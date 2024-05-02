@@ -17,14 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_bmwk.exporter
-
-import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.utils.getString
-import de.ingrid.igeserver.utils.getStringOrEmpty
+package de.ingrid.igeserver.profiles.opendata.exporter
 
 /*
 class BMWKModelTransformer(val doc: Document, val codelistHandler: CodelistHandler, val catalogId: String): IngridModelTransformer(model,

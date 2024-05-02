@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_bmwk.extensions
+package de.ingrid.igeserver.profiles.opendata.extensions
 
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.extension.pipe.Context
@@ -27,17 +27,16 @@ import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.tasks.IndexingTask
-import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.queryForList
 import org.springframework.stereotype.Component
 
 @Component
-class BmwkPublishExport(
+class OpenDataPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate, val indexingTask: IndexingTask
 ) : Filter<PostPublishPayload> {
-    override val profiles = arrayOf("ingrid-bmwk")
+    override val profiles = arrayOf("opendata")
 
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
 
@@ -46,11 +45,11 @@ class BmwkPublishExport(
 
         try {
             when (docType) {
-                "BmiDoc" -> indexBmwkDoc(context, docId)
-                "BmiAddressDoc" -> indexReferencesBmwkDocs(context, docId)
+                "BmiDoc" -> indexDoc(context, docId)
+                "BmiAddressDoc" -> indexReferencesDocs(context, docId)
                 else -> return payload
             }
-        } catch (ex: NoNodeAvailableException) {
+        } catch (ex: Exception) {
             throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
         }
 
@@ -58,7 +57,7 @@ class BmwkPublishExport(
 
     }
 
-    private fun indexReferencesBmwkDocs(context: Context, docId: String) {
+    private fun indexReferencesDocs(context: Context, docId: String) {
         context.addMessage(Message(this, "Index documents with referenced address $docId to Elasticsearch"))
 
         // get uuids from documents that reference the address
@@ -74,14 +73,14 @@ class BmwkPublishExport(
             """.trimIndent()
         )
 
-        docsWithReferences.forEach { indexBmwkDoc(context, it) }
+        docsWithReferences.forEach { indexDoc(context, it) }
 
     }
 
-    private fun indexBmwkDoc(context: Context, docId: String) {
+    private fun indexDoc(context: Context, docId: String) {
 
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
-        indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA, "indexInGridIDFBmwk", docId)
+        indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA, docId)
 
     }
 }

@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 
 
-@Profile("ingrid-bmwk")
+@Profile("opendata")
 @Configuration
-@ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.ingrid_bmwk"])
-class BmwkConfig
+@ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.opendata"])
+class OpenDataConfig

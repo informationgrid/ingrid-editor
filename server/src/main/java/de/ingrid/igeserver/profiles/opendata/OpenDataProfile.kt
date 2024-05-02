@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_bmwk
+package de.ingrid.igeserver.profiles.opendata
 
 import de.ingrid.igeserver.profiles.bmi.BmiProfile
 import de.ingrid.igeserver.repository.CatalogRepository
@@ -29,7 +29,7 @@ import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.stereotype.Service
 
 @Service
-class BmwkProfile(
+class OpenDataProfile(
     catalogRepo: CatalogRepository,
     codelistHandler: CodelistHandler,
     query: QueryRepository,
@@ -39,17 +39,17 @@ class BmwkProfile(
 ) : BmiProfile(codelistRepository, catalogRepo, codelistHandler, query, dateService, authUtils) {
 
     companion object {
-        const val id = "ingrid-bmwk"
+        const val id = "opendata"
     }
 
     override val identifier = id
-    override val title = "InGrid Katalog (BMWK)"
+    override val title = "Open-Data Katalog"
     override val parentProfile = "bmi"
 
-    override val indexExportFormatID = "indexInGridIDFBmwk"
+    override val indexExportFormatID = "indexOpenDataIDF"
 
     override fun getElasticsearchMapping(format: String): String {
-        return {}.javaClass.getResource("/bmwk/default-mapping.json")?.readText() ?: ""
+        return {}.javaClass.getResource("/opendata/default-mapping.json")?.readText() ?: ""
     }
 
     override fun getElasticsearchSetting(format: String): String {

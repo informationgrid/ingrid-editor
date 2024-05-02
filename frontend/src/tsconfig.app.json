@@ -18,7 +18,7 @@
     "profiles/profile-ingrid-bast.ts",
     "profiles/profile-ingrid-lfubayern.ts",
     "profiles/profile-ingrid-wsv.ts",
-    "profiles/profile-ingrid-bmwk.ts",
+    "profiles/profile-opendata.ts",
     "profiles/profile-bmi.ts"
   ]
 }

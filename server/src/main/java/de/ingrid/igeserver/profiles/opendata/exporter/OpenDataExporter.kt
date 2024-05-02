@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_bmwk.exporter
+package de.ingrid.igeserver.profiles.opendata.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -25,7 +25,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.bmi.exporter.BmiIndexExporter
+import de.ingrid.igeserver.profiles.bmi.exporter.BmiExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
@@ -42,8 +42,8 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
 @Service
-class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codelistHandler: CodelistHandler, val uploadConfig: Config) :
-    BmiIndexExporter() {
+class OpenDataExporter(val ingridIndexExporter: IngridIndexExporter, val codelistHandler: CodelistHandler, val uploadConfig: Config) :
+    BmiExporter() {
 
     val log = logger()
 
@@ -53,12 +53,12 @@ class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codeli
         get() {
             return ExportTypeInfo(
                 DocumentCategory.DATA,
-                "indexInGridIDFBmwk",
-                "BMWK Index",
+                "indexOpenDataIDF",
+                "Open-Data Index",
                 "Export der Datensätze für die weitere Verwendung im Exporter.",
                 MediaType.APPLICATION_JSON_VALUE,
                 "json",
-                listOf("ingrid-bmwk")
+                listOf("opendata")
             )
         }
 
@@ -73,9 +73,9 @@ class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codeli
         val bmiJson = mapper.readValue(bmiExport, JsonNode::class.java)
         val luceneJson = mapper.readValue(ingridExport, ObjectNode::class.java)
 
-        val bmwkAdditionalIdf = createAdditionalIdf(doc, catalogId)
-        appendToIdf(luceneJson, bmwkAdditionalIdf)
-        println(bmwkAdditionalIdf)
+        val additionalIdf = createAdditionalIdf(doc, catalogId)
+        appendToIdf(luceneJson, additionalIdf)
+        println(additionalIdf)
 
         // apply all bmi fields to ingrid lucene document
         bmiJson.fieldNames().forEach {
@@ -94,8 +94,8 @@ class BmwkIndexExporter(val ingridIndexExporter: IngridIndexExporter, val codeli
     private fun createAdditionalIdf(doc: Document, catalogId: String): String {
         val output: TemplateOutput = XMLStringOutput()
         templateEngine.render(
-            "export/ingrid-bmwk/additional.jte",
-            mapOf("map" to mapOf("model" to BMWKModelTransformerAdditional(doc, codelistHandler, catalogId, uploadConfig))),
+            "export/opendata/additional.jte",
+            mapOf("map" to mapOf("model" to OpenDataModelTransformerAdditional(doc, codelistHandler, catalogId, uploadConfig))),
             output
         )
         return output.toString()

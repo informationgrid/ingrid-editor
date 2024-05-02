@@ -32,15 +32,15 @@ import { BmiComponent } from "./profile-bmi";
 @Component({
   template: "",
 })
-class InGridBastComponent extends BmiComponent {
+class OpenDataComponent extends BmiComponent {
   bmiChange = (inject(BmiDoctype).codelistIdOpenData = "6400");
 }
 
 @NgModule({
-  declarations: [InGridBastComponent],
+  declarations: [OpenDataComponent],
 })
 export class ProfilePack {
   static getMyComponent() {
-    return InGridBastComponent;
+    return OpenDataComponent;
   }
 }

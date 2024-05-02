@@ -1,14 +1,14 @@
 {
   "pageTitle": {
-    "default": "Open Data Editor BMWK"
+    "default": "Open-Data Editor"
   },
   "menu": {
-    "application": "Open Data BMWK",
+    "application": "Open-Data",
     "logo": "assets/profiles/bmi/assets/icons/logo.svg",
     "logo-text": "Logo InGrid Framework"
   },
   "dashboard": {
-    "welcome": "Willkommen beim BMWK Editor",
-    "application": "Open Data"
+    "welcome": "Willkommen beim Open-Data Editor",
+    "application": "Open-Data"
   }
 }

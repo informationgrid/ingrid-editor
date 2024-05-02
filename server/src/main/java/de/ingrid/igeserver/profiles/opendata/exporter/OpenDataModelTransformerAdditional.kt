@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_bmwk.exporter
+package de.ingrid.igeserver.profiles.opendata.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -27,7 +27,7 @@ import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.mdek.upload.Config
 
-class BMWKModelTransformerAdditional(val doc: Document, val codelistHandler: CodelistHandler, val catalogId: String, val config: Config) {
+class OpenDataModelTransformerAdditional(val doc: Document, val codelistHandler: CodelistHandler, val catalogId: String, val config: Config) {
     fun getDistributions(): List<Distribution> {
         return doc.data.get("distributions")?.map { dist ->
             Distribution(
