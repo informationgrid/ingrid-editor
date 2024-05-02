@@ -199,7 +199,6 @@ class IndexTargetWorker(
                 "Error exporting document '${doc.document.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
             log.error(errorMessage, ex)
             message.errors.add(errorMessage)
-            increaseProgressInTargetMessage(targetMessage)
         }
         return null
     }
