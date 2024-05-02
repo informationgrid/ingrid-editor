@@ -267,15 +267,17 @@
     @endif
     @if("since".equals(page.getResourceDateType()))
         @if(page.isResourceRangeDefined() && (page.getData().getTemporal().getResourceDateTypeSince() != null) && "exactDate".equals(page.getData().getTemporal().getResourceDateTypeSince().getKey()))
-        "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getStart())}",
-        "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
-        "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getStart())}",
-        "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
-        "t01_object.time_type": "von",
+            @if(page.getData().getTemporal().getResourceRange() != null)
+                "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getStart())}",
+                "t2": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
+                "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getStart())}",
+                "t01_object.time_to": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceRange().getEnd())}",
+            @endif
+            "t01_object.time_type": "von",
         @elseif (page.getData().getTemporal().getResourceDate() != null)
-        "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
-        "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
-            @if  ("requestTime".equals(page.getData().getTemporal().getResourceDateTypeSince().getKey()))
+            "t1": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+            "t01_object.time_from": "${page.formatDate(page.getFormatterNoSeparator(), page.getData().getTemporal().getResourceDate())}",
+            @if(page.getData().getTemporal().getResourceDateTypeSince() != null && "requestTime".equals(page.getData().getTemporal().getResourceDateTypeSince().getKey()))
                 "t01_object.time_type": "seitX",
             @else
                 "t01_object.time_type": "seit",

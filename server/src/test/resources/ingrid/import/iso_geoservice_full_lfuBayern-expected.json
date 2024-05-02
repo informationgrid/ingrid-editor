@@ -56,9 +56,7 @@
   "graphicOverviews": [],
   "advProductGroups": [],
   "themes": [],
-  "priorityDatasets": [],
   "openDataCategories": [],
-  "spatialScope": null,
   "keywords": {
     "free": [],
     "geologicalKeywords": [{ "key": "1" }],
@@ -111,7 +109,6 @@
     },
     "description": ""
   },
-  "conformanceResult": [],
   "extraInfo": {
     "legalBasicsDescriptions": []
   },

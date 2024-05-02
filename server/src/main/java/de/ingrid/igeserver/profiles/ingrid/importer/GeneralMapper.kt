@@ -55,8 +55,11 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val documentService: DocumentService = isoData.documentService
 
     val uuid = metadata.fileIdentifier?.value
-    val type =
-        if (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue == "service") "InGridGeoService" else "InGridGeoDataset"
+    val type = when (metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
+        "service" -> "InGridGeoService"
+        "application" -> "InGridInformationSystem"
+        else -> "InGridGeoDataset"
+    }  
     val title = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.title?.value
     val isInspireIdentified = containsKeyword("inspireidentifiziert")
     val isAdVCompatible = containsKeyword("AdVMIS")

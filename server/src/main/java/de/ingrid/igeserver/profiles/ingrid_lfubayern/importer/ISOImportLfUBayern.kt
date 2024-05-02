@@ -56,6 +56,13 @@ class ISOImportLfUBayern(val codelistHandler: CodelistHandler, @Lazy val documen
                 )
             }
 
+            "application" -> {
+                ImportProfileData(
+                    "imports/ingrid-lfubayern/application.jte",
+                    ApplicationMapperLfUBayern(isoData)
+                )
+            }
+
             else -> null
         }
     }

@@ -17,26 +17,18 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_hmdk.importer
+package de.ingrid.igeserver.profiles.ingrid_lfubayern.importer
 
-import de.ingrid.igeserver.model.KeyValue
-import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
+import de.ingrid.igeserver.profiles.ingrid.importer.ApplicationMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.IsoImportData
 
-class GeodatasetMapperHMDK(isoData: IsoImportData) : GeodatasetMapper(isoData) {
+class ApplicationMapperLfUBayern(isoData: IsoImportData) : ApplicationMapper(isoData) {
 
-    val publicationHmbTG = containsKeyword("hmbtg")
-
-    override fun getKeywords(): List<String> =
-        super.getKeywords(listOf("HmbTG-Informationsgegenstand")).filterNot { it.equals("hmbtg") }
-
-
-    fun getInformationHmbTG(): List<KeyValue> {
-        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
-            ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "HmbTG-Informationsgegenstand" }
-            ?.flatMap { it.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
-            ?.map { KeyValue(it) } ?: emptyList()
-    }
-
+    val geolink: String = isoData.data.dataSetURI?.value ?: ""
+    val fees: String =
+        isoData.data.distributionInfo?.mdDistribution?.distributor?.get(0)?.mdDistributor?.distributionOrderProcess?.get(
+            0
+        )?.mdStandardOrderProcess?.fees?.value ?: ""
+    val useConstraintComments: String = if (getUseConstraints().isNotEmpty()) getUseConstraints()[0].note ?: "" else ""
 
 }

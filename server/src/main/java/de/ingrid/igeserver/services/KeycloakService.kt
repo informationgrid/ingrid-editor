@@ -28,6 +28,7 @@ import de.ingrid.igeserver.model.User
 import jakarta.annotation.PostConstruct
 import jakarta.ws.rs.ClientErrorException
 import jakarta.ws.rs.ForbiddenException
+import jakarta.ws.rs.core.Response
 import org.apache.logging.log4j.LogManager
 import org.jboss.resteasy.client.jaxrs.ResteasyClient
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl
@@ -50,6 +51,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
 import java.io.Closeable
+import java.io.InputStream
 import java.net.InetSocketAddress
 import java.net.ProxySelector
 import java.net.URI
@@ -319,7 +321,7 @@ class KeycloakService : UserManagementService {
             }
             val createResponse = usersResource.create(keycloakUser)
 
-            handleReponseErrors(createResponse.status) // will throw on error
+            handleReponseErrorsForUser(createResponse) // will throw on error
 
             val userId = CreatedResponseUtil.getCreatedId(createResponse)
 
@@ -353,21 +355,21 @@ class KeycloakService : UserManagementService {
         try {
             userResource.update(kcUser)
         } catch (e: ClientErrorException) {
-            if (e.response.status == 409) {
-                throw ConflictException.withReason("Conflicting email address")
-            } else {
-                throw e
-            }
+            handleReponseErrorsForUser(e.response)
         }
     }
 
-    private fun userHasAdminRole(user: User): Boolean {
-        return user.role.contains("ige-super-admin") || user.role.contains("cat-admin") || user.role.contains("md-admin")
-    }
-
-    private fun handleReponseErrors(status: Int) {
-        when (status) {
+    private fun handleReponseErrorsForUser(error: Response) {
+        if (error.status < 400) return
+        
+        val extraInfo = if (error.entity is InputStream) {
+            (error.entity as InputStream).reader().readText()
+        } else null
+        log.error("Error creating/updating user: $extraInfo")
+        
+        when (error.status) {
             409 -> throw ConflictException.withReason("New user cannot be created, because another user might have the same email address")
+            else -> throw ServerException.withReason("Error creating user: $extraInfo")
         }
     }
 

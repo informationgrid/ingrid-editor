@@ -72,9 +72,13 @@
 ],
 "advProductGroups": @template.imports.ingrid.partial.key-values(list = model.getAdvProductGroups()),
 "themes": @template.imports.ingrid.partial.key-values(list = model.getThemes()),
-"priorityDatasets": @template.imports.ingrid.partial.key-values(list = model.getPriorityDatasets()),
+@if(!model.getPriorityDatasets().isEmpty())
+    "priorityDatasets": @template.imports.ingrid.partial.key-values(list = model.getPriorityDatasets()),
+@endif
 "openDataCategories": @template.imports.ingrid.partial.key-values(list = model.getOpenDataCategories()),
-"spatialScope": @template.imports.ingrid.partial.key-value(item = model.getSpatialScope()),
+@if(model.getSpatialScope() != null)
+    "spatialScope": @template.imports.ingrid.partial.key-value(item = model.getSpatialScope()),
+@endif
 "keywords": {
     "free": [
     @for(var keyword : ForSupport.of(model.getKeywords()))
@@ -153,17 +157,19 @@
 },
 "description": "${interval.getDescription()}"
 },
-"conformanceResult": [
-@for(var item : ForSupport.of(model.getConformanceResult()))
-    {
-    "pass": @template.imports.ingrid.partial.key-value(item = item.get().getPass()),
-    "isInspire": ${item.get().isInspire()},
-    "explanation": "${item.get().getExplanation()}",
-    "specification": @template.imports.ingrid.partial.key-value(item = item.get().getSpecification()),
-    "publicationDate": "${item.get().getPublicationDate()}"
-    }@if (!item.isLast()),@endif
-@endfor
-],
+@if(!model.getConformanceResult().isEmpty())
+    "conformanceResult": [
+    @for(var item : ForSupport.of(model.getConformanceResult()))
+        {
+        "pass": @template.imports.ingrid.partial.key-value(item = item.get().getPass()),
+        "isInspire": ${item.get().isInspire()},
+        "explanation": "${item.get().getExplanation()}",
+        "specification": @template.imports.ingrid.partial.key-value(item = item.get().getSpecification()),
+        "publicationDate": "${item.get().getPublicationDate()}"
+        }@if (!item.isLast()),@endif
+    @endfor
+    ],
+@endif
 "extraInfo": {
 "legalBasicsDescriptions": @template.imports.ingrid.partial.key-values(list = model.getLegalDescriptions())
 },
