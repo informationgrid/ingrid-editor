@@ -24,9 +24,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
+import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.bmi.exporter.BmiExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.utils.getPath
@@ -38,12 +39,17 @@ import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
 @Service
-class OpenDataExporter(val ingridIndexExporter: IngridIndexExporter, val codelistHandler: CodelistHandler, val uploadConfig: Config) :
-    BmiExporter() {
+class OpenDataExporter(
+    @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
+    @Qualifier("ingridLuceneExporter") val luceneExporter: IngridLuceneExporter,
+    val codelistHandler: CodelistHandler,
+    val uploadConfig: Config
+) : IgeExporter {
 
     val log = logger()
 
@@ -64,7 +70,7 @@ class OpenDataExporter(val ingridIndexExporter: IngridIndexExporter, val codelis
 
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
-        val bmiExport = super.run(doc, catalogId, options) as String
+        /*val bmiExport = super.run(doc, catalogId, options) as String
 
         val ingridDoc = convertBmiToIngridDoc(doc)
         val ingridExport = ingridIndexExporter.run(ingridDoc, catalogId, options) as String
@@ -83,6 +89,24 @@ class OpenDataExporter(val ingridIndexExporter: IngridIndexExporter, val codelis
             luceneJson.set<JsonNode>(it, bmiJson.get(it))
         }
 
+        return luceneJson.toPrettyString()*/
+
+        // modify doc type to be mapped correctly during InGrid export
+        doc.type = "InGridSpecialisedTask"
+        val idf = idfExporter.run(doc, catalogId)
+        val luceneDoc = luceneExporter.run(doc, catalogId) as String
+
+        val mapper = jacksonObjectMapper()
+        val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
+
+        // TODO: support fingerprint in this profile
+/*
+        if (doc.type != "FOLDER") {
+            val idfFingerprintChecked = handleFingerprint(catalogId, doc.uuid, idf)
+            luceneJson.put("idf", idfFingerprintChecked)
+        }
+*/
+
         return luceneJson.toPrettyString()
     }
 
@@ -95,7 +119,16 @@ class OpenDataExporter(val ingridIndexExporter: IngridIndexExporter, val codelis
         val output: TemplateOutput = XMLStringOutput()
         templateEngine.render(
             "export/opendata/additional.jte",
-            mapOf("map" to mapOf("model" to OpenDataModelTransformerAdditional(doc, codelistHandler, catalogId, uploadConfig))),
+            mapOf(
+                "map" to mapOf(
+                    "model" to OpenDataModelTransformerAdditional(
+                        doc,
+                        codelistHandler,
+                        catalogId,
+                        uploadConfig
+                    )
+                )
+            ),
             output
         )
         return output.toString()
@@ -139,7 +172,7 @@ class OpenDataExporter(val ingridIndexExporter: IngridIndexExporter, val codelis
                     put("purpose", outer.getString("legalBasis"))
                     put("specificUsage", outer.getString("specificUsage"))
                 })
-                set<JsonNode>("temporal", mapper.createObjectNode().apply { 
+                set<JsonNode>("temporal", mapper.createObjectNode().apply {
                     set<JsonNode>("resourceDateType", outer.getPath("temporal.rangeType"))
                     set<JsonNode>("resourceDate", outer.getPath("temporal.timeSpanDate"))
                     set<JsonNode>("resourceRange", outer.getPath("temporal.timeSpanRange"))

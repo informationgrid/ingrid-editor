@@ -27,6 +27,7 @@ import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.tasks.IndexingTask
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.queryForList
 import org.springframework.stereotype.Component
@@ -37,6 +38,8 @@ class OpenDataPublishExport(
     val jdbcTemplate: JdbcTemplate, val indexingTask: IndexingTask
 ) : Filter<PostPublishPayload> {
     override val profiles = arrayOf("opendata")
+    
+    private val log = logger()
 
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
 
@@ -45,12 +48,13 @@ class OpenDataPublishExport(
 
         try {
             when (docType) {
-                "BmiDoc" -> indexDoc(context, docId)
-                "BmiAddressDoc" -> indexReferencesDocs(context, docId)
+                "OpenDataDoc" -> indexDoc(context, docId)
+                "OpenDataAddressDoc" -> indexReferencesDocs(context, docId)
                 else -> return payload
             }
         } catch (ex: Exception) {
-            throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
+//            log.error("Error exporting document: ", ex)
+            throw ClientException.withReason("Error exporting document: ${ex.message}", ex)
         }
 
         return payload

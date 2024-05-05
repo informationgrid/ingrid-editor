@@ -17,23 +17,33 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, NgModule } from "@angular/core";
-import { InGridComponent } from "./profile-ingrid";
-import { GeoDatasetDoctypeBast } from "./ingrid-bast/doctypes/geo-dataset.doctype";
-import { GeoServiceDoctypeBast } from "./ingrid-bast/doctypes/geo-service.doctype";
-import { CodelistStore } from "../app/store/codelist/codelist.store";
-import { CodelistQuery } from "../app/store/codelist/codelist.query";
-import { filter, map, take } from "rxjs/operators";
-import { BmiDoctype } from "./bmi/bmi.doctype";
+import { Component, NgModule } from "@angular/core";
 import { FolderDoctype } from "./folder/folder.doctype";
-import { BmiAddressDoctype } from "./bmi/bmi-address.doctype";
-import { BmiComponent } from "./profile-bmi";
+import { ProfileService } from "../app/services/profile.service";
+import { ContextHelpService } from "../app/services/context-help/context-help.service";
+import { ReportsService } from "../app/+reports/reports.service";
+import { OpenDataDoctype } from "./opendata/open-data-doctype.service";
+import { OpenDataAddressDoctype } from "./opendata/open-data-address-doctype.service";
 
 @Component({
   template: "",
 })
-class OpenDataComponent extends BmiComponent {
-  bmiChange = (inject(BmiDoctype).codelistIdOpenData = "6400");
+class OpenDataComponent {
+  // TODO: bmiChange = (inject(BmiDoctype).codelistIdOpenData = "6400");
+  constructor(
+    service: ProfileService,
+    contextHelpService: ContextHelpService,
+    reportsService: ReportsService,
+    opendata: OpenDataDoctype,
+    folder: FolderDoctype,
+    opendataAddress: OpenDataAddressDoctype,
+  ) {
+    const types = [opendata, folder, opendataAddress];
+
+    service.registerProfiles(types);
+
+    reportsService.setFilter((route) => route.path != "url-check");
+  }
 }
 
 @NgModule({
