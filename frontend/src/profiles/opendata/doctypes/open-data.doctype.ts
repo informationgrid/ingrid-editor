@@ -62,7 +62,7 @@ export class OpenDataDoctype extends BaseDoctype {
             needPublisher: {
               expression: (ctrl) =>
                 ctrl.value
-                  ? ctrl.value.some((row) => row.type.key === "publisher")
+                  ? ctrl.value.some((row) => row.type.key === "12")
                   : false,
               message:
                 'Fehler: Es muss eine Adresse als "veröffentlichende Stelle" eingetragen sein.',
@@ -70,8 +70,7 @@ export class OpenDataDoctype extends BaseDoctype {
             onePublisher: {
               expression: (ctrl) =>
                 ctrl.value
-                  ? ctrl.value.filter((row) => row.type.key === "publisher")
-                      .length < 2
+                  ? ctrl.value.filter((row) => row.type.key === "12").length < 2
                   : true,
               message:
                 "Fehler: Es darf nur eine Adresse als veröffentlichende Stelle angegeben werden",
