@@ -109,7 +109,8 @@ class IndexTargetWorker(
         totalHits: Long
     ): Boolean {
         val numExported = page * generalProperties.indexPageSize + docsToPublish.numberOfElements
-        val isLast = numExported.toLong() == totalHits
+        if (numExported.toLong() > totalHits) log.warn("Here seems to be a calculation error, since exported documents are higher than totalHits: $numExported > $totalHits")
+        val isLast = numExported.toLong() >= totalHits
         return isLast
     }
 
