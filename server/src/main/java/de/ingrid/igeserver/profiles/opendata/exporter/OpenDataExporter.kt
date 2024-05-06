@@ -30,7 +30,6 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 import gg.jte.ContentType
@@ -92,14 +91,13 @@ class OpenDataExporter(
         return luceneJson.toPrettyString()*/
 
         // modify doc type to be mapped correctly during InGrid export
-        doc.type = "InGridSpecialisedTask"
-        doc.data.put("isOpenData", true)
-        val luceneDoc = ingridIndexExporter.run(doc, catalogId, options) as String
+        val modifiedDoc = addDefaultValues(doc)
+        val luceneDoc = ingridIndexExporter.run(modifiedDoc, catalogId, options) as String
 
         val mapper = jacksonObjectMapper()
         val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
 
-        val additionalIdf = createAdditionalIdf(doc, catalogId)
+        val additionalIdf = createAdditionalIdf(modifiedDoc, catalogId)
         appendToIdf(luceneJson, additionalIdf)
 
         // TODO: support fingerprint in this profile for additionalIDF
@@ -137,52 +135,18 @@ class OpenDataExporter(
         return output.toString()
     }
 
-    private fun convertBmiToIngridDoc(doc: Document): Document {
+    private fun addDefaultValues(doc: Document): Document {
         val mapper = jacksonObjectMapper()
         return doc.apply {
             type = "InGridSpecialisedTask"
             data.apply {
                 val outer = this
-                set<JsonNode>("pointOfContact", get("addresses").apply {
-                    (get(0)?.get("type") as ObjectNode?)?.put("key", 12)
-                })
-                put("alternateTitle", getString("landingPage"))
-                set<JsonNode>("openDataCategories", get("openDataCategories"))
-                set<JsonNode>("spatial", mapper.createObjectNode().apply {
-                    set<JsonNode>("references", outer.get("spatial"))
-                    set<JsonNode>("spatialSystems", null)
-                })
-                val tempKeywords = get("keywords")
-                set<JsonNode>("keywords", mapper.createObjectNode().apply {
-                    set<JsonNode>("free", mapper.createArrayNode().apply {
-                        tempKeywords.forEach {
-                            add(mapper.createObjectNode().apply {
-                                put("id", null as String?)
-                                put("label", it.asText())
-                            })
-                        }
-
-                    })
-                })
                 set<JsonNode>("metadata", mapper.createObjectNode().apply {
                     set<JsonNode>("language", mapper.createObjectNode().apply {
                         put("key", 150)
                     })
                 })
                 put("isOpenData", true)
-                set<JsonNode>("openDataCategories", get("DCATThemes"))
-                set<JsonNode>("resource", mapper.createObjectNode().apply {
-                    put("purpose", outer.getString("legalBasis"))
-                    put("specificUsage", outer.getString("specificUsage"))
-                })
-                set<JsonNode>("temporal", mapper.createObjectNode().apply {
-                    set<JsonNode>("resourceDateType", outer.getPath("temporal.rangeType"))
-                    set<JsonNode>("resourceDate", outer.getPath("temporal.timeSpanDate"))
-                    set<JsonNode>("resourceRange", outer.getPath("temporal.timeSpanRange"))
-                })
-                set<JsonNode>("maintenanceInformation", mapper.createObjectNode().apply {
-                    set<JsonNode>("maintenanceAndUpdateFrequency", outer.get("periodicity"))
-                })
             }
         }
     }
