@@ -49,14 +49,14 @@ export class OpenDataDoctype extends BaseDoctype {
         this.addTextArea("description", "Beschreibung", this.id, {
           required: true,
         }),
-        this.addInput("landingPage", "Webseite", {
+        this.addInput("alternateTitle", "Webseite", {
           wrappers: ["panel", "form-field"],
           placeholder: "https://...",
           validators: {
             validation: ["url"],
           },
         }),
-        this.addAddressCard("addresses", "Adressen", {
+        this.addAddressCard("pointOfContact", "Adressen", {
           required: true,
           validators: {
             needPublisher: {
@@ -88,18 +88,20 @@ export class OpenDataDoctype extends BaseDoctype {
         this.addGroupSimple("keywords", [
           this.addRepeatList("free", "Schlagworte", {
             view: "chip",
+            convert: (val) => (val ? { label: val } : null),
+            labelField: "label",
             hint: "Mehrere Schlagworte durch Komma trennen und mit der Eingabetaste bestätigen.",
           }),
         ]),
       ]),
       this.addSection("Open Data", [
-        this.addRepeatList("DCATThemes", "Open Data Kategorien", {
+        this.addRepeatList("openDataCategories", "Open Data Kategorien", {
           view: "chip",
           asSelect: true,
           required: true,
           options: this.getCodelistForSelect(
             this.codelistIdOpenData,
-            "DCATThemes",
+            "openDataCategories",
           ),
           codelistId: this.codelistIdOpenData,
         }),
@@ -209,21 +211,21 @@ export class OpenDataDoctype extends BaseDoctype {
             },
           },
         }),
-        this.addInput(
-          "legalBasis",
-          "Rechtsgrundlage für die Zugangseröffnung",
-          {
+        this.addGroupSimple("resource", [
+          this.addInput("purpose", "Rechtsgrundlage für die Zugangseröffnung", {
             wrappers: ["panel", "form-field"],
-          },
-        ),
+          }),
+        ]),
         this.addInput("qualityProcessURI", "Qualitätssicherungsprozess URI", {
           wrappers: ["panel", "form-field"],
         }),
       ]),
       this.addSection("Raumbezüge", [
-        this.addSpatial("spatial", "Raumbezüge", {
-          limitTypes: ["free", "wkt"],
-        }),
+        this.addGroupSimple("spatial", [
+          this.addSpatial("references", "Raumbezüge", {
+            limitTypes: ["free", "wkt"],
+          }),
+        ]),
         this.addSelect(
           "politicalGeocodingLevel",
           "Ebene der geopolitischen Abdeckung",
@@ -235,7 +237,7 @@ export class OpenDataDoctype extends BaseDoctype {
       ]),
       this.addSection("Zeitbezüge", [
         this.addGroup("temporal", "Zeitliche Abdeckung der Daten", [
-          this.addSelect("rangeType", null, {
+          this.addSelect("resourceDateType", null, {
             showSearch: false,
             className: "flex-1",
             wrappers: ["form-field"],
@@ -246,7 +248,7 @@ export class OpenDataDoctype extends BaseDoctype {
               { label: "von - bis", value: "range" },
             ],
           }),
-          this.addDatepicker("timeSpanDate", null, {
+          this.addDatepicker("resourceDate", null, {
             placeholder: "TT.MM.JJJJ",
             wrappers: ["form-field"],
             fieldLabel: "Datum",
@@ -255,7 +257,7 @@ export class OpenDataDoctype extends BaseDoctype {
               hide: "model?.rangeType?.key == null || model?.rangeType?.key === 'range'",
             },
           }),
-          this.addDateRange("timeSpanRange", null, {
+          this.addDateRange("resourceRange", null, {
             wrappers: [],
             fieldLabel: "Datum",
             required: true,
@@ -264,14 +266,16 @@ export class OpenDataDoctype extends BaseDoctype {
             },
           }),
         ]),
-        this.addSelect("periodicity", "Periodizität", {
-          showSearch: true,
-          options: this.getCodelistForSelectWithEmtpyOption(
-            "518",
-            "periodicity",
-          ),
-          codelistId: "518",
-        }),
+        this.addGroupSimple("maintenanceInformation", [
+          this.addSelect("maintenanceAndUpdateFrequency", "Periodizität", {
+            showSearch: true,
+            options: this.getCodelistForSelectWithEmtpyOption(
+              "518",
+              "periodicity",
+            ),
+            codelistId: "518",
+          }),
+        ]),
       ]),
     ];
 

@@ -27,7 +27,7 @@ import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.utils.getPath
@@ -46,7 +46,7 @@ import org.springframework.stereotype.Service
 @Service
 class OpenDataExporter(
     @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
-    @Qualifier("ingridLuceneExporter") val luceneExporter: IngridLuceneExporter,
+    val ingridIndexExporter: IngridIndexExporter,
     val codelistHandler: CodelistHandler,
     val uploadConfig: Config
 ) : IgeExporter {
@@ -93,13 +93,16 @@ class OpenDataExporter(
 
         // modify doc type to be mapped correctly during InGrid export
         doc.type = "InGridSpecialisedTask"
-        val idf = idfExporter.run(doc, catalogId)
-        val luceneDoc = luceneExporter.run(doc, catalogId) as String
+        doc.data.put("isOpenData", true)
+        val luceneDoc = ingridIndexExporter.run(doc, catalogId, options) as String
 
         val mapper = jacksonObjectMapper()
         val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
 
-        // TODO: support fingerprint in this profile
+        val additionalIdf = createAdditionalIdf(doc, catalogId)
+        appendToIdf(luceneJson, additionalIdf)
+
+        // TODO: support fingerprint in this profile for additionalIDF
 /*
         if (doc.type != "FOLDER") {
             val idfFingerprintChecked = handleFingerprint(catalogId, doc.uuid, idf)

@@ -44,7 +44,6 @@ class OpenDataProfile(
 
     override val identifier = id
     override val title = "Open-Data Katalog"
-    override val parentProfile = "bmi"
 
     override val indexExportFormatID = "indexOpenDataIDF"
 
