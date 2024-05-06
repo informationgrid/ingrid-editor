@@ -32,8 +32,6 @@ import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.tasks.IndexConfig
 import de.ingrid.igeserver.tasks.IndexingTask
 import jakarta.persistence.EntityManager
-import java.text.SimpleDateFormat
-import java.util.*
 import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.jpa.AvailableHints
 import org.hibernate.query.NativeQuery
@@ -45,6 +43,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.text.SimpleDateFormat
+import java.util.*
 
 data class DocumentIndexInfo(
     val document: Document,
@@ -239,7 +239,7 @@ class IndexService(
                 null
             )
         val regex = Regex("(.|\\n)*?\\bFROM\\b")
-        val countSql = sql.replaceFirst(regex, "SELECT COUNT(*) FROM")
+        val countSql = sql.replaceFirst(regex, "SELECT COUNT(DISTINCT(document_wrapper.uuid, document_wrapper.id)) FROM")
         val nativeQuery = entityManager.createNativeQuery(countSql)
 
         nativeQuery.setParameter(1, queryInfo.catalogId)
