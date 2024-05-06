@@ -17,18 +17,18 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { DocumentService } from "../../app/services/document/document.service";
-import { CodelistService } from "../../app/services/codelist/codelist.service";
-import { CodelistQuery } from "../../app/store/codelist/codelist.query";
+import { DocumentService } from "../../../app/services/document/document.service";
+import { CodelistService } from "../../../app/services/codelist/codelist.service";
+import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { Injectable } from "@angular/core";
-import { OrganisationDoctype } from "../address/organisation.doctype";
+import { OrganisationDoctype } from "../../address/organisation.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { AddressOptions } from "../address/address.shared";
+import { AddressOptions } from "../../address/address.shared";
 import { map } from "rxjs/operators";
 import {
   EmailValidator,
   UrlValidator,
-} from "../../app/formly/input.validators";
+} from "../../../app/formly/input.validators";
 
 @Injectable({
   providedIn: "root",

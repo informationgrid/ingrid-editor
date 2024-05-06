@@ -22,8 +22,8 @@ import { FolderDoctype } from "./folder/folder.doctype";
 import { ProfileService } from "../app/services/profile.service";
 import { ContextHelpService } from "../app/services/context-help/context-help.service";
 import { ReportsService } from "../app/+reports/reports.service";
-import { OpenDataDoctype } from "./opendata/open-data-doctype.service";
-import { OpenDataAddressDoctype } from "./opendata/open-data-address-doctype.service";
+import { OpenDataDoctype } from "./opendata/doctypes/open-data.doctype";
+import { OpenDataAddressDoctype } from "./opendata/doctypes/open-data-address.doctype";
 
 @Component({
   template: "",

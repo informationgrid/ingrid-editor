@@ -18,13 +18,13 @@
  * limitations under the Licence.
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { BaseDoctype } from "../base.doctype";
+import { BaseDoctype } from "../../base.doctype";
 import { inject, Injectable } from "@angular/core";
-import { UploadService } from "../../app/shared/upload/upload.service";
-import { ConfigService } from "../../app/services/config/config.service";
+import { UploadService } from "../../../app/shared/upload/upload.service";
+import { ConfigService } from "../../../app/services/config/config.service";
 import { map } from "rxjs/operators";
-import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { RepeatDetailListOptions } from "../form-field-helper";
+import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
+import { RepeatDetailListOptions } from "../../form-field-helper";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 
@@ -254,7 +254,7 @@ export class OpenDataDoctype extends BaseDoctype {
             fieldLabel: "Datum",
             required: true,
             expressions: {
-              hide: "model?.rangeType?.key == null || model?.rangeType?.key === 'range'",
+              hide: "model?.resourceDateType?.key == null || model?.resourceDateType?.key === 'range'",
             },
           }),
           this.addDateRange("resourceRange", null, {
@@ -262,7 +262,7 @@ export class OpenDataDoctype extends BaseDoctype {
             fieldLabel: "Datum",
             required: true,
             expressions: {
-              hide: "model?.rangeType?.key !== 'range'",
+              hide: "model?.resourceDateType?.key !== 'range'",
             },
           }),
         ]),
