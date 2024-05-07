@@ -27,7 +27,12 @@ import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.mdek.upload.Config
 
-class OpenDataModelTransformerAdditional(val doc: Document, val codelistHandler: CodelistHandler, val catalogId: String, val config: Config) {
+class OpenDataModelTransformerAdditional(
+    val doc: Document,
+    val codelistHandler: CodelistHandler,
+    val catalogId: String,
+    val config: Config
+) {
     fun getDistributions(): List<Distribution> {
         return doc.data.get("distributions")?.map { dist ->
             Distribution(
@@ -43,19 +48,20 @@ class OpenDataModelTransformerAdditional(val doc: Document, val codelistHandler:
             )
         } ?: emptyList()
     }
-    
+
     fun getUuid() = doc.uuid
     fun getTitle() = doc.title?.trim() ?: ""
     fun getDescription() = doc.data.getString("description") ?: ""
     fun getLandingPage() = doc.data.getString("alternateTitle") ?: ""
-    fun getThemes() = doc.data.get("openDataCategories")?.mapNotNull { 
+    fun getThemes() = doc.data.get("openDataCategories")?.mapNotNull {
         codelistHandler.getCodelistValue("6400", it.getString("key") ?: "")
     } ?: emptyList()
+
     fun getCreated() = doc.created.toString()
     fun getModified() = doc.modified.toString()
     fun getPeriodicity() = "" //doc.data.getmodified.toString()
     fun getKeywords() = emptyList<String>()
-    fun getAddresses() = doc.data.get("pointOfContact").map { 
+    fun getAddresses() = doc.data.get("pointOfContact").map {
         AddressInfo(
             mapAddressType(it.getString("type.key") ?: ""),
             it.getString("ref.organization") ?: "",
@@ -81,10 +87,10 @@ class OpenDataModelTransformerAdditional(val doc: Document, val codelistHandler:
     fun getQualityProcessURI() = ""
     fun getPoliticalGeocodingLevel() = ""
     fun getTemporalStart(): String? = null
-    fun getTemporalEnd() : String? = null
+    fun getTemporalEnd(): String? = null
 
     private fun getDownloadLink(dist: JsonNode, uuid: String): String {
-        return if (dist.getBoolean("link.asLink") == true) dist.getString("link.uri")  ?: ""// TODO encode uri
+        return if (dist.getBoolean("link.asLink") == true) dist.getString("link.uri") ?: ""// TODO encode uri
         else "${config.uploadExternalUrl}$catalogId/${uuid}/${dist.getString("link.uri")}"
     }
 

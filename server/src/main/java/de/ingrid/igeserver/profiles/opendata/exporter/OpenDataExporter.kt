@@ -55,6 +55,10 @@ class OpenDataExporter(
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
+    override fun exportSql(catalogId: String): String {
+        return "${super.exportSql(catalogId)} AND document.type != 'FOLDER'"
+    }
+
     override val typeInfo: ExportTypeInfo
         get() {
             return ExportTypeInfo(
