@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
+import java.nio.charset.Charset
 import java.util.function.BiConsumer
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -149,7 +150,7 @@ class ImportService(
             ?.filterNot { it.getString("type.key").isNullOrEmpty() && it.getString("type.value").isNullOrEmpty() }
 
         if (pointOfContact?.size() == filteredContacts?.size) return analysis
-        
+
         analysis.document.data.set<JsonNode>(
             "pointOfContact", jacksonObjectMapper().createArrayNode().apply {
                 filteredContacts?.map { add(it) }
@@ -180,6 +181,8 @@ class ImportService(
 
         extractZip(file.inputStream()) { entry, os ->
             run {
+                // ignore resource fork files if zipped on MacOS
+                entry.name.contains("__MACOSX").takeIf { it }?.let { return@run }
                 val type = when {
                     entry.name.endsWith(".json") -> ContentType.APPLICATION_JSON.mimeType
                     entry.name.endsWith(".xml") -> ContentType.APPLICATION_XML.mimeType
@@ -236,13 +239,13 @@ class ImportService(
             forcePublish
         )
     }
-    
+
     fun getImporterInfos(): List<ImportTypeInfo> {
         return factory.getImporterInfos()
     }
 
     private fun extractZip(file: InputStream, consumerFunction: BiConsumer<ZipEntry, ByteArrayOutputStream>) {
-        ZipInputStream(file).use { zip ->
+        ZipInputStream(file, Charset.forName("CP437")).use { zip ->
             var entry: ZipEntry?
             while (zip.nextEntry.also { entry = it } != null) {
                 val outStream = ByteArrayOutputStream()
@@ -315,12 +318,12 @@ class ImportService(
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else if (ref.deleted) {
             val finalParentId = ref.document.data.getString(FIELD_PARENT)?.toInt() ?: parentId
-            
+
             // undelete first to completely delete afterwards
             removeDeletedFlag(ref.wrapperId!!)
             documentService.deleteDocument(principal, catalogId, ref.wrapperId, true)
             val newDoc = documentService.createDocument(principal, catalogId, ref.document, parentId, ref.isAddress, publish)
-           
+
             documentService.updateParent(catalogId, newDoc.wrapper.id!!, finalParentId)
 
             if (ref.isAddress) counter.addresses++ else counter.documents++
