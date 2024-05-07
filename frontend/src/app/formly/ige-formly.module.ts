@@ -306,6 +306,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     FieldToAiraLabelledbyPipe,
     SectionWrapper,
     UnitInputComponent,
+    SelectGeoDatasetDialog,
   ],
   providers: [
     {
@@ -357,7 +358,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     ValidUntilDialogComponent,
     PrintTypeComponent,
     DocumentReferenceTypeComponent,
-    SelectGeoDatasetDialog,
     SelectCswRecordDialog,
     CoordinatesSpatialComponent,
     UpdateGetCapabilitiesComponent,

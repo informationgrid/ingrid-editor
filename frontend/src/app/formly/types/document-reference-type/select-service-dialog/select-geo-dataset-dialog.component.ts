@@ -21,19 +21,34 @@ import { Component, Inject } from "@angular/core";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { TreeQuery } from "../../../../store/tree/tree.query";
+import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { DialogTemplateModule } from "../../../../shared/dialog-template/dialog-template.module";
+import { SharedModule } from "../../../../shared/shared.module";
+import { FormGroup } from "@angular/forms";
 
 export interface SelectServiceResponse {
   title: string;
   uuid: string;
   state: string;
+  layerNames: string[];
 }
 
 @Component({
   templateUrl: "./select-geo-dataset-dialog.component.html",
   styleUrls: ["./select-geo-dataset-dialog.component.scss"],
+  imports: [DialogTemplateModule, SharedModule, FormlyModule],
+  standalone: true,
 })
 export class SelectGeoDatasetDialog {
   selectedNode: string = null;
+  field: FormlyFieldConfig[] = [
+    {
+      key: "layerName",
+      type: "repeatList",
+    },
+  ];
+  form = new FormGroup<any>({});
+  model = { layerName: "" };
 
   constructor(
     private dlgRef: MatDialogRef<any>,
@@ -56,6 +71,7 @@ export class SelectGeoDatasetDialog {
       title: entity.title,
       state: entity._state,
       uuid: entity._uuid,
+      layerNames: this.form.value.layerName,
     });
   }
 

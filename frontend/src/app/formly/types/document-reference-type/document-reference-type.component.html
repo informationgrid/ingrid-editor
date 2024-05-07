@@ -21,6 +21,11 @@
             }
             <span>{{ item.title ?? "???" }}</span>
         </div>
+        <ul>
+            @for (name of item.layerNames; track name) {
+                <li>{{ name }}</li>
+            }
+        </ul>
         @if (formControl.enabled) {
             <button
                 mat-icon-button

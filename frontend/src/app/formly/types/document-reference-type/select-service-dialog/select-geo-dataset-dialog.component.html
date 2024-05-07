@@ -3,10 +3,17 @@
     (submit)="submit()"
     [disabled]="selectedNode === null"
 >
-    <ige-tree
-        content
-        [allowMultiSelectionMode]="false"
-        [disabledCondition]="enableOnlyGeoService()"
-        (selected)="selectDatasets($event)"
-    ></ige-tree>
+    <div content>
+        <div class="section-title">Layernamen:</div>
+        <formly-form
+            [fields]="field"
+            [form]="form"
+            [model]="model"
+        ></formly-form>
+        <ige-tree
+            [allowMultiSelectionMode]="false"
+            [disabledCondition]="enableOnlyGeoService()"
+            (selected)="selectDatasets($event)"
+        ></ige-tree>
+    </div>
 </ige-dialog-template>

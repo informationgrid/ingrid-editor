@@ -38,6 +38,7 @@ import { TreeQuery } from "../../../store/tree/tree.query";
 import { firstValueFrom } from "rxjs";
 
 interface Reference {
+  layerNames: string[];
   isExternalRef: boolean;
 }
 
@@ -104,8 +105,10 @@ export class DocumentReferenceTypeComponent
       .afterClosed()
       .subscribe((item: SelectServiceResponse) => {
         if (item) {
+          console.log(item);
           this.add(null, {
             uuid: item.uuid,
+            layerNames: item.layerNames,
             isExternalRef: false,
           });
           this.props.change?.(this.field);
@@ -170,6 +173,7 @@ export class DocumentReferenceTypeComponent
     return {
       title: item.title ?? item.url,
       url: item.url,
+      layerNames: [],
       isExternalRef: true,
     };
   }
@@ -196,6 +200,7 @@ export class DocumentReferenceTypeComponent
       title: doc?.title,
       state: doc?._state,
       type: doc?._type,
+      layerNames: [],
       icon: "Geodatensatz",
     };
   }
