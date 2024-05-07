@@ -55,7 +55,25 @@ class OpenDataModelTransformerAdditional(val doc: Document, val codelistHandler:
     fun getModified() = doc.modified.toString()
     fun getPeriodicity() = "" //doc.data.getmodified.toString()
     fun getKeywords() = emptyList<String>()
-    fun getAddresses() = emptyList<AddressInfo>()
+    fun getAddresses() = doc.data.get("pointOfContact").map { 
+        AddressInfo(
+            mapAddressType(it.getString("type.key") ?: ""),
+            it.getString("ref.organization") ?: "",
+            emptyList()
+        )
+    }
+
+    private fun mapAddressType(typeKey: String): String {
+        return when (typeKey) {
+            "2" -> return "maintainer"
+            "6" -> return "originator"
+            "7" -> return "contactPoint"
+            "11" -> return "creator"
+            "12" -> return "publisher"
+            else -> return "???"
+        }
+    }
+
     fun getSpatials() = emptyList<String>()
     fun getSpatialTitles() = emptyList<String>()
     fun getArs() = emptyList<String>()
@@ -104,5 +122,7 @@ data class License(
 )
 
 data class AddressInfo(
+    val type: String,
+    val organisation: String,
     val contacts: List<String> = emptyList(),
 )

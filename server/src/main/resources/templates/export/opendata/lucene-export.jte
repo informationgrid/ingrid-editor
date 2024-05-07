@@ -27,8 +27,8 @@
     "contact": [
     @for(var entry : ForSupport.of(model.getAddresses()))
         {
-            "type": "",
-            "organization": "",
+            "type": "${entry.get().getType()}",
+            "organization": "${entry.get().getOrganisation()}",
             "communication": [
             @for(var contact : ForSupport.of(entry.get().getContacts()))
                 {

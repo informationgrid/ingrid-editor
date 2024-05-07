@@ -120,17 +120,6 @@ class OpenDataExporter(
     }
 
     private fun getAdditionalLuceneJsonForDCATExporter(doc: Document, catalogId: String): JsonNode {
-        /*val engine = PebbleEngine.Builder()
-            .defaultEscapingStrategy("json")
-            //.newLineTrimming(false)
-            .build()
-
-        val compiledTemplate = engine.getTemplate("templates/export/opendata/lucene-export.peb")
-
-        val writer: Writer = StringWriter()
-        val map = getMapFromObject(doc, catalogId)
-        compiledTemplate.evaluate(writer, map)*/
-
         val output: TemplateOutput = JsonStringOutput()
         templateEngine.render("export/opendata/lucene-export.jte", getMapFromObject(doc, catalogId), output)
         
