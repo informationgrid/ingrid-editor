@@ -12,7 +12,7 @@
  * https://joinup.ec.europa.eu/software/page/eupl
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the Licence is distributed on an "AS IS" basis,
+ * distributed under the Licence is distributed on an "AS IS" basis,F
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
@@ -60,6 +60,7 @@ fun amendHMDKDescriptiveKeywords(
 
 fun getHmdkModelTransformerClass(docType: String): KClass<out Any>? {
     return when (docType) {
+        "InGridSpecialisedTask" -> IngridModelTransformerHmdk::class
         "InGridGeoDataset" -> GeodatasetTransformerHmdk::class
         "InGridGeoService" -> GeoserviceTransformerHmdk::class
         "InGridPublication" -> PublicationModelTransformerHmdk::class
