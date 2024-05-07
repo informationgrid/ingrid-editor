@@ -47,17 +47,16 @@
         {
             "format": ["{{ download.format.key }}"],
             {% if download.link.asLink %}
-                "access_url": "{{ download.link.value }}",
+                "accessURL": "{{ download.link.value }}",
             {% else %}
-                "access_url": "/downloads/{{ model.uuid }}/{{ download.link.value }}",
+                "accessURL": "/downloads/{{ model.uuid }}/{{ download.link.value }}",
             {% endif %}
             {% if download.modified  %}
                 "modified": "{{ download.modified }}",
             {% endif %}
             "title": "{{ download.title }}",
             "description": "{{ download.description }}",
-            "license": "{{ download.getLicenseData(catalogId).id }}",
-            "license_name": "{{ download.getLicenseData(catalogId).name }}",
+            "license": "{{ download.getLicenseData().id }}",
             "byClause": "{{ download.byClause }}",
             "languages": [
                 {% if not download.languageKeys.isEmpty() %}

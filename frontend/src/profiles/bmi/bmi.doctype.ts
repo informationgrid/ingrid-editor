@@ -27,7 +27,6 @@ import { CodelistQuery } from "../../app/store/codelist/codelist.query";
 import { RepeatDetailListOptions } from "../form-field-helper";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
-
 @Injectable({
   providedIn: "root",
 })
@@ -41,7 +40,6 @@ export class BmiDoctype extends BaseDoctype {
   private uploadService = inject(UploadService);
   private configService = inject(ConfigService);
   protected codelistQuery = inject(CodelistQuery);
-  public codelistIdOpenData = "20001";
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -95,11 +93,8 @@ export class BmiDoctype extends BaseDoctype {
           view: "chip",
           asSelect: true,
           required: true,
-          options: this.getCodelistForSelect(
-            this.codelistIdOpenData,
-            "DCATThemes",
-          ),
-          codelistId: this.codelistIdOpenData,
+          options: this.getCodelistForSelect("20001", "DCATThemes"),
+          codelistId: "20001",
         }),
         this.addRepeatDistributionDetailList("distributions", "Ressourcen", {
           required: true,
