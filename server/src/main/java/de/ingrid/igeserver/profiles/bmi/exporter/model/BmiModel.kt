@@ -23,12 +23,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.codelists.CodeListService
-import de.ingrid.igeserver.exports.interfaces.dcat.DCAT
-import de.ingrid.igeserver.exports.interfaces.dcat.Download
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.SpringContext
-import org.json.simple.parser.JSONParser
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
@@ -80,7 +77,7 @@ data class BmiModel(
         if (data.DCATThemes == null) return emptyList()
         return data.DCATThemes
                 .map { theme -> theme.key }
-            .map { "http://publications.europa.eu/resource/authority/data-theme/${codeListService?.getCodeListEntry("6400", it)?.data}" }
+            .map { "http://publications.europa.eu/resource/authority/data-theme/$it" }
     }
 
 
