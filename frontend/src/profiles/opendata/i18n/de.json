@@ -1,0 +1,14 @@
+{
+  "pageTitle": {
+    "default": "Open-Data Editor"
+  },
+  "menu": {
+    "application": "Open-Data",
+    "logo": "assets/profiles/bmi/assets/icons/logo.svg",
+    "logo-text": "Logo InGrid Framework"
+  },
+  "dashboard": {
+    "welcome": "Willkommen beim Open-Data Editor",
+    "application": "Open-Data"
+  }
+}
