@@ -21,6 +21,7 @@ import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { FieldArrayType } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
+  SelectGeoDatasetData,
   SelectGeoDatasetDialog,
   SelectServiceResponse,
 } from "./select-service-dialog/select-geo-dataset-dialog.component";
@@ -99,14 +100,25 @@ export class DocumentReferenceTypeComponent
       .subscribe((_) => this.buildModel());
   }
 
-  showInternalRefDialog() {
+  showInternalRefDialog(index?: number) {
     this.dialog
-      .open(SelectGeoDatasetDialog, { minWidth: 400, data: this.getRefUuids() })
+      .open(SelectGeoDatasetDialog, {
+        minWidth: 400,
+        data: <SelectGeoDatasetData>{
+          currentRefs: this.getRefUuids().filter((item, idx) => idx !== index),
+          activeRef: index >= 0 ? this.getRefUuids()[index] : null,
+          layerNames:
+            index >= 0 ? this.formControl.value[index].layerNames : [],
+        },
+      })
       .afterClosed()
       .subscribe((item: SelectServiceResponse) => {
         if (item) {
-          console.log(item);
-          this.add(null, {
+          const isNotNew = index >= 0;
+          if (isNotNew) {
+            this.remove(index);
+          }
+          this.add(index, {
             uuid: item.uuid,
             layerNames: item.layerNames,
             isExternalRef: false,
@@ -178,29 +190,34 @@ export class DocumentReferenceTypeComponent
     };
   }
 
-  private async mapInternalRef(item: any): Promise<DocumentReference> {
+  private async mapInternalRef(
+    item: DocumentReference,
+  ): Promise<DocumentReference> {
     const nodeEntity = this.tree.getByUuid(item.uuid);
     if (nodeEntity) {
-      return this.mapToDocumentReference(nodeEntity);
+      return this.mapToDocumentReference(nodeEntity, item.layerNames);
     }
 
     return await firstValueFrom(
       this.docService.load(item.uuid, false, false, true).pipe(
         map((doc) => {
-          return this.mapToDocumentReference(doc);
+          return this.mapToDocumentReference(doc, item.layerNames);
         }),
       ),
     );
   }
 
-  private mapToDocumentReference(doc: IgeDocument): DocumentReference {
+  private mapToDocumentReference(
+    doc: IgeDocument,
+    layerNames: string[],
+  ): DocumentReference {
     return {
       uuid: doc?._uuid,
       isExternalRef: false,
       title: doc?.title,
       state: doc?._state,
       type: doc?._type,
-      layerNames: [],
+      layerNames: layerNames,
       icon: "Geodatensatz",
     };
   }
@@ -209,5 +226,9 @@ export class DocumentReferenceTypeComponent
     return this.formControl.value
       .filter((item: any) => item.uuid)
       .map((item: any) => item.uuid);
+  }
+
+  editItem(index: number) {
+    this.showInternalRefDialog(index);
   }
 }

@@ -25,6 +25,13 @@ import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 import { DialogTemplateModule } from "../../../../shared/dialog-template/dialog-template.module";
 import { SharedModule } from "../../../../shared/shared.module";
 import { FormGroup } from "@angular/forms";
+import { Subject } from "rxjs";
+
+export interface SelectGeoDatasetData {
+  currentRefs: string[];
+  activeRef?: string;
+  layerNames?: string[];
+}
 
 export interface SelectServiceResponse {
   title: string;
@@ -43,24 +50,34 @@ export class SelectGeoDatasetDialog {
   selectedNode: string = null;
   field: FormlyFieldConfig[] = [
     {
-      key: "layerName",
+      key: "layerNames",
       type: "repeatList",
     },
   ];
   form = new FormGroup<any>({});
-  model = { layerName: "" };
+  model = { layerNames: [] };
+  initialNode = new Subject<number>();
 
   constructor(
     private dlgRef: MatDialogRef<any>,
     private tree: TreeQuery,
-    @Inject(MAT_DIALOG_DATA) private currentRefs: string[],
-  ) {}
+    @Inject(MAT_DIALOG_DATA) private data: SelectGeoDatasetData,
+  ) {
+    if (data.activeRef) {
+      setTimeout(() => {
+        const node = tree.getByUuid(data.activeRef);
+        this.initialNode.next(parseInt(node.id.toString()));
+      });
+    }
+    this.model.layerNames = data.layerNames;
+  }
 
   enableOnlyGeoService() {
     return (node: TreeNode) => {
       return (
         node.type !== "InGridGeoDataset" ||
-        this.currentRefs.indexOf(node._uuid) !== -1
+        this.data.currentRefs.indexOf(node._uuid) !== -1
+        // (node._uuid === this.data.activeRef && this.data.currentRefs.indexOf(node._uuid) !== -1)
       );
     };
   }
@@ -71,7 +88,7 @@ export class SelectGeoDatasetDialog {
       title: entity.title,
       state: entity._state,
       uuid: entity._uuid,
-      layerNames: this.form.value.layerName,
+      layerNames: this.form.value.layerNames,
     });
   }
 
