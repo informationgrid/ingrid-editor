@@ -59,7 +59,7 @@ class IndexExporter(val idfExporter: IDFExporter, val luceneExporter: LuceneExpo
 
         if (doNotPublishNegativeAssessments) conditions.add("document_wrapper.type != 'UvpNegativePreliminaryAssessmentDoc'")
         if (publishNegativeAssessmentsOnlyWithSpatialReferences) conditions.add("(document_wrapper.type != 'UvpNegativePreliminaryAssessmentDoc' OR (jsonb_path_exists(jsonb_strip_nulls(data), '\$.spatial')))")
-        if (publishNegativeAssessmentsControlledByDataset) conditions.add("document_wrapper.tags IS NULL OR NOT ('{negative-assessment-not-publish}' && document_wrapper.tags)")
+        if (publishNegativeAssessmentsControlledByDataset) conditions.add("(document_wrapper.tags IS NULL OR NOT ('{negative-assessment-not-publish}' && document_wrapper.tags))")
 
         conditions.add("document.state = 'PUBLISHED'")
 
