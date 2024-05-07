@@ -120,7 +120,7 @@ class EnhanceGroupsTask(
         catalogIdentifier: String
     ): Set<Int> {
         return docIds
-            .map { documentService.getWrapperByDocumentId(it) }
+            .map { documentService.getWrapperById(it) }
             .flatMap { wrapper -> getAllReferencedDocumentIds(wrapper, catalogIdentifier) }
             .toSet()
     }

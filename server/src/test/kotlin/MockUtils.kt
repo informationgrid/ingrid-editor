@@ -75,7 +75,7 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
             else throw EmptyResultDataAccessException(1)
         }
         if (document.id != null) {
-            every { documentService.getWrapperByDocumentId(document.id.toInt()) } answers {
+            every { documentService.getWrapperById(document.id.toInt()) } answers {
                 mockedDocumentSimple(document.id, document)
             }
         }

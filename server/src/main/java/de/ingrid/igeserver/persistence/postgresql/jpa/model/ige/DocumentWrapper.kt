@@ -91,7 +91,7 @@ class DocumentWrapper {
             name = "path",
             columnDefinition = "text[]"
     )
-    var path: List<String> = emptyList()
+    var path: List<Int> = emptyList()
         get() = if (field == null) emptyList() else field // field can actually be null if in db table null
 
 

@@ -369,7 +369,7 @@ class DatasetsApiController(
 
         val actualRoots = mutableListOf<DocumentWrapper>()
         val groupDatasets = aclService.getDatasetIdsFromGroups(userGroups!!, isAddress)
-            .map { id -> documentService.getWrapperByDocumentId(id) }
+            .map { id -> documentService.getWrapperById(id) }
         // paths is a list of string which need to be compared with ids from datasets, so we convert IDs to strings here
         val groupDatasetIds = groupDatasets.map { it.id.toString() }.toSet()
 
@@ -464,7 +464,6 @@ class DatasetsApiController(
         val path = documentData.wrapper.path
 
         val pathInfos = path
-            .map(String::toInt)
             .map { pathId -> createPathResponse(pathId, principal) }
 
         return ResponseEntity.ok(

@@ -126,7 +126,7 @@ class DocumentService(
 
     private var log = logger()
 
-    fun getWrapperByDocumentId(id: Int): DocumentWrapper = docWrapperRepo.findById(id).get()
+    fun getWrapperById(id: Int): DocumentWrapper = docWrapperRepo.findById(id).get()
 
     fun getParentWrapper(id: Int): DocumentWrapper? = docWrapperRepo.getParentWrapper(id)
 
@@ -803,6 +803,34 @@ class DocumentService(
         return DocumentData(docData.wrapper, postRevertPayload.document)
     }
 
+    /**
+     * Get the last published document version of a document with a given wrapper ID.
+     * This function is used to get the last published version of a document which is not the latest version.
+     *
+     * @param wrapperId the wrapper ID of the document
+     * @param forExport if the document is requested for export
+     * @param resolveLinks if internal references should be resolved
+     * @return the last published document version
+     */
+    fun getLastPublishedDocument(
+        wrapperId: Int,
+        forExport: Boolean = false,
+        resolveLinks: Boolean = true
+    ): Document {
+        val wrapper = getWrapperById(wrapperId)
+        return getLastPublishedDocument(wrapper.catalog!!.identifier, wrapper.uuid, forExport, resolveLinks)
+    }
+
+    /**
+     * Get the last published document version of a document with a given UUID.
+     * This function is used to get the last published version of a document which is not the latest version.
+     *
+     * @param catalogId the catalog identifier
+     * @param uuid the UUID of the document
+     * @param forExport if the document is requested for export
+     * @param resolveLinks if internal references should be resolved
+     * @return the last published document version
+     */
     fun getLastPublishedDocument(
         catalogId: String,
         uuid: String,
@@ -1009,7 +1037,7 @@ class DocumentService(
 
         // get new parent path
         val newPath = if (newParentId == null) emptyList() else {
-            getPathFromWrapper(newParentId) + newParentId.toString()
+            getPathFromWrapper(newParentId) + newParentId
         }
 
         // updateWrapper
@@ -1038,10 +1066,10 @@ class DocumentService(
     private fun getPathFromWrapper(id: Int) =
         getWrapperByDocumentIdAndCatalog(id).path
 
-    private fun updatePathForAllChildren(catalogId: String, path: List<String>, id: Int) {
+    private fun updatePathForAllChildren(catalogId: String, path: List<Int>, id: Int) {
         findChildrenWrapper(catalogId, id).hits
             .forEach {
-                it.path = path + id.toString()
+                it.path = path + id
                 // FIXME: what about the path of person under an institution???
                 if (it.type == "FOLDER") {
                     updatePathForAllChildren(catalogId, it.path, it.id!!)

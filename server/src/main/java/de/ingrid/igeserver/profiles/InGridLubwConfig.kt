@@ -17,28 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.exporter
+package de.ingrid.igeserver.profiles
 
-import de.ingrid.igeserver.exporter.model.FolderModel
-import de.ingrid.igeserver.model.KeyValue
-import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.utils.SpringContext
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 
-class FolderModelTransformer(
-    val model: FolderModel,
-    val catalogIdentifier: String,
-    val codelist: CodelistTransformer,
-    val type: KeyValue? = null,
-) {
-    companion object {
-        val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
-    }
 
-    val id = model.id
-    val uuid = model.uuid
-    val hierarchyParent = model.data._parent
-    
-    val category = documentService?.getWrapperById(model.id)?.category
-
-    val nextParent = documentService!!.getParentWrapper(model.id)?.uuid
-}
+@Profile("ingrid-lubw")
+@Configuration
+@ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.ingrid_lubw"])
+class InGridLubwConfig

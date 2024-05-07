@@ -5,6 +5,7 @@
 @param Content contentInfo = null
 @param Content additionalKeywords = null
 @param Content additionalResource = null
+@param Content additionalLineageSource = null
 
 {
     @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource)
@@ -59,6 +60,7 @@
                 "processStep": {
                     "description":  @template.imports.ingrid.partial.key-values(list = model.getProcessStep())
                 }
+                ${additionalLineageSource}
             }
        }
     },
