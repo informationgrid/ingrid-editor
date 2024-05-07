@@ -44,6 +44,7 @@ class IngridIdfExporterHmdk(
             put("InGridProject", ProjectModelTransformerHmdk::class)
             put("InGridDataCollection", DataCollectionModelTransformerHmdk::class)
             put("InGridInformationSystem", InformationSystemModelTransformerHmdk::class)
+            put("InGridSpecialisedTask", IngridModelTransformerHmdk::class)
         }
     }
 }

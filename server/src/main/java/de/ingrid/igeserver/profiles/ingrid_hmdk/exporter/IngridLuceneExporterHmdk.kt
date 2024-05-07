@@ -84,6 +84,7 @@ class IngridLuceneExporterHmdk(
             "InGridProject" -> ProjectModelTransformerHmdk::class
             "InGridDataCollection" -> DataCollectionModelTransformerHmdk::class
             "InGridInformationSystem" -> InformationSystemModelTransformerHmdk::class
+            "InGridSpecialisedTask" -> IngridModelTransformerHmdk::class
             else -> null
         }
     }
