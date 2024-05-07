@@ -41,7 +41,6 @@ export class OpenDataDoctype extends BaseDoctype {
   private uploadService = inject(UploadService);
   private configService = inject(ConfigService);
   protected codelistQuery = inject(CodelistQuery);
-  public codelistIdOpenData = "20001";
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -58,6 +57,7 @@ export class OpenDataDoctype extends BaseDoctype {
         }),
         this.addAddressCard("pointOfContact", "Adressen", {
           required: true,
+          allowedTypes: ["2", "6", "7", "11", "12"],
           validators: {
             needPublisher: {
               expression: (ctrl) =>
@@ -98,11 +98,8 @@ export class OpenDataDoctype extends BaseDoctype {
           view: "chip",
           asSelect: true,
           required: true,
-          options: this.getCodelistForSelect(
-            this.codelistIdOpenData,
-            "openDataCategories",
-          ),
-          codelistId: this.codelistIdOpenData,
+          options: this.getCodelistForSelect("6400", "openDataCategories"),
+          codelistId: "6400",
         }),
         this.addRepeatDistributionDetailList("distributions", "Ressourcen", {
           required: true,

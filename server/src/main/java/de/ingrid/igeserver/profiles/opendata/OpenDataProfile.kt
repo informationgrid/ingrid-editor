@@ -82,29 +82,7 @@ class OpenDataProfile(
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
-        val codelist505 = Codelist().apply {
-            identifier = "505"
-            catalog = catalogRef
-            name = "Adresstyp"
-            description = "Liste derAdresstypen"
-            data = jacksonObjectMapper().createArrayNode().apply {
-                codelist505.forEach { (key, value) ->
-                    add(toCodelistEntry(key, value, null, key))
-                }
-            }
-        }
 
-        val codelist20001 = Codelist().apply {
-            identifier = "20001"
-            catalog = catalogRef
-            name = "OpenData Kategorien"
-            description = "Dies sind die Kategorien, die im OpenData Kontext verwendet werden"
-            data = jacksonObjectMapper().createArrayNode().apply {
-                codelist20001.forEach { (key, value) ->
-                    add(toCodelistEntry(key, value))
-                }
-            }
-        }
         val codelist20003 = Codelist().apply {
             identifier = "20003"
             catalog = catalogRef
@@ -162,8 +140,8 @@ class OpenDataProfile(
         }
 
         when (codelistId) {
-            "505" -> codelistHandler.removeAndAddCodelist(catalogId, codelist505)
-            "20001" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20001)
+//            "505" -> codelistHandler.removeAndAddCodelist(catalogId, codelist505)
+//            "20001" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20001)
             // "20002" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20002) // Deprecated Liste "Download Typ"
             "20003" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20003)
             "20004" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20004)
@@ -171,10 +149,10 @@ class OpenDataProfile(
             "20006" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20006)
             "20007" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20007)
             null -> {
-                codelistHandler.removeAndAddCodelist(catalogId, codelist505)
-                codelistRepo.save(codelist505)
-                codelistHandler.removeAndAddCodelist(catalogId, codelist20001)
-                codelistRepo.save(codelist20001)
+//                codelistHandler.removeAndAddCodelist(catalogId, codelist505)
+//                codelistRepo.save(codelist505)
+//                codelistHandler.removeAndAddCodelist(catalogId, codelist20001)
+//                codelistRepo.save(codelist20001)
                 codelistHandler.removeAndAddCodelist(catalogId, codelist20003)
                 codelistRepo.save(codelist20003)
                 codelistHandler.removeAndAddCodelist(catalogId, codelist20004)

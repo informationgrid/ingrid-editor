@@ -28,6 +28,7 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter.JsonStringOutput
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.utils.getString
@@ -99,6 +100,13 @@ class OpenDataExporter(
 
         val additionalIdf = createAdditionalIdf(modifiedDoc, catalogId)
         appendToIdf(luceneJson, additionalIdf)
+        
+        val additionalLuceneJson = getAdditionalLuceneJsonForDCATExporter(doc, catalogId)
+        // apply all bmi fields to ingrid lucene document
+        additionalLuceneJson.fieldNames().forEach {
+            if (luceneJson.has(it)) log.error("Conflict between BMI export document and InGrid on field: $it")
+            luceneJson.set<JsonNode>(it, additionalLuceneJson.get(it))
+        }
 
         // TODO: support fingerprint in this profile for additionalIDF
 /*
@@ -109,6 +117,35 @@ class OpenDataExporter(
 */
 
         return luceneJson.toPrettyString()
+    }
+
+    private fun getAdditionalLuceneJsonForDCATExporter(doc: Document, catalogId: String): JsonNode {
+        /*val engine = PebbleEngine.Builder()
+            .defaultEscapingStrategy("json")
+            //.newLineTrimming(false)
+            .build()
+
+        val compiledTemplate = engine.getTemplate("templates/export/opendata/lucene-export.peb")
+
+        val writer: Writer = StringWriter()
+        val map = getMapFromObject(doc, catalogId)
+        compiledTemplate.evaluate(writer, map)*/
+
+        val output: TemplateOutput = JsonStringOutput()
+        templateEngine.render("export/opendata/lucene-export.jte", getMapFromObject(doc, catalogId), output)
+        
+        return jacksonObjectMapper().readValue(output.toString(), JsonNode::class.java)
+    }
+
+    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
+
+        return mapOf(
+            "map" to mapOf(
+                "model" to OpenDataModelTransformerAdditional(json, codelistHandler, catalogId, uploadConfig), //jacksonObjectMapper().convertValue(json, OpenDataModel::class.java),
+                "catalogId" to catalogId
+            )
+        )
+
     }
 
     private fun appendToIdf(json: ObjectNode?, additionalIdf: String) {

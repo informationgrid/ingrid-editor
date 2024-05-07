@@ -43,6 +43,27 @@ class OpenDataModelTransformerAdditional(val doc: Document, val codelistHandler:
             )
         } ?: emptyList()
     }
+    
+    fun getUuid() = doc.uuid
+    fun getTitle() = doc.title?.trim() ?: ""
+    fun getDescription() = doc.data.getString("description") ?: ""
+    fun getLandingPage() = doc.data.getString("alternateTitle") ?: ""
+    fun getThemes() = doc.data.get("openDataCategories")?.mapNotNull { 
+        codelistHandler.getCodelistValue("6400", it.getString("key") ?: "")
+    } ?: emptyList()
+    fun getCreated() = doc.created.toString()
+    fun getModified() = doc.modified.toString()
+    fun getPeriodicity() = "" //doc.data.getmodified.toString()
+    fun getKeywords() = emptyList<String>()
+    fun getAddresses() = emptyList<AddressInfo>()
+    fun getSpatials() = emptyList<String>()
+    fun getSpatialTitles() = emptyList<String>()
+    fun getArs() = emptyList<String>()
+    fun getLegalBasis() = ""
+    fun getQualityProcessURI() = ""
+    fun getPoliticalGeocodingLevel() = ""
+    fun getTemporalStart(): String? = null
+    fun getTemporalEnd() : String? = null
 
     private fun getDownloadLink(dist: JsonNode, uuid: String): String {
         return if (dist.getBoolean("link.asLink") == true) dist.getString("link.uri")  ?: ""// TODO encode uri
@@ -80,4 +101,8 @@ data class Distribution(
 data class License(
     val url: String,
     val name: String
+)
+
+data class AddressInfo(
+    val contacts: List<String> = emptyList(),
 )
