@@ -42,6 +42,7 @@ export interface SelectCswRecordData {
   asAtomDownloadService: boolean;
   layerNames: string[];
   url: string;
+  showLayernames: boolean;
 }
 
 @UntilDestroy()
@@ -68,6 +69,7 @@ export class SelectCswRecordDialog implements OnInit {
   ];
   form = new FormGroup<any>({});
   model = { layerNames: [] };
+  public showLayernames = false;
 
   constructor(
     private dlg: MatDialogRef<SelectCswRecordResponse>,
@@ -77,6 +79,7 @@ export class SelectCswRecordDialog implements OnInit {
     this.asAtomDownloadService = data.asAtomDownloadService === true;
     this.model.layerNames = data.layerNames ?? [];
     if (data.url) setTimeout(() => this.urlControl.setValue(data.url));
+    this.showLayernames = data.showLayernames;
   }
 
   ngOnInit(): void {

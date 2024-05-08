@@ -31,6 +31,7 @@ export interface SelectGeoDatasetData {
   currentRefs: string[];
   activeRef?: string;
   layerNames?: string[];
+  showLayernames: boolean;
 }
 
 export interface SelectServiceResponse {
@@ -57,6 +58,7 @@ export class SelectGeoDatasetDialog {
   form = new FormGroup<any>({});
   model = { layerNames: [] };
   initialNode = new Subject<number>();
+  public showLayernames = false;
 
   constructor(
     private dlgRef: MatDialogRef<any>,
@@ -70,6 +72,7 @@ export class SelectGeoDatasetDialog {
       });
     }
     this.model.layerNames = data.layerNames ?? [];
+    this.showLayernames = data.showLayernames;
   }
 
   enableOnlyGeoService() {

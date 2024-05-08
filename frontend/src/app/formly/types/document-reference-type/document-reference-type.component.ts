@@ -106,6 +106,7 @@ export class DocumentReferenceTypeComponent
       currentRefs: this.getRefUuids().filter((item, idx) => idx !== index),
       activeRef: index >= 0 ? this.getRefUuids()[index] : null,
       layerNames: index >= 0 ? this.formControl.value[index].layerNames : [],
+      showLayernames: this.props.showLayernames,
     };
     this.dialog
       .open(SelectGeoDatasetDialog, {
@@ -132,6 +133,7 @@ export class DocumentReferenceTypeComponent
         this.options.formState.mainModel.service.isAtomDownload,
       layerNames: index >= 0 ? this.formControl.value[index].layerNames : [],
       url: index >= 0 ? this.formControl.value[index].url : null,
+      showLayernames: this.props.showLayernames,
     };
     this.dialog
       .open(SelectCswRecordDialog, {

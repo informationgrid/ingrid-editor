@@ -24,11 +24,13 @@
                 }
                 <span>{{ item.title ?? "???" }}</span>
             </div>
-            <ul>
-                @for (name of item.layerNames; track name) {
-                    <li>{{ name }}</li>
-                }
-            </ul>
+            @if (props.showLayernames) {
+                <ul>
+                    @for (name of item.layerNames; track name) {
+                        <li>{{ name }}</li>
+                    }
+                </ul>
+            }
         </div>
         @if (formControl.enabled) {
             <button

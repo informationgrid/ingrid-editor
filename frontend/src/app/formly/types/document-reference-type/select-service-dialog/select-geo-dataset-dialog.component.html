@@ -4,15 +4,17 @@
     [disabled]="selectedNode === null || form.invalid"
 >
     <div content>
-        <div class="section-title">Layernamen:</div>
-        <div class="padding">
-            <formly-form
-                [fields]="field"
-                [form]="form"
-                [model]="model"
-            ></formly-form>
-        </div>
-        <div class="section-title">Auswahl des Geodatensatzes:</div>
+        @if (showLayernames) {
+            <div class="section-title">Layernamen:</div>
+            <div class="padding">
+                <formly-form
+                    [fields]="field"
+                    [form]="form"
+                    [model]="model"
+                ></formly-form>
+            </div>
+            <div class="section-title">Auswahl des Geodatensatzes:</div>
+        }
         <ige-tree
             [allowMultiSelectionMode]="false"
             [disabledCondition]="enableOnlyGeoService()"
