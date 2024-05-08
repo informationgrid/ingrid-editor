@@ -221,6 +221,12 @@
               "uuid": {
                 "type": "string"
               },
+              "layerNames": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
               "isExternalRef": {
                 "const": false
               }
@@ -241,6 +247,12 @@
               },
               "identifier": {
                 "type": "string"
+              },
+              "layerNames": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
               },
               "isExternalRef": {
                 "const": true
