@@ -518,8 +518,9 @@ open class IngridModelTransformer(
     }
 
     fun getOperatesOn() = data.service.coupledResources?.map {
+        val title: String? = it.layerNames?.joinToString(",")?.ifEmpty { null }
         if (it.isExternalRef) {
-            OperatesOn(it.uuid, it.identifier)
+            OperatesOn(it.uuid, it.identifier, title)
         } else {
             val identifier = getLastPublishedDocument(it.uuid!!)?.data?.get("identifier")?.asText() ?: it.uuid
             val containsNamespace = identifier.contains("://")
@@ -529,7 +530,7 @@ open class IngridModelTransformer(
                 val namespaceWithSlash = if (namespace.endsWith("/")) namespace else "$namespace/"
                 namespaceWithSlash + identifier
             }
-            OperatesOn(it.uuid, completeIdentifier)
+            OperatesOn(it.uuid, completeIdentifier, title)
         }
 
     } ?: emptyList()
@@ -944,7 +945,7 @@ data class DisplayOperation(
     val identifierLink: String?
 )
 
-data class OperatesOn(val uuidref: String?, val href: String?)
+data class OperatesOn(val uuidref: String?, val href: String?, val title: String?)
 
 
 data class CrossReference(
