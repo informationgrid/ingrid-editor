@@ -43,7 +43,7 @@
                 <button
                     data-cy="action-edit"
                     mat-menu-item
-                    (click)="editItem(i)"
+                    (click)="editItem(i, item.isExternalRef)"
                     [attr.aria-description]="item.title + ' bearbeiten'"
                 >
                     Bearbeiten

@@ -4,6 +4,15 @@
     [disabled]="phase !== 'valid'"
 >
     <div content>
+        <div class="section-title">Layernamen:</div>
+        <div class="padding">
+            <formly-form
+                [fields]="field"
+                [form]="form"
+                [model]="model"
+            ></formly-form>
+        </div>
+
         <mat-form-field appearance="outline" class="width-100 space-bottom">
             <mat-label>GetRecordById-URL</mat-label>
             <input

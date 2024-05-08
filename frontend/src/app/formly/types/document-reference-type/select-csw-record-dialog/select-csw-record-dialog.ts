@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { Component, Inject, OnInit } from "@angular/core";
-import { FormControl, Validators } from "@angular/forms";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { catchError, debounceTime, filter, tap } from "rxjs/operators";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
@@ -28,12 +28,20 @@ import {
 } from "../document-reference.service";
 import { Observable, of } from "rxjs";
 import { REGEX_URL } from "../../../input.validators";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 export interface SelectCswRecordResponse {
   title: string;
   url: string;
   identifier: string;
   uuid: string;
+  layerNames: string[];
+}
+
+export interface SelectCswRecordData {
+  asAtomDownloadService: boolean;
+  layerNames: string[];
+  url: string;
 }
 
 @UntilDestroy()
@@ -52,12 +60,23 @@ export class SelectCswRecordDialog implements OnInit {
   analysisError = null;
   asAtomDownloadService: boolean;
 
+  field: FormlyFieldConfig[] = [
+    {
+      key: "layerNames",
+      type: "repeatList",
+    },
+  ];
+  form = new FormGroup<any>({});
+  model = { layerNames: [] };
+
   constructor(
     private dlg: MatDialogRef<SelectCswRecordResponse>,
     private docRefService: DocumentReferenceService,
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    @Inject(MAT_DIALOG_DATA) data: SelectCswRecordData,
   ) {
     this.asAtomDownloadService = data.asAtomDownloadService === true;
+    this.model.layerNames = data.layerNames ?? [];
+    if (data.url) setTimeout(() => this.urlControl.setValue(data.url));
   }
 
   ngOnInit(): void {
@@ -77,6 +96,7 @@ export class SelectCswRecordDialog implements OnInit {
       url: this.urlControl.value,
       identifier: this.analysis.identifier,
       uuid: this.analysis.uuid,
+      layerNames: this.form.value.layerNames ?? [],
     });
   }
 

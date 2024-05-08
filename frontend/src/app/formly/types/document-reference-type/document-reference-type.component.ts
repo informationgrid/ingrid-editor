@@ -26,6 +26,7 @@ import {
   SelectServiceResponse,
 } from "./select-service-dialog/select-geo-dataset-dialog.component";
 import {
+  SelectCswRecordData,
   SelectCswRecordDialog,
   SelectCswRecordResponse,
 } from "./select-csw-record-dialog/select-csw-record-dialog";
@@ -101,52 +102,63 @@ export class DocumentReferenceTypeComponent
   }
 
   showInternalRefDialog(index?: number) {
+    const data: SelectGeoDatasetData = {
+      currentRefs: this.getRefUuids().filter((item, idx) => idx !== index),
+      activeRef: index >= 0 ? this.getRefUuids()[index] : null,
+      layerNames: index >= 0 ? this.formControl.value[index].layerNames : [],
+    };
     this.dialog
       .open(SelectGeoDatasetDialog, {
         minWidth: 400,
-        data: <SelectGeoDatasetData>{
-          currentRefs: this.getRefUuids().filter((item, idx) => idx !== index),
-          activeRef: index >= 0 ? this.getRefUuids()[index] : null,
-          layerNames:
-            index >= 0 ? this.formControl.value[index].layerNames : [],
-        },
+        data: data,
       })
       .afterClosed()
       .subscribe((item: SelectServiceResponse) => {
-        if (item) {
-          const isNotNew = index >= 0;
-          if (isNotNew) {
-            this.remove(index);
-          }
-          this.add(index, {
+        if (!item) return;
+        this.updateValue(
+          {
             uuid: item.uuid,
             layerNames: item.layerNames,
             isExternalRef: false,
-          });
-          this.props.change?.(this.field);
-        }
+          },
+          index,
+        );
       });
   }
 
-  showExternalRefDialog() {
+  showExternalRefDialog(index?: number) {
+    const data: SelectCswRecordData = {
+      asAtomDownloadService:
+        this.options.formState.mainModel.service.isAtomDownload,
+      layerNames: index >= 0 ? this.formControl.value[index].layerNames : [],
+      url: index >= 0 ? this.formControl.value[index].url : null,
+    };
     this.dialog
       .open(SelectCswRecordDialog, {
-        data: {
-          asAtomDownloadService:
-            this.options.formState.mainModel.service.isAtomDownload,
-        },
+        data: data,
         minWidth: 400,
       })
       .afterClosed()
       .subscribe((item: SelectCswRecordResponse) => {
-        if (item) {
-          this.add(null, {
+        if (!item) return;
+        this.updateValue(
+          {
             ...item,
             isExternalRef: true,
-          });
-          this.props.change?.(this.field);
-        }
+          },
+          index,
+        );
       });
+  }
+
+  private updateValue(item: any, index?: number) {
+    const isNotNew = index >= 0;
+    if (isNotNew) {
+      this.remove(index);
+    }
+    setTimeout(() => this.add(index, item));
+    this.props.change?.(this.field);
+    console.log("update value", item);
   }
 
   async openReference(item: DocumentReference | UrlReference) {
@@ -185,7 +197,7 @@ export class DocumentReferenceTypeComponent
     return {
       title: item.title ?? item.url,
       url: item.url,
-      layerNames: [],
+      layerNames: item.layerNames,
       isExternalRef: true,
     };
   }
@@ -228,7 +240,8 @@ export class DocumentReferenceTypeComponent
       .map((item: any) => item.uuid);
   }
 
-  editItem(index: number) {
-    this.showInternalRefDialog(index);
+  editItem(index: number, isExternalRef: boolean) {
+    if (isExternalRef) this.showExternalRefDialog(index);
+    else this.showInternalRefDialog(index);
   }
 }

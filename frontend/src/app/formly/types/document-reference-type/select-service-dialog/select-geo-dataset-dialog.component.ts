@@ -47,7 +47,7 @@ export interface SelectServiceResponse {
   standalone: true,
 })
 export class SelectGeoDatasetDialog {
-  selectedNode: string = null;
+  selectedNode: number = null;
   field: FormlyFieldConfig[] = [
     {
       key: "layerNames",
@@ -69,7 +69,7 @@ export class SelectGeoDatasetDialog {
         this.initialNode.next(parseInt(node.id.toString()));
       });
     }
-    this.model.layerNames = data.layerNames;
+    this.model.layerNames = data.layerNames ?? [];
   }
 
   enableOnlyGeoService() {
@@ -92,7 +92,7 @@ export class SelectGeoDatasetDialog {
     });
   }
 
-  selectDatasets(node: string[]) {
+  selectDatasets(node: number[]) {
     this.selectedNode = node[0];
   }
 }

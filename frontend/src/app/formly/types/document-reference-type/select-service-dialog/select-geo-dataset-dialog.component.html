@@ -1,15 +1,18 @@
 <ige-dialog-template
     label="Dargestellte Daten"
     (submit)="submit()"
-    [disabled]="selectedNode === null"
+    [disabled]="selectedNode === null || form.invalid"
 >
     <div content>
         <div class="section-title">Layernamen:</div>
-        <formly-form
-            [fields]="field"
-            [form]="form"
-            [model]="model"
-        ></formly-form>
+        <div class="padding">
+            <formly-form
+                [fields]="field"
+                [form]="form"
+                [model]="model"
+            ></formly-form>
+        </div>
+        <div class="section-title">Auswahl des Geodatensatzes:</div>
         <ige-tree
             [allowMultiSelectionMode]="false"
             [disabledCondition]="enableOnlyGeoService()"
