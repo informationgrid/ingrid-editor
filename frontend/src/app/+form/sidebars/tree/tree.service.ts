@@ -36,6 +36,9 @@ export class TreeService {
     if (a.type === "FOLDER" && b.type === "FOLDER") {
       return a.title.localeCompare(b.title);
     } else if (a.type !== "FOLDER" && b.type !== "FOLDER") {
+      //sort based on IDs for matched dataset names
+      if (a.title === b.title)
+        return a._id.toString().localeCompare(b._id.toString());
       return a.title.localeCompare(b.title);
     } else if (a.type === "FOLDER") {
       return -1;
