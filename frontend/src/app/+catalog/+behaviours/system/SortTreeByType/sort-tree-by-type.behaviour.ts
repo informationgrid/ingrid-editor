@@ -48,6 +48,9 @@ export class SortTreeByTypeBehaviour extends Plugin {
     } else if (a.type !== b.type) {
       return a.type.localeCompare(b.type);
     } else {
+      //sort based on IDs for matched dataset names
+      if (a.title === b.title)
+        return a._id.toString().localeCompare(b._id.toString());
       return a.title.localeCompare(b.title);
     }
   };
