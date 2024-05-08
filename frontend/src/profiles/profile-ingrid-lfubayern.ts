@@ -47,6 +47,7 @@ class InGridLFUBayernComponent extends InGridComponent {
   ];
 
   private modifyFormFieldConfiguration() {
+    this.geoService.showLayernamesForCoupledResources = true;
     [this.geoDataset, this.geoService, this.informationSystem].forEach(
       (docType) => {
         docType.showAdVCompatible = false;
