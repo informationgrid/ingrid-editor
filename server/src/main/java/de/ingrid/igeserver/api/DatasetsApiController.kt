@@ -370,8 +370,7 @@ class DatasetsApiController(
         val actualRoots = mutableListOf<DocumentWrapper>()
         val groupDatasets = aclService.getDatasetIdsFromGroups(userGroups!!, isAddress)
             .map { id -> documentService.getWrapperById(id) }
-        // paths is a list of string which need to be compared with ids from datasets, so we convert IDs to strings here
-        val groupDatasetIds = groupDatasets.map { it.id.toString() }.toSet()
+        val groupDatasetIds = groupDatasets.map { it.id }.toSet()
 
         for (potentialRoot in groupDatasets) {
             // if potentialRoot.path contains(intersects) any other groupDatasetId it is a descendant and therefore not an actual root node.
