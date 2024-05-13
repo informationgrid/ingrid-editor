@@ -142,7 +142,7 @@ export class BackendQuery {
    * When setting the end date, then add almost a whole day to search till the end of the day
    * @param endDate
    */
-  private static modifyToEndOfDay(endDate) {
+  static modifyToEndOfDay(endDate) {
     if (endDate) {
       return new Date(new Date(endDate).getTime() + almost24hours);
     }
