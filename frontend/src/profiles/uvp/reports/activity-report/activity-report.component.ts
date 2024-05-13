@@ -138,8 +138,8 @@ export class ActivityReportComponent implements AfterViewInit {
   }
 
   getReport(formValue) {
-    this.startDate = formValue?.timeRef.start?.toISOString();
-    this.endDate = BackendQuery.modifyToEndOfDay(formValue?.timeRef.end); //formValue?.timeRef.end?.toISOString();
+    this.startDate = formValue?.timeRef.start;
+    this.endDate = BackendQuery.modifyToEndOfDay(formValue?.timeRef.end);
     const actions = [
       "create",
       "update",
