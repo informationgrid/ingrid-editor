@@ -159,7 +159,7 @@ export class AssignedUserBehaviour extends Plugin {
           .open(ConfirmDialogComponent, {
             data: {
               title: "Benutzer löschen",
-              message: `Der Benutzer "${user.login}" ist noch für ${datasets.length} Datensätze verantwortlich. Bitte übertragen Sie die Verantwortung auf einen anderen Benutzer, bevor Sie diesen Benutzer löschen.`,
+              message: `Der Benutzer "${user.login}" ist noch für ${datasets.length} Datensätze verantwortlich. Bitte übertragen Sie vor dem Löschen die Verantwortung auf einen anderen Benutzer mit denselben Gruppen (Berechtigungen).`,
               confirmButtonText: "Verantwortung übertragen",
             } as ConfirmDialogData,
           })
