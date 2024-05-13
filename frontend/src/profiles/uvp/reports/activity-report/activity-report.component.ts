@@ -35,6 +35,7 @@ import { MatMenuModule } from "@angular/material/menu";
 import { DatePipe } from "@angular/common";
 import { FormSharedModule } from "../../../../app/+form/form-shared/form-shared.module";
 import { ExportService } from "../../../../app/services/export.service";
+import { BackendQuery } from "../../../../app/+research/backend-query.model";
 
 @UntilDestroy()
 @Component({
@@ -137,8 +138,8 @@ export class ActivityReportComponent implements AfterViewInit {
   }
 
   getReport(formValue) {
-    this.startDate = formValue?.timeRef.start?.toISOString();
-    this.endDate = formValue?.timeRef.end?.toISOString();
+    this.startDate = formValue?.timeRef.start;
+    this.endDate = BackendQuery.modifyToEndOfDay(formValue?.timeRef.end);
     const actions = [
       "create",
       "update",
