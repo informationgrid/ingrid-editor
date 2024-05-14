@@ -54,6 +54,10 @@ class GeoserviceTransformerLfub(
 
     private val docData = doc.data
 
+    init {
+        fieldToCodelist.referenceFileFormat = "20002"
+    }
+
     override val datasetUri = docData.getString("dataSetURI")
     
     override fun getDescriptiveKeywords(): List<Thesaurus> = lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData, codelists)

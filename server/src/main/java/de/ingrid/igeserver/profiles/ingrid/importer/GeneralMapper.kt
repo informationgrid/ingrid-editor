@@ -31,6 +31,7 @@ import de.ingrid.igeserver.exports.iso.TimePeriod
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
+import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertGml32ToWkt
@@ -48,10 +49,12 @@ import java.util.*
 open class GeneralMapper(val isoData: IsoImportData) {
 
     private val log = logger()
-    
+
+    val fieldToCodelist = FieldToCodelist()
+
     val metadata = isoData.data
     val codeListService: CodelistHandler = isoData.codelistService
-    val catalogId: String= isoData.catalogId
+    val catalogId: String = isoData.catalogId
     val documentService: DocumentService = isoData.documentService
 
     val uuid = metadata.fileIdentifier?.value
@@ -59,7 +62,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         "service" -> "InGridGeoService"
         "application" -> "InGridInformationSystem"
         else -> "InGridGeoDataset"
-    }  
+    }
     val title = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.title?.value
     val isInspireIdentified = containsKeyword("inspireidentifiziert")
     val isAdVCompatible = containsKeyword("AdVMIS")
@@ -130,13 +133,13 @@ open class GeneralMapper(val isoData: IsoImportData) {
                     )
                 } else mutableListOf()
             } else mutableListOf()
-            
+
             var uuid = contact.responsibleParty?.uuid
             if (individualName == null && uuid == null) {
                 // sometimes a distributor was not correctly exported, since only order information was needed,
                 // so we skip this "empty" address
                 if (organization == null) return@flatMapIndexed parents
-                uuid = findOrganisationUuid(organization) 
+                uuid = findOrganisationUuid(organization)
                     ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[organization] = newUuid }
             }
 
@@ -159,7 +162,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
     }
 
     private fun findOrganisationUuid(name: String): String? {
-        return isoData.addressMaps[name] ?: documentService.docRepo.findAddressByOrganisationName(catalogId, name).firstOrNull()
+        return isoData.addressMaps[name] ?: documentService.docRepo.findAddressByOrganisationName(catalogId, name)
+            .firstOrNull()
     }
 
     private fun getAddressInfo(address: Address?): AddressInfo? {
@@ -630,10 +634,15 @@ open class GeneralMapper(val isoData: IsoImportData) {
                             if (value == null) null else codeListService.getCodeListEntryId("2000", value, "iso")
                         val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
                         val applicationValue = resource.applicationProfile?.value
-                        val applicationId = if (applicationValue == null) null else codeListService.getCodeListEntryId(
-                            "1320",
+                        val applicationId = if (applicationValue == null) null
+                        else codeListService.getCodeListEntryId(
+                            fieldToCodelist.referenceFileFormat,
                             applicationValue,
-                            "iso"
+                            "de"
+                        ) ?: codeListService.getCatalogCodelistKey(
+                            catalogId,
+                            fieldToCodelist.referenceFileFormat,
+                            applicationValue
                         )
                         val applicationFinalValue = when {
                             applicationValue == null -> null
@@ -767,7 +776,11 @@ open class GeneralMapper(val isoData: IsoImportData) {
         return result
     }
 
-    private fun getUseConstraintNoteWhenJsonExists(otherConstraints: List<String>, index: Int, groupStartIndex: Int): String? {
+    private fun getUseConstraintNoteWhenJsonExists(
+        otherConstraints: List<String>,
+        index: Int,
+        groupStartIndex: Int
+    ): String? {
         if (index - 1 <= groupStartIndex) return null
         val note = otherConstraints.getOrNull(index - 1)
         if (note != null) {
@@ -921,8 +934,8 @@ data class PointOfContact(
     val parent: String? = null
 ) {
     fun getTitle(): String {
-        return if (personInfo?.lastName != null) 
-            if (personInfo.firstName.isNullOrEmpty()) personInfo.lastName 
+        return if (personInfo?.lastName != null)
+            if (personInfo.firstName.isNullOrEmpty()) personInfo.lastName
             else "${personInfo.lastName}, ${personInfo.firstName}"
         else organization ?: ""
     }

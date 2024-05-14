@@ -25,6 +25,10 @@ import de.ingrid.igeserver.profiles.ingrid.importer.IsoImportData
 
 class GeoserviceMapperLfUBayern(isoData: IsoImportData) : GeoserviceMapper(isoData) {
 
+    init {
+        fieldToCodelist.referenceFileFormat = "20002"
+    }
+
     val geolink: String = isoData.data.dataSetURI?.value ?: ""
     val fees: String = isoData.data.distributionInfo?.mdDistribution?.distributor?.get(0)?.mdDistributor?.distributionOrderProcess?.get(0)?.mdStandardOrderProcess?.fees?.value ?: ""
     val useConstraintComments: String = if (getUseConstraints().isNotEmpty()) getUseConstraints()[0].note ?: "" else ""

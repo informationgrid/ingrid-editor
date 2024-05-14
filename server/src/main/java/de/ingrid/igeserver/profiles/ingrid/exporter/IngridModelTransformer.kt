@@ -35,6 +35,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
 import de.ingrid.igeserver.profiles.ingrid.importer.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
+import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertWktToGeoJson
@@ -61,6 +62,9 @@ open class IngridModelTransformer(
     val doc: Document,
     val documentService: DocumentService
 ) {
+    
+    val fieldToCodelist = FieldToCodelist()
+    
     var incomingReferencesCache: List<CrossReference>? = null
     var superiorReferenceCache: SuperiorReference? = null
 
@@ -576,15 +580,17 @@ open class IngridModelTransformer(
 
 
     val references = data.references ?: emptyList()
-    private val externalReferences: List<ServiceUrl> = references.filter { it.uuidRef.isNullOrEmpty() }.map {
-        // if type not in codelist, use "information" #6017
-        val functionValue = codelists.getValue("2000", KeyValue(it.type.key), "iso") ?: "information"
-        val applicationProfile = codelists.getValue("1320", it.urlDataType, "de")
-        val attachedField = if (it.type.key == null) null else {
-            val attachedToFieldText = codelists.getValue("2000", it.type) ?: ""
-            AttachedField("2000", it.type.key!!, attachedToFieldText)
+    private val externalReferences: List<ServiceUrl> by lazy {
+        references.filter { it.uuidRef.isNullOrEmpty() }.map {
+            // if type not in codelist, use "information" #6017
+            val functionValue = codelists.getValue("2000", KeyValue(it.type.key), "iso") ?: "information"
+            val applicationProfile = codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de")
+            val attachedField = if (it.type.key == null) null else {
+                val attachedToFieldText = codelists.getValue("2000", it.type) ?: ""
+                AttachedField("2000", it.type.key!!, attachedToFieldText)
+            }
+            ServiceUrl(it.title, it.url ?: "", it.explanation, attachedField, applicationProfile, functionValue)
         }
-        ServiceUrl(it.title, it.url ?: "", it.explanation, attachedField, applicationProfile, functionValue)
     }
     val referencesWithUuidRefs = references
         .filter { !it.uuidRef.isNullOrEmpty() }
@@ -617,7 +623,7 @@ open class IngridModelTransformer(
     // systemEnvironment for GeoService does not exist and will be added to description! (#3462)
     open val systemEnvironment = data.systemEnvironment
 
-    fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() = externalReferences + serviceUrls + getCoupledServiceUrlsOrGetCapabilitiesUrl() + getAtomAsServiceUrl()
+    fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs(): List<ServiceUrl> = externalReferences + serviceUrls + getCoupledServiceUrlsOrGetCapabilitiesUrl() + getAtomAsServiceUrl()
     
     private fun getAtomAsServiceUrl(): List<ServiceUrl> = if (isAtomDownload) 
         listOf(ServiceUrl("Get Download Service Metadata", atomDownloadURL!!, null, isIdfResource = false, functionValue = "information")) 

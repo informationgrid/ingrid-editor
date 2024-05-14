@@ -107,6 +107,11 @@ export abstract class IngridShared extends BaseDoctype {
 
   defaultKeySpatialScope = null; // Regional
 
+  codelistIds = {
+    distributionFormat: "1320",
+    urlDataType: "1320",
+  };
+
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     this.thesaurusTopics = options.thesaurusTopics;
     return this.addGroupSimple(
@@ -1253,8 +1258,11 @@ export abstract class IngridShared extends BaseDoctype {
           },
           fields: [
             this.addAutoCompleteInline("name", "Name", {
-              options: this.getCodelistForSelect("1320", "specification"),
-              codelistId: "1320",
+              options: this.getCodelistForSelect(
+                this.codelistIds.distributionFormat,
+                "specification",
+              ),
+              codelistId: this.codelistIds.distributionFormat,
               required: true,
             }),
             this.addInputInline("version", "Version"),
@@ -1399,15 +1407,22 @@ export abstract class IngridShared extends BaseDoctype {
               },
             },
           }),
-          this.addAutoCompleteInline("urlDataType", "Dateiformat", {
-            options: this.getCodelistForSelect("1320", "urlDataType"),
-            codelistId: "1320",
-            wrappers: ["inline-help", "form-field"],
-            hasInlineContextHelp: true,
-            expressions: {
-              "props.required": 'field.form.value?.type?.key === "9990"', // Datendownload
+          this.addAutoCompleteInline(
+            "urlDataType",
+            this.transloco.translate("form.references.fileFormat"),
+            {
+              options: this.getCodelistForSelect(
+                this.codelistIds.urlDataType,
+                "urlDataType",
+              ),
+              codelistId: this.codelistIds.urlDataType,
+              wrappers: ["inline-help", "form-field"],
+              hasInlineContextHelp: true,
+              expressions: {
+                "props.required": 'field.form.value?.type?.key === "9990"', // Datendownload
+              },
             },
-          }),
+          ),
         ],
         { fieldGroupClassName: "flex-row gap-12" },
       ),

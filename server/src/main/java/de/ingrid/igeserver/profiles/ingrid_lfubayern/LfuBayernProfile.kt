@@ -82,14 +82,33 @@ class LfuBayernProfile(
 //                CodelistHandler.toCodelistEntry("1", "Konformität - Freier Eintrag", "2018-02-22")
             }
         }
+        val codelist20002 = Codelist().apply {
+            identifier = "20002"
+            catalog = catalogRef
+            name = "Anwendungsprofil"
+            description = ""
+            data = jacksonObjectMapper().createArrayNode().apply {
+                add(CodelistHandler.toCodelistEntry("1", "Anwendungs-URL"))
+                add(CodelistHandler.toCodelistEntry("2", "Bestellung"))
+                add(CodelistHandler.toCodelistEntry("3", "Download"))
+                add(CodelistHandler.toCodelistEntry("4", "GDS"))
+                add(CodelistHandler.toCodelistEntry("5", "GISterm"))
+                add(CodelistHandler.toCodelistEntry("6", "Information"))
+                add(CodelistHandler.toCodelistEntry("7", "Kontakt"))
+                add(CodelistHandler.toCodelistEntry("8", "WFS-URL"))
+                add(CodelistHandler.toCodelistEntry("9", "WMS-URL"))
+                add(CodelistHandler.toCodelistEntry("10", "Feed-URL"))
+            }
+        }
 
         when (codelistId) {
             "20000" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20000)
             "20001" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20001)
+            "20002" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20002)
             null -> {
                 codelistHandler.removeAndAddCodelists(
                     catalogId,
-                    listOf(codelist20000, codelist20001)
+                    listOf(codelist20000, codelist20001, codelist20002)
                 )
             }
         }

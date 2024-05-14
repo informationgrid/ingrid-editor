@@ -17,22 +17,6 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_lfubayern.importer
+package de.ingrid.igeserver.profiles.ingrid.utils
 
-import de.ingrid.igeserver.profiles.ingrid.importer.ApplicationMapper
-import de.ingrid.igeserver.profiles.ingrid.importer.IsoImportData
-
-class ApplicationMapperLfUBayern(isoData: IsoImportData) : ApplicationMapper(isoData) {
-
-    init {
-        fieldToCodelist.referenceFileFormat = "20002"
-    }
-
-    val geolink: String = isoData.data.dataSetURI?.value ?: ""
-    val fees: String =
-        isoData.data.distributionInfo?.mdDistribution?.distributor?.get(0)?.mdDistributor?.distributionOrderProcess?.get(
-            0
-        )?.mdStandardOrderProcess?.fees?.value ?: ""
-    val useConstraintComments: String = if (getUseConstraints().isNotEmpty()) getUseConstraints()[0].note ?: "" else ""
-
-}
+data class FieldToCodelist(var referenceFileFormat: String = "1320")
