@@ -47,6 +47,13 @@
                 "uuid": "${resource.get().getUuid()}",
             @endif
             "isExternalRef": ${resource.get().isExternalRef()}
+            @if(!resource.get().getLayerNames().isEmpty())
+                , "layerNames": [
+                @for(var layer : ForSupport.of(resource.get().getLayerNames()))
+                    "${layer.get()}"@if (!layer.isLast()),@endif
+                @endfor
+                ]
+            @endif
             }@if (!resource.isLast()),@endif
         @endfor
         ],

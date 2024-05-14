@@ -904,6 +904,7 @@ data class CoupledResourceModel(
     val title: String?,
     val isExternalRef: Boolean,
     val identifier: String? = null,
+    val layerNames: List<String> = emptyList(),
 )
 
 data class PointOfContact(
