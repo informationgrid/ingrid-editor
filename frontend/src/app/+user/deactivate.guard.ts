@@ -70,25 +70,36 @@ export class DeactivateGuard {
       .open(ConfirmDialogComponent, {
         disableClose: true,
         data: (<ConfirmDialogData>{
-          title: "Änderungen speichern?",
+          title: component.form?.invalid
+            ? "Änderungen verwerfen?"
+            : "Änderungen speichern?",
           message:
-            type == "user"
-              ? "Es wurden Änderungen am ausgewählten Benutzer vorgenommen.\nMöchten Sie die Änderungen speichern?"
-              : "Es wurden Änderungen an der ausgewählten Gruppe vorgenommen.\nMöchten Sie die Änderungen speichern?",
+            (type == "user"
+              ? "Es wurden Änderungen am ausgewählten Benutzer vorgenommen."
+              : "Es wurden Änderungen an der ausgewählten Gruppe vorgenommen.") +
+            (component.form?.invalid
+              ? ""
+              : "\nMöchten Sie die Änderungen speichern?"),
           buttons: [
             { text: "Abbrechen" },
             {
               text: "Verwerfen",
               id: "discard",
               alignRight: true,
+              emphasize: false,
             },
-            {
-              text: "Speichern",
-              id: "save",
-              alignRight: true,
-              emphasize: true,
-            },
-          ],
+          ].concat(
+            component.form?.invalid
+              ? []
+              : [
+                  {
+                    text: "Speichern",
+                    id: "save",
+                    alignRight: true,
+                    emphasize: true,
+                  },
+                ],
+          ),
         }) as ConfirmDialogData,
         hasBackdrop: true,
       })

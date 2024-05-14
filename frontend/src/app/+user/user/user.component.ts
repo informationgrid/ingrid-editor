@@ -249,23 +249,34 @@ export class UserComponent
       return this.dialog
         .open(ConfirmDialogComponent, {
           data: (<ConfirmDialogData>{
-            title: "Änderungen speichern?",
+            title: this.form?.invalid
+              ? "Änderungen Verwerfen?"
+              : "Änderungen speichern?",
             message:
-              "Es wurden Änderungen am ausgewählten Benutzer vorgenommen.\nMöchten Sie die Änderungen speichern?",
+              "Es wurden Änderungen am ausgewählten Benutzer vorgenommen. " +
+              (this.form?.invalid
+                ? ""
+                : "\nMöchten Sie die Änderungen speichern?"),
             buttons: [
               { text: "Abbrechen" },
               {
                 text: "Verwerfen",
                 id: "discard",
                 alignRight: true,
+                emphasize: false,
               },
-              {
-                text: "Speichern",
-                id: "save",
-                alignRight: true,
-                emphasize: true,
-              },
-            ],
+            ].concat(
+              this.form?.invalid
+                ? []
+                : [
+                    {
+                      text: "Speichern",
+                      id: "save",
+                      alignRight: true,
+                      emphasize: true,
+                    },
+                  ],
+            ),
           }) as ConfirmDialogData,
           hasBackdrop: true,
         })
