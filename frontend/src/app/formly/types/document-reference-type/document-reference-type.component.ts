@@ -33,7 +33,7 @@ import {
 import { Router } from "@angular/router";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocumentService } from "../../../services/document/document.service";
-import { distinctUntilChanged, map, startWith } from "rxjs/operators";
+import { debounceTime, map, startWith } from "rxjs/operators";
 import { DocumentState, IgeDocument } from "../../../models/ige-document";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeQuery } from "../../../store/tree/tree.query";
@@ -90,13 +90,7 @@ export class DocumentReferenceTypeComponent
       .pipe(
         untilDestroyed(this),
         startWith(<any[]>this.formControl.value),
-        distinctUntilChanged((a, b) => {
-          if (a.length !== b.length) return false;
-          return (
-            JSON.stringify(a.map((item: any) => item.uuid)) ===
-            JSON.stringify(b.map((item: any) => item.uuid))
-          );
-        }),
+        debounceTime(10),
       )
       .subscribe((_) => this.buildModel());
   }
