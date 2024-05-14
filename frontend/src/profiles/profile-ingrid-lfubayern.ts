@@ -51,7 +51,7 @@ class InGridLFUBayernComponent extends InGridComponent {
       (docType) => {
         docType.showAdVCompatible = false;
         docType.showAdVProductGroup = false;
-
+        docType.codelistIds.urlDataType = "20002";
         docType.manipulateDocumentFields = (
           fieldConfig: FormlyFieldConfig[],
         ) => {
