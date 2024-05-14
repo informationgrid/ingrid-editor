@@ -36,7 +36,9 @@ open class CodelistTransformer(
     if (entry?.key != null) codelistHandler.getCatalogCodelistValue( catalogIdentifier, codelistId, entry.key) else entry?.value
 
     fun getValue(codelistId: String, entry: KeyValue?, field: String): String? =
-        if (entry?.key != null) codelistHandler.getCodelistValue(codelistId, entry.key, field) else entry?.value
+        if (entry?.key != null) codelistHandler.getCodelistValue(codelistId, entry.key, field) 
+            ?: codelistHandler.getCatalogCodelistValue(catalogIdentifier, codelistId, entry.key) 
+        else entry?.value
 
 
     fun getData(codelistId: String, key: String?): String? = key?.let { codelistHandler.getCodelistEntryDataField(codelistId, it) }

@@ -47,6 +47,10 @@ class GeodatasetTransformerLfub(
 
     private val docData = doc.data
 
+    init {
+        fieldToCodelist.referenceFileFormat = "20002"
+    }
+
     override val supplementalInformation = docData.getString("supplementalInformation")
     override val datasetUri = docData.getString("dataSetURI")
 

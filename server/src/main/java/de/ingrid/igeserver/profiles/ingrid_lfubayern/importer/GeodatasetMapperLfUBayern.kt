@@ -24,6 +24,10 @@ import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.IsoImportData
 
 class GeodatasetMapperLfUBayern(isoData: IsoImportData) : GeodatasetMapper(isoData) {
+    
+    init {
+        fieldToCodelist.referenceFileFormat = "20002"
+    }
 
     val geolink: String = isoData.data.dataSetURI?.value ?: ""
     val fees: String = isoData.data.distributionInfo?.mdDistribution?.distributor?.get(0)?.mdDistributor?.distributionOrderProcess?.get(0)?.mdStandardOrderProcess?.fees?.value ?: ""

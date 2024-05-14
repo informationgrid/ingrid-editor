@@ -44,5 +44,9 @@ class InformationSystemTransformerExternalLfub(
 
     private val docData = doc.data
 
+    init {
+        fieldToCodelist.referenceFileFormat = "20002"
+    }
+
     override val useConstraints: List<UseConstraintTemplate> = lfubUseConstraints(super.useConstraints, docData)
 }
