@@ -70,6 +70,7 @@ data class MDBrowseGraphic(
 data class OperatesOn(
     @JacksonXmlProperty(isAttribute = true) val uuidref: String?,
     @JacksonXmlProperty(isAttribute = true) val href: String?,
+    @JacksonXmlProperty(isAttribute = true) val title: String?,
 )
 
 data class ContainsOperation(

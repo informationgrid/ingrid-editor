@@ -1,8 +1,15 @@
+@import "src/variables";
+
 .item {
   padding: 5px 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  ul {
+    margin: 5px;
+    color: $ige-comment-color;
+  }
 
   .title {
     display: flex;
@@ -13,7 +20,8 @@
     }
 
     mat-icon {
-      margin-right: 16px;
+      margin-right: 6px;
+      min-width: 24px;
     }
   }
 

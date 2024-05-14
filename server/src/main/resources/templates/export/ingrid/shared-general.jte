@@ -725,7 +725,7 @@
         </srv:containsOperations>
     @endfor
     @for( OperatesOn operatesOn : page.getOperatesOn() )
-        <srv:operatesOn uuidref="${operatesOn.getUuidref()}" xlink:href="${operatesOn.getHref()}" />
+        <srv:operatesOn uuidref="${operatesOn.getUuidref()}" xlink:href="${operatesOn.getHref()}" @if(operatesOn.getTitle() != null)xlink:title="${operatesOn.getTitle()}"@endif />
     @endfor
 @endif
 @if(TransformationTools.hasValue(page.getSupplementalInformation()))

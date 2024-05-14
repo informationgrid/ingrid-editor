@@ -21,23 +21,26 @@ import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { FieldArrayType } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
+  SelectGeoDatasetData,
   SelectGeoDatasetDialog,
   SelectServiceResponse,
 } from "./select-service-dialog/select-geo-dataset-dialog.component";
 import {
+  SelectCswRecordData,
   SelectCswRecordDialog,
   SelectCswRecordResponse,
 } from "./select-csw-record-dialog/select-csw-record-dialog";
 import { Router } from "@angular/router";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocumentService } from "../../../services/document/document.service";
-import { distinctUntilChanged, map, startWith } from "rxjs/operators";
+import { debounceTime, map, startWith } from "rxjs/operators";
 import { DocumentState, IgeDocument } from "../../../models/ige-document";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { firstValueFrom } from "rxjs";
 
 interface Reference {
+  layerNames: string[];
   isExternalRef: boolean;
 }
 
@@ -87,51 +90,71 @@ export class DocumentReferenceTypeComponent
       .pipe(
         untilDestroyed(this),
         startWith(<any[]>this.formControl.value),
-        distinctUntilChanged((a, b) => {
-          if (a.length !== b.length) return false;
-          return (
-            JSON.stringify(a.map((item: any) => item.uuid)) ===
-            JSON.stringify(b.map((item: any) => item.uuid))
-          );
-        }),
+        debounceTime(10),
       )
       .subscribe((_) => this.buildModel());
   }
 
-  showInternalRefDialog() {
+  showInternalRefDialog(index?: number) {
+    const data: SelectGeoDatasetData = {
+      currentRefs: this.getRefUuids().filter((item, idx) => idx !== index),
+      activeRef: index >= 0 ? this.getRefUuids()[index] : null,
+      layerNames: index >= 0 ? this.formControl.value[index].layerNames : [],
+      showLayernames: this.props.showLayernames,
+    };
     this.dialog
-      .open(SelectGeoDatasetDialog, { minWidth: 400, data: this.getRefUuids() })
+      .open(SelectGeoDatasetDialog, {
+        minWidth: 400,
+        data: data,
+      })
       .afterClosed()
       .subscribe((item: SelectServiceResponse) => {
-        if (item) {
-          this.add(null, {
+        if (!item) return;
+        this.updateValue(
+          {
             uuid: item.uuid,
+            layerNames: item.layerNames,
             isExternalRef: false,
-          });
-          this.props.change?.(this.field);
-        }
+          },
+          index,
+        );
       });
   }
 
-  showExternalRefDialog() {
+  showExternalRefDialog(index?: number) {
+    const data: SelectCswRecordData = {
+      asAtomDownloadService:
+        this.options.formState.mainModel.service.isAtomDownload,
+      layerNames: index >= 0 ? this.formControl.value[index].layerNames : [],
+      url: index >= 0 ? this.formControl.value[index].url : null,
+      showLayernames: this.props.showLayernames,
+    };
     this.dialog
       .open(SelectCswRecordDialog, {
-        data: {
-          asAtomDownloadService:
-            this.options.formState.mainModel.service.isAtomDownload,
-        },
+        data: data,
         minWidth: 400,
       })
       .afterClosed()
       .subscribe((item: SelectCswRecordResponse) => {
-        if (item) {
-          this.add(null, {
+        if (!item) return;
+        this.updateValue(
+          {
             ...item,
             isExternalRef: true,
-          });
-          this.props.change?.(this.field);
-        }
+          },
+          index,
+        );
       });
+  }
+
+  private updateValue(item: any, index?: number) {
+    const isNotNew = index >= 0;
+    if (isNotNew) {
+      this.remove(index);
+    }
+    setTimeout(() => this.add(index, item));
+    this.props.change?.(this.field);
+    console.log("update value", item);
   }
 
   async openReference(item: DocumentReference | UrlReference) {
@@ -170,32 +193,39 @@ export class DocumentReferenceTypeComponent
     return {
       title: item.title ?? item.url,
       url: item.url,
+      layerNames: item.layerNames,
       isExternalRef: true,
     };
   }
 
-  private async mapInternalRef(item: any): Promise<DocumentReference> {
+  private async mapInternalRef(
+    item: DocumentReference,
+  ): Promise<DocumentReference> {
     const nodeEntity = this.tree.getByUuid(item.uuid);
     if (nodeEntity) {
-      return this.mapToDocumentReference(nodeEntity);
+      return this.mapToDocumentReference(nodeEntity, item.layerNames);
     }
 
     return await firstValueFrom(
       this.docService.load(item.uuid, false, false, true).pipe(
         map((doc) => {
-          return this.mapToDocumentReference(doc);
+          return this.mapToDocumentReference(doc, item.layerNames);
         }),
       ),
     );
   }
 
-  private mapToDocumentReference(doc: IgeDocument): DocumentReference {
+  private mapToDocumentReference(
+    doc: IgeDocument,
+    layerNames: string[],
+  ): DocumentReference {
     return {
       uuid: doc?._uuid,
       isExternalRef: false,
       title: doc?.title,
       state: doc?._state,
       type: doc?._type,
+      layerNames: layerNames,
       icon: "Geodatensatz",
     };
   }
@@ -204,5 +234,10 @@ export class DocumentReferenceTypeComponent
     return this.formControl.value
       .filter((item: any) => item.uuid)
       .map((item: any) => item.uuid);
+  }
+
+  editItem(index: number, isExternalRef: boolean) {
+    if (isExternalRef) this.showExternalRefDialog(index);
+    else this.showInternalRefDialog(index);
   }
 }

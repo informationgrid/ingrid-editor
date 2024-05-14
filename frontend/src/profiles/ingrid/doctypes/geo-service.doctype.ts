@@ -43,6 +43,7 @@ export class GeoServiceDoctype extends IngridShared {
 
   showAdVCompatible = true;
   showAdVProductGroup = true;
+  showLayernamesForCoupledResources = false;
 
   geoServiceOptions = {
     required: {
@@ -181,8 +182,13 @@ export class GeoServiceDoctype extends IngridShared {
                 className: "flex-1",
                 props: {
                   label: "Dargestellte Daten",
+                  showLayernames:
+                    this.showLayernamesForCoupledResources === true,
                   change: (field) => {
-                    this.handleCoupledDatasetsChange(field, field.model);
+                    // run delayed to use the updated value
+                    setTimeout(() =>
+                      this.handleCoupledDatasetsChange(field, field.model),
+                    );
                   },
                 },
                 expressions: {

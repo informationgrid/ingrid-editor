@@ -117,7 +117,10 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
 
     fun getCoupledResources(): List<CoupledResourceModel> {
         val internalLinks = info?.operatesOn
-            ?.map { CoupledResourceModel(it.uuidref, null, null, false) } ?: emptyList()
+            ?.map { CoupledResourceModel(
+                it.uuidref,
+                null, null, false, 
+                layerNames = it.title?.split(",") ?: emptyList()) } ?: emptyList()
 
         val externalLinks = metadata.distributionInfo?.mdDistribution?.transferOptions
             ?.filter {
@@ -125,7 +128,11 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     ?: false
             }
             ?.flatMap { it.mdDigitalTransferOptions?.onLine?.map { online -> online.ciOnlineResource } ?: emptyList() }
-            ?.map { CoupledResourceModel(null, it?.linkage?.url, it?.name?.value, true) } ?: emptyList()
+            ?.map { CoupledResourceModel(
+                null, it?.linkage?.url, it?.name?.value, true,
+//                    layerNames = it.title?.split(",") ?: emptyList()) } ?: emptyList()
+                ) 
+            } ?: emptyList()
 
         return internalLinks + externalLinks
     }

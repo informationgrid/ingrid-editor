@@ -6,31 +6,59 @@
 
 @for (item of myModel; track item; let i = $index) {
     <div
-        class="item clickable"
-        (click)="openReference(item)"
-        (keyup.enter)="openReference(item)"
+        class="item"
         tabindex="0"
         role="listitem"
         [attr.aria-label]="item.title"
     >
-        <div class="title">
-            @if (item.isExternalRef) {
-                <mat-icon svgIcon="download-link"></mat-icon>
-            } @else {
-                <ige-document-icon [doc]="item"></ige-document-icon>
+        <div
+            class="clickable"
+            (click)="openReference(item)"
+            (keyup.enter)="openReference(item)"
+        >
+            <div class="title">
+                @if (item.isExternalRef) {
+                    <mat-icon svgIcon="download-link"></mat-icon>
+                } @else {
+                    <ige-document-icon [doc]="item"></ige-document-icon>
+                }
+                <span>{{ item.title ?? "???" }}</span>
+            </div>
+            @if (props.showLayernames) {
+                <ul>
+                    @for (name of item.layerNames; track name) {
+                        <li>{{ name }}</li>
+                    }
+                </ul>
             }
-            <span>{{ item.title ?? "???" }}</span>
         </div>
         @if (formControl.enabled) {
             <button
                 mat-icon-button
                 type="button"
                 class="remove-icon"
-                (click)="removeItem(i, $event)"
-                [attr.aria-description]="item.title + ' entfernen'"
+                [matMenuTriggerFor]="moreActionsMenu"
             >
-                <mat-icon>clear</mat-icon>
+                <mat-icon svgIcon="Mehr"></mat-icon>
             </button>
+            <mat-menu #moreActionsMenu="matMenu">
+                <button
+                    data-cy="action-edit"
+                    mat-menu-item
+                    (click)="editItem(i, item.isExternalRef)"
+                    [attr.aria-description]="item.title + ' bearbeiten'"
+                >
+                    Bearbeiten
+                </button>
+                <button
+                    [attr.data-cy]="'action-delete'"
+                    mat-menu-item
+                    (click)="removeItem(i, $event)"
+                    [attr.aria-description]="item.title + ' entfernen'"
+                >
+                    Entfernen
+                </button>
+            </mat-menu>
         }
     </div>
 }

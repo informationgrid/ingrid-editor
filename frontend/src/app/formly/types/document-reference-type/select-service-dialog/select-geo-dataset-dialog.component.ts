@@ -21,31 +21,66 @@ import { Component, Inject } from "@angular/core";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { TreeQuery } from "../../../../store/tree/tree.query";
+import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { DialogTemplateModule } from "../../../../shared/dialog-template/dialog-template.module";
+import { SharedModule } from "../../../../shared/shared.module";
+import { FormGroup } from "@angular/forms";
+import { Subject } from "rxjs";
+
+export interface SelectGeoDatasetData {
+  currentRefs: string[];
+  activeRef?: string;
+  layerNames?: string[];
+  showLayernames: boolean;
+}
 
 export interface SelectServiceResponse {
   title: string;
   uuid: string;
   state: string;
+  layerNames: string[];
 }
 
 @Component({
   templateUrl: "./select-geo-dataset-dialog.component.html",
   styleUrls: ["./select-geo-dataset-dialog.component.scss"],
+  imports: [DialogTemplateModule, SharedModule, FormlyModule],
+  standalone: true,
 })
 export class SelectGeoDatasetDialog {
-  selectedNode: string = null;
+  selectedNode: number = null;
+  field: FormlyFieldConfig[] = [
+    {
+      key: "layerNames",
+      type: "repeatList",
+    },
+  ];
+  form = new FormGroup<any>({});
+  model = { layerNames: [] };
+  initialNode = new Subject<number>();
+  public showLayernames = false;
 
   constructor(
     private dlgRef: MatDialogRef<any>,
     private tree: TreeQuery,
-    @Inject(MAT_DIALOG_DATA) private currentRefs: string[],
-  ) {}
+    @Inject(MAT_DIALOG_DATA) private data: SelectGeoDatasetData,
+  ) {
+    if (data.activeRef) {
+      setTimeout(() => {
+        const node = tree.getByUuid(data.activeRef);
+        this.initialNode.next(parseInt(node.id.toString()));
+      });
+    }
+    this.model.layerNames = data.layerNames ?? [];
+    this.showLayernames = data.showLayernames;
+  }
 
   enableOnlyGeoService() {
     return (node: TreeNode) => {
       return (
         node.type !== "InGridGeoDataset" ||
-        this.currentRefs.indexOf(node._uuid) !== -1
+        this.data.currentRefs.indexOf(node._uuid) !== -1
+        // (node._uuid === this.data.activeRef && this.data.currentRefs.indexOf(node._uuid) !== -1)
       );
     };
   }
@@ -56,10 +91,11 @@ export class SelectGeoDatasetDialog {
       title: entity.title,
       state: entity._state,
       uuid: entity._uuid,
+      layerNames: this.form.value.layerNames,
     });
   }
 
-  selectDatasets(node: string[]) {
+  selectDatasets(node: number[]) {
     this.selectedNode = node[0];
   }
 }
