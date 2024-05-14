@@ -1407,18 +1407,22 @@ export abstract class IngridShared extends BaseDoctype {
               },
             },
           }),
-          this.addAutoCompleteInline("urlDataType", "Dateiformat", {
-            options: this.getCodelistForSelect(
-              this.codelistIds.urlDataType,
-              "urlDataType",
-            ),
-            codelistId: this.codelistIds.urlDataType,
-            wrappers: ["inline-help", "form-field"],
-            hasInlineContextHelp: true,
-            expressions: {
-              "props.required": 'field.form.value?.type?.key === "9990"', // Datendownload
+          this.addAutoCompleteInline(
+            "urlDataType",
+            this.transloco.translate("form.references.fileFormat"),
+            {
+              options: this.getCodelistForSelect(
+                this.codelistIds.urlDataType,
+                "urlDataType",
+              ),
+              codelistId: this.codelistIds.urlDataType,
+              wrappers: ["inline-help", "form-field"],
+              hasInlineContextHelp: true,
+              expressions: {
+                "props.required": 'field.form.value?.type?.key === "9990"', // Datendownload
+              },
             },
-          }),
+          ),
         ],
         { fieldGroupClassName: "flex-row gap-12" },
       ),
