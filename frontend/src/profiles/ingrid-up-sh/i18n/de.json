@@ -1,18 +1,5 @@
 {
   "docType": {
-    "InGridSpecialisedTask": "Fachaufgabe",
-    "InGridGeoDataset": "Geodatensatz",
-    "InGridPublication": "Dokument",
-    "InGridGeoService": "Geodatendienst",
-    "InGridProject": "Projekt",
-    "InGridDataCollection": "Datenbank",
-    "InGridInformationSystem": "Anwendung",
-    "InGridOrganisationDoc": "Organisation",
-    "InGridPersonDoc": "Person"
-  },
-  "form": {
-    "validationMessages": {
-      "COUPLED_RESOURCES_MUST_BE_PUBLISHED": "Alle gekoppelten Daten müssen veröffentlicht sein"
-    }
+    "InGridSpecialisedTask": "Fachaufgabe"
   }
 }
