@@ -55,6 +55,8 @@ class IngridIDFExporter(
 
     val log = logger()
 
+    protected val mapper = ObjectMapper().registerKotlinModule()
+
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
         "ingridIDF",
@@ -71,10 +73,14 @@ class IngridIDFExporter(
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val output: TemplateOutput = XMLStringOutput()
         if (doc.type == "FOLDER") return ""
-        
+
         val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
-        
-        templateEngine.render(getTemplateForDoctype(doc.type), getMapFromObject(doc, catalogId, catalogProfileId), output)
+
+        templateEngine.render(
+            getTemplateForDoctype(doc.type),
+            getMapFromObject(doc, catalogId, catalogProfileId),
+            output
+        )
         // pretty printing takes around 5ms
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
         //       are new lines for example
@@ -101,22 +107,30 @@ class IngridIDFExporter(
         }
     }
 
-    private val mapper = ObjectMapper().registerKotlinModule()
-
     private fun getModelTransformer(json: Document, catalogId: String, profile: String): Any {
-        val ingridModel: IngridModel?
         val isAddress = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
-        ingridModel = if (isAddress) null else mapper.convertValue(json, IngridModel::class.java)
 
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
 
-        val transformerClass = getModelTransformerClass(json.type) ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
+        val transformerClass = getModelTransformerClass(json.type)
+            ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
-        return if(isAddress)
+        return if (isAddress)
             transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService)
         else
-            transformerClass.constructors.first().call(ingridModel, catalogId, codelistTransformer, config, catalogService, TransformerCache(), json, documentService)
+            transformerClass.constructors.first().call(
+                getIngridModel(json),
+                catalogId,
+                codelistTransformer,
+                config,
+                catalogService,
+                TransformerCache(),
+                json,
+                documentService
+            )
     }
+
+    fun getIngridModel(doc: Document) = mapper.convertValue(doc, IngridModel::class.java)
 
     fun getModelTransformerClass(docType: String): KClass<out Any>? {
         return when (docType) {

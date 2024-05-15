@@ -19,12 +19,15 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter
 
+import de.ingrid.igeserver.exporter.model.Address
+import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.*
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
+import de.ingrid.igeserver.profiles.uvp.exporter.model.DataModel.Companion.behaviourService
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -33,6 +36,7 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import java.time.OffsetDateTime
 import kotlin.reflect.KClass
 
 @Service
@@ -64,8 +68,13 @@ class IngridIdfExporterExternalLfub(
     @Lazy documentService: DocumentService
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
-    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getLfuBayernExternalTransformer(docType) ?: super.getModelTransformerClass(docType)
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? =
+        getLfuBayernExternalTransformer(docType) ?: super.getModelTransformerClass(docType)
 
+    override fun getIngridModel(doc: Document): IngridModel {
+        val uuid = getUuidAnonymous(doc.catalog?.identifier!!)
+        return mapper.convertValue(doc, IngridModel::class.java).apply { anonymizeAddresses(this, uuid) }
+    }
 }
 
 @Service
@@ -73,7 +82,7 @@ class IngridLuceneExporterExternalLfub(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
+    @Lazy documentService: DocumentService,
 ) :
     IngridLuceneExporter(
         codelistHandler,
@@ -83,13 +92,16 @@ class IngridLuceneExporterExternalLfub(
     ) {
 
     override fun getTransformer(data: TransformerData): Any {
+        val uuidAnonymous: String = getUuidAnonymous(data.catalogIdentifier)
         return when (data.type) {
             IngridDocType.DOCUMENT -> {
+                val model = data.mapper.convertValue(data.doc, IngridModel::class.java)
+                anonymizeAddresses(model, uuidAnonymous)
                 getLfuBayernExternalTransformer(data.doc.type)
                     ?.constructors
                     ?.first()
                     ?.call(
-                        data.mapper.convertValue(data.doc, IngridModel::class.java),
+                        model,
                         data.catalogIdentifier,
                         data.codelistTransformer,
                         config,
@@ -127,3 +139,20 @@ class IngridISOExporterExternalLfub(
         return getISOFromElasticDocumentString(indexString)
     }
 }
+
+private fun anonymizeAddresses(model: IngridModel, uuid: String) {
+    val exampleDate = OffsetDateTime.now()
+    val anonymousAddress = AddressModel(
+        uuid, 0, "InGridOrganisationDoc", null, null, null, null,
+        null, null, emptyList(), null,
+        Address(null, null, null, null, null, null, null), null, null,
+        exampleDate, exampleDate, exampleDate, null
+    )
+    model.data.pointOfContact?.forEach {
+        it.ref = anonymousAddress
+    }
+}
+
+private fun getUuidAnonymous(catalogId: String) =
+    behaviourService?.get(catalogId, "plugin.lfubayern.anonymous.address")?.data?.get("uuid") as String?
+        ?: ""
