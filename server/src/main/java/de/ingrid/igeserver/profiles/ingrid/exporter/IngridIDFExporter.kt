@@ -119,7 +119,7 @@ class IngridIDFExporter(
             transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService)
         else
             transformerClass.constructors.first().call(
-                getIngridModel(json),
+                getIngridModel(json, catalogId),
                 catalogId,
                 codelistTransformer,
                 config,
@@ -130,7 +130,7 @@ class IngridIDFExporter(
             )
     }
 
-    fun getIngridModel(doc: Document) = mapper.convertValue(doc, IngridModel::class.java)
+    fun getIngridModel(doc: Document, catalogId: String): IngridModel = mapper.convertValue(doc, IngridModel::class.java)
 
     fun getModelTransformerClass(docType: String): KClass<out Any>? {
         return when (docType) {

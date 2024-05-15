@@ -72,8 +72,8 @@ class IngridIdfExporterExternalLfub(
     override fun getModelTransformerClass(docType: String): KClass<out Any>? =
         getLfuBayernExternalTransformer(docType) ?: super.getModelTransformerClass(docType)
 
-    override fun getIngridModel(doc: Document): IngridModel {
-        val uuid = getUuidAnonymous(doc.catalog?.identifier!!)
+    override fun getIngridModel(doc: Document, catalogId: String): IngridModel {
+        val uuid = getUuidAnonymous(catalogId)
         return mapper.convertValue(doc, IngridModel::class.java).apply { 
             anonymizeAddresses(this, uuid)
             removeOfflineAccessReferences(this.data)
