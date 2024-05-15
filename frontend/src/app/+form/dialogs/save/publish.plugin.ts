@@ -75,6 +75,7 @@ export class PublishPlugin extends SaveBase {
       key: "unpublishDisabled",
       type: "checkbox",
       defaultValue: false,
+      wrappers: [],
       props: {
         label: '"Veröffentlichung zurückziehen" deaktivieren',
       },
