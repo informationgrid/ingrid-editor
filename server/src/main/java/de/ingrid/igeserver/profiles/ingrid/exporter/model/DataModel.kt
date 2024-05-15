@@ -78,7 +78,7 @@ data class DataModel(
     val distribution: Distribution?,
     val orderInfo: String?,
     val fees: String?,
-    val references: List<Reference>?,
+    var references: List<Reference>?,
     val serviceUrls: List<ServiceUrl>?,
     val dataQuality: DataQuality?,
     val dataQualityInfo: DataQualityInfo?,

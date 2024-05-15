@@ -592,9 +592,11 @@ open class IngridModelTransformer(
             ServiceUrl(it.title, it.url ?: "", it.explanation, attachedField, applicationProfile, functionValue)
         }
     }
-    val referencesWithUuidRefs = references
-        .filter { !it.uuidRef.isNullOrEmpty() }
-        .map { applyRefInfos(it) }
+    val referencesWithUuidRefs: List<Reference> by lazy {
+        references
+            .filter { !it.uuidRef.isNullOrEmpty() }
+            .map { applyRefInfos(it) }
+    }
 
     private fun applyRefInfos(it: Reference): Reference {
         val refClass = getLastPublishedDocument(it.uuidRef!!) ?: return it
@@ -609,8 +611,10 @@ open class IngridModelTransformer(
     }
 
     val getCoupledServicesForGeodataset = getIncomingReferencesProxy(true).filter { it.refType.key == "3600" }
-    val referencesWithCoupledServices = references + getCoupledServicesForGeodataset.map {
-        Reference(it.objectName, it.refType, it.description, it.serviceUrl, null, null)
+    val referencesWithCoupledServices: List<Reference> by lazy {
+        references + getCoupledServicesForGeodataset.map {
+            Reference(it.objectName, it.refType, it.description, it.serviceUrl, null, null)
+        }
     }
 
     // information system

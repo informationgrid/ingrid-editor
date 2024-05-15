@@ -25,6 +25,7 @@ import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.*
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.DataModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
 import de.ingrid.igeserver.profiles.uvp.exporter.model.DataModel.Companion.behaviourService
@@ -73,8 +74,13 @@ class IngridIdfExporterExternalLfub(
 
     override fun getIngridModel(doc: Document): IngridModel {
         val uuid = getUuidAnonymous(doc.catalog?.identifier!!)
-        return mapper.convertValue(doc, IngridModel::class.java).apply { anonymizeAddresses(this, uuid) }
+        return mapper.convertValue(doc, IngridModel::class.java).apply { 
+            anonymizeAddresses(this, uuid)
+            removeOfflineAccessReferences(this.data)
+        }
     }
+
+    
 }
 
 @Service
@@ -97,6 +103,8 @@ class IngridLuceneExporterExternalLfub(
             IngridDocType.DOCUMENT -> {
                 val model = data.mapper.convertValue(data.doc, IngridModel::class.java)
                 anonymizeAddresses(model, uuidAnonymous)
+                removeOfflineAccessReferences(model.data)
+                
                 getLfuBayernExternalTransformer(data.doc.type)
                     ?.constructors
                     ?.first()
@@ -156,3 +164,9 @@ private fun anonymizeAddresses(model: IngridModel, uuid: String) {
 private fun getUuidAnonymous(catalogId: String) =
     behaviourService?.get(catalogId, "plugin.lfubayern.anonymous.address")?.data?.get("uuid") as String?
         ?: ""
+
+private fun removeOfflineAccessReferences(data: DataModel) {
+    data.references = data.references?.filter {
+        it.type.key != "5303" // offline-access
+    }
+}

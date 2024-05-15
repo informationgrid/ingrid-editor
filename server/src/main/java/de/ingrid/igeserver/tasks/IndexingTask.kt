@@ -80,7 +80,7 @@ class IndexingTask(
     override fun run(context: JobExecutionContext) {
         val catalogId = context.mergedJobDataMap.getString("catalogId")
 
-        setAdminAuthentication("Indexing","Task")
+        setAdminAuthentication("Indexing", "Task")
         startIndexing(context, catalogId)
     }
 
@@ -228,6 +228,8 @@ class IndexingTask(
                     if (it == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address
                     else catalogProfile.indexIdField.document
                 )
+            }.also {
+                if (it.isEmpty()) log.warn("No exporter found for any category with ID: ${config.exporterId}")
             }
         }
     }
@@ -259,7 +261,9 @@ class IndexingTask(
     }
 
     private fun getElasticsearchAliasFromCatalog(catalog: Catalog, category: DocumentCategory, exportTarget: String) =
-        "${catalog.settings.config.elasticsearchAlias ?: catalog.identifier}_${category.value}_${exportTarget.lowercase().replace(" ", "")}"
+        "${catalog.settings.config.elasticsearchAlias ?: catalog.identifier}_${category.value}_${
+            exportTarget.lowercase().replace(" ", "")
+        }"
 
     /** Indexing of a single document into an Elasticsearch index. */
     fun updateDocument(
@@ -269,7 +273,7 @@ class IndexingTask(
     ) {
         log.info("Export dataset from catalog '$catalogId': $docId")
 
-        setAdminAuthentication("Indexing","Task")
+        setAdminAuthentication("Indexing", "Task")
 
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
@@ -300,7 +304,7 @@ class IndexingTask(
                         (currentThread ?: Thread.currentThread()).id,
                     )
                         .exportAndIndexSingleDocument(doc.document, indexInfo)
-                    
+
                     it.target.flush()
                 }
         } catch (ex: NoSuchElementException) {
@@ -336,7 +340,7 @@ class IndexingTask(
             else catalogProfile.indexIdField.document
         )
     }
-    
+
     fun removeFromIndex(catalogId: String, id: String, category: String) {
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
@@ -346,21 +350,21 @@ class IndexingTask(
         configs
             .filter { it.category.value == category }
             .forEach {
-            try {
-                val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog, enumCategory, it.target.name)
-                val oldIndex = it.target.getIndexNameFromAliasName(elasticsearchAlias)
+                try {
+                    val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog, enumCategory, it.target.name)
+                    val oldIndex = it.target.getIndexNameFromAliasName(elasticsearchAlias)
 
-                if (oldIndex != null && it.target.indexExists(oldIndex)) {
-                    val info = IndexInfo(oldIndex, elasticsearchAlias, null)
-                    it.target.delete(info, id, true)
+                    if (oldIndex != null && it.target.indexExists(oldIndex)) {
+                        val info = IndexInfo(oldIndex, elasticsearchAlias, null)
+                        it.target.delete(info, id, true)
+                    }
+                    it.target.flush()
+                } catch (ex: Exception) {
+                    throw NoElasticsearchConnectionException.withReason(
+                        ex.message ?: "No connection to Elasticsearch"
+                    )
                 }
-                it.target.flush()
-            } catch (ex: Exception) {
-                throw NoElasticsearchConnectionException.withReason(
-                    ex.message ?: "No connection to Elasticsearch"
-                )
             }
-        }
     }
 
     override fun interrupt() {

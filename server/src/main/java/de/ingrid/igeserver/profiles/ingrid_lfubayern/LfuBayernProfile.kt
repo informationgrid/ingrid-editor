@@ -53,7 +53,7 @@ class LfuBayernProfile(
     override val title = "InGrid Katalog (LfU Bayern)"
     override val parentProfile = "ingrid"
 
-    override val indexExportFormatID = "IngridIndexExporterLfub"
+    override val indexExportFormatID = "indexInGridIDFLfuBayern"
 
     init {
         isoImport.profileMapper[id] = isoImportLfUBayern
