@@ -312,7 +312,8 @@ open class GeneralMapper(
         val description: String? = null
     )
 
-    fun getKeywords(): List<String> {
+    open fun getKeywords() = getKeywords(emptyList())
+    fun getKeywords(ignoreAdditional: List<String> = emptyList()): List<String> {
         val ignoreThesaurus = listOf(
             "German Environmental Classification - Topic, version 1.0",
             "GEMET - INSPIRE themes, version 1.0",
@@ -321,7 +322,7 @@ open class GeneralMapper(
             "Spatial scope",
             "Further legal basis",
             "IACS data"
-        )
+        ) + ignoreAdditional
         val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS")
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.asSequence()

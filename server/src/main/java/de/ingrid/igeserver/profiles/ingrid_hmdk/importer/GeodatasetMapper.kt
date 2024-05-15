@@ -30,11 +30,14 @@ class GeodatasetMapperHMDK(metadata: Metadata, codeListService: CodelistHandler,
 
     val publicationHmbTG = containsKeyword("hmbtg")
 
+    override fun getKeywords(): List<String> =
+        super.getKeywords(listOf("HmbTG-Informationsgegenstand")).filterNot { it == "hmbtg" }
+
 
     fun getInformationHmbTG(): List<KeyValue> {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "HmbTG-Informationsgegenstand" }
-            ?.flatMap { it.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+            ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
             ?.map { KeyValue(it) } ?: emptyList()
     }
 
