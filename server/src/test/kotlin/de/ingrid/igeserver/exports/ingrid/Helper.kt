@@ -24,6 +24,7 @@ import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.exports.convertToDocument
 import de.ingrid.igeserver.exports.prettyFormatXml
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.schema.SchemaUtils
 
@@ -33,6 +34,7 @@ fun exportJsonToXML(exporter: IgeExporter, file: String, additional: ObjectNode?
 
     if (additional != null) {
         doc.data.setAll<ObjectNode>(additional)
+        doc.catalog = Catalog().apply { identifier = "test-catalog" }
     }
 
     val result = exporter.run(doc, "test-catalog") as String
