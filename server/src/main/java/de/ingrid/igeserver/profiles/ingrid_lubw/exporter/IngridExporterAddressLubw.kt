@@ -35,7 +35,7 @@ class IngridExporterAddressLubw(
     override val typeInfo =
         ExportTypeInfo(
             DocumentCategory.ADDRESS,
-            "indexInGridIDFLUBW",
+            "indexInGridIDFLubw",
             "Ingrid IDF Address LUBW (Elasticsearch)",
             "Export von Ingrid Adressen ins IDF Format für LUBW für die Anzeige im Portal ins Elasticsearch-Format.",
             "application/json",
