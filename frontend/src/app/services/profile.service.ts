@@ -26,7 +26,7 @@ import { ProfileAbstract } from "../store/profile/profile.model";
 import { IgeDocument } from "../models/ige-document";
 import { ContextHelpService } from "./context-help/context-help.service";
 import { forkJoin, from, Observable } from "rxjs";
-import { catchError, filter, map, switchMap, tap } from "rxjs/operators";
+import { catchError, filter, map, switchMap, take, tap } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -48,6 +48,7 @@ export class ProfileService {
       filter((info) => ProfileService.userHasAnyCatalog(info)),
       switchMap((info) => ProfileService.importProfile(info)),
       map(({ ProfilePack }) => ProfileService.getComponent(ProfilePack)),
+      take(1),
       catchError((error) => {
         this.errorService.showJavascriptError(error.message, error.stack);
         throw error;
