@@ -20,6 +20,7 @@
 import {
   Component,
   EventEmitter,
+  inject,
   OnInit,
   signal,
   ViewChild,
@@ -34,6 +35,7 @@ import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
 import { debounceTime, startWith, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ProfileService } from "../../services/profile.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Component({
@@ -45,7 +47,7 @@ export class GeneralReportComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   chartDataPublished = signal<number[]>(null);
   ignoredTypes = ["FOLDER"];
-
+  private translocoService = inject(TranslocoService);
   displayedColumns = [
     "icon",
     "title",
@@ -130,7 +132,11 @@ export class GeneralReportComponent implements OnInit {
   }
 
   getTitle(type: string): string {
-    return this.profileService.getProfile(type)?.label ?? type;
+    return (
+      this.translocoService.translate(
+        `docType.${this.profileService.getProfile(type)?.id}`,
+      ) ?? type
+    );
   }
 
   private async initFacets() {

@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { UntypedFormGroup, Validators } from "@angular/forms";
@@ -27,6 +34,7 @@ import { ProfileQuery } from "../../../../store/profile/profile.query";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DocBehavioursService } from "../../../../services/event/doc-behaviours.service";
 import { ProfileService } from "../../../../services/profile.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Component({
@@ -43,6 +51,8 @@ export class AddressTemplateComponent implements OnInit {
   }
 
   @Output() create = new EventEmitter();
+
+  private translocoService = inject(TranslocoService);
 
   initialActiveDocumentType = new BehaviorSubject<Partial<DocumentAbstract>>(
     null,
@@ -98,7 +108,7 @@ export class AddressTemplateComponent implements OnInit {
       .map((profile) => {
         return {
           id: profile.id,
-          title: profile.label,
+          title: this.translocoService.translate(`docType.${profile.id}`),
           icon: profile.iconClass,
           _type: profile.addressType,
           _state: "P",
