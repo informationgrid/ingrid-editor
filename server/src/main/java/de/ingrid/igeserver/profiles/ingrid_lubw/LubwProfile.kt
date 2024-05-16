@@ -51,7 +51,11 @@ class LubwProfile(
     override val title = "InGrid Katalog (LUBW)"
     override val parentProfile = "ingrid"
 
-    override val indexExportFormatID = "IngridIndexExporterLubw"
+    override val indexExportFormatID = "indexInGridIDFLubw"
+
+    override fun getElasticsearchMapping(format: String): String {
+        return {}.javaClass.getResource("/ingrid/mappings/lubw/default-mapping.json")?.readText() ?: ""
+    }
 
     init {
         isoImport.profileMapper[id] = isoImportLUBW
