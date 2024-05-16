@@ -31,6 +31,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter.JsonStringOutput
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 import gg.jte.ContentType
@@ -74,28 +75,7 @@ class OpenDataExporter(
 
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
-        /*val bmiExport = super.run(doc, catalogId, options) as String
-
-        val ingridDoc = convertBmiToIngridDoc(doc)
-        val ingridExport = ingridIndexExporter.run(ingridDoc, catalogId, options) as String
-
-        val mapper = jacksonObjectMapper()
-        val bmiJson = mapper.readValue(bmiExport, JsonNode::class.java)
-        val luceneJson = mapper.readValue(ingridExport, ObjectNode::class.java)
-
-        val additionalIdf = createAdditionalIdf(doc, catalogId)
-        appendToIdf(luceneJson, additionalIdf)
-        println(additionalIdf)
-
-        // apply all bmi fields to ingrid lucene document
-        bmiJson.fieldNames().forEach {
-            if (luceneJson.has(it)) log.error("Conflict between BMI export document and InGrid on field: $it")
-            luceneJson.set<JsonNode>(it, bmiJson.get(it))
-        }
-
-        return luceneJson.toPrettyString()*/
-
-        // modify doc type to be mapped correctly during InGrid export
+        // modify doc type and other fields to be mapped correctly during InGrid export
         val modifiedDoc = addDefaultValues(doc)
         val luceneDoc = ingridIndexExporter.run(modifiedDoc, catalogId, options) as String
 
@@ -138,7 +118,6 @@ class OpenDataExporter(
                 "catalogId" to catalogId
             )
         )
-
     }
 
     private fun appendToIdf(json: ObjectNode?, additionalIdf: String) {
@@ -171,12 +150,47 @@ class OpenDataExporter(
             type = "InGridSpecialisedTask"
             data.apply {
                 val outer = this
+
+                set<JsonNode>("pointOfContact", get("addresses").apply {
+                    (get(0)?.get("type") as ObjectNode?)?.put("key", 12)
+                })
+                put("alternateTitle", getString("landingPage"))
+                set<JsonNode>("openDataCategories", get("openDataCategories"))
+                set<JsonNode>("spatial", mapper.createObjectNode().apply {
+                    set<JsonNode>("references", if (outer.get("spatial").isEmpty) mapper.createArrayNode() else outer.get("spatial"))
+                    set<JsonNode>("spatialSystems", null)
+                })
+                val tempKeywords = get("keywords")
+                set<JsonNode>("keywords", mapper.createObjectNode().apply {
+                    set<JsonNode>("free", mapper.createArrayNode().apply {
+                        tempKeywords.forEach {
+                            add(mapper.createObjectNode().apply {
+                                put("id", null as String?)
+                                put("label", it.asText())
+                            })
+                        }
+
+                    })
+                })
                 set<JsonNode>("metadata", mapper.createObjectNode().apply {
                     set<JsonNode>("language", mapper.createObjectNode().apply {
                         put("key", 150)
                     })
                 })
                 put("isOpenData", true)
+                set<JsonNode>("openDataCategories", get("DCATThemes"))
+                set<JsonNode>("resource", mapper.createObjectNode().apply {
+                    put("purpose", outer.getString("legalBasis"))
+                    put("specificUsage", outer.getString("specificUsage"))
+                })
+                set<JsonNode>("temporal", mapper.createObjectNode().apply {
+                    set<JsonNode>("resourceDateType", outer.getPath("temporal.rangeType"))
+                    set<JsonNode>("resourceDate", outer.getPath("temporal.timeSpanDate"))
+                    set<JsonNode>("resourceRange", outer.getPath("temporal.timeSpanRange"))
+                })
+                set<JsonNode>("maintenanceInformation", mapper.createObjectNode().apply {
+                    set<JsonNode>("maintenanceAndUpdateFrequency", outer.get("periodicity"))
+                })
             }
         }
     }
@@ -186,9 +200,6 @@ class OpenDataExporter(
             if (value == null) return
             super.writeUserContent(
                 StringEscapeUtils.escapeXml10(value)
-//                .replace("\n", "&#10;")
-//                .replace("\r", "&#13;")
-//                .replace("\t", "&#9;")
             )
         }
     }
