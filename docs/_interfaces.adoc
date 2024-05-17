@@ -213,6 +213,26 @@ Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}```
 
 |===
 
+==== OGC API Customization
+This section provides an overview of custom OGC endpoints.
+
+===== Distributions (Files)
+[cols="1,2,3"]
+|===
+| Method | Type | Description
+
+| POST | Distributions
+| Upload multiple distributions (only file upload; no document updates)
+
+Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}/distributions```
+
+| DELETE | Distributions
+| Delete a distribution (only file deletion; no document updates)
+
+Endpoint: ```/api/ogc/collections/{collectionId}/items/{recordId}/distributions?uri={fileUri}```
+
+|===
+
 ==== CSW-t Transaction
 [cols="1,2,3"]
 |===
