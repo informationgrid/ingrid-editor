@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, OnInit } from "@angular/core";
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter, tap } from "rxjs/operators";
@@ -70,6 +75,7 @@ export class TableTypeComponent
 
   constructor(
     private dialog: MatDialog,
+    private cdr: ChangeDetectorRef,
     public contextHelpService: ContextHelpService,
     public configService: ConfigService,
   ) {
@@ -179,6 +185,7 @@ export class TableTypeComponent
   private updateFormControl(value: any[]) {
     this.formControl.setValue(value);
     this.formControl.markAsDirty();
+    this.cdr.detectChanges();
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
