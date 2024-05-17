@@ -25,9 +25,7 @@ import de.ingrid.igeserver.ogc.distributionHelper.OgcDistributionHelperFactory
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.mdek.upload.storage.Storage
-import de.ingrid.mdek.upload.storage.impl.FileSystemItem
 import de.ingrid.mdek.upload.storage.impl.Scope
-import net.pwall.json.schema.parser.Parser.Companion.isZero
 import org.springframework.context.annotation.Profile
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -54,17 +52,18 @@ class OgcDistributionsService(
 
         if (!document.isLatest) throw ValidationException.withReason("Found unpublished Record. Publish record before uploading any distributions.")
 
-        files.forEach() { file ->
-            // First: Check if all files a listed in document.
+        files.forEach { file ->
+            // First: Check if all files are listed in document
             val distributionId = file.originalFilename!!
             val distribution = distributionHelper.getDistributionDetails(document, collectionId, recordId, distributionId)
-            val sizeOfDistribution = distribution.size()
-            if (sizeOfDistribution.isZero()) throw ValidationException.withReason("Failed to save distributions. Distribution '$distributionId' is not part of record. Update record before uploading any distributions.")
-            if (sizeOfDistribution > 1) throw ValidationException.withReason("Failed to save distributions. Distribution '$distributionId' is listed $sizeOfDistribution times in document.")
+            when (distribution.size()) {
+                0 -> throw ValidationException.withReason("Failed to save distributions. Distribution '$distributionId' is not part of record. Update record before uploading any distributions.")
+                in 2..Int.MAX_VALUE -> throw ValidationException.withReason("Failed to save distributions. Distribution '$distributionId' is listed ${distribution.size()} times in document.")
+            }
         }
 
-        files.forEach() { file ->
-            // Second: If all files are listed in document, save files.
+        files.forEach { file ->
+            // Second: If all files are listed in document, save files
             val distributionId = file.originalFilename!!
             val fileSize = file.size
             try {
@@ -87,8 +86,8 @@ class OgcDistributionsService(
         apiValidationService.validateCollection(collectionId)
         getDocWrapper(collectionId, recordId)
         if (storage.exists(collectionId, userID, recordId, distributionId)) {
-            val publishedFiles: List<FileSystemItem> = this.storage.list(collectionId, Scope.PUBLISHED)
-            val fileSystemItem = publishedFiles.filter() { file -> file.file == distributionId && file.path == recordId}
+            val fileSystemItem = storage.list(collectionId, Scope.PUBLISHED)
+                .filter { file -> file.file == distributionId && file.path == recordId }
             storage.delete(collectionId, fileSystemItem[0])
         } else {
             throw NotFoundException.withMissingResource(distributionId, "file")

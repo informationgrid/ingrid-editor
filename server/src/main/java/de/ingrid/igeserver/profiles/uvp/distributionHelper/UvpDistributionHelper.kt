@@ -20,17 +20,18 @@
 package de.ingrid.igeserver.profiles.uvp.distributionHelper
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ogc.distributionHelper.OgcDistributionHelper
 import de.ingrid.igeserver.ogc.distributionHelper.DistributionTypeInfo
+import de.ingrid.igeserver.ogc.distributionHelper.OgcDistributionHelper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.utils.getBoolean
+import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.storage.Storage
-import org.springframework.context.annotation.Profile
-import org.springframework.stereotype.Service
 import net.pwall.json.schema.parser.Parser.Companion.isZero
 import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
+import org.springframework.context.annotation.Profile
+import org.springframework.stereotype.Service
 
 data class PublicHearing(
     val type: String,
@@ -96,19 +97,47 @@ class UvpDistributionHelper(
             allDistributions
         } else {
             val matchedDistributions = mutableListOf<Any>()
-            allDistributions.forEach() {
+            allDistributions.forEach {
                 val processStep = it
-                val type = processStep.get("type").textValue()
+                val type = processStep.getString("type")
 
                 if(type == "publicHearing") {
                     val docTypeList: List<String> = listOf("considerationDocs")
-                    docTypeList.forEach() { docType ->
-                        when (val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)) {
-                            is JsonNode -> {
-                                val requestedInfo = PublicHearing(
-                                    type = updatedProcessStep.get("type").textValue(),
-                                    publicHearingDate = updatedProcessStep.get("publicHearingDate"),
-                                    considerationDocs = updatedProcessStep.get("considerationDocs")
+                    docTypeList.forEach { docType ->
+                        val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)
+                        if (updatedProcessStep is JsonNode) {
+                            val requestedInfo = PublicHearing(
+                                type = updatedProcessStep.getString("type")!!,
+                                publicHearingDate = updatedProcessStep.get("publicHearingDate"),
+                                considerationDocs = updatedProcessStep.get("considerationDocs")
+                            )
+                            matchedDistributions.add(requestedInfo)
+                        }
+                    }
+                }
+
+                if(type == "decisionOfAdmission") {
+                    val docTypeList: List<String> = listOf("approvalDocs", "decisionDocs")
+                    docTypeList.forEach { docType ->
+                        val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)
+                        if (updatedProcessStep is JsonNode) {
+                            val approvalDocs = updatedProcessStep.get("approvalDocs").filter { doc -> doc.getString("downloadURL.uri") == distributionId }
+                            val decisionDocs = updatedProcessStep.get("decisionDocs").filter { doc -> doc.getString("downloadURL.uri") == distributionId }
+
+                            if (approvalDocs.isNotEmpty()) {
+                                val requestedInfo = DecisionOfAdmissionApprovalDocs(
+                                    type = updatedProcessStep.getString("type")!!,
+                                    decisionDate = updatedProcessStep.getString("decisionDate")!!,
+                                    approvalDocs = approvalDocs
+                                )
+                                matchedDistributions.add(requestedInfo)
+                            }
+
+                            if (decisionDocs.isNotEmpty()) {
+                                val requestedInfo = DecisionOfAdmissionDecisionDocs(
+                                    type = updatedProcessStep.getString("type")!!,
+                                    decisionDate = updatedProcessStep.getString("decisionDate")!!,
+                                    decisionDocs = decisionDocs
                                 )
                                 matchedDistributions.add(requestedInfo)
                             }
@@ -116,87 +145,56 @@ class UvpDistributionHelper(
                     }
                 }
 
-                if(type == "decisionOfAdmission") {
-                    val docTypeList: List<String> = listOf("approvalDocs", "decisionDocs")
-                    docTypeList.forEach() { docType ->
-                        when (val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)) {
-                            is JsonNode -> {
-                                val approvalDocs = updatedProcessStep.get("approvalDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == distributionId }
-                                val decisionDocs = updatedProcessStep.get("decisionDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == distributionId }
-
-                                if (approvalDocs.isNotEmpty()) {
-                                    val requestedInfo = DecisionOfAdmissionApprovalDocs(
-                                        type = updatedProcessStep.get("type").textValue(),
-                                        decisionDate = updatedProcessStep.get("decisionDate").textValue(),
-                                        approvalDocs = approvalDocs
-                                    )
-                                    matchedDistributions.add(requestedInfo)
-                                }
-
-                                if (decisionDocs.isNotEmpty()) {
-                                    val requestedInfo = DecisionOfAdmissionDecisionDocs(
-                                        type = updatedProcessStep.get("type").textValue(),
-                                        decisionDate = updatedProcessStep.get("decisionDate").textValue(),
-                                        decisionDocs = decisionDocs
-                                    )
-                                    matchedDistributions.add(requestedInfo)
-                                }
-                            }
-                        }
-                    }
-                }
-
                 if(type == "publicDisclosure") {
                     val docTypeList: List<String> = listOf("furtherDocs", "applicationDocs", "announcementDocs", "reportsRecommendationDocs")
-                    docTypeList.forEach() { docType ->
-                        when (val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)) {
-                            is JsonNode -> {
-                                val furtherDocs = updatedProcessStep.get("furtherDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == distributionId }
-                                val applicationDocs = updatedProcessStep.get("applicationDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == distributionId }
-                                val announcementDocs = updatedProcessStep.get("announcementDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == distributionId }
-                                val reportsRecommendationDocs = updatedProcessStep.get("reportsRecommendationDocs").filter() { doc -> doc.get("downloadURL").get("uri").textValue() == distributionId }
+                    docTypeList.forEach { docType ->
+                        val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)
+                        if (updatedProcessStep is JsonNode) {
+                            val furtherDocs = updatedProcessStep.get("furtherDocs").filter { doc -> doc.getString("downloadURL.uri") == distributionId }
+                            val applicationDocs = updatedProcessStep.get("applicationDocs").filter { doc -> doc.getString("downloadURL.uri") == distributionId }
+                            val announcementDocs = updatedProcessStep.get("announcementDocs").filter { doc -> doc.getString("downloadURL.uri") == distributionId }
+                            val reportsRecommendationDocs = updatedProcessStep.get("reportsRecommendationDocs").filter { doc -> doc.getString("downloadURL.uri") == distributionId }
 
-                                if (furtherDocs.isNotEmpty()) {
-                                    val requestedInfo = PublicDisclosureFurtherDocs(
-                                        type = updatedProcessStep.get("type").textValue(),
-                                        disclosureDate = updatedProcessStep.get("disclosureDate"),
-                                        furtherDocs = furtherDocs,
-                                        furtherDocsPublishDuringDisclosure = updatedProcessStep.get("furtherDocsPublishDuringDisclosure").asBoolean()
-                                    )
-                                    matchedDistributions.add(requestedInfo)
-                                }
-
-                                if (applicationDocs.isNotEmpty()) {
-                                    val requestedInfo = PublicDisclosureApplicationDocs(
-                                        type = updatedProcessStep.get("type").textValue(),
-                                        disclosureDate = updatedProcessStep.get("disclosureDate"),
-                                        applicationDocs = applicationDocs,
-                                        applicationDocsPublishDuringDisclosure = updatedProcessStep.get("applicationDocsPublishDuringDisclosure").asBoolean()
-                                    )
-                                    matchedDistributions.add(requestedInfo)
-                                }
-
-                                if (announcementDocs.isNotEmpty()) {
-                                    val requestedInfo = PublicDisclosureAnnouncementDocs(
-                                        type = updatedProcessStep.get("type").textValue(),
-                                        disclosureDate = updatedProcessStep.get("disclosureDate"),
-                                        announcementDocs = announcementDocs,
-                                        announcementDocsPublishDuringDisclosure = updatedProcessStep.get("announcementDocsPublishDuringDisclosure").asBoolean()
-                                    )
-                                    matchedDistributions.add(requestedInfo)
-                                }
-
-                                if (reportsRecommendationDocs.isNotEmpty()) {
-                                    val requestedInfo = PublicDisclosureReportsRecommendationDocs(
-                                        type = updatedProcessStep.get("type").textValue(),
-                                        disclosureDate = updatedProcessStep.get("disclosureDate"),
-                                        reportsRecommendationDocs = applicationDocs,
-                                        reportsRecommendationDocsPublishDuringDisclosure = updatedProcessStep.get("reportsRecommendationDocsPublishDuringDisclosure").asBoolean()
-                                    )
-                                    matchedDistributions.add(requestedInfo)
-                                }
-
+                            if (furtherDocs.isNotEmpty()) {
+                                val requestedInfo = PublicDisclosureFurtherDocs(
+                                    type = updatedProcessStep.getString("type")!!,
+                                    disclosureDate = updatedProcessStep.get("disclosureDate"),
+                                    furtherDocs = furtherDocs,
+                                    furtherDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("furtherDocsPublishDuringDisclosure")!!
+                                )
+                                matchedDistributions.add(requestedInfo)
                             }
+
+                            if (applicationDocs.isNotEmpty()) {
+                                val requestedInfo = PublicDisclosureApplicationDocs(
+                                    type = updatedProcessStep.getString("type")!!,
+                                    disclosureDate = updatedProcessStep.get("disclosureDate"),
+                                    applicationDocs = applicationDocs,
+                                    applicationDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("applicationDocsPublishDuringDisclosure")!!
+                                )
+                                matchedDistributions.add(requestedInfo)
+                            }
+
+                            if (announcementDocs.isNotEmpty()) {
+                                val requestedInfo = PublicDisclosureAnnouncementDocs(
+                                    type = updatedProcessStep.getString("type")!!,
+                                    disclosureDate = updatedProcessStep.get("disclosureDate"),
+                                    announcementDocs = announcementDocs,
+                                    announcementDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("announcementDocsPublishDuringDisclosure")!!
+                                )
+                                matchedDistributions.add(requestedInfo)
+                            }
+
+                            if (reportsRecommendationDocs.isNotEmpty()) {
+                                val requestedInfo = PublicDisclosureReportsRecommendationDocs(
+                                    type = updatedProcessStep.getString("type")!!,
+                                    disclosureDate = updatedProcessStep.get("disclosureDate"),
+                                    reportsRecommendationDocs = applicationDocs,
+                                    reportsRecommendationDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("reportsRecommendationDocsPublishDuringDisclosure")!!
+                                )
+                                matchedDistributions.add(requestedInfo)
+                            }
+
                         }
                     }
                 }
@@ -209,67 +207,24 @@ class UvpDistributionHelper(
     override fun searchForMissingFiles(distributions: JsonNode, collectionId: String, userID: String, recordId: String, distributionId: String?): List<String> {
         val missingFiles: MutableList<String> = mutableListOf()
 
-        distributions.forEach() { distribution ->
-            val type = distribution.get("type").textValue()
-            if(type == "publicHearing") {
-                distribution["considerationDocs"].forEach() { doc ->
-                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
-                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
-                    isLink.ifFalse {
-                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
-                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
+        distributions.forEach { distribution ->
+            val type = distribution.getString("type")
+            when (type) {
+                "publicHearing" -> {
+                    distribution["considerationDocs"].forEach { doc ->
+                        collectMissingFiles(doc, collectionId, userID, recordId, missingFiles)
                     }
                 }
-            }
-            if(type == "decisionOfAdmission") {
-                distribution["approvalDocs"].forEach() { doc ->
-                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
-                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
-                    isLink.ifFalse {
-                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
-                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
+
+                "decisionOfAdmission" -> {
+                    (distribution["approvalDocs"] + distribution["decisionDocs"]).forEach { doc ->
+                        collectMissingFiles(doc, collectionId, userID, recordId, missingFiles)
                     }
                 }
-                distribution["decisionDocs"].forEach() { doc ->
-                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
-                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
-                    isLink.ifFalse {
-                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
-                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
-                    }
-                }
-            }
-            if(type == "publicDisclosure") {
-                distribution["furtherDocs"].forEach() { doc ->
-                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
-                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
-                    isLink.ifFalse {
-                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
-                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
-                    }
-                }
-                distribution["applicationDocs"].forEach() { doc ->
-                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
-                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
-                    isLink.ifFalse {
-                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
-                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
-                    }
-                }
-                distribution["announcementDocs"].forEach() { doc ->
-                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
-                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
-                    isLink.ifFalse {
-                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
-                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
-                    }
-                }
-                distribution["reportsRecommendationDocs"].forEach() {doc ->
-                    val currentDistributionId = doc["downloadURL"]["uri"].textValue()
-                    val isLink = doc["downloadURL"]["asLink"].asBoolean()
-                    isLink.ifFalse {
-                        val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
-                        distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
+
+                "publicDisclosure" -> {
+                    (distribution["furtherDocs"] + distribution["applicationDocs"] + distribution["announcementDocs"] + distribution["reportsRecommendationDocs"]).forEach { doc ->
+                        collectMissingFiles(doc, collectionId, userID, recordId, missingFiles)
                     }
                 }
             }
@@ -278,9 +233,24 @@ class UvpDistributionHelper(
         return missingFiles
     }
 
+    private fun collectMissingFiles(
+        doc: JsonNode,
+        collectionId: String,
+        userID: String,
+        recordId: String,
+        missingFiles: MutableList<String>
+    ) {
+        val currentDistributionId = doc.getString("downloadURL.uri")!!
+        val isLink = doc.getBoolean("downloadURL.asLink")!!
+        isLink.ifFalse {
+            val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
+            distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
+        }
+    }
+
     private fun removeUnwantedInfos(distributionId: String, docType: String, processStep: JsonNode): JsonNode?  {
-        val jsonNodeList = processStep.get(docType).filter() {
-            it.get("downloadURL").get("uri").textValue() == distributionId
+        val jsonNodeList = processStep.get(docType).filter {
+            it.getString("downloadURL.uri") == distributionId
         }
         if (jsonNodeList.size.isZero()) return null
 
@@ -289,9 +259,7 @@ class UvpDistributionHelper(
         return processStep
     }
 
-    private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode {
-        val objectMapper: ObjectMapper = jacksonObjectMapper()
-        return objectMapper.valueToTree(listOfJsonNodes)
-    }
+    private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode =
+        jacksonObjectMapper().valueToTree(listOfJsonNodes)
 
 }

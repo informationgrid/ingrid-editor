@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.ogc.OgcHtmlConverterService
 import de.ingrid.igeserver.services.OgcDistributionsService
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile

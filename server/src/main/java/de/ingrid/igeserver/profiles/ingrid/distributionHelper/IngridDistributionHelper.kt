@@ -17,15 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.bmi.distributionHelper
+package de.ingrid.igeserver.profiles.ingrid.distributionHelper
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ogc.distributionHelper.OgcDistributionHelper
 import de.ingrid.igeserver.ogc.distributionHelper.DistributionTypeInfo
+import de.ingrid.igeserver.ogc.distributionHelper.OgcDistributionHelper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.utils.getBoolean
+import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.storage.Storage
 import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
 import org.springframework.context.annotation.Profile
@@ -55,7 +55,7 @@ class IngridDistributionHelper(
         return if (distributionId.isNullOrEmpty()) {
             allDistributions
         } else {
-            val filteredDistributions = allDistributions.filter() { it["fileName"]["uri"].textValue() == distributionId }
+            val filteredDistributions = allDistributions.filter { it.getString("fileName.uri") == distributionId }
             convertListToJsonNode(filteredDistributions)
         }
     }
@@ -69,9 +69,9 @@ class IngridDistributionHelper(
     ): List<String> {
         val missingFiles: MutableList<String> = mutableListOf()
 
-        distributions.forEach() { distribution ->
-            val currentDistributionId = distribution["fileName"]["uri"].textValue()
-            val isLink = distribution["fileName"]["asLink"].asBoolean()
+        distributions.forEach { distribution ->
+            val currentDistributionId = distribution.getString("fileName.uri")!!
+            val isLink = distribution.getBoolean("fileName.asLink")!!
             isLink.ifFalse {
                 val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
                 distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
@@ -81,9 +81,7 @@ class IngridDistributionHelper(
         return missingFiles
     }
 
-    private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode {
-        val objectMapper: ObjectMapper = jacksonObjectMapper()
-        return objectMapper.valueToTree(listOfJsonNodes)
-    }
+    private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode =
+        jacksonObjectMapper().valueToTree(listOfJsonNodes)
 
 }

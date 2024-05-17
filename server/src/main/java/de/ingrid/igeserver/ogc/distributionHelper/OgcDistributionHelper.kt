@@ -21,9 +21,7 @@ package de.ingrid.igeserver.ogc.distributionHelper
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import org.springframework.context.annotation.Profile
 
-@Profile("ogc-distributions-api")
 interface OgcDistributionHelper {
 
     val typeInfo: DistributionTypeInfo

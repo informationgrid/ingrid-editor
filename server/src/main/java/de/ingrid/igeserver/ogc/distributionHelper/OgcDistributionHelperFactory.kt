@@ -19,9 +19,7 @@
  */
 package de.ingrid.igeserver.ogc.distributionHelper
 
-import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.configuration.ConfigurationException
-import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -29,18 +27,9 @@ import org.springframework.stereotype.Service
 @Profile("ogc-distributions-api")
 @Service
 class OgcDistributionHelperFactory() {
-    private val log = logger()
 
     @Autowired
     private lateinit var distributionHelper: List<OgcDistributionHelper>
-
-    fun getDistributionHelperById(id: String): OgcDistributionHelper {
-        return distributionHelper.find { it.typeInfo.id == id } ?: throw NotFoundException.withMissingResource(id, null)
-    }
-
-    fun getDistributionHelperInfos(): List<DistributionTypeInfo> {
-        return distributionHelper.map { it.typeInfo }
-    }
 
     fun getDistributionHelper(profile: String): List<OgcDistributionHelper> {
 
@@ -52,7 +41,10 @@ class OgcDistributionHelperFactory() {
         return responsibleDistributionHelper
     }
 
-    private fun handleEmptyOrMultipleDistributionHelper(responsibleImporter: List<OgcDistributionHelper>, profile: String) {
+    private fun handleEmptyOrMultipleDistributionHelper(
+        responsibleImporter: List<OgcDistributionHelper>,
+        profile: String
+    ) {
         if (responsibleImporter.isEmpty()) {
             throw ConfigurationException.withReason("No distribution helper found for profile type '$profile'.")
         } else if (responsibleImporter.size > 1) {

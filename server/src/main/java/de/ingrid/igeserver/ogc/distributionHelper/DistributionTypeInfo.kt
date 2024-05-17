@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.ogc.distributionHelper
 
-import org.springframework.context.annotation.Profile
-
 
 /**
  * @param id the ID of the distribution helper
@@ -29,6 +27,4 @@ import org.springframework.context.annotation.Profile
  * @param profiles in which profiles can this distribution helper be used
  *
  */
-
-@Profile("ogc-distributions-api")
 data class DistributionTypeInfo(val id: String, val name: String, val description: String, val profiles: List<String>)
