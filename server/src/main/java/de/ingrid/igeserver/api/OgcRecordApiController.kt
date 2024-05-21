@@ -45,6 +45,7 @@ class OgcApiRecordsController(
         private val exporterFactory: ExporterFactory,
         private val apiValidationService: ApiValidationService,
         private val documentService: DocumentService,
+        private val catalogService: CatalogService
         ) : OgcApiRecords {
 
     val log = logger()
@@ -149,9 +150,11 @@ class OgcApiRecordsController(
         val exporter = exporterFactory.getExporter(DocumentCategory.DATA, format = exportFormat)
         val mimeType: String = exporter.typeInfo.dataType
 
+        val profile = catalogService.getProfileFromCatalog(collectionId)
+
         // create research query
         val (queryLimit, queryOffset) = ogcRecordService.pageLimitAndOffset(offset, limit)
-        val query = ogcRecordService.buildRecordsQuery(queryLimit, queryOffset, type, bbox, datetime, qParameter)
+        val query = ogcRecordService.buildRecordsQuery(profile, queryLimit, queryOffset, type, bbox, datetime, qParameter)
         val researchRecords: ResearchResponse = researchService.query(collectionId, query, principal)
 
         // links: next previous self

@@ -31,6 +31,7 @@ import de.ingrid.igeserver.exports.internal.InternalExporter
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.model.*
+import de.ingrid.igeserver.ogc.KeywordFilterSelector
 import de.ingrid.igeserver.ogc.OgcHtmlConverterService
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporter
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
@@ -93,6 +94,7 @@ class OgcRecordService(
     private val documentService: DocumentService,
     private val importService: ImportService,
     private val ogcHtmlConverterService: OgcHtmlConverterService,
+    private val keywordFilterSelector: KeywordFilterSelector,
     generalProperties: GeneralProperties,
 ) {
     val hostnameOgcApi = generalProperties.host + "/api/ogc"
@@ -278,7 +280,7 @@ class OgcRecordService(
         return instance.toString()
     }
 
-    fun buildRecordsQuery(queryLimit: Int, queryOffset: Int, type: List<String>?, bbox: List<Float>?, datetime: String?, qParameter: List<String>?): ResearchQuery {
+    fun buildRecordsQuery(profile: CatalogProfile, queryLimit: Int, queryOffset: Int, type: List<String>?, bbox: List<Float>?, datetime: String?, qParameter: List<String>?): ResearchQuery {
         val clausesList: MutableList<BoolFilter> = mutableListOf()
         // filter: exclude FOLDERS
         clausesList.add(BoolFilter("OR", listOf("document_wrapper.type != 'FOLDER'"), null, null, false))
@@ -303,7 +305,8 @@ class OgcRecordService(
             clausesList.add(BoolFilter("OR", typeList, null, null, false))
         }
         if (!qParameter.isNullOrEmpty()) {
-                clausesList.add(BoolFilter("OR", listOf("ingridSelectKeywords"), null, qParameter, true))
+            val keywordFilter: String = keywordFilterSelector.getKeywordFilter(profile)
+            clausesList.add(BoolFilter("OR", listOf(keywordFilter), null, qParameter, true))
         }
 
         // prepare query
