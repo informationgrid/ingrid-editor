@@ -62,9 +62,9 @@ open class IngridModelTransformer(
     val doc: Document,
     val documentService: DocumentService
 ) {
-    
+
     val fieldToCodelist = FieldToCodelist()
-    
+
     var incomingReferencesCache: List<CrossReference>? = null
     var superiorReferenceCache: SuperiorReference? = null
 
@@ -76,7 +76,7 @@ open class IngridModelTransformer(
     val distributionFormats = data.distribution?.format ?: emptyList()
     val isAtomDownload = data.service.isAtomDownload == true
     val atomDownloadURL: String?
-    open val digitalTransferOptions = doc.data.get("digitalTransferOptions")?.map { 
+    open val digitalTransferOptions = doc.data.get("digitalTransferOptions")?.map {
         DigitalTransferOption(
             createSimpleKeyValueFromJsonNode(it.get("name")),
             UnitField(it.getString("transferSize.value"), createSimpleKeyValueFromJsonNode(it.get("transferSize")?.get("unit"))),
@@ -618,8 +618,8 @@ open class IngridModelTransformer(
     }
 
     // information system
-    val serviceUrls = data.serviceUrls?.map { 
-        it.attachedToField = AttachedField("2000", "5066", "Link to Service") 
+    val serviceUrls = data.serviceUrls?.map {
+        it.attachedToField = AttachedField("2000", "5066", "Link to Service")
         it.functionValue = "information"
         it
     } ?: emptyList()
@@ -628,9 +628,9 @@ open class IngridModelTransformer(
     open val systemEnvironment = data.systemEnvironment
 
     fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs(): List<ServiceUrl> = externalReferences + serviceUrls + getCoupledServiceUrlsOrGetCapabilitiesUrl() + getAtomAsServiceUrl()
-    
-    private fun getAtomAsServiceUrl(): List<ServiceUrl> = if (isAtomDownload) 
-        listOf(ServiceUrl("Get Download Service Metadata", atomDownloadURL!!, null, isIdfResource = false, functionValue = "information")) 
+
+    private fun getAtomAsServiceUrl(): List<ServiceUrl> = if (isAtomDownload)
+        listOf(ServiceUrl("Get Download Service Metadata", atomDownloadURL!!, null, isIdfResource = false, functionValue = "information"))
     else emptyList()
 
     val parentIdentifier: String? = data.parentIdentifier
@@ -917,9 +917,17 @@ open class IngridModelTransformer(
     }
 
     fun hasDistributionInfo(): Boolean {
-        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || hasDistributorInfo() || !data.references.isNullOrEmpty() || isAtomDownload || serviceUrls.isNotEmpty() || getCoupledServiceUrls().isNotEmpty()
+        return digitalTransferOptions.isNotEmpty()
+                || distributionFormats.isNotEmpty()
+                || hasDistributorInfo()
+                || !data.references.isNullOrEmpty()
+                || isAtomDownload
+                // TODO Refactor after usage clarification #6322
+                // || serviceUrls.isNotEmpty()
+                // || getCoupledServiceUrls().isNotEmpty()
+                || getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs().isNotEmpty()
     }
-    
+
     fun hasDistributorInfo(): Boolean {
         return data.orderInfo?.isNotEmpty() == true || data.fees?.isNotEmpty() == true
     }
