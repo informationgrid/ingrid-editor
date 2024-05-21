@@ -36,7 +36,6 @@ import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporter
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import org.keycloak.util.JsonSerialization
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpHeaders
 import org.springframework.security.core.Authentication
@@ -279,7 +278,7 @@ class OgcRecordService(
         return instance.toString()
     }
 
-    fun buildRecordsQuery(queryLimit: Int, queryOffset: Int, type: List<String>?, bbox: List<Float>?, datetime: String?): ResearchQuery {
+    fun buildRecordsQuery(queryLimit: Int, queryOffset: Int, type: List<String>?, bbox: List<Float>?, datetime: String?, qParameter: List<String>?): ResearchQuery {
         val clausesList: MutableList<BoolFilter> = mutableListOf()
         // filter: exclude FOLDERS
         clausesList.add(BoolFilter("OR", listOf("document_wrapper.type != 'FOLDER'"), null, null, false))
@@ -303,8 +302,9 @@ class OgcRecordService(
             }
             clausesList.add(BoolFilter("OR", typeList, null, null, false))
         }
-        // prepare paging
-//        val (queryLimit, queryOffset) = pageLimitAndOffset(offset, limit)
+        if (!qParameter.isNullOrEmpty()) {
+                clausesList.add(BoolFilter("OR", listOf("ingridSelectKeywords"), null, qParameter, true))
+        }
 
         // prepare query
         return ResearchQuery(

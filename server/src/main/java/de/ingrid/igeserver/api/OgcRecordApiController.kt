@@ -26,7 +26,6 @@ import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
@@ -46,7 +45,6 @@ class OgcApiRecordsController(
         private val exporterFactory: ExporterFactory,
         private val apiValidationService: ApiValidationService,
         private val documentService: DocumentService,
-        val scheduler: SchedulerService,
         ) : OgcApiRecords {
 
     val log = logger()
@@ -142,7 +140,7 @@ class OgcApiRecordsController(
     }
 
 
-    override fun getRecords(allRequestParams: Map<String, String>, principal: Authentication, collectionId: String, limit: Int?, offset: Int?, type: List<String>?, bbox: List<Float>?, datetime: String?, q: List<String>?, externalid: List<String>?, format: RecordFormat, filter: String? ): ResponseEntity<ByteArray> {
+    override fun getRecords(allRequestParams: Map<String, String>, principal: Authentication, collectionId: String, limit: Int?, offset: Int?, type: List<String>?, bbox: List<Float>?, datetime: String?, qParameter: List<String>?, externalid: List<String>?, format: RecordFormat, filter: String? ): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("limit", "offset", "type", "bbox", "datetime", "q", "externalid", "f", "filter"))
         apiValidationService.validateBbox(bbox)
@@ -153,7 +151,7 @@ class OgcApiRecordsController(
 
         // create research query
         val (queryLimit, queryOffset) = ogcRecordService.pageLimitAndOffset(offset, limit)
-        val query = ogcRecordService.buildRecordsQuery(queryLimit, queryOffset, type, bbox, datetime)
+        val query = ogcRecordService.buildRecordsQuery(queryLimit, queryOffset, type, bbox, datetime, qParameter)
         val researchRecords: ResearchResponse = researchService.query(collectionId, query, principal)
 
         // links: next previous self

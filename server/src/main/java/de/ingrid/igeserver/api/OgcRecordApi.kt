@@ -194,19 +194,17 @@ interface OgcApiRecords {
             ) @RequestParam(value = "datetime", required = false) @Valid datetime: String?,
             // PARAMETER : q
             @Parameter(description = "## Text Search (q) parameter\n **OGC Parameter SHOULD**" +
-                    "\n\n### ! Not yet implemented !" +
-                    "\n\nA Records API SHALL support the Text Search (q) parameter for the operation." +
                     "\n\nThe list of search terms SHALL be a comma-separated list and spaces have no special meaning." +
                     "\n\nKeyword searches using the `q` parameter SHALL be case insensitive." +
                     "\t\n" +
                     "\n\nThe specific set of text keys/fields/properties of a record to which the `q` operator is applied SHALL be left to the discretion of the implementation." +
-                    "\n\nThe `q` operator SHOULD at least be applied to the following core queryables:" +
-                    "\n\n• title\n\n• description\n\n• keywords" +
+                    "\n\nThe `q` operator applies to the following core queryables:" +
+                    "\n\n• title\n\n• description" +
                     "\n\nOnly records whose text fields contains one or more of the search terms specified using the `q` parameter SHALL be in the result set." +
                     "\n\n[Source: DRAFT OGC API - Records - Part 1: Core](https://docs.ogc.org/DRAFTS/20-004.html#core-query-parameters-q)",
                     explode = Explode.FALSE,
                     style = ParameterStyle.MATRIX,
-            ) @RequestParam(value = "q", required = false) @Valid q: List<String>?,
+            ) @RequestParam(value = "q", required = false) @Valid qParameter: List<String>?,
          // PARAMETER : externalid
             @Parameter(description = "## Search by External Identifier (externalId)\n **OGC Parameter SHOULD**" +
                     "\n\n### ! Not yet implemented !" +
