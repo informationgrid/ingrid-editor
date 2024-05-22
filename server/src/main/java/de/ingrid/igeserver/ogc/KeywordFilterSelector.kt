@@ -24,7 +24,6 @@ import de.ingrid.igeserver.model.KeywordFilter
 import de.ingrid.igeserver.services.CatalogProfile
 import org.springframework.stereotype.Service
 
-
 @Service
 class KeywordFilterSelector(private val keywordFilterList: List<KeywordFilter>)  {
     fun getKeywordFilter(profile: CatalogProfile): String {
