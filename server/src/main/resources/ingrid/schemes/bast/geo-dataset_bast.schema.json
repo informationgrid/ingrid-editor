@@ -13,6 +13,7 @@
         "isAdVCompatible": true,
         "isOpenData": true,
         "hvd": true,
+        "hvdCategories": true,
         "isInspireIdentified": true,
         "isInspireConform": true,
         "subType": true,

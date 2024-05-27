@@ -12,6 +12,7 @@
       "properties": {
         "isAdVCompatible": true,
         "hvd": true,
+        "hvdCategories": true,
         "isOpenData": true,
         "isInspireIdentified": true,
         "isInspireConform": true,

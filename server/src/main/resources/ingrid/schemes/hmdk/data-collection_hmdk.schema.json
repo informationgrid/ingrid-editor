@@ -12,6 +12,7 @@
       "properties": {
         "isAdVCompatible": true,
         "hvd": true,
+        "hvdCategories": true,
         "isOpenData": true,
         "_uuid": true,
         "_type": true,
