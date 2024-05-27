@@ -48,7 +48,11 @@ export class SharedHmdk {
     typeGroup.push(this.getPublicationHmbTGFieldConfig());
 
     // add "Informationsgegenstand" right after typeGroup
-    topGroup.splice(3, 0, this.getInformationHmbTGFieldConfig());
+    topGroup.splice(
+      typeGroupPostion + 1,
+      0,
+      this.getInformationHmbTGFieldConfig(),
+    );
 
     // at least one "Herausgeber" is required when Dataset is OpenData
     const pointOfContact = topGroup //[4].fieldGroup
