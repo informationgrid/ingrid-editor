@@ -115,7 +115,7 @@ export abstract class IngridShared extends BaseDoctype {
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     this.thesaurusTopics = options.thesaurusTopics;
-    return this.addSection("Allgemeines", [
+    return this.addSection("", [
       this.addGroupSimple(
         null,
         [
