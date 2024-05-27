@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.importer
 
+import de.ingrid.igeserver.exports.iso.OperatesOn
 import de.ingrid.igeserver.model.KeyValue
 
 open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
@@ -116,11 +117,7 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
     }
 
     fun getCoupledResources(): List<CoupledResourceModel> {
-        val internalLinks = info?.operatesOn
-            ?.map { CoupledResourceModel(
-                it.uuidref,
-                null, null, false, 
-                layerNames = it.title?.split(",") ?: emptyList()) } ?: emptyList()
+        val internalLinks = groupItemsByUuid(info?.operatesOn)
 
         val externalLinks = metadata.distributionInfo?.mdDistribution?.transferOptions
             ?.filter {
@@ -131,10 +128,25 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             ?.map { CoupledResourceModel(
                 null, it?.linkage?.url, it?.name?.value, true,
 //                    layerNames = it.title?.split(",") ?: emptyList()) } ?: emptyList()
-                ) 
+                )
             } ?: emptyList()
 
         return internalLinks + externalLinks
+    }
+    
+    private fun groupItemsByUuid(items: List<OperatesOn>?): List<CoupledResourceModel> {
+        if (items == null) return emptyList()
+        
+        val groupedMap = mutableMapOf<String, MutableList<String>>()
+
+        for (item in items) {
+            val texts = groupedMap.getOrPut(item.uuidref!!) { mutableListOf() }
+            if (!item.title.isNullOrEmpty()) texts.add(item.title)
+        }
+
+        return groupedMap.map { (uuid, layerNames) -> 
+            CoupledResourceModel(uuid, null, null, false, layerNames = layerNames)
+        }
     }
 
     fun getResolutions(): List<Resolution> {

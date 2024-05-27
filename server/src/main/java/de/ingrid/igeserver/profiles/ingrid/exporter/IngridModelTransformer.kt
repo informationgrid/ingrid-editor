@@ -521,21 +521,23 @@ open class IngridModelTransformer(
         return (if (codelistId == null) null else codelists.getValue(codelistId, name, "iso")) ?: name.value
     }
 
-    fun getOperatesOn() = data.service.coupledResources?.map {
-        val title: String? = it.layerNames?.joinToString(",")?.ifEmpty { null }
-        if (it.isExternalRef) {
-            OperatesOn(it.uuid, it.identifier, title)
+    fun getOperatesOn() = data.service.coupledResources?.flatMap {
+        val finalIdentifier = if (it.isExternalRef) {
+            it.identifier
         } else {
             val identifier = getLastPublishedDocument(it.uuid!!)?.data?.get("identifier")?.asText() ?: it.uuid
             val containsNamespace = identifier.contains("://")
-            val completeIdentifier = if (containsNamespace) {
+            if (containsNamespace) {
                 identifier
             } else {
                 val namespaceWithSlash = if (namespace.endsWith("/")) namespace else "$namespace/"
                 namespaceWithSlash + identifier
             }
-            OperatesOn(it.uuid, completeIdentifier, title)
         }
+
+        // for each layername create an operatesOn-element 
+        if (it.layerNames.isNullOrEmpty()) listOf(OperatesOn(it.uuid, finalIdentifier, null))
+        else it.layerNames.map { layername: String -> OperatesOn(it.uuid, finalIdentifier, layername) }
 
     } ?: emptyList()
 
