@@ -37,18 +37,21 @@ export class SharedHmdk {
 
   manipulateDocumentFields = (
     fieldConfig: FormlyFieldConfig[],
-    typeGroupPostion = 0,
+    topGroupPosition = 0,
+    typeGroupPostion = 2,
   ) => {
     // add "Veröffentlichung gemäß HmbTG" in to "Typ" Checkboxes
-    const topGroup = fieldConfig[typeGroupPostion].fieldGroup;
-    const typeGroup = topGroup[0].fieldGroup;
+    const topGroup = fieldConfig[topGroupPosition].fieldGroup[0].fieldGroup;
+
+    const typeGroup = topGroup[typeGroupPostion].fieldGroup;
+    // add "Veröffentlichung gemäß HmbTG" to "OpenData" Section
     typeGroup.push(this.getPublicationHmbTGFieldConfig());
 
     // add "Informationsgegenstand" right after typeGroup
-    topGroup.splice(1, 0, this.getInformationHmbTGFieldConfig());
+    topGroup.splice(3, 0, this.getInformationHmbTGFieldConfig());
 
     // at least one "Herausgeber" is required when Dataset is OpenData
-    const pointOfContact = topGroup
+    const pointOfContact = topGroup //[4].fieldGroup
       .find((field) => field.props.label === "Allgemeines")
       .fieldGroup.find((field) => field.props.externalLabel === "Adressen");
     pointOfContact.validators = {

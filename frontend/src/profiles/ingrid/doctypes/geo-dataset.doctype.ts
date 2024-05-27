@@ -49,6 +49,7 @@ export class GeoDatasetDoctype extends IngridShared {
   };
 
   showInspireConform = true;
+  showHVD = true;
   showAdVCompatible = true;
   showAdVProductGroup = true;
   showIdentifierCreateButton = true;
@@ -64,7 +65,6 @@ export class GeoDatasetDoctype extends IngridShared {
         thesaurusTopics: true,
         additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
           required: this.geodatasetOptions.required.subType,
-          showSearch: true,
           options: this.getCodelistForSelect("525", "subType"),
           codelistId: "525",
         }),

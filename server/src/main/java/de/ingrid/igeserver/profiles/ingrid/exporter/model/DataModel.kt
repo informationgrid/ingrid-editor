@@ -60,6 +60,7 @@ data class DataModel(
     val openDataCategories: List<KeyValue>?,
     val priorityDatasets: List<KeyValue>?,
     val invekosKeywords: List<KeyValue>?,
+    val hvdCategories: List<KeyValue>?,
     val temporal: Temporal = Temporal(),
     val resource: Resource?,
     val extraInfo: ExtraInfo?,

@@ -35,6 +35,16 @@ val inVeKoSKeywordMapping = mapOf(
     "http://inspire.ec.europa.eu/metadata-codelist/IACSData/referenceParcel" to "Referenzparzelle"
 )
 
+
+val hvdKeywordMapping = mapOf(
+    "http://data.europa.eu/bna/c_ac64a52d" to "Georaum",
+    "http://data.europa.eu/bna/c_dd313021" to "Erdbeobachtung und Umwelt",
+    "http://data.europa.eu/bna/c_164e0bf5" to "Meteorologie",
+    "http://data.europa.eu/bna/c_e1da4e07" to "Statistik",
+    "http://data.europa.eu/bna/c_a9135398" to "Unternehmen und Eigentümerschaft von Unternehmen",
+    "http://data.europa.eu/bna/c_b79e35eb" to "Mobilität"
+)
+
 val iso639LanguageMapping = mapOf(
     "ger" to "150",
     "eng" to "123",
