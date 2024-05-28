@@ -467,43 +467,6 @@ export abstract class IngridShared extends BaseDoctype {
               },
             })
           : null,
-        this.showHVD
-          ? this.addRepeatList("hvdCategories", "HVD-Kategorien", {
-              view: "chip",
-              showSearch: true,
-              asSelect: true,
-              expressions: {
-                hide: (field: FormlyFieldConfig) => field.model.hvd !== true,
-              },
-              options: [
-                {
-                  label: "Georaum",
-                  value: "http://data.europa.eu/bna/c_ac64a52d",
-                },
-                {
-                  label: "Erdbeobachtung und Umwelt",
-                  value: "http://data.europa.eu/bna/c_dd313021",
-                },
-                {
-                  label: "Meteorologie",
-                  value: "http://data.europa.eu/bna/c_164e0bf5",
-                },
-                {
-                  label: "Statistik",
-                  value: "http://data.europa.eu/bna/c_e1da4e07",
-                },
-                {
-                  label: "Unternehmen und Eigentümerschaft von Unternehmen",
-                  value: "http://data.europa.eu/bna/c_a9135398",
-                },
-                {
-                  label: "Mobilität",
-                  value: "http://data.europa.eu/bna/c_b79e35eb",
-                },
-              ],
-              required: true,
-            })
-          : null,
         options.inspireTopics
           ? this.addRepeatList("themes", "INSPIRE-Themen", {
               view: "chip",
@@ -574,6 +537,43 @@ export abstract class IngridShared extends BaseDoctype {
             "props.required": this.options.dynamicRequired.openDataCategories,
           },
         }),
+        this.showHVD
+          ? this.addRepeatList("hvdCategories", "HVD-Kategorien", {
+              view: "chip",
+              showSearch: true,
+              asSelect: true,
+              expressions: {
+                hide: (field: FormlyFieldConfig) => field.model.hvd !== true,
+              },
+              options: [
+                {
+                  label: "Georaum",
+                  value: "http://data.europa.eu/bna/c_ac64a52d",
+                },
+                {
+                  label: "Erdbeobachtung und Umwelt",
+                  value: "http://data.europa.eu/bna/c_dd313021",
+                },
+                {
+                  label: "Meteorologie",
+                  value: "http://data.europa.eu/bna/c_164e0bf5",
+                },
+                {
+                  label: "Statistik",
+                  value: "http://data.europa.eu/bna/c_e1da4e07",
+                },
+                {
+                  label: "Unternehmen und Eigentümerschaft von Unternehmen",
+                  value: "http://data.europa.eu/bna/c_a9135398",
+                },
+                {
+                  label: "Mobilität",
+                  value: "http://data.europa.eu/bna/c_b79e35eb",
+                },
+              ],
+              required: true,
+            })
+          : null,
         options.priorityDataset
           ? this.addRepeatList(
               "priorityDatasets",
