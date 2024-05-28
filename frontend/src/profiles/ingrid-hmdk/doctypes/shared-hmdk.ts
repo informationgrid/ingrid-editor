@@ -41,7 +41,7 @@ export class SharedHmdk {
     typeGroupPostion = 2,
   ) => {
     // add "Veröffentlichung gemäß HmbTG" in to "Typ" Checkboxes
-    const topGroup = fieldConfig[topGroupPosition].fieldGroup[0].fieldGroup;
+    const topGroup = fieldConfig[topGroupPosition].fieldGroup;
 
     const typeGroup = topGroup[typeGroupPostion].fieldGroup;
     // add "Veröffentlichung gemäß HmbTG" to "OpenData" Section
