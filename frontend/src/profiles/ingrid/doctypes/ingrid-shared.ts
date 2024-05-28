@@ -115,176 +115,165 @@ export abstract class IngridShared extends BaseDoctype {
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     this.thesaurusTopics = options.thesaurusTopics;
-    return this.addSection("", [
-      this.addGroupSimple(
-        null,
-        [
-          options.inspireRelevant ||
-          this.showAdVCompatible ||
-          !this.options.hide.openData
-            ? this.addGroup(
-                null,
-                "Typ",
-                [
-                  options.inspireRelevant
-                    ? this.addCheckboxInline(
-                        "isInspireIdentified",
-                        "INSPIRE-relevant",
-                        {
-                          className: "flex-1",
-                          click: (field: FormlyFieldConfig) =>
-                            this.handleInspireIdentifiedClick(field),
-                        },
-                      )
-                    : null,
-                  this.showAdVCompatible
-                    ? this.addCheckboxInline(
-                        "isAdVCompatible",
-                        "AdV kompatibel",
-                        {
-                          className: "flex-1",
-                          click: (field: FormlyFieldConfig) =>
-                            this.handleAdvClick(field),
-                        },
-                      )
-                    : null,
-                ].filter(Boolean),
-              )
-            : null,
-          this.addRadioboxes("isInspireConform", "INSPIRE konform", {
-            expressions: {
-              hide: (field: FormlyFieldConfig) =>
-                !(this.showInspireConform && field.model.isInspireIdentified),
+    return this.addGroupSimple(
+      null,
+      [
+        options.inspireRelevant ||
+        this.showAdVCompatible ||
+        !this.options.hide.openData
+          ? this.addGroup(
+              null,
+              "Typ",
+              [
+                options.inspireRelevant
+                  ? this.addCheckboxInline(
+                      "isInspireIdentified",
+                      "INSPIRE-relevant",
+                      {
+                        className: "flex-1",
+                        click: (field: FormlyFieldConfig) =>
+                          this.handleInspireIdentifiedClick(field),
+                      },
+                    )
+                  : null,
+                this.showAdVCompatible
+                  ? this.addCheckboxInline(
+                      "isAdVCompatible",
+                      "AdV kompatibel",
+                      {
+                        className: "flex-1",
+                        click: (field: FormlyFieldConfig) =>
+                          this.handleAdvClick(field),
+                      },
+                    )
+                  : null,
+              ].filter(Boolean),
+            )
+          : null,
+        this.addRadioboxes("isInspireConform", "INSPIRE konform", {
+          expressions: {
+            hide: (field: FormlyFieldConfig) =>
+              !(this.showInspireConform && field.model.isInspireIdentified),
+          },
+          options: [
+            {
+              value: "Ja",
+              id: true,
             },
-            options: [
-              {
-                value: "Ja",
-                id: true,
-              },
-              {
-                value: "Nein",
-                id: false,
-              },
-            ],
-            click: (field: FormlyFieldConfig) =>
-              setTimeout(() =>
-                this.handleIsInspireConformClick(field).subscribe(),
-              ),
-          }),
-          this.showInVeKoSField
-            ? this.addSelect("invekos", "InVeKoS", {
-                allowNoValue: false,
-                defaultValue: { key: "none" },
-                expressions: {
-                  hide: "!model.isInspireIdentified",
-                },
-                resetOnHide: false,
-                options: [
-                  {
-                    label: "Kein InVeKoS Datensatz",
-                    value: "none",
-                  },
-                  {
-                    label: "InVeKoS/IACS (GSAA)",
-                    value: "gsaa",
-                  },
-                  {
-                    label: "InVeKoS/IACS (LPIS)",
-                    value: "lpis",
-                  },
-                ],
-                change: (field: FormlyFieldConfig, value: MatSelectChange) => {
-                  this.handleInVeKosChange(
-                    field,
-                    value,
-                    options.thesaurusTopics,
-                  );
-                },
-              })
-            : null,
-          this.options.hide.openData
-            ? null
-            : this.addGroup(
-                null,
-                "Open Data",
-                [
-                  this.addCheckboxInline("isOpenData", "Open Data", {
-                    className: "flex-1",
-                    click: (field: FormlyFieldConfig) =>
-                      this.handleOpenDataClick(field),
-                  }),
-                  this.showHVD
-                    ? this.addCheckboxInline(
-                        "hvd",
-                        "High-Value-Dataset (HVD)",
-                        {
-                          className: "flex-1",
-                          click: (field: FormlyFieldConfig) =>
-                            setTimeout(() =>
-                              this.handleHVDClick(field).subscribe(),
-                            ),
-                        },
-                      )
-                    : null,
-                ].filter(Boolean),
-              ),
-          options.additionalGroup ? options.additionalGroup : null,
-          this.addSection("Allgemeines", [
-            this.addInput(
-              "parentIdentifier",
-              "Identifikator des übergeordneten Metadatensatzes",
-              {
-                wrappers: ["panel", "form-field"],
-                className: "optional",
-              },
+            {
+              value: "Nein",
+              id: false,
+            },
+          ],
+          click: (field: FormlyFieldConfig) =>
+            setTimeout(() =>
+              this.handleIsInspireConformClick(field).subscribe(),
             ),
-            this.addInput("alternateTitle", "Kurzbezeichnung", {
+        }),
+        this.showInVeKoSField
+          ? this.addSelect("invekos", "InVeKoS", {
+              allowNoValue: false,
+              defaultValue: { key: "none" },
+              expressions: {
+                hide: "!model.isInspireIdentified",
+              },
+              resetOnHide: false,
+              options: [
+                {
+                  label: "Kein InVeKoS Datensatz",
+                  value: "none",
+                },
+                {
+                  label: "InVeKoS/IACS (GSAA)",
+                  value: "gsaa",
+                },
+                {
+                  label: "InVeKoS/IACS (LPIS)",
+                  value: "lpis",
+                },
+              ],
+              change: (field: FormlyFieldConfig, value: MatSelectChange) => {
+                this.handleInVeKosChange(field, value, options.thesaurusTopics);
+              },
+            })
+          : null,
+        this.options.hide.openData
+          ? null
+          : this.addGroup(
+              null,
+              "Open Data",
+              [
+                this.addCheckboxInline("isOpenData", "Open Data", {
+                  className: "flex-1",
+                  click: (field: FormlyFieldConfig) =>
+                    this.handleOpenDataClick(field),
+                }),
+                this.showHVD
+                  ? this.addCheckboxInline("hvd", "High-Value-Dataset (HVD)", {
+                      className: "flex-1",
+                      click: (field: FormlyFieldConfig) =>
+                        setTimeout(() =>
+                          this.handleHVDClick(field).subscribe(),
+                        ),
+                    })
+                  : null,
+              ].filter(Boolean),
+            ),
+        options.additionalGroup ? options.additionalGroup : null,
+        this.addSection("Allgemeines", [
+          this.addInput(
+            "parentIdentifier",
+            "Identifikator des übergeordneten Metadatensatzes",
+            {
               wrappers: ["panel", "form-field"],
               className: "optional",
-            }),
-            this.addTextArea("description", "Beschreibung", this.id, {
-              required: true,
-              rows: 6,
-            }),
-            this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
-              className: "optional",
-            }),
-            this.addAddressCard("pointOfContact", "Adressen", {
-              required: true,
-              validators: {
-                atLeastOneMD: {
-                  expression: (ctrl: FormControl) =>
-                    // equals "Ansprechpartner MD"
-                    ctrl.value
-                      ? ctrl.value.some((address) => address.type?.key === "12")
-                      : false,
-                  message:
-                    "Es muss mindestens einen 'Ansprechpartner MD' geben.",
-                },
-                atLeastOnePointOfContactWhenAdV: {
-                  expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
-                    // equals "Ansprechpartner"
-                    !field.model.isAdVCompatible ||
-                    (ctrl.value
-                      ? ctrl.value.some((address) => address.type?.key === "7")
-                      : false),
-                  message: "Es muss mindestens einen 'Ansprechpartner' geben.",
-                },
-                atLeastOneOtherAddress: {
-                  expression: (ctrl: FormControl) =>
-                    // not equals "Ansprechpartner MD"
-                    ctrl.value
-                      ? ctrl.value.some((address) => address.type?.key !== "12")
-                      : false,
-                  message:
-                    "Neben dem 'Ansprechpartner MD' muss mindestens eine weitere Adresse angegeben werden.",
-                },
+            },
+          ),
+          this.addInput("alternateTitle", "Kurzbezeichnung", {
+            wrappers: ["panel", "form-field"],
+            className: "optional",
+          }),
+          this.addTextArea("description", "Beschreibung", this.id, {
+            required: true,
+            rows: 6,
+          }),
+          this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
+            className: "optional",
+          }),
+          this.addAddressCard("pointOfContact", "Adressen", {
+            required: true,
+            validators: {
+              atLeastOneMD: {
+                expression: (ctrl: FormControl) =>
+                  // equals "Ansprechpartner MD"
+                  ctrl.value
+                    ? ctrl.value.some((address) => address.type?.key === "12")
+                    : false,
+                message: "Es muss mindestens einen 'Ansprechpartner MD' geben.",
               },
-            }),
-          ]),
-        ].filter(Boolean),
-      ),
-    ]);
+              atLeastOnePointOfContactWhenAdV: {
+                expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
+                  // equals "Ansprechpartner"
+                  !field.model.isAdVCompatible ||
+                  (ctrl.value
+                    ? ctrl.value.some((address) => address.type?.key === "7")
+                    : false),
+                message: "Es muss mindestens einen 'Ansprechpartner' geben.",
+              },
+              atLeastOneOtherAddress: {
+                expression: (ctrl: FormControl) =>
+                  // not equals "Ansprechpartner MD"
+                  ctrl.value
+                    ? ctrl.value.some((address) => address.type?.key !== "12")
+                    : false,
+                message:
+                  "Neben dem 'Ansprechpartner MD' muss mindestens eine weitere Adresse angegeben werden.",
+              },
+            },
+          }),
+        ]),
+      ].filter(Boolean),
+    );
   }
 
   handleActivateOpenData(field: FormlyFieldConfig): Observable<boolean> {

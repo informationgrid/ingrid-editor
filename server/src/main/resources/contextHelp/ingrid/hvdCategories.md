@@ -16,7 +16,7 @@ title: HVD Kategorien
 
 # HVD Kategorien
 
-Wenn die checkbox "High-Value-Dataset (HVD)" aktiviert ist, muss mindestens eine HVD-Kategorie ausgewählt werden.
+Wenn die Checkbox "High-Value-Dataset (HVD)" aktiviert ist, muss mindestens eine HVD-Kategorie ausgewählt werden.
 
 ## Abbildung ISO 19139 XML
 
