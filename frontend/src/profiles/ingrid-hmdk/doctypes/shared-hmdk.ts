@@ -281,7 +281,7 @@ export class SharedHmdk {
 
     // remove all categories
     field.model.openDataCategories = [];
-
+    if (field.model.hvd) field.model.hvd = false;
     setTimeout(() => field.options.formState.updateModel());
     return of(true);
   }

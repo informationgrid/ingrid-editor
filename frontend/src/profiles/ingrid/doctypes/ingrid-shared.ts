@@ -349,6 +349,8 @@ export abstract class IngridShared extends BaseDoctype {
         map((decision) => {
           if (decision != "ok") {
             field.formControl.setValue(true);
+          } else {
+            if (this.showHVD) field.model.hvd = false;
           }
           return decision === "ok";
         }),
@@ -358,7 +360,10 @@ export abstract class IngridShared extends BaseDoctype {
   private handleOpenDataClick(field: FormlyFieldConfig) {
     const isChecked = field.formControl.value;
     if (!isChecked) {
-      this.handleDeactivateOpenData(field).subscribe();
+      this.handleDeactivateOpenData(field).subscribe((hasChanged) => {
+        // update model since another field was changed
+        if (hasChanged) field.options.formState.updateModel();
+      });
     } else {
       this.handleActivateOpenData(field).subscribe((hasChanged) => {
         // update model since another field was changed
