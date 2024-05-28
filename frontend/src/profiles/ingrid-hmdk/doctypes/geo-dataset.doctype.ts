@@ -30,8 +30,7 @@ export class GeoDatasetDoctypeHMDK extends GeoDatasetDoctype {
   sharedHmdk = new SharedHmdk(this);
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    "fsefe";
-    return this.sharedHmdk.manipulateDocumentFields(fieldConfig);
+    return this.sharedHmdk.manipulateDocumentFields(fieldConfig, 0, 3);
   };
 
   handleActivateOpenData(field: FormlyFieldConfig) {

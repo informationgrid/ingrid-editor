@@ -19,7 +19,6 @@
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { inject, Injectable } from "@angular/core";
-import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
 import { GeoServiceDoctype } from "../../ingrid/doctypes/geo-service.doctype";
 import { CommonFieldsBast } from "./common-fields";
 
@@ -34,7 +33,7 @@ export class GeoServiceDoctypeBast extends GeoServiceDoctype {
   showAdVProductGroup = false;
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    fieldConfig[1].fieldGroup
+    fieldConfig[1].fieldGroup[0].fieldGroup
       .find((field) => field.props.label === "Allgemeines")
       .fieldGroup.push(...this.common.getFields());
 
