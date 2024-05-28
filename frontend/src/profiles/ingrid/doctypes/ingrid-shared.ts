@@ -212,9 +212,7 @@ export abstract class IngridShared extends BaseDoctype {
                   ? this.addCheckboxInline("hvd", "High-Value-Dataset (HVD)", {
                       className: "flex-1",
                       click: (field: FormlyFieldConfig) =>
-                        setTimeout(() =>
-                          this.handleHVDClick(field).subscribe(),
-                        ),
+                        this.handleHVDClick(field).subscribe(),
                     })
                   : null,
               ].filter(Boolean),
@@ -281,12 +279,13 @@ export abstract class IngridShared extends BaseDoctype {
     const isInspire = field.model.isInspireIdentified;
 
     function executeAction() {
-      if (field.model.resource !== undefined) {
-        if (isInspire) {
-          field.model.resource.accessConstraints = [{ key: "1" }];
-        } else {
-          field.model.resource.accessConstraints = [];
-        }
+      const accessConstraintsControl = field.form.get(
+        "resource.accessConstraints",
+      );
+      if (isInspire) {
+        accessConstraintsControl.setValue([{ key: "1" }]);
+      } else {
+        accessConstraintsControl.setValue([]);
       }
     }
 
@@ -339,7 +338,7 @@ export abstract class IngridShared extends BaseDoctype {
           if (decision != "ok") {
             field.formControl.setValue(true);
           } else {
-            if (this.showHVD) field.model.hvd = false;
+            if (this.showHVD) field.form.get("hvd").setValue(false);
           }
           return decision === "ok";
         }),
@@ -349,15 +348,9 @@ export abstract class IngridShared extends BaseDoctype {
   private handleOpenDataClick(field: FormlyFieldConfig) {
     const isChecked = field.formControl.value;
     if (!isChecked) {
-      this.handleDeactivateOpenData(field).subscribe((hasChanged) => {
-        // update model since another field was changed
-        if (hasChanged) field.options.formState.updateModel();
-      });
+      this.handleDeactivateOpenData(field).subscribe();
     } else {
-      this.handleActivateOpenData(field).subscribe((hasChanged) => {
-        // update model since another field was changed
-        if (hasChanged) field.options.formState.updateModel();
-      });
+      this.handleActivateOpenData(field).subscribe();
     }
   }
 
@@ -470,17 +463,10 @@ export abstract class IngridShared extends BaseDoctype {
               },
               change: (field, $event) =>
                 options.thesaurusTopics &&
-                this.keywordAnalysis.updateIsoCategory(
-                  $event,
-                  field.options.formState,
-                ),
+                this.keywordAnalysis.updateIsoCategory($event, field),
               remove: (field, $event) =>
                 options.thesaurusTopics &&
-                this.keywordAnalysis.updateIsoCategory(
-                  $event,
-                  field.options.formState,
-                  true,
-                ),
+                this.keywordAnalysis.updateIsoCategory($event, field, true),
               validators: {
                 ...(this.showInVeKoSField && {
                   invekos_gsaa: {
@@ -755,19 +741,19 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private checkConnectedIsoCategory(event, field: FormlyFieldConfig) {
-    const themes = field.options.formState.mainModel.themes;
+    const themes = field.form.get("themes");
     // if themes are removed because not INSPIRE-relevant, then ignore
     if (!themes) return;
 
     const possibleKeys = Object.keys(
       KeywordAnalysis.inspireToIsoMapping,
     ).filter((key) => KeywordAnalysis.inspireToIsoMapping[key] === event.key);
-    const connectedInspireTheme = themes.find(
+    const connectedInspireTheme = themes.value.find(
       (item) => possibleKeys.indexOf(item.key) !== -1,
     );
     if (connectedInspireTheme) {
-      field.model[field.key as string].push(event);
-      field.options.formState.updateModel();
+      const topicCategoriesCtrl = field.form.get("topicCategories");
+      topicCategoriesCtrl.setValue([...topicCategoriesCtrl.value, event]);
       const inspireThemeValue = this.codelistQuery.getCodelistEntryValueByKey(
         "6100",
         connectedInspireTheme.key,
@@ -1543,10 +1529,7 @@ export abstract class IngridShared extends BaseDoctype {
   private handleInspireIdentifiedClick(field: FormlyFieldConfig) {
     const checked = field.formControl.value;
     if (checked) {
-      this.handleActivateInspireIdentified(field).subscribe((hasChanged) => {
-        // update model since another field was changed
-        if (hasChanged) field.options.formState.updateModel();
-      });
+      this.handleActivateInspireIdentified(field).subscribe();
     } else {
       this.handleDeactivateInspireIdentified(field).subscribe();
     }
@@ -1556,25 +1539,25 @@ export abstract class IngridShared extends BaseDoctype {
     field: FormlyFieldConfig,
   ): Observable<boolean> {
     const cookieId = "HIDE_INSPIRE_INFO";
-    const isOpenData = field.model.isOpenData === true;
+    const isOpenData = field.form.get("isOpenData").value === true;
 
     const executeAction = () => {
-      field.model.isInspireConform = true;
+      field.form.get("isInspireConform")?.setValue(true);
 
       if (this.defaultKeySpatialScope) {
-        field.model.spatialScope = {
+        field.form.get("spatialScope").setValue({
           key: this.defaultKeySpatialScope,
-        };
+        });
       }
 
       if (this.isGeoService) {
         if (isOpenData) {
-          field.model.resource.accessConstraints = [{ key: "1" }];
+          field.form.get("resource.accessConstraints").setValue([{ key: "1" }]);
         }
 
-        this.addConformanceEntry(field.model, "10", "1");
+        this.addConformanceEntry(field, "10", "1");
       } else if (this.isGeoDataset) {
-        this.addConformanceEntry(field.model, "12", "1");
+        this.addConformanceEntry(field, "12", "1");
       }
     };
 
@@ -1607,16 +1590,18 @@ export abstract class IngridShared extends BaseDoctype {
     field: FormlyFieldConfig,
   ): Observable<boolean> {
     const cookieId = "HIDE_INSPIRE_DEACTIVATE_INFO";
-    const isOpenData = field.model.isOpenData === true;
+    const isOpenData = field.form.get("isOpenData").value === true;
     const specificationToRemove = this.isGeoService ? "10" : "12";
 
     const executeAction = () => {
-      if (isOpenData) field.model.resource.accessConstraints = [];
+      if (isOpenData) field.form.get("resource.accessConstraints").setValue([]);
 
-      field.model.conformanceResult = (
-        field.model.conformanceResult ?? []
-      ).filter((item) => item.specification?.key !== specificationToRemove);
-      field.options.formState.updateModel();
+      const conformanceResultCtrl = field.form.get("conformanceResult");
+      conformanceResultCtrl.setValue(
+        (conformanceResultCtrl.value ?? []).filter(
+          (item) => item.specification?.key !== specificationToRemove,
+        ),
+      );
     };
 
     if (this.cookieService.getCookie(cookieId) === "true") {
@@ -1655,7 +1640,7 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private addConformanceEntry(
-    model: any,
+    fieldConfig: FormlyFieldConfig,
     specificationKey: string,
     passKey: string,
   ) {
@@ -1663,7 +1648,8 @@ export abstract class IngridShared extends BaseDoctype {
       "6005",
       specificationKey,
     )?.data;
-    const conformanceValues = (model.conformanceResult ?? []).filter(
+    const conformanceResultCtrl = fieldConfig.form.get("conformanceResult");
+    const conformanceValues = (conformanceResultCtrl.value ?? []).filter(
       (item) => item.specification?.key !== specificationKey,
     );
     conformanceValues.push({
@@ -1677,7 +1663,7 @@ export abstract class IngridShared extends BaseDoctype {
         publicationDate?.length > 0 ? new Date(publicationDate) : null,
       isInspire: true,
     });
-    model.conformanceResult = conformanceValues;
+    conformanceResultCtrl.setValue(conformanceValues);
   }
 
   private handleIsInspireConformClick(
@@ -1688,11 +1674,10 @@ export abstract class IngridShared extends BaseDoctype {
 
     const executeAction = () => {
       if (isConform) {
-        this.addConformanceEntry(field.model, "12", "1");
+        this.addConformanceEntry(field, "12", "1");
       } else {
-        this.addConformanceEntry(field.model, "12", "2");
+        this.addConformanceEntry(field, "12", "2");
       }
-      field.options.formState.updateModel();
     };
 
     if (this.cookieService.getCookie(cookieId) === "true") {
@@ -1723,11 +1708,11 @@ export abstract class IngridShared extends BaseDoctype {
    */
   private handleAdvClick(field: FormlyFieldConfig) {
     const isChecked = field.formControl.value;
-    const advProductGroups = field.model.advProductGroups;
+    const advProductGroupsCtrl = field.form.get("advProductGroups");
+    const advProductGroups = advProductGroupsCtrl.value;
     if (isChecked || !advProductGroups || advProductGroups.length === 0) return;
 
-    field.model.advProductGroups = [];
-    field.options.formState.updateModel();
+    advProductGroupsCtrl.setValue([]);
     this.snack.open("Die AdV-Produktgruppe wurde automatisch geleert");
   }
 
@@ -1793,15 +1778,15 @@ export abstract class IngridShared extends BaseDoctype {
 
   private handleHVDClick(field: FormlyFieldConfig) {
     const hvdChecked = field.formControl.value;
+    const isOpenDataCtrl = field.form.get("isOpenData");
     // if hvd is checked and field is not open data, show open data dialog
-    if (hvdChecked && field.model.isOpenData !== true) {
+    if (hvdChecked && isOpenDataCtrl.value !== true) {
       return this.handleActivateOpenData(field).pipe(
         tap((success) =>
           success
-            ? (field.model.isOpenData = true)
+            ? isOpenDataCtrl.setValue(true)
             : field.formControl.setValue(false),
         ),
-        tap(() => field.options.formState.updateModel()),
       );
     } else {
       return of(true);
@@ -1813,37 +1798,32 @@ export abstract class IngridShared extends BaseDoctype {
     value: MatSelectChange,
     hasThesaurusTopics: boolean,
   ) {
-    console.log("handle invekos change");
-    const formState = field.options.formState;
-
     if (value.value.key === "none") return;
 
-    this.addInVeKoSKeyword(formState, "iacs");
+    this.addInVeKoSKeyword(field, "iacs");
 
     const executeAction = (value) => {
       if (value === "gsaa") {
         // INSPIRE Thema "Land use" Pflicht ("Bodennutzung")
-        this.addInspireTopic(formState, "304", hasThesaurusTopics);
-        this.addInVeKoSKeyword(formState, "gsaa");
+        this.addInspireTopic(field, "304", hasThesaurusTopics);
+        this.addInVeKoSKeyword(field, "gsaa");
       }
       if (value === "lpis") {
         // INSPIRE Thema "Land cover" Pflicht ("Bodenbedeckung")
-        this.addInspireTopic(formState, "202", hasThesaurusTopics);
-        this.addInVeKoSKeyword(formState, "lpis");
+        this.addInspireTopic(field, "202", hasThesaurusTopics);
+        this.addInVeKoSKeyword(field, "lpis");
       }
 
       if (value === "gsaa" || value === "lpis") {
         // GEMET Schlagwort "Common Agricultural Policy" Pflicht
-        this.addGemet(formState, {
+        this.addGemet(field, {
           id: "http://www.eionet.europa.eu/gemet/concept/1600",
           label: "Gemeinsame Agrarpolitik",
           alternativeLabel: null,
         });
         // als Topic Category muss "farming" ausgewählt werden
-        this.addTopicCategory(formState, "1");
+        this.addTopicCategory(field, "1");
       }
-
-      field.options.formState.updateModel();
     };
 
     const cookieId = "HIDE_INVEKOS_INFO";
@@ -1872,49 +1852,54 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private addInspireTopic(
-    formState: any,
+    fieldConfig: FormlyFieldConfig,
     id: string,
     hasThesaurusTopics: boolean,
   ) {
-    const exists = formState.mainModel.themes.some((entry) => entry.key === id);
+    const themesCtrl = fieldConfig.form.get("themes");
+    const exists = themesCtrl.value.some((entry) => entry.key === id);
     if (!exists) {
       const itemTheme = { key: id };
-      formState.mainModel.themes.push(itemTheme);
+      themesCtrl.setValue([...themesCtrl.value, itemTheme]);
       if (hasThesaurusTopics) {
-        this.keywordAnalysis.updateIsoCategory(itemTheme, formState);
+        this.keywordAnalysis.updateIsoCategory(itemTheme, fieldConfig);
       }
     }
   }
 
-  private addTopicCategory(formState: any, id: string) {
-    const exists = formState.mainModel.topicCategories.some(
-      (entry) => entry.key === id,
-    );
+  private addTopicCategory(fieldConfig: FormlyFieldConfig, id: string) {
+    const topicCategoriesCtrl = fieldConfig.form.get("topicCategories");
+    const exists = topicCategoriesCtrl.value.some((entry) => entry.key === id);
     if (!exists) {
       const topicCategory = { key: id };
-      formState.mainModel.topicCategories.push(topicCategory);
+      topicCategoriesCtrl.setValue([
+        ...topicCategoriesCtrl.value,
+        topicCategory,
+      ]);
     }
   }
 
-  private addInVeKoSKeyword(formState: any, id: string) {
+  private addInVeKoSKeyword(fieldConfig: FormlyFieldConfig, id: string) {
     const uri = `http://inspire.ec.europa.eu/metadata-codelist/IACSData/${id}`;
-    if (!formState.mainModel.invekosKeywords)
-      formState.mainModel.invekosKeywords = [];
-    const exists = formState.mainModel.invekosKeywords.some(
-      (entry) => entry.key === uri,
-    );
+    const invekosKeywordsCtrl = fieldConfig.form.get("invekosKeywords");
+    if (!invekosKeywordsCtrl.value) invekosKeywordsCtrl.setValue([]);
+    const exists = invekosKeywordsCtrl.value.some((entry) => entry.key === uri);
     if (!exists) {
       const topicCategory = { key: uri };
-      formState.mainModel.invekosKeywords.push(topicCategory);
+      invekosKeywordsCtrl.setValue([
+        ...invekosKeywordsCtrl.value,
+        topicCategory,
+      ]);
     }
   }
 
-  private addGemet(formState: any, item: any) {
-    const exists = formState.mainModel.keywords.gemet?.some(
+  private addGemet(fieldConfig: FormlyFieldConfig, item: any) {
+    const keywordsGemetCtrl = fieldConfig.form.get("keywords.gemet");
+    const exists = keywordsGemetCtrl.value?.some(
       (entry) => entry.id === item.id,
     );
     if (!exists) {
-      formState.mainModel.keywords.gemet.push(item);
+      keywordsGemetCtrl.setValue([...keywordsGemetCtrl.value, item]);
     }
   }
 }

@@ -266,15 +266,14 @@ export class GeoServiceDoctype extends IngridShared {
     return this.manipulateDocumentFields(fields);
   };
 
-  private handleCoupledDatasetsChange(field: FormlyFieldConfig, value) {
-    if (field.parent.model.couplingType?.key === "mixed") return;
+  private handleCoupledDatasetsChange(field: FormlyFieldConfig, value: any[]) {
+    const couplingTypeCtrl = field.form.root.get("service.couplingType");
+    if (couplingTypeCtrl === null || couplingTypeCtrl.value?.key === "mixed")
+      return;
 
-    field.parent.model.couplingType = {
+    couplingTypeCtrl.setValue({
       key: value.length > 0 ? "tight" : "loose",
-    };
-    // update model to reflect changes
-    // TODO: maybe use formOptions.detectChanges(field)?
-    field.options.formState.updateModel();
+    });
   }
 
   private handleServiceTypeChange(field) {
