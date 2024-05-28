@@ -49,6 +49,8 @@
         "publicationHmbTG": {
           "type": ["null", "boolean"]
         },
+        "hvd": true,
+        "hvdCategories": true,
         "informationHmbTG": {
           "type": "array",
           "items": {

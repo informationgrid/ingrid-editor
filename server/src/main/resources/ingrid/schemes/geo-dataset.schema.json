@@ -274,6 +274,12 @@
             "$ref": "../../general.schema.json#/definitions/KeyValue"
           }
         },
+        "hvdCategories": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/KeyValue"
+          }
+        },
         "spatialScope": {
           "anyOf": [
             {

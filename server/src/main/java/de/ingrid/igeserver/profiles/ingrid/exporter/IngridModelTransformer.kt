@@ -32,6 +32,7 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
+import de.ingrid.igeserver.profiles.ingrid.hvdKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
 import de.ingrid.igeserver.profiles.ingrid.importer.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
@@ -62,9 +63,9 @@ open class IngridModelTransformer(
     val doc: Document,
     val documentService: DocumentService
 ) {
-    
+
     val fieldToCodelist = FieldToCodelist()
-    
+
     var incomingReferencesCache: List<CrossReference>? = null
     var superiorReferenceCache: SuperiorReference? = null
 
@@ -76,7 +77,7 @@ open class IngridModelTransformer(
     val distributionFormats = data.distribution?.format ?: emptyList()
     val isAtomDownload = data.service.isAtomDownload == true
     val atomDownloadURL: String?
-    open val digitalTransferOptions = doc.data.get("digitalTransferOptions")?.map { 
+    open val digitalTransferOptions = doc.data.get("digitalTransferOptions")?.map {
         DigitalTransferOption(
             createSimpleKeyValueFromJsonNode(it.get("name")),
             UnitField(it.getString("transferSize.value"), createSimpleKeyValueFromJsonNode(it.get("transferSize")?.get("unit"))),
@@ -416,7 +417,17 @@ open class IngridModelTransformer(
         showType = false
     )
 
+    val hvdCategories = Thesaurus(
+        keywords = data.hvdCategories?.map { KeywordIso(name = mapHVDKeyword(it.key!!), link = it.key) }
+            ?: emptyList(),
+        date = "2023-09-27",
+        name = "High-value dataset categories",
+        link = "http://data.europa.eu/bna/asd487ae75",
+        showType = true
+    )
+
     private fun mapInVeKoSKeyword(key: String): String = inVeKoSKeywordMapping[key] ?: key
+    private fun mapHVDKeyword(key: String): String = hvdKeywordMapping[key] ?: key
 
     val advCompatibleKeyword =
         if (data.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()
@@ -434,7 +445,8 @@ open class IngridModelTransformer(
             inspirePriorityKeywords,
             gemetKeywords,
             umthesKeywords,
-            inspireKeywords
+            inspireKeywords,
+            hvdCategories
         )
 
         return allKeywords.flatMap { thesaurus -> thesaurus.keywords.mapNotNull { it.name } } + advProductGroups
@@ -453,6 +465,7 @@ open class IngridModelTransformer(
         umthesKeywords,
         gemetKeywords,
         invekosKeywords,
+        hvdCategories
     )
 
     val specificUsage = data.resource?.specificUsage
@@ -921,7 +934,7 @@ open class IngridModelTransformer(
     fun hasDistributionInfo(): Boolean {
         return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || hasDistributorInfo() || !data.references.isNullOrEmpty() || isAtomDownload || serviceUrls.isNotEmpty() || getCoupledServiceUrls().isNotEmpty()
     }
-    
+
     fun hasDistributorInfo(): Boolean {
         return data.orderInfo?.isNotEmpty() == true || data.fees?.isNotEmpty() == true
     }
