@@ -296,7 +296,6 @@ jib {
     def name
     if (project.hasProperty("branch_name")) name = project.ext.branch_name else name = "???"
     def tag = name == "develop" ? "latest" : name
-//    def tag = project.ext.branch_name == "develop" ? "latest" : project.ext.branch_name
     tag = tag.replaceAll("/", "-")
     from {
         image = 'eclipse-temurin:17-jre-focal'
@@ -304,7 +303,11 @@ jib {
     to {
         // in case we build a release we also add release tag from version
         if (!project.version.contains("-")) {
-            tags = [version]
+            if (System.env.BUILD_NUMBER == "1") {
+                tags = [version.toString(), version.toString() + '-release']
+            } else {
+                tags = [version.toString()]
+            }
         }
         image = 'docker-registry.wemove.com/ingrid-ige-ng:' + tag
     }
