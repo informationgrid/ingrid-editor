@@ -538,6 +538,7 @@ open class IngridModelTransformer(
         val finalIdentifier = if (it.isExternalRef) {
             it.identifier
         } else {
+            // TODO: when document not yet published (ISO-view of draft) then do not generate operatesOn-element (#6241)
             val identifier = getLastPublishedDocument(it.uuid!!)?.data?.get("identifier")?.asText() ?: it.uuid
             val containsNamespace = identifier.contains("://")
             if (containsNamespace) {
