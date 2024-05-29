@@ -51,7 +51,7 @@ class IngridExporterLfub(
             "application/json",
             "json",
             listOf("ingrid-lfubayern"),
-            isPublic = true,
+            isPublic = false,
             useForPublish = true
         )
 }
