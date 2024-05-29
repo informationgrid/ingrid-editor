@@ -30,7 +30,7 @@ export class GeoServiceDoctypeHmdk extends GeoServiceDoctype {
   sharedHmdk = new SharedHmdk(this);
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    return this.sharedHmdk.manipulateDocumentFields(fieldConfig, 1);
+    return this.sharedHmdk.manipulateDocumentFields(fieldConfig);
   };
 
   handleActivateOpenData(field: FormlyFieldConfig) {

@@ -35,31 +35,24 @@ export class SharedHmdk {
 
   constructor(private doc: IngridShared) {}
 
-  manipulateDocumentFields = (
-    fieldConfig: FormlyFieldConfig[],
-    topGroupPosition = 0,
-    typeGroupPostion = 2,
-  ) => {
-    // add "Veröffentlichung gemäß HmbTG" in to "Typ" Checkboxes
-    const topGroup = fieldConfig[topGroupPosition].fieldGroup;
-
-    const typeGroup = topGroup[typeGroupPostion].fieldGroup;
+  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     // add "Veröffentlichung gemäß HmbTG" to "OpenData" Section
-    typeGroup.push(this.getPublicationHmbTGFieldConfig());
-
-    // add "Informationsgegenstand" right after typeGroup
-    topGroup.splice(
-      typeGroupPostion + 1,
-      0,
-      this.getInformationHmbTGFieldConfig(),
+    const openData = this.doc.findFieldElementWithId(fieldConfig, "isOpenData");
+    openData.fieldConfig.push(this.getPublicationHmbTGFieldConfig());
+    // add "Informationsgegenstand" right after OpenData Section
+    const openDataParent = this.doc.findParentFieldElementWithId(
+      fieldConfig,
+      "isOpenData",
     );
+    this.doc.addAfter(openDataParent, this.getInformationHmbTGFieldConfig());
 
     // at least one "Herausgeber" is required when Dataset is OpenData
-    const pointOfContact = topGroup //[4].fieldGroup
-      .find((field) => field.props.label === "Allgemeines")
-      .fieldGroup.find((field) => field.props.externalLabel === "Adressen");
-    pointOfContact.validators = {
-      ...pointOfContact.validators,
+    const pointOfContact = this.doc.findFieldElementWithId(
+      fieldConfig,
+      "pointOfContact",
+    );
+    pointOfContact.fieldConfig[pointOfContact.index].validators = {
+      ...pointOfContact.fieldConfig[pointOfContact.index].validators,
       atLeastOnePublisher: this.atLeastOnePublisher,
     };
 

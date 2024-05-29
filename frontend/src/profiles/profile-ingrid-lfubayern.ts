@@ -22,7 +22,6 @@ import { InGridComponent, InGridDoctype } from "./profile-ingrid";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CommonFieldsLfuBayern } from "./ingrid-lfubayern/doctypes/common-fields";
-import { FieldConfigPosition } from "./form-field-helper";
 import { AnonymousAddressPlugin } from "./ingrid-lfubayern/behaviours/anonymous-address.plugin";
 import { PluginService } from "../app/services/plugin/plugin.service";
 
@@ -84,8 +83,11 @@ class InGridLFUBayernComponent extends InGridComponent {
     );
 
     // for all classes
-    this.addAfter(pointOfContactPosition, this.common.getGeodataFieldConfig());
-    this.addAfter(orderInfoPosition, this.common.getFeesFieldConfig());
+    this.common.addAfter(
+      pointOfContactPosition,
+      this.common.getGeodataFieldConfig(),
+    );
+    this.common.addAfter(orderInfoPosition, this.common.getFeesFieldConfig());
     const useConstraintsElement = this.common.findFieldElementWithId(
       fieldConfig,
       "useConstraints",
@@ -95,7 +97,7 @@ class InGridLFUBayernComponent extends InGridComponent {
     useConstraintsElement.fieldConfig[useConstraintsElement.index].expressions[
       "props.maxLength"
     ] = "1";
-    this.addAfter(
+    this.common.addAfter(
       useConstraintsElement,
       this.common.getUseConstraintsCommentFieldConfig(),
     );
@@ -104,26 +106,22 @@ class InGridLFUBayernComponent extends InGridComponent {
       docType === InGridDoctype.InGridGeoDataset.toString() ||
       docType === InGridDoctype.InGridGeoService.toString()
     ) {
-      this.addAfter(
+      this.common.addAfter(
         freeKeywordsPosition,
         this.common.getInternalKeywordsFieldConfig(),
       );
     }
 
     if (docType === InGridDoctype.InGridGeoDataset.toString()) {
-      this.addAfter(
+      this.common.addAfter(
         pointOfContactPosition,
         this.common.getSupplementFieldConfig(),
       );
-      this.addAfter(
+      this.common.addAfter(
         freeKeywordsPosition,
         this.common.getGeologicalKeywordsFieldConfig(),
       );
     }
-  }
-
-  private addAfter(info: FieldConfigPosition, field: FormlyFieldConfig) {
-    info.fieldConfig.splice(info.index + 1, 0, field);
   }
 }
 
