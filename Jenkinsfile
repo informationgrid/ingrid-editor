@@ -1,5 +1,6 @@
 pipeline {
     agent any
+    triggers{ cron( getCronParams() ) }
 
     environment {
         POSTGRES_USER = 'admin'
@@ -118,4 +119,23 @@ pipeline {
             updateGitlabCommitStatus name: 'build', state: 'canceled'
         }
     }
+}
+
+def getCronParams() {
+    String tagTimestamp = env.TAG_TIMESTAMP
+    long diffInDays = 0
+    if (tagTimestamp != null) {
+        long diff = "${currentBuild.startTimeInMillis}".toLong() - "${tagTimestamp}".toLong()
+        diffInDays = diff / (1000 * 60 * 60 * 24)
+        echo "Days since release: ${diffInDays}"
+    }
+
+    def versionMatcher = /\d\.\d\.\d(.\d)?/
+    if( env.TAG_NAME ==~ versionMatcher && diffInDays < 365) {
+        // once every 7 days between midnight and 6am
+        return 'H H(0-6) */7 * *'
+    }
+    else {
+        return ''
+    } 
 }
