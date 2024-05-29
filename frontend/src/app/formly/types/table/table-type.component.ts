@@ -98,9 +98,10 @@ export class TableTypeComponent
         // distinctUntilChanged(),
         tap((value) => this.prepareFormattedValues(value)),
       )
-      .subscribe(
-        (value) => (this.dataSource = new MatTableDataSource<any>(value || [])),
-      );
+      .subscribe((value) => {
+        this.dataSource = new MatTableDataSource<any>(value || []);
+        this.cdr.detectChanges();
+      });
 
     const requiredColumnKeys = this.props.columns
       .filter((col) => col.props?.required)
