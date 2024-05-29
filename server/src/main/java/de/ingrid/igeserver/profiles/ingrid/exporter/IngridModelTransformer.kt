@@ -543,8 +543,7 @@ open class IngridModelTransformer(
             if (containsNamespace) {
                 identifier
             } else {
-                val namespaceWithSlash = if (namespace.endsWith("/")) namespace else "$namespace/"
-                namespaceWithSlash + identifier
+                namespace + identifier
             }
         }
 
@@ -682,7 +681,7 @@ open class IngridModelTransformer(
 
     init {
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
-        this.namespace = catalog.settings.config.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
+        this.namespace = catalog.settings.config.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier/"
         this.citationURL =
             namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
         pointOfContact =
