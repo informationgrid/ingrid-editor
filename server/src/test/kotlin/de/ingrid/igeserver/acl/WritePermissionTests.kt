@@ -25,7 +25,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
-import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.authorization.AuthorizationDeniedException
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 
@@ -61,7 +61,7 @@ class WritePermissionTests : IntegrationTest() {
         doc.hasOnlySubtreeWritePermission shouldBe false
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun readNotAllowedToDocumentNotInGroup() {
         docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
     }
@@ -82,7 +82,7 @@ class WritePermissionTests : IntegrationTest() {
         docWrapperRepo.save(doc)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun writeNotAllowedToDocumentNotInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
         doc.hasWritePermission shouldBe false
@@ -124,7 +124,7 @@ class WritePermissionTests : IntegrationTest() {
         docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun deleteNotAllowedToDocumentNotInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
         docWrapperRepo.deleteById(doc.id!!)

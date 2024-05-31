@@ -25,7 +25,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.EmptyResultDataAccessException
-import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.authorization.AuthorizationDeniedException
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 
@@ -58,12 +58,12 @@ class WriteSubTreePermissionTests : IntegrationTest() {
         doc.hasOnlySubtreeWritePermission shouldBe false
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun readNotAllowedToDocumentNotInGroup() {
         docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun writeNotAllowedToRootDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
         doc.hasWritePermission shouldBe false
@@ -71,7 +71,7 @@ class WriteSubTreePermissionTests : IntegrationTest() {
         docWrapperRepo.save(doc)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun writeNotAllowedToRootDocumentInGroupWithNoParentReadAccess() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuidNoParentRead)
         doc.hasWritePermission shouldBe false
@@ -95,7 +95,7 @@ class WriteSubTreePermissionTests : IntegrationTest() {
         docWrapperRepo.save(doc)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun writeNotAllowedToDocumentNotInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
         doc.hasWritePermission shouldBe false
@@ -103,7 +103,7 @@ class WriteSubTreePermissionTests : IntegrationTest() {
         docWrapperRepo.save(doc)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     @Transactional
     fun deleteNotAllowedToRootDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
@@ -118,7 +118,7 @@ class WriteSubTreePermissionTests : IntegrationTest() {
         docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun deleteNotAllowedToDocumentNotInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
         docWrapperRepo.deleteById(doc.id!!)

@@ -24,7 +24,7 @@ import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.authorization.AuthorizationDeniedException
 import org.springframework.security.test.context.support.WithMockUser
 
 @WithMockUser(username = "test-user", authorities = ["GROUP_READTREE"])
@@ -75,36 +75,36 @@ class ReadPermissionTests : IntegrationTest() {
         doc.hasOnlySubtreeWritePermission shouldBe false
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun readNotAllowedToDocumentNotInGroup() {
         docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun writeNotAllowedToRootDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
         docWrapperRepo.save(doc)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun writeNotAllowedToSubDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
         docWrapperRepo.save(doc)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun deleteNotAllowedToDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
         docWrapperRepo.deleteById(doc.id!!)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun deleteNotAllowedToSubDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
         docWrapperRepo.deleteById(doc.id!!)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun deleteNotAllowedToDocumentNotInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
         docWrapperRepo.deleteById(doc.id!!)
