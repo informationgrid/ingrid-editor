@@ -74,7 +74,7 @@ class RecordPLUProperties : Serializable {
 
     var developmentFreezePeriod: PeriodOfTime? = null
 
-    var publisher: @NotNull(message = "dct:publisher must not be null") Agent? = null
+    var publisher: Agent? = null
 
     var maintainers: Set<Agent>? = null
 

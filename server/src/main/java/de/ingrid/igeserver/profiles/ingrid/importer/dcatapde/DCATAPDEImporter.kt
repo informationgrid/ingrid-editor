@@ -54,20 +54,22 @@ class DCATAPDEImporter(
             ?: throw ServerException.withReason("DCAT-AP.DE record could not be deserialized")
 
         val output = try {
-            convertDcatRecordToJson(deserializeRecord)
+            convertDcatRecordToJson(catalogId, deserializeRecord)
         } catch (ex: Exception) {
             throw ServerException.withReason("${ex.message} -> ${ex.cause?.toString()}")
         }
 
-        log.debug("Created JSON from imported file: $output")
+         log.debug("Created JSON from imported file: $output")
 
         return jacksonObjectMapper().readValue(output, JsonNode::class.java)
     }
 
-    fun convertDcatRecordToJson(record: RecordPLUProperties): String {
+    fun convertDcatRecordToJson(catalogId: String, record: RecordPLUProperties): String {
         val output: TemplateOutput = JsonStringOutput()
 
-        templateEngine.render("imports/ingrid/dcatap/dcat-ap-de-1_0.jte", mapOf("model" to DcatApDeMapper(record)), output)
+        templateEngine.render("imports/ingrid/dcatap/dcat-ap-de-1_0.jte", mapOf(
+            "model" to DcatApDeMapper(catalogId, record, documentService)
+        ), output)
         return output.toString()
     }
 
