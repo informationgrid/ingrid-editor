@@ -41,7 +41,7 @@ class DcatApDeMapper(val catalogId: String, val model: RecordPLUProperties, val 
 
     fun getAddressUuid(contact: Contact): String {
         val search = contact.hasOrganizationName ?: contact.fn ?: return UUID.randomUUID().toString()
-        return documentService.docRepo.findAddressByOrganisationName(catalogId, search)
-            .firstOrNull() ?: UUID.randomUUID().toString()
+        return /*documentService.docRepo.findAddressByOrganisationName(catalogId, search)
+            .firstOrNull() ?: */UUID.randomUUID().toString()
     }
 }
