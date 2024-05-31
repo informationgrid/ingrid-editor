@@ -56,7 +56,7 @@ interface OgcDistributionsApi {
         principal: Authentication,
         @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
-        @Parameter(description = "## distribution ID \n\n The Identifier of the distribution.") @RequestParam(value = "uri", required = true) distributionId: String,
+        @Parameter(description = "## Distribution ID \n\n The Identifier of the distribution (e.g. 'example.png').") @RequestParam(value = "distributionId", required = true) distributionId: String,
     ): ResponseEntity<String>
 
 }
