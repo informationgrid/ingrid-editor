@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,24 +50,21 @@ import java.util.function.Consumer
 import java.util.function.Function
 
 @Component
-class RdfDeserializer(@Autowired mapper: ObjectMapper, @Autowired validationUtils: ValidationUtils) : Deserializer {
-    private val mapper: ObjectMapper
+class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val validationUtils: ValidationUtils) :
+    Deserializer {
 
-    private val validationUtils: ValidationUtils
+    val uuidPattern = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
 
     init {
         // make sure we don't get an XmlMapper
         require(mapper !is XmlMapper) { "XmlMapper cannot be used to deserialize GeoJson." }
-        this.validationUtils = validationUtils
-        // we use jackson to convert GeoJSON objects into Map<String, Object>s
-        this.mapper = mapper
     }
 
     @Throws(ServerException::class)
     override fun deserializeRecord(rdf: String?): RecordPLUProperties? {
         try {
             val model = getRdfModel(rdf, Lang.RDFXML)
-            validationUtils.validateSyntax(model)
+//            validationUtils.validateSyntax(model)
             val datasetProperty = model.getProperty(model.getNsPrefixURI("dcat"), "Dataset")
 
             val records: MutableList<RecordPLUProperties> = ArrayList()
@@ -141,7 +138,10 @@ class RdfDeserializer(@Autowired mapper: ObjectMapper, @Autowired validationUtil
         if (!distributionsAsMaps.isEmpty()) {
             record.distributions = mapsToDistributions(distributionsAsMaps)
         }
-        record.identifier = str(model, dataset, "dct", "identifier")
+        record.identifier = str(model, dataset, "dct", "identifier") ?: run {
+            // if not explicit identifier then use the one from URI
+            uuidPattern.find(dataset.uri)?.value
+        }
         record.issued = instant(model, dataset, "dct", "issued")
         record.maintainers = createAgents(model, dataset, "dcatde", "maintainer")
         record.modified = instant(model, dataset, "dct", "modified")
@@ -182,19 +182,21 @@ class RdfDeserializer(@Autowired mapper: ObjectMapper, @Autowired validationUtil
         record.title = str(model, dataset, "dct", "title")
 
         val location = res(model, dataset, "dct", "spatial")
-        if (location == null) {
+        /*if (location == null) {
             val msg = "dct:spatial must not be null"
             throw withReason(msg, null)
-        }
+        }*/
         // TODO check if the geometric elements are wrapped in a <dct:Location>
-        record.bbox = createGeoShape(model, location, "dcat", "bbox")
-        record.geometry = createGeoShape(model, location, "locn", "geometry")
-        val geoPointMap = createGeoShape(model, location, "dcat", "centroid")
-        if (geoPointMap != null) {
-            val geoPoint = geoPointMap["coordinates"] as List<Double>?
-            record.centroid = geoPoint!!.toTypedArray<Double>()
+        if (location != null) {
+            record.bbox = createGeoShape(model, location, "dcat", "bbox")
+            record.geometry = createGeoShape(model, location, "locn", "geometry")
+            val geoPointMap = createGeoShape(model, location, "dcat", "centroid")
+            if (geoPointMap != null) {
+                val geoPoint = geoPointMap["coordinates"] as List<Double>?
+                record.centroid = geoPoint!!.toTypedArray<Double>()
+            }
+            record.geographicName = str(model, location, "locn", "geographicName")
         }
-        record.geographicName = str(model, location, "locn", "geographicName")
         return record
     }
 

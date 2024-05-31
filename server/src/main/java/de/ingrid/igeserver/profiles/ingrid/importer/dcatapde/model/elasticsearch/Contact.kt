@@ -44,6 +44,8 @@ class Contact : Serializable {
 
     var hasTelephone: String? = null
 
+    var type: String? = null
+
     override fun equals(o: Any?): Boolean {
         if (this === o) {
             return true
