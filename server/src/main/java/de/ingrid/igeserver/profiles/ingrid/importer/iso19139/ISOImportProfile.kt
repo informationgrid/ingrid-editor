@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid.importer
+package de.ingrid.igeserver.profiles.ingrid.importer.iso19139
 
 import de.ingrid.igeserver.exports.iso.Metadata
 

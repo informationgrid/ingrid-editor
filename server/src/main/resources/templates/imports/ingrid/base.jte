@@ -1,5 +1,5 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
-@import de.ingrid.igeserver.profiles.ingrid.importer.GeneralMapper
+@import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeneralMapper
 @import gg.jte.Content
 @import gg.jte.support.ForSupport
 @param GeneralMapper model
