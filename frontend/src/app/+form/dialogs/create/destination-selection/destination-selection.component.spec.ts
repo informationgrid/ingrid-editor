@@ -20,9 +20,8 @@
 import { DestinationSelectionComponent } from "./destination-selection.component";
 import { PageTemplateModule } from "../../../../shared/page-template/page-template.module";
 import { SharedModule } from "../../../../shared/shared.module";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatDialogModule } from "@angular/material/dialog";
-import { RouterTestingModule } from "@angular/router/testing";
 import {
   createComponentFactory,
   Spectator,
@@ -34,6 +33,11 @@ import { of, Subject } from "rxjs";
 import { recentDocuments } from "../../../../_test-data/documents";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { getTranslocoModule } from "../../../../transloco-testing.module";
+import { provideLocationMocks } from "@angular/common/testing";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 describe("DestinationSelectionComponent", () => {
   let spectator: Spectator<DestinationSelectionComponent>;
@@ -45,13 +49,16 @@ describe("DestinationSelectionComponent", () => {
     imports: [
       PageTemplateModule,
       SharedModule,
-      HttpClientTestingModule,
       MatDialogModule,
-      RouterTestingModule,
       MatSnackBarModule,
       getTranslocoModule(),
     ],
     componentMocks: [DynamicDatabase, ConfigService],
+    providers: [
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
+      provideLocationMocks(),
+    ],
     detectChanges: false,
   });
 

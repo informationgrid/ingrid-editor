@@ -18,8 +18,6 @@
  * limitations under the Licence.
  */
 import { DashboardComponent } from "./dashboard.component";
-
-import { RouterTestingModule } from "@angular/router/testing";
 import { ConfigService } from "../services/config/config.service";
 import { of } from "rxjs";
 import { recentDocuments } from "../_test-data/documents";
@@ -41,15 +39,19 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { DashboardModule } from "./dashboard.module";
 import { MessageService } from "../services/messages/message.service";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { getTranslocoModule } from "../transloco-testing.module";
+import { provideLocationMocks } from "@angular/common/testing";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 describe("DashboardComponent", () => {
   let spectator: Spectator<DashboardComponent>;
   const createComponent = createComponentFactory({
     component: DashboardComponent,
     imports: [
-      RouterTestingModule,
       MatDialogModule,
       MatFormFieldModule,
       MatCardModule,
@@ -57,7 +59,6 @@ describe("DashboardComponent", () => {
       TranslocoModule,
       MatIconTestingModule,
       DashboardModule,
-      HttpClientTestingModule,
       getTranslocoModule(),
     ],
     declarations: [
@@ -67,7 +68,11 @@ describe("DashboardComponent", () => {
       DateAgoPipe,
     ],
     componentMocks: [QuickSearchComponent],
-    providers: [],
+    providers: [
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
+      provideLocationMocks(),
+    ],
     mocks: [
       ConfigService,
       DocumentService,

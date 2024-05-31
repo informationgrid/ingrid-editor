@@ -24,11 +24,9 @@ import {
   Spectator,
 } from "@ngneat/spectator";
 import { CodelistService } from "../../services/codelist/codelist.service";
-import { CodelistQuery } from "../../store/codelist/codelist.query";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
-import { of } from "rxjs";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { Codelist } from "../../store/codelist/codelist.model";
 import { CodelistPresenterComponent } from "../../shared/codelist-presenter/codelist-presenter.component";
 import { MatSlideToggleHarness } from "@angular/material/slide-toggle/testing";
@@ -36,6 +34,10 @@ import { HarnessLoader } from "@angular/cdk/testing";
 import { MatMenuHarness } from "@angular/material/menu/testing";
 import { TestBed } from "@angular/core/testing";
 import { CodelistStore } from "../../store/codelist/codelist.store";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 describe("CatalogCodelistsComponent", () => {
   let spectator: Spectator<CatalogCodelistsComponent>;
@@ -63,8 +65,12 @@ describe("CatalogCodelistsComponent", () => {
 
   const createHost = createComponentFactory({
     component: CatalogCodelistsComponent,
-    imports: [CodelistPresenterComponent, HttpClientTestingModule],
-    providers: [mockProvider(CodelistService)],
+    imports: [CodelistPresenterComponent],
+    providers: [
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
+      mockProvider(CodelistService),
+    ],
     detectChanges: false,
   });
 

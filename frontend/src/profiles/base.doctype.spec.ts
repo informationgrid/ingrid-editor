@@ -21,9 +21,13 @@ import { BaseDoctype } from "./base.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { getTranslocoModule } from "../app/transloco-testing.module";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 @Injectable({
   providedIn: "root",
@@ -57,12 +61,12 @@ describe("Document Type", () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        MatSnackBarModule,
-        getTranslocoModule(),
+      imports: [MatSnackBarModule, getTranslocoModule()],
+      providers: [
+        DummyDocType,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
-      providers: [DummyDocType],
     });
     doctype = TestBed.inject(DummyDocType);
     initialFieldLength = doctype.fields.length;

@@ -23,7 +23,7 @@ import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 import { RepeatDetailListComponent } from "../repeat-detail-list/repeat-detail-list.component";
 import { IgeFormlyModule } from "../../ige-formly.module";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { of } from "rxjs";
 import { SelectOptionUi } from "../../../services/codelist/codelist.service";
@@ -32,7 +32,11 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatSelectModule } from "@angular/material/select";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { MatAutocompleteHarness } from "@angular/material/autocomplete/testing";
-import { HttpClient } from "@angular/common/http";
+import {
+  HttpClient,
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 import { delay } from "rxjs/operators";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { TestKey } from "@angular/cdk/testing";
@@ -49,7 +53,6 @@ describe("RepeatListComponent", () => {
     imports: [
       IgeFormlyModule,
       MatIconTestingModule,
-      HttpClientTestingModule,
       MatSnackBarModule,
       FormsModule,
       MatAutocompleteModule,
@@ -58,6 +61,10 @@ describe("RepeatListComponent", () => {
       MatIconTestingModule,
       RepeatDetailListComponent,
       getTranslocoModule(),
+    ],
+    providers: [
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
     ],
   });
 

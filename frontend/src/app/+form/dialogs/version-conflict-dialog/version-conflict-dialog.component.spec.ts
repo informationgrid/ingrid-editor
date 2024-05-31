@@ -17,17 +17,21 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Spectator, createComponentFactory } from "@ngneat/spectator";
+import { createComponentFactory, Spectator } from "@ngneat/spectator";
 
 import { VersionConflictDialogComponent } from "./version-conflict-dialog.component";
 import { MatDialogModule } from "@angular/material/dialog";
 import { SharedModule } from "../../../shared/shared.module";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import {
   ConfigService,
   Configuration,
 } from "../../../services/config/config.service";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 describe("VersionConflictDialogComponent", () => {
   let spectator: Spectator<VersionConflictDialogComponent>;
@@ -37,7 +41,11 @@ describe("VersionConflictDialogComponent", () => {
 
   const createComponent = createComponentFactory({
     component: VersionConflictDialogComponent,
-    imports: [MatDialogModule, SharedModule, HttpClientTestingModule],
+    imports: [MatDialogModule, SharedModule],
+    providers: [
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
+    ],
   });
 
   beforeEach(() => {

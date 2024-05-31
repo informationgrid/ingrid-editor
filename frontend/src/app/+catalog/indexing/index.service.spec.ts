@@ -23,16 +23,22 @@ import {
   mockProvider,
   SpectatorService,
 } from "@ngneat/spectator";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { ConfigService } from "../../services/config/config.service";
 import { BehaviorSubject } from "rxjs";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 describe("IndexService", () => {
   let spectator: SpectatorService<IndexService>;
   const createService = createServiceFactory({
     service: IndexService,
-    imports: [HttpClientTestingModule],
+    imports: [],
     providers: [
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
       mockProvider(ConfigService, {
         $userInfo: new BehaviorSubject({}),
       }),

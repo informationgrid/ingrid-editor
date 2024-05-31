@@ -25,7 +25,7 @@ import { UntilDestroy } from "@ngneat/until-destroy";
 import { getTranslocoModule } from "../../../app/transloco-testing.module";
 import { FormlyMaterialModule } from "@ngx-formly/material";
 import { OneColumnWrapperComponent } from "../../../app/formly/wrapper/one-column-wrapper.component";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { RepeatComponent } from "../../../app/formly/types/repeat/repeat.component";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { BehaviorSubject } from "rxjs";
@@ -35,6 +35,10 @@ import { CommonModule } from "@angular/common";
 import { SelectTypeComponent } from "../../../app/formly/types/select-type/select-type.component";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { HarnessLoader } from "@angular/cdk/testing";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 describe("GeometryContextDialogComponent", () => {
   let spectator: Spectator<GeometryContextDialogComponent>;
@@ -44,6 +48,8 @@ describe("GeometryContextDialogComponent", () => {
   const createComponent = createComponentFactory({
     component: GeometryContextDialogComponent,
     providers: [
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
       {
         provide: MatDialogRef,
         useValue: {},
@@ -69,7 +75,6 @@ describe("GeometryContextDialogComponent", () => {
         wrappers: [{ name: "panel", component: OneColumnWrapperComponent }],
       }),
       getTranslocoModule(),
-      HttpClientTestingModule,
       CommonModule,
     ],
     detectChanges: false,

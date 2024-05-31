@@ -35,8 +35,9 @@ import { GlobalErrorHandler } from "./error-handler";
 import {
   HTTP_INTERCEPTORS,
   HttpClient,
-  HttpClientModule,
-  HttpClientXsrfModule,
+  provideHttpClient,
+  withInterceptorsFromDi,
+  withXsrfConfiguration,
 } from "@angular/common/http";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatButtonModule } from "@angular/material/button";
@@ -230,7 +231,9 @@ export function ConfigLoader(
     InitCatalogComponent,
     AddonsWrapperComponent,
     ButtonWrapperComponent,
-  ],
+  ], // additional providers
+  bootstrap: [AppComponent],
+  exports: [SectionWrapper],
   imports: [
     environment.production ? [] : AkitaNgDevtools.forRoot({ logTrace: false }),
     KeycloakAngularModule,
@@ -244,8 +247,6 @@ export function ConfigLoader(
     BrowserModule,
     BrowserAnimationsModule,
     NgxFlowModule,
-    HttpClientModule,
-    HttpClientXsrfModule,
     FormlyModule.forRoot({
       wrappers: [
         { name: "inline-help", component: InlineHelpWrapperComponent },
@@ -301,6 +302,7 @@ export function ConfigLoader(
     SectionWrapper,
   ],
   providers: [
+    provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
     // make sure we are authenticated by keycloak before bootstrap
     {
       provide: APP_INITIALIZER,
@@ -378,14 +380,12 @@ export function ConfigLoader(
         disableTooltipInteractivity: true,
       },
     },
-
     // WebSocket
     {
       provide: RxStompService,
       useFactory: rxStompServiceFactory,
       deps: [ConfigService],
     },
-
     // Formly
     {
       provide: FORMLY_CONFIG,
@@ -393,11 +393,12 @@ export function ConfigLoader(
       useFactory: registerTranslateExtension,
       deps: [TranslocoService],
     },
-
     // PLUGINS
     pluginProvider,
-  ], // additional providers
-  bootstrap: [AppComponent],
-  exports: [SectionWrapper],
+    /*    {
+      provide: XSRF_TOKEN,
+      useFactory: () => generateXsrfToken()
+    },*/
+  ],
 })
 export class AppModule {}
