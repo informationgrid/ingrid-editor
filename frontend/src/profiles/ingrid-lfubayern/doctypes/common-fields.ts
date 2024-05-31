@@ -42,7 +42,7 @@ export class CommonFieldsLfuBayern extends FormFieldHelper {
   getUseConstraintsCommentFieldConfig(): FormlyFieldConfig {
     return this.addTextArea(
       "useConstraintsComments",
-      "Kommentar (Nutzungsbedingungen)",
+      "Nutzungsbedingungen (Ergänzung)",
       "lfub",
     );
   }
