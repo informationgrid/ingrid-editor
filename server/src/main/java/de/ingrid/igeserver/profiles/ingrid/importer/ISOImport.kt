@@ -110,7 +110,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
-        return "application/xml" == contentType
+        return "application/xml" == contentType && !fileContent.contains("<rdf:RDF")
     }
 
     internal class JsonStringOutput : StringOutput() {
