@@ -44,6 +44,7 @@ export class GeoServiceDoctype extends IngridShared {
   showAdVCompatible = true;
   showAdVProductGroup = true;
   showLayernamesForCoupledResources = false;
+  showUpdateGetCapabilities = true;
 
   geoServiceOptions = {
     required: {
@@ -75,13 +76,15 @@ export class GeoServiceDoctype extends IngridShared {
 
   documentFields = () => {
     const fields = <FormlyFieldConfig[]>[
-      {
-        type: "updateGetCapabilities",
-        wrappers: ["panel"],
-        props: {
-          externalLabel: "GetCapabilities",
-        },
-      },
+      this.showUpdateGetCapabilities
+        ? {
+            type: "updateGetCapabilities",
+            wrappers: ["panel"],
+            props: {
+              externalLabel: "GetCapabilities",
+            },
+          }
+        : null,
       this.addGeneralSection({
         inspireRelevant: true,
       }),
@@ -261,7 +264,7 @@ export class GeoServiceDoctype extends IngridShared {
       this.addAdditionalInformationSection({ conformity: true }),
       this.addAvailabilitySection(),
       this.addLinksSection(),
-    ];
+    ].filter(Boolean);
 
     return this.manipulateDocumentFields(fields);
   };
