@@ -33,6 +33,7 @@ import org.apache.http.client.utils.URIBuilder
 import org.apache.jena.rdf.model.*
 import org.apache.jena.riot.Lang
 import org.apache.jena.riot.RiotException
+import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -130,12 +131,12 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
         record.admsIdentifier = str(model, dataset, "adms", "identifier")
         record.contact = createContact(model, dataset, "dcat", "contactPoint")
         record.contributors = createAgents(model, dataset, "dct", "contributor")
-        record.description = str(model, dataset, "dct", "description")
+        record.description = dataset.getProperty(DCTerms.title)?.string
         val distributionsAsMaps = createSetOfMaps(model, dataset, "dcat", "distribution", distributionProperties)
         if (!distributionsAsMaps.isEmpty()) {
             record.distributions = mapsToDistributions(distributionsAsMaps)
         }
-        record.identifier = str(model, dataset, "dct", "identifier") ?: run {
+        record.identifier = dataset.getProperty(DCTerms.identifier).string ?: run {
             // if not explicit identifier then use the one from URI
             uuidPattern.find(dataset.uri)?.value
         }
@@ -175,8 +176,8 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
         )["developmentFreezePeriod"] as PeriodOfTime?
         val publishers = createAgents(model, dataset, "dct", "publisher").iterator()
         record.publisher = if (publishers.hasNext()) publishers.next() else null
-        record.relation = str(model, dataset, "dct", "relation")
-        record.title = str(model, dataset, "dct", "title")
+        record.relation = dataset.getProperty(DCTerms.relation)?.string
+        record.title = dataset.getProperty(DCTerms.title)?.string
 
         val location = res(model, dataset, "dct", "spatial")
         /*if (location == null) {
