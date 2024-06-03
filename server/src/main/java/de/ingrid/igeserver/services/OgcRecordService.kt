@@ -31,7 +31,6 @@ import de.ingrid.igeserver.exports.internal.InternalExporter
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.model.*
-import de.ingrid.igeserver.ogc.KeywordFilterSelector
 import de.ingrid.igeserver.ogc.OgcHtmlConverterService
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporter
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
@@ -94,7 +93,6 @@ class OgcRecordService(
     private val documentService: DocumentService,
     private val importService: ImportService,
     private val ogcHtmlConverterService: OgcHtmlConverterService,
-    private val keywordFilterSelector: KeywordFilterSelector,
     generalProperties: GeneralProperties,
 ) {
     val hostnameOgcApi = generalProperties.host + "/api/ogc"
@@ -278,45 +276,6 @@ class OgcRecordService(
         }
 
         return instance.toString()
-    }
-
-    fun buildRecordsQuery(profile: CatalogProfile, queryLimit: Int, queryOffset: Int, type: List<String>?, bbox: List<Float>?, datetime: String?, qParameter: List<String>?): ResearchQuery {
-        val clausesList: MutableList<BoolFilter> = mutableListOf()
-        // filter: exclude FOLDERS
-        clausesList.add(BoolFilter("OR", listOf("document_wrapper.type != 'FOLDER'"), null, null, false))
-
-        clausesList.add(BoolFilter("OR", listOf("document1.state = 'PUBLISHED'"), null, null, false))
-        // bbox // check if 4 values is true
-        if (bbox != null) {
-            val boundingBox = bbox.map { coordinate -> coordinate.toString() }
-            clausesList.add(BoolFilter("OR", listOf("ingridSelectSpatial"), null, boundingBox, true))
-        }
-        // time span
-        if (datetime != null) {
-            val dateList = ogcDateTimeConverter(datetime)
-            clausesList.add(BoolFilter("OR", listOf("selectTimespan"), null, dateList, true))
-        }
-        // filter by doc type
-        if (type != null) {
-            val typeList = mutableListOf<String>()
-            for (name in type) {
-                typeList.add("document_wrapper.type = '${name}'")
-            }
-            clausesList.add(BoolFilter("OR", typeList, null, null, false))
-        }
-        if (!qParameter.isNullOrEmpty()) {
-            val keywordFilter: String = keywordFilterSelector.getKeywordFilter(profile)
-            clausesList.add(BoolFilter("OR", listOf(keywordFilter), null, qParameter, true))
-        }
-
-        // prepare query
-        return ResearchQuery(
-                term = null,
-                clauses = BoolFilter(op = "AND", value = null, clauses = clausesList, parameter = null, isFacet = true),
-//                orderByField = "title",
-//                orderByDirection = "ASC",
-                pagination = ResearchPaging(1, queryLimit, queryOffset)
-        )
     }
 
     fun pageLimitAndOffset(offset: Int?, limit: Int?): LimitAndOffset {

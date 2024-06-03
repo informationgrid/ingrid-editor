@@ -19,27 +19,34 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.quickfilter
 
-import de.ingrid.igeserver.model.KeywordFilter
+import de.ingrid.igeserver.model.BoolFilter
+import de.ingrid.igeserver.ogc.OgcApiResearchQuery
+import de.ingrid.igeserver.ogc.OgcFilterParameter
 import org.intellij.lang.annotations.Language
 import org.springframework.stereotype.Component
 
 @Component
-class KeywordFilterIngrid: KeywordFilter() {
+class OgcApiResearchQueryIngrid: OgcApiResearchQuery() {
     override val profiles = listOf("ingrid")
 
-    override val id = "KeywordFilterIngrid"
-    override val label = "<group label will be used>"
+    override lateinit var ogcParameter: OgcFilterParameter
 
-    override val parameters: List<String> = emptyList()
+    override fun profileSpecificClauses(): MutableList<BoolFilter>? {
+        val clausesList: MutableList<BoolFilter> = mutableListOf()
 
-    override val filter = ""
+        if (ogcParameter.qParameter != null) {
+            clausesList.add(BoolFilter("OR", listOf(qParameterSQL()), null, null, false))
+        }
+
+        return clausesList
+    }
 
     @Language("PostgreSQL")
-    override fun filter(parameter: List<*>?): String {
-        val titleCondition = parameter?.joinToString(" OR ") { "title ILIKE '%$it%'" }
-        val descriptionCondition = parameter?.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
-        val alternateTitleCondition = parameter?.joinToString(" OR ") { "data ->> 'alternateTitle' ILIKE '%$it%'" }
-        val freeKeywordsCondition = parameter?.joinToString(" OR ") { "EXISTS (SELECT 1 FROM jsonb_array_elements(data -> 'keywords' -> 'free') AS keyword WHERE keyword ->> 'label' ILIKE '%$it%')" }
+    fun qParameterSQL(): String {
+        val titleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "title ILIKE '%$it%'" }
+        val descriptionCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
+        val alternateTitleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'alternateTitle' ILIKE '%$it%'" }
+        val freeKeywordsCondition = ogcParameter.qParameter?.joinToString(" OR ") { "EXISTS (SELECT 1 FROM jsonb_array_elements(data -> 'keywords' -> 'free') AS keyword WHERE keyword ->> 'label' ILIKE '%$it%')" }
 
         return """
             ($titleCondition)

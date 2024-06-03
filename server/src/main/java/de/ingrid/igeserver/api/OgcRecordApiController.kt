@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.model.Link
 import de.ingrid.igeserver.model.ResearchResponse
+import de.ingrid.igeserver.ogc.OgcFilterParameter
+import de.ingrid.igeserver.ogc.OgcApiResearchQueryFactory
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
@@ -39,14 +41,15 @@ import java.time.Instant
 @Profile("ogc-api")
 @RequestMapping(path = ["/api/ogc"])
 class OgcApiRecordsController(
-        private val ogcRecordService: OgcRecordService,
-        private val researchService: ResearchService,
-        private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
-        private val exporterFactory: ExporterFactory,
-        private val apiValidationService: ApiValidationService,
-        private val documentService: DocumentService,
-        private val catalogService: CatalogService
-        ) : OgcApiRecords {
+    private val ogcRecordService: OgcRecordService,
+    private val researchService: ResearchService,
+    private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
+    private val exporterFactory: ExporterFactory,
+    private val apiValidationService: ApiValidationService,
+    private val documentService: DocumentService,
+    private val catalogService: CatalogService,
+    private val ogcApiResearchQueryFactory: OgcApiResearchQueryFactory
+) : OgcApiRecords {
 
     val log = logger()
 
@@ -154,8 +157,12 @@ class OgcApiRecordsController(
 
         // create research query
         val (queryLimit, queryOffset) = ogcRecordService.pageLimitAndOffset(offset, limit)
-        val query = ogcRecordService.buildRecordsQuery(profile, queryLimit, queryOffset, type, bbox, datetime, qParameter)
-        val researchRecords: ResearchResponse = researchService.query(collectionId, query, principal)
+
+        val ogcParameter = OgcFilterParameter(queryLimit, queryOffset, type, bbox, datetime, qParameter)
+
+        val ogcApiResearchQuery = ogcApiResearchQueryFactory.getQuery(profile, ogcParameter)
+
+        val researchRecords: ResearchResponse = researchService.query(collectionId, ogcApiResearchQuery, principal)
 
         // links: next previous self
         val totalHits = researchRecords.totalHits

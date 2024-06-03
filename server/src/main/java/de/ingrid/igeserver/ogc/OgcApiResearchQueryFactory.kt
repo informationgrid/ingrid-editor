@@ -20,19 +20,21 @@
 package de.ingrid.igeserver.ogc
 
 import de.ingrid.igeserver.configuration.ConfigurationException
-import de.ingrid.igeserver.model.KeywordFilter
+import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.services.CatalogProfile
 import org.springframework.stereotype.Service
 
 @Service
-class KeywordFilterSelector(private val keywordFilterList: List<KeywordFilter>)  {
-    fun getKeywordFilter(profile: CatalogProfile): String {
+class OgcApiResearchQueryFactory(
+    private val ogcApiSearchFilterList: List<OgcApiResearchQuery>
+)  {
+    fun getQuery(profile: CatalogProfile, ogcFilterParameter: OgcFilterParameter): ResearchQuery {
         try {
-            val filter = keywordFilterList.filter { keywordFilter: KeywordFilter -> keywordFilter.profiles.contains(profile.identifier) }
-            if (filter.size > 1 ) throw ConfigurationException.withReason("Filtering by keywords is not possible. The profile '$profile' has more than one KeywordFilter.")
-            return filter.first().id
+            val filter = ogcApiSearchFilterList.filter { ogcApiSearchFilter: OgcApiResearchQuery -> ogcApiSearchFilter.profiles.contains(profile.identifier) }
+            if (filter.size > 1 ) throw ConfigurationException.withReason("Record query is not possible. The profile '$profile' has more than one OgcApiResearchQuery.")
+            return filter.first().createQuery(ogcFilterParameter)
         } catch (e: NoSuchElementException) {
-            throw ConfigurationException.withReason("Filtering by keywords is not possible. The profile '$profile' does not support the OGC 'q' parameter.")
+            throw ConfigurationException.withReason("Record query is not possible. The profile '$profile' does not have a OgcApiResearchQuery.")
         }
     }
 }

@@ -19,26 +19,33 @@
  */
 package de.ingrid.igeserver.profiles.bmi.quickfilter
 
-import de.ingrid.igeserver.model.KeywordFilter
+import de.ingrid.igeserver.model.BoolFilter
+import de.ingrid.igeserver.ogc.OgcApiResearchQuery
+import de.ingrid.igeserver.ogc.OgcFilterParameter
 import org.intellij.lang.annotations.Language
 import org.springframework.stereotype.Component
 
 @Component
-class KeywordFilterBmi: KeywordFilter() {
+class OgcApiResearchQueryBmi: OgcApiResearchQuery() {
     override val profiles = listOf("bmi")
 
-    override val id = "KeywordFilterBmi"
-    override val label = "<group label will be used>"
+    override lateinit var ogcParameter: OgcFilterParameter // = OgcFilterParameter(null, null, null, null, null, null)
 
-    override val parameters: List<String> = emptyList()
+    override fun profileSpecificClauses(): MutableList<BoolFilter>? {
+        val clausesList: MutableList<BoolFilter> = mutableListOf()
 
-    override val filter = ""
+        if (ogcParameter.qParameter != null) {
+            clausesList.add(BoolFilter("OR", listOf(qParameterSQL()), null, null, false))
+        }
+
+        return clausesList
+    }
 
     @Language("PostgreSQL")
-    override fun filter(parameter: List<*>?): String {
-        val titleCondition = parameter?.joinToString(" OR ") { "title ILIKE '%$it%'" }
-        val descriptionCondition = parameter?.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
-        val keywordsCondition = parameter?.joinToString(" OR ") { "data ->> 'keywords' ILIKE '%$it%'" }
+    fun qParameterSQL(): String {
+        val titleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "title ILIKE '%$it%'" }
+        val descriptionCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
+        val keywordsCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'keywords' ILIKE '%$it%'" }
 
         return """
             ($titleCondition) 
