@@ -19,7 +19,7 @@
  */
 package de.ingrid.igeserver.ogc.api
 
-import de.ingrid.igeserver.services.OgcDistributionsService
+import de.ingrid.igeserver.ogc.services.OgcDistributionsService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse

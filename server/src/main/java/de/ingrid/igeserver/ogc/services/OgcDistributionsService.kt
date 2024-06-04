@@ -17,13 +17,16 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.services
+package de.ingrid.igeserver.ogc.services
 
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.ogc.distributionHelper.OgcDistributionHelperFactory
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.services.ApiValidationService
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.storage.Storage
 import de.ingrid.mdek.upload.storage.impl.Scope
 import org.springframework.context.annotation.Profile
