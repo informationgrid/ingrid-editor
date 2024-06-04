@@ -1,5 +1,20 @@
 # Changelog
 
+## 7.1.3 (04.06.2024)
+
+### Features
+
+- Funktion GetCapabilities Aktualisieren für Dienste herausnehmen (#6343)
+- ISO-Ansicht im Editor (#6342)
+- applicationProfile, Anpassung der Liste (#6274)
+- Daten-Dienste-Kopplung: neue Komponente für Erfassung der Layer (#6084)
+- IGE: Schlagwort-Auswahlfeld mit HVD-Kategorien (Basis-Funktionalität) (#6076)
+- Überarbeitung der Seite "Funktionen" in der Dokumentation (#7)
+
+### Bugfixes
+
+- Migration: operatesOn (#6241)
+
 ## 7.0.0 (05.01.2024)
 
 ### Features
