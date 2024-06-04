@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.api
+package de.ingrid.igeserver.ogc.api
 
 import de.ingrid.igeserver.services.OgcDistributionsService
 import io.swagger.v3.oas.annotations.Operation

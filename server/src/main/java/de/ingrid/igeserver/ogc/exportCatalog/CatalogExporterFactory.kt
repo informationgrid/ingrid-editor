@@ -19,9 +19,8 @@
  */
 package de.ingrid.igeserver.ogc.exportCatalog
 
-import de.ingrid.igeserver.api.CollectionFormat
+import de.ingrid.igeserver.ogc.api.CollectionFormat
 import de.ingrid.igeserver.configuration.ConfigurationException
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 

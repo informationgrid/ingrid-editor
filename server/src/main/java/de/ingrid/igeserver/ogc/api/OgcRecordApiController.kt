@@ -17,9 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.api
+package de.ingrid.igeserver.ogc.api
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.model.Link
 import de.ingrid.igeserver.model.ResearchResponse
