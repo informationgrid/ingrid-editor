@@ -74,8 +74,8 @@ class IngridIndexExporter(
     }
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
-        val idf = idfExporter.run(doc, catalogId)
-        val luceneDoc = luceneExporter.run(doc, catalogId) as String
+        val idf = idfExporter.run(doc, catalogId, options)
+        val luceneDoc = luceneExporter.run(doc, catalogId, options ) as String
 
         val mapper = jacksonObjectMapper()
         val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)

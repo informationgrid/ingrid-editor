@@ -1,5 +1,6 @@
 pipeline {
     agent any
+    triggers{ cron( getCronParams() ) }
 
     environment {
         POSTGRES_USER = 'admin'
@@ -12,24 +13,13 @@ pipeline {
 
     options {
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
-        gitLabConnection('GitLab (wemove)')
     }
 
 
     stages {
         // normal build if it's not the master branch and not the support branch, except if it's a SNAPSHOT-version
         stage('Build') {
-            /*when {
-                not { branch 'master' }
-                not {
-                    allOf {
-                        branch 'support/*'
-                        expression { return !VERSION.endsWith("-SNAPSHOT") }
-                    }
-                }
-            }*/
             steps {
-                updateGitlabCommitStatus name: 'build', state: 'running'
                 script {
                     // since container is run on host and not within Jenkins, we cannot map init sql file
                     // so we use here a modified postgres image for the tests
@@ -66,30 +56,6 @@ pipeline {
                 }
             }
         }
-
-        // release build if it's the master or the support branch and is not a SNAPSHOT version
-        /*stage ('Build-Release') {
-            when {
-                anyOf { branch 'master'; branch 'support/*' }
-                expression { return !VERSION.endsWith("-SNAPSHOT") }
-            }
-            steps {
-                sh './gradlew clean build'
-            }
-        }*/
-
-        /*stage ('SonarQube Analysis'){
-            steps {
-                withMaven(
-                        maven: 'Maven3',
-                        mavenSettingsConfig: '2529f595-4ac5-44c6-8b4f-f79b5c3f4bae'
-                ) {
-                    withSonarQubeEnv('Wemove SonarQube') {
-                        sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.4.0.905:sonar'
-                    }
-                }
-            }
-        }*/
     }
     post {
         always {
@@ -105,17 +71,24 @@ pipeline {
                         to: '${DEFAULT_RECIPIENTS}')
             }
         }
-        failure {
-            updateGitlabCommitStatus name: 'build', state: 'failed'
-        }
-        unstable {
-            updateGitlabCommitStatus name: 'build', state: 'failed'
-        }
-        success {
-            updateGitlabCommitStatus name: 'build', state: 'success'
-        }
-        aborted {
-            updateGitlabCommitStatus name: 'build', state: 'canceled'
-        }
     }
+}
+
+def getCronParams() {
+    String tagTimestamp = env.TAG_TIMESTAMP
+    long diffInDays = 0
+    if (tagTimestamp != null) {
+        long diff = "${currentBuild.startTimeInMillis}".toLong() - "${tagTimestamp}".toLong()
+        diffInDays = diff / (1000 * 60 * 60 * 24)
+        echo "Days since release: ${diffInDays}"
+    }
+
+    def versionMatcher = /\d\.\d\.\d(.\d)?/
+    if( env.TAG_NAME ==~ versionMatcher && diffInDays < 365) {
+        // once every 7 days between midnight and 6am
+        return 'H H(0-6) */7 * *'
+    }
+    else {
+        return ''
+    } 
 }

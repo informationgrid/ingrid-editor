@@ -69,8 +69,8 @@ class IndexExporter(val idfExporter: IDFExporter, val luceneExporter: LuceneExpo
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         if (doc.type == "FOLDER") return "{}"
 
-        val idf = idfExporter.run(doc, catalogId)
-        val luceneDoc = luceneExporter.run(doc, catalogId) as String
+        val idf = idfExporter.run(doc, catalogId, options)
+        val luceneDoc = luceneExporter.run(doc, catalogId, options) as String
 
         val mapper = jacksonObjectMapper()
         val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)

@@ -2,6 +2,7 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.COORD_TYPE
 @import gg.jte.support.ForSupport
+@import java.util.List
 @import java.util.Map
 @import gg.jte.Content
 
@@ -12,6 +13,7 @@
 !{var catalog = ((Catalog)map.get("catalog"));}
 !{var partner = ((String)map.get("partner"));}
 !{var provider = ((String)map.get("provider"));}
+!{var tags = ((List<String>)map.get("tags"));}
 
 {
     "iPlugId": "ige-ng_${catalog.getIdentifier()}",
@@ -25,6 +27,11 @@
     "location":  $unsafe{page.getSpatialReferenceLocationNames()},
     "created": "${page.formatDate(page.getFormatterISO(), page.getModel().get_created())}",
     "modified": "${page.formatDate(page.getFormatterISO(), page.getModel().get_contentModified())}",
+    "tags": [
+    @for(var entry : ForSupport.of(tags))
+        "${entry.get()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
     "areaid": [],
     "partner": [
         "${partner}"

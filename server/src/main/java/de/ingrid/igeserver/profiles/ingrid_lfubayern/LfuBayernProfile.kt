@@ -28,6 +28,7 @@ import de.ingrid.igeserver.profiles.ingrid_lfubayern.importer.ISOImportLfUBayern
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.CodelistHandler.Companion.toCodelistEntry
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.context.annotation.Lazy
@@ -70,7 +71,9 @@ class LfuBayernProfile(
             name = "Geologische Schlüsselliste"
             description = ""
             data = jacksonObjectMapper().createArrayNode().apply {
-//                CodelistHandler.toCodelistEntry("1", "Konformität - Freier Eintrag", "2018-02-22")
+//                codelist20000.forEach { (key, value) ->
+//                    add(toCodelistEntry(key, value))
+//                }
             }
         }
         val codelist20001 = Codelist().apply {
@@ -79,7 +82,7 @@ class LfuBayernProfile(
             name = "Interne Schlüsselwörter"
             description = ""
             data = jacksonObjectMapper().createArrayNode().apply {
-//                CodelistHandler.toCodelistEntry("1", "Konformität - Freier Eintrag", "2018-02-22")
+                add(toCodelistEntry("1", "Cadenza"))
             }
         }
         val codelist20002 = Codelist().apply {
@@ -88,16 +91,16 @@ class LfuBayernProfile(
             name = "Anwendungsprofil"
             description = ""
             data = jacksonObjectMapper().createArrayNode().apply {
-                add(CodelistHandler.toCodelistEntry("1", "Anwendungs-URL"))
-                add(CodelistHandler.toCodelistEntry("2", "Bestellung"))
-                add(CodelistHandler.toCodelistEntry("3", "Download"))
-                add(CodelistHandler.toCodelistEntry("4", "GDS"))
-                add(CodelistHandler.toCodelistEntry("5", "GISterm"))
-                add(CodelistHandler.toCodelistEntry("6", "Information"))
-                add(CodelistHandler.toCodelistEntry("7", "Kontakt"))
-                add(CodelistHandler.toCodelistEntry("8", "WFS-URL"))
-                add(CodelistHandler.toCodelistEntry("9", "WMS-URL"))
-                add(CodelistHandler.toCodelistEntry("10", "Feed-URL"))
+                add(toCodelistEntry("1", "Anwendungs-URL"))
+                add(toCodelistEntry("2", "Bestellung"))
+                add(toCodelistEntry("3", "Download"))
+                add(toCodelistEntry("4", "GDS"))
+                add(toCodelistEntry("5", "GISterm"))
+                add(toCodelistEntry("6", "Information"))
+                add(toCodelistEntry("7", "Kontakt"))
+                add(toCodelistEntry("8", "WFS-URL"))
+                add(toCodelistEntry("9", "WMS-URL"))
+                add(toCodelistEntry("10", "Feed-URL"))
             }
         }
 

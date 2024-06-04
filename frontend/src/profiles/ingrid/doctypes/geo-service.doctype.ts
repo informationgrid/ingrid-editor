@@ -44,6 +44,7 @@ export class GeoServiceDoctype extends IngridShared {
   showAdVCompatible = true;
   showAdVProductGroup = true;
   showLayernamesForCoupledResources = false;
+  showUpdateGetCapabilities = true;
 
   geoServiceOptions = {
     required: {
@@ -75,13 +76,15 @@ export class GeoServiceDoctype extends IngridShared {
 
   documentFields = () => {
     const fields = <FormlyFieldConfig[]>[
-      {
-        type: "updateGetCapabilities",
-        wrappers: ["panel"],
-        props: {
-          externalLabel: "GetCapabilities",
-        },
-      },
+      this.showUpdateGetCapabilities
+        ? {
+            type: "updateGetCapabilities",
+            wrappers: ["panel"],
+            props: {
+              externalLabel: "GetCapabilities",
+            },
+          }
+        : null,
       this.addGeneralSection({
         inspireRelevant: true,
       }),
@@ -261,20 +264,19 @@ export class GeoServiceDoctype extends IngridShared {
       this.addAdditionalInformationSection({ conformity: true }),
       this.addAvailabilitySection(),
       this.addLinksSection(),
-    ];
+    ].filter(Boolean);
 
     return this.manipulateDocumentFields(fields);
   };
 
-  private handleCoupledDatasetsChange(field: FormlyFieldConfig, value) {
-    if (field.parent.model.couplingType?.key === "mixed") return;
+  private handleCoupledDatasetsChange(field: FormlyFieldConfig, value: any[]) {
+    const couplingTypeCtrl = field.form.root.get("service.couplingType");
+    if (couplingTypeCtrl === null || couplingTypeCtrl.value?.key === "mixed")
+      return;
 
-    field.parent.model.couplingType = {
+    couplingTypeCtrl.setValue({
       key: value.length > 0 ? "tight" : "loose",
-    };
-    // update model to reflect changes
-    // TODO: maybe use formOptions.detectChanges(field)?
-    field.options.formState.updateModel();
+    });
   }
 
   private handleServiceTypeChange(field) {

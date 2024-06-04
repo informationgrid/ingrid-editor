@@ -21,6 +21,7 @@ package de.ingrid.igeserver.imports
 
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.configuration.ConfigurationException
+import de.ingrid.igeserver.services.CatalogProfile
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -40,9 +41,10 @@ class ImporterFactory {
         return importer.map { it.typeInfo }
     }
 
-    fun getImporter(contentType: String, fileContent: String): List<IgeImporter> {
+    fun getImporter(profile: CatalogProfile, contentType: String, fileContent: String): List<IgeImporter> {
 
         val responsibleImporter = importer
+            .filter { it.typeInfo.profiles.isEmpty() || it.typeInfo.profiles.contains(profile.identifier) || it.typeInfo.profiles.contains(profile.parentProfile) }
             .filter { it.canHandleImportFile(contentType, fileContent) }
 
         handleEmptyOrMultipleImporter(responsibleImporter, contentType)

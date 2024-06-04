@@ -28,7 +28,7 @@ import {
   mockProvider,
   Spectator,
 } from "@ngneat/spectator";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { DialogTemplateModule } from "../../../app/shared/dialog-template/dialog-template.module";
@@ -60,6 +60,10 @@ import { MatInputHarness } from "@angular/material/input/testing";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { GermanDateAdapter } from "../../../app/services/german-date.adapter";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 describe("ConformityDialogComponent", () => {
   let spectator: Spectator<ConformityDialogComponent>;
@@ -78,7 +82,6 @@ describe("ConformityDialogComponent", () => {
     component: ConformityDialogComponent,
     imports: [
       MatDialogModule,
-      HttpClientTestingModule,
       MatSnackBarModule,
       MatFormFieldModule,
       DialogTemplateModule,
@@ -94,6 +97,8 @@ describe("ConformityDialogComponent", () => {
       MatAutocompleteModule,
     ],
     providers: [
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
       { provide: MatDialogRef, useValue: mockMatDialogRef },
       { provide: MAT_DIALOG_DATA, useValue: [] },
       {

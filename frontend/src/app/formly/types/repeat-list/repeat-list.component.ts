@@ -233,6 +233,7 @@ export class RepeatListComponent
         filter((value) => value !== undefined && value !== null),
         map((value) => this._filter(value)),
         map((value) => this._markSelected(value)),
+        tap(() => this.cdr.detectChanges()),
       );
 
       if (this.type !== "select" && this.type !== "autocomplete") {

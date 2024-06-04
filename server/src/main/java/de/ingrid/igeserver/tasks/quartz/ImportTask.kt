@@ -76,7 +76,7 @@ class ImportTask(
                 Stage.ANALYZE -> {
                     clearPreviousAnalysis(context)
                     val profile = catalogService.getProfileFromCatalog(info.catalogId)
-                    importService.analyzeFile(info.catalogId, info.importFile!!, message)
+                    importService.analyzeFile(profile, info.catalogId, info.importFile!!, message)
                         .also { checkForValidDocumentsInProfile(profile, it) }
                         .also {
                             profile.additionalImportAnalysis(info.catalogId, it, message)

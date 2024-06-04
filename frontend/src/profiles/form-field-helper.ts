@@ -842,6 +842,21 @@ export class FormFieldHelper {
     };
   }
 
+  findFieldElementWithIdPath(
+    fieldConfig: FormlyFieldConfig[],
+    id: string,
+  ): FieldConfigPosition {
+    if (!fieldConfig) return null;
+    let currentFieldConfigPosition = null;
+    id.split(".").forEach((idPart) => {
+      currentFieldConfigPosition = this.findFieldElementWithId(
+        currentFieldConfigPosition?.fieldConfig ?? fieldConfig,
+        idPart,
+      );
+    });
+    return currentFieldConfigPosition;
+  }
+
   findFieldElementWithId(
     fieldConfig: FormlyFieldConfig[],
     id: string,
@@ -855,11 +870,44 @@ export class FormFieldHelper {
     if (index !== -1) return { fieldConfig, index };
 
     let subFound = null;
-    const anyFound = fieldConfig.some((item) => {
+    fieldConfig.some((item) => {
       subFound = this.findFieldElementWithId(item.fieldGroup, id);
       return subFound;
     });
     return subFound;
+  }
+
+  // TODO: merge with findFieldElementWithId
+  findParentFieldElementWithId(
+    fieldConfig: FormlyFieldConfig[],
+    id: string,
+    fieldConfigParent: FormlyFieldConfig[] = null,
+    parentIndex: number = null,
+  ): FieldConfigPosition {
+    if (!fieldConfig) return null;
+
+    const index = fieldConfig.findIndex((field) => {
+      if (field.key === id) return true;
+    });
+
+    if (index !== -1)
+      return { fieldConfig: fieldConfigParent, index: parentIndex };
+
+    let subFound = null;
+    fieldConfig.some((item, index) => {
+      subFound = this.findParentFieldElementWithId(
+        item.fieldGroup,
+        id,
+        fieldConfig,
+        index,
+      );
+      return subFound;
+    });
+    return subFound;
+  }
+
+  addAfter(info: FieldConfigPosition, field: FormlyFieldConfig) {
+    info.fieldConfig.splice(info.index + 1, 0, field);
   }
 
   private initExpressions(expressions = {}) {

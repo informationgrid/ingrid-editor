@@ -32,6 +32,7 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
+import de.ingrid.igeserver.profiles.ingrid.hvdKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
 import de.ingrid.igeserver.profiles.ingrid.importer.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
@@ -62,9 +63,9 @@ open class IngridModelTransformer(
     val doc: Document,
     val documentService: DocumentService
 ) {
-    
+
     val fieldToCodelist = FieldToCodelist()
-    
+
     var incomingReferencesCache: List<CrossReference>? = null
     var superiorReferenceCache: SuperiorReference? = null
 
@@ -76,7 +77,7 @@ open class IngridModelTransformer(
     val distributionFormats = data.distribution?.format ?: emptyList()
     val isAtomDownload = data.service.isAtomDownload == true
     val atomDownloadURL: String?
-    open val digitalTransferOptions = doc.data.get("digitalTransferOptions")?.map { 
+    open val digitalTransferOptions = doc.data.get("digitalTransferOptions")?.map {
         DigitalTransferOption(
             createSimpleKeyValueFromJsonNode(it.get("name")),
             UnitField(it.getString("transferSize.value"), createSimpleKeyValueFromJsonNode(it.get("transferSize")?.get("unit"))),
@@ -416,7 +417,17 @@ open class IngridModelTransformer(
         showType = false
     )
 
+    val hvdCategories = Thesaurus(
+        keywords = data.hvdCategories?.map { KeywordIso(name = mapHVDKeyword(it.key!!), link = it.key) }
+            ?: emptyList(),
+        date = "2023-09-27",
+        name = "High-value dataset categories",
+        link = "http://data.europa.eu/bna/asd487ae75",
+        showType = true
+    )
+
     private fun mapInVeKoSKeyword(key: String): String = inVeKoSKeywordMapping[key] ?: key
+    private fun mapHVDKeyword(key: String): String = hvdKeywordMapping[key] ?: key
 
     val advCompatibleKeyword =
         if (data.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()
@@ -434,7 +445,8 @@ open class IngridModelTransformer(
             inspirePriorityKeywords,
             gemetKeywords,
             umthesKeywords,
-            inspireKeywords
+            inspireKeywords,
+            hvdCategories
         )
 
         return allKeywords.flatMap { thesaurus -> thesaurus.keywords.mapNotNull { it.name } } + advProductGroups
@@ -453,6 +465,7 @@ open class IngridModelTransformer(
         umthesKeywords,
         gemetKeywords,
         invekosKeywords,
+        hvdCategories
     )
 
     val specificUsage = data.resource?.specificUsage
@@ -521,21 +534,23 @@ open class IngridModelTransformer(
         return (if (codelistId == null) null else codelists.getValue(codelistId, name, "iso")) ?: name.value
     }
 
-    fun getOperatesOn() = data.service.coupledResources?.map {
-        val title: String? = it.layerNames?.joinToString(",")?.ifEmpty { null }
-        if (it.isExternalRef) {
-            OperatesOn(it.uuid, it.identifier, title)
+    fun getOperatesOn() = data.service.coupledResources?.flatMap {
+        val finalIdentifier = if (it.isExternalRef) {
+            it.identifier
         } else {
+            // TODO: when document not yet published (ISO-view of draft) then do not generate operatesOn-element (#6241)
             val identifier = getLastPublishedDocument(it.uuid!!)?.data?.get("identifier")?.asText() ?: it.uuid
             val containsNamespace = identifier.contains("://")
-            val completeIdentifier = if (containsNamespace) {
+            if (containsNamespace) {
                 identifier
             } else {
-                val namespaceWithSlash = if (namespace.endsWith("/")) namespace else "$namespace/"
-                namespaceWithSlash + identifier
+                namespace + identifier
             }
-            OperatesOn(it.uuid, completeIdentifier, title)
         }
+
+        // for each layername create an operatesOn-element 
+        if (it.layerNames.isNullOrEmpty()) listOf(OperatesOn(it.uuid, finalIdentifier, null))
+        else it.layerNames.map { layername: String -> OperatesOn(it.uuid, finalIdentifier, layername) }
 
     } ?: emptyList()
 
@@ -618,8 +633,8 @@ open class IngridModelTransformer(
     }
 
     // information system
-    val serviceUrls = data.serviceUrls?.map { 
-        it.attachedToField = AttachedField("2000", "5066", "Link to Service") 
+    val serviceUrls = data.serviceUrls?.map {
+        it.attachedToField = AttachedField("2000", "5066", "Link to Service")
         it.functionValue = "information"
         it
     } ?: emptyList()
@@ -628,9 +643,9 @@ open class IngridModelTransformer(
     open val systemEnvironment = data.systemEnvironment
 
     fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs(): List<ServiceUrl> = externalReferences + serviceUrls + getCoupledServiceUrlsOrGetCapabilitiesUrl() + getAtomAsServiceUrl()
-    
-    private fun getAtomAsServiceUrl(): List<ServiceUrl> = if (isAtomDownload) 
-        listOf(ServiceUrl("Get Download Service Metadata", atomDownloadURL!!, null, isIdfResource = false, functionValue = "information")) 
+
+    private fun getAtomAsServiceUrl(): List<ServiceUrl> = if (isAtomDownload)
+        listOf(ServiceUrl("Get Download Service Metadata", atomDownloadURL!!, null, isIdfResource = false, functionValue = "information"))
     else emptyList()
 
     val parentIdentifier: String? = data.parentIdentifier
@@ -667,7 +682,7 @@ open class IngridModelTransformer(
 
     init {
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
-        this.namespace = catalog.settings.config.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
+        this.namespace = catalog.settings.config.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier/"
         this.citationURL =
             namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
         pointOfContact =
@@ -917,9 +932,17 @@ open class IngridModelTransformer(
     }
 
     fun hasDistributionInfo(): Boolean {
-        return digitalTransferOptions.isNotEmpty() || distributionFormats.isNotEmpty() || hasDistributorInfo() || !data.references.isNullOrEmpty() || isAtomDownload || serviceUrls.isNotEmpty() || getCoupledServiceUrls().isNotEmpty()
+        return digitalTransferOptions.isNotEmpty()
+                || distributionFormats.isNotEmpty()
+                || hasDistributorInfo()
+                || !data.references.isNullOrEmpty()
+                || isAtomDownload
+                // TODO Refactor after usage clarification #6322
+                // || serviceUrls.isNotEmpty()
+                // || getCoupledServiceUrls().isNotEmpty()
+                || getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs().isNotEmpty()
     }
-    
+
     fun hasDistributorInfo(): Boolean {
         return data.orderInfo?.isNotEmpty() == true || data.fees?.isNotEmpty() == true
     }

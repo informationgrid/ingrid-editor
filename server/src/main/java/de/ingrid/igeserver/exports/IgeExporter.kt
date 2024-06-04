@@ -31,7 +31,7 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
 
-data class ExportOptions(val includeDraft: Boolean, val catalogProfile: String? = null)
+data class ExportOptions(val includeDraft: Boolean, val catalogProfile: String? = null, val tags: List<String> = emptyList())   
 
 interface IgeExporter {
     val typeInfo: ExportTypeInfo

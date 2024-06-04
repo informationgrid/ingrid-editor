@@ -41,15 +41,15 @@ import java.time.Instant
 @Profile("ogc-api")
 @RequestMapping(path = ["/api/ogc"])
 class OgcApiRecordsController(
-    private val ogcRecordService: OgcRecordService,
-    private val researchService: ResearchService,
-    private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
-    private val exporterFactory: ExporterFactory,
-    private val apiValidationService: ApiValidationService,
-    private val documentService: DocumentService,
-    private val catalogService: CatalogService,
-    private val ogcApiResearchQueryFactory: OgcApiResearchQueryFactory
-) : OgcApiRecords {
+        private val ogcRecordService: OgcRecordService,
+        private val researchService: ResearchService,
+        private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
+        private val exporterFactory: ExporterFactory,
+        private val apiValidationService: ApiValidationService,
+        private val documentService: DocumentService,
+        val catalogService: CatalogService,
+        private val ogcApiResearchQueryFactory: OgcApiResearchQueryFactory
+        ) : OgcApiRecords {
 
     val log = logger()
 
@@ -108,6 +108,7 @@ class OgcApiRecordsController(
     override fun postDataset(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, datasetFolderId: String?, addressFolderId: String?): ResponseEntity<JsonNode> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId"))
+        val profile = catalogService.getProfileFromCatalog(collectionId)
 
         val contentType = allHeaders["content-type"]!!
 
@@ -116,19 +117,29 @@ class OgcApiRecordsController(
             parentDocument = if(!datasetFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, datasetFolderId)).id } else null,
             parentAddress = if(!addressFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, addressFolderId)).id } else null,
         )
-        ogcRecordService.transactionalImportDocuments(options, collectionId, contentType, data, principal, recordMustExist = false, null)
+        ogcRecordService.transactionalImportDocuments(options, collectionId, contentType, data, principal, recordMustExist = false, null, profile)
         return ResponseEntity.ok().build()
     }
 
 
-    override fun putDataset(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, collectionId: String, recordId: String, data: String ): ResponseEntity<JsonNode> {
+    override fun putDataset(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, collectionId: String, recordId: String, data: String): ResponseEntity<JsonNode> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf())
+        val profile = catalogService.getProfileFromCatalog(collectionId)
 
         val contentType = allHeaders["content-type"]!!
 
         val options = ImportOptions( publish = true , overwriteAddresses = true, overwriteDatasets = true)
-        ogcRecordService.transactionalImportDocuments(options, collectionId, contentType, data, principal, recordMustExist = true, recordId)
+        ogcRecordService.transactionalImportDocuments(
+            options,
+            collectionId,
+            contentType,
+            data,
+            principal,
+            recordMustExist = true,
+            recordId,
+            profile
+        )
         return ResponseEntity.ok().build()
     }
 

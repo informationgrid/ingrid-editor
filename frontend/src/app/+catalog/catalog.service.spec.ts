@@ -29,15 +29,21 @@ import {
   ConfigService,
   Configuration,
 } from "../services/config/config.service";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 describe("CatalogService", () => {
   let spectator: SpectatorService<CatalogService>;
   const createService = createServiceFactory({
     service: CatalogService,
-    imports: [HttpClientTestingModule, MatSnackBarModule],
+    imports: [MatSnackBarModule],
     providers: [
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
       mockProvider(ConfigService, {
         getConfiguration: () =>
           new Configuration(

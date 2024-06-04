@@ -111,7 +111,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
                 true
             )
         val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
-        val result = exporter.run(docVersion, catalogId, ExportOptions(options.useDraft))
+        val result = exporter.run(docVersion, catalogId, ExportOptions(options.useDraft, null,  doc.tags))
         return if (result is ObjectNode) result.toPrettyString() else result as String
     }
 

@@ -56,7 +56,7 @@ class IngridExporterExternalLfub(
             "application/json",
             "json",
             listOf("ingrid-lfubayern"),
-            isPublic = true,
+            isPublic = false,
             useForPublish = true
         )
 }
@@ -135,7 +135,7 @@ class IngridISOExporterExternalLfub(
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
         "ingridISOLfuExternalBayern",
-        "ISO 19139 LfuBayern",
+        "ISO 19139 LfuBayern External",
         "Export von LfuBayern Dokumenten in ISO für die Vorschau im Editor.",
         "text/xml",
         "xml",

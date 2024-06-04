@@ -89,50 +89,55 @@ export class KeywordAnalysis {
     field: FormlyFieldConfig,
     thesaurusTopics: boolean,
   ) {
-    const model = field.options.formState.mainModel;
     data.forEach((item) => {
-      if (!this.keywordExists(item, model)) {
-        this.addKeyword(item, model);
+      if (!this.keywordExists(item, field)) {
+        this.addKeyword(item, field);
         if (item.thesaurus === "INSPIRE-Themen" && thesaurusTopics) {
-          this.updateIsoCategory(item.value, field.options.formState);
+          this.updateIsoCategory(item.value, field);
         }
       }
     });
-    field.options.formState.updateModel();
   }
 
-  updateIsoCategory(item: any, formstate: any, doRemove: boolean = false) {
+  updateIsoCategory(
+    item: any,
+    fieldConfig: FormlyFieldConfig,
+    doRemove: boolean = false,
+  ) {
     const isoKey = KeywordAnalysis.inspireToIsoMapping[item.key];
     if (!isoKey) return;
 
     // check if exists and add if not
-    const topics = formstate.mainModel.topicCategories;
-    const alreadyExists = topics.some((topic: any) => topic.key === isoKey);
+    const topicsCtrl = fieldConfig.form.get("topicCategories");
+    const alreadyExists = topicsCtrl.value.some(
+      (topic: any) => topic.key === isoKey,
+    );
     const isoValue = this.codelistQuery.getCodelistEntryValueByKey(
       "527",
       isoKey,
     );
 
     if (!doRemove && !alreadyExists) {
-      topics.push({ key: isoKey });
-      formstate.updateModel();
+      topicsCtrl.setValue([...topicsCtrl.value, { key: isoKey }]);
       this.snack.open(
         `Die abhängige ISO-Kategorie '${isoValue}' wurde ebenfalls hinzugefügt.`,
       );
     } else if (doRemove && alreadyExists) {
-      formstate.mainModel.topicCategories = topics.filter(
-        (topic: any) => topic.key !== isoKey,
+      topicsCtrl.setValue(
+        topicsCtrl.value.filter((topic: any) => topic.key !== isoKey),
       );
-      formstate.updateModel();
       this.snack.open(
         `Die abhängige ISO-Kategorie '${isoValue}' wurde ebenfalls entfernt.`,
       );
     }
   }
 
-  keywordExists(item: ThesaurusResult, model: any): boolean {
-    const thesaurusModel = this.mapThesaurusToModel(item, model);
-    return thesaurusModel?.some((keyword: any) => {
+  keywordExists(
+    item: ThesaurusResult,
+    fieldConfig: FormlyFieldConfig,
+  ): boolean {
+    const thesaurusCtrl = fieldConfig.form.get(this.mapThesaurusToModel(item));
+    return thesaurusCtrl.value?.some((keyword: any) => {
       if (item.thesaurus === "INSPIRE-Themen") {
         return keyword.key === item.value.key;
       } else {
@@ -141,21 +146,21 @@ export class KeywordAnalysis {
     });
   }
 
-  addKeyword(item: ThesaurusResult, model: any) {
-    const thesaurusModel = this.mapThesaurusToModel(item, model);
-    thesaurusModel.push(item.value);
+  addKeyword(item: ThesaurusResult, fieldConfig: FormlyFieldConfig) {
+    const thesaurusCtrl = fieldConfig.form.get(this.mapThesaurusToModel(item));
+    thesaurusCtrl.setValue([...thesaurusCtrl.value, item.value]);
   }
 
-  private mapThesaurusToModel(item: ThesaurusResult, model: any): any {
+  private mapThesaurusToModel(item: ThesaurusResult): string {
     switch (item.thesaurus) {
       case "Gemet Schlagworte":
-        return model.keywords.gemet;
+        return "keywords.gemet";
       case "Umthes Schlagworte":
-        return model.keywords.umthes;
+        return "keywords.umthes";
       case "Freie Schlagworte":
-        return model.keywords.free;
+        return "keywords.free";
       case "INSPIRE-Themen":
-        return model.themes;
+        return "themes";
       default:
         throw new IgeError(`Thesaurus not supported: ${item.thesaurus}`);
     }

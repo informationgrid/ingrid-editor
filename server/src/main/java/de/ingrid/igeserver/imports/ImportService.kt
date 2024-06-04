@@ -27,8 +27,8 @@ import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.DOCUMENT_STATE
-import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_PARENT
 import de.ingrid.igeserver.utils.getString
@@ -58,6 +58,7 @@ class ImportService(
     }
 
     fun analyzeFile(
+        profile: CatalogProfile,
         catalogId: String,
         fileLocation: String,
         message: Message,
@@ -74,7 +75,7 @@ class ImportService(
         if (type == "application/zip") {
             val totalFiles: Int
             val importers: List<String>
-            return handleZipImport(catalogId, file)
+            return handleZipImport(profile, catalogId, file)
                 .also { totalFiles = it.documents.size }
                 .also { importers = it.importers }
                 .documents
@@ -88,12 +89,12 @@ class ImportService(
         }
 
         val fileContent = file.readText(Charsets.UTF_8)
-        return prepareImportAnalysis(catalogId, type, fileContent)
+        return prepareImportAnalysis(profile, catalogId, type, fileContent)
 
     }
 
-    fun prepareImportAnalysis(catalogId: String, type: String, fileContent: String): OptimizedImportAnalysis {
-        val importer = factory.getImporter(type, fileContent)
+    fun prepareImportAnalysis(profile: CatalogProfile, catalogId: String, type: String, fileContent: String): OptimizedImportAnalysis {
+        val importer = factory.getImporter(profile, type, fileContent)
 
         val addressMap = mutableMapOf<String, String>()
         val result = importer[0].run(catalogId, fileContent, addressMap)
@@ -174,7 +175,7 @@ class ImportService(
         }
     }
 
-    private fun handleZipImport(catalogId: String, file: File): ExtractedZip {
+    private fun handleZipImport(profile: CatalogProfile, catalogId: String, file: File): ExtractedZip {
         val docs = mutableListOf<JsonNode>()
         val importers = mutableSetOf<String>()
         val addressMap = mutableMapOf<String, String>()
@@ -188,7 +189,7 @@ class ImportService(
                     entry.name.endsWith(".xml") -> ContentType.APPLICATION_XML.mimeType
                     else -> null
                 }
-                val importer = factory.getImporter(type.toString(), os.toString())
+                val importer = factory.getImporter(profile, type.toString(), os.toString())
                 val result = importer[0].run(catalogId, os.toString(), addressMap)
                 docs.add(result)
                 importers.addAll(importer.map { it.typeInfo.id })
@@ -345,43 +346,12 @@ class ImportService(
         }
     }
 
-    private fun fixDocumentType(data: DocumentData, type: String) {
-        data.document.type = type
-        documentService.docRepo.save(data.document)
-        data.wrapper.type = type
-        documentService.docWrapperRepo.save(data.wrapper)
-    }
-
     private fun handleAddressTitle(ref: DocumentAnalysis) {
         if (ref.isAddress && ref.document.title.isNullOrEmpty()) {
             val data = ref.document.data
             ref.document.title = if (data.has("organization"))
                 data.get("organization").asText()
             else "${data.get("lastName").asText()}, ${data.get("firstName").asText()}"
-        }
-    }
-
-    /**
-     * In case we recover a deleted document which was published before, we need to adjust the documents
-     * if and only if we import a document with the same UUID in draft-state.
-     *
-     * In that case the published version will be marked as archived and the draft version, which had
-     * the state DRAFT_AND_PUBLISHED will be set to DRAFT, so that the new imported version has no
-     * knowledge of the published version. However, it's still possible to access this version internally.
-     */
-    private fun handleDeletedPublishedVersion(catalogId: String, uuid: String, wrapperId: Int) {
-        try {
-            documentService.getLastPublishedDocument(catalogId, uuid).also {
-                it.state = DOCUMENT_STATE.ARCHIVED
-                it.wrapperId = wrapperId
-                documentService.docRepo.save(it)
-            }
-            documentService.getDocumentFromCatalog(catalogId, wrapperId).also {
-                it.document.state = DOCUMENT_STATE.DRAFT
-                documentService.docRepo.save(it.document)
-            }
-        } catch (e: Exception) {
-            // no published document exists -> do nothing
         }
     }
 

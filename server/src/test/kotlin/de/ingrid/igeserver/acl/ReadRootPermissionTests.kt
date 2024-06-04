@@ -24,7 +24,7 @@ import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.authorization.AuthorizationDeniedException
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 
@@ -53,7 +53,7 @@ class ReadRootPermissionTests : IntegrationTest() {
         doc.hasOnlySubtreeWritePermission shouldBe false
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun writeNotAllowedToRootDocument() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
         doc.hasWritePermission shouldBe false
@@ -61,7 +61,7 @@ class ReadRootPermissionTests : IntegrationTest() {
         docWrapperRepo.save(doc)
     }
 
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun writeNotAllowedToSubDocument() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
         doc.hasWritePermission shouldBe false
@@ -70,7 +70,7 @@ class ReadRootPermissionTests : IntegrationTest() {
     }
 
     @Transactional
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun deleteNotAllowedToRootDocument() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
         doc.hasWritePermission shouldBe false
@@ -79,10 +79,10 @@ class ReadRootPermissionTests : IntegrationTest() {
     }
 
     @Transactional
-    @Test(expected = AccessDeniedException::class)
+    @Test(expected = AuthorizationDeniedException::class)
     fun deleteNotAllowedToSubDocument() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
         docWrapperRepo.deleteById(doc.id!!)
     }
-    
+
 }

@@ -78,13 +78,13 @@ $mat-ige-red: (
   ),
 );
 
-$my-primary: mat.define-palette($mat-ige-purple);
-$my-accent: mat.define-palette($mat-ige-green);
-$my-warn: mat.define-palette($mat-ige-red);
-$my-typography: mat.define-typography-config();
+$my-primary: mat.m2-define-palette($mat-ige-purple);
+$my-accent: mat.m2-define-palette($mat-ige-green);
+$my-warn: mat.m2-define-palette($mat-ige-red);
+$my-typography: mat.m2-define-typography-config();
 
 // Create the theme object (a Sass map containing all of the palettes).
-$ige-form-theme: mat.define-light-theme(
+$ige-form-theme: mat.m2-define-light-theme(
   (
     color: (
       primary: $my-primary,
@@ -95,7 +95,7 @@ $ige-form-theme: mat.define-light-theme(
     typography: $my-typography,
   )
 );
-$ige-theme: mat.define-light-theme(
+$ige-theme: mat.m2-define-light-theme(
   (
     color: (
       primary: $my-primary,
@@ -106,7 +106,7 @@ $ige-theme: mat.define-light-theme(
     typography: $my-typography,
   )
 );
-$ige-table-theme: mat.define-light-theme(
+$ige-table-theme: mat.m2-define-light-theme(
   (
     color: (
       primary: $my-primary,
@@ -134,9 +134,9 @@ $ige-table-theme: mat.define-light-theme(
   @include mat.button-color($special-theme);
 }*/
 ige-side-menu {
-  $special-primary: mat.define-palette(mat.$orange-palette);
-  $special-accent: mat.define-palette(mat.$brown-palette);
-  $special-theme: mat.define-dark-theme(
+  $special-primary: mat.m2-define-palette(mat.$m2-orange-palette);
+  $special-accent: mat.m2-define-palette(mat.$m2-brown-palette);
+  $special-theme: mat.m2-define-dark-theme(
     (
       color: (
         primary: $special-primary,

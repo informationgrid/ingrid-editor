@@ -62,13 +62,17 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ConfigService } from "../../../services/config/config.service";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { TranslocoModule } from "@ngneat/transloco";
 import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
 import { SharedDocumentItemModule } from "../../../shared/shared-document-item.module";
 import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
 import { getTranslocoModule } from "../../../transloco-testing.module";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 function mapDocumentsToTreeNodes(docs: DocumentAbstract[], level: number) {
   return docs.map(
@@ -106,7 +110,6 @@ describe("TreeComponent", () => {
       FormFieldsModule,
       MatProgressSpinnerModule,
       MatSelectModule,
-      HttpClientTestingModule,
       MatSnackBarModule,
       TranslocoModule,
       SharedDocumentItemModule,
@@ -118,7 +121,11 @@ describe("TreeComponent", () => {
       EmptyNavigationComponent,
       DocumentIconComponent,
     ],
-    providers: [{ provide: MatIconRegistry, useClass: FakeMatIconRegistry }],
+    providers: [
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
+      { provide: MatIconRegistry, useClass: FakeMatIconRegistry },
+    ],
     componentMocks: [DynamicDatabase, ConfigService],
     detectChanges: false,
   });

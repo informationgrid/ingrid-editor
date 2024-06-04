@@ -42,13 +42,14 @@ export class CommonFieldsLfuBayern extends FormFieldHelper {
   getUseConstraintsCommentFieldConfig(): FormlyFieldConfig {
     return this.addTextArea(
       "useConstraintsComments",
-      "Kommentar (Nutzungsbedingungen)",
+      "Nutzungsbedingungen (Ergänzung)",
       "lfub",
     );
   }
   getInternalKeywordsFieldConfig(): FormlyFieldConfig {
     return this.addRepeatList("internalKeywords", "Interne Schlüsselwörter", {
       view: "chip",
+      asSelect: true,
       options: this.codelistService.observe("20001"),
       codelistId: "20001",
     });
@@ -59,6 +60,7 @@ export class CommonFieldsLfuBayern extends FormFieldHelper {
       "Geologische Schlüsselliste",
       {
         view: "chip",
+        asSelect: true,
         options: this.codelistService.observe("20000"),
         codelistId: "20000",
       },
