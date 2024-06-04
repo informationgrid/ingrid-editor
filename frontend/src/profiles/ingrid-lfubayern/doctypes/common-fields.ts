@@ -49,6 +49,7 @@ export class CommonFieldsLfuBayern extends FormFieldHelper {
   getInternalKeywordsFieldConfig(): FormlyFieldConfig {
     return this.addRepeatList("internalKeywords", "Interne Schlüsselwörter", {
       view: "chip",
+      asSelect: true,
       options: this.codelistService.observe("20001"),
       codelistId: "20001",
     });
@@ -59,6 +60,7 @@ export class CommonFieldsLfuBayern extends FormFieldHelper {
       "Geologische Schlüsselliste",
       {
         view: "chip",
+        asSelect: true,
         options: this.codelistService.observe("20000"),
         codelistId: "20000",
       },
