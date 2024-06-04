@@ -91,6 +91,6 @@ class DCATAPDEImporter(
             "dcat-ap-de-1.0",
             "DCAT-AP.DE 1.0",
             "",
-            emptyList()
+            listOf("ingrid")
         )
 }
