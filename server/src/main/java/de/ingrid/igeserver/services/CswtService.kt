@@ -28,7 +28,6 @@ import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.utils.xml.Csw202NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatusCode
 import org.springframework.security.core.Authentication
@@ -61,7 +60,8 @@ data class CSWTransactionResult(
 @Profile("csw-t")
 class CswtService(
     private val documentService: DocumentService,
-    private val importService: ImportService
+    private val importService: ImportService,
+    private val catalogService: CatalogService
 ) {
 
     val log = logger()
@@ -78,6 +78,7 @@ class CswtService(
 
         val factory: DocumentBuilderFactory
         val resultInsert: MutableList<String> = mutableListOf()
+        val profile = catalogService.getProfileFromCatalog(collectionId)
 
         try {
             factory = DocumentBuilderFactory.newInstance()
@@ -97,7 +98,7 @@ class CswtService(
                 val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","MD_Metadata").item(0)
                 resultInsert.add(utils.getString(metadataDoc, "./gmd:fileIdentifier/gco:CharacterString"))
                 val docData = xmlNodeToString(metadataDoc) // convert Node to String
-                importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = false, null )
+                importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = false, null, profile)
 
             }
             /**
@@ -110,7 +111,7 @@ class CswtService(
                 if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
                     val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","MD_Metadata").item(0)
                     val docData = xmlNodeToString(metadataDoc) // convert Node to String
-                    importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = true, propValue )
+                    importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = true, propValue, profile )
                 } else {
                     log.error("Constraint not supported with PropertyName: $propName and Literal: $propValue")
                     throw Exception("Constraint not supported with PropertyName: $propName and Literal: $propValue")
@@ -153,8 +154,8 @@ class CswtService(
         return transactionResult
     }
 
-    private fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?){
-            val optimizedImportAnalysis = importService.prepareImportAnalysis(collectionId, contentType, data)
+    private fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?, profile: CatalogProfile){
+            val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, data)
             if(optimizedImportAnalysis.existingDatasets.isNotEmpty()){
                 val id = optimizedImportAnalysis.existingDatasets[0].uuid
                 if(!recordMustExist) {

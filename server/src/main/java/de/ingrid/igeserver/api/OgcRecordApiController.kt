@@ -26,7 +26,6 @@ import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.services.*
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
@@ -46,7 +45,7 @@ class OgcApiRecordsController(
         private val exporterFactory: ExporterFactory,
         private val apiValidationService: ApiValidationService,
         private val documentService: DocumentService,
-        val scheduler: SchedulerService,
+        val catalogService: CatalogService,
         ) : OgcApiRecords {
 
     val log = logger()
@@ -106,6 +105,7 @@ class OgcApiRecordsController(
     override fun postDataset(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, collectionId: String, data: String, datasetFolderId: String?, addressFolderId: String?): ResponseEntity<JsonNode> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId"))
+        val profile = catalogService.getProfileFromCatalog(collectionId)
 
         val contentType = allHeaders["content-type"]!!
 
@@ -114,19 +114,29 @@ class OgcApiRecordsController(
             parentDocument = if(!datasetFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, datasetFolderId)).id } else null,
             parentAddress = if(!addressFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, addressFolderId)).id } else null,
         )
-        ogcRecordService.transactionalImportDocuments(options, collectionId, contentType, data, principal, recordMustExist = false, null)
+        ogcRecordService.transactionalImportDocuments(options, collectionId, contentType, data, principal, recordMustExist = false, null, profile)
         return ResponseEntity.ok().build()
     }
 
 
-    override fun putDataset(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, collectionId: String, recordId: String, data: String ): ResponseEntity<JsonNode> {
+    override fun putDataset(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, collectionId: String, recordId: String, data: String): ResponseEntity<JsonNode> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf())
+        val profile = catalogService.getProfileFromCatalog(collectionId)
 
         val contentType = allHeaders["content-type"]!!
 
         val options = ImportOptions( publish = true , overwriteAddresses = true, overwriteDatasets = true)
-        ogcRecordService.transactionalImportDocuments(options, collectionId, contentType, data, principal, recordMustExist = true, recordId)
+        ogcRecordService.transactionalImportDocuments(
+            options,
+            collectionId,
+            contentType,
+            data,
+            principal,
+            recordMustExist = true,
+            recordId,
+            profile
+        )
         return ResponseEntity.ok().build()
     }
 

@@ -36,7 +36,6 @@ import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporter
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import org.keycloak.util.JsonSerialization
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpHeaders
 import org.springframework.security.core.Authentication
@@ -158,14 +157,23 @@ class OgcRecordService(
     }
 
     @Transactional
-    fun transactionalImportDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?){
-        importDocuments(options, collectionId, contentType, data, principal, recordMustExist, recordId)
+    fun transactionalImportDocuments(
+        options: ImportOptions,
+        collectionId: String,
+        contentType: String,
+        data: String,
+        principal: Authentication,
+        recordMustExist: Boolean,
+        recordId: String?,
+        profile: CatalogProfile
+    ){
+        importDocuments(options, collectionId, contentType, data, principal, recordMustExist, recordId, profile)
     }
 
-    fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?){
+    fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?, profile: CatalogProfile){
         val docArray = prepareDataForImport(collectionId, contentType, data)
         for( doc in docArray ) {
-            val optimizedImportAnalysis = importService.prepareImportAnalysis(collectionId, contentType, doc)
+            val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, doc)
             if(optimizedImportAnalysis.existingDatasets.isNotEmpty()){
                     val id = optimizedImportAnalysis.existingDatasets[0].uuid
                 if(!recordMustExist) {
