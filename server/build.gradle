@@ -128,7 +128,7 @@ dependencies {
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.keycloak:keycloak-admin-client:24.0.1'
+    implementation 'org.keycloak:keycloak-admin-client:24.0.5'
 
     // OpenAI
     // import Kotlin API client BOM
