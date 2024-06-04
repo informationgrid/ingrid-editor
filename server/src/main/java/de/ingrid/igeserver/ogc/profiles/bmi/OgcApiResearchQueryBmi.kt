@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.bmi.quickfilter
+package de.ingrid.igeserver.ogc.profiles.bmi
 
 import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.ogc.OgcApiResearchQuery

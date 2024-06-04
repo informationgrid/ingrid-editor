@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid.quickfilter
+package de.ingrid.igeserver.ogc.profiles.uvp
 
 import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.ogc.OgcApiResearchQuery
@@ -26,8 +26,8 @@ import org.intellij.lang.annotations.Language
 import org.springframework.stereotype.Component
 
 @Component
-class OgcApiResearchQueryIngrid: OgcApiResearchQuery() {
-    override val profiles = listOf("ingrid")
+class OgcApiResearchQueryUvp: OgcApiResearchQuery() {
+    override val profiles = listOf("uvp")
 
     override lateinit var ogcParameter: OgcFilterParameter
 
@@ -45,14 +45,10 @@ class OgcApiResearchQueryIngrid: OgcApiResearchQuery() {
     fun qParameterSQL(): String {
         val titleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "title ILIKE '%$it%'" }
         val descriptionCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
-        val alternateTitleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'alternateTitle' ILIKE '%$it%'" }
-        val freeKeywordsCondition = ogcParameter.qParameter?.joinToString(" OR ") { "EXISTS (SELECT 1 FROM jsonb_array_elements(data -> 'keywords' -> 'free') AS keyword WHERE keyword ->> 'label' ILIKE '%$it%')" }
 
         return """
             ($titleCondition)
             OR ($descriptionCondition)
-            OR ($alternateTitleCondition)
-            OR ($freeKeywordsCondition)
         """
     }
 }
