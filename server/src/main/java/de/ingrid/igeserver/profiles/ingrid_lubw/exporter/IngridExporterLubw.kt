@@ -84,7 +84,7 @@ class IngridLuceneExporterLubw(
         documentService,
     ) {
 
-    override fun getTemplateForDoctype(doc: Document, catalog: Catalog): Pair<String, Map<String, Any>> {
+    override fun getTemplateForDoctype(doc: Document, catalog: Catalog, options: ExportOptions): Pair<String, Map<String, Any>> {
         return when (doc.type) {
             "InGridSpecialisedTask",
             "InGridGeoDataset",
@@ -95,10 +95,10 @@ class IngridLuceneExporterLubw(
             "InGridInformationSystem"
             -> Pair(
                     "export/ingrid-lubw/template-lucene-lubw.jte",
-                    getMapper(IngridDocType.DOCUMENT, doc, catalog),
+                    getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
                 )
 
-            else -> super.getTemplateForDoctype(doc, catalog)
+            else -> super.getTemplateForDoctype(doc, catalog, options)
         }
     }
 

@@ -22,6 +22,7 @@ package de.ingrid.igeserver.profiles.uvp.exporter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.codelists.CodeListService
+import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.uvp.exporter.model.UVPModel
@@ -41,24 +42,25 @@ class LuceneExporter(
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
-    fun run(doc: Document, catalogId: String): Any {
+    fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         if (doc.type == "FOLDER") return "{}"
 
         val output: TemplateOutput = JsonStringOutput()
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        templateEngine.render("export/uvp/template-lucene.jte", getMapFromObject(doc, catalog), output)
+        templateEngine.render("export/uvp/template-lucene.jte", getMapFromObject(doc, catalog, options), output)
         return output.toString()
     }
 
-    private fun getMapFromObject(json: Document, catalog: Catalog): Map<String, Any> {
+    private fun getMapFromObject(json: Document, catalog: Catalog, options: ExportOptions): Map<String, Any> {
 
         val mapper = ObjectMapper().registerKotlinModule()
         return mapOf(
             "map" to mapOf(
                 "model" to mapper.convertValue(json, UVPModel::class.java).apply { init(catalog.identifier) },
                 "catalog" to catalog,
-                "partner" to mapCodelistValue("110", catalog.settings?.config?.partner),
-                "provider" to mapCodelistValue("111", catalog.settings?.config?.provider)
+                "tags" to options.tags,
+                "partner" to mapCodelistValue("110", catalog.settings.config.partner),
+                "provider" to mapCodelistValue("111", catalog.settings.config.provider)
             )
         )
 
