@@ -27,6 +27,9 @@ import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.ogc.OgcFilterParameter
 import de.ingrid.igeserver.ogc.OgcApiResearchQueryFactory
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
+import de.ingrid.igeserver.ogc.services.OgcRecordService
+import de.ingrid.igeserver.ogc.services.QueryMetadata
+import de.ingrid.igeserver.ogc.services.ResponsePackage
 import de.ingrid.igeserver.services.*
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -63,14 +66,14 @@ enum class RecordFormat(val mimeType: String) {
 @Profile("ogc-api")
 @RequestMapping(path = ["/api/ogc"])
 class OgcApiRecordsController(
-        private val ogcRecordService: OgcRecordService,
-        private val researchService: ResearchService,
-        private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
-        private val exporterFactory: ExporterFactory,
-        private val apiValidationService: ApiValidationService,
-        private val documentService: DocumentService,
-        val catalogService: CatalogService,
-        private val ogcApiResearchQueryFactory: OgcApiResearchQueryFactory
+    private val ogcRecordService: OgcRecordService,
+    private val researchService: ResearchService,
+    private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
+    private val exporterFactory: ExporterFactory,
+    private val apiValidationService: ApiValidationService,
+    private val documentService: DocumentService,
+    val catalogService: CatalogService,
+    private val ogcApiResearchQueryFactory: OgcApiResearchQueryFactory
         ) {
 
     val log = logger()

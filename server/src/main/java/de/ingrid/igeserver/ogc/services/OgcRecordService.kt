@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.services
+package de.ingrid.igeserver.ogc.services
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -41,6 +41,7 @@ import de.ingrid.igeserver.ogc.model.Link
 import de.ingrid.igeserver.ogc.model.RecordCollection
 import de.ingrid.igeserver.ogc.model.RecordsResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.services.*
 import org.keycloak.util.JsonSerialization
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpHeaders

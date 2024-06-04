@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeType
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.ogc.model.Link
-import de.ingrid.igeserver.services.QueryMetadata
+import de.ingrid.igeserver.ogc.services.QueryMetadata
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
