@@ -26,14 +26,13 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
-import de.ingrid.igeserver.model.RecordTime
+import de.ingrid.igeserver.ogc.model.RecordTime
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.*
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import de.ingrid.igeserver.model.Record
+import de.ingrid.igeserver.ogc.model.Record
 
 @Service
 class OgcGeoJsonExporter(

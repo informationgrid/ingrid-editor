@@ -22,12 +22,11 @@ package de.ingrid.igeserver.ogc.exportCatalog.internal
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.ogc.exportCatalog.CatalogExportTypeInfo
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporter
-import de.ingrid.igeserver.model.RecordCollection
+import de.ingrid.igeserver.ogc.model.RecordCollection
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service

@@ -36,6 +36,10 @@ import de.ingrid.igeserver.ogc.api.CollectionFormat
 import de.ingrid.igeserver.ogc.api.RecordFormat
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporter
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
+import de.ingrid.igeserver.ogc.model.LimitAndOffset
+import de.ingrid.igeserver.ogc.model.Link
+import de.ingrid.igeserver.ogc.model.RecordCollection
+import de.ingrid.igeserver.ogc.model.RecordsResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import org.keycloak.util.JsonSerialization
 import org.springframework.context.annotation.Profile
