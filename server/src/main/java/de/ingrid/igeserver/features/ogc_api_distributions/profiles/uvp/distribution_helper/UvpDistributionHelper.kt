@@ -17,20 +17,19 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.uvp.distributionHelper
+package de.ingrid.igeserver.features.ogc_api_distributions.profiles.uvp.distribution_helper
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.features.ogcApi.distributionHelper.DistributionTypeInfo
-import de.ingrid.igeserver.features.ogcApi.distributionHelper.OgcDistributionHelper
+import de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper.DistributionTypeInfo
+import de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper.OgcDistributionHelper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.storage.Storage
 import net.pwall.json.schema.parser.Parser.Companion.isZero
 import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 data class PublicHearing(
@@ -73,7 +72,6 @@ data class PublicDisclosureReportsRecommendationDocs(
     val reportsRecommendationDocsPublishDuringDisclosure: Boolean,
 )
 
-@Profile("ogc-distributions-api & uvp")
 @Service
 class UvpDistributionHelper(
     private val storage: Storage

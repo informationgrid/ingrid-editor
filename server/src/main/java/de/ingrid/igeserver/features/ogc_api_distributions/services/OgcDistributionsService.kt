@@ -17,11 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.features.ogcApi.services
+package de.ingrid.igeserver.features.ogc_api_distributions.services
 
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.ValidationException
-import de.ingrid.igeserver.features.ogcApi.distributionHelper.OgcDistributionHelperFactory
+import de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper.OgcDistributionHelperFactory
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.ApiValidationService
@@ -29,14 +29,12 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.storage.Storage
 import de.ingrid.mdek.upload.storage.impl.Scope
-import org.springframework.context.annotation.Profile
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 
 @Service
-@Profile("ogc-distributions-api")
 class OgcDistributionsService(
     private val storage: Storage,
     private val catalogService: CatalogService,

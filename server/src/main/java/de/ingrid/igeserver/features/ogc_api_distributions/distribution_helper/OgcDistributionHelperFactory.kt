@@ -17,14 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.features.ogcApi.distributionHelper
+package de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper
 
 import de.ingrid.igeserver.configuration.ConfigurationException
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
-@Profile("ogc-distributions-api")
 @Service
 class OgcDistributionHelperFactory() {
 

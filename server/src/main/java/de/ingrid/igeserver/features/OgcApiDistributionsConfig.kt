@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,14 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.features.ogcApi.distributionHelper
+package de.ingrid.igeserver.features
+
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 
 
-/**
- * @param id the ID of the distribution helper
- * @param name the display name of the distribution helper
- * @param description a description for the distribution helper
- * @param profiles in which profiles can this distribution helper be used
- *
- */
-data class DistributionTypeInfo(val id: String, val name: String, val description: String, val profiles: List<String>)
+@Profile("ogc-distributions-api")
+@Configuration
+@ComponentScan(basePackages = ["de.ingrid.igeserver.features.ogc_api_distributions"])
+class OgcApiDistributionsConfig

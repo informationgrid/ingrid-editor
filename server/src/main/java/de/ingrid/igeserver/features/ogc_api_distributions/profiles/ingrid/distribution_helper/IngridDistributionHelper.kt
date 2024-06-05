@@ -17,43 +17,43 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.bmi.distributionHelper
+package de.ingrid.igeserver.features.ogc_api_distributions.profiles.ingrid.distribution_helper
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.features.ogcApi.distributionHelper.DistributionTypeInfo
-import de.ingrid.igeserver.features.ogcApi.distributionHelper.OgcDistributionHelper
+import de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper.DistributionTypeInfo
+import de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper.OgcDistributionHelper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.storage.Storage
 import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
-@Profile("ogc-distributions-api & bmi")
 @Service
-class BmiDistributionHelper(
+class IngridDistributionHelper(
     private val storage: Storage
 ): OgcDistributionHelper {
 
     override val typeInfo: DistributionTypeInfo
         get() = DistributionTypeInfo(
-            "bmi",
-            "BMI",
-            description = "BMI distribution Helper",
+            "ingrid",
+            "Ingrid",
+            description = "Ingrid distribution Helper",
             emptyList()
         )
 
-    override fun canHandleDistribution(profile: String): Boolean = "bmi" == profile
+    override fun canHandleDistribution(profile: String): Boolean {
+        return "ingrid" == profile
+    }
 
     override fun getDistributionDetails(document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
-        val allDistributions = document.data["distributions"]
+        val allDistributions = document.data["graphicOverviews"]
 
         return if (distributionId.isNullOrEmpty()) {
             allDistributions
         } else {
-            val filteredDistributions = allDistributions.filter() { it.getString("link.uri") == distributionId }
+            val filteredDistributions = allDistributions.filter { it.getString("fileName.uri") == distributionId }
             convertListToJsonNode(filteredDistributions)
         }
     }
@@ -67,14 +67,15 @@ class BmiDistributionHelper(
     ): List<String> {
         val missingFiles: MutableList<String> = mutableListOf()
 
-        distributions.forEach() { distribution ->
-            val currentDistributionId = distribution.getString("link.uri")!!
-            val isLink = distribution.getBoolean("link.asLink")!!
+        distributions.forEach { distribution ->
+            val currentDistributionId = distribution.getString("fileName.uri")!!
+            val isLink = distribution.getBoolean("fileName.asLink")!!
             isLink.ifFalse {
                 val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
                 distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
             }
         }
+
         return missingFiles
     }
 

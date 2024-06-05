@@ -17,15 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.features.ogcApi.api
+package de.ingrid.igeserver.features.ogc_api_distributions.api
 
-import de.ingrid.igeserver.features.ogcApi.services.OgcDistributionsService
+import de.ingrid.igeserver.features.ogc_api_distributions.services.OgcDistributionsService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -33,7 +32,6 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@Profile("ogc-distributions-api")
 @RequestMapping(path = ["/api/ogc"])
 class OgcDistributionsApiController(
     private val ogcDistributionsService: OgcDistributionsService,
