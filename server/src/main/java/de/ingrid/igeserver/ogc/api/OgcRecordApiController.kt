@@ -24,8 +24,8 @@ import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.ogc.model.Link
 import de.ingrid.igeserver.model.ResearchResponse
-import de.ingrid.igeserver.ogc.OgcFilterParameter
-import de.ingrid.igeserver.ogc.OgcApiResearchQueryFactory
+import de.ingrid.igeserver.ogc.services.researchQuery.OgcFilterParameter
+import de.ingrid.igeserver.ogc.services.researchQuery.OgcApiResearchQueryFactory
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.ogc.services.OgcRecordService
 import de.ingrid.igeserver.ogc.services.QueryMetadata

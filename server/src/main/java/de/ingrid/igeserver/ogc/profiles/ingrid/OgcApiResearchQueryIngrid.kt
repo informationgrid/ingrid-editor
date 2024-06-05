@@ -20,8 +20,8 @@
 package de.ingrid.igeserver.ogc.profiles.ingrid
 
 import de.ingrid.igeserver.model.BoolFilter
-import de.ingrid.igeserver.ogc.OgcApiResearchQuery
-import de.ingrid.igeserver.ogc.OgcFilterParameter
+import de.ingrid.igeserver.ogc.services.researchQuery.OgcApiResearchQuery
+import de.ingrid.igeserver.ogc.services.researchQuery.OgcFilterParameter
 import org.intellij.lang.annotations.Language
 import org.springframework.stereotype.Component
 
