@@ -212,9 +212,7 @@ export abstract class IngridShared extends BaseDoctype {
                   ? this.addCheckboxInline("hvd", "High-Value-Dataset (HVD)", {
                       className: "flex-1",
                       click: (field: FormlyFieldConfig) =>
-                        setTimeout(() =>
-                          this.handleHVDClick(field).subscribe(),
-                        ),
+                        this.handleHVDClick(field).subscribe(),
                     })
                   : null,
               ].filter(Boolean),
@@ -1798,7 +1796,8 @@ export abstract class IngridShared extends BaseDoctype {
       return this.handleActivateOpenData(field).pipe(
         tap((success) =>
           success
-            ? (field.model.isOpenData = true)
+            ? ((field.model.openDataCategories = []),
+              (field.model.isOpenData = true))
             : field.formControl.setValue(false),
         ),
         tap(() => field.options.formState.updateModel()),
