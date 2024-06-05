@@ -31,7 +31,6 @@ import de.ingrid.igeserver.exports.internal.InternalExporter
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.model.*
-import de.ingrid.igeserver.ogc.OgcHtmlConverterService
 import de.ingrid.igeserver.ogc.api.CollectionFormat
 import de.ingrid.igeserver.ogc.api.RecordFormat
 import de.ingrid.igeserver.ogc.exportCatalog.OgcCatalogExporter
