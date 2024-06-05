@@ -131,7 +131,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
         record.admsIdentifier = str(model, dataset, "adms", "identifier")
         record.contact = createContact(model, dataset, "dcat", "contactPoint")
         record.contributors = createAgents(model, dataset, "dct", "contributor")
-        record.description = dataset.getProperty(DCTerms.title)?.string
+        record.description = dataset.getProperty(DCTerms.description)?.string
         val distributionsAsMaps = createSetOfMaps(model, dataset, "dcat", "distribution", distributionProperties)
         if (!distributionsAsMaps.isEmpty()) {
             record.distributions = mapsToDistributions(distributionsAsMaps)
