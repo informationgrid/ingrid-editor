@@ -1,5 +1,11 @@
 # Changelog
 
+## 7.1.3.1 (05.06.2024)
+
+### Bugfixes
+
+- OpenData-Kategorien nicht auswählbar nach HVD-Option (#6400)
+
 ## 7.1.3 (04.06.2024)
 
 ### Features
@@ -14,6 +20,55 @@
 ### Bugfixes
 
 - Migration: operatesOn (#6241)
+
+## 7.1.2 (15.05.2024)
+
+### Features
+
+- applicationProfile, Anpassung der Liste (#6274)
+- Anonymisierung Adressen (#6253)
+- IGE-NG: iBus spezifischer Index beim Export an verschiedene iBusse (#6171)
+- Daten-Dienste-Kopplung: neue Komponente für Erfassung der Layer (#6084)
+- Bezeichnung der Objektklassen im Portal / Editor? (#6061)
+- Beim Löschen von verantwortlichem User werden bei "Verantwortung übertragen"-Tabelle Users angezeigt ohne Berechtigungen auf die MD (#6045)
+- Anzupassendes Verhalten bezüglich Export (CSW) nach extern (#6041)
+- Neue Felder im Editor (#6039)
+
+### Bugfixes
+
+- Änderung an Benutzer kann indirekt gespeichert werden obwohl Pflichtangaben fehlen (#6302)
+- Fehler bei der Indizierung (#6296)
+- Berechnung der zu exportierenden Datensätze fehlerhaft (#6283)
+- Import aus ZIP Archiv funktioniert nicht bei Umlauten in Dateinamen gezippter Dateien (#6281)
+- abstract in ISO-Ansicht fehlerhaft (#6277)
+- Nachname ändern führt zu Fehlermeldung (#6252)
+- IGE-NG Exporter produziert unvollständiges Dokument in ISO 19139 (#6206)
+- Rechenfehler beim Indizieren... (#6201)
+- Löschen aus Index kann zu Fehler führen (#6181)
+- Vorschaubilder für untergeordnete Objekte der Datensätze erscheinen nicht im Portal... (#6170)
+- Editor: geometry context bei Export nicht berücksichtigt (#6162)
+- IGE: Importfehler (#6116)
+- Darstellung der Metadaten im GetCapabilities Assistenten verbessern (#6090)
+- Feldzuordnung bei Adressen korrigieren (#6067)
+- Toolbar buttons get activated when user clicks on them using right mouse click (#6057)
+- "Nach Ort suchen" im Portal funktioniert nicht (#6036)
+- Make filter by date inclusive in activity report (#6015)
+
+## 7.1.1 (04.06.2024)
+
+### Features
+
+- IGE-NG: iBus spezifischer Index beim Export an verschiedene iBusse (#6171)
+- UVP, Portal: Menüeintrag verkürzen (#4495)
+- Überarbeitung der Seite "Funktionen" in der Dokumentation (#7)
+
+### Bugfixes
+
+- Löschen aus Index kann zu Fehler führen (#6181)
+- Vorschaubilder für untergeordnete Objekte der Datensätze erscheinen nicht im Portal... (#6170)
+- Editor: geometry context bei Export nicht berücksichtigt (#6162)
+- IGE: Importfehler (#6116)
+- "Nach Ort suchen" im Portal funktioniert nicht (#6036)
 
 ## 7.0.0 (05.01.2024)
 
