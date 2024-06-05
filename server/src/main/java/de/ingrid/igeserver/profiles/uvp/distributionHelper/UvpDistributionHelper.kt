@@ -22,8 +22,8 @@ package de.ingrid.igeserver.profiles.uvp.distributionHelper
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ogc.distributionHelper.DistributionTypeInfo
-import de.ingrid.igeserver.ogc.distributionHelper.OgcDistributionHelper
+import de.ingrid.igeserver.features.ogcApi.distributionHelper.DistributionTypeInfo
+import de.ingrid.igeserver.features.ogcApi.distributionHelper.OgcDistributionHelper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
