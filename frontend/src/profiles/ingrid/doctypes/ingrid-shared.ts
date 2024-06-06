@@ -118,9 +118,7 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addGroupSimple(
       null,
       [
-        options.inspireRelevant ||
-        this.showAdVCompatible ||
-        !this.options.hide.openData
+        options.inspireRelevant || this.showAdVCompatible
           ? this.addGroup(
               null,
               "Typ",
