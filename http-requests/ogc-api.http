@@ -1,0 +1,399 @@
+### get all datasets
+
+GET {{url}}/ogc/collections/{{catalogId}}/items
+Accept: application/json
+Authorization: Bearer {{$auth.token("auth-id")}}
+
+### Create new dataset with DCAT-AP.DE
+
+POST {{url}}/ogc/collections/{{catalogId}}/items
+Accept: application/json
+Authorization: Bearer {{$auth.token("auth-id")}}
+Content-Type: application/xml
+
+<rdf:RDF
+        xmlns:adms="http://www.w3.org/ns/adms#"
+        xmlns:dcat="http://www.w3.org/ns/dcat#"
+        xmlns:dcatde="http://dcat-ap.de/def/dcatde/"
+        xmlns:dcatap="http://data.europa.eu/r5r/"
+        xmlns:dcterms="http://purl.org/dc/terms/"
+        xmlns:foaf="http://xmlns.com/foaf/0.1/"
+        xmlns:gml="http://www.opengis.net/gml/3.2"
+        xmlns:locn="http://www.w3.org/ns/locn#"
+        xmlns:odrs="http://schema.theodi.org/odrs#"
+        xmlns:owl="http://www.w3.org/2002/07/owl#"
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns:schema="http://schema.org/"
+        xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+        xmlns:vcard="http://www.w3.org/2006/vcard/ns#"
+        xmlns:hydra="http://www.w3.org/ns/hydra/core#">
+    <dcat:Catalog rdf:about="https://bmi-opendata.wemove.com">
+        <dcat:dataset rdf:resource="https://bmi-opendata.wemove.com/exporter/datasets/d31f121e-4767-4fd0-8fb5-b99cbdfe4713"/>
+        <dcterms:description xml:lang="de">Dies ist der Opendata-Katalog des BMI.</dcterms:description>
+        <dcterms:publisher>
+            <foaf:Agent rdf:about="https://bmi-opendata.wemove.com/#publisher">
+                <foaf:name>BMI</foaf:name>
+            </foaf:Agent>
+        </dcterms:publisher>
+        <dcterms:title xml:lang="de">BMI Opendata Editor</dcterms:title>
+        <foaf:homepage rdf:resource="https://bmi-opendata.wemove.com"/>
+    </dcat:Catalog>
+    <dcat:Dataset rdf:about="https://bmi-opendata.wemove.com/exporter/datasets/d31f121e-4767-4fd0-8fb5-b99cbdfe4713">
+        <dcterms:description>Beschreibung des Testdatensatzes Opendata wemove</dcterms:description>
+        <dcterms:title>Open Data Testdatensatz via OGC-API</dcterms:title>
+        <dcat:contactPoint>
+            <vcard:Organization>
+                <vcard:fn>wemove</vcard:fn>
+                <vcard:hasPostalCode>60314</vcard:hasPostalCode>
+                <vcard:hasStreetAddress>Hanauer Landstr. 52</vcard:hasStreetAddress>
+                <vcard:hasLocality>Frankfurt</vcard:hasLocality>
+                <vcard:hasCountryName>Deutschland</vcard:hasCountryName>
+                <vcard:hasEmail>martin.muster@wemove.com</vcard:hasEmail>
+                <vcard:hasURL rdf:resource="https://www.wemove.com"/>
+                <vcard:hasTelephone>069 111111</vcard:hasTelephone>
+            </vcard:Organization>
+        </dcat:contactPoint>
+        <dcterms:identifier>d31f121e-4767-4fd0-8fb5-b99cbdfe4713</dcterms:identifier>
+        <dcat:distribution rdf:resource="https://bmi-opendata.wemove.com/downloads/d31f121e-4767-4fd0-8fb5-b99cbdfe4713/hilfe.png#distribution"/>
+    </dcat:Dataset>
+    <dcat:Distribution rdf:about="https://bmi-opendata.wemove.com/downloads/d31f121e-4767-4fd0-8fb5-b99cbdfe4713/hilfe.png#distribution">
+        <dcat:accessURL rdf:resource="https://bmi-opendata.wemove.com/downloads/d31f121e-4767-4fd0-8fb5-b99cbdfe4713/hilfe.png"/>
+        <dcterms:license rdf:resource="http://dcat-ap.de/def/licenses/cc-zero"/>
+        <dcterms:format rdf:resource="http://publications.europa.eu/resource/authority/file-type/PNG"/>
+        <dcterms:description>MM Beschreibung Hilfe Bild</dcterms:description>
+        <dcat:downloadURL rdf:resource="https://bmi-opendata.wemove.com/downloads/d31f121e-4767-4fd0-8fb5-b99cbdfe4713/hilfe.png"/>
+        <dcterms:title>Hilfe Bild</dcterms:title>
+        <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">1969-07-08T23:00:00Z</dcterms:modified>
+        <dcatap:availability rdf:resource="http://publications.europa.eu/resource/authority/planned-availability/TEMPORARY"/>
+        <dcatde:licenseAttributionByText>Quellenvermerk: wemove bitte nennen</dcatde:licenseAttributionByText>
+    </dcat:Distribution>
+</rdf:RDF>
+
+### Update a dataset (simple) with DCAT-AP.DE
+
+PUT {{url}}/ogc/collections/{{catalogId}}/items/d31f121e-4767-4fd0-8fb5-b99cbdfe4713
+Accept: application/json
+Authorization: Bearer {{$auth.token("auth-id")}}
+Content-Type: application/xml
+
+<rdf:RDF
+        xmlns:adms="http://www.w3.org/ns/adms#"
+        xmlns:dcat="http://www.w3.org/ns/dcat#"
+        xmlns:dcatde="http://dcat-ap.de/def/dcatde/"
+        xmlns:dcatap="http://data.europa.eu/r5r/"
+        xmlns:dcterms="http://purl.org/dc/terms/"
+        xmlns:foaf="http://xmlns.com/foaf/0.1/"
+        xmlns:gml="http://www.opengis.net/gml/3.2"
+        xmlns:locn="http://www.w3.org/ns/locn#"
+        xmlns:odrs="http://schema.theodi.org/odrs#"
+        xmlns:owl="http://www.w3.org/2002/07/owl#"
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns:schema="http://schema.org/"
+        xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+        xmlns:vcard="http://www.w3.org/2006/vcard/ns#"
+        xmlns:hydra="http://www.w3.org/ns/hydra/core#">
+    <dcat:Catalog rdf:about="https://bmi-opendata.wemove.com">
+        <dcat:dataset rdf:resource="https://bmi-opendata.wemove.com/exporter/datasets/d31f121e-4767-4fd0-8fb5-b99cbdfe4713"/>
+        <dcterms:description xml:lang="de">Dies ist der Opendata-Katalog des BMI.</dcterms:description>
+        <dcterms:publisher>
+            <foaf:Agent rdf:about="https://bmi-opendata.wemove.com/#publisher">
+                <foaf:name>BMI</foaf:name>
+            </foaf:Agent>
+        </dcterms:publisher>
+        <dcterms:title xml:lang="de">BMI Opendata Editor</dcterms:title>
+        <foaf:homepage rdf:resource="https://bmi-opendata.wemove.com"/>
+    </dcat:Catalog>
+    <dcat:Dataset rdf:about="https://bmi-opendata.wemove.com/exporter/datasets/d31f121e-4767-4fd0-8fb5-b99cbdfe4713">
+        <dcterms:description>Beschreibung des Testdatensatzes Opendata wemove</dcterms:description>
+        <dcterms:title>Open Data wemove Testdatensatz via OGC-API</dcterms:title>
+        <dcat:contactPoint>
+            <vcard:Organization>
+                <vcard:fn>wemove</vcard:fn>
+                <vcard:hasPostalCode>60314</vcard:hasPostalCode>
+                <vcard:hasStreetAddress>Hanauer Landstr. 52</vcard:hasStreetAddress>
+                <vcard:hasLocality>Frankfurt</vcard:hasLocality>
+                <vcard:hasCountryName>Deutschland</vcard:hasCountryName>
+                <vcard:hasEmail>martin.muster@wemove.com</vcard:hasEmail>
+                <vcard:hasURL rdf:resource="https://www.wemove.com"/>
+                <vcard:hasTelephone>069 111111</vcard:hasTelephone>
+            </vcard:Organization>
+        </dcat:contactPoint>
+        <dcterms:identifier>d31f121e-4767-4fd0-8fb5-b99cbdfe4713</dcterms:identifier>
+        <dcat:distribution rdf:resource="https://bmi-opendata.wemove.com/downloads/d31f121e-4767-4fd0-8fb5-b99cbdfe4713/hilfe.png#distribution"/>
+    </dcat:Dataset>
+    <dcat:Distribution rdf:about="https://bmi-opendata.wemove.com/downloads/d31f121e-4767-4fd0-8fb5-b99cbdfe4713/hilfe.png#distribution">
+        <dcat:accessURL rdf:resource="https://bmi-opendata.wemove.com/downloads/d31f121e-4767-4fd0-8fb5-b99cbdfe4713/hilfe.png"/>
+        <dcterms:license rdf:resource="http://dcat-ap.de/def/licenses/cc-zero"/>
+        <dcterms:format rdf:resource="http://publications.europa.eu/resource/authority/file-type/PNG"/>
+        <dcterms:description>MM Beschreibung Hilfe Bild</dcterms:description>
+        <dcat:downloadURL rdf:resource="https://bmi-opendata.wemove.com/downloads/d31f121e-4767-4fd0-8fb5-b99cbdfe4713/hilfe.png"/>
+        <dcterms:title>Hilfe Bild</dcterms:title>
+        <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">1969-07-08T23:00:00Z</dcterms:modified>
+        <dcatap:availability rdf:resource="http://publications.europa.eu/resource/authority/planned-availability/TEMPORARY"/>
+        <dcatde:licenseAttributionByText>Quellenvermerk: wemove bitte nennen</dcatde:licenseAttributionByText>
+    </dcat:Distribution>
+</rdf:RDF>
+
+### Update a dataset with DCAT-AP.DE
+
+PUT {{url}}/ogc/collections/{{catalogId}}/items/d31f121e-4767-4fd0-8fb5-b99cbdfe4713
+Accept: application/json
+Authorization: Bearer {{$auth.token("auth-id")}}
+Content-Type: application/xml
+
+<rdf:RDF
+        xmlns:adms="http://www.w3.org/ns/adms#"
+        xmlns:dcat="http://www.w3.org/ns/dcat#"
+        xmlns:dcatde="http://dcat-ap.de/def/dcatde/"
+        xmlns:dcatap="http://data.europa.eu/r5r/"
+        xmlns:dcterms="http://purl.org/dc/terms/"
+        xmlns:foaf="http://xmlns.com/foaf/0.1/"
+        xmlns:gml="http://www.opengis.net/gml/3.2"
+        xmlns:locn="http://www.w3.org/ns/locn#"
+        xmlns:odrs="http://schema.theodi.org/odrs#"
+        xmlns:owl="http://www.w3.org/2002/07/owl#"
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns:schema="http://schema.org/"
+        xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+        xmlns:vcard="http://www.w3.org/2006/vcard/ns#"
+        xmlns:hydra="http://www.w3.org/ns/hydra/core#">
+    <dcat:Catalog rdf:about="https://bmi-opendata.wemove.com">
+        <dcat:dataset rdf:resource="https://bmi-opendata.wemove.com/exporter/datasets/d31f121e-4767-4fd0-8fb5-b99cbdfe4713"/>
+        <dcterms:description xml:lang="de">Dies ist der Opendata-Katalog des BMI.</dcterms:description>
+        <dcterms:publisher>
+            <foaf:Agent rdf:about="https://bmi-opendata.wemove.com/#publisher">
+                <foaf:name>BMI</foaf:name>
+            </foaf:Agent>
+        </dcterms:publisher>
+        <dcterms:title xml:lang="de">BMI Opendata Editor</dcterms:title>
+        <foaf:homepage rdf:resource="https://bmi-opendata.wemove.com"/>
+    </dcat:Catalog>
+    <dcat:Dataset rdf:about="https://bmi-opendata.wemove.com/exporter/datasets/d31f121e-4767-4fd0-8fb5-b99cbdfe4713">
+        <dcterms:description>Beschreibung des Testdatensatzes Opendata wemove</dcterms:description>
+        <dcterms:title>Open Data wemove Testdatensatz via OGC-API</dcterms:title>
+        <dcatde:contributorID rdf:resource="http://dcat-ap.de/def/contributors/openDataBund"/>
+        <dcat:contactPoint>
+            <vcard:Organization>
+                <vcard:fn>wemove</vcard:fn>
+                <vcard:hasPostalCode>60314</vcard:hasPostalCode>
+                <vcard:hasStreetAddress>Hanauer Landstr. 52</vcard:hasStreetAddress>
+                <vcard:hasLocality>Frankfurt</vcard:hasLocality>
+                <vcard:hasCountryName>Deutschland</vcard:hasCountryName>
+                <vcard:hasEmail>martin.muster@wemove.com</vcard:hasEmail>
+                <vcard:hasURL rdf:resource="https://www.wemove.com"/>
+                <vcard:hasTelephone>069 111111</vcard:hasTelephone>
+            </vcard:Organization>
+        </dcat:contactPoint>
+        <dcat:distribution rdf:resource="https://bmi-opendata.wemove.com/downloads/d31f121e-4767-4fd0-8fb5-b99cbdfe4713/hilfe.png#distribution"/>
+        <dcat:keyword>wemove</dcat:keyword>
+        <dcat:keyword>digital</dcat:keyword>
+        <dcat:keyword>solutions</dcat:keyword>
+        <dcat:keyword>frankfurt am main</dcat:keyword>
+        <dcterms:publisher>
+            <foaf:Agent>
+                <foaf:name>wemove</foaf:name>
+                <foaf:mbox>martin.maidhof@wemove.com</foaf:mbox>
+                <foaf:homepage>https://www.wemove.com</foaf:homepage>
+            </foaf:Agent>
+        </dcterms:publisher>
+        <dcatde:qualityProcessURI rdf:resource="http://dcat-ap.de/def/politicalGeocoding/level/state"/>
+        <dcatde:originator>
+            <foaf:Organization>
+                <foaf:name>wemove Berlin</foaf:name>
+                <foaf:mbox>berlin_test@wemove_test.com</foaf:mbox>
+                <foaf:homepage>https://www.wemove.com/berlin</foaf:homepage>
+            </foaf:Organization>
+        </dcatde:originator>
+        <dcterms:accrualPeriodicity rdf:resource="http://publications.europa.eu/resource/authority/frequency/CONT"/>
+        <dcterms:identifier>d31f121e-4767-4fd0-8fb5-b99cbdfe4713</dcterms:identifier>
+        <dcat:landingPage rdf:resource="https://www.wemove.com/website/de/"/>
+        <dcterms:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2023-05-08T18:17:57Z</dcterms:issued>
+        <dcterms:spatial>
+            <dcterms:Location>
+                <skos:prefLabel>Frankfurt am Main, Hessen, Deutschland (administrative)</skos:prefLabel>
+                <locn:geometry rdf:datatype="https://www.iana.org/assignments/media-types/application/vnd.geo+json">{"type": "GeometryCollection", "geometries": [{"type": "Polygon", "coordinates": [[[8.47276, 50.015354], [8.800405, 50.015354], [8.800405, 50.227142], [8.47276, 50.227142], [8.47276, 50.015354]]]},{"type": "Polygon", "coordinates": [[[6.098034, 47.23942], [15.578555, 47.23942], [15.578555, 55.054344], [6.098034, 55.054344], [6.098034, 47.23942]]]}]}</locn:geometry>
+            </dcterms:Location>
+        </dcterms:spatial>
+        <dcterms:temporal>
+            <dcterms:PeriodOfTime>
+                <dcat:endDate rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-10-22Z</dcat:endDate>
+            </dcterms:PeriodOfTime>
+        </dcterms:temporal>
+        <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2023-10-24T14:16:30Z</dcterms:modified>
+        <dcatde:politicalGeocodingLevelURI rdf:resource="http://dcat-ap.de/def/politicalGeocoding/Level/european"/>
+        <dcatde:legalBasis>Meine Rechtsgrundlage</dcatde:legalBasis>
+        <dcat:theme rdf:resource="http://publications.europa.eu/resource/authority/data-theme/TECH"/>
+        <dcat:theme rdf:resource="http://publications.europa.eu/resource/authority/data-theme/EDUC"/>
+    </dcat:Dataset>
+    <dcat:Distribution rdf:about="https://bmi-opendata.wemove.com/downloads/d31f121e-4767-4fd0-8fb5-b99cbdfe4713/hilfe.png#distribution">
+        <dcat:accessURL rdf:resource="hilfe.png"/>
+        <dcterms:license rdf:resource="http://dcat-ap.de/def/licenses/cc-zero"/>
+        <dcterms:format rdf:resource="http://publications.europa.eu/resource/authority/file-type/PNG"/>
+        <dcterms:description>MM Beschreibung Hilfe Bild</dcterms:description>
+        <dcat:downloadURL rdf:resource="https://bmi-opendata.wemove.com/downloads/d31f121e-4767-4fd0-8fb5-b99cbdfe4713/hilfe.png"/>
+        <dcterms:title>Hilfe Bild</dcterms:title>
+        <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">1969-07-08T23:00:00Z</dcterms:modified>
+        <dcatap:availability rdf:resource="http://publications.europa.eu/resource/authority/planned-availability/TEMPORARY"/>
+        <dcatde:licenseAttributionByText>Quellenvermerk: wemove bitte nennen</dcatde:licenseAttributionByText>
+    </dcat:Distribution>
+</rdf:RDF>
+
+### create dataset with IGE-JSON
+
+POST {{url}}/ogc/collections/{{catalogId}}/items
+Accept: application/json
+Authorization: Bearer {{$auth.token("auth-id")}}
+Content-Type: application/json
+
+{
+  "title": "Open Data wemove Testdatensatz via OGC-API With IGE-JSON",
+  "_uuid": "59a574c2-f57a-4177-b7a8-16163c45cbdc",
+  "_type": "OpenDataDoc",
+  "addresses": [
+    {
+      "ref": {
+        "title": "wemove",
+        "_uuid": "dd3c264c-7118-4302-a531-06e5b0a9f89b",
+        "_type": "OpenDataAddressDoc",
+        "address": {
+          "city": "Frankfurt",
+          "street": "Hanauer Landstr. 52",
+          "country": {
+            "key": "276"
+          },
+          "zip-code": "60314"
+        },
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "martin.muster@wemove.com"
+          },
+          {
+            "type": {
+              "key": "1"
+            },
+            "connection": "069 111111"
+          }
+        ],
+        "organization": "wemove",
+        "positionName": "wemove"
+      },
+      "type": {
+        "key": "7"
+      }
+    }
+  ],
+  "DCATThemes": [],
+  "description": "Beschreibung des Testdatensatzes Opendata wemove",
+  "distributions": [
+    {
+      "link": {
+        "uri": "test.txt",
+        "value": "test.txt",
+        "asLink": false,
+        "lastModified": ""
+      },
+      "title": "Hilfe Bild",
+      "format": {
+        "key": "ZIP"
+      },
+      "license": null,
+      "byClause": "",
+      "modified": "",
+      "languages": [],
+      "description": "MM Beschreibung Hilfe Bild",
+      "availability": null
+    }
+  ]
+}
+
+### update dataset with IGE-JSON
+
+PUT {{url}}/ogc/collections/{{catalogId}}/items/59a574c2-f57a-4177-b7a8-16163c45cbdc
+Accept: application/json
+Authorization: Bearer {{$auth.token("auth-id")}}
+Content-Type: application/json
+
+{
+  "title": "Open Data wemove Testdatensatz via OGC-API With IGE-JSON",
+  "_uuid": "59a574c2-f57a-4177-b7a8-16163c45cbdc",
+  "_type": "OpenDataDoc",
+  "addresses": [
+    {
+      "ref": {
+        "title": "wemove",
+        "_uuid": "dd3c264c-7118-4302-a531-06e5b0a9f89b",
+        "_type": "OpenDataAddressDoc",
+        "address": {
+          "city": "Frankfurt",
+          "street": "Hanauer Landstr. 52",
+          "country": {
+            "key": "276"
+          },
+          "zip-code": "60314"
+        },
+        "contact": [
+          {
+            "type": {
+              "key": "3"
+            },
+            "connection": "martin.muster@wemove.com"
+          },
+          {
+            "type": {
+              "key": "1"
+            },
+            "connection": "069 111111"
+          }
+        ],
+        "organization": "wemove",
+        "positionName": "wemove"
+      },
+      "type": {
+        "key": "7"
+      }
+    }
+  ],
+  "DCATThemes": [],
+  "description": "Beschreibung des Testdatensatzes Opendata wemove",
+  "distributions": [
+    {
+      "link": {
+        "uri": "test.txt",
+        "value": "test.txt",
+        "asLink": false,
+        "lastModified": ""
+      },
+      "title": "Hilfe Bild",
+      "format": {
+        "key": "ZIP"
+      },
+      "license": null,
+      "byClause": "",
+      "modified": "",
+      "languages": [],
+      "description": "MM Beschreibung Hilfe Bild",
+      "availability": null
+    }
+  ]
+}
+
+### Upload file
+
+POST {{url}}/ogc/collections/{{catalogId}}/items/59a574c2-f57a-4177-b7a8-16163c45cbdc/distributions
+Accept: application/json
+Authorization: Bearer {{$auth.token("auth-id")}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="files"; filename="test.txt"
+Content-Type: text/plain
+
+Dies ist ein Beispiel
+--WebAppBoundary--
+
+### Delete a file
+
+DELETE {{url}}/ogc/collections/{{catalogId}}/items/59a574c2-f57a-4177-b7a8-16163c45cbdc/distributions?uri=test.txt
