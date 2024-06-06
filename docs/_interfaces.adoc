@@ -27,9 +27,6 @@ Overview of the necessary variables and credentials:
 | *$CLIENTID*
 | Keycloak client ID  (e.g. "ige-ng-frontend")
 
-| *$CLIENTSECRET*
-| Keycloak client secret (e.g. "admin")
-
 | *$USERNAME*
 | Username of InGird Editor Login
 
@@ -55,7 +52,7 @@ This Section descripts how access token and refresh token can be obtained via *c
 
 Replace the variable and execute cURL:
 
-`$KEYCLOAK_HOST`, `$REALM`, `$USERNAME`, `$PASSWORD`, `$CLIENTID`, `$CLIENTSECRET`
+`$KEYCLOAK_HOST`, `$REALM`, `$USERNAME`, `$PASSWORD`, `$CLIENTID`
 
 [source, curl]
 ----
@@ -66,7 +63,6 @@ curl -X POST
     -d password=$PASSWORD
     -d grant_type=password
     -d client_id=$CLIENTID
-    -d client_secret=$CLIENTSECRET
 ----
 
 
@@ -114,7 +110,6 @@ For more advanced testing, Postman can help to maintain a fresh access token.
 * Grand Type = "Password Credentials"
 * Access Token URL = `$KEYCLOAK_HOST`/realms/`$REALM`/protocol/openid-connect/token
 * Client ID = `$CLIENTID`,
-* Client Secret = `$CLIENTSECRET`
 * Username = `$USERNAME`
 * Password = `$PASSWORD`
 . Click *Get New Access Token*
