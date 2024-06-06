@@ -154,27 +154,27 @@ class Address : ShouldSpec() {
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.expected.idf.xml")
         }
-        
+
         should("export address hierarchy with position name") {
             val doc = documentService.getLastPublishedDocument("test-catalog", "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2")
             val result = exportDocToXML(exporter, doc)
-            
+
             result shouldContain addressHierarchy
             result shouldContain addressHierarchyWithPositionNameSet
         }
-        
+
         should("export address hierarchy with no position name") {
             val doc = documentService.getLastPublishedDocument("test-catalog", "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2")
             every {
-                documentService.getLastPublishedDocument("test-catalog", "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2")
+                documentService.getLastPublishedDocument("test-catalog", "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2", any(), any())
             } answers {
                 doc.data.put("positionName", null as String?)
                 doc
             }
             doc.data.put("positionName", null as String?)
-            
+
             val result = exportDocToXML(exporter, doc)
-            
+
             result shouldContain addressHierarchy
             result shouldContain addressHierarchyWithNoPositionNameSet
         }
