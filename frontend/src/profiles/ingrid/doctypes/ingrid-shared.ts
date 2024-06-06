@@ -76,6 +76,8 @@ export abstract class IngridShared extends BaseDoctype {
     dynamicRequired: {
       accessConstraints: "formState.mainModel?.isInspireIdentified",
       openDataCategories: undefined,
+      spatialReferences: undefined,
+      spatialSystems: undefined,
     },
     dynamicHide: {
       openDataCategories: "!formState.mainModel?.isOpenData",
@@ -86,6 +88,8 @@ export abstract class IngridShared extends BaseDoctype {
       topicCategories: true,
       accessConstraints: false,
       resourceDateType: false,
+      spatialReferences: true,
+      spatialSystems: false,
     },
     hide: {
       openData: false,
@@ -771,18 +775,21 @@ export abstract class IngridShared extends BaseDoctype {
         "spatial",
         [
           this.addSpatial("references", "Raumbezug", {
-            required: true,
+            required: this.options.required.spatialReferences,
             hasInlineContextHelp: true,
             defaultValue: defaultSpatial ? defaultSpatial : undefined,
+            expressions: {
+              "props.required": this.options.dynamicRequired.spatialReferences,
+            },
           }),
           this.addRepeatList("spatialSystems", "Koordinatenreferenzsysteme", {
+            required: this.options.required.spatialSystems,
             asSelect: false,
             showSearch: true,
             options: this.getCodelistForSelect("100", "spatialSystems"),
             codelistId: "100",
-            // TODO: required: this.spatialSystemsRequired, // instead of dynamic required
             expressions: {
-              "props.required": () => this.isGeoDataset || this.isGeoService,
+              "props.required": this.options.dynamicRequired.spatialSystems,
             },
           }),
           this.addGroup(
