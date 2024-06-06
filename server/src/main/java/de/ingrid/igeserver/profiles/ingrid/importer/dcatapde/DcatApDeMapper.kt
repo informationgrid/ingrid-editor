@@ -22,9 +22,13 @@ package de.ingrid.igeserver.profiles.ingrid.importer.dcatapde
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.RecordPLUProperties
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.Contact
 import de.ingrid.igeserver.services.DocumentService
+import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.*
 
 class DcatApDeMapper(val catalogId: String, val model: RecordPLUProperties, val documentService: DocumentService) {
+
+    private val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
 
     val title = model.title
     val uuid = model.identifier
@@ -44,4 +48,15 @@ class DcatApDeMapper(val catalogId: String, val model: RecordPLUProperties, val 
         return documentService.docRepo.findAddressByOrganisationName(catalogId, search)
             .firstOrNull() ?: UUID.randomUUID().toString()
     }
+
+    val distributions = model.distributions ?: emptySet()
+
+    val openDataCategories = emptyList<String>()
+
+    fun getContactTitle(contact: Contact): String {
+        return contact.hasOrganizationName ?: contact.fn ?: ""
+    }
+
+    fun formatDate(date: Instant?): String =
+        if (date == null) "" else formatterISO.format(Date.from(date))
 }

@@ -97,6 +97,8 @@ class RecordPLUProperties : Serializable {
 
     var processSteps: Set<ProcessStep>? = null
 
+    var themes: Set<String>? = null
+
     override fun equals(o: Any?): Boolean {
         if (this === o) {
             return true

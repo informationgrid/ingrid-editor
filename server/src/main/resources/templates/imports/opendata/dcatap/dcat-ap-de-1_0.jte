@@ -12,8 +12,8 @@
         "ref": {
         "_uuid": "${model.getAddressUuid(contact.get())}",
         "_type": "OpenDataAddressDoc",
-        "title": "${contact.get().getHasOrganizationName()}",
-        "organization": "${contact.get().getHasOrganizationName()}",
+        "title": "${model.getContactTitle(contact.get())}",
+        "organization": "${model.getContactTitle(contact.get())}",
         !{var address = contact.get();}
         "address": {
         @if(address.getHasLocality() != null)"city": "${address.getHasLocality()}",@endif
@@ -39,6 +39,32 @@
         },
         "type": { "key": "${contact.get().getType()}" }
         }@if (!contact.isLast()),@endif
+    @endfor
+    ],
+    "distributions": [
+    @for(var distribution : gg.jte.support.ForSupport.of(model.getDistributions()))
+        {
+            "link": {
+                "uri": "${distribution.get().getAccessURL()}",
+                "value": "${distribution.get().getAccessURL()}",
+                "asLink": false,
+                "lastModified": "${model.formatDate(distribution.get().getModified())}"
+            },
+            "title": "${distribution.get().getTitle()}",
+            "format": {
+                "key": "ZIP"
+            },
+            "license": null,
+            "byClause": "",
+            "modified": "${model.formatDate(distribution.get().getModified())}",
+            "languages": [],
+            "description": "${distribution.get().getDescription()}",
+            "availability": null
+        }@if (!distribution.isLast()),@endif
+    @endfor
+    ],
+    "DCATThemes": [
+    @for(var category : gg.jte.support.ForSupport.of(model.getOpenDataCategories()))
     @endfor
     ]
 }

@@ -133,7 +133,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
         record.contributors = createAgents(model, dataset, "dct", "contributor")
         record.description = dataset.getProperty(DCTerms.description)?.string
         val distributionsAsMaps = createSetOfMaps(model, dataset, "dcat", "distribution", distributionProperties)
-        if (!distributionsAsMaps.isEmpty()) {
+        if (distributionsAsMaps.isNotEmpty()) {
             record.distributions = mapsToDistributions(distributionsAsMaps)
         }
         record.identifier = dataset.getProperty(DCTerms.identifier).string ?: run {
@@ -178,6 +178,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
         record.publisher = if (publishers.hasNext()) publishers.next() else null
         record.relation = dataset.getProperty(DCTerms.relation)?.string
         record.title = dataset.getProperty(DCTerms.title)?.string
+//        record.themes = model.listObjectsOfProperty(DCAT.theme)
 
         val location = res(model, dataset, "dct", "spatial")
         /*if (location == null) {
