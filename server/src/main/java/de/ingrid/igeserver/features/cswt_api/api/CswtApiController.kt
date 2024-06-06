@@ -17,10 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.api
+package de.ingrid.igeserver.features.cswt_api.api
 
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.IgeException
+import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.features.cswt_api.services.CSWTransactionResult
 import de.ingrid.igeserver.features.cswt_api.services.CswtService
 import de.ingrid.igeserver.services.ApiValidationService
@@ -40,7 +41,6 @@ import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@Profile("csw-t")
 @RequestMapping(path = ["/api"])
 class CswtApiController (
     private val apiValidationService: ApiValidationService,

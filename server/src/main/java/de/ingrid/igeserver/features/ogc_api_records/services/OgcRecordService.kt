@@ -29,6 +29,8 @@ import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exports.internal.InternalExporter
 import de.ingrid.igeserver.exports.iso.Metadata
+import de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat
+import de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.model.*
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporter

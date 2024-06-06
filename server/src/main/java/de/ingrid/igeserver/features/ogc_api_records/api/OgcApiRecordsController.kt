@@ -17,9 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.api
+package de.ingrid.igeserver.features.ogc_api_records.api
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.features.ogc_api_records.model.Link
 import de.ingrid.igeserver.model.ResearchResponse
@@ -61,7 +62,6 @@ enum class RecordFormat(val mimeType: String) {
     geojson("application/json")
 }
 
-@Profile("ogc-api")
 @RestController
 @RequestMapping(path = ["/api/ogc"])
 class OgcApiRecordsController(
