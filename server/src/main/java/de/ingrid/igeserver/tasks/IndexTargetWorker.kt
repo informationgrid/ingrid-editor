@@ -169,7 +169,7 @@ class IndexTargetWorker(
         log.debug("export '${doc.uuid}' with exporter '${config.exporter.typeInfo.type}' to target '${config.target.name}'")
         val (exportedDoc, exporterType) =
             Pair(config.exporter.run(doc, catalogId), config.exporter.typeInfo.type)
-        
+
         val elasticDocument = convertToElasticDocument(exportedDoc)
         config.target.update(indexInfo, elasticDocument)
         val simpleContext = SimpleContext(catalogId, catalogProfile.identifier, doc.uuid)
@@ -178,14 +178,6 @@ class IndexTargetWorker(
             PostIndexPayload(elasticDocument, config.category.name, exporterType),
             simpleContext
         )
-    }
-
-    private fun handleIndexException(doc: Document, ex: Exception) {
-        val errorMessage =
-            "Error in PostIndexFilter or during sending to Elasticsearch: '${doc.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
-        log.error(errorMessage, ex)
-        message.errors.add(errorMessage)
-        notify.sendMessage(message)
     }
 
     private fun handleExportException(

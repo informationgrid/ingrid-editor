@@ -24,6 +24,7 @@ import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
@@ -31,6 +32,7 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
@@ -38,7 +40,7 @@ import kotlin.reflect.KClass
 @Service
 class IngridExporterExternalBast(
     idfExporter: IngridIdfExporterExternalBast,
-    luceneExporter: IngridLuceneExporterBast,
+    @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
     documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
@@ -80,7 +82,7 @@ class IngridIdfExporterExternalBast(
 @Service
 class IngridISOExporterExternalBast(
     idfExporter: IngridIdfExporterExternalBast,
-    luceneExporter: IngridLuceneExporterBast,
+    @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
     documentWrapperRepository: DocumentWrapperRepository
 ) : IngridExporterExternalBast(idfExporter, luceneExporter, documentWrapperRepository) {
 
