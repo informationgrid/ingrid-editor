@@ -59,7 +59,7 @@ class IndexExporterAddress(
     @Transactional
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         if (doc.type == "FOLDER") return "{}"
-        
+
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val partner = codelistService.getCodeListValue("110", catalog.settings.config.partner, "ident") ?: ""
         val provider = codelistService.getCodeListValue("111", catalog.settings.config.provider, "ident") ?: ""
@@ -108,7 +108,7 @@ class IndexExporterAddress(
     private fun getParentTitle(parent: DocumentWrapper?): List<String> {
         if (parent == null || parent.type == "FOLDER") return emptyList()
 
-        val publishedDoc = documentService.getLastPublishedDocument(parent.catalog!!.identifier, parent.uuid)
+        val publishedDoc = documentService.getLastPublishedDocument(parent.catalog!!.identifier, parent.uuid, resolveLinks = false)
         return getParentTitle(parent.parent) + (publishedDoc.title ?: "")
     }
 

@@ -548,7 +548,7 @@ open class IngridModelTransformer(
             }
         }
 
-        // for each layername create an operatesOn-element 
+        // for each layername create an operatesOn-element
         if (it.layerNames.isNullOrEmpty()) listOf(OperatesOn(it.uuid, finalIdentifier, null))
         else it.layerNames.map { layername: String -> OperatesOn(it.uuid, finalIdentifier, layername) }
 
@@ -563,7 +563,7 @@ open class IngridModelTransformer(
         return if (model.type == "InGridGeoDataset") {
             val doc = getLastPublishedDocument(model.uuid)
             documentService.getIncomingReferences(doc, catalogIdentifier)
-                .map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
+                .map { documentService.getLastPublishedDocument(catalogIdentifier, it, resolveLinks = false) }
                 .filter {
                     it.type == "InGridGeoService" && it.data.get("service").get("type").get("key").asText() == "2"
                 }
@@ -586,7 +586,7 @@ open class IngridModelTransformer(
     }
 
     // TODO: move to specific doc types
-    // information system or publication 
+    // information system or publication
     open val supplementalInformation = data.explanation ?: data.publication?.explanation
 
     // TODO: move to specific doc type
@@ -905,10 +905,10 @@ open class IngridModelTransformer(
         }
     }
 
-    fun getLastPublishedDocument(uuid: String): Document? {
+    fun getLastPublishedDocument(uuid: String, resolveLinks: Boolean = false): Document? {
         if (cache.documents.containsKey(uuid)) return cache.documents[uuid]
         return try {
-            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = true)
+            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = resolveLinks)
                 .also { cache.documents[uuid] = it }
         } catch (e: Exception) {
             log.warn("Could not get last published document: $uuid")

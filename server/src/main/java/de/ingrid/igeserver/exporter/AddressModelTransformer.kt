@@ -20,8 +20,8 @@
 package de.ingrid.igeserver.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
@@ -66,7 +66,7 @@ class AddressModelTransformer(
     fun getIndividualName(): String? = getIndividualName(displayAddress)
 
     fun getDisplayOrganization(): String? = determineEldestAncestor()?.document?.data?.getString("organization")
-    
+
     fun getOrganization(): String? = displayAddress.data.getString("organization")
 
     fun getPositionName(): String? =
@@ -212,7 +212,7 @@ class AddressModelTransformer(
         if (wrapper.type == "FOLDER") return mutableListOf()
 
         val convertedDoc = try {
-            val publishedDoc = documentService.getLastPublishedDocument(catalogIdentifier, wrapper.uuid)
+            val publishedDoc = documentService.getLastPublishedDocument(catalogIdentifier, wrapper.uuid, resolveLinks = false)
             DocumentData(wrapper, publishedDoc)
         } catch (ex: EmptyResultDataAccessException) {
             // no published document found
