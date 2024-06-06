@@ -21,7 +21,7 @@ package de.ingrid.igeserver.imports.ingrid_lfubayern
 
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.imports.changeUuidOfOrganisationTo
-import de.ingrid.igeserver.profiles.ingrid.importer.ISOImport
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.importer.ISOImportLfUBayern
 import de.ingrid.igeserver.repository.CatalogRepository

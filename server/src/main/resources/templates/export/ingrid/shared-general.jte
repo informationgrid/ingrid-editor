@@ -9,7 +9,7 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.DateEvent
 @import de.ingrid.igeserver.profiles.ingrid.exporter.CrossReference
-@import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
+@import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
 @import gg.jte.Content
 
 @param IngridModelTransformer page

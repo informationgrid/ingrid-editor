@@ -19,8 +19,8 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lfubayern.importer
 
-import de.ingrid.igeserver.profiles.ingrid.importer.ApplicationMapper
-import de.ingrid.igeserver.profiles.ingrid.importer.IsoImportData
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ApplicationMapper
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 
 class ApplicationMapperLfUBayern(isoData: IsoImportData) : ApplicationMapper(isoData) {
 

@@ -33,8 +33,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 import de.ingrid.igeserver.profiles.ingrid.hvdKeywordMapping
-import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
-import de.ingrid.igeserver.profiles.ingrid.importer.UnitField
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.CatalogService

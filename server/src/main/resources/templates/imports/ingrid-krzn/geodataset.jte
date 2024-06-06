@@ -1,4 +1,4 @@
-@import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
+@import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 @import gg.jte.support.ForSupport
 @param GeodatasetMapper model
 

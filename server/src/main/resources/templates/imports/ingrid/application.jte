@@ -1,4 +1,4 @@
-@import de.ingrid.igeserver.profiles.ingrid.importer.ApplicationMapper
+@import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ApplicationMapper
 @import gg.jte.Content
 @import gg.jte.support.ForSupport
 @param ApplicationMapper model

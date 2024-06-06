@@ -140,7 +140,6 @@ dependencies {
     implementation "io.ktor:ktor-client-java"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 
-
     // Markdown
     implementation "org.commonmark:commonmark:0.22.0"
     implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.22.0"
@@ -179,7 +178,10 @@ dependencies {
     implementation("org.geotools:gt-geojson:$geotools_version") {
         exclude group: 'javax.media', module: 'jai_core'
     }
-
+    
+    // RDF for DCAT-AP.de
+    implementation "org.apache.jena:apache-jena-libs:4.7.0"
+    
     // Test
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version" // for kotest framework
     testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version" // for kotest core jvm assertions

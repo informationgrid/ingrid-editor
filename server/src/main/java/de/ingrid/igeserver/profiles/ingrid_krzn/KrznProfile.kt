@@ -23,7 +23,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
-import de.ingrid.igeserver.profiles.ingrid.importer.ISOImport
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.profiles.ingrid_krzn.importer.ISOImportKRZN
 import de.ingrid.igeserver.repository.CatalogRepository
