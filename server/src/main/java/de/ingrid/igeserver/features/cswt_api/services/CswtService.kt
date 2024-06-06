@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.services
+package de.ingrid.igeserver.features.cswt_api.services
 
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.IgeException
@@ -25,6 +25,9 @@ import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.imports.ImportService
+import de.ingrid.igeserver.services.CatalogProfile
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.utils.xml.Csw202NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.logging.log4j.kotlin.logger
@@ -57,7 +60,6 @@ data class CSWTransactionResult(
 )
 
 @Service
-@Profile("csw-t")
 class CswtService(
     private val documentService: DocumentService,
     private val importService: ImportService,

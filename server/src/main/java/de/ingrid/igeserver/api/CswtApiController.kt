@@ -21,20 +21,23 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.IgeException
-import de.ingrid.igeserver.services.CSWTransactionResult
-import de.ingrid.igeserver.services.CswtService
+import de.ingrid.igeserver.features.cswt_api.services.CSWTransactionResult
+import de.ingrid.igeserver.features.cswt_api.services.CswtService
 import de.ingrid.igeserver.services.ApiValidationService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.SchedulerService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @Profile("csw-t")
@@ -44,10 +47,29 @@ class CswtApiController (
     private val ogcCswtService: CswtService,
     private val documentService: DocumentService,
     val scheduler: SchedulerService,
-) : CswtApi {
+) {
 
     val log = logger()
-    override fun handleCSWT(allRequestParams: Map<String, String>, allHeaders: Map<String, String>, principal: Authentication, service: String, request: String, catalog: String, data: String, datasetFolderId: String?, addressFolderId: String?): ResponseEntity<ByteArray> {
+
+
+    @PostMapping(value = ["/cswt"], consumes = [MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_XML_VALUE])
+    @Operation(tags=["CSW-T"], summary = "Insert, Update, Delete Records via CSW-t", hidden = false)
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Successful operation."),
+        ApiResponse(responseCode = "400", description = "Invalid input"),
+        ApiResponse(responseCode = "404", description = "Not found"),
+    ])
+    fun handleCSWT(
+        @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
+        @RequestHeader allHeaders: Map<String, String>,
+        principal: Authentication,
+        @Parameter(description = "Value must be 'CSW'" , required = true) @RequestParam("SERVICE", defaultValue = "CSW") service: String = "CSW",
+        @Parameter(description = "Value must be 'Transaction'" , required = true ) @RequestParam("REQUEST", defaultValue = "Transaction") request: String,
+        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @RequestParam("catalog") catalog: String,
+        @Parameter(description = "The datasets to be inserted, delete or updated.", required = true) @RequestBody data: String,
+        @Parameter(description = "## Dataset Folder ID \n **Custom Parameter** \n\n Add Dataset to Folder with UUID") @RequestParam(value = "datasetFolderId", required = false) datasetFolderId: String?,
+        @Parameter(description = "## Address Folder ID \n **Custom Parameter** \n\n Add Address to Folder with UUID") @RequestParam(value = "addressFolderId", required = false) addressFolderId: String?,
+    ): ResponseEntity<ByteArray> {
         var statusCode: HttpStatusCode? = null
         var xmlResponse: ByteArray? = null
 
