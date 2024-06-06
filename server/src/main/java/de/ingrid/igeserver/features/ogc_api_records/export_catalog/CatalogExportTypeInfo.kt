@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.features.ogcApi.exportCatalog
+package de.ingrid.igeserver.features.ogc_api_records.export_catalog
 
 import de.ingrid.igeserver.services.DocumentCategory
 

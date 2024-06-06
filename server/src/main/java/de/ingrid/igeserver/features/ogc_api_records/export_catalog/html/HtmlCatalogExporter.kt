@@ -17,58 +17,44 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.features.ogcApi.exportCatalog.internal
+package de.ingrid.igeserver.features.ogc_api_records.export_catalog.html
 
-import de.ingrid.igeserver.configuration.GeneralProperties
-import de.ingrid.igeserver.features.ogcApi.exportCatalog.CatalogExportTypeInfo
-import de.ingrid.igeserver.features.ogcApi.exportCatalog.OgcCatalogExporter
-import de.ingrid.igeserver.features.ogcApi.model.RecordCollection
+
+import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.features.ogc_api_records.services.OgcHtmlConverterService
+import de.ingrid.igeserver.features.ogc_api_records.export_catalog.CatalogExportTypeInfo
+import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
+import org.keycloak.util.JsonSerialization.mapper
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
 
 @Service
-class InternalCatalogExporter(
+class HtmlCatalogExporter(
         @Lazy val documentService: DocumentService,
         val catalogService: CatalogService,
-        private val generalProperties: GeneralProperties
+        val ogcHtmlConverterService: OgcHtmlConverterService
 ) : OgcCatalogExporter {
 
     override val typeInfo: CatalogExportTypeInfo
         get() = CatalogExportTypeInfo(
                 DocumentCategory.DATA,
-                "json",
-                "IGE Catalog in JSON",
-                "Interne Datenstruktur des IGE Catalog",
-                MediaType.APPLICATION_JSON_VALUE,
-                "json",
+                "html",
+                "IGE Catalog in HTML",
+                "HTML Representation des IGE Catalog",
+                MediaType.TEXT_HTML_VALUE,
+                "html",
                 listOf()
         )
 
-    override fun run(catalog: Catalog): RecordCollection {
-        return mapCatalogToRecordCollection(catalog)
+    override fun run(catalog: Catalog): Any {
+        val objectNode: ObjectNode = mapper.valueToTree(catalog)
+        return ogcHtmlConverterService.convertObjectNode2Html(objectNode, "Collection" )
     }
-
-    private fun mapCatalogToRecordCollection(catalog: Catalog): RecordCollection {
-        val apiHost = generalProperties.host
-        val links = "${apiHost}/api/ogc/collections/${catalog.identifier}/items"
-        return RecordCollection(
-                id = catalog.identifier,
-                title = catalog.name,
-                description = catalog.description,
-                links = links,
-                itemType = "record",
-                type = "Collection",
-                modelType = catalog.type,
-                created = catalog.created,
-                updated = catalog.modified,
-        )
-    }
-
 
 }

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.features.ogcApi.exportCatalog
+package de.ingrid.igeserver.features.ogc_api_records.export_catalog
 
 import de.ingrid.igeserver.configuration.ConfigurationException
 import org.springframework.stereotype.Service
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service
 class OgcCatalogExporterFactory(private val catalogExporterList: List<OgcCatalogExporter>) {
     val typeInfos: List<CatalogExportTypeInfo> = catalogExporterList.map { exporter: OgcCatalogExporter -> exporter.typeInfo }
 
-    fun getExporter(format: de.ingrid.igeserver.features.ogcApi.api.CollectionFormat): OgcCatalogExporter {
+    fun getExporter(format: de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat): OgcCatalogExporter {
         try {
             return catalogExporterList.first { exporter: OgcCatalogExporter -> format.toString() == exporter.typeInfo.type }
         } catch (e: NoSuchElementException) {

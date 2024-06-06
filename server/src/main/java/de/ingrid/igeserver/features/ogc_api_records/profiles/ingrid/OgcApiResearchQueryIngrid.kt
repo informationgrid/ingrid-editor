@@ -17,11 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.features.ogcApi.profiles.ingrid
+package de.ingrid.igeserver.features.ogc_api_records.profiles.ingrid
 
 import de.ingrid.igeserver.model.BoolFilter
-import de.ingrid.igeserver.features.ogcApi.services.researchQuery.OgcApiResearchQuery
-import de.ingrid.igeserver.features.ogcApi.services.researchQuery.OgcFilterParameter
+import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcApiResearchQuery
+import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcFilterParameter
 import org.intellij.lang.annotations.Language
 import org.springframework.stereotype.Component
 

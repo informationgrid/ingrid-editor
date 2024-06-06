@@ -26,5 +26,5 @@ import org.springframework.context.annotation.Profile
 
 @Profile("ogc-api")
 @Configuration
-@ComponentScan(basePackages = ["de.ingrid.igeserver.features.ogcApi"])
-class OgcConfig
+@ComponentScan(basePackages = ["de.ingrid.igeserver.features.ogc_api_records"])
+class OgcApiRecordsConfig

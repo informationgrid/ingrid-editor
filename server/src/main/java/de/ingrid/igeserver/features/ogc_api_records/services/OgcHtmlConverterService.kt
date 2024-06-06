@@ -17,13 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.features.ogcApi.services
+package de.ingrid.igeserver.features.ogc_api_records.services
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeType
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.configuration.GeneralProperties
-import de.ingrid.igeserver.features.ogcApi.model.Link
+import de.ingrid.igeserver.features.ogc_api_records.model.Link
 import org.springframework.stereotype.Service
 
 @Service

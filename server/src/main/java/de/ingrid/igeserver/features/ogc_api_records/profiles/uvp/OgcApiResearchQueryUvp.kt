@@ -17,19 +17,19 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.features.ogcApi.profiles.bmi
+package de.ingrid.igeserver.features.ogc_api_records.profiles.uvp
 
 import de.ingrid.igeserver.model.BoolFilter
-import de.ingrid.igeserver.features.ogcApi.services.researchQuery.OgcApiResearchQuery
-import de.ingrid.igeserver.features.ogcApi.services.researchQuery.OgcFilterParameter
+import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcApiResearchQuery
+import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcFilterParameter
 import org.intellij.lang.annotations.Language
 import org.springframework.stereotype.Component
 
 @Component
-class OgcApiResearchQueryBmi: OgcApiResearchQuery() {
-    override val profiles = listOf("bmi")
+class OgcApiResearchQueryUvp: OgcApiResearchQuery() {
+    override val profiles = listOf("uvp")
 
-    override lateinit var ogcParameter: OgcFilterParameter // = OgcFilterParameter(null, null, null, null, null, null)
+    override lateinit var ogcParameter: OgcFilterParameter
 
     override fun profileSpecificClauses(): MutableList<BoolFilter>? {
         val clausesList: MutableList<BoolFilter> = mutableListOf()
@@ -45,12 +45,10 @@ class OgcApiResearchQueryBmi: OgcApiResearchQuery() {
     fun qParameterSQL(): String {
         val titleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "title ILIKE '%$it%'" }
         val descriptionCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
-        val keywordsCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'keywords' ILIKE '%$it%'" }
 
         return """
-            ($titleCondition) 
-            OR ($descriptionCondition) 
-            OR ($keywordsCondition)
+            ($titleCondition)
+            OR ($descriptionCondition)
         """
     }
 }

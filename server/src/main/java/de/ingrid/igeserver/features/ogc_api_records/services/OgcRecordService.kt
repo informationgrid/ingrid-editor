@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.features.ogcApi.services
+package de.ingrid.igeserver.features.ogc_api_records.services
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -31,12 +31,12 @@ import de.ingrid.igeserver.exports.internal.InternalExporter
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.model.*
-import de.ingrid.igeserver.features.ogcApi.exportCatalog.OgcCatalogExporter
-import de.ingrid.igeserver.features.ogcApi.exportCatalog.OgcCatalogExporterFactory
-import de.ingrid.igeserver.features.ogcApi.model.LimitAndOffset
-import de.ingrid.igeserver.features.ogcApi.model.Link
-import de.ingrid.igeserver.features.ogcApi.model.RecordCollection
-import de.ingrid.igeserver.features.ogcApi.model.RecordsResponse
+import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporter
+import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporterFactory
+import de.ingrid.igeserver.features.ogc_api_records.model.LimitAndOffset
+import de.ingrid.igeserver.features.ogc_api_records.model.Link
+import de.ingrid.igeserver.features.ogc_api_records.model.RecordCollection
+import de.ingrid.igeserver.features.ogc_api_records.model.RecordsResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.services.*
 import org.keycloak.util.JsonSerialization
@@ -99,11 +99,11 @@ class OgcRecordService(
 ) {
     val hostnameOgcApi = generalProperties.host + "/api/ogc"
 
-    fun handleLandingPageRequest(requestedFormat: de.ingrid.igeserver.features.ogcApi.api.CollectionFormat): ResponsePackage {
+    fun handleLandingPageRequest(requestedFormat: de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat): ResponsePackage {
         val linkList: MutableList<Link> = mutableListOf()
 
         linkList.add(Link(href = hostnameOgcApi, rel = "self", type = requestedFormat.mimeType, title = "This document"))
-        de.ingrid.igeserver.features.ogcApi.api.CollectionFormat.entries
+        de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat.entries
             .filter { it != requestedFormat }
             .forEach {
                 linkList.add(
@@ -119,7 +119,7 @@ class OgcRecordService(
             links = linkList
         )
 
-        val responseByteArray = if (requestedFormat == de.ingrid.igeserver.features.ogcApi.api.CollectionFormat.html) {
+        val responseByteArray = if (requestedFormat == de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat.html) {
             val infoAsObjectNode: ObjectNode = JsonSerialization.mapper.valueToTree(info)
             val html = ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Landing page")
             ogcHtmlConverterService.wrapperForHtml(html, null, null).toByteArray()
@@ -134,7 +134,7 @@ class OgcRecordService(
     }
 
 
-    fun handleConformanceRequest(requestedFormat: de.ingrid.igeserver.features.ogcApi.api.CollectionFormat): ResponsePackage {
+    fun handleConformanceRequest(requestedFormat: de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat): ResponsePackage {
         val mimeType = requestedFormat.mimeType
 
         val conformance = Conformance(
@@ -144,7 +144,7 @@ class OgcRecordService(
             )
         )
 
-        val responseByteArray = if(requestedFormat == de.ingrid.igeserver.features.ogcApi.api.CollectionFormat.html) {
+        val responseByteArray = if(requestedFormat == de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat.html) {
             val infoAsObjectNode: ObjectNode = JsonSerialization.mapper.valueToTree(conformance)
             val html = ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Conformance")
             ogcHtmlConverterService.wrapperForHtml(html, null, null).toByteArray()
@@ -302,7 +302,7 @@ class OgcRecordService(
         return LimitAndOffset(queryLimit, queryOffset)
     }
 
-    fun getLinksForRecords(offset: Int?, limit: Int?, totalHits: Int, collectionId: String, requestedFormat: de.ingrid.igeserver.features.ogcApi.api.RecordFormat): List<Link> {
+    fun getLinksForRecords(offset: Int?, limit: Int?, totalHits: Int, collectionId: String, requestedFormat: de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat): List<Link> {
         val list: MutableList<Link> = mutableListOf()
 
         // prepare pageing numbers
@@ -319,7 +319,7 @@ class OgcRecordService(
         val nextOffsetString = "&offset=$nextOffset"
 
         // add self Link to list
-        de.ingrid.igeserver.features.ogcApi.api.RecordFormat.entries
+        de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat.entries
             .filter { it == requestedFormat }
             .forEach {
                 list.add(createLink(
@@ -331,7 +331,7 @@ class OgcRecordService(
             }
 
         // add collection links in supported formats
-        de.ingrid.igeserver.features.ogcApi.api.CollectionFormat.entries.forEach {
+        de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat.entries.forEach {
             val supportedFormat = it
             list.add(createLink(
                     url = "$baseUrl?f=$supportedFormat",
@@ -342,7 +342,7 @@ class OgcRecordService(
         }
 
         // add alternate, next, previous links for each format
-        de.ingrid.igeserver.features.ogcApi.api.RecordFormat.entries.forEach {
+        de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat.entries.forEach {
             val supportedFormat = it
             val mimeType = it.mimeType
             if (supportedFormat != requestedFormat) list.add(createLink(
@@ -376,14 +376,14 @@ class OgcRecordService(
                 title = title
         )
     }
-    fun prepareCatalog(collectionId: String, exporter: OgcCatalogExporter, format: de.ingrid.igeserver.features.ogcApi.api.CollectionFormat): ByteArray {
+    fun prepareCatalog(collectionId: String, exporter: OgcCatalogExporter, format: de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat): ByteArray {
         val catalog = exportCatalog( collectionId, exporter)
         val catalogAsList = listOf(catalog)
         val editedCatalog = editCatalogs(exporter.typeInfo.dataType, catalogAsList, format)
         return addWrapperToCatalog(editedCatalog, exporter.typeInfo.dataType, format, null, true, null)
     }
 
-    fun prepareCatalogs(principal: Principal, format: de.ingrid.igeserver.features.ogcApi.api.CollectionFormat): ByteArray {
+    fun prepareCatalogs(principal: Principal, format: de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat): ByteArray {
         val catalogs = catalogService.getCatalogsForPrincipal(principal)
         val exporter = ogcCatalogExporterFactory.getExporter(format)
         val catalogList: MutableList<Any> = mutableListOf()
@@ -402,7 +402,7 @@ class OgcRecordService(
         }
     }
 
-    private fun editCatalogs(mimeType: String, catalogList: List<Any>, format: de.ingrid.igeserver.features.ogcApi.api.CollectionFormat): Any{
+    private fun editCatalogs(mimeType: String, catalogList: List<Any>, format: de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat): Any{
         return if (mimeType == "text/xml") {
             var response = ""
             for (catalog in catalogList) response += catalog.toString().substringAfter("?>")
@@ -425,7 +425,7 @@ class OgcRecordService(
             catalogList
         }
     }
-    private fun addWrapperToCatalog(catalog: Any, mimeType: String, format: de.ingrid.igeserver.features.ogcApi.api.CollectionFormat, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
+    private fun addWrapperToCatalog(catalog: Any, mimeType: String, format: de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
         var wrappedResponse = ""
         if(mimeType == "text/html") wrappedResponse = ogcHtmlConverterService.wrapperForHtml(catalog as String, links, queryMetadata)
         if(mimeType == "text/xml") wrappedResponse = wrapperForXml(catalog as String, links, queryMetadata)
@@ -453,7 +453,7 @@ class OgcRecordService(
         wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
     }
 
-    fun prepareRecord(collectionId: String, recordId: String, format: de.ingrid.igeserver.features.ogcApi.api.RecordFormat): Pair<ByteArray, String> {
+    fun prepareRecord(collectionId: String, recordId: String, format: de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat): Pair<ByteArray, String> {
         val record = exportRecord(recordId, collectionId, format)
         val mimeType = record.exportFormat.toString()
 
@@ -463,27 +463,27 @@ class OgcRecordService(
         return Pair(wrappedRecord, mimeType)
     }
 
-    fun prepareRecords(records: ResearchResponse, collectionId: String, format: de.ingrid.igeserver.features.ogcApi.api.RecordFormat, mimeType: String, links: List<Link>, queryMetadata: QueryMetadata): ByteArray {
+    fun prepareRecords(records: ResearchResponse, collectionId: String, format: de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat, mimeType: String, links: List<Link>, queryMetadata: QueryMetadata): ByteArray {
         val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record._uuid!!, collectionId, format) }
         val unwrappedRecords = removeDefaultWrapper(mimeType, recordList, format)
         return addWrapperToRecords(unwrappedRecords, mimeType, format, links, false, queryMetadata)
     }
 
-    private fun exportRecord(recordId: String, collectionId: String, format: de.ingrid.igeserver.features.ogcApi.api.RecordFormat): ExportResult {
+    private fun exportRecord(recordId: String, collectionId: String, format: de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat): ExportResult {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
         val id = wrapper.id!!
-        val exportFormat = if(format == de.ingrid.igeserver.features.ogcApi.api.RecordFormat.json) "internal" else format.toString()
+        val exportFormat = if(format == de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat.json) "internal" else format.toString()
         val options = ExportRequestParameter(
                 id = id,
                 exportFormat = exportFormat,
                 // TODO context of ingridISO exporter: check why address documents need to called as drafts
-                useDraft = (format == de.ingrid.igeserver.features.ogcApi.api.RecordFormat.ingridISO && wrapper.category == "address")
+                useDraft = (format == de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat.ingridISO && wrapper.category == "address")
         )
         return exportService.export(collectionId, options)
     }
 
 
-    private fun removeDefaultWrapper(mimeType: String, recordList: List<ExportResult>, format: de.ingrid.igeserver.features.ogcApi.api.RecordFormat): Any{
+    private fun removeDefaultWrapper(mimeType: String, recordList: List<ExportResult>, format: de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat): Any{
         return if (mimeType == "text/xml") {
             var response = ""
             for (record in recordList) response += record.result.toString(Charsets.UTF_8).substringAfter("?>")
@@ -492,7 +492,7 @@ class OgcRecordService(
             val response: MutableList<JsonNode> = mutableListOf()
             for (record in recordList) {
                 var wrapperlessRecord = jacksonObjectMapper().readValue(record.result, JsonNode::class.java)
-                if(format == de.ingrid.igeserver.features.ogcApi.api.RecordFormat.json) wrapperlessRecord = wrapperlessRecord.get("resources").get("published")
+                if(format == de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat.json) wrapperlessRecord = wrapperlessRecord.get("resources").get("published")
                 response.add(wrapperlessRecord)
             }
             response
@@ -504,7 +504,7 @@ class OgcRecordService(
             recordList
         }
     }
-    private fun addWrapperToRecords(responseRecords: Any, mimeType: String, format: de.ingrid.igeserver.features.ogcApi.api.RecordFormat, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
+    private fun addWrapperToRecords(responseRecords: Any, mimeType: String, format: de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
         var wrappedResponse = ""
         if(mimeType == "text/html") wrappedResponse = ogcHtmlConverterService.wrapperForHtml(responseRecords as String, links, queryMetadata)
         if(mimeType == "text/xml") wrappedResponse = wrapperForXml(responseRecords as String, links, queryMetadata)
@@ -522,7 +522,7 @@ class OgcRecordService(
         return node
     }
 
-    private fun wrapperForJsonCatalog(responseCatalogs: List<JsonNode>, links: List<Link>?, queryMetadata: QueryMetadata?, singleRecord: Boolean?, format: de.ingrid.igeserver.features.ogcApi.api.CollectionFormat): String {
+    private fun wrapperForJsonCatalog(responseCatalogs: List<JsonNode>, links: List<Link>?, queryMetadata: QueryMetadata?, singleRecord: Boolean?, format: de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat): String {
         val mapper = jacksonObjectMapper()
         val recordArray = mapper.createArrayNode()
         responseCatalogs.forEach { recordArray.add(convertObject2Json(it)) }
@@ -530,12 +530,12 @@ class OgcRecordService(
         return recordArray.toString()
     }
 
-    private fun wrapperForJson(responseRecords: List<JsonNode>, links: List<Link>?, queryMetadata: QueryMetadata?, singleRecord: Boolean?, format: de.ingrid.igeserver.features.ogcApi.api.RecordFormat): String {
+    private fun wrapperForJson(responseRecords: List<JsonNode>, links: List<Link>?, queryMetadata: QueryMetadata?, singleRecord: Boolean?, format: de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat): String {
         val wrappedResponse: JsonNode
         val mapper = jacksonObjectMapper()
-        if(format == de.ingrid.igeserver.features.ogcApi.api.RecordFormat.geojson && singleRecord == true) {
+        if(format == de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat.geojson && singleRecord == true) {
                 wrappedResponse = mapper.convertValue(responseRecords, JsonNode::class.java)
-        } else if(format == de.ingrid.igeserver.features.ogcApi.api.RecordFormat.geojson && singleRecord == false) {
+        } else if(format == de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat.geojson && singleRecord == false) {
                 val response = RecordsResponse(
                         type = "FeatureCollection",
                         timeStamp = queryMetadata!!.timeStamp,

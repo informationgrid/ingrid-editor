@@ -17,19 +17,19 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.features.ogcApi.api
+package de.ingrid.igeserver.features.ogc_api_records.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.exports.ExporterFactory
-import de.ingrid.igeserver.features.ogcApi.model.Link
+import de.ingrid.igeserver.features.ogc_api_records.model.Link
 import de.ingrid.igeserver.model.ResearchResponse
-import de.ingrid.igeserver.features.ogcApi.services.researchQuery.OgcFilterParameter
-import de.ingrid.igeserver.features.ogcApi.services.researchQuery.OgcApiResearchQueryFactory
-import de.ingrid.igeserver.features.ogcApi.exportCatalog.OgcCatalogExporterFactory
-import de.ingrid.igeserver.features.ogcApi.services.OgcRecordService
-import de.ingrid.igeserver.features.ogcApi.services.QueryMetadata
-import de.ingrid.igeserver.features.ogcApi.services.ResponsePackage
+import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcFilterParameter
+import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcApiResearchQueryFactory
+import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporterFactory
+import de.ingrid.igeserver.features.ogc_api_records.services.OgcRecordService
+import de.ingrid.igeserver.features.ogc_api_records.services.QueryMetadata
+import de.ingrid.igeserver.features.ogc_api_records.services.ResponsePackage
 import de.ingrid.igeserver.services.*
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -91,7 +91,7 @@ class OgcApiRecordsController(
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                 "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
-        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: de.ingrid.igeserver.features.ogcApi.api.CollectionFormat,
+        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
@@ -115,7 +115,7 @@ class OgcApiRecordsController(
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                 "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
-        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: de.ingrid.igeserver.features.ogcApi.api.CollectionFormat,
+        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
@@ -139,7 +139,7 @@ class OgcApiRecordsController(
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                 "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
-        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: de.ingrid.igeserver.features.ogcApi.api.CollectionFormat,
+        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
@@ -166,7 +166,7 @@ class OgcApiRecordsController(
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                 "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`"
-        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: de.ingrid.igeserver.features.ogcApi.api.CollectionFormat,
+        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
@@ -293,7 +293,7 @@ class OgcApiRecordsController(
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                 "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
                 "\n\n• get response in XML, ISO 19139 with value `ingridISO` \n\n• get response in GEOJSON with value `geojson`"
-        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: de.ingrid.igeserver.features.ogcApi.api.RecordFormat,
+        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
@@ -406,7 +406,7 @@ class OgcApiRecordsController(
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
                 "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
                 "\n\n• get response in XML, ISO 19139 with value `ingridISO` \n\n• get response in GEOJSON with value `geojson`"
-        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: de.ingrid.igeserver.features.ogcApi.api.RecordFormat,
+        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat,
         // PARAMETER : filter
         @Parameter(description = "## Filter\n **OGC Parameter SHOULD**" +
                 "\n\n### ! Not yet implemented !" +
@@ -421,7 +421,7 @@ class OgcApiRecordsController(
         apiValidationService.validateRequestParams(allRequestParams, listOf("limit", "offset", "type", "bbox", "datetime", "q", "externalid", "f", "filter"))
         apiValidationService.validateBbox(bbox)
 
-        val exportFormat = if(format == de.ingrid.igeserver.features.ogcApi.api.RecordFormat.json) "internal" else format.toString()
+        val exportFormat = if(format == de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat.json) "internal" else format.toString()
         val exporter = exporterFactory.getExporter(DocumentCategory.DATA, format = exportFormat)
         val mimeType: String = exporter.typeInfo.dataType
 
