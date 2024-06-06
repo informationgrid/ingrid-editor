@@ -629,6 +629,31 @@ class InheritedProfileComponent extends ParentProfileComponent {}
 
 * add file to `tsconfig.app.json` und `tsconfig.spec.json`
 
+=== Features
+A feature is a functionality that can be enabled or disabled on demand.
+The logic for all features should be managed in the directory "features".
+
+==== Feature Activation
+Similar to catalog profiles it is possible to activate features with its spring profiles.
+In order to ensure that a feature is disabled by default, follow the instructions of *Feature Creation*.
+
+==== Feature Creation
+* Create a new package that contains the feature logic in the features-directory:
+`server/src/main/java/de/ingrid/igeserver/features/<FeatureNamePackage>`
+
+* Create a new config file for activating the feature in the features-directory:
+`server/src/main/java/de/ingrid/igeserver/features/<FeatureNameConfig>`
+
+Example of a feature config file:
+
+[source,kotlin]
+----
+@Profile("feature-name")
+@Configuration
+@ComponentScan(basePackages = ["de.ingrid.igeserver.features.[feature-name-package]"])
+class FeatureNameConfig
+----
+
 === Export format
 
 The documentation of the export format is here: link:export-format.adoc#_export_format[Definition Export format]
