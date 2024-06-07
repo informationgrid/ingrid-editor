@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 if [[ -n "${WAIT_FOR_PARAM}" ]]; then
   TIMEOUT=120
   if [[ -n "${WAIT_FOR_PARAM_TIMEOUT}" ]]; then
