@@ -4,7 +4,7 @@ if [[ -n "${WAIT_FOR_PARAM}" ]]; then
   if [[ -n "${WAIT_FOR_PARAM_TIMEOUT}" ]]; then
     TIMEOUT=${WAIT_FOR_PARAM_TIMEOUT}
   fi
-  /wait-for-it.sh ${WAIT_FOR_PARAM} -t ${TIMEOUT}
+  /wait-for-it.sh ${WAIT_FOR_PARAM} -t ${TIMEOUT} -- echo "Continue"
 fi
 
 echo "Adapt index.html to match context path"
