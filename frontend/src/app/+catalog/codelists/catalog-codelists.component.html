@@ -38,7 +38,7 @@
                             [formControl]="filterCtrl"
                         ></ngx-mat-select-search>
                     </mat-option>
-                    @for (codelist of filteredOptions; track codelist) {
+                    @for (codelist of filteredOptions; track codelist.id) {
                         <mat-option [value]="codelist">
                             {{ codelist.name }} ({{ codelist.id }})
                         </mat-option>
@@ -88,7 +88,7 @@
                     cdkDropList
                     (cdkDropListDropped)="dropFavorite($event)"
                 >
-                    @for (item of favorites; track item) {
+                    @for (item of favorites; track item.id) {
                         <div
                             cdkDrag
                             class="list-item flex-row align-items-center"

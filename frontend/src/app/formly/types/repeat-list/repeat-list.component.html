@@ -148,7 +148,7 @@
                     ></ngx-mat-select-search>
                 </mat-option>
             }
-            @for (option of filteredOptions | async; track option) {
+            @for (option of filteredOptions | async; track option.value) {
                 @if (option.value === "_SEPARATOR_") {
                     <mat-divider class="space-bottom"></mat-divider>
                 } @else {
@@ -194,7 +194,7 @@
             #auto="matAutocomplete"
             (optionSelected)="addToList($event.option.value)"
         >
-            @for (option of filteredOptions | async; track option) {
+            @for (option of filteredOptions | async; track option.value) {
                 @if (option.value === "_SEPARATOR_") {
                     <mat-divider class="space-bottom"></mat-divider>
                 } @else {
