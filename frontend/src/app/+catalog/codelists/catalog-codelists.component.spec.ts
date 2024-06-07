@@ -38,6 +38,8 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { MatIconTestingModule } from "@angular/material/icon/testing";
+import { Observable, of } from "rxjs";
 
 describe("CatalogCodelistsComponent", () => {
   let spectator: Spectator<CatalogCodelistsComponent>;
@@ -65,11 +67,15 @@ describe("CatalogCodelistsComponent", () => {
 
   const createHost = createComponentFactory({
     component: CatalogCodelistsComponent,
-    imports: [CodelistPresenterComponent],
+    imports: [CodelistPresenterComponent, MatIconTestingModule],
     providers: [
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
-      mockProvider(CodelistService),
+      mockProvider(CodelistService, {
+        updateFavorites(id: string, entryIds: string[]): Observable<void> {
+          return of();
+        },
+      }),
     ],
     detectChanges: false,
   });

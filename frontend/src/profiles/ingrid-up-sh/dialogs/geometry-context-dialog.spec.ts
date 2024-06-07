@@ -92,7 +92,6 @@ describe("GeometryContextDialogComponent", () => {
   it("should fill a new item of type 'nominal'", async () => {
     await enterCommonData();
     await expectNumInputsForType(select, "nominal", 4);
-    console.log(spectator.component.form.value);
     expect(spectator.component.form.value).toEqual(
       expectedFormValue("nominal"),
     );

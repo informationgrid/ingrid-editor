@@ -17,11 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  createComponentFactory,
-  mockProvider,
-  Spectator,
-} from "@ngneat/spectator";
+import { createComponentFactory, Spectator } from "@ngneat/spectator";
 
 import { QuickSearchComponent } from "./quick-search.component";
 import { DocumentService } from "../../services/document/document.service";
@@ -32,6 +28,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
+import { SearchInputComponent } from "../../shared/search-input/search-input.component";
 
 describe("QuickSearchComponent", () => {
   let spectator: Spectator<QuickSearchComponent>;
@@ -45,6 +42,7 @@ describe("QuickSearchComponent", () => {
       MatFormFieldModule,
       MatInputModule,
       MatIconTestingModule,
+      SearchInputComponent,
     ],
     mocks: [DocumentService, Router],
   });
