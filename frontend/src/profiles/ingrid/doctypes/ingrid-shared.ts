@@ -106,7 +106,9 @@ export abstract class IngridShared extends BaseDoctype {
   showHVD: boolean = false;
   showAdVCompatible: boolean = false;
   showAdVProductGroup: boolean = false;
+  /** @deprecated: should be defined in geoservice-doctype */
   isGeoService: boolean = false;
+  /** @deprecated: should be defined in geodataset-doctype */
   isGeoDataset: boolean = false;
   private thesaurusTopics: boolean = false;
 

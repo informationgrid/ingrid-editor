@@ -41,7 +41,6 @@ export class GeoDatasetDoctype extends IngridShared {
       statement: true,
       subType: true,
       identifier: true,
-      spatialSystems: true,
     },
     dynamicRequired: {
       citation:
@@ -58,6 +57,11 @@ export class GeoDatasetDoctype extends IngridShared {
   showIdentifierCreateButton = true;
   isGeoDataset = true;
   defaultKeySpatialScope = "885989663";
+
+  constructor() {
+    super();
+    this.options.required.spatialSystems = true;
+  }
 
   documentFields = () => {
     this.handleInVeKoSBehaviour();
