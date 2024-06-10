@@ -124,7 +124,7 @@ class IndexingTask(
                             postIndexPipe,
                             settingsService,
                             cancellations,
-                            (currentThread ?: Thread.currentThread()).id
+                            (currentThread ?: Thread.currentThread()).threadId()
                         ).indexAll()
 
                         // make sure to write everything to elasticsearch
@@ -302,7 +302,7 @@ class IndexingTask(
                         postIndexPipe,
                         settingsService,
                         cancellations,
-                        (currentThread ?: Thread.currentThread()).id,
+                        (currentThread ?: Thread.currentThread()).threadId(),
                     )
                         .exportAndIndexSingleDocument(doc.document, indexInfo, ExportOptions(false, null, it.tags))
 
@@ -370,7 +370,7 @@ class IndexingTask(
 
     override fun interrupt() {
         super.interrupt()
-        this.cancellations[currentThread!!.id] = true
+        this.cancellations[currentThread!!.threadId()] = true
     }
 }
 
