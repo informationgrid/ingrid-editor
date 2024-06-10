@@ -61,7 +61,7 @@ class GroupsApiController(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isCatAdmin = authUtils.isAdmin(principal)
         // user is not allowed to delete groups he is a member of except for cat admin
-        if (userBelongsToGroup(principal,id) || !isCatAdmin) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        if (userBelongsToGroup(principal,id) && !isCatAdmin) return ResponseEntity(HttpStatus.FORBIDDEN)
 
         groupService.remove(catalogId, id)
         return ResponseEntity(HttpStatus.OK)
