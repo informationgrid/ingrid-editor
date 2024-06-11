@@ -33,30 +33,34 @@ import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.Geodatase
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.GeoserviceTransformerLfub
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.InformationSystemTransformerLfub
 import de.ingrid.igeserver.utils.getString
-import de.ingrid.igeserver.utils.getStringOrEmpty
 import kotlin.reflect.KClass
 
 fun lfubUseConstraints(
     superUseConstraints: List<UseConstraintTemplate>,
     docData: JsonNode
 ): List<UseConstraintTemplate> {
-    val comments = docData.getString("resource.useConstraintsComments")
-    if (comments.isNullOrEmpty()) return superUseConstraints
-    return if (superUseConstraints.isNotEmpty()) {
-        superUseConstraints.apply {
-            get(0).note = docData.getStringOrEmpty("resource.useConstraintsComments")
-        }
-    } else {
-        // add comment as title, since it's the only otherConstraints then
-        listOf(
-            UseConstraintTemplate(
-                CharacterStringModel(docData.getStringOrEmpty("resource.useConstraintsComments"), null),
-                null,
-                null,
-                null
+    val comment = docData.getString("resource.useConstraintsComments")
+    if (superUseConstraints.isEmpty() && comment == null) return emptyList()
+
+    // special handling of other constraints for lfu-bayern profile (#6383)
+    val (title, json) = if (superUseConstraints.isNotEmpty()) {
+        val title = superUseConstraints[0].let {
+            CharacterStringModel(
+                listOfNotNull(
+                    it.title.text,
+                    it.source?.let { source -> "Quellenvermerk: $source" },
+                    comment
+                ).joinToString(";"),
+                it.title.link
             )
-        )
-    }
+        }
+
+        Pair(title, superUseConstraints[0].json)
+    } else Pair(CharacterStringModel(comment!!, null), null)
+
+    return listOf(
+        UseConstraintTemplate(title, null, json, null)
+    )
 }
 
 fun lfubGetDescriptiveKeywords(
