@@ -73,7 +73,7 @@ class IndexService(
 
     companion object {
         const val jobKey: String = "index"
-        
+
         fun getNextIndexName(name: String): String {
             val dateFormat = SimpleDateFormat("yyyyMMddHHmmssS")
             val date: String = dateFormat.format(Date())
@@ -101,7 +101,7 @@ class IndexService(
 
     private fun getConfigFromDatabase(catalog: Catalog): IndexConfig? =
         catalog.settings.indexCronPattern?.let { IndexConfig(catalog.identifier, "IGNORE", it) }
-    
+
 
     fun getSinglePublishedDocument(
         queryInfo: QueryInfo,
@@ -147,7 +147,7 @@ class IndexService(
 
     fun updateCronConfig(catalogId: String, config: IndexCronOptions) {
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        val settings = catalog.settings.apply { 
+        val settings = catalog.settings.apply {
             indexCronPattern = config.cronPattern
         }
         catalog.settings = settings
@@ -195,7 +195,7 @@ class IndexService(
 
         return result
             .map {
-                IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String, it[3] as Int?, it[4] as Array<String>)
+                IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String, it[3] as Int?, it[4] as Array<String>? ?: emptyArray())
             }
             .map {
                 // FOLDERS do not have a published version
