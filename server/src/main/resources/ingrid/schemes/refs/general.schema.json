@@ -219,7 +219,7 @@
                 "additionalProperties": false,
                 "properties": {
                   "value": {
-                    "type": "number"
+                    "type": ["null", "number"]
                   },
                   "unit": {
                     "$ref": "#/definitions/KeyValue"
