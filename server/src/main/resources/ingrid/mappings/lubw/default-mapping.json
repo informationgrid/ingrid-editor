@@ -3,6 +3,10 @@
     "enabled": true
   },
   "properties": {
+    "iPlugId": {
+      "type": "keyword",
+      "store": true
+    },
     "iplug_id": {
       "type": "keyword",
       "store": true

@@ -72,6 +72,8 @@ class IndexExporterAddress(
         return jacksonObjectMapper().createObjectNode().apply {
             put("t02_address.adr_id", doc.uuid)
             put("title", doc.title)
+            // TODO: remove once "iPlugId" spelling is not needed anymore
+            put("iPlugId", "ige-ng_$catalogId")
             put("iplug_id", "ige-ng_$catalogId")
             put("dataSourceName", "iPlug IGE-NG ($catalogId)")
             set<ArrayNode>("partner", jacksonObjectMapper().createArrayNode().add(partner))
