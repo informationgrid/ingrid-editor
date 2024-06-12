@@ -79,11 +79,17 @@ class ImportService(
                 .also { totalFiles = it.documents.size }
                 .also { importers = it.importers }
                 .documents
-                .mapIndexed { index, fileContent ->
+                .flatMapIndexed { index, fileContent ->
                     val progress = ((index + 1f) / totalFiles) * 100
                     notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
-                    val result = if (fileContent is ArrayNode) fileContent[0] else fileContent
-                    analyzeDoc(catalogId, result)
+                    if (fileContent is ArrayNode) {
+                        listOfNotNull(
+                        if (!fileContent[0].isNull) analyzeDoc(catalogId, fileContent[0], forcePublish = true, isLatest = false) else null,
+                        analyzeDoc(catalogId, fileContent[1], forcePublish = false, isLatest = true, isDraftAndPublished = !fileContent[0].isNull)
+                        )
+                    } else {
+                        listOf(analyzeDoc(catalogId, fileContent))
+                    }
                 }
                 .toList().let { prepareForImport(importers, it) }
         }
