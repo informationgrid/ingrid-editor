@@ -19,28 +19,11 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_bast.exporter
 
-import de.ingrid.igeserver.exporter.CodelistTransformer
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
-import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.utils.getString
-import de.ingrid.mdek.upload.Config
 
-class IngridModelTransformerBast(
-    model: IngridModel,
-    catalogIdentifier: String,
-    codelists: CodelistTransformer,
-    config: Config,
-    catalogService: CatalogService,
-    cache: TransformerCache,
-    doc: Document,
-    documentService: DocumentService
-) : IngridModelTransformer(
-    model, catalogIdentifier, codelists, config, catalogService, cache, doc, documentService
-) {
+class IngridModelTransformerBast(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
     fun getDistributorName(): String {
         val distributor = pointOfContact.firstOrNull { it.relationType?.key != "2" } ?: return ""

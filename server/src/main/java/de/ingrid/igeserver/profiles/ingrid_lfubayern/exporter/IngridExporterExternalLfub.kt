@@ -80,7 +80,7 @@ class IngridIdfExporterExternalLfub(
         }
     }
 
-    
+
 }
 
 @Service
@@ -109,14 +109,16 @@ class IngridLuceneExporterExternalLfub(
                     ?.constructors
                     ?.first()
                     ?.call(
-                        model,
-                        data.catalogIdentifier,
-                        data.codelistTransformer,
-                        config,
-                        catalogService,
-                        TransformerCache(),
-                        data.doc,
-                        documentService
+                        TransformerConfig(
+                            model,
+                            data.catalogIdentifier,
+                            data.codelistTransformer,
+                            config,
+                            catalogService,
+                            TransformerCache(),
+                            data.doc,
+                            documentService
+                        )
                     ) ?: super.getTransformer(data)
             }
 

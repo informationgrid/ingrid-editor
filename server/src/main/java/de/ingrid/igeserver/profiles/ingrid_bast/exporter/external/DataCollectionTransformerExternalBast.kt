@@ -19,38 +19,15 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_bast.exporter.external
 
-import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.DataCollectionModelTransformer
-import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
-import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
-import de.ingrid.mdek.upload.Config
 
-class DataCollectionTransformerExternalBast(
-    model: IngridModel,
-    catalogIdentifier: String,
-    codelists: CodelistTransformer,
-    config: Config,
-    catalogService: CatalogService,
-    cache: TransformerCache,
-    doc: Document,
-    documentService: DocumentService
-) : DataCollectionModelTransformer(
-    model,
-    catalogIdentifier,
-    codelists,
-    config,
-    catalogService,
-    cache,
-    doc,
-    documentService
-) {
+class DataCollectionTransformerExternalBast(transformerConfig: TransformerConfig) :
+    DataCollectionModelTransformer(transformerConfig) {
 
     private val docData = doc.data
 

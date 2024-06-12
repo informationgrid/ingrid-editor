@@ -19,28 +19,11 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lubw.exporter.tranformer
 
-import de.ingrid.igeserver.exporter.CodelistTransformer
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
-import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.utils.getString
-import de.ingrid.mdek.upload.Config
 
-class IngridModelTransformerLubw(
-    model: IngridModel,
-    catalogIdentifier: String,
-    codelists: CodelistTransformer,
-    config: Config,
-    catalogService: CatalogService,
-    cache: TransformerCache,
-    doc: Document,
-    documentService: DocumentService
-) : IngridModelTransformer(
-    model, catalogIdentifier, codelists, config, catalogService, cache, doc, documentService
-) {
+class IngridModelTransformerLubw(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
     val treePathNames: List<String>
     val treePathUuids: List<String>
@@ -52,7 +35,6 @@ class IngridModelTransformerLubw(
         treePathUuids = treePath.map { it.uuid }
         distributor = getDistributorName()
     }
-
 
 
     private fun getDistributorName(): String {

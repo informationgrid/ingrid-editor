@@ -89,14 +89,16 @@ class IngridLuceneExporterLfub(
                     ?.constructors
                     ?.first()
                     ?.call(
-                        data.mapper.convertValue(data.doc, IngridModel::class.java),
-                        data.catalogIdentifier,
-                        data.codelistTransformer,
-                        config,
-                        catalogService,
-                        TransformerCache(),
-                        data.doc,
-                        documentService
+                        TransformerConfig(
+                            data.mapper.convertValue(data.doc, IngridModel::class.java),
+                            data.catalogIdentifier,
+                            data.codelistTransformer,
+                            config,
+                            catalogService,
+                            TransformerCache(),
+                            data.doc,
+                            documentService
+                        )
                     ) ?: super.getTransformer(data)
             }
 

@@ -53,7 +53,7 @@ class TransformerCache {
     val documents = mutableMapOf<String, Document>()
 }
 
-open class IngridModelTransformer(
+data class TransformerConfig(
     val model: IngridModel,
     val catalogIdentifier: String,
     val codelists: CodelistTransformer,
@@ -62,7 +62,19 @@ open class IngridModelTransformer(
     val cache: TransformerCache,
     val doc: Document,
     val documentService: DocumentService
+)
+
+open class IngridModelTransformer(
+    transformerConfig: TransformerConfig
 ) {
+    val model = transformerConfig.model
+    val catalogIdentifier = transformerConfig.catalogIdentifier
+    val codelists = transformerConfig.codelists
+    val config = transformerConfig.config
+    val catalogService = transformerConfig.catalogService
+    val cache = transformerConfig.cache
+    val doc = transformerConfig.doc
+    val documentService = transformerConfig.documentService
 
     val fieldToCodelist = FieldToCodelist()
 

@@ -157,11 +157,15 @@ class IngridLuceneExporter(
 
             IngridDocType.DOCUMENT -> {
                 IngridModelTransformer(
+                    TransformerConfig(
                     data.mapper.convertValue(data.doc, IngridModel::class.java),
                     data.catalogIdentifier,
                     data.codelistTransformer,
                     config,
-                    catalogService, TransformerCache(), data.doc, documentService
+                    catalogService,
+                    TransformerCache(),
+                    data.doc,
+                    documentService)
                 )
             }
 

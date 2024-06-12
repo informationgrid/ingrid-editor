@@ -75,7 +75,8 @@ class IngridIdfExporterBast(
         listOf("ingrid-bast"),
     )
 
-    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getBastTransformer(docType) ?: super.getModelTransformerClass(docType)
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? =
+        getBastTransformer(docType) ?: super.getModelTransformerClass(docType)
 }
 
 @Service
@@ -96,6 +97,7 @@ class IngridLuceneExporterBast(
         return when (data.type) {
             IngridDocType.DOCUMENT -> {
                 IngridModelTransformerBast(
+                    TransformerConfig(
                         data.mapper.convertValue(data.doc, IngridModel::class.java),
                         data.catalogIdentifier,
                         data.codelistTransformer,
@@ -105,7 +107,9 @@ class IngridLuceneExporterBast(
                         data.doc,
                         documentService
                     )
+                )
             }
+
             else -> super.getTransformer(data)
         }
     }

@@ -30,6 +30,7 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -115,8 +116,14 @@ class OpenDataIDFExporter(
             transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService)
         else
             transformerClass.constructors.first().call(
-                ingridModel, catalogId, codelistTransformer, config, catalogService,
-                TransformerCache(), json, documentService
+                TransformerConfig(
+                    ingridModel!!,
+                    catalogId,
+                    codelistTransformer,
+                    config,
+                    catalogService,
+                    TransformerCache(), json, documentService
+                )
             )
     }
 

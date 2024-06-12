@@ -119,14 +119,16 @@ class IngridIDFExporter(
             transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService)
         else
             transformerClass.constructors.first().call(
-                getIngridModel(json, catalogId),
-                catalogId,
-                codelistTransformer,
-                config,
-                catalogService,
-                TransformerCache(),
-                json,
-                documentService
+                TransformerConfig(
+                    getIngridModel(json, catalogId),
+                    catalogId,
+                    codelistTransformer,
+                    config,
+                    catalogService,
+                    TransformerCache(),
+                    json,
+                    documentService
+                )
             )
     }
 

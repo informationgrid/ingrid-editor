@@ -19,29 +19,13 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
-import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.TransformationTools
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
-import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
 
-open class GeodatasetModelTransformer(
-    model: IngridModel,
-    catalogIdentifier: String,
-    codelistTransformer: CodelistTransformer,
-    config: Config,
-    catalogService: CatalogService,
-    cache: TransformerCache,
-    doc: Document,
-    documentService: DocumentService
-) : IngridModelTransformer(
-    model, catalogIdentifier, codelistTransformer, config, catalogService, cache, doc, documentService
-) {
+open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
+    IngridModelTransformer(transformerConfig) {
 
     private val isSeries = model.data.subType?.key == "6"
 
