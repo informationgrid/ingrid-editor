@@ -461,7 +461,7 @@ class DocumentService(
                     moveLastPublishedDocumentToArchive(catalogId, wrapper)
 
                     val latestDoc = getDocumentFromCatalog(catalogId, wrapper.id!!)
-                    latestDoc.document.apply { 
+                    latestDoc.document.apply {
                         state = DOCUMENT_STATE.PUBLISHED
                         contentmodified = OffsetDateTime.now()
                     }
@@ -736,7 +736,7 @@ class DocumentService(
 
         if (realDelete) {
             // remove all document versions which have the same ID
-            docRepo.deleteAllByUuid(docData.document.uuid)
+            docRepo.deleteAllByCatalog_IdentifierAndUuid(catalogId, docData.document.uuid)
 
             // remove the wrapper
             docWrapperRepo.deleteById(id)

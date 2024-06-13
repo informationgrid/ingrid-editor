@@ -48,10 +48,10 @@ interface DocumentRepository : JpaRepository<Document, Int> {
         uuid: String,
         state: DOCUMENT_STATE
     ): Document
-    
+
     @Modifying
     @PreAuthorize("hasPermission(#uuid, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
-    fun deleteAllByUuid(uuid: String)
+    fun deleteAllByCatalog_IdentifierAndUuid(catalog_identifier: String, uuid: String)
 
     @PreAuthorize("#document.id == null || hasPermission(#document.wrapperId, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
     fun save(@Param("document") document: Document): Document
@@ -94,7 +94,7 @@ interface DocumentRepository : JpaRepository<Document, Int> {
                        AND (replace(doc.data\:\:text, ':', '\\:') ilike %:source%)
     """, nativeQuery = true)
     fun getDocIdsWithReferenceTo(@Param("catalogIdent") catalogId: String, @Param("source") source: String): List<Int>
-    
+
     @Query("""
         SELECT doc.uuid FROM document_wrapper dw, document doc, catalog cat WHERE dw.uuid = doc.uuid AND dw.deleted = 0 AND dw.catalog_id = cat.id AND doc.catalog_id = cat.id AND cat.identifier = :catalogIdentifier AND doc.data->>'organization' = :name
     """, nativeQuery = true)
