@@ -127,7 +127,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     return this.fields;
   }
 
-  getCodelistForSelectWithEmtpyOption(
+  getCodelistForSelectWithEmptyOption(
     codelistId: string,
     field: string,
   ): Observable<SelectOptionUi[]> {

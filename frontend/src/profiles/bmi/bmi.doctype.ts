@@ -259,7 +259,7 @@ export class BmiDoctype extends BaseDoctype {
         ]),
         this.addSelect("periodicity", "Periodizität", {
           showSearch: true,
-          options: this.getCodelistForSelectWithEmtpyOption(
+          options: this.getCodelistForSelectWithEmptyOption(
             "518",
             "periodicity",
           ),
