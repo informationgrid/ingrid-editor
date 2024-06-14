@@ -33,6 +33,7 @@
                 <ng-template matStepLabel>{{ t("formSingular") }}</ng-template>
                 <ige-tree
                     #treeComponent
+                    [allowMultiSelectionMode]="false"
                     (selected)="selectDatasets($event)"
                 ></ige-tree>
 

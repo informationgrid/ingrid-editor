@@ -7,6 +7,10 @@
       "type": "keyword",
       "store": true
     },
+    "iplug_id": {
+      "type": "keyword",
+      "store": true
+    },
     "partner": {
       "type": "keyword",
       "store": true

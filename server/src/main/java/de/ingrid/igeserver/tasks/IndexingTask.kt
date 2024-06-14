@@ -27,6 +27,7 @@ import de.ingrid.igeserver.api.messaging.IndexingNotifier
 import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.NoElasticsearchConnectionException
+import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.index.IIndexManager
 import de.ingrid.igeserver.index.IndexService
@@ -123,7 +124,7 @@ class IndexingTask(
                             postIndexPipe,
                             settingsService,
                             cancellations,
-                            (currentThread ?: Thread.currentThread()).id
+                            (currentThread ?: Thread.currentThread()).threadId()
                         ).indexAll()
 
                         // make sure to write everything to elasticsearch
@@ -301,9 +302,9 @@ class IndexingTask(
                         postIndexPipe,
                         settingsService,
                         cancellations,
-                        (currentThread ?: Thread.currentThread()).id,
+                        (currentThread ?: Thread.currentThread()).threadId(),
                     )
-                        .exportAndIndexSingleDocument(doc.document, indexInfo)
+                        .exportAndIndexSingleDocument(doc.document, indexInfo, ExportOptions(false, null, it.tags))
 
                     it.target.flush()
                 }
@@ -369,7 +370,7 @@ class IndexingTask(
 
     override fun interrupt() {
         super.interrupt()
-        this.cancellations[currentThread!!.id] = true
+        this.cancellations[currentThread!!.threadId()] = true
     }
 }
 

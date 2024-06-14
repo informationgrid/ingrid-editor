@@ -57,6 +57,11 @@ export class GeoServiceDoctype extends IngridShared {
 
   tree = inject(TreeQuery);
 
+  constructor() {
+    super();
+    this.options.required.spatialSystems = true;
+  }
+
   private mapServiceTypeToVersionCodelist = {
     "1": 5151,
     "2": 5152,

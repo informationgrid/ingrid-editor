@@ -30,7 +30,7 @@ import java.util.concurrent.Executors
 abstract class ThesaurusService {
 
     abstract val id: String
-    
+
     abstract fun search(term: String, options: ThesaurusSearchOptions): List<Keyword>
 
     fun sendRequest(method: String, url: String): String {
@@ -52,7 +52,7 @@ abstract class ThesaurusService {
         HttpRequest.newBuilder()
             .method(method, HttpRequest.BodyPublishers.noBody())
             .uri(URI.create(url))
-            .timeout(Duration.ofSeconds(5))
+            .timeout(Duration.ofSeconds(10))
             .build()
 
 }

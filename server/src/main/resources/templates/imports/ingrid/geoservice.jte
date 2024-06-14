@@ -1,4 +1,4 @@
-@import de.ingrid.igeserver.profiles.ingrid.importer.GeoserviceMapper
+@import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeoserviceMapper
 @import gg.jte.Content
 @import gg.jte.support.ForSupport
 @param GeoserviceMapper model 

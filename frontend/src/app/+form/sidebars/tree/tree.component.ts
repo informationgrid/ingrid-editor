@@ -106,7 +106,7 @@ export class TreeComponent implements OnInit {
   );
 
   /** The node selection must be kept local */
-  selection: TreeSelection;
+  selection: TreeSelection = new TreeSelection(this.treeControl);
 
   // signal to show that a tree node is loading
   isLoading: TreeNode;
@@ -136,7 +136,6 @@ export class TreeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.selection = new TreeSelection(this.treeControl);
     this.selection.allowMultiSelectionMode = this.allowMultiSelectionMode;
     this.selection.model.changed
       .pipe(

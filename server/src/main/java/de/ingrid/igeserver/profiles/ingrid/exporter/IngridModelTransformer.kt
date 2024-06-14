@@ -33,8 +33,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
 import de.ingrid.igeserver.profiles.ingrid.hvdKeywordMapping
-import de.ingrid.igeserver.profiles.ingrid.importer.DigitalTransferOption
-import de.ingrid.igeserver.profiles.ingrid.importer.UnitField
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.CatalogService
@@ -53,7 +53,7 @@ class TransformerCache {
     val documents = mutableMapOf<String, Document>()
 }
 
-open class IngridModelTransformer(
+data class TransformerConfig(
     val model: IngridModel,
     val catalogIdentifier: String,
     val codelists: CodelistTransformer,
@@ -62,7 +62,19 @@ open class IngridModelTransformer(
     val cache: TransformerCache,
     val doc: Document,
     val documentService: DocumentService
+)
+
+open class IngridModelTransformer(
+    transformerConfig: TransformerConfig
 ) {
+    val model = transformerConfig.model
+    val catalogIdentifier = transformerConfig.catalogIdentifier
+    val codelists = transformerConfig.codelists
+    val config = transformerConfig.config
+    val catalogService = transformerConfig.catalogService
+    val cache = transformerConfig.cache
+    val doc = transformerConfig.doc
+    val documentService = transformerConfig.documentService
 
     val fieldToCodelist = FieldToCodelist()
 
@@ -169,7 +181,10 @@ open class IngridModelTransformer(
         }
 
         UseConstraintTemplate(
-            CharacterStringModel(codelists.getValue("6500", constraint.title)!!, link),
+            CharacterStringModel(
+                codelists.getValue("6500", constraint.title) ?: throw ServerException.withReason("Unknown use constraints key: ${constraint.title}"),
+                link
+            ),
             constraint.source,
             json,
             constraint.title?.key
@@ -409,7 +424,7 @@ open class IngridModelTransformer(
     )
 
     val invekosKeywords = Thesaurus(
-        keywords = data.invekosKeywords?.map { KeywordIso(name = mapInVeKoSKeyword(it.key!!), link = it.key) }
+        keywords = data.invekosKeywords?.map { KeywordIso(name = mapInVeKoSKeyword(it.key ?: throw ServerException.withReason("Unknown InVeKoS-key: $it")), link = it.key) }
             ?: emptyList(),
         date = "2021-06-08",
         name = "IACS data",
@@ -418,7 +433,7 @@ open class IngridModelTransformer(
     )
 
     val hvdCategories = Thesaurus(
-        keywords = data.hvdCategories?.map { KeywordIso(name = mapHVDKeyword(it.key!!), link = it.key) }
+        keywords = data.hvdCategories?.map { KeywordIso(name = mapHVDKeyword(it.key ?: throw ServerException.withReason("Unknown HvD-key: $it")), link = it.key) }
             ?: emptyList(),
         date = "2023-09-27",
         name = "High-value dataset categories",
@@ -548,7 +563,7 @@ open class IngridModelTransformer(
             }
         }
 
-        // for each layername create an operatesOn-element 
+        // for each layername create an operatesOn-element
         if (it.layerNames.isNullOrEmpty()) listOf(OperatesOn(it.uuid, finalIdentifier, null))
         else it.layerNames.map { layername: String -> OperatesOn(it.uuid, finalIdentifier, layername) }
 
@@ -563,7 +578,7 @@ open class IngridModelTransformer(
         return if (model.type == "InGridGeoDataset") {
             val doc = getLastPublishedDocument(model.uuid)
             documentService.getIncomingReferences(doc, catalogIdentifier)
-                .map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
+                .map { documentService.getLastPublishedDocument(catalogIdentifier, it, resolveLinks = false) }
                 .filter {
                     it.type == "InGridGeoService" && it.data.get("service").get("type").get("key").asText() == "2"
                 }
@@ -586,7 +601,7 @@ open class IngridModelTransformer(
     }
 
     // TODO: move to specific doc types
-    // information system or publication 
+    // information system or publication
     open val supplementalInformation = data.explanation ?: data.publication?.explanation
 
     // TODO: move to specific doc type
@@ -602,7 +617,7 @@ open class IngridModelTransformer(
             val applicationProfile = codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de")
             val attachedField = if (it.type.key == null) null else {
                 val attachedToFieldText = codelists.getValue("2000", it.type) ?: ""
-                AttachedField("2000", it.type.key!!, attachedToFieldText)
+                AttachedField("2000", it.type.key ?: throw ServerException.withReason("Unknown reference type-key: ${it.type}"), attachedToFieldText)
             }
             ServiceUrl(it.title, it.url ?: "", it.explanation, attachedField, applicationProfile, functionValue)
         }
@@ -614,7 +629,7 @@ open class IngridModelTransformer(
     }
 
     private fun applyRefInfos(it: Reference): Reference {
-        val refClass = getLastPublishedDocument(it.uuidRef!!) ?: return it
+        val refClass = getLastPublishedDocument(it.uuidRef ?: throw ServerException.withReason("UUID of a reference is NULL")) ?: return it
         it.uuidRefClass = mapDocumentType(refClass.type)
         val service = refClass.data.get("service")
         it.uuidRefVersion = getVersion(
@@ -645,7 +660,7 @@ open class IngridModelTransformer(
     fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs(): List<ServiceUrl> = externalReferences + serviceUrls + getCoupledServiceUrlsOrGetCapabilitiesUrl() + getAtomAsServiceUrl()
 
     private fun getAtomAsServiceUrl(): List<ServiceUrl> = if (isAtomDownload)
-        listOf(ServiceUrl("Get Download Service Metadata", atomDownloadURL!!, null, isIdfResource = false, functionValue = "information"))
+        listOf(ServiceUrl("Get Download Service Metadata", atomDownloadURL ?: throw ServerException.withReason("Atom Download URL is NULL"), null, isIdfResource = false, functionValue = "information"))
     else emptyList()
 
     val parentIdentifier: String? = data.parentIdentifier
@@ -715,7 +730,7 @@ open class IngridModelTransformer(
             codelists,
             // Map pointOfContactMD type to pointOfContact for ISO Exports
             if( it.type?.key != "12") it.type else KeyValue("7", "pointOfContact"),
-            getLastPublishedDocument(it.ref?.uuid!!) ?: Document().apply {
+            getLastPublishedDocument(it.ref?.uuid ?: throw ServerException.withReason("Address-Reference UUID is NULL")) ?: Document().apply {
                 data = jacksonObjectMapper().createObjectNode()
                 type = "null-address"
                 modified = OffsetDateTime.now()
@@ -744,11 +759,11 @@ open class IngridModelTransformer(
 
 
     private fun getCoupledCrossReferences() = model.data.service.coupledResources?.filter { !it.isExternalRef }
-        ?.mapNotNull { getCrossReference(it.uuid!!, KeyValue("3600", null)) } ?: emptyList()
+        ?.mapNotNull { getCrossReference(it.uuid ?: throw ServerException.withReason("Coupled resource UUID is NULL"), KeyValue("3600", null)) } ?: emptyList()
 
     private fun getReferencedCrossReferences() =
         model.data.references?.filter { !it.uuidRef.isNullOrEmpty() }
-            ?.mapNotNull { getCrossReference(it.uuidRef!!, it.type) }
+            ?.mapNotNull { getCrossReference(it.uuidRef ?: throw ServerException.withReason("UUID of reference is NULL"), it.type) }
             ?: emptyList()
 
     open fun getCrossReferences() =
@@ -764,20 +779,20 @@ open class IngridModelTransformer(
 
         return getIncomingReferencesProxy(true)
             .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities" }
-            .map { ServiceUrl(it.objectName, it.serviceUrl!!, null) }
+            .map { ServiceUrl(it.objectName, it.serviceUrl ?: throw ServerException.withReason("Service URL is NULL"), null) }
     }
 
     private fun getGetCapabilitiesUrl(): List<ServiceUrl> {
         return model.data.service.operations
             ?.filter { isCapabilitiesEntry(it) }
-            ?.map { ServiceUrl("Dienst \"${model.title}\" (GetCapabilities)", it.methodCall!!, it.description) }
+            ?.map { ServiceUrl("Dienst \"${model.title}\" (GetCapabilities)", it.methodCall ?: throw ServerException.withReason("Operation URL is NULL"), it.description) }
             ?: emptyList()
     }
 
     private fun getExternalCoupledResources(): List<ServiceUrl> {
         return model.data.service.coupledResources
             ?.filter { it.isExternalRef }
-            ?.map { ServiceUrl(it.title ?: "", it.url!!, null) } ?: emptyList()
+            ?.map { ServiceUrl(it.title ?: "", it.url ?: throw ServerException.withReason("External coupled resource URL is NULL"), null) } ?: emptyList()
     }
 
     private fun getIncomingReferencesProxy(excludeSubordinate: Boolean = false): List<CrossReference> {
@@ -837,7 +852,7 @@ open class IngridModelTransformer(
         return CrossReference(
             direction = direction,
             uuid = uuid,
-            objectName = refTrans.title!!,
+            objectName = refTrans.title ?: throw ServerException.withReason("Title of referenced dataset is NULL"),
             objectType = mapDocumentType(refTrans.type),
             refType = refType,
             description = refTrans.data.getString("description"),
@@ -889,9 +904,9 @@ open class IngridModelTransformer(
 
         return GraphicOverview(
             FileName(
-                json.getBoolean("fileName.asLink")!!,
-                json.getString("fileName.value")!!,
-                json.getString("fileName.uri")!!
+                json.getBoolean("fileName.asLink") ?: throw ServerException.withReason("Preview image 'asLink'-property is NULL"),
+                json.getString("fileName.value") ?: throw ServerException.withReason("Preview image 'value'-property is NULL"),
+                json.getString("fileName.uri") ?: throw ServerException.withReason("Preview image 'uri'-property is NULL")
             ),
             json.getString("fieldDescription")
         )
@@ -905,10 +920,10 @@ open class IngridModelTransformer(
         }
     }
 
-    fun getLastPublishedDocument(uuid: String): Document? {
+    fun getLastPublishedDocument(uuid: String, resolveLinks: Boolean = false): Document? {
         if (cache.documents.containsKey(uuid)) return cache.documents[uuid]
         return try {
-            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = true)
+            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = resolveLinks)
                 .also { cache.documents[uuid] = it }
         } catch (e: Exception) {
             log.warn("Could not get last published document: $uuid")

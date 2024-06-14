@@ -31,6 +31,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -156,11 +157,13 @@ class OpenDataLuceneExporter(
 
             OpenDataDocType.DOCUMENT -> {
                 IngridModelTransformer(
-                    data.mapper.convertValue(data.doc, IngridModel::class.java),
-                    data.catalogIdentifier,
-                    data.codelistTransformer,
-                    config,
-                    catalogService, TransformerCache(), data.doc, documentService
+                    TransformerConfig(
+                        data.mapper.convertValue(data.doc, IngridModel::class.java),
+                        data.catalogIdentifier,
+                        data.codelistTransformer,
+                        config,
+                        catalogService, TransformerCache(), data.doc, documentService
+                    )
                 )
             }
 

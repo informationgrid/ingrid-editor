@@ -20,7 +20,6 @@
 import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
-import { RepeatDetailListComponent } from "../repeat-detail-list/repeat-detail-list.component";
 import { IgeFormlyModule } from "../../ige-formly.module";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
@@ -59,7 +58,6 @@ describe("RepeatListComponent", () => {
       MatSelectModule,
       ReactiveFormsModule,
       MatIconTestingModule,
-      RepeatDetailListComponent,
       getTranslocoModule(),
     ],
     providers: [

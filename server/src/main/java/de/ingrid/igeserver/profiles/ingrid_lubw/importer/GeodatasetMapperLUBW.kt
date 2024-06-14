@@ -20,8 +20,8 @@
 package de.ingrid.igeserver.profiles.ingrid_lubw.importer
 
 import de.ingrid.igeserver.exports.iso.MDDataIdentification
-import de.ingrid.igeserver.profiles.ingrid.importer.GeodatasetMapper
-import de.ingrid.igeserver.profiles.ingrid.importer.IsoImportData
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 
 class GeodatasetMapperLUBW(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 

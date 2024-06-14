@@ -27,6 +27,7 @@ import de.ingrid.igeserver.api.messaging.IndexingNotifier
 import de.ingrid.igeserver.api.messaging.TargetMessage
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.IndexException
+import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.extension.pipe.impl.SimpleContext
 import de.ingrid.igeserver.index.DocumentIndexInfo
 import de.ingrid.igeserver.index.IndexService
@@ -149,7 +150,7 @@ class IndexTargetWorker(
             notify.sendMessage(message)
 
             try {
-                exportAndIndexSingleDocument(doc.document, indexInfo)
+                exportAndIndexSingleDocument(doc.document, indexInfo, ExportOptions(false, catalogProfile.identifier, doc.tags))
             } catch (ex: InterruptedException) {
                 throw ex
             } catch (ex: Exception) {
@@ -165,11 +166,11 @@ class IndexTargetWorker(
         }
     }
 
-    fun exportAndIndexSingleDocument(doc: Document, indexInfo: IndexInfo) {
+    fun exportAndIndexSingleDocument(doc: Document, indexInfo: IndexInfo, exportOptions: ExportOptions) {
         log.debug("export '${doc.uuid}' with exporter '${config.exporter.typeInfo.type}' to target '${config.target.name}'")
         val (exportedDoc, exporterType) =
-            Pair(config.exporter.run(doc, catalogId), config.exporter.typeInfo.type)
-        
+            Pair(config.exporter.run(doc, catalogId, exportOptions), config.exporter.typeInfo.type)
+
         val elasticDocument = convertToElasticDocument(exportedDoc)
         config.target.update(indexInfo, elasticDocument)
         val simpleContext = SimpleContext(catalogId, catalogProfile.identifier, doc.uuid)
@@ -178,14 +179,6 @@ class IndexTargetWorker(
             PostIndexPayload(elasticDocument, config.category.name, exporterType),
             simpleContext
         )
-    }
-
-    private fun handleIndexException(doc: Document, ex: Exception) {
-        val errorMessage =
-            "Error in PostIndexFilter or during sending to Elasticsearch: '${doc.uuid}' in catalog '$catalogId': ${ex.cause?.message ?: ex.message}"
-        log.error(errorMessage, ex)
-        message.errors.add(errorMessage)
-        notify.sendMessage(message)
     }
 
     private fun handleExportException(

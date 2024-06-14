@@ -20,9 +20,9 @@
 package de.ingrid.igeserver.profiles.ingrid_hmdk.importer
 
 import de.ingrid.igeserver.exports.iso.Metadata
-import de.ingrid.igeserver.profiles.ingrid.importer.ISOImportProfile
-import de.ingrid.igeserver.profiles.ingrid.importer.ImportProfileData
-import de.ingrid.igeserver.profiles.ingrid.importer.IsoImportData
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImportProfile
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ImportProfileData
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.context.annotation.Lazy

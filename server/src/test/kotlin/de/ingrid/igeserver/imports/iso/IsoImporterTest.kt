@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.imports.*
-import de.ingrid.igeserver.profiles.ingrid.importer.ISOImport
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler

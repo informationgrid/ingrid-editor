@@ -19,27 +19,12 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer
 
-import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.model.KeyValue
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
-import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.utils.getString
-import de.ingrid.mdek.upload.Config
 
-class GeodatasetTransformerKrzn(
-    model: IngridModel,
-    catalogIdentifier: String,
-    codelists: CodelistTransformer,
-    config: Config,
-    catalogService: CatalogService,
-    cache: TransformerCache,
-    doc: Document,
-    documentService: DocumentService
-) : GeodatasetModelTransformer(model, catalogIdentifier, codelists, config, catalogService, cache, doc, documentService) {
+class GeodatasetTransformerKrzn(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
     private val docData = doc.data
     override val systemEnvironment =

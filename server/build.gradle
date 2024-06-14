@@ -3,6 +3,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 import java.nio.file.Paths
 
+import static org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+
 buildscript {
     ext.kotlin_version = '1.9.23'
     ext.spring_boot_version = '3.3.0'
@@ -140,7 +142,6 @@ dependencies {
     implementation "io.ktor:ktor-client-java"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 
-
     // Markdown
     implementation "org.commonmark:commonmark:0.22.0"
     implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.22.0"
@@ -179,6 +180,9 @@ dependencies {
     implementation("org.geotools:gt-geojson:$geotools_version") {
         exclude group: 'javax.media', module: 'jai_core'
     }
+
+    // RDF for DCAT-AP.de
+    implementation "org.apache.jena:apache-jena-libs:4.7.0"
 
     // Test
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version" // for kotest framework
@@ -226,8 +230,6 @@ dependencyManagement {
 
 group = 'de.ingrid'
 description = 'IGE-NG Server'
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
 
 springBoot {
     buildInfo()
@@ -254,8 +256,8 @@ allOpen {
 }
 
 tasks.withType(KotlinCompile).configureEach {
-    kotlinOptions {
-        jvmTarget = '17'
+    compilerOptions {
+        jvmTarget.set(JVM_21)
     }
 }
 
@@ -297,7 +299,7 @@ jib {
     def tag = name == "develop" ? "latest" : name
     tag = tag.replaceAll("/", "-")
     from {
-        image = 'eclipse-temurin:17-jre-focal'
+        image = 'bellsoft/liberica-openjre-alpine:21'
     }
     to {
         // in case we build a release we also add release tag from version

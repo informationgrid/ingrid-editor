@@ -488,7 +488,7 @@ class OgcRecordService(
     private fun removeDefaultWrapper(mimeType: String, recordList: List<ExportResult>, format: RecordFormat): Any{
         return if (mimeType == "text/xml") {
             var response = ""
-            for (record in recordList) response += record.result.toString(Charsets.UTF_8).substringAfter("?>")
+            for (record in recordList) response += record.result?.toString(Charsets.UTF_8)?.substringAfter("?>")
             response
         } else if (mimeType == "application/json") {
             val response: MutableList<JsonNode> = mutableListOf()
@@ -500,7 +500,7 @@ class OgcRecordService(
             response
         } else if (mimeType == "text/html") {
             var response = ""
-            for (record in recordList) response += record.result.toString(Charsets.UTF_8)
+            for (record in recordList) response += record.result?.toString(Charsets.UTF_8)
             response
         } else {
             recordList

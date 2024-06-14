@@ -53,8 +53,8 @@
             "modified": "${download.get().getModified() }",
             "title": "${download.get().getTitle() }",
             "description": "${download.get().getDescription() }",
-            "license": "${download.get().getLicense().getUrl() }",
-            "license_name": "${download.get().getLicense().getName() }",
+            "license": "@if(download.get().getLicense() != null)${download.get().getLicense().getUrl()}@endif",
+            "license_name": "@if(download.get().getLicense() != null)${download.get().getLicense().getName()}@endif",
             "byClause": "${download.get().getByClause() }",
             "languages": [
                 @for(var entry : ForSupport.of(download.get().getLanguages()))

@@ -39,7 +39,7 @@ import java.io.ByteArrayOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-data class ExportResult(val result: ByteArray, val fileName: String, val exportFormat: MediaType)
+data class ExportResult(val result: ByteArray?, val fileName: String, val exportFormat: MediaType)
 
 @Service
 class ExportService(val exporterFactory: ExporterFactory) {
@@ -74,7 +74,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
             )
         } else {
             ExportResult(
-                handleSingleDataset(options, doc, catalogId).toByteArray(),
+                handleSingleDataset(options, doc, catalogId)?.toByteArray(),
                 doc.uuid + "." + exporter.typeInfo.fileExtension,
                 MediaType.valueOf(exporter.typeInfo.dataType)
             )
@@ -103,9 +103,13 @@ class ExportService(val exporterFactory: ExporterFactory) {
         options: ExportRequestParameter,
         doc: DocumentWrapper,
         catalogId: String
-    ): String {
+    ): String? {
         val docVersion =
-            if (!options.useDraft) getPublishedVersion(catalogId, doc) else documentService.getDocumentByWrapperId(
+            if (!options.useDraft) {
+                try {
+                    getPublishedVersion(catalogId, doc)
+                } catch (ex: NotFoundException) { return null }
+            } else documentService.getDocumentByWrapperId(
                 catalogId,
                 doc.id!!,
                 true

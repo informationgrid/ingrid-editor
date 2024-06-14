@@ -48,6 +48,7 @@ import java.util.*
 
 data class DocumentIndexInfo(
     val document: Document,
+    val tags: List<String>,
     var exporterType: String? = null
 )
 
@@ -72,7 +73,7 @@ class IndexService(
 
     companion object {
         const val jobKey: String = "index"
-        
+
         fun getNextIndexName(name: String): String {
             val dateFormat = SimpleDateFormat("yyyyMMddHHmmssS")
             val date: String = dateFormat.format(Date())
@@ -100,7 +101,7 @@ class IndexService(
 
     private fun getConfigFromDatabase(catalog: Catalog): IndexConfig? =
         catalog.settings.indexCronPattern?.let { IndexConfig(catalog.identifier, "IGNORE", it) }
-    
+
 
     fun getSinglePublishedDocument(
         queryInfo: QueryInfo,
@@ -146,7 +147,7 @@ class IndexService(
 
     fun updateCronConfig(catalogId: String, config: IndexCronOptions) {
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        val settings = catalog.settings.apply { 
+        val settings = catalog.settings.apply {
             indexCronPattern = config.cronPattern
         }
         catalog.settings = settings
@@ -187,13 +188,14 @@ class IndexService(
                 .addScalar("id")
                 .addScalar("type")
                 .addScalar("parent_id")
+                .addScalar("tags")
                 .setFirstResult((paging.page - 1) * paging.pageSize)
                 .setMaxResults(paging.pageSize)
                 .resultList as List<Array<out Any?>>
 
         return result
             .map {
-                IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String, it[3] as Int?)
+                IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String, it[3] as Int?, it[4] as Array<String>? ?: emptyArray())
             }
             .map {
                 // FOLDERS do not have a published version
@@ -210,7 +212,8 @@ class IndexService(
                             val parentWrapper = documentService.getWrapperById(it.parentId)
                             data.put(FIELD_PARENT, parentWrapper.uuid)
                         }
-                    }
+                    },
+                    it.tags.toList()
                 )
             }
     }
@@ -222,7 +225,7 @@ class IndexService(
         val iBusConditions = getSystemSpecificConditions(queryInfo.types)
         var sql =
             """
-                SELECT document_wrapper.uuid, document_wrapper.id, document_wrapper.type, document_wrapper.parent_id
+                SELECT document_wrapper.uuid, document_wrapper.id, document_wrapper.type, document_wrapper.parent_id, document_wrapper.tags
                 FROM document_wrapper JOIN document document ON document_wrapper.uuid=document.uuid, catalog
                 WHERE document_wrapper.catalog_id = catalog.id AND document.catalog_id = catalog.id AND 
                 category = '${queryInfo.category}' AND deleted = 0 AND catalog.identifier = ? AND
@@ -252,5 +255,6 @@ data class IndexDocumentResult(
     val uuid: String,
     val wrapperId: Int,
     val type: String,
-    val parentId: Int?
+    val parentId: Int?,
+    val tags: Array<String>,
 )

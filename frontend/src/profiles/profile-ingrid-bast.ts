@@ -50,9 +50,23 @@ class InGridBastComponent extends InGridComponent {
   ];
 
   private modifyFormFieldConfiguration() {
-    [this.geoDataset, this.geoService].forEach((docType) => {
-      docType.options.required.resourceDateType = true;
-    });
+    const openDataActiveNotRequired =
+      '!field.form.root.get("isOpenData")?.value';
+    [this.geoDataset, this.geoService, this.dataCollection].forEach(
+      (docType) => {
+        const options = docType.options;
+        options.required.resourceDateType = true;
+        options.required.spatialReferences = false;
+        options.dynamicRequired.spatialReferences = openDataActiveNotRequired;
+        options.required.spatialSystems = false;
+        options.dynamicRequired.spatialSystems = openDataActiveNotRequired;
+      },
+    );
+    const geodatasetOptions = this.geoDataset.geodatasetOptions;
+    geodatasetOptions.required.identifier = false;
+    geodatasetOptions.dynamicRequired.identifier = openDataActiveNotRequired;
+    geodatasetOptions.required.statement = false;
+    geodatasetOptions.dynamicRequired.statement = openDataActiveNotRequired;
   }
 }
 

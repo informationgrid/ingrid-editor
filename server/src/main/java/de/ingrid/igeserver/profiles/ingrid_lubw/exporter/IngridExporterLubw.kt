@@ -106,13 +106,16 @@ class IngridLuceneExporterLubw(
         return when (data.type) {
             IngridDocType.DOCUMENT -> {
                 IngridModelTransformerLubw(
-                    data.mapper.convertValue(data.doc, IngridModel::class.java),
-                    data.catalogIdentifier,
-                    data.codelistTransformer,
-                    config,
-                    catalogService, TransformerCache(), data.doc, documentService
+                    TransformerConfig(
+                        data.mapper.convertValue(data.doc, IngridModel::class.java),
+                        data.catalogIdentifier,
+                        data.codelistTransformer,
+                        config,
+                        catalogService, TransformerCache(), data.doc, documentService
+                    )
                 )
             }
+
             else -> super.getTransformer(data)
         }
     }

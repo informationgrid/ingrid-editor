@@ -21,6 +21,7 @@ import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
 
 import { CheckboxComponent } from "./checkbox.component";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { FormsModule } from "@angular/forms";
 
 describe("IgeCheckboxComponent", () => {
   let component: CheckboxComponent;
@@ -29,7 +30,7 @@ describe("IgeCheckboxComponent", () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CheckboxComponent],
-      imports: [MatCheckboxModule],
+      imports: [MatCheckboxModule, FormsModule],
     }).compileComponents();
   }));
 

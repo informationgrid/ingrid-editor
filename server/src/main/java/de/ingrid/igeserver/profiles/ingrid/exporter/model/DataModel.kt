@@ -77,7 +77,7 @@ data class DataModel(
     val categoryCatalog: List<CategoryCatalog>?,
     val databaseContent: List<DatabaseContent>?,
     val distribution: Distribution?,
-    val orderInfo: String?,
+    var orderInfo: String?,
     val fees: String?,
     var references: List<Reference>?,
     val serviceUrls: List<ServiceUrl>?,
@@ -244,7 +244,7 @@ data class ConformanceResult(
         get() {
             return if (field.isNullOrEmpty()) "see the referenced specification" else field
         }
-    
+
     val publicationDate: String? = null
         get() {
             return if (field?.contains("Z") == true) {

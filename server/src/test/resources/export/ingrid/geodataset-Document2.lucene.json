@@ -16,6 +16,7 @@
     "kk"
   ],
   "iPlugId": "/ingrid-group:ige-iplug-test",
+  "iplug_id": "/ingrid-group:ige-iplug-test",
   "object_types_catalogue.type_date": "20230221000000000",
   "t02_address.institution": "Wemove Test",
   "t0113_dataset_reference.reference_date": "20230221000000000",

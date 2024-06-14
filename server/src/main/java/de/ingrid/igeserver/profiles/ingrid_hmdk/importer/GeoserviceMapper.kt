@@ -20,8 +20,8 @@
 package de.ingrid.igeserver.profiles.ingrid_hmdk.importer
 
 import de.ingrid.igeserver.model.KeyValue
-import de.ingrid.igeserver.profiles.ingrid.importer.GeoserviceMapper
-import de.ingrid.igeserver.profiles.ingrid.importer.IsoImportData
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeoserviceMapper
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 
 class GeoserviceMapperHMDK(isoData: IsoImportData) : GeoserviceMapper(isoData) {
 

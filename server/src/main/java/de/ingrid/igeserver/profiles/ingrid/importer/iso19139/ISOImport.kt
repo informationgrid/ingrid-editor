@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid.importer
+package de.ingrid.igeserver.profiles.ingrid.importer.iso19139
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
@@ -125,7 +125,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
-        return "application/xml" == contentType
+        return "application/xml" == contentType && !fileContent.contains("<rdf:RDF")
     }
 
     internal class JsonStringOutput : StringOutput() {

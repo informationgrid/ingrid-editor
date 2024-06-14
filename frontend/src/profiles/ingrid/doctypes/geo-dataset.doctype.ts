@@ -45,6 +45,8 @@ export class GeoDatasetDoctype extends IngridShared {
     dynamicRequired: {
       citation:
         "formState.mainModel?.featureCatalogueDescription?.featureTypes?.length > 0",
+      identifier: undefined,
+      statement: undefined,
     },
   };
 
@@ -55,6 +57,11 @@ export class GeoDatasetDoctype extends IngridShared {
   showIdentifierCreateButton = true;
   isGeoDataset = true;
   defaultKeySpatialScope = "885989663";
+
+  constructor() {
+    super();
+    this.options.required.spatialSystems = true;
+  }
 
   documentFields = () => {
     this.handleInVeKoSBehaviour();
@@ -80,6 +87,10 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addGroupSimple("lineage", [
           this.addTextArea("statement", "Fachliche Grundlage", this.id, {
             required: this.geodatasetOptions.required.statement,
+            expressions: {
+              "props.required":
+                this.geodatasetOptions.dynamicRequired.statement,
+            },
           }),
         ]),
         this.addInput("identifier", "Identifikator der Datenquelle", {
@@ -102,6 +113,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 ? ""
                 : "ISO-Abbildung: " + namespace + value;
             },
+            "props.required": this.geodatasetOptions.dynamicRequired.identifier,
           },
           buttonConfig: {
             text: "Erzeuge Id",

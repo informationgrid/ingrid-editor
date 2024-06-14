@@ -84,7 +84,7 @@ class OpenDataExporter(
 
         val additionalIdf = createAdditionalIdf(modifiedDoc, catalogId)
         appendToIdf(luceneJson, additionalIdf)
-        
+
         val additionalLuceneJson = getAdditionalLuceneJsonForDCATExporter(doc, catalogId)
         // apply all bmi fields to ingrid lucene document
         additionalLuceneJson.fieldNames().forEach {
@@ -106,7 +106,7 @@ class OpenDataExporter(
     private fun getAdditionalLuceneJsonForDCATExporter(doc: Document, catalogId: String): JsonNode {
         val output: TemplateOutput = JsonStringOutput()
         templateEngine.render("export/opendata/lucene-export.jte", getMapFromObject(doc, catalogId), output)
-        
+
         return jacksonObjectMapper().readValue(output.toString(), JsonNode::class.java)
     }
 
@@ -157,21 +157,22 @@ class OpenDataExporter(
                 put("alternateTitle", getString("landingPage"))
                 set<JsonNode>("openDataCategories", get("openDataCategories"))
                 set<JsonNode>("spatial", mapper.createObjectNode().apply {
-                    set<JsonNode>("references", if (outer.get("spatial").isEmpty) mapper.createArrayNode() else outer.get("spatial"))
+                    set<JsonNode>("references", if (outer.get("spatial") == null || outer.get("spatial").isEmpty) mapper.createArrayNode() else outer.get("spatial"))
                     set<JsonNode>("spatialSystems", null)
                 })
-                val tempKeywords = get("keywords")
-                set<JsonNode>("keywords", mapper.createObjectNode().apply {
-                    set<JsonNode>("free", mapper.createArrayNode().apply {
-                        tempKeywords.forEach {
-                            add(mapper.createObjectNode().apply {
-                                put("id", null as String?)
-                                put("label", it.asText())
-                            })
-                        }
+                get("keywords")?.let {
+                    set<JsonNode>("keywords", mapper.createObjectNode().apply {
+                        set<JsonNode>("free", mapper.createArrayNode().apply {
+                            it.forEach {
+                                add(mapper.createObjectNode().apply {
+                                    put("id", null as String?)
+                                    put("label", it.asText())
+                                })
+                            }
 
+                        })
                     })
-                })
+                }
                 set<JsonNode>("metadata", mapper.createObjectNode().apply {
                     set<JsonNode>("language", mapper.createObjectNode().apply {
                         put("key", 150)

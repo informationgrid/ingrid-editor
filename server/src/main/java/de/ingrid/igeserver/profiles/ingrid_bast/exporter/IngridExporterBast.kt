@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_bast.exporter
 
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.*
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
@@ -74,7 +75,8 @@ class IngridIdfExporterBast(
         listOf("ingrid-bast"),
     )
 
-    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getBastTransformer(docType) ?: super.getModelTransformerClass(docType)
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? =
+        getBastTransformer(docType) ?: super.getModelTransformerClass(docType)
 }
 
 @Service
@@ -94,10 +96,8 @@ class IngridLuceneExporterBast(
     override fun getTransformer(data: TransformerData): Any {
         return when (data.type) {
             IngridDocType.DOCUMENT -> {
-                getBastTransformer(data.doc.type)
-                    ?.constructors
-                    ?.first()
-                    ?.call(
+                IngridModelTransformerBast(
+                    TransformerConfig(
                         data.mapper.convertValue(data.doc, IngridModel::class.java),
                         data.catalogIdentifier,
                         data.codelistTransformer,
@@ -106,9 +106,29 @@ class IngridLuceneExporterBast(
                         TransformerCache(),
                         data.doc,
                         documentService
-                    ) ?: super.getTransformer(data)
+                    )
+                )
             }
+
             else -> super.getTransformer(data)
+        }
+    }
+
+    override fun getTemplateForDoctype(
+        doc: Document,
+        catalog: Catalog,
+        options: ExportOptions
+    ): Pair<String, Map<String, Any>> {
+        return when (doc.type) {
+            "InGridGeoDataset",
+            "InGridGeoService",
+            "InGridDataCollection"
+            -> Pair(
+                "export/ingrid-bast/template-lucene-bast.jte",
+                getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
+            )
+
+            else -> super.getTemplateForDoctype(doc, catalog, options)
         }
     }
 }

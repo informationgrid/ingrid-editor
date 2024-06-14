@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2022-2024 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,15 +17,9 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid.importer
+package de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.util
 
-import de.ingrid.igeserver.exports.iso.Metadata
-
-interface ISOImportProfile {
-    fun handle(catalogId: String, data: Metadata, addressMaps: MutableMap<String, String>): ImportProfileData?
-}
-
-data class ImportProfileData(
-    val template: String,
-    val mapper: GeneralMapper
-)
+/**
+ * Marker interface for transient ES fields.
+ */
+interface TransientGroup 
