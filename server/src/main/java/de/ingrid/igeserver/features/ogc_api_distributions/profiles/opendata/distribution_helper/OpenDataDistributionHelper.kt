@@ -17,12 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.opendata.distributionHelper
+package de.ingrid.igeserver.features.ogc_api_distributions.profiles.opendata.distribution_helper
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.ogc.distributionHelper.DistributionTypeInfo
-import de.ingrid.igeserver.ogc.distributionHelper.OgcDistributionHelper
+import de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper.DistributionTypeInfo
+import de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper.OgcDistributionHelper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
@@ -31,7 +31,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
-@Profile("ogc-distributions-api & opendata")
+@Profile("opendata")
 @Service
 class OpenDataDistributionHelper(
     private val storage: Storage
