@@ -33,6 +33,7 @@ class DataCollectionTransformerExternalBast(transformerConfig: TransformerConfig
 
     init {
         pointOfContact = super.pointOfContact.filter { it.relationType?.key != "2" }
+        transformerConfig.model.data.orderInfo = ""
     }
 
     override val useConstraints: List<UseConstraintTemplate> =
