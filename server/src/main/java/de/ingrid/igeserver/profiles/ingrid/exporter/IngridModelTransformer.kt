@@ -831,7 +831,7 @@ open class IngridModelTransformer(
 
     fun getParentIdentifierReference(): SuperiorReference? = getSuperiorReferenceProxy()
 
-    private fun getCrossReference(
+    open fun getCrossReference(
         uuid: String,
         type: KeyValue?,
         direction: String = "OUT",
