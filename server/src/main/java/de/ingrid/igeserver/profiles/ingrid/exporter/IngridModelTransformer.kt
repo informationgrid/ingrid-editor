@@ -61,7 +61,8 @@ data class TransformerConfig(
     val catalogService: CatalogService,
     val cache: TransformerCache,
     val doc: Document,
-    val documentService: DocumentService
+    val documentService: DocumentService,
+    val tags: List<String>
 )
 
 open class IngridModelTransformer(
@@ -75,6 +76,7 @@ open class IngridModelTransformer(
     val cache = transformerConfig.cache
     val doc = transformerConfig.doc
     val documentService = transformerConfig.documentService
+    val tags = transformerConfig.tags
 
     val fieldToCodelist = FieldToCodelist()
 

@@ -74,11 +74,9 @@ class IngridIDFExporter(
         val output: TemplateOutput = XMLStringOutput()
         if (doc.type == "FOLDER") return ""
 
-        val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
-
         templateEngine.render(
             getTemplateForDoctype(doc.type),
-            getMapFromObject(doc, catalogId, catalogProfileId),
+            getMapFromObject(doc, catalogId, options),
             output
         )
         // pretty printing takes around 5ms
@@ -107,7 +105,7 @@ class IngridIDFExporter(
         }
     }
 
-    private fun getModelTransformer(json: Document, catalogId: String, profile: String): Any {
+    private fun getModelTransformer(json: Document, catalogId: String, exportOptions: ExportOptions): Any {
         val isAddress = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
 
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
@@ -127,7 +125,8 @@ class IngridIDFExporter(
                     catalogService,
                     TransformerCache(),
                     json,
-                    documentService
+                    documentService,
+                    exportOptions.tags
                 )
             )
     }
@@ -150,8 +149,8 @@ class IngridIDFExporter(
     }
 
 
-    private fun getMapFromObject(json: Document, catalogId: String, profile: String): Map<String, Any> {
-        val modelTransformer = getModelTransformer(json, catalogId, profile)
+    private fun getMapFromObject(json: Document, catalogId: String, options: ExportOptions): Map<String, Any> {
+        val modelTransformer = getModelTransformer(json, catalogId, options)
         return mapOf(
             "map" to mapOf(
                 "model" to modelTransformer

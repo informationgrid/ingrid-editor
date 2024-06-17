@@ -97,7 +97,8 @@ class IngridLuceneExporterLfub(
                             catalogService,
                             TransformerCache(),
                             data.doc,
-                            documentService
+                            documentService,
+                            data.tags
                         )
                     ) ?: super.getTransformer(data)
             }
