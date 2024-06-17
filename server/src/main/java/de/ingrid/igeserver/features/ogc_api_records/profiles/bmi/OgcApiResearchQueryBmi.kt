@@ -23,8 +23,10 @@ import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcApiResearchQuery
 import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcFilterParameter
 import org.intellij.lang.annotations.Language
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
+@Profile("bmi")
 @Component
 class OgcApiResearchQueryBmi: OgcApiResearchQuery() {
     override val profiles = listOf("bmi")
