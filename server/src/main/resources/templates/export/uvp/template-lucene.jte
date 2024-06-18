@@ -13,7 +13,7 @@
 !{page.getData().convertEiaNumbers(catalog.getIdentifier());}
 
 {
-    "iplug_id": "ige-ng_${catalog.getIdentifier()}",
+    "iPlugId": "ige-ng_${catalog.getIdentifier()}",
     "dataSourceName": "iPlug IGE-NG (${catalog.getIdentifier()})",
     "title": "${page.getTitle()}",
     "summary": "${page.getData().getDescription()}",

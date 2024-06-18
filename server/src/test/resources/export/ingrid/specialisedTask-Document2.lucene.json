@@ -3,7 +3,7 @@
   "t01_object.is_adv_compatible": "N",
   "t01_object.loc_descr": "Testerläuterung1",
   "t02_address.adr_id": "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
-  "iplug_id": "/ingrid-group:ige-iplug-test",
+  "iPlugId": "/ingrid-group:ige-iplug-test",
   "t01_object.is_catalog_data": "Y",
   "t02_address.create_time": "20121210182805493",
   "t01_object.id": "319946833",

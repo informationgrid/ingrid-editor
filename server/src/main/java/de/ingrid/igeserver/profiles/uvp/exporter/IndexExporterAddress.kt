@@ -72,7 +72,7 @@ class IndexExporterAddress(
         return jacksonObjectMapper().createObjectNode().apply {
             put("t02_address.adr_id", doc.uuid)
             put("title", doc.title)
-            put("iplug_id", "ige-ng_$catalogId")
+            put("iPlugId", "ige-ng_$catalogId")
             put("dataSourceName", "iPlug IGE-NG ($catalogId)")
             set<ArrayNode>("partner", jacksonObjectMapper().createArrayNode().add(partner))
             set<ArrayNode>("provider", jacksonObjectMapper().createArrayNode().add(provider))
