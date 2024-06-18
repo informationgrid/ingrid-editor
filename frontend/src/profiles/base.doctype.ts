@@ -24,6 +24,7 @@ import {
   CodelistService,
   SelectOption,
   SelectOptionUi,
+  SortBy,
 } from "../app/services/codelist/codelist.service";
 import { filter, map, take, tap } from "rxjs/operators";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
@@ -127,7 +128,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     return this.fields;
   }
 
-  getCodelistForSelectWithEmtpyOption(
+  getCodelistForSelectWithEmptyOption(
     codelistId: string,
     field: string,
   ): Observable<SelectOptionUi[]> {
@@ -139,11 +140,11 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   getCodelistForSelect(
     codelistId: string,
     field: string,
-    sort: boolean = true,
+    sortBy: SortBy = "label",
   ): Observable<SelectOptionUi[]> {
     if (field) this.fieldWithCodelistMap.set(field, codelistId);
 
-    return this.codelistService.observe(codelistId, sort);
+    return this.codelistService.observe(codelistId, sortBy);
   }
 
   async init(help: string[]): Promise<void> {

@@ -79,7 +79,7 @@ export class TestDoctype extends BaseDoctype {
         this.addSelect("selectWithEmpty", "Selectbox mit leerer Option", {
           required: true,
           placeholder: "Bitte wählen...",
-          options: this.getCodelistForSelectWithEmtpyOption(
+          options: this.getCodelistForSelectWithEmptyOption(
             "8000",
             "selectWithEmpty",
           ),
