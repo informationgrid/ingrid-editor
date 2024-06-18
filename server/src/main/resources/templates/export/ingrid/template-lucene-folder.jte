@@ -10,7 +10,6 @@
 !{var provider = ((String)map.get("provider"));}
 
 {
-    "iPlugId": "ige-ng_${catalog.getIdentifier()}",
     "iplug_id": "ige-ng_${catalog.getIdentifier()}",
     "dataSourceName": "iPlug IGE-NG (${catalog.getIdentifier()})",
     "partner": [
