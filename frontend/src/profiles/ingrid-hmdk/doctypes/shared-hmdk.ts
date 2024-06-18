@@ -115,7 +115,7 @@ export class SharedHmdk {
         options: this.doc.getCodelistForSelect(
           "informationsgegenstand",
           "informationHmbTG",
-          false,
+          "value",
         ),
       },
     );

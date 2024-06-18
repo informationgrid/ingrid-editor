@@ -70,6 +70,18 @@ export class SelectOption {
 
 export interface SelectOptionUi extends SelectOption {
   disabled?: boolean;
+  sortkey?: string;
+}
+
+export type SortBy = "value" | "label" | "sortkey";
+function compareEntries(a: SelectOptionUi, b: SelectOptionUi, sortBy: SortBy) {
+  switch (sortBy) {
+    case "label":
+      return a[sortBy]?.localeCompare(b[sortBy]);
+    case "value":
+    case "sortkey":
+      return a[sortBy]?.localeCompare(b[sortBy], undefined, { numeric: true });
+  }
 }
 
 @UntilDestroy()
@@ -82,7 +94,7 @@ export class CodelistService {
   static mapToSelect = (
     codelist: Codelist,
     language = "de",
-    sort = true,
+    sortBy: SortBy = "label",
   ): SelectOptionUi[] => {
     if (!codelist) {
       return [];
@@ -93,15 +105,14 @@ export class CodelistService {
         ({
           label: entry.fields[language] ?? entry.fields["name"],
           value: entry.id,
+          sortkey: entry.fields["sortkey"],
         }) as SelectOptionUi,
     );
 
-    return sort
-      ? CodelistService.sortFavorites(
-          codelist.id,
-          items.sort((a, b) => a.label?.localeCompare(b.label)),
-        )
-      : items;
+    return CodelistService.sortFavorites(
+      codelist.id,
+      items.sort((a, b) => compareEntries(a, b, sortBy)),
+    );
   };
 
   private queue = [];
@@ -261,10 +272,10 @@ export class CodelistService {
 
   observe(
     codelistId: string,
-    sort: boolean = true,
+    sortBy: SortBy = "label",
   ): Observable<SelectOptionUi[]> {
     return this.observeRaw(codelistId).pipe(
-      map((codelist) => CodelistService.mapToSelect(codelist, "de", sort)),
+      map((codelist) => CodelistService.mapToSelect(codelist, "de", sortBy)),
     );
   }
 
