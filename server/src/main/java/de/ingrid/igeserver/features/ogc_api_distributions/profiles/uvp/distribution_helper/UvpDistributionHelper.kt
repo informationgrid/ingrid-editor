@@ -30,6 +30,7 @@ import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.storage.Storage
 import net.pwall.json.schema.parser.Parser.Companion.isZero
 import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 data class PublicHearing(
@@ -72,6 +73,7 @@ data class PublicDisclosureReportsRecommendationDocs(
     val reportsRecommendationDocsPublishDuringDisclosure: Boolean,
 )
 
+@Profile("uvp")
 @Service
 class UvpDistributionHelper(
     private val storage: Storage
