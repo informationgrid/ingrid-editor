@@ -49,4 +49,8 @@ class BastProfile(
 
     override val indexExportFormatID = "indexInGridIDFBast"
 
+    override fun getElasticsearchMapping(format: String): String {
+        return {}.javaClass.getResource("/ingrid/mappings/bast/default-mapping.json")?.readText() ?: ""
+    }
+
 }
