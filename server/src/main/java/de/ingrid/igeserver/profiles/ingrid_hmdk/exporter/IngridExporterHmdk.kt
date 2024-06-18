@@ -63,7 +63,8 @@ class IngridIdfExporterHmdk(
     @Lazy documentService: DocumentService
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
-    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getHmdkModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? =
+        getHmdkModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
 }
 
 @Service
@@ -95,7 +96,8 @@ class IngridLuceneExporterHmdk(
                             catalogService,
                             TransformerCache(),
                             data.doc,
-                            documentService
+                            documentService,
+                            data.tags
                         )
                     ) ?: super.getTransformer(data)
             }

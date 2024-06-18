@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component
 import java.net.URLDecoder
 
 @Component
-class BmiType : EntityType() {
+class OpenDataType : EntityType() {
     override val className = "OpenDataDoc"
     override val profiles = arrayOf(OpenDataProfile.id)
 

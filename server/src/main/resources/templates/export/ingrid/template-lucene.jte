@@ -13,7 +13,6 @@
 !{var catalog = ((Catalog)map.get("catalog"));}
 !{var partner = ((String)map.get("partner"));}
 !{var provider = ((String)map.get("provider"));}
-!{var tags = ((List<String>)map.get("tags"));}
 
 {
     "iPlugId": "ige-ng_${catalog.getIdentifier()}",
@@ -28,7 +27,7 @@
     "created": "${page.formatDate(page.getFormatterISO(), page.getModel().get_created())}",
     "modified": "${page.formatDate(page.getFormatterISO(), page.getModel().get_contentModified())}",
     "tags": [
-    @for(var entry : ForSupport.of(tags))
+    @for(var entry : ForSupport.of(page.getTags()))
         "${entry.get()}"@if (!entry.isLast()),@endif
     @endfor
     ],

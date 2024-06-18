@@ -111,7 +111,11 @@ class IngridLuceneExporterLubw(
                         data.catalogIdentifier,
                         data.codelistTransformer,
                         config,
-                        catalogService, TransformerCache(), data.doc, documentService
+                        catalogService,
+                        TransformerCache(),
+                        data.doc,
+                        documentService,
+                        data.tags
                     )
                 )
             }

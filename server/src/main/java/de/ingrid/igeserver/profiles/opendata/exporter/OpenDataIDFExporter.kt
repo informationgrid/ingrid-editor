@@ -78,7 +78,7 @@ class OpenDataIDFExporter(
 
         templateEngine.render(
             getTemplateForDoctype(doc.type),
-            getMapFromObject(doc, catalogId, catalogProfileId),
+            getMapFromObject(doc, catalogId, options),
             output
         )
         // pretty printing takes around 5ms
@@ -102,7 +102,7 @@ class OpenDataIDFExporter(
 
     private val mapper = ObjectMapper().registerKotlinModule()
 
-    private fun getModelTransformer(json: Document, catalogId: String, profile: String): Any {
+    private fun getModelTransformer(json: Document, catalogId: String, options: ExportOptions): Any {
         val ingridModel: IngridModel?
         val isAddress = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
         ingridModel = if (isAddress) null else mapper.convertValue(json, IngridModel::class.java)
@@ -122,7 +122,10 @@ class OpenDataIDFExporter(
                     codelistTransformer,
                     config,
                     catalogService,
-                    TransformerCache(), json, documentService
+                    TransformerCache(),
+                    json,
+                    documentService,
+                    options.tags
                 )
             )
     }
@@ -136,8 +139,8 @@ class OpenDataIDFExporter(
     }
 
 
-    private fun getMapFromObject(json: Document, catalogId: String, profile: String): Map<String, Any> {
-        val modelTransformer = getModelTransformer(json, catalogId, profile)
+    private fun getMapFromObject(json: Document, catalogId: String, options: ExportOptions): Map<String, Any> {
+        val modelTransformer = getModelTransformer(json, catalogId, options)
         return mapOf(
             "map" to mapOf(
                 "model" to modelTransformer

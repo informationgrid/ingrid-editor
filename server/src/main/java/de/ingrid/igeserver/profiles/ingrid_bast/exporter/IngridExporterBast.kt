@@ -105,7 +105,8 @@ class IngridLuceneExporterBast(
                         catalogService,
                         TransformerCache(),
                         data.doc,
-                        documentService
+                        documentService,
+                        data.tags
                     )
                 )
             }

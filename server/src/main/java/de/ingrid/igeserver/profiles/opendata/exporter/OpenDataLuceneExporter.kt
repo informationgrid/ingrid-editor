@@ -27,6 +27,7 @@ import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.FolderModelTransformer
 import de.ingrid.igeserver.exporter.model.FolderModel
+import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
@@ -54,11 +55,11 @@ class OpenDataLuceneExporter(
 ) {
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
-    fun run(doc: Document, catalogId: String): Any {
+    fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val output: TemplateOutput = JsonStringOutput()
         handleFoldersWithoutPublishedChildrens(doc)
         val catalog = catalogService.getCatalogById(catalogId)
-        val templateData = getTemplateForDoctype(doc, catalog)
+        val templateData = getTemplateForDoctype(doc, catalog, options)
         templateEngine.render(templateData.first, templateData.second, output)
         // fix strings that actually should represent JSON (like wkt_geo-field)
         return output.toString().replace("@json@", "\"")
@@ -71,64 +72,64 @@ class OpenDataLuceneExporter(
         }
     }
 
-    private fun getTemplateForDoctype(doc: Document, catalog: Catalog): Pair<String, Map<String, Any>> {
+    private fun getTemplateForDoctype(doc: Document, catalog: Catalog, options: ExportOptions): Pair<String, Map<String, Any>> {
         return when (doc.type) {
             "InGridSpecialisedTask" -> Pair(
                 "export/ingrid/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog)
+                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
             )
 
             "InGridGeoDataset" -> Pair(
                 "export/ingrid/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog)
+                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
             )
 
             "InGridPublication" -> Pair(
                 "export/ingrid/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog)
+                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
             )
 
             "InGridGeoService" -> Pair(
                 "export/ingrid/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog)
+                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
             )
 
             "InGridProject" -> Pair(
                 "export/ingrid/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog)
+                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
             )
 
             "InGridDataCollection" -> Pair(
                 "export/ingrid/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog)
+                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
             )
 
             "InGridInformationSystem" -> Pair(
                 "export/ingrid/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog)
+                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
             )
 
             "InGridOrganisationDoc" -> Pair(
                 "export/ingrid/template-lucene-address.jte",
-                getMapper(OpenDataDocType.ADDRESS, doc, catalog)
+                getMapper(OpenDataDocType.ADDRESS, doc, catalog, options)
             )
 
             "InGridPersonDoc" -> Pair(
                 "export/ingrid/template-lucene-address.jte",
-                getMapper(OpenDataDocType.ADDRESS, doc, catalog)
+                getMapper(OpenDataDocType.ADDRESS, doc, catalog, options)
             )
 
-            "FOLDER" -> Pair("export/ingrid/template-lucene-folder.jte", getMapper(OpenDataDocType.FOLDER, doc, catalog))
+            "FOLDER" -> Pair("export/ingrid/template-lucene-folder.jte", getMapper(OpenDataDocType.FOLDER, doc, catalog, options))
             else -> {
                 throw ServerException.withReason("Cannot get template for type: ${doc.type}")
             }
         }
     }
 
-    private fun getMapper(type: OpenDataDocType, doc: Document, catalog: Catalog): Map<String, Any> {
+    private fun getMapper(type: OpenDataDocType, doc: Document, catalog: Catalog, options: ExportOptions): Map<String, Any> {
 
         val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier)
-        val data = TransformerData(type, catalog.identifier, codelistTransformer, doc)
+        val data = TransformerData(type, catalog.identifier, codelistTransformer, doc, options.tags)
 
         val transformer: Any = getTransformer(data)
 
@@ -162,7 +163,11 @@ class OpenDataLuceneExporter(
                         data.catalogIdentifier,
                         data.codelistTransformer,
                         config,
-                        catalogService, TransformerCache(), data.doc, documentService
+                        catalogService,
+                        TransformerCache(),
+                        data.doc,
+                        documentService,
+                        data.tags
                     )
                 )
             }
@@ -200,5 +205,6 @@ data class TransformerData(
     val catalogIdentifier: String,
     val codelistTransformer: CodelistTransformer,
     val doc: Document,
+    val tags: List<String>,
     val mapper: ObjectMapper = ObjectMapper().registerKotlinModule()
 )

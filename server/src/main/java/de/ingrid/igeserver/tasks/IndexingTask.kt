@@ -304,7 +304,7 @@ class IndexingTask(
                         cancellations,
                         (currentThread ?: Thread.currentThread()).threadId(),
                     )
-                        .exportAndIndexSingleDocument(doc.document, indexInfo, ExportOptions(false, null, it.tags))
+                        .exportAndIndexSingleDocument(doc.document, indexInfo, ExportOptions(false, null, doc.tags))
 
                     it.target.flush()
                 }

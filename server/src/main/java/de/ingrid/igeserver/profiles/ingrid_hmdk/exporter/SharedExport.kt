@@ -22,10 +22,12 @@ package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.*
 import de.ingrid.igeserver.utils.getBoolean
+import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
 import kotlin.reflect.KClass
 
@@ -57,6 +59,37 @@ fun amendHMDKDescriptiveKeywords(
 
     return keywords
 }
+
+
+fun getMapUrl(doc: Document?, tags: List<String>): String {
+    // if the service has access constraints, we do not want to show the mapUrl
+    if (doc == null || (doc.data.get("service")?.getBoolean("hasAccessConstraints") == true)) return ""
+
+    return generateMapUrl(
+        if (doc.type == "InGridGeoService")
+        // all coupled resources uuids for services
+            getMapLinkUuidsFromService(doc)
+        else
+        // only use the uuid of the geodataset
+            listOf(doc.uuid)
+        , tags
+    )
+}
+
+private fun generateMapUrl(uuids: List<String>, tags: List<String>): String {
+    val baseUrl =
+        if (tags.contains("intranet") || tags.contains("amtsintern"))
+            "https://geofos.fhhnet.stadt.hamburg.de/fhh-atlas/?mdid="
+        else
+            "https://geoportal-hamburg.de/geo-online/?mdid="
+
+    return baseUrl + uuids.joinToString(",")
+}
+
+private fun getMapLinkUuidsFromService(doc: Document) = doc.data.get("service")?.get("coupledResources")
+    ?.filter { !it.get("isExternalRef").asBoolean() }
+    ?.mapNotNull { it.getString("uuid") }
+    ?: emptyList()
 
 fun getHmdkModelTransformerClass(docType: String): KClass<out Any>? {
     return when (docType) {

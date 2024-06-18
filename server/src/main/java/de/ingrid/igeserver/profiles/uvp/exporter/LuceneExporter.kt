@@ -47,18 +47,17 @@ class LuceneExporter(
 
         val output: TemplateOutput = JsonStringOutput()
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        templateEngine.render("export/uvp/template-lucene.jte", getMapFromObject(doc, catalog, options), output)
+        templateEngine.render("export/uvp/template-lucene.jte", getMapFromObject(doc, catalog), output)
         return output.toString()
     }
 
-    private fun getMapFromObject(json: Document, catalog: Catalog, options: ExportOptions): Map<String, Any> {
+    private fun getMapFromObject(json: Document, catalog: Catalog): Map<String, Any> {
 
         val mapper = ObjectMapper().registerKotlinModule()
         return mapOf(
             "map" to mapOf(
                 "model" to mapper.convertValue(json, UVPModel::class.java).apply { init(catalog.identifier) },
                 "catalog" to catalog,
-                "tags" to options.tags,
                 "partner" to mapCodelistValue("110", catalog.settings.config.partner),
                 "provider" to mapCodelistValue("111", catalog.settings.config.provider)
             )

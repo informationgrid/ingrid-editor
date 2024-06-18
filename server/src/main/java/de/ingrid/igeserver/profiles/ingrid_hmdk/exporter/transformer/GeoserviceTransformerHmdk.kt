@@ -19,13 +19,30 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer
 
+import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.profiles.ingrid.exporter.CrossReference
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.amendHMDKDescriptiveKeywords
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.getMapUrl
 
 class GeoserviceTransformerHmdk(transformerConfig: TransformerConfig) :
     GeodataserviceModelTransformer(transformerConfig) {
     override fun getDescriptiveKeywords(): List<Thesaurus> =
         amendHMDKDescriptiveKeywords(doc.data, codelists, super.getDescriptiveKeywords())
+
+
+    override fun getCrossReference(
+        uuid: String,
+        type: KeyValue?,
+        direction: String,
+        ignoreNotFound: Boolean
+    ): CrossReference? =
+        super.getCrossReference(uuid, type, direction, ignoreNotFound)?.apply {
+            mapUrl = getMapUrl(getLastPublishedDocument(uuid), tags)
+        }
+
+
+    override val mapLinkUrl = getMapUrl(doc, tags)
 }

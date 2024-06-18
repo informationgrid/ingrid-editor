@@ -96,7 +96,8 @@ class IngridLuceneExporterUPSH(
                             catalogService,
                             TransformerCache(),
                             data.doc,
-                            documentService
+                            documentService,
+                            data.tags
                         )
                     ) ?: super.getTransformer(data)
             }

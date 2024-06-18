@@ -35,7 +35,7 @@ import java.util.Map;
 @Configuration
 @ComponentScan(basePackages = {"de.ingrid.igeserver", "de.ingrid.mdek"}, excludeFilters = @ComponentScan.Filter(
         type = FilterType.CUSTOM,
-        classes = ProfileFilter.class
+        classes = {ProfileFilter.class, FeatureFilter.class}
 ))
 public class SpringConfiguration {
 
