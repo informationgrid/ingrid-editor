@@ -96,12 +96,12 @@ export class IsoViewPlugin extends Plugin {
   private showISODialog() {
     const currentDocument = this.treeQuery.getOpenedDocument();
     const options = {
-      id: currentDocument.id as number,
+      ids: [currentDocument.id as number],
       useDraft: true,
       exportFormat: this.isoExportFormat,
     };
     const optionsOnlyPublished = {
-      id: currentDocument.id as number,
+      ids: [currentDocument.id as number],
       useDraft: false,
       exportFormat: this.isoExportFormat,
     };

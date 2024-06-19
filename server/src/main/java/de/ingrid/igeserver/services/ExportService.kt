@@ -56,30 +56,36 @@ class ExportService(val exporterFactory: ExporterFactory) {
     fun getExportTypes(catalogId: String, profileId: String, onlyPublic: Boolean = true): List<ExportTypeInfo> {
         val profile = documentService.catalogService.getProfileFromCatalog(catalogId)
         return exporterFactory.typeInfos
-            .filter { it.profiles.isEmpty() || it.profiles.contains(profileId) || it.profiles.contains(profile.parentProfile)}
+            .filter { it.profiles.isEmpty() || it.profiles.contains(profileId) || it.profiles.contains(profile.parentProfile) }
             .filter { if (onlyPublic) it.isPublic else true }
     }
 
     fun export(catalogId: String, options: ExportRequestParameter): ExportResult {
-        // TODO: option to export addresses too?
-        val doc = documentService.getWrapperByDocumentIdAndCatalog(options.id)
+        val docs = options.ids.map { documentService.getWrapperByDocumentIdAndCatalog(it) }
         val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
+        val isSingleNonFolderDocument = docs.size == 1 && docs[0].type != "FOLDER"
 
-        return if (doc.type == "FOLDER") {
-            val result = handleWithSubDocuments(doc, options, catalogId)
+        return if (isSingleNonFolderDocument) {
+            val doc = docs[0]
+            val data = handleSingleDataset(options, doc, catalogId)?.toByteArray()
+            val fileName = "${doc.uuid}.${exporter.typeInfo.fileExtension}"
+            val mediaType = MediaType.valueOf(exporter.typeInfo.dataType)
+            ExportResult(data, fileName, mediaType)
+        } else {
+            val results = docs.flatMap { document ->
+                if (document.type == "FOLDER") handleWithSubDocuments(document, options, catalogId)
+                else handleSingleDataset(options, document, catalogId)?.let { listOf(Pair(document.uuid, it)) }
+                    ?: emptyList()
+
+            }
+                // remove duplicates
+                .toSet().toList()
             ExportResult(
-                zipToFile(result, exporter.typeInfo.fileExtension),
-                doc.uuid + ".zip",
+                zipToFile(results, exporter.typeInfo.fileExtension),
+                "export.zip",
                 MediaType.valueOf("application/zip")
             )
-        } else {
-            ExportResult(
-                handleSingleDataset(options, doc, catalogId)?.toByteArray(),
-                doc.uuid + "." + exporter.typeInfo.fileExtension,
-                MediaType.valueOf(exporter.typeInfo.dataType)
-            )
         }
-
     }
 
     private fun zipToFile(result: List<Pair<String, String>>, fileExtension: String): ByteArray {
@@ -108,14 +114,16 @@ class ExportService(val exporterFactory: ExporterFactory) {
             if (!options.useDraft) {
                 try {
                     getPublishedVersion(catalogId, doc)
-                } catch (ex: NotFoundException) { return null }
+                } catch (ex: NotFoundException) {
+                    return null
+                }
             } else documentService.getDocumentByWrapperId(
                 catalogId,
                 doc.id!!,
                 true
             )
         val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
-        val result = exporter.run(docVersion, catalogId, ExportOptions(options.useDraft, null,  doc.tags))
+        val result = exporter.run(docVersion, catalogId, ExportOptions(options.useDraft, null, doc.tags))
         return if (result is ObjectNode) result.toPrettyString() else result as String
     }
 

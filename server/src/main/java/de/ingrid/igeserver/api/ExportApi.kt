@@ -50,7 +50,7 @@ interface ExportApi {
         @Parameter(
             description = "The dataset to be exported.",
             required = true
-        ) @RequestBody data: @Valid ExportRequestParameter
+        ) @RequestBody options: @Valid ExportRequestParameter
     ): ResponseEntity<ByteArray?>
 
     @ApiResponses(

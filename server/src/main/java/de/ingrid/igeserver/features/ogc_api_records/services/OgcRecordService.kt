@@ -476,7 +476,7 @@ class OgcRecordService(
         val id = wrapper.id!!
         val exportFormat = if(format == RecordFormat.json) "internal" else format.toString()
         val options = ExportRequestParameter(
-                id = id,
+                ids = listOf(id),
                 exportFormat = exportFormat,
                 // TODO context of ingridISO exporter: check why address documents need to called as drafts
                 useDraft = (format == RecordFormat.ingridISO && wrapper.category == "address")

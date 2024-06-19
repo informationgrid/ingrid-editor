@@ -86,16 +86,18 @@ export class ExportComponent implements OnInit {
     this.selectedIds = ids;
     if (ids.length > 0) {
       this.datasetSelected = true;
-      this.docService.getPath(ids[0]).subscribe((path) => (this.path = path));
+      // only get path if exactly one dataset is selected
+      ids.length == 1
+        ? this.docService
+            .getPath(ids[0])
+            .subscribe((path) => (this.path = path))
+        : (this.path = null);
     }
   }
 
   runExport() {
     let model = this.optionsFormGroup.value;
-    const options = ExchangeService.prepareExportInfo(
-      this.selectedIds[0],
-      model,
-    );
+    const options = ExchangeService.prepareExportInfo(this.selectedIds, model);
     this.exportResult = null;
     this.exportFinished = false;
     this.exportService
