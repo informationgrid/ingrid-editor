@@ -135,12 +135,17 @@ open class GeneralMapper(val isoData: IsoImportData) {
             } else mutableListOf()
 
             var uuid = contact.responsibleParty?.uuid
-            if (individualName == null && uuid == null) {
-                // sometimes a distributor was not correctly exported, since only order information was needed,
-                // so we skip this "empty" address
-                if (organization == null) return@flatMapIndexed parents
-                uuid = findOrganisationUuid(organization)
-                    ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[organization] = newUuid }
+            if (uuid == null) {
+                if (individualName == null) {
+                    // sometimes a distributor was not correctly exported, since only order information was needed,
+                    // so we skip this "empty" address
+                    if (organization == null) return@flatMapIndexed parents
+                    uuid = findOrganisationUuid(organization)
+                        ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[organization] = newUuid }
+                } else {
+                    uuid = findPersonUuid(individualName)
+                        ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[getPersonIdentifier(individualName)] = newUuid }
+                }
             }
 
             val pointOfContact = PointOfContact(
@@ -164,6 +169,16 @@ open class GeneralMapper(val isoData: IsoImportData) {
     private fun findOrganisationUuid(name: String): String? {
         return isoData.addressMaps[name] ?: documentService.docRepo.findAddressByOrganisationName(catalogId, name)
             .firstOrNull()
+    }
+
+    private fun findPersonUuid(person: PersonInfo): String? {
+        return isoData.addressMaps[getPersonIdentifier(person)]
+            ?: documentService.docRepo.findAddressByPerson(catalogId, person.firstName, person.lastName)
+            .firstOrNull()
+    }
+
+    private fun getPersonIdentifier(person: PersonInfo): String {
+        return "${person.firstName} ${person.lastName}"
     }
 
     private fun getAddressInfo(address: Address?): AddressInfo? {
