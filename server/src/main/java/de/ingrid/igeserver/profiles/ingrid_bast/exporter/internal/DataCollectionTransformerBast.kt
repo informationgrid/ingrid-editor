@@ -22,8 +22,8 @@ package de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.DataCollectionModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid_bast.exporter.getBastKeywords
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 
@@ -32,13 +32,9 @@ class DataCollectionTransformerBast(transformerConfig: TransformerConfig) :
 
     private val docData = doc.data
 
-    override fun getDescriptiveKeywords(): List<Thesaurus> {
-        val bastKeywords = Thesaurus("BASt Keywords", "2024-01-01", showType = false, keywords = listOfNotNull(
-            docData.getString("projectNumber")?.let { KeywordIso(it) },
-            docData.getString("projectTitle")?.let { KeywordIso(it) }
-        ))
-        return super.getDescriptiveKeywords() + bastKeywords
-    }
+    override fun getDescriptiveKeywords(): List<Thesaurus>  = super.getDescriptiveKeywords() + getBastKeywords(docData)
+
+    override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() + getBastKeywords(docData).keywords.mapNotNull { it.name }
 
     override val supplementalInformation = docData.getString("supplementalInformation")
 
@@ -46,7 +42,10 @@ class DataCollectionTransformerBast(transformerConfig: TransformerConfig) :
         super.useConstraints + if (docData.getString("resource.useConstraintsComments") == null) emptyList()
         else listOf(
             UseConstraintTemplate(
-                CharacterStringModel(docData.getStringOrEmpty("resource.useConstraintsComments"), null), null, null, null
+                CharacterStringModel(docData.getStringOrEmpty("resource.useConstraintsComments"), null),
+                null,
+                null,
+                null
             )
         )
 }

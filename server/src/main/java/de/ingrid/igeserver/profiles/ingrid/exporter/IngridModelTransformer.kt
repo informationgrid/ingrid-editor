@@ -451,7 +451,7 @@ open class IngridModelTransformer(
     val inspireRelevantKeyword =
         if (data.isInspireIdentified == true) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
 
-    fun getKeywordsAsList(): List<String> {
+    open fun getKeywordsAsList(): List<String> {
         val allKeywords = listOf(
             inspireRelevantKeyword,
             advCompatibleKeyword,
