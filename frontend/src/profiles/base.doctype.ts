@@ -24,7 +24,7 @@ import {
   CodelistService,
   SelectOption,
   SelectOptionUi,
-  SortBy,
+  CodelistSort,
 } from "../app/services/codelist/codelist.service";
 import { filter, map, take, tap } from "rxjs/operators";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
@@ -140,7 +140,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   getCodelistForSelect(
     codelistId: string,
     field: string,
-    sortBy: SortBy = "label",
+    sortBy: CodelistSort = "label",
   ): Observable<SelectOptionUi[]> {
     if (field) this.fieldWithCodelistMap.set(field, codelistId);
 

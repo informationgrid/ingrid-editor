@@ -1730,9 +1730,12 @@ export abstract class IngridShared extends BaseDoctype {
   private getPriorityDatasets(): Observable<SelectOptionUi[]> {
     return this.codelistService.observeRaw("6350").pipe(
       map((codelist) => {
-        const items = CodelistService.mapToSelect(codelist, "de", "value").map(
-          (item, index) =>
-            this.adaptPriorityDatasetItem(item, codelist.entries[index]),
+        const items = CodelistService.mapToSelect(
+          codelist,
+          "de",
+          "NO_SORT",
+        ).map((item, index) =>
+          this.adaptPriorityDatasetItem(item, codelist.entries[index]),
         );
 
         return CodelistService.sortFavorites(

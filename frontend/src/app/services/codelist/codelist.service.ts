@@ -73,16 +73,7 @@ export interface SelectOptionUi extends SelectOption {
   sortkey?: string;
 }
 
-export type SortBy = "value" | "label" | "sortkey";
-function compareEntries(a: SelectOptionUi, b: SelectOptionUi, sortBy: SortBy) {
-  switch (sortBy) {
-    case "label":
-      return a[sortBy]?.localeCompare(b[sortBy]);
-    case "value":
-    case "sortkey":
-      return a[sortBy]?.localeCompare(b[sortBy], undefined, { numeric: true });
-  }
-}
+export type CodelistSort = "NO_SORT" | "value" | "label" | "sortkey";
 
 @UntilDestroy()
 @Injectable({
@@ -94,7 +85,7 @@ export class CodelistService {
   static mapToSelect = (
     codelist: Codelist,
     language = "de",
-    sortBy: SortBy = "label",
+    sortBy: CodelistSort = "label",
   ): SelectOptionUi[] => {
     if (!codelist) {
       return [];
@@ -111,9 +102,28 @@ export class CodelistService {
 
     return CodelistService.sortFavorites(
       codelist.id,
-      items.sort((a, b) => compareEntries(a, b, sortBy)),
+      items.sort((a, b) => CodelistService.compareEntries(a, b, sortBy)),
     );
   };
+
+  private static compareEntries(
+    a: SelectOptionUi,
+    b: SelectOptionUi,
+    sortBy: CodelistSort,
+  ) {
+    switch (sortBy) {
+      case "NO_SORT":
+        // don't sort
+        return 0;
+      case "label":
+        return a[sortBy]?.localeCompare(b[sortBy]);
+      case "value":
+      case "sortkey":
+        return a[sortBy]?.localeCompare(b[sortBy], undefined, {
+          numeric: true,
+        });
+    }
+  }
 
   private queue = [];
   private batchProcessed = true;
@@ -272,7 +282,7 @@ export class CodelistService {
 
   observe(
     codelistId: string,
-    sortBy: SortBy = "label",
+    sortBy: CodelistSort = "label",
   ): Observable<SelectOptionUi[]> {
     return this.observeRaw(codelistId).pipe(
       map((codelist) => CodelistService.mapToSelect(codelist, "de", sortBy)),
