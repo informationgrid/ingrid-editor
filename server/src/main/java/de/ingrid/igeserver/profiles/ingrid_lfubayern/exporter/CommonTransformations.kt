@@ -47,10 +47,10 @@ fun lfubUseConstraints(
         val title = superUseConstraints[0].let {
             CharacterStringModel(
                 listOfNotNull(
-                    it.title.text,
-                    it.source?.let { source -> "Quellenvermerk: $source" },
-                    comment
-                ).joinToString(";"),
+                    it.title.text.ifEmpty { null },
+                    it.source?.ifEmpty { null },
+                    comment?.ifEmpty { null }
+                ).joinToString("; "),
                 it.title.link
             )
         }
