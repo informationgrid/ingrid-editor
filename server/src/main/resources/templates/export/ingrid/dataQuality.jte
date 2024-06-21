@@ -1,4 +1,4 @@
-@import de.ingrid.igeserver.exporter.TransformationTools;
+@import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer.DisplayableQuality
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
