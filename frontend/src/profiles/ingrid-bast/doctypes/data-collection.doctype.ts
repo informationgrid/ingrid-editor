@@ -31,6 +31,12 @@ export class DataCollectionDoctypeBast extends DataCollectionDoctype {
   showAdVCompatible = false;
   showAdVProductGroup = false;
 
+  constructor() {
+    super();
+
+    this.options.hide.openData = true;
+  }
+
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     fieldConfig[0].fieldGroup
       .find((field) => field.props.label === "Allgemeines")
