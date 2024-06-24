@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.imports.*
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.CatalogService
@@ -54,6 +55,8 @@ class IsoImporterTest : AnnotationSpec() {
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog()
         every { documentService.docRepo } returns documentRepository
         every { documentRepository.findAddressByOrganisationName(any(), any()) } returns emptyList()
+        // needed for checking if imported address-reference already exists (default yes)
+        every { documentService.getWrapperByCatalogAndDocumentUuid(any(), any()) } returns DocumentWrapper()
     }
 
     @Test
