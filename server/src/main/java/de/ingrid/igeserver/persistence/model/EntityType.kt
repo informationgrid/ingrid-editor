@@ -63,7 +63,7 @@ abstract class EntityType {
      */
     @Deprecated("inherited document types should have the same className!!!", ReplaceWith("null"))
     open fun parentClassName(): String? = null
-    
+
     /**
      * List of profiles using the entity type
      *
@@ -202,7 +202,7 @@ abstract class EntityType {
             } catch (ex: NotFoundException) {
                 // TODO: what to do with removed references?
                 logger.error("Referenced address was not found: $uuid -> Should we remove it from '${doc.uuid}'?")
-                throw ServerException.withReason("Document '${doc.uuid}' could not be indexed because referenced address was not found or has different publication condition: $uuid")
+                throw ServerException.withReason("Document '${doc.uuid}' has a reference that could not be resolved: $uuid")
             }
         }
     }

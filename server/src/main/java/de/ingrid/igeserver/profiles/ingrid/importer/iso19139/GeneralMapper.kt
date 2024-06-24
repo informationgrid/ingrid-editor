@@ -135,21 +135,21 @@ open class GeneralMapper(val isoData: IsoImportData) {
             } else mutableListOf()
 
             var uuid = contact.responsibleParty?.uuid
-            if (uuid == null) {
+            if (uuid == null || !uuidExists(uuid)) {
                 if (individualName == null) {
                     // sometimes a distributor was not correctly exported, since only order information was needed,
                     // so we skip this "empty" address
                     if (organization == null) return@flatMapIndexed parents
                     uuid = findOrganisationUuid(organization)
-                        ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[organization] = newUuid }
+                        ?: uuid ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[organization] = newUuid }
                 } else {
                     uuid = findPersonUuid(individualName)
-                        ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[getPersonIdentifier(individualName)] = newUuid }
+                        ?: uuid ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[getPersonIdentifier(individualName)] = newUuid }
                 }
             }
 
             val pointOfContact = PointOfContact(
-                uuid ?: UUID.randomUUID().toString(),
+                uuid,
                 if (individualName == null) "InGridOrganisationDoc" else "InGridPersonDoc",
                 communications,
                 role,
@@ -164,6 +164,15 @@ open class GeneralMapper(val isoData: IsoImportData) {
             parents.add(pointOfContact)
             parents
         }
+    }
+
+    private fun uuidExists(uuid: String?) = try {
+        if (uuid == null) false else {
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
+            true
+        }
+    } catch (e: Exception) {
+        false
     }
 
     private fun findOrganisationUuid(name: String): String? {
