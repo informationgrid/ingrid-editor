@@ -5,9 +5,11 @@
   padding-left: 8px;
   mat-icon {
     margin-right: 12px;
-    padding-left: 4px;
-    padding-right: 4px;
     border-radius: 50%;
     background-color: $ige-background;
+  }
+
+  .legend {
+    flex: 1;
   }
 }
