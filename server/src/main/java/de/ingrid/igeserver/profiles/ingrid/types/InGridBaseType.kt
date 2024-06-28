@@ -55,6 +55,7 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
             WHERE (
                 dw.deleted = 0
                 AND dw.catalog_id = ${doc.catalog!!.id}
+                AND dw.catalog_id = d.catalog_id
                 AND dw.uuid = d.uuid
                 AND d.state = 'PUBLISHED'
                 AND (
