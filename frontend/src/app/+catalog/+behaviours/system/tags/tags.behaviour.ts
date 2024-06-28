@@ -114,6 +114,7 @@ export class TagsBehaviour extends Plugin {
           helpText: helpText,
         },
         delayFocusTrap: true,
+        maxWidth: 600,
       })
       .afterClosed()
       .pipe(filter((item) => item))
