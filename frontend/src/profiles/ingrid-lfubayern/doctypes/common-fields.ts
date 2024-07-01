@@ -27,7 +27,7 @@ export class CommonFieldsLfuBayern extends FormFieldHelper {
   codelistService = inject(CodelistService);
 
   getGeodataFieldConfig(): FormlyFieldConfig {
-    return this.addInput("dataSetURI", "Geodatenlink", {
+    return this.addInput("dataSetURI", "URI des Datenbestandes", {
       wrappers: ["panel", "form-field"],
     });
   }
