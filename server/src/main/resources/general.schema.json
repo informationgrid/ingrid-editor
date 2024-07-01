@@ -62,7 +62,14 @@
               "type": ["null", "string"]
             },
             "value": {
-              "$ref": "#/definitions/BoundingBox"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BoundingBox"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           },
           "required": [],
@@ -88,7 +95,14 @@
               "type": ["null", "string"]
             },
             "value": {
-              "$ref": "#/definitions/BoundingBox"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/BoundingBox"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           },
           "required": [],
