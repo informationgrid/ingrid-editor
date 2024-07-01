@@ -33,7 +33,6 @@ import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { map, tap } from "rxjs/operators";
-import { merge, Observable } from "rxjs";
 import { RxStompService } from "../../rx-stomp.service";
 import { copyToClipboardFn } from "../../services/utils";
 import { PageTemplateModule } from "../../shared/page-template/page-template.module";

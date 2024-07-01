@@ -89,7 +89,11 @@ class IndexService(
                 .filter { it.cron.isNotEmpty() }
                 .forEach { config ->
                     val jobKey = JobKey.jobKey(IndexService.jobKey, config.catalogId)
-                    schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, config.catalogId, config.cron)
+                    try {
+                        schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, config.catalogId, config.cron)
+                    } catch (e: Exception) {
+                        log.error("Error setting up scheduler for '${config.catalogId}' with expression '${config.cron}'", e)
+                    }
                 }
         } catch (ex: Exception) {
             // ignore any exception during startup
@@ -101,7 +105,7 @@ class IndexService(
         catalogRepo.findAll().mapNotNull { getConfigFromDatabase(it) }
 
     private fun getConfigFromDatabase(catalog: Catalog): IndexConfig? =
-        catalog.settings.indexCronPattern?.let { IndexConfig(catalog.identifier, "IGNORE", it) }
+        catalog.settings.indexCronPattern?.let { IndexConfig(catalog.identifier, "IGNORE", it.trim()) }
 
 
     fun getSinglePublishedDocument(

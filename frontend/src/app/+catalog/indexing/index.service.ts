@@ -70,7 +70,7 @@ export class IndexService {
 
   setCronPattern(value: string) {
     return this.http.post(this.configuration.backendUrl + "index/config/cron", {
-      cronPattern: value,
+      cronPattern: value.trim(),
     });
   }
 
