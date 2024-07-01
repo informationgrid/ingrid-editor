@@ -91,8 +91,9 @@ class IndexService(
                     val jobKey = JobKey.jobKey(IndexService.jobKey, config.catalogId)
                     schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, config.catalogId, config.cron)
                 }
-        } catch (_: Exception) {
+        } catch (ex: Exception) {
             // ignore any exception during startup
+            log.error("Error during setting up scheduler", ex)
         }
     }
 
