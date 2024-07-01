@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -37,6 +37,7 @@ import {
   ConfirmDialogData,
 } from "../../../../dialogs/confirm/confirm-dialog.component";
 import { ConfigService } from "../../../../services/config/config.service";
+import { AuthenticationFactory } from "../../../../security/auth.factory";
 
 export interface LinkInfo {
   file: string;
@@ -49,7 +50,7 @@ export interface LinkInfo {
   templateUrl: "./upload-files-dialog.component.html",
   styleUrls: ["./upload-files-dialog.component.scss"],
 })
-export class UploadFilesDialogComponent implements OnInit {
+export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   chosenFiles: TransfersWithErrorInfo[] = [];
   targetUrl: string;
   docUuid = null;
@@ -61,6 +62,7 @@ export class UploadFilesDialogComponent implements OnInit {
   extractZipFiles = false;
   extractInProgress = false;
   infoText;
+  refreshTimer$: number = null;
 
   constructor(
     private dlgRef: MatDialogRef<UploadFilesDialogComponent, LinkInfo[]>,
@@ -68,6 +70,7 @@ export class UploadFilesDialogComponent implements OnInit {
     formStateService: FormStateService,
     private uploadService: UploadService,
     configService: ConfigService,
+    private authFactory: AuthenticationFactory,
     @Inject(MAT_DIALOG_DATA)
     private data: {
       currentItems: any[];
@@ -86,10 +89,22 @@ export class UploadFilesDialogComponent implements OnInit {
     this.infoText = data.infoText;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // refresh token to in this dialog to prevent auto-save, since this might lead to
+    // a removal of uploaded files (#6386)
+    this.refreshTimer$ = setInterval(() => {
+      return this.authFactory.get().refreshToken();
+    }, 60000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.refreshTimer$ != null) {
+      clearInterval(this.refreshTimer$);
+    }
+  }
 
   removeUploadedFile(fileId: string) {
-    // uploaded files will not be removed for now due to a bug
+    console.log("uploaded files will not be removed for now due to a bug");
     /*const fileNotReferenced = this.fileExistsInTable(fileId);
     if (!fileNotReferenced) {
       this.uploadService.deleteUploadedFile(this.docUuid, fileId);

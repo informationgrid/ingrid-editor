@@ -59,7 +59,7 @@ export class AutosavePlugin extends Plugin {
         filter(() => this.formStateService.getForm()?.dirty),
         filter((time) => sessionDuration - time > this.tenMinutes),
       )
-      .subscribe((time) => {
+      .subscribe(() => {
         this.snackBar.open(
           "Der Datensatz wurde automatisch gespeichert.",
           "Schließen",

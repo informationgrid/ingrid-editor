@@ -29,7 +29,6 @@ import { filter, scan, take, takeWhile } from "rxjs/operators";
 import { SessionStore } from "../store/session.store";
 import { ModalService } from "./modal/modal.service";
 import { IgeError } from "../models/ige-error";
-import { ApiService } from "./ApiService";
 import { KeycloakEventType, KeycloakService } from "keycloak-angular";
 import { StorageService } from "../../storage.service";
 import { AuthenticationFactory } from "../security/auth.factory";
@@ -44,7 +43,6 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
   constructor(
     private session: SessionStore,
     private modalService: ModalService,
-    private apiService: ApiService,
     private keycloak: KeycloakService,
     private authFactory: AuthenticationFactory,
     private storageService: StorageService,
@@ -149,7 +147,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
       });
   }
 
-  private decodeToken(str) {
+  private decodeToken(str: any) {
     str = str.split(".")[1];
 
     str = str.replace(/-/g, "+");
@@ -167,7 +165,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
         throw "Invalid token";
     }
 
-    str = decodeURIComponent(escape(atob(str)));
+    str = decodeURIComponent(atob(str));
 
     str = JSON.parse(str);
     return str;
