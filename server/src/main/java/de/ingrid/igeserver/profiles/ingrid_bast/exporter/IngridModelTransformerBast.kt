@@ -28,7 +28,7 @@ class IngridModelTransformerBast(transformerConfig: TransformerConfig) : IngridM
     override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() + getBastKeywords(doc.data).keywords.mapNotNull { it.name }
 
     fun getDistributorName(): String {
-        val distributor = pointOfContact.firstOrNull { it.relationType?.key != "2" } ?: return ""
+        val distributor = pointOfContact.firstOrNull { it.relationType?.key == "2" } ?: return ""
         val oldestAncestorData = distributor.ancestorAddressesIncludingSelf.first().document.data
         return oldestAncestorData.getString("organization") ?: oldestAncestorData.getString("lastName") ?: "???"
     }
