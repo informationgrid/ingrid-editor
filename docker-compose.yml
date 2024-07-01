@@ -32,24 +32,27 @@ services:
       - ige-ng-network
 
   elastic:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.1
     environment:
       - cluster.name=ingrid
       - discovery.type=single-node
-      - ingest.geoip.downloader.enabled=false
+      - cluster.routing.allocation.disk.threshold_enabled=false
       - http.host=0.0.0.0
       - transport.host=0.0.0.0
       - http.cors.enabled=true
-      - http.cors.allow-origin=*
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - xpack.security.enabled=false
+      #- xpack.security.enabled=true
       #- ELASTIC_PASSWORD=admin
-      - xpack.monitoring.enabled=false
-      - xpack.ml.enabled=false
+      #- xpack.security.http.ssl.enabled=true
+      #- xpack.security.http.ssl.keystore.path=http.p12
+      # - ELASTICSEARCH_KEYSTORE_PASSWORD=
     restart: unless-stopped
+    # volumes:
+      # - ./set-keystore-password.sh:/usr/share/elasticsearch/bin/set-keystore-password.sh
+      # - ./elasticsearch-ssl-http/elasticsearch/http.p12:/usr/share/elasticsearch/config/http.p12
+    # entrypoint: [ "/bin/bash", "-c", "/usr/share/elasticsearch/bin/set-keystore-password.sh && /usr/local/bin/docker-entrypoint.sh eswrapper" ]
     ports:
       - "9200:9200"
-      - "9300:9300"
     networks:
       - ige-ng-network
 

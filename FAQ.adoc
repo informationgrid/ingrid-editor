@@ -3,6 +3,65 @@
 :highlightjs-languages: kotlin
 :toc: left
 
+== Elasticsearch Configuration
+
+To secure Elasticsearch it can be done in the following ways:
+
+=== Basic Authentication
+
+To easily secure Elasticsearch with Basic Authentication, the following environment variables need to be set in the `docker-compose.yml`
+
+[source,yaml]
+----
+- xpack.security.enabled=true
+- ELASTIC_PASSWORD=admin
+----
+
+=== TLS
+
+In order to secure your Elasticsearch cluster even more, the transport layer can be encrypted. For this we need to create certificates. This is well explained https://www.elastic.co/guide/en/elasticsearch/reference/8.14/security-basic-setup-https.html#encrypt-http-communication[here].
+
+To summarize you need to do the following things for version 8.14.1:
+
+* go to your Elasticsearch installation
+* type `./bin/elasticsearch-certutil http` and configure your certificate
+* the zip-file contains a `http.p12`-file which is needed for the Elasticsearch-cluster and a `elasticsearch-ca.pem`-file for the client
+* if the keystore has been password-protected then the cluster must be started with a special script
+
+[source,yaml]
+----
+environment:
+  - xpack.security.http.ssl.enabled=true
+  - xpack.security.http.ssl.keystore.path=http.p12
+  - ELASTICSEARCH_KEYSTORE_PASSWORD=XXX
+volumes:
+  - ./elasticsearch-ssl-http/elasticsearch/http.p12:/usr/share/elasticsearch/config/http.p12
+  - ./set-keystore-password.sh:/usr/share/elasticsearch/bin/set-keystore-password.sh
+entrypoint: [ "/bin/bash", "-c", "/usr/share/elasticsearch/bin/set-keystore-password.sh && /usr/local/bin/docker-entrypoint.sh eswrapper" ]
+----
+
+The script `set-keystore-password.sh` contains this:
+
+[source,bash]
+----
+#!/bin/bash
+
+# Check if the keystore password is provided
+if [ -z "$ELASTICSEARCH_KEYSTORE_PASSWORD" ]; then
+  echo "Keystore password not provided. Exiting."
+  exit 1
+fi
+
+# Create the keystore if it doesn't exist
+if [ ! -f /usr/share/elasticsearch/config/elasticsearch.keystore ]; then
+  /usr/share/elasticsearch/bin/elasticsearch-keystore create
+fi
+
+# Set the keystore password
+echo "$ELASTICSEARCH_KEYSTORE_PASSWORD" | /usr/share/elasticsearch/bin/elasticsearch-keystore add xpack.security.http.ssl.keystore.secure_password
+
+----
+
 == Apache Configuration
 
 When the IGE-NG is installed there are two options how to access the application.
@@ -409,7 +468,7 @@ See the following example:
 
 - if we want to execute code only if all subscribers of an event agree:
 
-[source,typescript]  
+[source,typescript]
 ----
   this.eventService.sendEventAndContinueOnSuccess(IgeEvent.DELETE, data)
             .subscribe(() => this.showDeleteDialog());
