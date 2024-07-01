@@ -19,7 +19,9 @@
  */
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
-import com.fasterxml.jackson.annotation.*
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonSetter
+import com.fasterxml.jackson.annotation.Nulls
 import de.ingrid.igeserver.api.messaging.IndexMessage
 
 data class CatalogSettings(
@@ -79,5 +81,6 @@ data class ElasticConfig(
     val name: String,
     val hosts: List<String>,
     val username: String? = null,
-    val password: String? = null
+    val password: String? = null,
+    val https: Boolean? = null
 ): WithId

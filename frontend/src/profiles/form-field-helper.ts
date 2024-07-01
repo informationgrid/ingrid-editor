@@ -43,6 +43,7 @@ export interface Options {
   remove?: (field, event) => void;
   expressions?: {
     hide?;
+    "props.label"?;
     className?;
     defaultValue?;
     "props.required"?;
