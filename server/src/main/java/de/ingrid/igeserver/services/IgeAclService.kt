@@ -58,6 +58,8 @@ class IgeAclService(
         }
         val permissionLevels = listOf("writeTree", "readTree", "writeTreeExceptParent")
         val sids = sidRetrievalStrategy.getSids(authentication)
+        val hasRootWrite = checkForRootPermissions(sids, listOf(BasePermission.WRITE))
+        val hasRootRead = checkForRootPermissions(sids, listOf(BasePermission.READ))
 
         var isAllowed: Boolean
         permissionLevels.forEach { permissionLevel ->
@@ -68,14 +70,12 @@ class IgeAclService(
                 )
                 @Suppress("UNREACHABLE_CODE")
                 isAllowed = when (permissionLevel) {
-                    "writeTree" -> isAllowed(acl, BasePermission.WRITE, sids)
-                    "readTree" -> isAllowed(acl, BasePermission.READ, sids)
-                    "writeTreeExceptParent" -> isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids) || isAllowed(
-                        acl,
-                        BasePermission.WRITE,
-                        sids
-                    )
-
+                    "writeTree" -> isAllowed(acl, BasePermission.WRITE, sids) || hasRootWrite
+                    "readTree" -> isAllowed(acl, BasePermission.READ, sids) || hasRootRead || hasRootWrite
+                    "writeTreeExceptParent" ->
+                        isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids)
+                                || isAllowed(acl, BasePermission.WRITE, sids)
+                                || hasRootWrite
                     else -> throw error("this is impossible and must not happen.")
                 }
                 // if one permission is not allowed, we can stop here
