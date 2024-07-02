@@ -15,8 +15,8 @@
         @if (!hideFields.type) {
             <div class="flex-row">
                 <div>Typ</div>
-                <div data-cy="header-type">
-                    {{ mapDocumentType(model._type) }}
+                <div data-cy="header-type" *transloco="let t; read: 'docType'">
+                    {{ t(model._type) }}
                 </div>
             </div>
         }

@@ -73,10 +73,6 @@ export class HeaderMoreComponent implements OnInit {
     this.migrated = new Date(this.model._created) < new Date(catCreateDate);
   }
 
-  mapDocumentType(type: string) {
-    return this.profileQuery.getEntity(type).label;
-  }
-
   showHelp() {
     this.contextHelpService.showContextHelp(
       "all",
