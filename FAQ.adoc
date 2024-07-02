@@ -26,6 +26,7 @@ To summarize you need to do the following things for version 8.14.1:
 * go to your Elasticsearch installation
 * type `./bin/elasticsearch-certutil http` and configure your certificate
 * the zip-file contains a `http.p12`-file which is needed for the Elasticsearch-cluster and a `elasticsearch-ca.pem`-file for the client
+* the client-certificate must be made available in the root folder of the container (`/elasticsearch-ca.pem`)
 * if the keystore has been password-protected then the cluster must be started with a special script
 
 [source,yaml]
