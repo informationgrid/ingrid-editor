@@ -2,11 +2,11 @@
 @import gg.jte.support.ForSupport
 @import java.util.Map
 @param Map<String, Object> map
-    
+
 !{var page = ((IngridModelTransformerLubw)map.get("model"));}
 
 
-@template.export.ingrid.template-lucene(map = map, extraFields = @`
+@template.export.ingrid.lucene.template-lucene(map = map, extraFields = @`
 ,
     "distributor": "${page.getDistributor()}",
     "object_node.tree_path.name": [

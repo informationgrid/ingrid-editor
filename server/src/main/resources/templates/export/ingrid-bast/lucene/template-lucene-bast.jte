@@ -5,7 +5,7 @@
 !{var page = ((IngridModelTransformerBast)map.get("model"));}
 
 
-@template.export.ingrid.template-lucene(map = map, extraFields = @`
+@template.export.ingrid.lucene.template-lucene(map = map, extraFields = @`
     ,
     "distributor": "${page.getDistributorName()}"
 `)

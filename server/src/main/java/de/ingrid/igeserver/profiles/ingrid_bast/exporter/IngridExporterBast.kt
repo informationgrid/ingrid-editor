@@ -125,7 +125,7 @@ class IngridLuceneExporterBast(
             "InGridGeoService",
             "InGridDataCollection"
             -> Pair(
-                "export/ingrid-bast/template-lucene-bast.jte",
+                "export/ingrid-bast/lucene/template-lucene-bast.jte",
                 getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
             )
 
