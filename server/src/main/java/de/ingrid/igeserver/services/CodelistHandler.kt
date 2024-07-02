@@ -26,10 +26,10 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import de.ingrid.codelists.CodeListService
 import de.ingrid.codelists.model.CodeList
 import de.ingrid.codelists.model.CodeListEntry
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.CodelistRepository
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
@@ -52,7 +52,7 @@ class CodelistHandler(
         }
 
     }
-    
+
     fun removeCodelist(catalogId: String, codelistIdentifier: String) {
         codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, codelistIdentifier)
     }
@@ -96,7 +96,7 @@ class CodelistHandler(
                     defaultEntry = it.defaultEntry
                     entries = it.data?.map { entry ->
                         CodeListEntry().apply {
-                            id = entry.get("id").asText()
+                            id = entry.get("id")?.asText() ?: throw ServerException.withReason("Error getting codelist entries from '${it.name}' (${it.identifier})")
                             description =
                                 if (entry.get("description") == null || entry.get("description").isNull) null else entry.get(
                                     "description"
@@ -128,8 +128,8 @@ class CodelistHandler(
             ?.entries
             ?.find { it.getField("de") == value }
             ?.id
-    }    
-    
+    }
+
     fun getCodelistEntry(codelistId: String, key: String): CodeListEntry? {
         return getCodelists(listOf(codelistId))
             .find { it.id == codelistId }
@@ -172,12 +172,12 @@ class CodelistHandler(
             .entries.find { it.data.contains(dataValue) }
             ?.id
     }
-    
+
     fun getDefaultCodelistEntryId(listId: String): String? {
         val defaultEntryId = codeListService.getCodeList(listId).defaultEntry
         return if (defaultEntryId == "-1") null else defaultEntryId
     }
-    
+
     fun getDefaultCatalogCodelistEntryId(catalogId: String, listId: String): String? {
         val defaultEntryId = getCatalogCodelists(catalogId).find { it.id == listId }?.defaultEntry
         return if (defaultEntryId == "-1") null else defaultEntryId
