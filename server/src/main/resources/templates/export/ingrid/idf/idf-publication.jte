@@ -7,7 +7,7 @@
 !{var page = ((PublicationModelTransformer)map.get("model"));}
 !{var publication = page.getPublication();}
 @template.export.template-idf(content = @`
-    @template.export.ingrid.shared-general(page = page, additionalCitation =  @`
+    @template.export.ingrid.idf.shared-general(page = page, additionalCitation =  @`
         @if(publication != null)
             @if(TransformationTools.hasValue(publication.getPublicationDate()))
                 <gmd:editionDate>

@@ -7,7 +7,7 @@
 
 !{var page = ((GeodatasetModelTransformer)map.get("model"));}
 @template.export.template-idf(content = @`
-    @template.export.ingrid.shared-general(
+    @template.export.ingrid.idf.shared-general(
     page = page,
     contentInfo = @`
         @if (!page.getFeatureTypes().isEmpty())
@@ -55,7 +55,7 @@
         @endif
     `
     )
-    @template.export.ingrid.dataQuality(page = page)
+    @template.export.ingrid.idf.dataQuality(page = page)
     @for(Citation citation : page.getPortrayalCatalogueCitations())
     <gmd:portrayalCatalogueInfo>
         <gmd:MD_PortrayalCatalogueReference>

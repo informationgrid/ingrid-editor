@@ -5,5 +5,5 @@
 
 !{var page = ((IngridModelTransformer)map.get("model"));}
 @template.export.template-idf(content = @`
-    @template.export.ingrid.shared-general(page = page)
+    @template.export.ingrid.idf.shared-general(page = page)
 `, abstract_text = page.getDescription())

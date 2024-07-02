@@ -92,8 +92,8 @@ class OpenDataIDFExporter(
 
     private fun getTemplateForDoctype(type: String): String {
         return when (type) {
-            "OpenDataDoc" -> "export/ingrid/idf-specialisedTask.jte"
-            "OpenDataAddressDoc" -> "export/ingrid/idf-address.jte"
+            "OpenDataDoc" -> "export/ingrid/idf/idf-specialisedTask.jte"
+            "OpenDataAddressDoc" -> "export/ingrid/idf/idf-address.jte"
             else -> {
                 throw ServerException.withReason("Cannot get template for type: $type")
             }

@@ -50,7 +50,7 @@
         <gco:CharacterString>${page.getHierarchyLevelName()}</gco:CharacterString>
     </gmd:hierarchyLevelName>
 @endif
-@template.export.ingrid.addresses(addresses = page.getContacts(), wrapperElement = "gmd:contact")
+@template.export.ingrid.idf.addresses(addresses = page.getContacts(), wrapperElement = "gmd:contact")
 @if( page.getContacts().isEmpty() ) <gmd:contact/> @endif
 <gmd:dateStamp>
     <gco:Date>${page.getModifiedMetadataDate()}</gco:Date>
@@ -257,7 +257,7 @@
             <gmd:referenceSystemIdentifier>
                 <gmd:RS_Identifier>
                     <gmd:code>
-                        @template.export.ingrid.anchorOrCharacterString(model = spatialSystem)
+                        @template.export.ingrid.idf.anchorOrCharacterString(model = spatialSystem)
                     </gmd:code>
                 </gmd:RS_Identifier>
             </gmd:referenceSystemIdentifier>
@@ -328,7 +328,7 @@
                     codeListValue="${page.getStatus()}" />
         </gmd:status>
     @endif
-    @template.export.ingrid.addresses(addresses = page.getPointOfContact(), wrapperElement = "gmd:pointOfContact")
+    @template.export.ingrid.idf.addresses(addresses = page.getPointOfContact(), wrapperElement = "gmd:pointOfContact")
     @if( page.getMaintenanceAndUpdateFrequency() != null || TransformationTools.hasValue(page.getMaintenanceNote()) )
         <gmd:resourceMaintenance>
             <gmd:MD_MaintenanceInformation>
@@ -383,7 +383,7 @@
             </gmd:MD_Format>
         </gmd:resourceFormat>
     @endif
-    @template.export.ingrid.descriptiveKeywords(thesauri = page.getDescriptiveKeywords())
+    @template.export.ingrid.idf.descriptiveKeywords(thesauri = page.getDescriptiveKeywords())
     @if(TransformationTools.hasValue(page.getSpecificUsage()))
         <gmd:resourceSpecificUsage>
             <gmd:MD_Usage>
@@ -413,7 +413,7 @@
                 </gmd:useConstraints>
                 @for(UseConstraintTemplate useconstraint : page.getUseConstraints() )
                     <gmd:otherConstraints>
-                        @template.export.ingrid.anchorOrCharacterString(model = useconstraint.getTitle())
+                        @template.export.ingrid.idf.anchorOrCharacterString(model = useconstraint.getTitle())
                     </gmd:otherConstraints>
                     @if(TransformationTools.hasValue(useconstraint.getNote()))
                         <gmd:otherConstraints>
@@ -444,7 +444,7 @@
                 </gmd:accessConstraints>
                 @for(CharacterStringModel accessConstraint : page.getAvailabilityAccessConstraints() )
                     <gmd:otherConstraints>
-                        @template.export.ingrid.anchorOrCharacterString(model = accessConstraint)
+                        @template.export.ingrid.idf.anchorOrCharacterString(model = accessConstraint)
                     </gmd:otherConstraints>
                 @endfor
             </gmd:MD_LegalConstraints>
@@ -781,7 +781,7 @@ ${contentInfo}
                 <gmd:distributor>
                     <gmd:MD_Distributor>
                         <gmd:distributorContact>
-                            @template.export.ingrid.addresses(addresses = page.getOrderInfoContact())
+                            @template.export.ingrid.idf.addresses(addresses = page.getOrderInfoContact())
                             @if(page.getOrderInfoContact().isEmpty())
                                 <gmd:CI_ResponsibleParty>
                                     <gmd:role>
