@@ -1,5 +1,71 @@
 # Changelog
 
+## 7.2.0 (08.07.2024)
+
+### Features
+
+- Veröffentlichungsrecht bei Referenzen während Veröffentlichung prüfen (#6482)
+- Veröffentlichungsrecht - Warnung bei Änderung bei Adressen (#6458)
+- Open Data - Checkbox und Portaldarstellung (#6454)
+- Export-Funktionalität mit Mehrfachauswahl (#6437)
+- Fertigstellung "Interne Schlüsselwörter" und "Geologische Schlüsselliste" (#6394)
+- Anpassungen bei Nutzungsbedingungen (#6383)
+- Mehrfachauswahl bei Export (#6382)
+- Export "Bestellinformationen" nur nach intern (#6350)
+- Funktion GetCapabilities Aktualisieren für Dienste herausnehmen (#6343)
+- ISO-Ansicht im Editor (#6342)
+- Open-Data Datensätze: optionale Angaben (#6334)
+- Anpassung Export, Adressen vom Typ "Fachliche Ansprechstelle" (#6333)
+
+### Bugfixes
+
+- Falsche SQL für die Ermittlung der eingehenden Referenzen (#6474)
+- Import von Adressen mit nicht existierender Uuid (#6463)
+- Import von Personen legt Duplikate an (#6456)
+- Fehler Indexierung und ISO-Ansicht (#6432)
+- Datensatz aus anderem Katalog fehlt nach Import (#6429)
+- Nächtliche Indexierung auf PROD läuft nicht (#6422)
+- Fehler bei Export und Import eines Ordners (#6419)
+- Bessere Handhabung von Filtern nach Katalogen über die InGrid Query (war: Indexfeld "iPlugId" muss kleingeschrieben werden.) (#6412)
+- JSON-Validierungsfehler Freier Raumbezug (#6401)
+- "Kartenlinks" werden nicht im Portal angezeigt (#6399)
+- Hochgeladene Dateien werden gelöscht durch automatische Speicherung (#6386)
+- Fehlermeldung bei Validierung "Medienoption" (#6380)
+- Suche nach Projektnummer funktioniert nicht (#6348
+
+## 7.1.0 (28.03.2024)
+
+### Features
+
+- "Dateiformat" Pflichtfeld für Typ "Datendownload" (#6145)
+- Überarbeitung Portal-Layout / Teil 2 (#6112)
+- Anpassungen Editor (#6077)
+- IGE-NG, Exporter für internes/externes Portal (#6002)
+- Konfigurierbarkeit der Karte verbessern (#5964)
+
+### Bugfixes
+
+- Keycloak erlaubt keine Leerzeichen im Loginnamen (#6130)
+- ISO-Export für "HmbTG-Informationsgegenstand" unterschiedlich Classic / NG (#6126)
+- "Open Data Kategorien", zwei Korrekturen (#6115)
+- "Informationsgegenstand" verschwindet bei Speichern (OpenData-MD) (#6108)
+- User aus Keycloak werden nicht im IGE-NG angezeigt (#6088)
+- Anführungszeichen escapen bei "Quelle" (#6071)
+- Feldzuordnung bei Adressen korrigieren (#6067)
+- "Nach Ort suchen" im Portal funktioniert nicht (#6036)
+- Aktualisierung sicherheitskritischer Libraries (#6018)
+- Verweistypen sollen wenn nicht aus der ISO Liste kommend, als Type "information" abgegeben werden. (#6017)
+- Tooltip shows 'undefined' when analyzing keywords and adding them to 'INSPIRE-Themen' (#6016)
+- Löschung Account, Login in Bestätigungs-E-Mail fehlt (#5997)
+- Leere Eingabe in Feld 'url' in der iBus Verwaltung Seite (#5990)
+- Verantwortlicher beim Report "Abgelaufene Metadaten" verbessern (#5986)
+- The activity report of UVP catalog shows wrong user (#5983)
+- Reihenfolge der Organisationen bei Anzeige der Adressen umdrehen (#5981)
+- Sprung vom Geodatensatz zum gekoppelten Dienst - Abfrage bei ungespeicherten Änderungen hinzufügen (#5979)
+- Fehlermeldung nach Hinzufügen einer Adresse und Speichern erst bei Sprung zu Adressbereich (#5974)
+- ' Zurücksetzen ' and ' Hinzufügen' buttons should be disabled in Codelist page when the item comes from Codelist-Repository (#5968)
+- Kontexthilfe nicht eingebunden im Adressbereich (#5942)
+
 ## 7.0.0 (05.01.2024)
 
 ### Features
