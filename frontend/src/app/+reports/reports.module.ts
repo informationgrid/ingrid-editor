@@ -45,6 +45,7 @@ import {
 import { IgePagingIntl } from "../shared/IgePagingIntl";
 import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler-header.module";
 import { A11yModule } from "@angular/cdk/a11y";
+import { ResultTableHeaderComponent } from "../+research/result-table/result-table-header/result-table-header.component";
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { A11yModule } from "@angular/cdk/a11y";
     MatPaginatorModule,
     JobHandlerHeaderModule,
     A11yModule,
+    ResultTableHeaderComponent,
   ],
   providers: [
     {

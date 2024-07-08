@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, inject, OnInit, ViewChild } from "@angular/core";
 import { UrlCheckService, UrlInfo, UrlLogResult } from "./url-check.service";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
@@ -35,6 +35,7 @@ import { IgeError } from "../../models/ige-error";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfigService } from "../../services/config/config.service";
 import { RxStompService } from "../../rx-stomp.service";
+import { ExportService } from "../../services/export.service";
 
 @Component({
   selector: "ige-url-check",
@@ -42,6 +43,8 @@ import { RxStompService } from "../../rx-stomp.service";
   styleUrls: ["./url-check.component.scss"],
 })
 export class UrlCheckComponent implements OnInit {
+  private exportService: ExportService = inject(ExportService);
+
   @ViewChild(MatSort, { static: false })
   set sort(value: MatSort) {
     if (this.dataSource) {
@@ -173,5 +176,24 @@ export class UrlCheckComponent implements OnInit {
     } else {
       throw new IgeError("Die Prüfung der URL lieferte einen Fehler");
     }
+  }
+
+  downloadTable() {
+    const rows: string[][] = [];
+    const headerCol = ["Status", "URL", "Datensatz UUID", "Datensatz Titel"];
+    rows.push(headerCol);
+    rows.push(
+      ...this.dataSource.filteredData.flatMap((entry) => {
+        return entry.datasets.map((ds) => {
+          return [
+            this.statusCodeText[entry.status],
+            entry.url,
+            ds.uuid,
+            ds.title,
+          ];
+        });
+      }),
+    );
+    this.exportService.exportCsv(rows, { exportName: "bericht" });
   }
 }
