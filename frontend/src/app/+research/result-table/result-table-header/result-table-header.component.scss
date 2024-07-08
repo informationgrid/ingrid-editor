@@ -1,0 +1,42 @@
+@import "src/variables";
+
+.result-table-header {
+  height: 49px;
+  background-color: #ffffff;
+  position: relative;
+  text-align: center;
+
+  mat-divider {
+    height: 36px;
+  }
+
+  .result {
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 0.4px;
+    line-height: 49px;
+    color: $ige-primary;
+
+    margin: auto;
+    width: 50%;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  ::ng-deep.mat-mdc-progress-spinner {
+    margin-left: 8px;
+    circle {
+      stroke: $ige-primary;
+    }
+  }
+
+  .result-buttons {
+    display: flex;
+    position: absolute;
+    top: 6px;
+    right: 0;
+    text-align: left;
+  }
+}

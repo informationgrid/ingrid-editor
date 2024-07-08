@@ -1,0 +1,29 @@
+<div class="result-table-header">
+    <div class="result">
+        @if (isLoading) {
+            Suche
+            <mat-spinner [diameter]="24"></mat-spinner>
+        } @else {
+            <span>
+                <span data-cy="total-hits">{{ totalHits }}</span>
+                @if (totalHits === 1) {
+                    Ergebnis gefunden
+                } @else {
+                    Ergebnisse gefunden
+                }
+            </span>
+        }
+    </div>
+    <div class="result-buttons">
+        @if (showDownloadButton) {
+            <button
+                mat-button
+                color="primary"
+                (click)="download.emit()"
+                aria-label="Exportieren (CSV)"
+            >
+                CSV
+            </button>
+        }
+    </div>
+</div>
