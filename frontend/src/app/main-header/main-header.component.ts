@@ -106,7 +106,7 @@ export class MainHeaderComponent implements OnInit {
 
   async logout() {
     const hasNavigated = await this.router.navigate([
-      `${ConfigService.catalogId}`,
+      `${ConfigService.catalogId}/logout`,
     ]);
 
     if (!hasNavigated) {

@@ -136,6 +136,14 @@ export const routes: Routes = [
         },
       },
       {
+        path: "logout",
+        loadComponent: () =>
+          import("./+logout/logout.component").then((m) => m.LogoutComponent),
+        data: {
+          hideFromMenu: true,
+        },
+      },
+      {
         path: "",
         redirectTo: "dashboard",
         pathMatch: "full",
