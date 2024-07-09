@@ -552,24 +552,30 @@ open class IngridModelTransformer(
     }
 
     fun getOperatesOn() = data.service.coupledResources?.flatMap {
-        val finalIdentifier = if (it.isExternalRef) {
-            it.identifier
-        } else {
-            // TODO: when document not yet published (ISO-view of draft) then do not generate operatesOn-element (#6241)
-            val identifier = getLastPublishedDocument(it.uuid!!)?.data?.get("identifier")?.asText() ?: it.uuid
-            val containsNamespace = identifier.contains("://")
-            if (containsNamespace) {
-                identifier
-            } else {
-                namespace + identifier
-            }
-        }
+        val finalIdentifier = getCoupledResourceIdentifier(it)
 
         // for each layername create an operatesOn-element
         if (it.layerNames.isNullOrEmpty()) listOf(OperatesOn(it.uuid, finalIdentifier, null))
         else it.layerNames.map { layername: String -> OperatesOn(it.uuid, finalIdentifier, layername) }
 
     } ?: emptyList()
+
+    fun getCoupledResourceIdentifiers() = model.data.service.coupledResources?.map { getCoupledResourceIdentifier(it) } ?: emptyList()
+
+    private fun getCoupledResourceIdentifier(
+        it: CoupledResource
+    ) = if (it.isExternalRef) {
+        it.identifier
+    } else {
+        // TODO: when document not yet published (ISO-view of draft) then do not generate operatesOn-element (#6241)
+        val identifier = getLastPublishedDocument(it.uuid!!)?.data?.get("identifier")?.asText() ?: it.uuid
+        val containsNamespace = identifier.contains("://")
+        if (containsNamespace) {
+            identifier
+        } else {
+            namespace + identifier
+        }
+    }
 
     // type is "Darstellungsdienste" and operation is "GetCapabilities"
     val capabilitiesUrl =
@@ -721,7 +727,6 @@ open class IngridModelTransformer(
                 getOperationName(it.name),
                 it.description,
                 it.methodCall,
-                citationURL
             )
         } ?: emptyList()
     }
@@ -992,7 +997,6 @@ data class DisplayOperation(
     val name: String?,
     val description: String?,
     val methodCall: String?,
-    val identifierLink: String?
 )
 
 data class OperatesOn(val uuidref: String?, val href: String?, val title: String?)

@@ -654,17 +654,29 @@
         @endif
     </gmd:EX_Extent>
 </${page.getExtentType()}>
-@for( DisplayOperation operation : page.getOperations() )
-    <srv:coupledResource>
-        <srv:SV_CoupledResource>
-            <srv:operationName>
-                <gco:CharacterString>${operation.getName()}</gco:CharacterString>
-            </srv:operationName>
-            <srv:identifier>
-                <gco:CharacterString>${operation.getIdentifierLink()}</gco:CharacterString>
-            </srv:identifier>
-        </srv:SV_CoupledResource>
-    </srv:coupledResource>
+@for( String identifier : page.getCoupledResourceIdentifiers() )
+    @for( DisplayOperation operation : page.getOperations() )
+        <srv:coupledResource>
+            <srv:SV_CoupledResource>
+                <srv:operationName>
+                    <gco:CharacterString>${operation.getName()}</gco:CharacterString>
+                </srv:operationName>
+                <srv:identifier>
+                    <gco:CharacterString>${identifier}</gco:CharacterString>
+                </srv:identifier>
+            </srv:SV_CoupledResource>
+        </srv:coupledResource>
+    @endfor
+    @if(page.getOperations().isEmpty())
+        <srv:coupledResource>
+            <srv:SV_CoupledResource>
+                <srv:operationName gco:nilReason="missing" />
+                <srv:identifier>
+                    <gco:CharacterString>${identifier}</gco:CharacterString>
+                </srv:identifier>
+            </srv:SV_CoupledResource>
+        </srv:coupledResource>
+    @endif
 @endfor
 @if(isService)
     <srv:couplingType>
