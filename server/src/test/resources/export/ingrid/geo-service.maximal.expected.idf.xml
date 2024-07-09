@@ -790,7 +790,7 @@
                                 <gco:CharacterString>Get Download Service Metadata</gco:CharacterString>
                             </srv:operationName>
                             <srv:identifier>
-                                <gco:CharacterString>https://registry.gdi-de.org/id/test-catalog/ID_00000000-0000-0000-0000-000000000000</gco:CharacterString>
+                                <gco:CharacterString>https://registry.gdi-de.org/id/test-catalog/f4b077b0-91e1-49d3-aac6-826284562537</gco:CharacterString>
                             </srv:identifier>
                         </srv:SV_CoupledResource>
                     </srv:coupledResource>
@@ -800,7 +800,7 @@
                                 <gco:CharacterString>DescribeFeatureType</gco:CharacterString>
                             </srv:operationName>
                             <srv:identifier>
-                                <gco:CharacterString>https://registry.gdi-de.org/id/test-catalog/ID_00000000-0000-0000-0000-000000000000</gco:CharacterString>
+                                <gco:CharacterString>https://registry.gdi-de.org/id/test-catalog/f4b077b0-91e1-49d3-aac6-826284562537</gco:CharacterString>
                             </srv:identifier>
                         </srv:SV_CoupledResource>
                     </srv:coupledResource>
