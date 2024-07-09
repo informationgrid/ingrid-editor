@@ -186,7 +186,7 @@ export class UrlCheckComponent implements OnInit {
       ...this.dataSource.filteredData.flatMap((entry) => {
         return entry.datasets.map((ds) => {
           return [
-            this.statusCodeText[entry.status],
+            this.statusCodeText[entry.status] ?? entry.status,
             entry.url,
             ds.uuid,
             ds.title,
