@@ -23,8 +23,11 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.model.CopyOptions
+import de.ingrid.igeserver.model.DocMetadata
+import de.ingrid.igeserver.model.DocumentWithMetadata
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.FindAllResults
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -71,16 +74,14 @@ class DatasetsApiController(
         data: JsonNode,
         address: Boolean,
         publish: Boolean
-    ): ResponseEntity<JsonNode> {
+    ): ResponseEntity<DocumentWithMetadata> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val parent = data.get(FIELD_PARENT)
         val parentId = if (parent == null || parent.isNull) null else parent.asInt()
         val resultDoc = documentService.createDocument(principal, catalogId, data, parentId, address, publish)
-        addMetadataToDocument(resultDoc)
-
-        val node = documentService.convertToJsonNode(resultDoc.document)
-        return ResponseEntity.ok(node)
+        val metadata = getMetadataFromWrapper(resultDoc)
+        return ResponseEntity.ok(metadata)
     }
 
     /**
@@ -95,7 +96,7 @@ class DatasetsApiController(
         unpublish: Boolean,
         cancelPendingPublishing: Boolean,
         revert: Boolean
-    ): ResponseEntity<JsonNode> {
+    ): ResponseEntity<DocumentWithMetadata> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val resultDoc = if (revert) {
@@ -112,34 +113,40 @@ class DatasetsApiController(
             documentService.updateDocument(principal, catalogId, id, doc)
         }
 
-        addMetadataToDocument(resultDoc)
-
-        val node = documentService.convertToJsonNode(resultDoc.document)
-        return ResponseEntity.ok(node)
+        val metadata = getMetadataFromWrapper(resultDoc)
+        return ResponseEntity.ok(metadata)
     }
 
-    private fun addMetadataToDocument(
-        documentData: DocumentData
-    ) {
-        val wrapper = documentData.wrapper
+    private fun getMetadataFromWrapper(
+        docData: DocumentData
+    ): DocumentWithMetadata {
 
-        with(documentData.document) {
-            data.put(FIELD_HAS_CHILDREN, wrapper.countChildren > 0)
-            data.put(FIELD_PARENT, wrapper.parent?.id)
-            data.put(FIELD_PARENT_IS_FOLDER, wrapper.parent?.type == "FOLDER")
-            // TODO: next two fields not really necessary, since they can be simply evaluated from doc
-            data.put(FIELD_CREATED_USER_EXISTS, createdByUser != null)
-            data.put(FIELD_MODIFIED_USER_EXISTS, contentModifiedByUser != null)
-            data.put(FIELD_PENDING_DATE, wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME))
-            data.put(FIELD_TAGS, wrapper.tags.joinToString(","))
-            data.put(FIELD_RESPONSIBLE_USER, wrapper.responsibleUser?.id)
-            wrapper.fingerprint?.let {
-                data.put(FIELD_METADATA_DATE, it[0].date.toString())
-            }
-            hasWritePermission = wrapper.hasWritePermission
-            hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
-            wrapperId = wrapper.id
-        }
+        val metadata = DocMetadata(
+            docData.wrapper.countChildren > 0,
+            docData.wrapper.parent?.id,
+            docData.wrapper.parent?.type == "FOLDER",
+            docData.document.createdByUser != null,
+            docData.document.contentModifiedByUser != null,
+            docData.wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME),
+            docData.wrapper.tags.joinToString(","),
+            docData.wrapper.responsibleUser?.id,
+            docData.wrapper.fingerprint?.let {it[0].date.toString()},
+            docData.wrapper.hasWritePermission,
+            docData.wrapper.hasOnlySubtreeWritePermission,
+            docData.wrapper.id!!,
+            docData.document.created!!,
+            docData.document.createdby,
+            docData.document.modified!!,
+            docData.document.modifiedby,
+            docData.document.contentmodified!!,
+            docData.document.contentmodifiedby,
+            docData.document.state.getState(),
+            docData.document.type,
+            docData.document.version!!,
+            docData.document.uuid,
+        )
+        val data = prepareForFrontend(docData.document)
+        return DocumentWithMetadata(data, metadata)
     }
 
     @Transactional
@@ -159,7 +166,7 @@ class DatasetsApiController(
         principal: Principal,
         ids: List<Int>,
         options: CopyOptions
-    ): ResponseEntity<List<JsonNode>> {
+    ): ResponseEntity<List<DocumentWithMetadata>> {
         val destCanWrite = aclService.getPermissionInfo(principal as Authentication, options.destId)
             .let { it.canWrite || it.canOnlyWriteSubtree }
         val sourceCanRead = ids.map { aclService.getPermissionInfo(principal, it).canRead }.all { it }
@@ -225,7 +232,7 @@ class DatasetsApiController(
         return ResponseEntity.ok().build()
     }
 
-    private fun handleCopy(principal: Principal, catalogId: String, id: Int, options: CopyOptions): JsonNode {
+    private fun handleCopy(principal: Principal, catalogId: String, id: Int, options: CopyOptions): DocumentWithMetadata {
 
         val wrapper = documentService.getWrapperByDocumentIdAndCatalog(id)
 
@@ -247,7 +254,7 @@ class DatasetsApiController(
         doc: JsonNode,
         options: CopyOptions,
         isAddress: Boolean
-    ): JsonNode {
+    ): DocumentWithMetadata {
         val origParentId = doc[FIELD_ID].asInt()
         val origParentUUID = doc[FIELD_UUID].asText()
 
@@ -275,7 +282,6 @@ class DatasetsApiController(
                 InitiatorAction.COPY
             )
 
-        addMetadataToDocument(copiedParent)
 
         storage.copyToUnpublished(catalogId, origParentUUID, copiedParent.wrapper.uuid)
 
@@ -285,7 +291,7 @@ class DatasetsApiController(
             copiedParentJson.put(FIELD_HAS_CHILDREN, count > 0)
         }
 
-        return copiedParentJson
+        return getMetadataFromWrapper(copiedParent)
     }
 
     private fun handleCopySubTree(
@@ -438,32 +444,34 @@ class DatasetsApiController(
         principal: Principal,
         uuid: String,
         publish: Boolean?
-    ): ResponseEntity<JsonNode> {
+    ): ResponseEntity<DocumentWithMetadata> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
 
         return if (publish == true) {
             val document = documentService.getLastPublishedDocument(catalogId, uuid)
-            addMetadataToDocument(DocumentData(wrapper, document))
-            documentService.convertToJsonNode(document).let { ResponseEntity.ok(it) }
+            val metadata = getMetadataFromWrapper(DocumentData(wrapper, document))
+            ResponseEntity.ok(metadata)
         } else {
             getByID(principal, wrapper.id!!)
         }
     }
 
+    private fun prepareForFrontend(document: Document): ObjectNode {
+        return document.data.deepCopy().apply { put("title", document.title) }
+    }
+
     override fun getByID(
         principal: Principal,
         id: Int
-    ): ResponseEntity<JsonNode> {
+    ): ResponseEntity<DocumentWithMetadata> {
 
         try {
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
             // TODO: catalogId is not necessary anymore
             val docData = documentService.getDocumentFromCatalog(catalogId, id, true)
-
-            addMetadataToDocument(docData)
-            val jsonDoc = documentService.convertToJsonNode(docData.document)
-            return ResponseEntity.ok(jsonDoc)
+            val metadata = getMetadataFromWrapper(docData)
+            return ResponseEntity.ok(metadata)
         } catch (ex: AccessDeniedException) {
             throw ForbiddenException.withAccessRights("No read access to document")
         }

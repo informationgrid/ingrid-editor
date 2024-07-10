@@ -54,8 +54,6 @@ import { IgeError } from "../../models/ige-error";
 import { SessionQuery } from "../../store/session.query";
 import { PathResponse } from "../../models/path-response";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
-import { TreeQuery } from "../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 import {
   ResearchResponse,
   ResearchService,
@@ -285,6 +283,7 @@ export class DocumentService {
   ): Observable<IgeDocument> {
     this.documentOperationFinished$.next(false);
     return this.dataService.load(id, useUuid).pipe(
+      map((data) => this.mapDocumentWithMetadata(data)),
       tap((doc) => {
         if (updateStore) {
           this.updateTreeStore(doc, address);
@@ -325,6 +324,7 @@ export class DocumentService {
 
     if (saveOptions.noVisualUpdates) {
       return this.dataService.save(doc, saveOptions.isAddress).pipe(
+        map((data) => this.mapDocumentWithMetadata(data)),
         tap((json) => {
           saveOptions.data = json;
           this.postSaveActions(saveOptions);
@@ -334,6 +334,7 @@ export class DocumentService {
     }
 
     return this.dataService.save(doc, saveOptions.isAddress).pipe(
+      map((data) => this.mapDocumentWithMetadata(data)),
       tap(() => this.messageService.sendInfo("Ihre Eingabe wurde gespeichert")),
       tap((json) => {
         saveOptions.data = json;
@@ -459,6 +460,7 @@ export class DocumentService {
 
     return this.dataService.publish(doc, publishDate).pipe(
       // catchError((error) => this.handlePublishError(error, data, isAddress)),
+      map((data) => this.mapDocumentWithMetadata(data)),
       filter((response) => response),
       tap(() => {
         if (!publishDate)
@@ -478,6 +480,7 @@ export class DocumentService {
   unpublish(id: number, forAddress: boolean): Observable<any> {
     const store = forAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.unpublish(id).pipe(
+      map((data) => this.mapDocumentWithMetadata(data)),
       catchError((error) => {
         return this.handleUnpublishError(error, id);
       }),
@@ -512,6 +515,7 @@ export class DocumentService {
           return this.load(id);
         }
       }),
+      map((data) => this.mapDocumentWithMetadata(data)),
       map((json) => this.mapToDocumentAbstracts([json], json._parent)),
       tap((json) =>
         store.update({
@@ -585,6 +589,7 @@ export class DocumentService {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     return this.dataService.revert(id).pipe(
+      map((data) => this.mapDocumentWithMetadata(data)),
       map((json) => this.mapToDocumentAbstracts([json], json._parent)),
       map((json) => {
         json[0]._hasChildren = store.getValue().entities[id]._hasChildren;
@@ -650,7 +655,10 @@ export class DocumentService {
       tap((docs) => {
         this.messageService.sendInfo("Datensatz wurde kopiert");
 
-        const infos = this.mapToDocumentAbstracts(docs, dest);
+        const mappedDocs = docs.map((data) =>
+          this.mapDocumentWithMetadata(data),
+        );
+        const infos = this.mapToDocumentAbstracts(mappedDocs, dest);
 
         this.updateStoreAfterCopy(infos, dest, isAddress);
 
@@ -1087,6 +1095,33 @@ export class DocumentService {
       `${this.configuration.backendUrl}datasets/${id}/validate`,
       null,
     );
+  }
+
+  private mapDocumentWithMetadata(data: IgeDocument) {
+    return {
+      ...data.document,
+      _id: data.metadata.wrapperId,
+      _uuid: data.metadata.uuid,
+      _type: data.metadata.docType,
+      _parent: data.metadata.parent,
+      _created: data.metadata.created,
+      _modified: data.metadata.modified,
+      _metadataDate: data.metadata.metadataDate,
+      _responsibleUser: data.metadata.responsibleUser,
+      _contentModified: data.metadata.contentModified,
+      _createdBy: data.metadata.createdBy,
+      _creatorExists: data.metadata.creatorExists,
+      _modifierExists: data.metadata.modifierExists,
+      _contentModifiedBy: data.metadata.contentModifiedBy,
+      _hasChildren: data.metadata.hasChildren,
+      _pendingDate: data.metadata.pendingDate,
+      _tags: data.metadata.tags,
+      _version: data.metadata.version,
+      _state: data.metadata.state,
+      hasWritePermission: data.metadata.hasWritePermission,
+      hasOnlySubtreeWritePermission:
+        data.metadata.hasOnlySubtreeWritePermission,
+    };
   }
 }
 

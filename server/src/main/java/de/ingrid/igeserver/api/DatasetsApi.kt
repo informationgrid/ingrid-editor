@@ -21,6 +21,7 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.CopyOptions
+import de.ingrid.igeserver.model.DocumentWithMetadata
 import de.ingrid.igeserver.services.DocumentInfo
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
@@ -56,7 +57,7 @@ interface DatasetsApi {
             value = "publish",
             required = false
         ) publish: Boolean
-    ): ResponseEntity<JsonNode>
+    ): ResponseEntity<DocumentWithMetadata>
 
     @PutMapping(value = ["/datasets/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Update a complete dataset")
@@ -90,7 +91,7 @@ interface DatasetsApi {
             value = "revert",
             required = false
         ) revert: Boolean
-    ): ResponseEntity<JsonNode>
+    ): ResponseEntity<DocumentWithMetadata>
 
     @Operation(description = "Copy a dataset or tree under another dataset")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Datasets have been copied successfully.")])
@@ -103,7 +104,7 @@ interface DatasetsApi {
         principal: Principal,
         @Parameter(description = "IDs of the copied datasets", required = true) @PathVariable("ids") ids: List<Int>,
         @Parameter(description = "...", required = true) @RequestBody options: @Valid CopyOptions
-    ): ResponseEntity<List<JsonNode>>
+    ): ResponseEntity<List<DocumentWithMetadata>>
 
     @Operation(description = "Deletes a dataset")
     @ApiResponses(
@@ -160,7 +161,7 @@ interface DatasetsApi {
             value = "publish",
             required = false
         ) publish: Boolean?*/
-    ): ResponseEntity<JsonNode>
+    ): ResponseEntity<DocumentWithMetadata>
 
     @Operation(description = "Retrieve a dataset by a given UUID.")
     @ApiResponses(
@@ -181,7 +182,7 @@ interface DatasetsApi {
             value = "publish",
             required = false
         ) publish: Boolean?
-    ): ResponseEntity<JsonNode>
+    ): ResponseEntity<DocumentWithMetadata>
 
     @Operation(description = "Get the hierarchical path of a document. Retrieve an array of ID of all parents leading to the given dataset ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Array of IDs.")])

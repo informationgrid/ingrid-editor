@@ -396,6 +396,7 @@ class DocumentService(
     /**
      * Map data-field from entity to root
      */
+    @Deprecated("Use DocumentWithMetadata-class")
     fun convertToJsonNode(document: Document): JsonNode {
 
         val node = jacksonObjectMapper().convertValue(document, ObjectNode::class.java)
