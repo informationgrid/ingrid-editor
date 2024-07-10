@@ -71,10 +71,6 @@
 |
 |false
 
-|INDEX_THROUGH_IBUS
-|Index directy to Elasticsearch or through an iBus 
-|false
-
 |KEYCLOAK_BACKEND_USER
 |Needed for administrative tasks in Keycloak
 |
