@@ -166,7 +166,7 @@ export class KeywordAnalysis {
     }
   }
 
-  private async assignKeyword(item: string, checkThemes: boolean) {
+  public async assignKeyword(item: string, checkThemes: boolean) {
     if (checkThemes) {
       const resultTheme = this.checkInThemes(item);
       if (resultTheme.found) return resultTheme;
@@ -199,7 +199,7 @@ export class KeywordAnalysis {
     };
   }
 
-  private async checkInThesaurus(
+  public async checkInThesaurus(
     item: string,
     thesaurus: string,
   ): Promise<ThesaurusResult> {

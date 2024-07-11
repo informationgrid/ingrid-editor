@@ -1,0 +1,99 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+    <!-- dialog header -->
+    <div
+        cdkDragHandle
+        class="dialog-title-wrapper flex-row align-items-center gap-12"
+    >
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+        <h1 mat-dialog-title>Schlagwörter konsolidieren</h1>
+    </div>
+
+    @if (true) {
+        <mat-dialog-content>
+            <div>
+                Gemet Schlagworte
+                <mat-chip-listbox>
+                    <mat-chip *ngFor="let keyword of gemetKeywords">
+                        {{ keyword.label }}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                </mat-chip-listbox>
+            </div>
+            <div>
+                Umthes Schlagworte
+                <mat-chip-listbox>
+                    <mat-chip *ngFor="let keyword of umthesKeywords">
+                        {{ keyword.label }}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                </mat-chip-listbox>
+            </div>
+            <div>
+                Freie Schlagworte
+                <mat-chip-listbox>
+                    <mat-chip *ngFor="let keyword of freeKeywords">
+                        {{ keyword.label }}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                </mat-chip-listbox>
+            </div>
+
+            @if (!isLoading) {
+                <div>
+                    Test
+                    <mat-chip-listbox>
+                        <mat-chip *ngFor="let keyword of gemetKeywordsNew">
+                            {{ keyword.label }}
+                            <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                    </mat-chip-listbox>
+                </div>
+            } @else {
+                <mat-spinner
+                    class="content-spinner"
+                    diameter="40"
+                ></mat-spinner>
+            }
+
+            <!--            <mat-chip-list>-->
+            <!--                <mat-chip-->
+            <!--                    *ngFor="let option of to.options"-->
+            <!--                    [selectable]="to.selectable"-->
+            <!--                    [removable]="to.removable"-->
+            <!--                    (removed)="remove(option)"-->
+            <!--                >-->
+            <!--                    {{ option.label }}-->
+            <!--                    <mat-icon matChipRemove *ngIf="to.removable"-->
+            <!--                        >cancel</mat-icon-->
+            <!--                    >-->
+            <!--                </mat-chip>-->
+            <!--                <input-->
+            <!--                    placeholder="{{ to.placeholder }}"-->
+            <!--                    [formControl]="formControl"-->
+            <!--                    [matChipInputFor]="chipList"-->
+            <!--                    [matChipInputAddOnBlur]="true"-->
+            <!--                    (matChipInputTokenEnd)="add($event)"-->
+            <!--                />-->
+            <!--            </mat-chip-list>-->
+        </mat-dialog-content>
+    } @else {
+        <mat-spinner class="content-spinner" diameter="40"></mat-spinner>
+    }
+
+    <!-- dialog action buttons -->
+    <mat-dialog-actions>
+        <button mat-flat-button mat-dialog-close="true">Schließen</button>
+        <div class="flex-1"></div>
+
+        <button
+            color="primary"
+            mat-flat-button
+            [disabled]="false"
+            (click)="({})"
+        >
+            Übernehmen
+        </button>
+    </mat-dialog-actions>
+</div>
