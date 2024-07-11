@@ -21,7 +21,7 @@ import { Injectable } from "@angular/core";
 import { QueryEntity } from "@datorama/akita";
 import { CodelistState, CodelistStore } from "./codelist.store";
 import { Codelist, CodelistEntry } from "./codelist.model";
-import { map } from "rxjs/operators";
+import { IgeError } from "../../models/ige-error";
 
 @Injectable({
   providedIn: "root",
@@ -48,26 +48,17 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
     entryKey: string,
     defaultValue?: string,
   ) {
-    const entities = this.getValue().entities[codelistId];
-    const entryFields = entities.entries.find((entry) => entry.id === entryKey)
+    const codelist = this.getCodelist(codelistId);
+    const entryFields = codelist.entries.find((entry) => entry.id === entryKey)
       ?.fields;
 
     return entryFields ? entryFields["de"] : defaultValue ?? "";
   }
 
   getCodelistEntryByKey(codelistId: string, entryKey: string): CodelistEntry {
-    const entities = this.getValue().entities[codelistId];
-    return entities?.entries?.find((entry) => entry.id === entryKey);
-  }
-
-  getCodelistEntryIdByValue(
-    codelistId: string,
-    value: string,
-    field: string,
-  ): string {
-    const entities = this.getValue().entities[codelistId];
-    return entities?.entries?.find((entry) => entry.fields[field] === value)
-      ?.id;
+    return this.getCodelist(codelistId)?.entries?.find(
+      (entry) => entry.id === entryKey,
+    );
   }
 
   getCodelistEntryByValue(
@@ -75,7 +66,17 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
     value: string,
     field: string,
   ): CodelistEntry {
-    const entities = this.getValue().entities[codelistId];
-    return entities?.entries?.find((entry) => entry.fields[field] === value);
+    return this.getCodelist(codelistId)?.entries?.find(
+      (entry) => entry.fields[field] === value,
+    );
+  }
+
+  private getCodelist(codelistId: string): Codelist {
+    const entities = this.getEntity(codelistId);
+    if (!entities)
+      throw new IgeError(
+        `Die Codeliste konnte nicht gefunden werden: ${codelistId}`,
+      );
+    return entities;
   }
 }
