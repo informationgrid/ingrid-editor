@@ -72,13 +72,13 @@ class OpenDataExporter(
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val mapper = jacksonObjectMapper()
-        // modify doc type and other fields to be mapped correctly during InGrid export
         if (doc.type == "FOLDER") {
             val luceneDoc = ingridIndexExporter.run(doc, catalogId, options) as String
             val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
-            luceneJson.toPrettyString()
+            return luceneJson.toPrettyString()
         }
 
+        // modify doc type and other fields to be mapped correctly during InGrid export
         val modifiedDoc = addDefaultValues(doc)
 
         val luceneDoc = ingridIndexExporter.run(modifiedDoc, catalogId, options) as String
