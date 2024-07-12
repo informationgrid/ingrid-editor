@@ -23,8 +23,10 @@ import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.IgeException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.imports.ImportService
+import de.ingrid.igeserver.persistence.filter.publish.JsonErrorEntry
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
@@ -177,12 +179,12 @@ class CswtService(
     }
 
     fun prepareException(exception: Exception): String {
-        var errorMsg = exception.toString()
-        var cause = exception.cause
-        if (cause == null) {
-            cause = exception
-        } else {
-            errorMsg = cause.toString()
+        var errorMsg = exception.cause?.toString() ?: exception.toString()
+        if (exception is ValidationException) {
+            val lastError: JsonErrorEntry? = (exception.data?.get("error") as List<JsonErrorEntry>)?.last()
+            if (lastError != null) {
+                errorMsg += " (${lastError.error}, location: ${lastError.instanceLocation})"
+            }
         }
         return errorMsg
     }
