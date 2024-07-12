@@ -48,7 +48,7 @@ class OpenDataModelTransformerAdditional(
             )
         } ?: emptyList()
     }
-
+    fun getHierarchyParent() = doc.data.getString("hierarchyParent") ?: ""
     fun getUuid() = doc.uuid
     fun getTitle() = doc.title?.trim() ?: ""
     fun getDescription() = doc.data.getString("description") ?: ""
