@@ -25,6 +25,7 @@ import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.FIELD_UUID
+import de.ingrid.igeserver.utils.convertToDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
 import java.net.URLDecoder
@@ -75,7 +76,7 @@ class MCloudType : EntityType() {
             // TODO: improve import process so we don't need this
             if (addressJson is ObjectNode) {
                 val uuid = addressJson.path(FIELD_UUID).textValue()
-                val addressDoc = documentService.convertToDocument(addressJson)
+                val addressDoc = convertToDocument(addressJson)
                 addressDocs.add(addressDoc)
                 (address as ObjectNode).put("ref", uuid)
             }

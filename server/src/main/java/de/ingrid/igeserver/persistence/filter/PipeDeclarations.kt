@@ -95,6 +95,7 @@ open class PreCreatePayload(
     type: EntityType,
     catalogIdentifier: String,
     document: Document,
+    val parentId: Int?,
     val category: String,
     val initiator: InitiatorAction
 ) :

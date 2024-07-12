@@ -21,7 +21,7 @@ import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { Observable, Subject } from "rxjs";
 import { filter } from "rxjs/operators";
-import { IgeDocument } from "../../models/ige-document";
+import { DocumentWithMetadata, IgeDocument } from "../../models/ige-document";
 import { ConfigService } from "../config/config.service";
 
 export interface BeforePublishData {
@@ -46,7 +46,7 @@ export interface DocEvent {
 export class DocEventsService {
   private _beforePublish$ = new Subject<any>();
   private _beforeSave$ = new Subject<void>();
-  private _afterSave$ = new Subject<any>();
+  private _afterSave$ = new Subject<DocumentWithMetadata>();
   private _afterLoadAndSet$ = new Subject<any>();
 
   private _onError$ = new Subject<ErrorWithHandled>();
@@ -66,7 +66,7 @@ export class DocEventsService {
     );
   }
 
-  afterSave$(address: boolean): Observable<IgeDocument> {
+  afterSave$(address: boolean): Observable<DocumentWithMetadata> {
     return this._afterSave$.pipe(filter(() => this.belongsToThisPage(address)));
   }
 
@@ -93,7 +93,7 @@ export class DocEventsService {
     this._beforeSave$.next();
   }
 
-  sendAfterSave(data: IgeDocument) {
+  sendAfterSave(data: DocumentWithMetadata) {
     this._afterSave$.next(data);
   }
 

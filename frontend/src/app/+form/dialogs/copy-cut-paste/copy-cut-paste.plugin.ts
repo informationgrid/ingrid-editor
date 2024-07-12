@@ -39,7 +39,7 @@ import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Router } from "@angular/router";
-import { IgeDocument } from "../../../models/ige-document";
+import { DocumentWithMetadata } from "../../../models/ige-document";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 
@@ -198,7 +198,7 @@ export class CopyCutPastePlugin extends Plugin {
 
   async copy(includeTree = false) {
     let handled = await FormUtils.handleDirtyForm(
-      this.formStateService.getForm(),
+      this.formStateService,
       this.documentService,
       this.dialog,
       this.forAddress,
@@ -228,19 +228,19 @@ export class CopyCutPastePlugin extends Plugin {
       .subscribe();
   }
 
-  private selectCopiedDataset(documents: IgeDocument[]) {
+  private selectCopiedDataset(documents: DocumentWithMetadata[]) {
     if (documents.length == 1) {
       const target = this.forAddress ? "address" : "form";
       this.router.navigate([
         `${ConfigService.catalogId}/${target}`,
-        { id: documents[0]._uuid },
+        { id: documents[0].metadata.uuid },
       ]);
     }
   }
 
   async cut() {
     let handled = await FormUtils.handleDirtyForm(
-      this.formStateService.getForm(),
+      this.formStateService,
       this.documentService,
       this.dialog,
       this.forAddress,

@@ -19,9 +19,7 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
@@ -207,7 +205,7 @@ class DocumentService(
             doc.hasWritePermission = wrapper.hasWritePermission
             doc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
             doc.wrapperId = wrapper.id
-            doc.data.put(FIELD_PARENT, wrapper.parent?.id) // make parent available in frontend
+            // TODO AW: doc.data.put(FIELD_PARENT, wrapper.parent?.id) // make parent available in frontend
             // TODO: only call when requested!?
             return expandInternalReferences(
                 doc,
@@ -307,23 +305,6 @@ class DocumentService(
     fun createDocument(
         principal: Principal,
         catalogId: String,
-        data: JsonNode,
-        parentId: Int?,
-        address: Boolean = false,
-        publish: Boolean = false,
-        initiator: InitiatorAction = InitiatorAction.DEFAULT
-    ): DocumentData {
-        (data as ObjectNode).put(FIELD_PARENT, parentId)
-        val document = convertToDocument(data)
-        return createDocument(principal, catalogId, document, parentId, address, publish, initiator)
-
-    }
-
-
-    @Transactional
-    fun createDocument(
-        principal: Principal,
-        catalogId: String,
         document: Document,
         parentId: Int?,
         address: Boolean = false,
@@ -336,7 +317,7 @@ class DocumentService(
         val docType = getDocumentType(docTypeName, filterContext.profile)
 
         // run pre-create pipe(s)
-        val preCreatePayload = PreCreatePayload(docType, catalogId, document, getCategoryFromType(docTypeName, address), initiator)
+        val preCreatePayload = PreCreatePayload(docType, catalogId, document, parentId, getCategoryFromType(docTypeName, address), initiator)
         preCreatePipe.runFilters(preCreatePayload, filterContext)
 
         val preUpdatePayload = PreUpdatePayload(docType, catalogId, preCreatePayload.document, preCreatePayload.wrapper)
@@ -391,62 +372,6 @@ class DocumentService(
         val postWrapper = runPostUpdatePipes(docType, catalogId, newDocument, newWrapper, filterContext, publish)
 
         return DocumentData(postWrapper, newDocument)
-    }
-
-    /**
-     * Map data-field from entity to root
-     */
-    @Deprecated("Use DocumentWithMetadata-class")
-    fun convertToJsonNode(document: Document): JsonNode {
-
-        val node = jacksonObjectMapper().convertValue(document, ObjectNode::class.java)
-        val data = node.remove("data")
-        data.fields().forEach { entry ->
-            node.replace(entry.key, entry.value)
-        }
-        return node
-
-    }
-
-    fun convertToDocument(docJson: JsonNode): Document {
-
-        return Document().apply {
-            title = docJson.get("title")?.asText() ?: ""
-            type = docJson.get(FIELD_DOCUMENT_TYPE).asText()
-            version = docJson.get(FIELD_VERSION)?.asInt()
-            if (docJson.hasNonNull(FIELD_UUID)) {
-                uuid = docJson.get(FIELD_UUID).asText()
-            }
-            data = removeInternalFields(docJson as ObjectNode)
-        }
-
-    }
-
-    private fun removeInternalFields(node: ObjectNode): ObjectNode {
-        val copy = jacksonObjectMapper().createObjectNode().setAll<ObjectNode>(node)
-        listOf(
-            FIELD_VERSION,
-            FIELD_CREATED_USER_EXISTS,
-            FIELD_MODIFIED_USER_EXISTS,
-            FIELD_CREATED,
-            FIELD_MODIFIED,
-            FIELD_CONTENT_MODIFIED,
-            FIELD_CREATED_BY,
-            FIELD_MODIFIED_BY,
-            FIELD_CONTENT_MODIFIED_BY,
-            FIELD_UUID,
-            FIELD_ID,
-            FIELD_DOCUMENT_TYPE,
-            FIELD_TAGS,
-            FIELD_STATE,
-            "title",
-            "hasWritePermission",
-            "hasOnlySubtreeWritePermission",
-            "_wrapperId",
-//            FIELD_PARENT // the parent is only stored in document wrapper -> still needed in default document update
-        )
-            .forEach { copy.remove(it) }
-        return copy
     }
 
     // TODO: refactor since removeInternalFields does almost the same, find out difference and why
@@ -678,9 +603,6 @@ class DocumentService(
             title = newDocument.title
             data = newDocument.data
             version = newDocument.version // discover concurrent editing conflict
-
-            // remove parent from document (only store parent in wrapper)
-            data.remove(FIELD_PARENT)
 
             // set name of user who modifies document
             modifiedby = authUtils.getFullNameFromPrincipal(principal)
@@ -975,10 +897,10 @@ class DocumentService(
         options: UpdateReferenceOptions = UpdateReferenceOptions(onlyPublished)
     ): Document {
         // set empty parent fields explicitly to null
-        val parent = docData.data.has(FIELD_PARENT)
+        /*val parent = docData.data.has(FIELD_PARENT)
         if (!parent || docData.data.get(FIELD_PARENT).asText().isEmpty()) {
             docData.data.put(FIELD_PARENT, null as String?)
-        }
+        }*/
 
         // get latest references from links
         if (resolveLinks) {
@@ -1094,6 +1016,10 @@ class DocumentService(
                 }
                 docWrapperRepo.save(it)
             }
+    }
+
+    fun detachDocumentFromDatabase(doc: Any) {
+        this.entityManager.detach(doc);
     }
 }
 

@@ -45,7 +45,7 @@ import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
 import { SessionQuery } from "../../../store/session.query";
 import { FormularService } from "../../formular.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { debounceTime, filter, map, tap } from "rxjs/operators";
+import { catchError, debounceTime, filter, map, tap } from "rxjs/operators";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import {
   combineLatest,
@@ -272,9 +272,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(() => (this.showBlocker = true));
 
     // reset dirty flag after save
-    this.docEvents
-      .afterSave$(this.address)
-      .subscribe((data) => this.updateFormWithData(data));
+    this.docEvents.afterSave$(this.address).subscribe((data) => {
+      this.formStateService.updateMetadata(data.metadata);
+      this.updateFormWithData(data.documentWithMetadata);
+    });
 
     this.documentService.documentOperationFinished$
       .pipe(untilDestroyed(this))
@@ -355,17 +356,18 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(
         untilDestroyed(this),
         filter((doc) => doc != null),
+        tap((doc) => this.formStateService.updateMetadata(doc.metadata)),
+        map((doc) => doc.documentWithMetadata),
         tap((doc) => this.handleReadOnlyState(doc)),
         tap((doc) => this.treeService.selectTreeNode(this.address, doc._id)),
         tap((doc) =>
           this.loadSubscription.push(this.updateBreadcrumb(doc._id)),
         ),
-      )
-      .subscribe(
-        (doc) => this.updateFormWithData(doc),
-        (error: HttpErrorResponse) =>
+        catchError((error: HttpErrorResponse) =>
           this.handleLoadError(error, previousDocUuid),
-      );
+        ),
+      )
+      .subscribe((doc: IgeDocument) => this.updateFormWithData(doc));
 
     this.loadSubscription.push(loadSubscription);
   }
@@ -378,7 +380,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.documentService.updateBreadcrumb(id, this.address);
   }
 
-  private handleLoadError(error: HttpErrorResponse, previousDocUuid: string) {
+  private handleLoadError(
+    error: HttpErrorResponse,
+    previousDocUuid: string,
+  ): Observable<any> {
     if (error.status === 403) {
       // select previous document
       const target =
@@ -502,7 +507,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async handleDrop(event: any) {
     let handled = await FormUtils.handleDirtyForm(
-      this.formStateService.getForm(),
+      this.formStateService,
       this.documentService,
       this.dialog,
       this.address,

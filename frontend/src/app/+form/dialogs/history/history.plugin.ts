@@ -367,7 +367,7 @@ export class HistoryPlugin extends Plugin {
 
   private handleDirtyForm() {
     return FormUtils.handleDirtyForm(
-      this.formStateService.getForm(),
+      this.formStateService,
       this.documentService,
       this.dialog,
       this.forAddress,

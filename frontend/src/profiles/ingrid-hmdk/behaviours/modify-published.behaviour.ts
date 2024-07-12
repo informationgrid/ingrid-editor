@@ -79,7 +79,7 @@ export class ModifyPublishedBehaviour extends Plugin {
     this.documentDataService
       .loadPublished(openedDocument._uuid, true)
       .subscribe((published) => {
-        if (published?.publicationHmbTG)
+        if (published?.document.publicationHmbTG)
           this.dialog
             .open(ConfirmDialogComponent, {
               data: {

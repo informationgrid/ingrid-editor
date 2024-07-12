@@ -193,13 +193,18 @@ export abstract class SaveBase extends Plugin {
     return this.formStateService.getForm();
   }
 
+  protected getMetadata() {
+    return this.formStateService.metadata();
+  }
+
   private loadDocument(id: number, address: boolean) {
     this.documentService
       .load(id, address)
       .pipe(
         tap((data) =>
+          // @ts-ignore
           this.documentService.postSaveActions({
-            data: data,
+            data: data.documentWithMetadata,
             isNewDoc: false,
             isAddress: address,
           }),

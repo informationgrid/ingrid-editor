@@ -25,6 +25,8 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.utils.convertToDocument
+import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -145,19 +147,23 @@ abstract class EntityType {
     private fun getDocumentForReferenceUuid(
         catalogId: String,
         uuid: String,
-        options: UpdateReferenceOptions
     ): JsonNode {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
         val documentData = documentService.getDocumentFromCatalog(catalogId, wrapper.id!!).also {
             it.document.data.put(FIELD_TAGS, wrapper.tags.joinToString(","))
         }
 
-        val latestDocumentJson = documentService.convertToJsonNode(documentData.document)
-
-        if (options.forExport) {
-            documentService.removeInternalFieldsForImport(latestDocumentJson as ObjectNode)
+        // TODO AW: the extra mapping should not be needed once addresses will be loaded explicitly
+        return getRawJsonFromDocument(documentData.document).apply {
+            put(FIELD_UUID, uuid)
+            put(FIELD_STATE, documentData.document.state.getState())
+            put(FIELD_DOCUMENT_TYPE, documentData.document.type)
+            put(FIELD_CREATED, documentData.document.created.toString())
+            put(FIELD_MODIFIED, documentData.document.modified.toString())
+            put(FIELD_CONTENT_MODIFIED, documentData.document.contentmodified.toString())
+            put(FIELD_ID, documentData.wrapper.id)
+            put(FIELD_PARENT, documentData.wrapper.getParentUuid())
         }
-        return latestDocumentJson
     }
 
     protected fun getUploadsFromFileList(fileList: JsonNode?, field: String = "downloadURL"): List<String> {
@@ -177,7 +183,7 @@ abstract class EntityType {
             // TODO: improve import process so we don't need this
             if (addressJson is ObjectNode) {
                 val uuid = addressJson.path(FIELD_UUID).textValue()
-                val addressDoc = documentService.convertToDocument(addressJson)
+                val addressDoc = convertToDocument(addressJson)
                 addressDocs.add(addressDoc)
                 (address as ObjectNode).put("ref", uuid)
             }
@@ -197,7 +203,7 @@ abstract class EntityType {
                 address.path("ref").path(FIELD_UUID).asText()
             }
             try {
-                val latestDocumentJson = getDocumentForReferenceUuid(options.catalogId!!, uuid, options)
+                val latestDocumentJson = getDocumentForReferenceUuid(options.catalogId!!, uuid)
                 (address as ObjectNode).replace("ref", latestDocumentJson)
             } catch (ex: NotFoundException) {
                 // TODO: what to do with removed references?

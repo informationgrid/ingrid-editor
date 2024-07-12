@@ -20,10 +20,8 @@
 package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.model.CopyOptions
-import de.ingrid.igeserver.model.DocMetadata
 import de.ingrid.igeserver.model.DocumentWithMetadata
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.FindAllResults
@@ -34,6 +32,8 @@ import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.igeserver.utils.convertToDocument
+import de.ingrid.igeserver.utils.prepareDocumentWithMetadata
 import de.ingrid.mdek.upload.storage.Storage
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -46,7 +46,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 @RestController
@@ -72,15 +71,15 @@ class DatasetsApiController(
     override fun createDataset(
         principal: Principal,
         data: JsonNode,
+        type: String,
+        parentId: Int?,
         address: Boolean,
         publish: Boolean
     ): ResponseEntity<DocumentWithMetadata> {
-
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val parent = data.get(FIELD_PARENT)
-        val parentId = if (parent == null || parent.isNull) null else parent.asInt()
-        val resultDoc = documentService.createDocument(principal, catalogId, data, parentId, address, publish)
-        val metadata = getMetadataFromWrapper(resultDoc)
+        val doc = convertToDocument(data, type)
+        val resultDoc = documentService.createDocument(principal, catalogId, doc, parentId, address, publish)
+        val metadata = prepareDocumentWithMetadata(resultDoc)
         return ResponseEntity.ok(metadata)
     }
 
@@ -95,7 +94,8 @@ class DatasetsApiController(
         publish: Boolean,
         unpublish: Boolean,
         cancelPendingPublishing: Boolean,
-        revert: Boolean
+        revert: Boolean,
+        version: Int?
     ): ResponseEntity<DocumentWithMetadata> {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -106,48 +106,17 @@ class DatasetsApiController(
         } else if (cancelPendingPublishing) {
             documentService.cancelPendingPublishing(principal, catalogId, id)
         } else if (publish) {
-            val doc = documentService.convertToDocument(data)
+            val doc = convertToDocument(data, docVersion = version)
             documentService.publishDocument(principal, catalogId, id, doc, publishDate)
         } else {
-            val doc = documentService.convertToDocument(data)
+            val doc = convertToDocument(data, docVersion = version)
             documentService.updateDocument(principal, catalogId, id, doc)
         }
 
-        val metadata = getMetadataFromWrapper(resultDoc)
+        val metadata = prepareDocumentWithMetadata(resultDoc)
         return ResponseEntity.ok(metadata)
     }
 
-    private fun getMetadataFromWrapper(
-        docData: DocumentData
-    ): DocumentWithMetadata {
-
-        val metadata = DocMetadata(
-            docData.wrapper.countChildren > 0,
-            docData.wrapper.parent?.id,
-            docData.wrapper.parent?.type == "FOLDER",
-            docData.document.createdByUser != null,
-            docData.document.contentModifiedByUser != null,
-            docData.wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME),
-            docData.wrapper.tags.joinToString(","),
-            docData.wrapper.responsibleUser?.id,
-            docData.wrapper.fingerprint?.let {it[0].date.toString()},
-            docData.wrapper.hasWritePermission,
-            docData.wrapper.hasOnlySubtreeWritePermission,
-            docData.wrapper.id!!,
-            docData.document.created!!,
-            docData.document.createdby,
-            docData.document.modified!!,
-            docData.document.modifiedby,
-            docData.document.contentmodified!!,
-            docData.document.contentmodifiedby,
-            docData.document.state.getState(),
-            docData.document.type,
-            docData.document.version!!,
-            docData.document.uuid,
-        )
-        val data = prepareForFrontend(docData.document)
-        return DocumentWithMetadata(data, metadata)
-    }
 
     @Transactional
     override fun deleteById(principal: Principal, ids: List<Int>): ResponseEntity<Unit> {
@@ -232,7 +201,12 @@ class DatasetsApiController(
         return ResponseEntity.ok().build()
     }
 
-    private fun handleCopy(principal: Principal, catalogId: String, id: Int, options: CopyOptions): DocumentWithMetadata {
+    private fun handleCopy(
+        principal: Principal,
+        catalogId: String,
+        id: Int,
+        options: CopyOptions
+    ): DocumentWithMetadata {
 
         val wrapper = documentService.getWrapperByDocumentIdAndCatalog(id)
 
@@ -242,34 +216,28 @@ class DatasetsApiController(
             validateCopyOperation(catalogId, id, options.destId)
         }
 
-        val docJson = documentService.convertToJsonNode(doc)
-        (docJson as ObjectNode).put(FIELD_PARENT, options.destId)
+//        val metadata = prepareDocumentWithMetadata(DocumentData(wrapper, doc))
+        // TODO AW: is there another way?
+//        metadata.document.put(FIELD_PARENT, options.destId)
 
-        return createCopyAndHandleSubTree(principal, catalogId, docJson, options, documentService.isAddress(wrapper))
+        // clear UUID to create a new one during copy
+        documentService.detachDocumentFromDatabase(doc)
+        doc.uuid = ""
+        doc.id = null
+        doc.version = null
+
+        return createCopyAndHandleSubTree(principal, catalogId, doc, options, documentService.isAddress(wrapper))
     }
 
     private fun createCopyAndHandleSubTree(
         principal: Principal,
         catalogId: String,
-        doc: JsonNode,
+        doc: Document,
         options: CopyOptions,
         isAddress: Boolean
     ): DocumentWithMetadata {
-        val origParentId = doc[FIELD_ID].asInt()
-        val origParentUUID = doc[FIELD_UUID].asText()
-
-        val objectNode = doc as ObjectNode
-
-        // remove fields that shouldn't be persisted
-        // also copied docs need new ID
-        listOf(
-            FIELD_ID,
-            FIELD_UUID,
-            FIELD_STATE,
-            FIELD_HAS_CHILDREN,
-            FIELD_VERSION,
-            FIELD_CREATED
-        ).forEach { objectNode.remove(it) }
+        val origParentId = doc.wrapperId!! // doc[FIELD_ID].asInt()
+        val origParentUUID = doc.uuid // doc[FIELD_UUID].asText()
 
         val copiedParent =
             documentService.createDocument(
@@ -285,13 +253,14 @@ class DatasetsApiController(
 
         storage.copyToUnpublished(catalogId, origParentUUID, copiedParent.wrapper.uuid)
 
-        val copiedParentJson = documentService.convertToJsonNode(copiedParent.document) as ObjectNode
+//        val copiedParentJson = documentService.convertToJsonNode(copiedParent.document) as ObjectNode
         if (options.includeTree) {
             val count = handleCopySubTree(principal, catalogId, copiedParent.wrapper.id!!, origParentId, isAddress)
-            copiedParentJson.put(FIELD_HAS_CHILDREN, count > 0)
+            // TODO AW: is this needed to calc hasChildren?
+//            copiedParentJson.put(FIELD_HAS_CHILDREN, count > 0)
         }
 
-        return getMetadataFromWrapper(copiedParent)
+        return prepareDocumentWithMetadata(copiedParent)
     }
 
     private fun handleCopySubTree(
@@ -309,9 +278,12 @@ class DatasetsApiController(
 
             child.let {
 //                val childDoc = documentService.getLatestDocument(it, false, false)
-                val childVersion = (documentService.convertToJsonNode(it.document) as ObjectNode)
-                    .put(FIELD_PARENT, parentId)
-                createCopyAndHandleSubTree(principal, catalogId, childVersion, CopyOptions(parentId, true), isAddress)
+//                val childVersion = (documentService.convertToJsonNode(it.document) as ObjectNode)
+//                    .put(FIELD_PARENT, parentId)
+
+                // clear UUID to create a new one during copy
+                it.document.uuid = ""
+                createCopyAndHandleSubTree(principal, catalogId, it.document, CopyOptions(parentId, true), isAddress)
             }
 
         }
@@ -450,15 +422,11 @@ class DatasetsApiController(
 
         return if (publish == true) {
             val document = documentService.getLastPublishedDocument(catalogId, uuid)
-            val metadata = getMetadataFromWrapper(DocumentData(wrapper, document))
+            val metadata = prepareDocumentWithMetadata(DocumentData(wrapper, document))
             ResponseEntity.ok(metadata)
         } else {
             getByID(principal, wrapper.id!!)
         }
-    }
-
-    private fun prepareForFrontend(document: Document): ObjectNode {
-        return document.data.deepCopy().apply { put("title", document.title) }
     }
 
     override fun getByID(
@@ -470,7 +438,7 @@ class DatasetsApiController(
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
             // TODO: catalogId is not necessary anymore
             val docData = documentService.getDocumentFromCatalog(catalogId, id, true)
-            val metadata = getMetadataFromWrapper(docData)
+            val metadata = prepareDocumentWithMetadata(docData)
             return ResponseEntity.ok(metadata)
         } catch (ex: AccessDeniedException) {
             throw ForbiddenException.withAccessRights("No read access to document")

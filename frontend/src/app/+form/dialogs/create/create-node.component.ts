@@ -24,7 +24,10 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
-import { DocumentService } from "../../../services/document/document.service";
+import {
+  DocumentService,
+  SaveOptions,
+} from "../../../services/document/document.service";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { tap } from "rxjs/operators";
 import { TreeQuery } from "../../../store/tree/tree.query";
@@ -257,7 +260,7 @@ export class CreateNodeComponent implements OnInit {
     newAddress.title = this.documentService.createAddressTitle(newAddress);
     const savedDoc = await this.saveForm(newAddress);
 
-    this.navigateAfterSave(savedDoc._uuid);
+    this.navigateAfterSave(savedDoc.metadata.uuid);
   }
 
   private async handleDocumentCreate() {
@@ -268,18 +271,16 @@ export class CreateNodeComponent implements OnInit {
     newDocument.title = this.formGroup.get("title").value;
     const savedDoc = await this.saveForm(newDocument);
 
-    this.navigateAfterSave(savedDoc._uuid);
+    this.navigateAfterSave(savedDoc.metadata.uuid);
   }
 
   private saveForm(data: IgeDocument) {
     const pathIds = this.path.map((item) => item.id);
+
     return firstValueFrom(
-      this.documentService.save({
-        data: data,
-        isNewDoc: true,
-        isAddress: this.forAddress,
-        path: pathIds,
-      }),
+      this.documentService.save(
+        SaveOptions.createNewDocument(data, this.forAddress, pathIds),
+      ),
     );
   }
 

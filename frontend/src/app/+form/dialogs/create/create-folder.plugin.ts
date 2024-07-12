@@ -103,7 +103,7 @@ export class CreateFolderPlugin extends Plugin {
     // getFirstParentFolder would throw an error
     if (selectedDoc) {
       let handled = await FormUtils.handleDirtyForm(
-        this.formStateService.getForm(),
+        this.formStateService,
         this.documentService,
         this.dialog,
         this.forAddress,

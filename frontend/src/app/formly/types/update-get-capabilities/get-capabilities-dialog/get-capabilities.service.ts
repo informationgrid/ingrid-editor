@@ -20,7 +20,10 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ConfigService } from "../../../../services/config/config.service";
-import { DocumentService } from "../../../../services/document/document.service";
+import {
+  DocumentService,
+  SaveOptions,
+} from "../../../../services/document/document.service";
 import { IgeDocument } from "../../../../models/ige-document";
 import {
   docReferenceTemplate,
@@ -246,17 +249,13 @@ export class GetCapabilitiesService {
       let uuid = resource.uuid;
       if (!resource.exists) {
         const doc = await this.mapCoupledResource(resource, parent);
-        const savedDoc = this.documentService.save({
-          data: doc,
-          isNewDoc: true,
-          isAddress: false,
-          noVisualUpdates: true,
-          dontUpdateForm: true,
-        });
+        const savedDoc = this.documentService.save(
+          SaveOptions.createNewDocument(doc, false, null, true),
+        );
         const newDoc = await lastValueFrom(savedDoc);
         return <DocumentReference>{
           ...docReferenceTemplate,
-          uuid: newDoc._uuid,
+          uuid: newDoc.metadata.uuid,
         };
       }
       return <DocumentReference>{
@@ -364,13 +363,9 @@ export class GetCapabilitiesService {
       return [{ ref: address, type: { key: "1" } }];
     }
 
-    const result = this.documentService.save({
-      data: address,
-      isNewDoc: true,
-      isAddress: true,
-      noVisualUpdates: true,
-      dontUpdateForm: true,
-    });
+    const result = this.documentService.save(
+      SaveOptions.createNewDocument(address, true, null, true),
+    );
     const newAddress = await lastValueFrom(result);
     return [{ ref: newAddress, type: { key: "1" } }];
   }

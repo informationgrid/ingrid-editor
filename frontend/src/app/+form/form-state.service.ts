@@ -17,17 +17,20 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { Injectable, signal } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { SessionStore } from "../store/session.store";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { transaction } from "@datorama/akita";
+import { Metadata } from "../models/ige-document";
 
 @Injectable({
   providedIn: "root",
 })
 export class FormStateService {
   private form: UntypedFormGroup;
+  private _metadata = signal<Metadata>(null);
+  metadata = this._metadata.asReadonly();
   private textareaElementsRows: any = {};
   private readonly lineHeight = 24;
 
@@ -44,6 +47,10 @@ export class FormStateService {
 
   updateForm(form: UntypedFormGroup) {
     this.form = form;
+  }
+
+  updateMetadata(metadata: Metadata) {
+    this._metadata.set(metadata);
   }
 
   getForm() {

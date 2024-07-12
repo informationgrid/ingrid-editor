@@ -22,9 +22,9 @@ import { AddressType, Doctype } from "../app/services/formular/doctype";
 import { Observable } from "rxjs";
 import {
   CodelistService,
+  CodelistSort,
   SelectOption,
   SelectOptionUi,
-  CodelistSort,
 } from "../app/services/codelist/codelist.service";
 import { filter, map, take, tap } from "rxjs/operators";
 import { CodelistQuery } from "../app/store/codelist/codelist.query";
@@ -46,42 +46,6 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       props: {
         label: "Titel",
       },
-    },
-    {
-      key: "_id",
-    },
-    {
-      key: "_uuid",
-    },
-    {
-      key: "_parent",
-    },
-    {
-      key: "_type",
-      props: {
-        label: "Typ",
-      },
-    },
-    {
-      key: "_created",
-    },
-    {
-      key: "_createdBy",
-    },
-    {
-      key: "_modified",
-    },
-    {
-      key: "_contentModified",
-      props: {
-        label: "Aktualität",
-      },
-    },
-    {
-      key: "_contentModifiedBy",
-    },
-    {
-      key: "_version",
     },
   ];
 

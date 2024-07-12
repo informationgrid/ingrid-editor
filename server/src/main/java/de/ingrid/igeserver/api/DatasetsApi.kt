@@ -52,6 +52,8 @@ interface DatasetsApi {
     fun createDataset(
         principal: Principal,
         @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: @Valid JsonNode,
+        @Parameter(description = "The type of the document", required = true) @RequestParam type: @Valid String,
+        @Parameter(description = "The ID of the parent", required = false) @RequestParam parent: @Valid Int?,
         @Parameter(description = "Is this an address document") @RequestParam(required = false) address: @Valid Boolean,
         @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(
             value = "publish",
@@ -90,7 +92,11 @@ interface DatasetsApi {
         @Parameter(description = "Delete the draft version and make the published version the current one.") @RequestParam(
             value = "revert",
             required = false
-        ) revert: Boolean
+        ) revert: Boolean,
+        @Parameter(description = "Document version") @RequestParam(
+            value = "version",
+            required = false
+        ) version: Int?
     ): ResponseEntity<DocumentWithMetadata>
 
     @Operation(description = "Copy a dataset or tree under another dataset")

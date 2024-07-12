@@ -94,7 +94,7 @@ export class TagsBehaviour extends Plugin {
       ? "Eine Adresse darf in ihrem Veröffentlichungsrecht nicht weiter eingeschränkt sein als die Datensätze, in denen sie referenziert wird. Bitte prüfen Sie das Veröffentlichungsrecht der Datensätze."
       : "Bitte stellen Sie bei einer Veränderung des Veröffentlichungsrechts sicher, dass auch alle Referenzen das passende Veröffentlichungsrecht besitzen.";
     const handled = await FormUtils.handleDirtyForm(
-      this.formStateService.getForm(),
+      this.formStateService,
       this.documentService,
       this.dialog,
       this.forAddress,

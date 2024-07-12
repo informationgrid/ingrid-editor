@@ -138,13 +138,15 @@ export class GetCapabilititesWizardPlugin extends Plugin {
     await this.getCapService.applyChangesToModel(model, result);
     this.documentService
       .save({
+        id: null,
+        version: null,
         data: model,
         isNewDoc: true,
       })
       .subscribe((result) => {
         this.router.navigate([
           `${ConfigService.catalogId}/form`,
-          { id: result._uuid },
+          { id: result.metadata.uuid },
         ]);
         snackRef.dismiss();
       });

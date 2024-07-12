@@ -31,6 +31,7 @@ import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.FIELD_PARENT
+import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.getString
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
@@ -213,7 +214,7 @@ class ImportService(
         isLatest: Boolean = true,
         isDraftAndPublished: Boolean = false
     ): DocumentAnalysis {
-        val document = documentService.convertToDocument(doc)
+        val document = convertToDocument(doc)
         document.state = if (forcePublish) DOCUMENT_STATE.PUBLISHED
         else if (isDraftAndPublished) DOCUMENT_STATE.DRAFT_AND_PUBLISHED else DOCUMENT_STATE.DRAFT
         document.isLatest = isLatest

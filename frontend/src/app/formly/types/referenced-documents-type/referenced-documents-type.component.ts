@@ -20,28 +20,22 @@
 import {
   ChangeDetectorRef,
   Component,
+  effect,
   ElementRef,
   OnInit,
   ViewChild,
 } from "@angular/core";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { ResearchService } from "../../../+research/research.service";
-import {
-  distinctUntilChanged,
-  filter,
-  map,
-  startWith,
-  switchMap,
-  tap,
-} from "rxjs/operators";
+import { map, startWith, switchMap, tap } from "rxjs/operators";
 import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import { PageEvent } from "@angular/material/paginator";
-import { merge } from "rxjs";
 import { ConfigService } from "../../../services/config/config.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
+import { FormStateService } from "../../../+form/form-state.service";
 
 @UntilDestroy()
 @Component({
@@ -88,9 +82,17 @@ export class ReferencedDocumentsTypeComponent
     private router: Router,
     private researchService: ResearchService,
     private documentService: DocumentService,
+    private formStateService: FormStateService,
     private cdr: ChangeDetectorRef,
   ) {
     super();
+
+    effect(() => {
+      this.currentUuid = this.formStateService.metadata().uuid;
+      this.docs = [];
+      this.firstLoaded = true;
+      this.searchReferences(this.currentUuid);
+    });
   }
 
   ngOnInit(): void {
@@ -103,19 +105,12 @@ export class ReferencedDocumentsTypeComponent
       "Es existieren keine Referenzen auf diese Adresse";
     this.isLoading = false;
 
-    const loadEvent = this.form.get("_uuid").valueChanges.pipe(
-      untilDestroyed(this),
-      filter((value) => value),
-      distinctUntilChanged(),
-      tap((uuid) => (this.currentUuid = uuid)),
-    );
-
     const reloadEvent = this.documentService.reload$.pipe(
       untilDestroyed(this),
       map((item) => item.uuid),
     );
 
-    merge(loadEvent, reloadEvent)
+    reloadEvent
       .pipe(
         untilDestroyed(this),
         startWith(this.currentUuid),

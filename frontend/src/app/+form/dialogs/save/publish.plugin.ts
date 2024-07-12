@@ -288,8 +288,15 @@ export class PublishPlugin extends SaveBase {
   }
 
   saveWithData(data, delay: Date = null) {
+    const metadata = this.getMetadata();
     this.documentService
-      .publish(data, this.forAddress, delay)
+      .publish(
+        metadata.wrapperId,
+        metadata.version,
+        data,
+        this.forAddress,
+        delay,
+      )
       .pipe(
         catchError((error) =>
           this.handleError(error, data, this.forAddress, "PUBLISH"),
@@ -308,7 +315,7 @@ export class PublishPlugin extends SaveBase {
   }
 
   revert() {
-    const docId = this.getForm().value._id;
+    const docId = this.getMetadata().wrapperId;
 
     const message =
       "Wollen Sie diesen Datensatz wirklich auf die letzte Veröffentlichungsversion zurücksetzen?";
@@ -383,7 +390,7 @@ export class PublishPlugin extends SaveBase {
   }
 
   private checkForAllParentsPublished() {
-    const id: number = this.getForm().value._id;
+    const id: number = this.getMetadata().wrapperId;
     return this.tree
       .getParents(id)
       .every((entity) => entity._type === "FOLDER" || entity._state === "P");
@@ -392,7 +399,7 @@ export class PublishPlugin extends SaveBase {
   private validateDataset() {
     const isValid = this.validateBeforePublish();
     this.documentService
-      .validateDocument(this.getForm().value._id)
+      .validateDocument(this.getMetadata().wrapperId)
       .pipe(
         catchError((e) => {
           const error = this.prepareValidationError(e);

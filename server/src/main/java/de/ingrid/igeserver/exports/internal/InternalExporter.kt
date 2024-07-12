@@ -29,7 +29,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
-import org.springframework.beans.factory.annotation.Autowired
+import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -54,8 +54,7 @@ class InternalExporter(
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         // TODO: move to utilities to prevent cycle
-        val version = documentService.convertToJsonNode(doc)
-        documentService.removeInternalFieldsForImport(version as ObjectNode)
+        val version = getRawJsonFromDocument(doc)
 
         val versions = if (options.includeDraft) {
             Pair(getPublished(catalogId, doc.uuid), version)
@@ -68,7 +67,7 @@ class InternalExporter(
     private fun getPublished(catalogId: String, uuid: String): JsonNode? {
         return try {
             val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
-            documentService.convertToJsonNode(document)
+            getRawJsonFromDocument(document)
         } catch (ex: Exception) {
             // allow to export only draft versions
             null

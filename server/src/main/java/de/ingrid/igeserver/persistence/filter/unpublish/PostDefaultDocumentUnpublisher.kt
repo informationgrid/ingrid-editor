@@ -27,8 +27,8 @@ import de.ingrid.igeserver.persistence.filter.persistence.PostDataHistoryLogger
 import de.ingrid.igeserver.services.AuditLogger
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.tasks.IndexingTask
+import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.springframework.context.annotation.Lazy
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 /**
@@ -56,7 +56,7 @@ class PostDefaultDocumentUnpublisher(
             category = PostDataHistoryLogger.LOG_CATEGORY,
             action = payload.action.name.lowercase(),
             target = docId,
-            data = documentService.convertToJsonNode(payload.document),
+            data = getRawJsonFromDocument(payload.document),
             logger = PostDataHistoryLogger.LOGGER_NAME,
             catalogIdentifier = payload.catalogIdentifier,
             principal = context.principal

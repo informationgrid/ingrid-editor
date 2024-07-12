@@ -72,7 +72,7 @@ export class FormChangeDeactivateGuard {
     if (stayOnPage) {
       const type = target instanceof FormComponent ? "document" : "address";
       return FormUtils.handleDirtyForm(
-        this.formStateService.getForm(),
+        this.formStateService,
         this.documentService,
         this.dialog,
         type === "address",
@@ -169,8 +169,11 @@ export class FormChangeDeactivateGuard {
 
     if (action === "save") {
       const form = this.formStateService.getForm()?.getRawValue();
+      const metadata = this.formStateService.metadata();
       await firstValueFrom(
         this.documentService.save({
+          id: metadata.wrapperId,
+          version: metadata.version,
           data: form,
           isNewDoc: false,
           isAddress: isAddress,
