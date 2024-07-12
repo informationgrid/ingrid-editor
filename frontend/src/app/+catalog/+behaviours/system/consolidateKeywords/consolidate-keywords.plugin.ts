@@ -93,14 +93,14 @@ export class ConsolidateKeywordsPlugin extends Plugin {
           this.openConsolidateKeywordsDialog(event.data.id).subscribe(
             async (confirmed) => {
               if (confirmed) {
-                //     const handled = await FormUtils.handleDirtyForm(
-                //       this.formStateService.getForm(),
-                //       this.documentService,
-                //       this.dialog,
-                //       this.forAddress,
-                //     );
-                //     if (handled)
-                //       console.log("consolidate keywords for docId", event.data.id);
+                const handled = await FormUtils.handleDirtyForm(
+                  this.formStateService.getForm(),
+                  this.documentService,
+                  this.dialog,
+                  this.forAddress,
+                );
+                if (handled)
+                  console.log("consolidate keywords for docId", event.data.id);
               }
             },
           );

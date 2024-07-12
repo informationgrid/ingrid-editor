@@ -17,13 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  Inject,
-  OnInit,
-} from "@angular/core";
+import { Component, Inject, OnInit } from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
 import {
   MAT_DIALOG_DATA,
@@ -31,12 +25,6 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from "@angular/material/dialog";
-import {
-  PermissionLevel,
-  User,
-  UserWithDocPermission,
-} from "../../../../../+user/user";
-import { FormControl } from "@angular/forms";
 import { UserTableComponent } from "../../../../../+user/user/user-table/user-table.component";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButtonModule } from "@angular/material/button";
@@ -46,20 +34,13 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfigService } from "../../../../../services/config/config.service";
-import { ConfirmDialogComponent } from "../../../../../dialogs/confirm/confirm-dialog.component";
 import { MatChip, MatChipListbox } from "@angular/material/chips";
-import { noop } from "rxjs";
 import { NgForOf } from "@angular/common";
 import { DocumentDataService } from "../../../../../services/document/document-data.service";
 import { KeywordAnalysis } from "../../../../../../profiles/ingrid/utils/keywords";
 
 export interface ConsolidateDialogData {
   id: number;
-}
-
-export interface keywordConsolidateData {
-  id: number;
-  // status: "unchanged" | "added" | "removed";
 }
 
 @Component({
@@ -96,7 +77,6 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   id: number;
-  query = new FormControl<string>("");
   keywords: any[];
   gemetKeywords: any[];
   umthesKeywords: any[];
@@ -108,31 +88,27 @@ export class ConsolidateDialogComponent implements OnInit {
   isLoading: boolean;
 
   ngOnInit() {
-    this.consolidateKeywords(this.keywords);
+    this.consolidateKeywords();
   }
 
-  private consolidateKeywords(keywords) {
+  private consolidateKeywords() {
     this.isLoading = true;
     this.documentDataService.load(this.id, false).subscribe((response) => {
-      console.log(response.keywords);
       this.gemetKeywords = response.keywords.gemet;
       this.umthesKeywords = response.keywords.umthes;
       this.freeKeywords = response.keywords.free;
-
-      this.keywords = [
-        ...this.gemetKeywords,
-        ...this.umthesKeywords,
-        ...this.freeKeywords,
-      ];
 
       Promise.all([
         ...this.gemetKeywords.map((keyword) =>
           this.keywordAnalysis
             .checkInThesaurus(keyword.label, "gemet")
             .then((res) => {
-              console.log(res);
               if (res.found) {
                 this.gemetKeywordsNew.push(res);
+              } else {
+                if (!this.freeKeywords.includes(keyword.label)) {
+                  this.freeKeywordsNew.push(res);
+                }
               }
             }),
         ),
@@ -140,9 +116,12 @@ export class ConsolidateDialogComponent implements OnInit {
           this.keywordAnalysis
             .checkInThesaurus(keyword.label, "umthes")
             .then((res) => {
-              console.log(res);
-              if (res.found !== true) {
+              if (res.found) {
                 this.umthesKeywordsNew.push(res);
+              } else {
+                if (!this.freeKeywords.includes(keyword.label)) {
+                  this.freeKeywordsNew.push(res);
+                }
               }
             }),
         ),
@@ -150,20 +129,46 @@ export class ConsolidateDialogComponent implements OnInit {
           this.keywordAnalysis
             .assignKeyword(keyword.label, true)
             .then((res) => {
-              console.log(res);
-              if (res.found !== true) {
-                this.freeKeywordsNew.push(res);
+              if (res.found) {
+                if (res.thesaurus === "Gemet Schlagworte") {
+                  this.gemetKeywordsNew.push(res);
+                }
+                if (res.thesaurus === "Umthes Schlagworte") {
+                  this.umthesKeywordsNew.push(res);
+                }
               }
             }),
         ),
       ]).then(() => {
-        // Set loading flag to false once all keywords are processed
+        this.freeKeywordsNew = [...this.freeKeywords, ...this.freeKeywordsNew];
         this.isLoading = false;
-        console.log(this.gemetKeywordsNew);
-        console.log(this.umthesKeywordsNew);
-        console.log(this.freeKeywordsNew);
       });
-      return this.keywords;
+      return [this.gemetKeywords, this.umthesKeywords, this.freeKeywords];
+    });
+  }
+
+  private saveKeywords() {
+    this.documentDataService.load(this.id, false).subscribe((response) => {
+      response.keywords.gemet = this.gemetKeywordsNew.map((keyword) => ({
+        id: keyword.id,
+        label: keyword.label,
+        // alternateLabel: keyword.
+      }));
+      response.keywords.umthes = this.umthesKeywordsNew.map((keyword) => ({
+        id: keyword.id,
+        label: keyword.label,
+        // alternateLabel: keyword.
+      }));
+      response.keywords.free = this.freeKeywordsNew.map((keyword) => ({
+        label: keyword.label,
+      }));
+
+      // this.documentService.save().subscribe(() => {
+      //   this.snackBar.open("Schlagworte konsolidiert", "", {
+      //     panelClass: "green",
+      //   });
+      //   this.dialogRef.close("confirm");
+      // });
     });
   }
 }

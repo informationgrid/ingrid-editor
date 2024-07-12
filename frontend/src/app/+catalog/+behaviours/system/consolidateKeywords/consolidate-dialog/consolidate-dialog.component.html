@@ -17,7 +17,6 @@
                 <mat-chip-listbox>
                     <mat-chip *ngFor="let keyword of gemetKeywords">
                         {{ keyword.label }}
-                        <mat-icon matChipRemove>cancel</mat-icon>
                     </mat-chip>
                 </mat-chip-listbox>
             </div>
@@ -26,7 +25,6 @@
                 <mat-chip-listbox>
                     <mat-chip *ngFor="let keyword of umthesKeywords">
                         {{ keyword.label }}
-                        <mat-icon matChipRemove>cancel</mat-icon>
                     </mat-chip>
                 </mat-chip-listbox>
             </div>
@@ -35,18 +33,32 @@
                 <mat-chip-listbox>
                     <mat-chip *ngFor="let keyword of freeKeywords">
                         {{ keyword.label }}
-                        <mat-icon matChipRemove>cancel</mat-icon>
                     </mat-chip>
                 </mat-chip-listbox>
             </div>
 
             @if (!isLoading) {
                 <div>
-                    Test
+                    Gemet New
                     <mat-chip-listbox>
                         <mat-chip *ngFor="let keyword of gemetKeywordsNew">
                             {{ keyword.label }}
-                            <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                    </mat-chip-listbox>
+                </div>
+                <div>
+                    Umthes New
+                    <mat-chip-listbox>
+                        <mat-chip *ngFor="let keyword of umthesKeywordsNew">
+                            {{ keyword.label }}
+                        </mat-chip>
+                    </mat-chip-listbox>
+                </div>
+                <div>
+                    Free New
+                    <mat-chip-listbox>
+                        <mat-chip *ngFor="let keyword of freeKeywordsNew">
+                            {{ keyword.label }}
                         </mat-chip>
                     </mat-chip-listbox>
                 </div>
@@ -56,27 +68,6 @@
                     diameter="40"
                 ></mat-spinner>
             }
-
-            <!--            <mat-chip-list>-->
-            <!--                <mat-chip-->
-            <!--                    *ngFor="let option of to.options"-->
-            <!--                    [selectable]="to.selectable"-->
-            <!--                    [removable]="to.removable"-->
-            <!--                    (removed)="remove(option)"-->
-            <!--                >-->
-            <!--                    {{ option.label }}-->
-            <!--                    <mat-icon matChipRemove *ngIf="to.removable"-->
-            <!--                        >cancel</mat-icon-->
-            <!--                    >-->
-            <!--                </mat-chip>-->
-            <!--                <input-->
-            <!--                    placeholder="{{ to.placeholder }}"-->
-            <!--                    [formControl]="formControl"-->
-            <!--                    [matChipInputFor]="chipList"-->
-            <!--                    [matChipInputAddOnBlur]="true"-->
-            <!--                    (matChipInputTokenEnd)="add($event)"-->
-            <!--                />-->
-            <!--            </mat-chip-list>-->
         </mat-dialog-content>
     } @else {
         <mat-spinner class="content-spinner" diameter="40"></mat-spinner>
@@ -90,7 +81,7 @@
         <button
             color="primary"
             mat-flat-button
-            [disabled]="false"
+            [disabled]="isLoading"
             (click)="({})"
         >
             Übernehmen
