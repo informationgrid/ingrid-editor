@@ -19,7 +19,6 @@
  */
 import { IgeDocument } from "../../models/ige-document";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { SelectOptionUi } from "../codelist/codelist.service";
 
 export type AddressType = "person" | "organization";
 
@@ -62,7 +61,7 @@ export interface Doctype {
   /**
    *
    */
-  fieldsMap: SelectOptionUi[];
+  // fieldsMap: SelectOptionUi[];
 
   cleanFields: FormlyFieldConfig[];
 

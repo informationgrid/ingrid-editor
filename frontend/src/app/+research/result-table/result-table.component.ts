@@ -31,7 +31,10 @@ import { ResearchResponse } from "../research.service";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
 import { MatPaginator } from "@angular/material/paginator";
-import { SelectOptionUi } from "../../services/codelist/codelist.service";
+import {
+  SelectOption,
+  SelectOptionUi,
+} from "../../services/codelist/codelist.service";
 import { ProfileService } from "../../services/profile.service";
 import { ProfileQuery } from "../../store/profile/profile.query";
 import { IgeDocument } from "../../models/ige-document";
@@ -79,7 +82,11 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     "_contentModified",
     "settings",
   ];
-  columnsMap: SelectOptionUi[];
+  columnsMap: SelectOptionUi[] = [
+    new SelectOption("_type", "Typ"),
+    new SelectOption("title", "Titel"),
+    new SelectOption("_contentModified", "Aktualität"),
+  ];
 
   totalHits = 0;
   profileIconsMap: {};
@@ -95,7 +102,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.profileQuery.selectLoading().subscribe((isLoading) => {
+    /*this.profileQuery.selectLoading().subscribe((isLoading) => {
       if (isLoading) return;
 
       let profiles = this.profileService.getProfiles();
@@ -104,7 +111,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
         return acc;
       }, {});
       this.columnsMap = profiles[0].fieldsMap;
-    });
+    });*/
   }
 
   ngAfterViewInit(): void {

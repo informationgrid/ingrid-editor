@@ -82,7 +82,8 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   addressType: AddressType;
 
-  fieldsMap: SelectOptionUi[] = [];
+  // TODO AW: fieldsMap still used or only intended to have a choice for research-table in the future?
+  // fieldsMap: SelectOptionUi[] = [];
   fieldWithCodelistMap: Map<string, string> = new Map<string, string>();
   cleanFields: FormlyFieldConfig[];
 
@@ -119,7 +120,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     this.hasOptionalFields = this.hasOptionals(this.fields);
     this.addCodelistDefaultValues(this.fields);
     if (this.helpIds.length > 0) this.addContextHelp(this.fields);
-    this.getFieldMap(this.fields);
+    // this.getFieldMap(this.fields);
 
     this.cleanFields = JSON.parse(
       JSON.stringify(this.fields, this.removeObservables),
@@ -174,6 +175,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
     });
   }
 
+  /*
   private getFieldMap(fields: FormlyFieldConfig[]) {
     fields.forEach((field) => {
       let fieldKey = <string>field.key;
@@ -191,6 +193,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       }
     });
   }
+*/
 
   private addCodelistDefaultValues(fields: FormlyFieldConfig[]) {
     fields.forEach((field) => {
