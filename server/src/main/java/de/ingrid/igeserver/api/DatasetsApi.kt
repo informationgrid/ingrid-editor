@@ -53,7 +53,7 @@ interface DatasetsApi {
         principal: Principal,
         @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: @Valid JsonNode,
         @Parameter(description = "The type of the document", required = true) @RequestParam type: @Valid String,
-        @Parameter(description = "The ID of the parent", required = false) @RequestParam parent: @Valid Int?,
+        @Parameter(description = "The ID of the parent", required = false) @RequestParam parentId: @Valid Int?,
         @Parameter(description = "Is this an address document") @RequestParam(required = false) address: @Valid Boolean,
         @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(
             value = "publish",

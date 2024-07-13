@@ -91,7 +91,7 @@ export class ReferencedDocumentsTypeComponent
       this.currentUuid = this.formStateService.metadata().uuid;
       this.docs = [];
       this.firstLoaded = true;
-      this.searchReferences(this.currentUuid);
+      this.searchReferences(this.currentUuid).subscribe();
     });
   }
 
