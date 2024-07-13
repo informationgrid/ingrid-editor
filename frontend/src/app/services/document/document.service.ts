@@ -326,7 +326,13 @@ export class DocumentService {
 
     if (saveOptions.noVisualUpdates) {
       return this.dataService
-        .save(saveOptions.id, saveOptions.version, doc, saveOptions.isAddress)
+        .save(
+          saveOptions.id,
+          saveOptions.version,
+          saveOptions.type,
+          doc,
+          saveOptions.isAddress,
+        )
         .pipe(
           // map((data) => this.mapDocumentWithMetadata(data)),
           tap((json) => {
@@ -341,7 +347,13 @@ export class DocumentService {
     }
 
     return this.dataService
-      .save(saveOptions.id, saveOptions.version, doc, saveOptions.isAddress)
+      .save(
+        saveOptions.id,
+        saveOptions.version,
+        saveOptions.type,
+        doc,
+        saveOptions.isAddress,
+      )
       .pipe(
         // map((data) => this.mapDocumentWithMetadata(data)),
         tap(() =>
@@ -1153,6 +1165,7 @@ export class SaveOptions {
   data: IgeDocument;
   id: number;
   version: number;
+  type?: string;
   isNewDoc?: boolean;
   isAddress?: boolean;
   path?: number[];
@@ -1161,6 +1174,7 @@ export class SaveOptions {
 
   static createNewDocument(
     data: IgeDocument,
+    type: string,
     isAddress: boolean,
     pathIds: number[],
     skipFormUpdate: boolean = false,
@@ -1168,6 +1182,7 @@ export class SaveOptions {
     return {
       id: null,
       version: null,
+      type: type,
       data: data,
       isNewDoc: true,
       isAddress: isAddress,

@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
@@ -372,20 +371,6 @@ class DocumentService(
         val postWrapper = runPostUpdatePipes(docType, catalogId, newDocument, newWrapper, filterContext, publish)
 
         return DocumentData(postWrapper, newDocument)
-    }
-
-    // TODO: refactor since removeInternalFields does almost the same, find out difference and why
-    fun removeInternalFieldsForImport(json: ObjectNode) {
-        listOf(
-//            FIELD_ID,
-            FIELD_VERSION,
-//            FIELD_CREATED,
-//            FIELD_MODIFIED,
-            FIELD_STATE,
-            FIELD_HAS_CHILDREN,
-            "hasWritePermission",
-            "hasOnlySubtreeWritePermission"
-        ).forEach { json.remove(it) }
     }
 
     fun publishPendingDocuments(principal: Principal, catalogId: String) {

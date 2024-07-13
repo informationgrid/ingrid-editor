@@ -250,7 +250,14 @@ export class GetCapabilitiesService {
       if (!resource.exists) {
         const doc = await this.mapCoupledResource(resource, parent);
         const savedDoc = this.documentService.save(
-          SaveOptions.createNewDocument(doc, false, null, true),
+          // TODO AW: also profide uuid and parent
+          SaveOptions.createNewDocument(
+            doc,
+            "InGridGeoDataset",
+            null,
+            null,
+            true,
+          ),
         );
         const newDoc = await lastValueFrom(savedDoc);
         return <DocumentReference>{
@@ -364,7 +371,7 @@ export class GetCapabilitiesService {
     }
 
     const result = this.documentService.save(
-      SaveOptions.createNewDocument(address, true, null, true),
+      SaveOptions.createNewDocument(address, type, true, null, true),
     );
     const newAddress = await lastValueFrom(result);
     return [{ ref: newAddress, type: { key: "1" } }];

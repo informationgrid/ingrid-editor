@@ -279,7 +279,12 @@ export class CreateNodeComponent implements OnInit {
 
     return firstValueFrom(
       this.documentService.save(
-        SaveOptions.createNewDocument(data, this.forAddress, pathIds),
+        SaveOptions.createNewDocument(
+          data,
+          this.docTypeChoice,
+          this.forAddress,
+          pathIds,
+        ),
       ),
     );
   }

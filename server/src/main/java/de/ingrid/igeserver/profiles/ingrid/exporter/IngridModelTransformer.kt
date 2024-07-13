@@ -568,7 +568,7 @@ open class IngridModelTransformer(
         it.identifier
     } else {
         // TODO: when document not yet published (ISO-view of draft) then do not generate operatesOn-element (#6241)
-        val identifier = getLastPublishedDocument(it.uuid!!)?.data?.get("identifier")?.asText() ?: it.uuid
+        val identifier = getLastPublishedDocument(it.uuid!!)?.data?.getString("identifier") ?: it.uuid
         val containsNamespace = identifier.contains("://")
         if (containsNamespace) {
             identifier
@@ -588,11 +588,11 @@ open class IngridModelTransformer(
             documentService.getIncomingReferences(doc, catalogIdentifier)
                 .map { documentService.getLastPublishedDocument(catalogIdentifier, it, resolveLinks = false) }
                 .filter {
-                    it.type == "InGridGeoService" && it.data.get("service").get("type").get("key").asText() == "2"
+                    it.type == "InGridGeoService" && it.data.getString("service.type.key") == "2"
                 }
                 .mapNotNull {
                     it.data.get("service").get("operations")
-                        .firstOrNull { isCapabilitiesEntry(it) }?.get("methodCall")?.asText()
+                        .firstOrNull { isCapabilitiesEntry(it) }?.getString("methodCall")
                 }
         } else emptyList()
 
@@ -755,7 +755,7 @@ open class IngridModelTransformer(
     }
 
     private fun getCitationUrlFromDoc(doc: Document): String {
-        val identifier = doc.data.get("identifier")?.asText()
+        val identifier = doc.data.getString("identifier")
             ?: throw ServerException.withReason("Identifier of coupled document not found: ${doc.uuid}")
         return if (identifier.indexOf("/", 1) == -1) {
             namespace.suffixIfNot("/") + identifier
@@ -827,7 +827,7 @@ open class IngridModelTransformer(
             uuid = uuid,
             objectName = doc.title ?: "???",
             objectType = mapDocumentType(doc.type),
-            description = doc.data.get("description")?.asText(),
+            description = doc.data.getString("description"),
             graphicOverview = generateBrowseGraphics(
                 listOfNotNull(convertToGraphicOverview(doc.data.get("graphicOverviews")?.get(0))), uuid
             ).firstOrNull()?.uri,
@@ -887,7 +887,7 @@ open class IngridModelTransformer(
         if (asCoupledResource != null) return KeyValue("3600", null)
 
         val asReference = data.get("references")
-            ?.find { it.get("uuidRef")?.asText() == this.model.uuid }
+            ?.find { it.getString("uuidRef") == this.model.uuid }
 
         return if (asReference != null) {
             createKeyValueFromJsonNode(asReference.get("type"))

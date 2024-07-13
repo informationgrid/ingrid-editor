@@ -171,7 +171,6 @@ class PostMigrationTask(
                     .putNull("_parent")
                     .put("title", organization)
                     .put("organization", organization)
-//              TODO AW:  (data as ObjectNode).put(FIELD_PARENT, parentId)
                 val document = convertToDocument(organizationData)
                 val organizationDoc = documentService.createDocument(
                     auth as Principal,
@@ -197,7 +196,6 @@ class PostMigrationTask(
             .put("_type", "FOLDER")
             .putNull("_parent")
             .put("title", "Freie Adressen")
-        //              TODO AW:  (data as ObjectNode).put(FIELD_PARENT, parentId)
         val document = convertToDocument(folderData)
         val folderDoc =
             documentService.createDocument(auth as Principal, catalogIdentifier, document, null, true)
@@ -215,7 +213,6 @@ class PostMigrationTask(
             .put("_type", "FOLDER")
             .put("title", title)
 
-        //              TODO AW:  (data as ObjectNode).put(FIELD_PARENT, parentId)
         val document = convertToDocument(folderData)
         val folderDoc =
             documentService.createDocument(
@@ -448,7 +445,6 @@ class PostMigrationTask(
                     .put("_type", "FOLDER")
                     .put("_parent", parentId.toString())
                     .put("title", title)
-                //              TODO AW:  (data as ObjectNode).put(FIELD_PARENT, parentId)
                 val document = convertToDocument(folderData)
                 val folderDoc =
                     documentService.createDocument(auth as Principal, catalogIdentifier, document, parentId)

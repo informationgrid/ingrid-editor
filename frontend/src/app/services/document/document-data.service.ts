@@ -113,6 +113,7 @@ export class DocumentDataService {
   save(
     id: number,
     version: number,
+    type: string,
     data: IgeDocument,
     isAddress?: boolean,
   ): Observable<DocumentWithMetadata> {
@@ -127,7 +128,7 @@ export class DocumentDataService {
     } else {
       return this.http
         .post<DocumentWithMetadata>(
-          `${this.configuration.backendUrl}datasets?type=${data._type}${params}`,
+          `${this.configuration.backendUrl}datasets?type=${type}${params}`,
           data,
         )
         .pipe(map((data) => this.mapDocumentWithMetadata(data)));

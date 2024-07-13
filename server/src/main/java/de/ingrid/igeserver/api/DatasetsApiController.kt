@@ -216,10 +216,6 @@ class DatasetsApiController(
             validateCopyOperation(catalogId, id, options.destId)
         }
 
-//        val metadata = prepareDocumentWithMetadata(DocumentData(wrapper, doc))
-        // TODO AW: is there another way?
-//        metadata.document.put(FIELD_PARENT, options.destId)
-
         // clear UUID to create a new one during copy
         documentService.detachDocumentFromDatabase(doc)
         doc.uuid = ""
