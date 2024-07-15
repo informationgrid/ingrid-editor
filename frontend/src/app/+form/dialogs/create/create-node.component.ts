@@ -19,9 +19,11 @@
  */
 import {
   Component,
+  effect,
   ElementRef,
   Inject,
   OnInit,
+  signal,
   ViewChild,
 } from "@angular/core";
 import {
@@ -43,7 +45,7 @@ import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
-import { firstValueFrom, Subject } from "rxjs";
+import { firstValueFrom } from "rxjs";
 import { TranslocoService } from "@ngneat/transloco";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 
@@ -74,8 +76,7 @@ export class CreateNodeComponent implements OnInit {
   alreadySubmitted = false;
 
   private query: TreeQuery | AddressTreeQuery;
-  docTypeChoice: string;
-  docTypeChanged$ = new Subject<void>();
+  docTypeChoice = signal<string>(null);
 
   constructor(
     private config: ConfigService,
@@ -100,6 +101,12 @@ export class CreateNodeComponent implements OnInit {
         this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
       );
     }
+
+    effect(() => {
+      // update path depending on selected document type
+      this.docTypeChoice();
+      this.mapPath(this.path);
+    });
   }
 
   private _path: ShortTreeNode[] = [];
@@ -127,22 +134,14 @@ export class CreateNodeComponent implements OnInit {
       this.initializeForAddresses();
     }
 
-    this.formGroup.valueChanges.pipe(untilDestroyed(this)).subscribe((value) =>
-      setTimeout(() => {
-        this.docTypeChoice = value.choice;
-        this.docTypeChanged$.next();
-      }, 0),
-    );
+    this.formGroup.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((value) => this.docTypeChoice.set(value.choice));
 
     // set initial path to current position
     this.query.breadcrumb$
       .pipe(untilDestroyed(this))
       .subscribe((path) => this.mapPath(path));
-
-    // update path depending on selected document type
-    this.docTypeChanged$
-      .pipe(untilDestroyed(this))
-      .subscribe(() => this.mapPath(this.path));
   }
 
   async handleCreate() {
@@ -245,10 +244,7 @@ export class CreateNodeComponent implements OnInit {
   }
 
   private async handleAddressCreate() {
-    const newAddress = new IgeDocument(
-      this.formGroup.get("choice").value,
-      this.parent,
-    );
+    const newAddress = new IgeDocument();
 
     const organization = this.formGroup.get("organization").value;
     if (organization) {
@@ -258,30 +254,37 @@ export class CreateNodeComponent implements OnInit {
       newAddress.lastName = this.formGroup.get("lastName").value;
     }
     newAddress.title = this.documentService.createAddressTitle(newAddress);
-    const savedDoc = await this.saveForm(newAddress);
+    const savedDoc = await this.saveForm(
+      newAddress,
+      this.docTypeChoice(),
+      this.parent,
+    );
 
     this.navigateAfterSave(savedDoc.metadata.uuid);
   }
 
   private async handleDocumentCreate() {
-    const newDocument = new IgeDocument(
-      this.formGroup.get("choice").value,
+    const newDocument: any = {
+      title: this.formGroup.get("title").value,
+    };
+    const savedDoc = await this.saveForm(
+      newDocument,
+      this.docTypeChoice(),
       this.parent,
     );
-    newDocument.title = this.formGroup.get("title").value;
-    const savedDoc = await this.saveForm(newDocument);
 
     this.navigateAfterSave(savedDoc.metadata.uuid);
   }
 
-  private saveForm(data: IgeDocument) {
+  private saveForm(data: IgeDocument, type: string, parent: number) {
     const pathIds = this.path.map((item) => item.id);
 
     return firstValueFrom(
       this.documentService.save(
         SaveOptions.createNewDocument(
           data,
-          this.docTypeChoice,
+          type,
+          parent,
           this.forAddress,
           pathIds,
         ),

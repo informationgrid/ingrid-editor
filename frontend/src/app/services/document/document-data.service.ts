@@ -25,6 +25,7 @@ import { Injectable } from "@angular/core";
 import { PathResponse } from "../../models/path-response";
 import { TagRequest } from "../../models/tag-request.model";
 import { map } from "rxjs/operators";
+import { SaveOptions } from "./document.service";
 
 @Injectable({
   providedIn: "root",
@@ -63,9 +64,7 @@ export class DocumentDataService {
     }
   }
 
-  private mapDocumentWithMetadata(
-    data: DocumentWithMetadata,
-  ): DocumentWithMetadata {
+  mapDocumentWithMetadata(data: DocumentWithMetadata): DocumentWithMetadata {
     data.documentWithMetadata = {
       ...data.document,
       _id: data.metadata.wrapperId,
@@ -78,8 +77,8 @@ export class DocumentDataService {
       _responsibleUser: data.metadata.responsibleUser,
       _contentModified: data.metadata.contentModified,
       _createdBy: data.metadata.createdBy,
-      _creatorExists: data.metadata.creatorExists,
-      _modifierExists: data.metadata.modifierExists,
+      _creatorExists: data.metadata.createdUserExists,
+      _modifierExists: data.metadata.modifiedUserExists,
       _contentModifiedBy: data.metadata.contentModifiedBy,
       _hasChildren: data.metadata.hasChildren,
       _pendingDate: data.metadata.pendingDate,
@@ -95,12 +94,14 @@ export class DocumentDataService {
 
   loadPublished(id: string, useUuid = false): Observable<DocumentWithMetadata> {
     if (useUuid) {
-      return this.http.get<DocumentWithMetadata>(
-        this.configuration.backendUrl +
-          "datasetsByUuid/" +
-          id +
-          "?publish=true",
-      );
+      return this.http
+        .get<DocumentWithMetadata>(
+          this.configuration.backendUrl +
+            "datasetsByUuid/" +
+            id +
+            "?publish=true",
+        )
+        .pipe(map((data) => this.mapDocumentWithMetadata(data)));
     } else {
       return this.http
         .get<DocumentWithMetadata>(
@@ -111,24 +112,22 @@ export class DocumentDataService {
   }
 
   save(
-    id: number,
-    version: number,
-    type: string,
     data: IgeDocument,
-    isAddress?: boolean,
+    options: SaveOptions,
   ): Observable<DocumentWithMetadata> {
-    const params = isAddress ? "&address=true" : "";
-    if (id != null) {
+    let params = options.isAddress ? "&address=true" : "";
+    params += options.parentId != null ? "&parentId=" + options.parentId : "";
+    if (options.id != null) {
       return this.http
         .put<DocumentWithMetadata>(
-          `${this.configuration.backendUrl}datasets/${id}?version=${version}${params}`,
+          `${this.configuration.backendUrl}datasets/${options.id}?version=${options.version}${params}`,
           data,
         )
         .pipe(map((data) => this.mapDocumentWithMetadata(data)));
     } else {
       return this.http
         .post<DocumentWithMetadata>(
-          `${this.configuration.backendUrl}datasets?type=${type}${params}`,
+          `${this.configuration.backendUrl}datasets?type=${options.type}${params}`,
           data,
         )
         .pipe(map((data) => this.mapDocumentWithMetadata(data)));

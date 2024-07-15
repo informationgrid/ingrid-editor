@@ -55,7 +55,7 @@
                     [disableRoot]="!isAdmin"
                     [forAddress]="forAddress"
                     [initialSelectedId]="jumpedTreeNodeId"
-                    [typeToInsert]="docTypeChoice"
+                    [typeToInsert]="docTypeChoice()"
                     (choice)="updateParent($event)"
                 ></ige-destination-selection>
             </mat-tab>

@@ -24,8 +24,10 @@ import { MatDialog } from "@angular/material/dialog";
 import { GetCapabilitiesDialogComponent } from "../../../../app/formly/types/update-get-capabilities/get-capabilities-dialog/get-capabilities-dialog.component";
 import { filter } from "rxjs/operators";
 import { GetCapabilitiesService } from "../../../../app/formly/types/update-get-capabilities/get-capabilities-dialog/get-capabilities.service";
-import { DocumentService } from "../../../../app/services/document/document.service";
-import { IgeDocument } from "../../../../app/models/ige-document";
+import {
+  DocumentService,
+  SaveOptions,
+} from "../../../../app/services/document/document.service";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -125,9 +127,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
         : doc._type === "FOLDER"
           ? doc.id
           : this.treeQuery.getFirstParentFolder(doc.id + "")?.id;
-    const newDoc = new IgeDocument("InGridGeoService", +parentFolder);
-    const model: IgeDocument = {
-      ...newDoc,
+    const model: any = {
       service: {},
       resource: {},
       spatial: {},
@@ -137,12 +137,15 @@ export class GetCapabilititesWizardPlugin extends Plugin {
     };
     await this.getCapService.applyChangesToModel(model, result);
     this.documentService
-      .save({
-        id: null,
-        version: null,
-        data: model,
-        isNewDoc: true,
-      })
+      .save(
+        SaveOptions.createNewDocument(
+          model,
+          "InGridGeoService",
+          +parentFolder,
+          false,
+          null,
+        ),
+      )
       .subscribe((result) => {
         this.router.navigate([
           `${ConfigService.catalogId}/form`,

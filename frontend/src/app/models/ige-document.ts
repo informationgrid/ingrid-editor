@@ -38,11 +38,15 @@ export class Metadata {
   // the hierarchical parent of this document
   parentId: number;
 
+  parentIsFolder: boolean;
+
   // the creation date
   created?: string;
 
   // the database object modification date
   modified?: string;
+
+  modifiedBy?: string;
 
   metadataDate?: string;
 
@@ -51,17 +55,17 @@ export class Metadata {
   // the content modification by an actual user date
   contentModified?: string;
 
-  // the name of the creator
+  // the name of the last modifier
+  contentModifiedBy?: string;
+
+  // the name of the creator^^
   createdBy?: string;
 
   // check if creator of document is still among the users
-  creatorExists?: boolean;
+  createdUserExists?: boolean;
 
   // check if modifier of document is still among the users
-  modifierExists?: boolean;
-
-  // the name of the last modifier
-  contentModifiedBy?: string;
+  modifiedUserExists?: boolean;
 
   // shows if the document has child documents
   hasChildren?: boolean;
@@ -133,9 +137,4 @@ export class IgeDocument {
 
   // profile specific fields
   [x: string]: any;
-
-  constructor(type: string, parent?: number) {
-    // this._type = type;
-    // this._parent = parent ? parent : null;
-  }
 }

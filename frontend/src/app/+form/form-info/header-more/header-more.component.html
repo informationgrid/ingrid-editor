@@ -1,6 +1,6 @@
 @if (showMore) {
     <div [@slideDown] class="more-info">
-        @if (model._type !== "FOLDER" && !hideFields.state) {
+        @if (metadata().docType !== "FOLDER" && !hideFields.state) {
             <div class="flex-row">
                 <div>Status</div>
                 <div
@@ -8,7 +8,7 @@
                     data-cy="header-state"
                     *transloco="let t; read: 'docState'"
                 >
-                    {{ t(model._state) }}
+                    {{ t(metadata().state) }}
                 </div>
             </div>
         }
@@ -16,27 +16,28 @@
             <div class="flex-row">
                 <div>Typ</div>
                 <div data-cy="header-type" *transloco="let t; read: 'docType'">
-                    {{ t(model._type) }}
+                    {{ t(metadata().docType) }}
                 </div>
             </div>
         }
         <div class="flex-row padding-below">
             <div>ID</div>
-            <div data-cy="header-id">{{ model._uuid }}</div>
+            <div data-cy="header-id">{{ metadata().uuid }}</div>
         </div>
         @if (!hideFields.created) {
             <div class="flex-row">
                 <div>Erstellt am</div>
                 <div data-cy="header-created-on">
-                    <span [matTooltip]="model._created | date: 'long'">{{
-                        model._created | date: "dd.MM.yyyy"
+                    <span [matTooltip]="metadata().created | date: 'long'">{{
+                        metadata().created | date: "dd.MM.yyyy"
                     }}</span>
-                    @if (model._createdBy) {
+                    @if (metadata().createdBy) {
                         <span>
                             von
                             {{
-                                model._createdBy +
-                                    (!model._creatorExists && !this.migrated
+                                metadata().createdBy +
+                                    (!metadata().createdUserExists &&
+                                    !this.migrated
                                         ? " (ausgeschieden)"
                                         : "")
                             }}</span
@@ -50,15 +51,18 @@
                 <div>Geändert am</div>
                 <div data-cy="header-modified-on">
                     <span
-                        [matTooltip]="model._contentModified | date: 'long'"
-                        >{{ model._contentModified | date: "dd.MM.yyyy" }}</span
+                        [matTooltip]="metadata().contentModified | date: 'long'"
+                        >{{
+                            metadata().contentModified | date: "dd.MM.yyyy"
+                        }}</span
                     >
-                    @if (model._contentModifiedBy) {
+                    @if (metadata().contentModifiedBy) {
                         <span>
                             von
                             {{
-                                model._contentModifiedBy +
-                                    (!model._modifierExists && !this.migrated
+                                metadata().contentModifiedBy +
+                                    (!metadata().modifiedUserExists &&
+                                    !this.migrated
                                         ? " (ausgeschieden)"
                                         : "")
                             }}
@@ -67,15 +71,15 @@
                 </div>
             </div>
         }
-        @if (!hideFields._responsibleUser && model._responsibleUser) {
+        @if (!hideFields._responsibleUser && metadata().responsibleUser) {
             <div class="flex-row">
                 <div>Verantwortlich</div>
                 <div data-cy="header-responsible-user">
-                    {{ model._responsibleUser | fullName | async }}
+                    {{ metadata().responsibleUser | fullName | async }}
                 </div>
             </div>
         }
-        @if (!hideFields._metadataDate && model._metadataDate) {
+        @if (!hideFields._metadataDate && metadata().metadataDate) {
             <div class="flex-row hasContextHelp">
                 <ige-form-label
                     class="flex-row"
@@ -85,10 +89,10 @@
                     Metadaten-Datum
                 </ige-form-label>
                 <span
-                    [matTooltip]="model._metadataDate | date: 'long'"
+                    [matTooltip]="metadata().metadataDate | date: 'long'"
                     data-cy="header-metadata-date"
                 >
-                    {{ model._metadataDate | date: "dd.MM.yyyy" }}
+                    {{ metadata().metadataDate | date: "dd.MM.yyyy" }}
                     (veröffentlichte Version)
                 </span>
             </div>

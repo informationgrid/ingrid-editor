@@ -324,50 +324,21 @@ export class DocumentService {
   save(saveOptions: SaveOptions): Observable<DocumentWithMetadata> {
     const doc = this.preSaveActions(saveOptions.data, saveOptions.isAddress);
 
-    if (saveOptions.noVisualUpdates) {
-      return this.dataService
-        .save(
-          saveOptions.id,
-          saveOptions.version,
-          saveOptions.type,
-          doc,
-          saveOptions.isAddress,
-        )
-        .pipe(
-          // map((data) => this.mapDocumentWithMetadata(data)),
-          tap((json) => {
-            const postSaveOptions: PostSaveOptions = {
-              ...saveOptions,
-              dataWithMetadata: json,
-            };
-            this.postSaveActions(postSaveOptions);
-          }),
-          finalize(() => this.documentOperationFinished$.next(true)),
-        );
-    }
-
-    return this.dataService
-      .save(
-        saveOptions.id,
-        saveOptions.version,
-        saveOptions.type,
-        doc,
-        saveOptions.isAddress,
-      )
-      .pipe(
-        // map((data) => this.mapDocumentWithMetadata(data)),
-        tap(() =>
-          this.messageService.sendInfo("Ihre Eingabe wurde gespeichert"),
-        ),
-        tap((json) => {
-          const postSaveOptions: PostSaveOptions = {
-            ...saveOptions,
-            dataWithMetadata: json,
-          };
-          this.postSaveActions(postSaveOptions);
-        }),
-        finalize(() => this.documentOperationFinished$.next(true)),
-      );
+    return this.dataService.save(doc, saveOptions).pipe(
+      tap(() => {
+        if (!saveOptions.noVisualUpdates) {
+          this.messageService.sendInfo("Ihre Eingabe wurde gespeichert");
+        }
+      }),
+      tap((json) => {
+        const postSaveOptions: PostSaveOptions = {
+          ...saveOptions,
+          dataWithMetadata: json,
+        };
+        this.postSaveActions(postSaveOptions);
+      }),
+      finalize(() => this.documentOperationFinished$.next(true)),
+    );
   }
 
   updateTags(id: number, data: TagRequest, forAddress: boolean) {
@@ -513,7 +484,10 @@ export class DocumentService {
   unpublish(id: number, forAddress: boolean): Observable<any> {
     const store = forAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.unpublish(id).pipe(
-      map((data) => this.mapDocumentWithMetadata(data)),
+      map(
+        (data) =>
+          this.dataService.mapDocumentWithMetadata(data).documentWithMetadata,
+      ),
       catchError((error) => {
         return this.handleUnpublishError(error, id);
       }),
@@ -548,7 +522,10 @@ export class DocumentService {
           return this.load(id);
         }
       }),
-      map((data) => this.mapDocumentWithMetadata(data)),
+      map(
+        (data) =>
+          this.dataService.mapDocumentWithMetadata(data).documentWithMetadata,
+      ),
       map((json) => this.mapToDocumentAbstracts([json], json._parent)),
       tap((json) =>
         store.update({
@@ -1132,33 +1109,6 @@ export class DocumentService {
       null,
     );
   }
-
-  private mapDocumentWithMetadata(data: DocumentWithMetadata): IgeDocument {
-    return {
-      ...data.document,
-      _id: data.metadata.wrapperId,
-      _uuid: data.metadata.uuid,
-      _type: data.metadata.docType,
-      _parent: data.metadata.parentId,
-      _created: data.metadata.created,
-      _modified: data.metadata.modified,
-      _metadataDate: data.metadata.metadataDate,
-      _responsibleUser: data.metadata.responsibleUser,
-      _contentModified: data.metadata.contentModified,
-      _createdBy: data.metadata.createdBy,
-      _creatorExists: data.metadata.creatorExists,
-      _modifierExists: data.metadata.modifierExists,
-      _contentModifiedBy: data.metadata.contentModifiedBy,
-      _hasChildren: data.metadata.hasChildren,
-      _pendingDate: data.metadata.pendingDate,
-      _tags: data.metadata.tags,
-      _version: data.metadata.version,
-      _state: data.metadata.state,
-      hasWritePermission: data.metadata.hasWritePermission,
-      hasOnlySubtreeWritePermission:
-        data.metadata.hasOnlySubtreeWritePermission,
-    };
-  }
 }
 
 export class SaveOptions {
@@ -1166,8 +1116,10 @@ export class SaveOptions {
   id: number;
   version: number;
   type?: string;
+  parentId?: number;
   isNewDoc?: boolean;
   isAddress?: boolean;
+  uuid?: string;
   path?: number[];
   noVisualUpdates?: boolean;
   dontUpdateForm?: boolean;
@@ -1175,17 +1127,21 @@ export class SaveOptions {
   static createNewDocument(
     data: IgeDocument,
     type: string,
+    parentId: number,
     isAddress: boolean,
-    pathIds: number[],
+    pathIds: number[] = null,
     skipFormUpdate: boolean = false,
+    uuid: string = null,
   ) {
     return {
       id: null,
       version: null,
       type: type,
+      parentId: parentId,
       data: data,
       isNewDoc: true,
       isAddress: isAddress,
+      uuid: uuid,
       path: pathIds,
       noVisualUpdates: skipFormUpdate,
       dontUpdateForm: skipFormUpdate,

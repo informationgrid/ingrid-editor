@@ -131,7 +131,7 @@ export class SavePlugin extends SaveBase {
         })
         .pipe(
           catchError((error) =>
-            this.handleError(error, formData, this.forAddress, "SAVE"),
+            this.handleError(error, metadata, this.forAddress, "SAVE"),
           ),
           finalize(() =>
             this.formToolbarService.setButtonState("toolBtnSave", true),

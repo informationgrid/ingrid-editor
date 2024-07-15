@@ -254,6 +254,7 @@ export class GetCapabilitiesService {
           SaveOptions.createNewDocument(
             doc,
             "InGridGeoDataset",
+            parent,
             null,
             null,
             true,
@@ -345,11 +346,7 @@ export class GetCapabilitiesService {
           };
     const country = !value.country?.key ? null : { key: value.country.key };
 
-    const address: IgeDocument = {
-      _uuid: value.uuid,
-      _type: type,
-      _parent: addressParent,
-      _state: value._state,
+    const address: any = {
       firstName: value.firstName,
       lastName: value.lastName,
       organization: value.organization,
@@ -371,7 +368,15 @@ export class GetCapabilitiesService {
     }
 
     const result = this.documentService.save(
-      SaveOptions.createNewDocument(address, type, true, null, true),
+      SaveOptions.createNewDocument(
+        address,
+        type,
+        addressParent,
+        true,
+        null,
+        true,
+        value.uuid,
+      ),
     );
     const newAddress = await lastValueFrom(result);
     return [{ ref: newAddress, type: { key: "1" } }];
