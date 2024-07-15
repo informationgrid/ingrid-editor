@@ -219,7 +219,7 @@ export class CreateNodeComponent implements OnInit {
         hasWritePermission: entity.hasWritePermission,
         hasOnlySubtreeWritePermission: entity.hasOnlySubtreeWritePermission,
       },
-      this.docTypeChoice,
+      this.docTypeChoice(),
     );
     if (cannotAddBelow) {
       return this.getPathAllowedToAdd(path);

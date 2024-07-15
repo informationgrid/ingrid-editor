@@ -322,7 +322,11 @@ export class DocumentService {
   }
 
   save(saveOptions: SaveOptions): Observable<DocumentWithMetadata> {
-    const doc = this.preSaveActions(saveOptions.data, saveOptions.isAddress);
+    const doc = this.preSaveActions(
+      saveOptions.data,
+      saveOptions.type,
+      saveOptions.isAddress,
+    );
 
     return this.dataService.save(doc, saveOptions).pipe(
       tap(() => {
@@ -360,8 +364,12 @@ export class DocumentService {
     );
   }
 
-  private preSaveActions(data: IgeDocument, isAddress: boolean): IgeDocument {
-    if (isAddress && data._type !== "FOLDER") {
+  private preSaveActions(
+    data: IgeDocument,
+    docType: string,
+    isAddress: boolean,
+  ): IgeDocument {
+    if (isAddress && docType !== "FOLDER") {
       // recreate address title, as it can not be changed manually for addresses
       data.title = this.createAddressTitle(data);
     }
@@ -454,15 +462,15 @@ export class DocumentService {
   publish(
     id: number,
     version: number,
+    docType: string,
     data: IgeDocument,
     isAddress: boolean,
     publishDate: Date = null,
   ): Observable<any> {
-    const doc = this.preSaveActions(data, isAddress);
+    const doc = this.preSaveActions(data, docType, isAddress);
 
     return this.dataService.publish(id, version, doc, publishDate).pipe(
       // catchError((error) => this.handlePublishError(error, data, isAddress)),
-      // map((data) => this.mapDocumentWithMetadata(data)),
       filter((response) => response !== null && response !== undefined),
       tap(() => {
         if (!publishDate)

@@ -62,12 +62,19 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
         json: String,
         payload: PrePublishPayload
     ): String {
-        val extraFields = """
-            ,
+        // TODO AW: remove after separation of metadata is complete
+        val extraFields = if (json.contains("\"_type\"")) {
+            """,
+            "title": "${JsonEscape.escapeJson(payload.document.title)}",
+            "_uuid": "${JsonEscape.escapeJson(payload.document.uuid)}"
+        """.trimIndent()
+        } else {
+            """,
             "title": "${JsonEscape.escapeJson(payload.document.title)}",
             "_type": "${JsonEscape.escapeJson(payload.document.type)}",
             "_uuid": "${JsonEscape.escapeJson(payload.document.uuid)}"
         """.trimIndent()
+        }
         return json.substringBeforeLast("}") + extraFields + "}"
     }
 

@@ -293,6 +293,7 @@ export class PublishPlugin extends SaveBase {
       .publish(
         metadata.wrapperId,
         metadata.version,
+        metadata.docType,
         data,
         this.forAddress,
         delay,
