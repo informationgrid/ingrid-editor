@@ -48,6 +48,7 @@ import {
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { ValidationErrors } from "@angular/forms";
+import { FormStateService } from "../../../+form/form-state.service";
 
 @UntilDestroy()
 @Component({
@@ -78,6 +79,7 @@ export class TableTypeComponent
     private cdr: ChangeDetectorRef,
     public contextHelpService: ContextHelpService,
     public configService: ConfigService,
+    private formStateService: FormStateService,
   ) {
     super();
   }
@@ -381,7 +383,7 @@ export class TableTypeComponent
         this.props.columns[this.batchMode ? index - 1 : index].props;
       if (options.onClick) {
         options.onClick(
-          this.form.root.get("_uuid").value,
+          this.formStateService.metadata().uuid,
           element[uploadKey].uri,
           $event,
         );

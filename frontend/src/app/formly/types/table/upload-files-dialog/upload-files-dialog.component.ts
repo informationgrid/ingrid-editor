@@ -80,7 +80,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
       infoText?: String;
     },
   ) {
-    this.docUuid = formStateService.getForm().get("_uuid").value;
+    this.docUuid = formStateService.metadata().uuid;
     this.targetUrl = `${configService.getConfiguration().backendUrl}upload/${
       this.docUuid
     }`;

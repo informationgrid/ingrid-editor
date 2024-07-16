@@ -364,6 +364,8 @@ export class GetCapabilitiesService {
     };
 
     if (value.exists) {
+      // TODO AW: when addresses are only stored and loaded as references then we only need to set the uuid here as ref
+      address._uuid = value.uuid;
       return [{ ref: address, type: { key: "1" } }];
     }
 
@@ -379,7 +381,7 @@ export class GetCapabilitiesService {
       ),
     );
     const newAddress = await lastValueFrom(result);
-    return [{ ref: newAddress, type: { key: "1" } }];
+    return [{ ref: newAddress.documentWithMetadata, type: { key: "1" } }];
   }
 
   private mapTimeSpan(value: TimeReference): any {

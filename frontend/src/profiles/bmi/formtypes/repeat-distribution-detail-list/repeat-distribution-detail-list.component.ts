@@ -19,7 +19,6 @@
  */
 import { Component, OnInit } from "@angular/core";
 import {
-  FieldArrayType,
   FieldTypeConfig,
   FormlyFieldConfig,
   FormlyFieldProps,
@@ -51,6 +50,7 @@ import {
 import { filter } from "rxjs/operators";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
+import { FormStateService } from "../../../../app/+form/form-state.service";
 
 interface RepeatDistributionDetailListProps extends FormlyFieldProps {
   infoText: string;
@@ -90,7 +90,10 @@ export class RepeatDistributionDetailListComponent
   showMore = {};
   batchMode = false;
 
-  constructor(private dialog: MatDialog) {
+  constructor(
+    private dialog: MatDialog,
+    private formStateService: FormStateService,
+  ) {
     super();
   }
 
@@ -141,7 +144,7 @@ export class RepeatDistributionDetailListComponent
     return (
       this.field.props.backendUrl +
       "upload/" +
-      this.form.get("_uuid").value +
+      this.formStateService.metadata().uuid +
       "/" +
       uri
     );
@@ -259,7 +262,11 @@ export class RepeatDistributionDetailListComponent
     if (!element.asLink) {
       const options = this.props.fields[2].props;
       if (options.onClick) {
-        options.onClick(this.form.root.get("_uuid").value, element.uri, $event);
+        options.onClick(
+          this.formStateService.metadata().uuid,
+          element.uri,
+          $event,
+        );
       }
     }
   }

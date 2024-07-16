@@ -141,7 +141,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
         SaveOptions.createNewDocument(
           model,
           "InGridGeoService",
-          +parentFolder,
+          parentFolder ? +parentFolder : null,
           false,
           null,
         ),
