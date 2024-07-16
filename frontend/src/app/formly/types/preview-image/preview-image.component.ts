@@ -57,6 +57,7 @@ import { FormMessageService } from "../../../services/form-message.service";
 import { of } from "rxjs";
 import { REGEX_URL } from "../../input.validators";
 import { TranslocoService } from "@ngneat/transloco";
+import { FormStateService } from "../../../+form/form-state.service";
 
 @UntilDestroy()
 @Component({
@@ -82,6 +83,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private messageService = inject(FormMessageService);
   private translocoService = inject(TranslocoService);
+  private formStateService = inject(FormStateService);
 
   private linkFields: FormlyFieldConfig[] = [
     {
@@ -248,7 +250,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   }
 
   private updateTemporaryImageUrl(uri: string) {
-    const docUuid = this.formControl.root.value._uuid;
+    const docUuid = this.formStateService.metadata().uuid;
     return this.uploadService
       .getFile(docUuid, uri)
       .pipe(

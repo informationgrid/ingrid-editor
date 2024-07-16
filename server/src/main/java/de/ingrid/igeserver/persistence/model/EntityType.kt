@@ -27,6 +27,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.getRawJsonFromDocument
+import de.ingrid.igeserver.utils.getString
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -173,6 +174,7 @@ abstract class EntityType {
             ?: emptyList()
     }
 
+    // TODO AW: use function by all profiles
     fun replaceWithReferenceUuid(doc: Document, fieldId: String): MutableList<Document> {
         val addressDocs = mutableListOf<Document>()
 
@@ -183,7 +185,8 @@ abstract class EntityType {
             // TODO: improve import process so we don't need this
             if (addressJson is ObjectNode) {
                 val uuid = addressJson.path(FIELD_UUID).textValue()
-                val addressDoc = convertToDocument(addressJson)
+                val addressDoc = convertToDocument(addressJson, addressJson.getString(FIELD_DOCUMENT_TYPE), null, addressJson.getString(
+                    FIELD_UUID))
                 addressDocs.add(addressDoc)
                 (address as ObjectNode).put("ref", uuid)
             }

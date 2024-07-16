@@ -214,7 +214,7 @@ class ImportService(
         isLatest: Boolean = true,
         isDraftAndPublished: Boolean = false
     ): DocumentAnalysis {
-        val document = convertToDocument(doc)
+        val document = convertToDocument(doc, doc.getString("_type"), null, doc.getString("_uuid"))
         document.state = if (forcePublish) DOCUMENT_STATE.PUBLISHED
         else if (isDraftAndPublished) DOCUMENT_STATE.DRAFT_AND_PUBLISHED else DOCUMENT_STATE.DRAFT
         document.isLatest = isLatest

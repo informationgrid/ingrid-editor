@@ -23,8 +23,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
 import de.ingrid.igeserver.services.FIELD_UUID
 import de.ingrid.igeserver.utils.convertToDocument
+import de.ingrid.igeserver.utils.getString
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
 
@@ -55,7 +57,8 @@ class TestType : EntityType() {
         for (address in addresses) {
             val addressJson = address.path("ref")
             val uuid = addressJson.path(FIELD_UUID).textValue()
-            val addressDoc = convertToDocument(addressJson)
+            val addressDoc = convertToDocument(addressJson, addressJson.getString(FIELD_DOCUMENT_TYPE), null, addressJson.getString(
+                FIELD_UUID))
             addressDocs.add(addressDoc)
             (address as ObjectNode).put("ref", uuid)
         }

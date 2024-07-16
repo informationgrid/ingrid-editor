@@ -27,8 +27,10 @@ import de.ingrid.igeserver.persistence.model.document.impl.AddressType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.opendata.OpenDataProfile
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
 import de.ingrid.igeserver.services.FIELD_UUID
 import de.ingrid.igeserver.utils.convertToDocument
+import de.ingrid.igeserver.utils.getString
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
@@ -80,7 +82,8 @@ class OpenDataType : EntityType() {
             // TODO: improve import process so we don't need this
             if (addressJson is ObjectNode) {
                 val uuid = addressJson.path(FIELD_UUID).textValue()
-                val addressDoc = convertToDocument(addressJson)
+                val addressDoc = convertToDocument(addressJson, addressJson.getString(FIELD_DOCUMENT_TYPE), null, addressJson.getString(
+                    FIELD_UUID))
                 addressDocs.add(addressDoc)
                 (address as ObjectNode).put("ref", uuid)
             }
