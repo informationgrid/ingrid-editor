@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.DocumentWithMetadata
@@ -72,12 +73,18 @@ class DatasetsApiController(
         principal: Principal,
         data: JsonNode,
         type: String,
+        uuid: String?,
         parentId: Int?,
         address: Boolean,
         publish: Boolean
     ): ResponseEntity<DocumentWithMetadata> {
+        // TODO AW: remove after separation of metadata finished (this is just to be backwards compatible with tests)
+        (data as ObjectNode).apply {
+            remove("_parent")
+            remove("_type")
+        }
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val doc = convertToDocument(data, type)
+        val doc = convertToDocument(data, type, docUuid = uuid)
         val resultDoc = documentService.createDocument(principal, catalogId, doc, parentId, address, publish)
         val metadata = prepareDocumentWithMetadata(resultDoc)
         return ResponseEntity.ok(metadata)
@@ -217,12 +224,16 @@ class DatasetsApiController(
         }
 
         // clear UUID to create a new one during copy
+        prepareDocumentForCopy(doc)
+
+        return createCopyAndHandleSubTree(principal, catalogId, doc, options, documentService.isAddress(wrapper))
+    }
+
+    private fun prepareDocumentForCopy(doc: Document) {
         documentService.detachDocumentFromDatabase(doc)
         doc.uuid = ""
         doc.id = null
         doc.version = null
-
-        return createCopyAndHandleSubTree(principal, catalogId, doc, options, documentService.isAddress(wrapper))
     }
 
     private fun createCopyAndHandleSubTree(
@@ -252,8 +263,7 @@ class DatasetsApiController(
 //        val copiedParentJson = documentService.convertToJsonNode(copiedParent.document) as ObjectNode
         if (options.includeTree) {
             val count = handleCopySubTree(principal, catalogId, copiedParent.wrapper.id!!, origParentId, isAddress)
-            // TODO AW: is this needed to calc hasChildren?
-//            copiedParentJson.put(FIELD_HAS_CHILDREN, count > 0)
+            copiedParent.wrapper.countChildren = count.toInt()
         }
 
         return prepareDocumentWithMetadata(copiedParent)
@@ -271,14 +281,10 @@ class DatasetsApiController(
         val docs = documentService.findChildrenDocs(catalogId, origParentId, isAddress)
 
         docs.hits.forEach { child ->
-
             child.let {
-//                val childDoc = documentService.getLatestDocument(it, false, false)
-//                val childVersion = (documentService.convertToJsonNode(it.document) as ObjectNode)
-//                    .put(FIELD_PARENT, parentId)
-
                 // clear UUID to create a new one during copy
-                it.document.uuid = ""
+                prepareDocumentForCopy(it.document)
+                it.document.wrapperId = it.wrapper.id
                 createCopyAndHandleSubTree(principal, catalogId, it.document, CopyOptions(parentId, true), isAddress)
             }
 

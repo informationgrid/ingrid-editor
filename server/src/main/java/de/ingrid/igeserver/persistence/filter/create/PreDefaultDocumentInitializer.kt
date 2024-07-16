@@ -53,9 +53,8 @@ class PreDefaultDocumentInitializer(
         if (payload.document.uuid.isEmpty()) {
             payload.document.uuid = UUID.randomUUID().toString()
         }
-        val docId = payload.document.uuid
 
-        context.addMessage(Message(this, "Process document data '$docId' before insert"))
+        context.addMessage(Message(this, "Process document data '${payload.document.uuid}' before insert"))
 
         val catalogRef = catalogRepo.findByIdentifier(context.catalogId)
         initializeDocument(payload, context, catalogRef)

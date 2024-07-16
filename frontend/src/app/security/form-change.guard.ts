@@ -30,7 +30,6 @@ import { FormComponent } from "../+form/form/form.component";
 import { AddressComponent } from "../+address/address/address.component";
 import { DocumentService } from "../services/document/document.service";
 import { FormStateService } from "../+form/form-state.service";
-import { IgeDocument } from "../models/ige-document";
 import { ConfigService } from "../services/config/config.service";
 import { PluginService } from "../services/plugin/plugin.service";
 import { FormUtils } from "../+form/form.utils";
@@ -125,8 +124,7 @@ export class FormChangeDeactivateGuard {
 
   private handleFormHasChanged(target: any): Observable<boolean> {
     const type = target instanceof FormComponent ? "document" : "address";
-    const currentUuid = (<IgeDocument>this.formStateService.getForm().value)
-      ._uuid;
+    const currentUuid = this.formStateService.metadata().uuid;
     return this.dialog
       .open(ConfirmDialogComponent, {
         hasBackdrop: true,

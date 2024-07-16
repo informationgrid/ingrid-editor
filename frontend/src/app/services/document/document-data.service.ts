@@ -183,11 +183,13 @@ export class DocumentDataService {
     return this.http.delete(this.configuration.backendUrl + "datasets/" + ids);
   }
 
-  revert(id: number): Observable<IgeDocument> {
-    return this.http.put<IgeDocument>(
-      this.configuration.backendUrl + "datasets/" + id + "?revert=true",
-      {},
-    );
+  revert(id: number): Observable<DocumentWithMetadata> {
+    return this.http
+      .put<DocumentWithMetadata>(
+        this.configuration.backendUrl + "datasets/" + id + "?revert=true",
+        {},
+      )
+      .pipe(map((data) => this.mapDocumentWithMetadata(data)));
   }
 
   getPath(id: number): Observable<PathResponse[]> {

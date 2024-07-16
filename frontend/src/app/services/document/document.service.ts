@@ -607,7 +607,6 @@ export class DocumentService {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     return this.dataService.revert(id).pipe(
-      // map((data) => this.mapDocumentWithMetadata(data)),
       map((json) =>
         this.mapToDocumentAbstracts(
           [json.documentWithMetadata],

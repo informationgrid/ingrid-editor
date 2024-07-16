@@ -31,17 +31,14 @@ import java.time.format.DateTimeFormatter
 fun documentInPublishedState(document: Document) =
     document.state == DOCUMENT_STATE.PUBLISHED || document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED || document.state == DOCUMENT_STATE.PENDING
 
-fun convertToDocument(docJson: JsonNode, docType: String? = null, docVersion: Int? = null): Document {
+fun convertToDocument(docJson: JsonNode, docType: String? = null, docVersion: Int? = null, docUuid: String? = null): Document {
 
     return Document().apply {
         title = docJson.getStringOrEmpty("title")
         if (docType != null) type = docType
         if (docVersion != null) version = docVersion
+        if (docUuid != null) uuid = docUuid
 
-        // TODO AW: can uuid be explicitly set? Import?
-//            if (docJson.hasNonNull(FIELD_UUID)) {
-//                uuid = docJson.get(FIELD_UUID).asText()
-//            }
         // all document-data except title go into the data field
         data = (docJson as ObjectNode).apply { remove("title") }
     }
