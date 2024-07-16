@@ -78,19 +78,19 @@ class ResearchService {
     fun query(catalogId: String, query: ResearchQuery, principal: Principal = SecurityContextHolder.getContext().authentication): ResearchResponse {
 
         val groups = authUtils.getCurrentUserRoles(catalogId)
-        val hasAccessToRootDocs = authUtils.isAdmin(principal) || aclService.hasRootAccess(groups)
-        val groupIds = if (hasAccessToRootDocs) emptyList() else aclService.getAllDatasetIdsFromGroups(groups)
+        val hasReadAccessToRootDocs = authUtils.isAdmin(principal) || aclService.hasRootReadAccess(groups)
+        val idsToSearchIn = if (hasReadAccessToRootDocs) null else aclService.getDatasetIdsSetInGroups(groups)
 
         // if a user has no groups then user is not allowed anything
-        if (groupIds.isEmpty() && !hasAccessToRootDocs) {
+        if (idsToSearchIn.isNullOrEmpty() && !hasReadAccessToRootDocs) {
             return ResearchResponse(0, emptyList())
         }
 
-        val sql = createQuery(catalogId, query, groupIds)
+        val sql = createQuery(catalogId, query, idsToSearchIn)
 
         val termAsParameters = getParameters(query)
         val result = sendQuery(sql, termAsParameters, query.pagination)
-        val map = filterAndMapResult(result, hasAccessToRootDocs, principal)
+        val map = filterAndMapResult(result, hasReadAccessToRootDocs, principal)
 
         val totalHits = if (query.pagination.pageSize != Int.MAX_VALUE) {
             getTotalHits(sql, termAsParameters)
@@ -114,13 +114,13 @@ class ResearchService {
 
     }
 
-    private fun createQuery(catalogId: String, query: ResearchQuery, groupDocUuids: List<Int>): String {
+    private fun createQuery(catalogId: String, query: ResearchQuery, idsToSearchIn: List<Int>?): String {
         var sqlQuery =
             """
                 SELECT DISTINCT document1.*, document_wrapper.category
                 FROM catalog, document_wrapper Join document document1 on document_wrapper.uuid = document1.uuid
                 ${determineJsonSearch(query.term)}
-                ${determineWhereQuery(catalogId, query, groupDocUuids)}
+                ${determineWhereQuery(catalogId, query, idsToSearchIn)}
             """ + if (query.orderByField != null) """
                 ORDER BY document1.${query.orderByField} ${query.orderByDirection}
             """.trimIndent() else ""
@@ -128,11 +128,18 @@ class ResearchService {
         return sqlQuery
     }
 
-    private fun determineWhereQuery(catalogId: String, query: ResearchQuery, groupDocIds: List<Int>): String {
+    /**
+     * This method determines the WHERE clause of the SQL query.
+     * It is responsible for filtering the search results by catalog, permissions and search term.
+     * @param catalogId the catalog identifier
+     * @param query the research query
+     * @param idsToSearchIn the ids of the documents the user is allowed to see. If null, the user is allowed to see all documents.
+     */
+    private fun determineWhereQuery(catalogId: String, query: ResearchQuery, idsToSearchIn: List<Int>?): String {
         val catalogFilter = createCatalogFilter(catalogId)
-        val groupDocIdsString = groupDocIds.joinToString(",")
+        val groupDocIdsString = idsToSearchIn?.joinToString(",")
         // TODO: uuid IN (SELECT(unnest(dw.path))) might be more performant (https://coderwall.com/p/jmtskw/use-in-instead-of-any-in-postgresql)
-        val permissionFilter = if (groupDocIds.isEmpty()) "" else
+        val permissionFilter = if (groupDocIdsString == null ) "" else
             """ AND (document_wrapper.id = ANY(('{$groupDocIdsString}')) 
                     OR ('{$groupDocIdsString}') && document_wrapper.path)
             """.trimIndent()

@@ -34,7 +34,6 @@ import org.springframework.security.acls.jdbc.JdbcMutableAclService
 import org.springframework.security.acls.model.*
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
-import java.security.Principal
 
 data class PermissionInfo(
     val canRead: Boolean = false,
@@ -63,7 +62,7 @@ class IgeAclService(
 
         var isAllowed: Boolean
         permissionLevels.forEach { permissionLevel ->
-            val permissionLevelUuids = getAllDatasetIdsFromGroups(listOf(group), permissionLevel)
+            val permissionLevelUuids = getDatasetIdsSetInGroups(listOf(group), permissionLevel)
             permissionLevelUuids.forEach { uuid ->
                 val acl = this.aclService.readAclById(
                     ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
@@ -76,6 +75,7 @@ class IgeAclService(
                         isAllowed(acl, CustomPermission.WRITE_ONLY_SUBTREE, sids)
                                 || isAllowed(acl, BasePermission.WRITE, sids)
                                 || hasRootWrite
+
                     else -> throw error("this is impossible and must not happen.")
                 }
                 // if one permission is not allowed, we can stop here
@@ -114,28 +114,33 @@ class IgeAclService(
         }
     }
 
-    fun getDatasetIdsFromGroups(groups: Collection<Group>, isAddress: Boolean): List<Int> {
+    /**
+     *  Get all dataset ids which are explicitly set in the groups which match the permission level
+     *  @param groups list of groups
+     *  @param permissionLevel permission level to filter for. If empty, all permissions are considered
+     *  @param isAddress if true, only addresses are considered and if false, only documents are considered (if null, both are considered)
+     */
+    fun getDatasetIdsSetInGroups(
+        groups: Collection<Group>,
+        permissionLevel: String = "",
+        isAddress: Boolean? = null
+    ): List<Int> {
         return groups
             .asSequence()
-            .map { group -> if (isAddress) group.permissions?.addresses else group.permissions?.documents }
-            .map { permissions -> permissions?.map { permission -> permission.get("id").asInt() }.orEmpty() }
-            .flatten().toSet().toList()
-    }
-
-    fun getAllDatasetIdsFromGroups(groups: Collection<Group>, permissionLevel: String = ""): List<Int> {
-        return groups
-            .asSequence()
+            // get all dataset permissions for each group
             .map { group ->
                 mutableListOf<JsonNode>().apply {
-                    addAll(group.permissions?.addresses ?: emptyList())
-                    addAll(group.permissions?.documents ?: emptyList())
+                    if (isAddress != false) addAll(group.permissions?.addresses ?: emptyList())
+                    if (isAddress != true) addAll(group.permissions?.documents ?: emptyList())
                 }
             }
+            // filter for permission level
             .map { permissions ->
                 permissions.filter { permission ->
                     permissionLevel.isEmpty() || permission.get("permission").asText() == permissionLevel
                 }
             }
+            // get the dataset ids and flatten the list
             .map { permissions -> permissions.map { permission -> permission.get("id").asInt() } }
             .flatten().toSet().toList()
     }
@@ -190,20 +195,17 @@ class IgeAclService(
         (aclService as JdbcMutableAclService).deleteAcl(objIdentity, true)
     }
 
-    fun hasRootAccess(groups: Set<Group>) =
+    /**
+     * Check if any group has root read access
+     * @param groups list of groups
+     */
+    fun hasRootReadAccess(groups: Set<Group>) =
         groups.any {
             listOf(
                 RootPermissionType.READ,
                 RootPermissionType.WRITE
             ).contains(it.permissions?.rootPermission)
         }
-
-    fun getDocumentIdsForGroups(principal: Principal, permissionLevel: String, catalogId: String): List<Int> {
-        val groups = authUtils.getCurrentUserRoles(catalogId)
-        val hasAccessToRootDocs = authUtils.isAdmin(principal) || hasRootAccess(groups)
-        return if (hasAccessToRootDocs) emptyList() else getAllDatasetIdsFromGroups(groups)
-    }
-
 }
 
 fun checkForRootPermissions(

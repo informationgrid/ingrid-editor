@@ -103,10 +103,10 @@ class JobsApiController(
         
         if (groups.isEmpty() && !authUtils.isAdmin(principal)) throw ServerException.withReason("User has not been assigned any groups")
         
-        val hasWriteRoot = groups.any { it.permissions?.rootPermission == RootPermissionType.WRITE }
+        val hasWriteRoot = authUtils.isAdmin(principal) || groups.any { it.permissions?.rootPermission == RootPermissionType.WRITE }
         if (!hasWriteRoot) {
             docIds = listOf("writeTree", "writeTreeExceptParent").flatMap {
-                aclService.getDocumentIdsForGroups(principal, it, catalogId)
+                aclService.getDatasetIdsSetInGroups(groups, it)
             }
         }
         

@@ -384,7 +384,7 @@ class DatasetsApiController(
     ): FindAllResults<DocumentData> {
 
         val actualRoots = mutableListOf<DocumentWrapper>()
-        val groupDatasets = aclService.getDatasetIdsFromGroups(userGroups!!, isAddress)
+        val groupDatasets = aclService.getDatasetIdsSetInGroups(userGroups!!, isAddress = isAddress)
             .map { id -> documentService.getWrapperById(id) }
         val groupDatasetIds = groupDatasets.map { it.id }.toSet()
 
