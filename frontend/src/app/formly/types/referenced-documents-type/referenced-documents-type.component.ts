@@ -27,7 +27,7 @@ import {
 } from "@angular/core";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { ResearchService } from "../../../+research/research.service";
-import { map, startWith, switchMap, tap } from "rxjs/operators";
+import { filter, map, startWith, switchMap, tap } from "rxjs/operators";
 import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
@@ -57,7 +57,7 @@ export class ReferencedDocumentsTypeComponent
 
   pageSize = 10;
 
-  docs: DocumentAbstract[];
+  docs: DocumentAbstract[] = [];
 
   private sql = `SELECT document1.*, document_wrapper.category
                  FROM document_wrapper
@@ -114,6 +114,7 @@ export class ReferencedDocumentsTypeComponent
       .pipe(
         untilDestroyed(this),
         startWith(this.currentUuid),
+        filter((uuid) => uuid !== undefined),
         tap(() => (this.docs = [])),
         tap(() => (this.firstLoaded = true)),
         switchMap((uuid) => this.searchReferences(uuid)),

@@ -163,7 +163,7 @@ abstract class EntityType {
             put(FIELD_MODIFIED, documentData.document.modified.toString())
             put(FIELD_CONTENT_MODIFIED, documentData.document.contentmodified.toString())
             put(FIELD_ID, documentData.wrapper.id)
-            put(FIELD_PARENT, documentData.wrapper.getParentUuid())
+            put(FIELD_PARENT, documentData.wrapper.id)
         }
     }
 
