@@ -223,9 +223,6 @@ class DatasetsApiController(
             validateCopyOperation(catalogId, id, options.destId)
         }
 
-        // clear UUID to create a new one during copy
-        prepareDocumentForCopy(doc)
-
         return createCopyAndHandleSubTree(principal, catalogId, doc, options, documentService.isAddress(wrapper))
     }
 
@@ -243,8 +240,11 @@ class DatasetsApiController(
         options: CopyOptions,
         isAddress: Boolean
     ): DocumentWithMetadata {
-        val origParentId = doc.wrapperId!! // doc[FIELD_ID].asInt()
-        val origParentUUID = doc.uuid // doc[FIELD_UUID].asText()
+        val origParentId = doc.wrapperId!!
+        val origParentUUID = doc.uuid
+
+        // clear UUID and other fields to create a new one during copy
+        prepareDocumentForCopy(doc)
 
         val copiedParent =
             documentService.createDocument(
@@ -257,12 +257,11 @@ class DatasetsApiController(
                 InitiatorAction.COPY
             )
 
-
         storage.copyToUnpublished(catalogId, origParentUUID, copiedParent.wrapper.uuid)
 
-//        val copiedParentJson = documentService.convertToJsonNode(copiedParent.document) as ObjectNode
         if (options.includeTree) {
             val count = handleCopySubTree(principal, catalogId, copiedParent.wrapper.id!!, origParentId, isAddress)
+            // calculate children to correctly set hasChildren-field for frontend
             copiedParent.wrapper.countChildren = count.toInt()
         }
 

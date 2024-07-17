@@ -25,6 +25,8 @@ import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.filter.PostPersistencePayload
 import de.ingrid.igeserver.services.AuditLogger
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
+import de.ingrid.igeserver.services.FIELD_UUID
 import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
@@ -54,7 +56,10 @@ class PostDataHistoryLogger(
             category = LOG_CATEGORY,
             action = payload.action.name.lowercase(),
             target = docId,
-            data = getRawJsonFromDocument(payload.document),
+            data = getRawJsonFromDocument(payload.document).apply {
+                put(FIELD_UUID, payload.document.uuid)
+                put(FIELD_DOCUMENT_TYPE, payload.document.type)
+            },
             logger = LOGGER_NAME,
             catalogIdentifier = payload.catalogIdentifier,
             principal = context.principal
