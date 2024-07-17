@@ -9,6 +9,7 @@
 {
     "uuid": "${model.getUuid() }",
     "title": "${model.getTitle() }",
+    "parent.object_node.obj_uuid": "${model.getHierarchyParent()}",
     "description": "${model.getDescription() }",
     "landingPage": "${model.getLandingPage() }",
     "theme": [
