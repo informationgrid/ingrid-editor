@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.persistence.filter.publish
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
@@ -45,7 +46,7 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
     override fun invoke(payload: PrePublishPayload, context: Context): PrePublishPayload {
         val schema = payload.type.jsonSchema
         if (schema != null) {
-            val json = payload.document.data.toString()
+            val json = payload.document.data
 
             // add title to json, which isn't part of the data field
             val jsonWithTitle = addGenericFields(json, payload)
@@ -59,18 +60,18 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
     }
 
     private fun addGenericFields(
-        json: String,
+        json: ObjectNode,
         payload: PrePublishPayload
     ): String {
         // TODO AW: remove after separation of metadata is complete (also check import with publication!)
         var extraFields = ""","title": "${JsonEscape.escapeJson(payload.document.title)}""""
-        if (!json.contains("\"_type\"")) {
+        if (!json.has("_type")) {
             extraFields += ""","_type": "${JsonEscape.escapeJson(payload.document.type)}""""
         }
-        if (!json.contains("\"_uuid\"")) {
-            ""","_uuid": "${JsonEscape.escapeJson(payload.document.uuid)}""""
+        if (!json.has("_uuid")) {
+            extraFields += ""","_uuid": "${JsonEscape.escapeJson(payload.document.uuid)}""""
         }
-        return json.substringBeforeLast("}") + extraFields + "}"
+        return json.toString().substringBeforeLast("}") + extraFields + "}"
     }
 
     fun validate(schemaFile: String, json: String): BasicOutput? {
