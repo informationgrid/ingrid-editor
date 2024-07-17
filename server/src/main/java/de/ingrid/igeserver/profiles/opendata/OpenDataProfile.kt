@@ -178,7 +178,7 @@ class OpenDataProfile(
     }
 
     override fun getElasticsearchMapping(format: String): String {
-        return {}.javaClass.getResource("/ingrid/mappings/default-mapping.json")?.readText() ?: ""
+        return {}.javaClass.getResource("/opendata/mappings/default-mapping.json")?.readText() ?: ""
     }
 
     override fun getElasticsearchSetting(format: String): String {
