@@ -103,6 +103,7 @@ class AddressModelTransformer(
 
     val id = displayAddress.id
     val uuid = displayAddress.uuid
+    val title = displayAddress.title
 
     //    val isFolder = doc.type == "FOLDER"
     val hoursOfService = displayAddress.data.getString("hoursOfService")
