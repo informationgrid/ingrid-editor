@@ -145,6 +145,18 @@ export class ConsolidateDialogComponent implements OnInit {
         ),
       ]).then(() => {
         this.freeKeywordsNew = [...this.freeKeywords, ...this.freeKeywordsNew];
+        this.gemetKeywordsNew = this.removeDuplicates(
+          this.gemetKeywordsNew,
+          "label",
+        );
+        this.umthesKeywordsNew = this.removeDuplicates(
+          this.umthesKeywordsNew,
+          "label",
+        );
+        this.freeKeywordsNew = this.removeDuplicates(
+          this.freeKeywordsNew,
+          "label",
+        );
         this.isLoading = false;
       });
       return [this.gemetKeywords, this.umthesKeywords, this.freeKeywords];
@@ -177,7 +189,7 @@ export class ConsolidateDialogComponent implements OnInit {
         });
     });
   }
-  private removeDuplicates(arr, uniqueKey) {
+  private removeDuplicates(arr, uniqueKey: string) {
     if (uniqueKey) {
       return arr.filter(
         (item, index, self) =>
