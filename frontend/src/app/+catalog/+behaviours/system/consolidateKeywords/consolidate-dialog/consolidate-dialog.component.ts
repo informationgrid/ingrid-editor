@@ -93,6 +93,10 @@ export class ConsolidateDialogComponent implements OnInit {
 
   private consolidateKeywords() {
     this.isLoading = true;
+    this.gemetKeywordsNew = [];
+    this.umthesKeywordsNew = [];
+    this.freeKeywordsNew = [];
+
     this.documentDataService.load(this.id, false).subscribe((response) => {
       this.gemetKeywords = response.keywords.gemet;
       this.umthesKeywords = response.keywords.umthes;
@@ -147,28 +151,44 @@ export class ConsolidateDialogComponent implements OnInit {
     });
   }
 
-  private saveKeywords() {
-    this.documentDataService.load(this.id, false).subscribe((response) => {
-      response.keywords.gemet = this.gemetKeywordsNew.map((keyword) => ({
-        id: keyword.id,
-        label: keyword.label,
-        // alternateLabel: keyword.
+  saveConsolidatedKeywords() {
+    this.documentDataService.load(this.id, false).subscribe((doc) => {
+      doc.keywords.gemet = this.gemetKeywordsNew.map((keyword) => ({
+        id: keyword.value.id,
+        label: keyword.value.label,
+        alternateLabel: keyword.value.alternativeLabel || null,
       }));
-      response.keywords.umthes = this.umthesKeywordsNew.map((keyword) => ({
-        id: keyword.id,
-        label: keyword.label,
-        // alternateLabel: keyword.
+      doc.keywords.umthes = this.umthesKeywordsNew.map((keyword) => ({
+        id: keyword.value.id,
+        label: keyword.value.label,
+        alternateLabel: keyword.value.alternativeLabel || null,
       }));
-      response.keywords.free = this.freeKeywordsNew.map((keyword) => ({
+      doc.keywords.free = this.freeKeywordsNew.map((keyword) => ({
         label: keyword.label,
       }));
 
-      // this.documentService.save().subscribe(() => {
-      //   this.snackBar.open("Schlagworte konsolidiert", "", {
-      //     panelClass: "green",
-      //   });
-      //   this.dialogRef.close("confirm");
-      // });
+      this.documentService
+        .save({ data: doc, isNewDoc: false, isAddress: false })
+        .subscribe(() => {
+          this.snackBar.open("Schlagworte konsolidiert", "", {
+            panelClass: "green",
+          });
+          this.dialogRef.close("confirm");
+        });
     });
+  }
+  private removeDuplicates(arr, uniqueKey) {
+    if (uniqueKey) {
+      return arr.filter(
+        (item, index, self) =>
+          index === self.findIndex((t) => t[uniqueKey] === item[uniqueKey]),
+      );
+    } else {
+      return arr.filter(
+        (item, index, self) =>
+          index ===
+          self.findIndex((t) => t.id === item.id && t.label === item.label),
+      );
+    }
   }
 }
