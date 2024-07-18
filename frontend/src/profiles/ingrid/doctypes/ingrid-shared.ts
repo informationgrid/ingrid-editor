@@ -709,20 +709,6 @@ export abstract class IngridShared extends BaseDoctype {
             },
           },
         }),
-        this.addInput(null, "Schlagwortkonsolidierung", {
-          className: "optional",
-          wrappers: ["panel", "button", "form-field"],
-          placeholder: "Nichts eingeben!",
-          contextHelpId: "keywordconsolidation",
-          hideInPreview: true,
-          buttonConfig: {
-            text: "Konsolidieren",
-            onClick: async (_, field) => {
-              this.snack.open("Schlagworte werden konsolidiert ...");
-              await this.consolidateKeywords(field, options);
-            },
-          },
-        }),
       ].filter(Boolean),
     );
   }
@@ -765,44 +751,6 @@ export abstract class IngridShared extends BaseDoctype {
     } catch (error) {
       // If there's an error, it means the URL is not available
       return false;
-    }
-  }
-
-  private async consolidateKeywords(
-    field: FormlyFieldConfig,
-    options: KeywordSectionOptions,
-  ) {
-    const formState = field.options.formState;
-    const checkThemes =
-      options.inspireTopics && formState.mainModel.isInspireIdentified;
-
-    const freeKeywords = field.form.get("keywords.free").value;
-    const gemetKeywords = field.form.get("keywords.gemet").value;
-    const umthesKeywords = field.form.get("keywords.umthes").value;
-    console.log(gemetKeywords);
-
-    // filter gemetKeywords by making a rest call to object.id
-    gemetKeywords.filter((item) => this.isUrlAvailable(item.id));
-    console.log(gemetKeywords);
-
-    const allKeywords = [
-      ...freeKeywords,
-      ...gemetKeywords,
-      ...umthesKeywords,
-    ].map((item) => item.label);
-
-    // field.form.get("keywords.free").setValue([]);
-    field.form.get("keywords.gemet").setValue([]);
-    field.form.get("keywords.umthes").setValue([]);
-
-    const response = await this.keywordAnalysis.analyzeKeywords(
-      allKeywords,
-      checkThemes,
-    );
-
-    if (response.length > 0) {
-      this.keywordAnalysis.updateForm(response, field, this.thesaurusTopics);
-      this.informUserAboutThesaurusAnalysis(response);
     }
   }
 
