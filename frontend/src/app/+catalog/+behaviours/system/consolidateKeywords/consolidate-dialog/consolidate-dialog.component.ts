@@ -38,6 +38,7 @@ import { MatChip, MatChipListbox } from "@angular/material/chips";
 import { NgClass, NgForOf, NgIf } from "@angular/common";
 import { DocumentDataService } from "../../../../../services/document/document-data.service";
 import { KeywordAnalysis } from "../../../../../../profiles/ingrid/utils/keywords";
+import { ThesaurusResult } from "../../../../../../profiles/ingrid/components/thesaurus-result";
 
 export interface ConsolidateDialogData {
   id: number;
@@ -108,7 +109,7 @@ export class ConsolidateDialogComponent implements OnInit {
         ...this.gemetKeywords.map((keyword) =>
           this.keywordAnalysis
             .checkInThesaurus(keyword.label, "gemet")
-            .then((res) => {
+            .then((res: ThesaurusResult) => {
               if (res.found) {
                 res["status"] = "unchanged";
                 this.gemetKeywordsNew.push(res);
@@ -126,7 +127,7 @@ export class ConsolidateDialogComponent implements OnInit {
         ...this.umthesKeywords.map((keyword) =>
           this.keywordAnalysis
             .checkInThesaurus(keyword.label, "umthes")
-            .then((res) => {
+            .then((res: ThesaurusResult) => {
               if (res.found) {
                 res["status"] = "unchanged";
                 this.umthesKeywordsNew.push(res);
@@ -169,25 +170,15 @@ export class ConsolidateDialogComponent implements OnInit {
 
   saveConsolidatedKeywords() {
     this.documentDataService.load(this.id, false).subscribe((doc) => {
-      doc.keywords.gemet = this.gemetKeywordsNew
-        .filter((keyword) => keyword.status !== "removed")
-        .map((keyword) => ({
-          id: keyword.value.id,
-          label: keyword.value.label,
-          alternateLabel: keyword.value.alternativeLabel || null,
-        }));
-      doc.keywords.umthes = this.umthesKeywordsNew
-        .filter((keyword) => keyword.status !== "removed")
-        .map((keyword) => ({
-          id: keyword.value.id,
-          label: keyword.value.label,
-          alternateLabel: keyword.value.alternativeLabel || null,
-        }));
+      doc.keywords.gemet = this.mapKeywords(
+        this.gemetKeywordsNew.filter((k) => k.status !== "removed"),
+      );
+      doc.keywords.umthes = this.mapKeywords(
+        this.umthesKeywordsNew.filter((k) => k.status !== "removed"),
+      );
       doc.keywords.free = this.freeKeywordsNew
-        .filter((keyword) => keyword.status !== "removed")
-        .map((keyword) => ({
-          label: keyword.label,
-        }));
+        .filter((k) => k.status !== "removed")
+        .map((k) => ({ label: k.label }));
 
       this.documentService
         .save({ data: doc, isNewDoc: false, isAddress: false })
@@ -199,31 +190,23 @@ export class ConsolidateDialogComponent implements OnInit {
         });
     });
   }
-  private removeDuplicates(arr, uniqueKey: string) {
-    if (uniqueKey) {
-      return arr.filter(
-        (item, index, self) =>
-          index === self.findIndex((t) => t[uniqueKey] === item[uniqueKey]),
-      );
-    } else {
-      return arr.filter(
-        (item, index, self) =>
-          index ===
-          self.findIndex((t) => t.id === item.id && t.label === item.label),
-      );
-    }
+
+  private mapKeywords(keywords: any[]) {
+    return keywords.map((k) => ({
+      id: k.value.id,
+      label: k.value.label,
+      alternateLabel: k.value.alternativeLabel || null,
+    }));
+  }
+  private removeDuplicates(arr: Object[], uniqueKey: string) {
+    return arr.filter(
+      (item, index, self) =>
+        index === self.findIndex((t) => t[uniqueKey] === item[uniqueKey]),
+    );
   }
 
-  sortByStatus(keywords: any): any {
-    return keywords.sort((a, b) => {
-      if (a.status === "removed" && b.status !== "removed") {
-        return 1;
-      } else if (a.status !== "removed" && b.status === "removed") {
-        return -1;
-      } else {
-        return 0;
-      }
-    });
+  private sortByStatus(keywords: Object[]) {
+    return keywords.sort((a, b) => (a["status"] === "removed" ? 1 : -1));
   }
 
   private sortKeywordsByStatus() {
