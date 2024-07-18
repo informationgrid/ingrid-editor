@@ -35,7 +35,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfigService } from "../../../../../services/config/config.service";
 import { MatChip, MatChipListbox } from "@angular/material/chips";
-import { NgForOf } from "@angular/common";
+import { NgClass, NgForOf, NgIf } from "@angular/common";
 import { DocumentDataService } from "../../../../../services/document/document-data.service";
 import { KeywordAnalysis } from "../../../../../../profiles/ingrid/utils/keywords";
 
@@ -59,6 +59,8 @@ export interface ConsolidateDialogData {
     MatChip,
     MatChipListbox,
     NgForOf,
+    NgClass,
+    NgIf,
   ],
   standalone: true,
 })
@@ -108,10 +110,15 @@ export class ConsolidateDialogComponent implements OnInit {
             .checkInThesaurus(keyword.label, "gemet")
             .then((res) => {
               if (res.found) {
+                res["status"] = "unchanged";
                 this.gemetKeywordsNew.push(res);
               } else {
                 if (!this.freeKeywords.includes(keyword.label)) {
-                  this.freeKeywordsNew.push(res);
+                  const addedRes = { ...res, status: "added" };
+                  this.freeKeywordsNew.push(addedRes);
+
+                  const removedRes = { ...res, status: "removed" };
+                  this.gemetKeywordsNew.push(removedRes);
                 }
               }
             }),
@@ -121,10 +128,15 @@ export class ConsolidateDialogComponent implements OnInit {
             .checkInThesaurus(keyword.label, "umthes")
             .then((res) => {
               if (res.found) {
+                res["status"] = "unchanged";
                 this.umthesKeywordsNew.push(res);
               } else {
                 if (!this.freeKeywords.includes(keyword.label)) {
-                  this.freeKeywordsNew.push(res);
+                  const addedRes = { ...res, status: "added" };
+                  this.freeKeywordsNew.push(addedRes);
+
+                  const removedRes = { ...res, status: "removed" };
+                  this.umthesKeywordsNew.push(removedRes);
                 }
               }
             }),
@@ -135,9 +147,11 @@ export class ConsolidateDialogComponent implements OnInit {
             .then((res) => {
               if (res.found) {
                 if (res.thesaurus === "Gemet Schlagworte") {
+                  res["status"] = "added";
                   this.gemetKeywordsNew.push(res);
                 }
                 if (res.thesaurus === "Umthes Schlagworte") {
+                  res["status"] = "added";
                   this.umthesKeywordsNew.push(res);
                 }
               }
@@ -145,18 +159,8 @@ export class ConsolidateDialogComponent implements OnInit {
         ),
       ]).then(() => {
         this.freeKeywordsNew = [...this.freeKeywords, ...this.freeKeywordsNew];
-        this.gemetKeywordsNew = this.removeDuplicates(
-          this.gemetKeywordsNew,
-          "label",
-        );
-        this.umthesKeywordsNew = this.removeDuplicates(
-          this.umthesKeywordsNew,
-          "label",
-        );
-        this.freeKeywordsNew = this.removeDuplicates(
-          this.freeKeywordsNew,
-          "label",
-        );
+        this.sortKeywordsByStatus();
+        this.removeDuplicateKeywords();
         this.isLoading = false;
       });
       return [this.gemetKeywords, this.umthesKeywords, this.freeKeywords];
@@ -165,19 +169,25 @@ export class ConsolidateDialogComponent implements OnInit {
 
   saveConsolidatedKeywords() {
     this.documentDataService.load(this.id, false).subscribe((doc) => {
-      doc.keywords.gemet = this.gemetKeywordsNew.map((keyword) => ({
-        id: keyword.value.id,
-        label: keyword.value.label,
-        alternateLabel: keyword.value.alternativeLabel || null,
-      }));
-      doc.keywords.umthes = this.umthesKeywordsNew.map((keyword) => ({
-        id: keyword.value.id,
-        label: keyword.value.label,
-        alternateLabel: keyword.value.alternativeLabel || null,
-      }));
-      doc.keywords.free = this.freeKeywordsNew.map((keyword) => ({
-        label: keyword.label,
-      }));
+      doc.keywords.gemet = this.gemetKeywordsNew
+        .filter((keyword) => keyword.status !== "removed")
+        .map((keyword) => ({
+          id: keyword.value.id,
+          label: keyword.value.label,
+          alternateLabel: keyword.value.alternativeLabel || null,
+        }));
+      doc.keywords.umthes = this.umthesKeywordsNew
+        .filter((keyword) => keyword.status !== "removed")
+        .map((keyword) => ({
+          id: keyword.value.id,
+          label: keyword.value.label,
+          alternateLabel: keyword.value.alternativeLabel || null,
+        }));
+      doc.keywords.free = this.freeKeywordsNew
+        .filter((keyword) => keyword.status !== "removed")
+        .map((keyword) => ({
+          label: keyword.label,
+        }));
 
       this.documentService
         .save({ data: doc, isNewDoc: false, isAddress: false })
@@ -202,5 +212,35 @@ export class ConsolidateDialogComponent implements OnInit {
           self.findIndex((t) => t.id === item.id && t.label === item.label),
       );
     }
+  }
+
+  sortByStatus(keywords: any): any {
+    return keywords.sort((a, b) => {
+      if (a.status === "removed" && b.status !== "removed") {
+        return 1;
+      } else if (a.status !== "removed" && b.status === "removed") {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+  private sortKeywordsByStatus() {
+    this.gemetKeywordsNew = this.sortByStatus(this.gemetKeywordsNew);
+    this.umthesKeywordsNew = this.sortByStatus(this.umthesKeywordsNew);
+    this.freeKeywordsNew = this.sortByStatus(this.freeKeywordsNew);
+  }
+
+  private removeDuplicateKeywords() {
+    this.gemetKeywordsNew = this.removeDuplicates(
+      this.gemetKeywordsNew,
+      "label",
+    );
+    this.umthesKeywordsNew = this.removeDuplicates(
+      this.umthesKeywordsNew,
+      "label",
+    );
+    this.freeKeywordsNew = this.removeDuplicates(this.freeKeywordsNew, "label");
   }
 }

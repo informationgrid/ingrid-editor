@@ -1,3 +1,43 @@
-.content-spinner {
-  margin: 24px auto;
+.keyword-section {
+  display: flex;
+  margin-top: 12px;
+}
+
+.label-wrapper {
+  width: 200px;
+  padding-right: 24px;
+  padding-bottom: 10px;
+}
+
+.keyword-label {
+  flex: 0 0 200px; /* Adjust the width as needed */
+  //font-weight: bold;
+}
+
+.loading-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chip-list {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Chip status styles */
+.added-keyword {
+  background-color: #4caf50; /* Green */
+  color: white;
+}
+
+.removed-keyword {
+  background-color: #f44336; /* Red */
+  color: white;
+}
+
+.unchanged-keyword {
+  background-color: #9e9e9e; /* Grey */
+  color: white;
 }
