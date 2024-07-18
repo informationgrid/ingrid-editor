@@ -159,18 +159,34 @@ export class ConsolidateDialogComponent implements OnInit {
                   res["status"] = "added";
                   this.gemetKeywordsNew.push(res);
                   if (!res.alreadyExists) {
-                    this.freeKeywordsNew.push({ ...res, status: "removed" });
+                    if (keyword.label === res.label) {
+                      this.freeKeywordsNew.push({ ...res, status: "removed" });
+                    } else {
+                      this.freeKeywordsNew.push({
+                        ...keyword,
+                        status: "unchanged",
+                      });
+                    }
                   }
                 }
                 if (res.thesaurus === "Umthes Schlagworte") {
                   res["status"] = "added";
                   this.umthesKeywordsNew.push(res);
                   if (!res.alreadyExists) {
-                    this.freeKeywordsNew.push({ ...res, status: "removed" });
+                    if (keyword.label === res.label) {
+                      this.freeKeywordsNew.push({ ...res, status: "removed" });
+                    } else {
+                      this.freeKeywordsNew.push({
+                        ...keyword,
+                        status: "unchanged",
+                      });
+                    }
                   }
                 }
-              } else {
-                this.freeKeywordsNew.push({ ...res, status: "unchanged" });
+                if (res.thesaurus === "Freie Schlagworte") {
+                  res["status"] = "unchanged";
+                  this.freeKeywordsNew.push(res);
+                }
               }
             }),
         ),
