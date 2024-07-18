@@ -151,26 +151,13 @@ export class ConsolidateKeywordsPlugin extends Plugin {
       this.formMenuService.removeMenuItem(
         this.formMenuId,
         "consolidate-keywords",
-      ); // TODO
+      );
     }
   }
 
   unregister() {
     super.unregister();
   }
-
-  private handleEvent(eventResponder: EventResponder) {
-    let success = false;
-    const user = eventResponder.data as User;
-  }
-
-  private buildResponse(isSuccess: boolean): EventData {
-    return {
-      result: isSuccess ? IgeEventResultType.SUCCESS : IgeEventResultType.FAIL,
-      data: isSuccess ? null : "this info comes from assigned user behaviour",
-    };
-  }
-
   openConsolidateKeywordsDialog(id: number): Observable<boolean> {
     return this.dialog
       .open(ConsolidateDialogComponent, {

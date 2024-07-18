@@ -100,10 +100,19 @@ export class ConsolidateDialogComponent implements OnInit {
     this.freeKeywordsNew = [];
 
     this.documentDataService.load(this.id, false).subscribe((response) => {
+      if (!response.keywords) {
+        this.keywords = [];
+        this.isLoading = false;
+        return;
+      }
       this.gemetKeywords = response.keywords.gemet;
       this.umthesKeywords = response.keywords.umthes;
       this.freeKeywords = response.keywords.free;
-
+      this.keywords = [
+        ...this.gemetKeywords,
+        ...this.umthesKeywords,
+        ...this.freeKeywords,
+      ];
       Promise.all([
         ...this.gemetKeywords.map((keyword) =>
           this.keywordAnalysis
@@ -163,7 +172,6 @@ export class ConsolidateDialogComponent implements OnInit {
         this.removeDuplicateKeywords();
         this.isLoading = false;
       });
-      return [this.gemetKeywords, this.umthesKeywords, this.freeKeywords];
     });
   }
 
@@ -190,11 +198,11 @@ export class ConsolidateDialogComponent implements OnInit {
     });
   }
 
-  private mapKeywords(keywords: any[]) {
+  private mapKeywords(keywords: Object[]) {
     return keywords.map((k) => ({
-      id: k.value.id,
-      label: k.value.label,
-      alternateLabel: k.value.alternativeLabel || null,
+      id: k["value"].id,
+      label: k["value"].label,
+      alternateLabel: k["value"].alternativeLabel || null,
     }));
   }
   private removeDuplicates(arr: Object[], uniqueKey: string) {
