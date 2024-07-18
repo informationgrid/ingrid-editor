@@ -56,8 +56,7 @@ class OgcGeoJsonExporter(
         )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
-        // TODO: move to utilities to prevent cycle
-        val version = getRawJsonFromDocument(doc)
+        val version = getRawJsonFromDocument(doc, true)
 
         val versions = if (options.includeDraft) {
             Pair(getPublished(catalogId, doc.uuid), version)

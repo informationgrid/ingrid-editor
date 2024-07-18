@@ -146,16 +146,20 @@ abstract class EntityType {
     }
 
     private fun getDocumentForReferenceUuid(
-        catalogId: String,
+        options: UpdateReferenceOptions,
         uuid: String,
     ): JsonNode {
-        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
-        val documentData = documentService.getDocumentFromCatalog(catalogId, wrapper.id!!).also {
-            it.document.data.put(FIELD_TAGS, wrapper.tags.joinToString(","))
+        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(options.catalogId!!, uuid)
+        val documentData = documentService.getDocumentFromCatalog(options.catalogId, wrapper.id!!).also {
+            if (!options.forExport) {
+                it.document.data.put(FIELD_TAGS, wrapper.tags.joinToString(","))
+            }
         }
 
         // TODO AW: the extra mapping should not be needed once addresses will be loaded explicitly
-        return getRawJsonFromDocument(documentData.document).apply {
+        return if (options.forExport) {
+            getRawJsonFromDocument(documentData.document, true)
+        } else getRawJsonFromDocument(documentData.document).apply {
             put(FIELD_UUID, uuid)
             put(FIELD_STATE, documentData.document.state.getState())
             put(FIELD_DOCUMENT_TYPE, documentData.document.type)
@@ -206,7 +210,7 @@ abstract class EntityType {
                 address.path("ref").path(FIELD_UUID).asText()
             }
             try {
-                val latestDocumentJson = getDocumentForReferenceUuid(options.catalogId!!, uuid)
+                val latestDocumentJson = getDocumentForReferenceUuid(options, uuid)
                 (address as ObjectNode).replace("ref", latestDocumentJson)
             } catch (ex: NotFoundException) {
                 // TODO: what to do with removed references?

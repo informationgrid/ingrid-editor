@@ -125,8 +125,8 @@ export class GetCapabilititesWizardPlugin extends Plugin {
       doc === null
         ? null
         : doc._type === "FOLDER"
-          ? doc.id
-          : this.treeQuery.getFirstParentFolder(doc.id + "")?.id;
+          ? +doc.id
+          : +this.treeQuery.getFirstParentFolder(doc.id + "")?.id;
     const model: any = {
       service: {},
       resource: {},
@@ -135,13 +135,13 @@ export class GetCapabilititesWizardPlugin extends Plugin {
       keywords: { gemet: [], umthes: [], free: [] },
       themes: [],
     };
-    await this.getCapService.applyChangesToModel(model, result);
+    await this.getCapService.applyChangesToModel(model, result, parentFolder);
     this.documentService
       .save(
         SaveOptions.createNewDocument(
           model,
           "InGridGeoService",
-          parentFolder ? +parentFolder : null,
+          parentFolder,
           false,
           null,
         ),

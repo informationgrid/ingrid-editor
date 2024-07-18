@@ -69,7 +69,11 @@ export class GetCapabilitiesService {
     );
   }
 
-  async applyChangesToModel(model: any, values: GetCapabilitiesAnalysis) {
+  async applyChangesToModel(
+    model: any,
+    values: GetCapabilitiesAnalysis,
+    parentFolder: number,
+  ) {
     const urlReferences: Url[] = [];
     for (const [key, value] of Object.entries(values)) {
       if (key === "title") model.title = value;
@@ -94,7 +98,7 @@ export class GetCapabilitiesService {
       if (key === "coupledResources") {
         model.service.coupledResources = await this.handleCoupledResources(
           value,
-          model._parent,
+          parentFolder,
         );
         if (value?.length > 0) {
           model.service.couplingType = {
@@ -248,10 +252,10 @@ export class GetCapabilitiesService {
     const res = resources.map(async (resource) => {
       let uuid = resource.uuid;
       if (!resource.exists) {
-        const doc = await this.mapCoupledResource(resource, parent);
+        const doc = await this.mapCoupledResource(resource);
         const savedDoc = this.documentService.save(
           SaveOptions.createNewDocument(
-            doc,
+            doc as any, // TODO AW: we should save a document without metadata, so cleanup IgeDocument
             "InGridGeoDataset",
             parent,
             null,
@@ -276,12 +280,8 @@ export class GetCapabilitiesService {
 
   private async mapCoupledResource(
     resource: CoupledResource,
-    parent: number,
-  ): Promise<IgeDocument> {
+  ): Promise<Partial<IgeDocument>> {
     const doc = {
-      _uuid: resource.uuid,
-      _type: "InGridGeoDataset",
-      _parent: parent,
       title: resource.title,
       description: resource.description,
       identifier: resource.objectIdentifier,

@@ -26,6 +26,8 @@ import de.ingrid.igeserver.model.DocumentWithMetadata
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DocumentData
+import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
+import de.ingrid.igeserver.services.FIELD_UUID
 import java.time.format.DateTimeFormatter
 
 fun documentInPublishedState(document: Document) =
@@ -77,6 +79,12 @@ fun prepareDocumentWithMetadata(
     return DocumentWithMetadata(data, metadata)
 }
 
-fun getRawJsonFromDocument(document: Document): ObjectNode {
-    return document.data.deepCopy().apply { put("title", document.title) }
+fun getRawJsonFromDocument(document: Document, includeMetadataForExport: Boolean = false): ObjectNode {
+    return document.data.deepCopy().apply {
+        put("title", document.title)
+        if (includeMetadataForExport) {
+            put(FIELD_UUID, document.uuid)
+            put(FIELD_DOCUMENT_TYPE, document.type)
+        }
+    }
 }
