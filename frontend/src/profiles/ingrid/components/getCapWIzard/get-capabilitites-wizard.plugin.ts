@@ -35,6 +35,7 @@ import { GetCapabilitiesAnalysis } from "../../../../app/formly/types/update-get
 import { TreeQuery } from "../../../../app/store/tree/tree.query";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
+import { DocumentAbstract } from "../../../../app/store/document/document.model";
 
 @Injectable({
   providedIn: "root",
@@ -126,7 +127,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
         ? null
         : doc._type === "FOLDER"
           ? +doc.id
-          : +this.treeQuery.getFirstParentFolder(doc.id + "")?.id;
+          : this.getFirstParentFolderId(doc);
     const model: any = {
       service: {},
       resource: {},
@@ -153,6 +154,12 @@ export class GetCapabilititesWizardPlugin extends Plugin {
         ]);
         snackRef.dismiss();
       });
+  }
+
+  private getFirstParentFolderId(doc: DocumentAbstract) {
+    const result = this.treeQuery.getFirstParentFolder(doc.id + "")?.id;
+    if (result === undefined) return null;
+    return +result;
   }
 
   unregisterForm() {
