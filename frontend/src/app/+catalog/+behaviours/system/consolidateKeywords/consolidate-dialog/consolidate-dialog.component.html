@@ -20,52 +20,67 @@
                     <div class="label-wrapper">
                         <label>Gemet Schlagworte</label>
                     </div>
-                    <mat-chip-listbox class="chip-list">
-                        <mat-chip
-                            *ngFor="let keyword of gemetKeywordsNew"
-                            [ngClass]="{
-                                'added-keyword': keyword.status === 'added',
-                                'removed-keyword': keyword.status === 'removed'
-                            }"
-                            [disabled]="keyword.status === 'removed'"
-                        >
-                            {{ keyword.label }}
-                        </mat-chip>
-                    </mat-chip-listbox>
+                    @if (gemetKeywordsNew.length > 0) {
+                        <mat-chip-listbox class="chip-list">
+                            <mat-chip
+                                *ngFor="let keyword of gemetKeywordsNew"
+                                [ngClass]="{
+                                    'added-keyword': keyword.status === 'added',
+                                    'removed-keyword':
+                                        keyword.status === 'removed'
+                                }"
+                                [disabled]="keyword.status === 'removed'"
+                            >
+                                {{ keyword.label }}
+                            </mat-chip>
+                        </mat-chip-listbox>
+                    } @else {
+                        ---
+                    }
                 </div>
                 <div class="keyword-section">
                     <div class="label-wrapper">
                         <label>Umthes Schlagworte</label>
                     </div>
-                    <mat-chip-listbox class="chip-list">
-                        <mat-chip
-                            *ngFor="let keyword of umthesKeywordsNew"
-                            [ngClass]="{
-                                'added-keyword': keyword.status === 'added',
-                                'removed-keyword': keyword.status === 'removed'
-                            }"
-                            [disabled]="keyword.status === 'removed'"
-                        >
-                            {{ keyword.label }}
-                        </mat-chip>
-                    </mat-chip-listbox>
+                    @if (umthesKeywordsNew.length > 0) {
+                        <mat-chip-listbox class="chip-list">
+                            <mat-chip
+                                *ngFor="let keyword of umthesKeywordsNew"
+                                [ngClass]="{
+                                    'added-keyword': keyword.status === 'added',
+                                    'removed-keyword':
+                                        keyword.status === 'removed'
+                                }"
+                                [disabled]="keyword.status === 'removed'"
+                            >
+                                {{ keyword.label }}
+                            </mat-chip>
+                        </mat-chip-listbox>
+                    } @else {
+                        ---
+                    }
                 </div>
                 <div class="keyword-section">
                     <div class="label-wrapper">
                         <label>Freie Schlagworte</label>
                     </div>
-                    <mat-chip-listbox class="chip-list">
-                        <mat-chip
-                            *ngFor="let keyword of freeKeywordsNew"
-                            [ngClass]="{
-                                'added-keyword': keyword.status === 'added',
-                                'removed-keyword': keyword.status === 'removed'
-                            }"
-                            [disabled]="keyword.status === 'removed'"
-                        >
-                            {{ keyword.label }}
-                        </mat-chip>
-                    </mat-chip-listbox>
+                    @if (freeKeywordsNew.length > 0) {
+                        <mat-chip-listbox class="chip-list">
+                            <mat-chip
+                                *ngFor="let keyword of freeKeywordsNew"
+                                [ngClass]="{
+                                    'added-keyword': keyword.status === 'added',
+                                    'removed-keyword':
+                                        keyword.status === 'removed'
+                                }"
+                                [disabled]="keyword.status === 'removed'"
+                            >
+                                {{ keyword.label }}
+                            </mat-chip>
+                        </mat-chip-listbox>
+                    } @else {
+                        ---
+                    }
                 </div>
             </div>
             <div *ngIf="isLoading" class="loading-wrapper">
