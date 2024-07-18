@@ -127,6 +127,7 @@ export class ConsolidateKeywordsPlugin extends Plugin {
       );
 
       this.formSubscriptions.push(onDocLoad);
+      this.formSubscriptions.push(onEvent);
     }
   }
 
