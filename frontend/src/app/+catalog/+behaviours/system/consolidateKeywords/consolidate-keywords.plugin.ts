@@ -89,7 +89,17 @@ export class ConsolidateKeywordsPlugin extends Plugin {
     if (this.isPrivileged && !this.forAddress) {
       const onEvent = this.docEvents
         .onEvent("OPEN_CONSOLIDATE_KEYWORDS_DIALOG")
-        .subscribe((event) => {
+        .subscribe(async (event) => {
+          const handled = await FormUtils.handleDirtyForm(
+            this.formStateService.getForm(),
+            this.documentService,
+            this.dialog,
+            false,
+          );
+          if (!handled) {
+            return;
+          }
+
           this.openConsolidateKeywordsDialog(event.data.id).subscribe(
             async (confirmed) => {
               if (confirmed) {

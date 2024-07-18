@@ -21,7 +21,6 @@ import { Component, Inject, OnInit } from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
 import {
   MAT_DIALOG_DATA,
-  MatDialog,
   MatDialogModule,
   MatDialogRef,
 } from "@angular/material/dialog";
@@ -71,8 +70,8 @@ export class ConsolidateDialogComponent implements OnInit {
     private documentService: DocumentService,
     private documentDataService: DocumentDataService,
     private dialogRef: MatDialogRef<ConsolidateDialogComponent>,
-    private dialog: MatDialog,
     private snackBar: MatSnackBar,
+
     public configService: ConfigService,
     private keywordAnalysis: KeywordAnalysis,
   ) {
