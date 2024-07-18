@@ -21,15 +21,12 @@ package de.ingrid.igeserver.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.model.KeyValue
-import java.time.OffsetDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AddressModel(
     @JsonProperty("_uuid") val uuid: String,
-    @JsonProperty("_id") val id: Int,
+//    @JsonProperty("_id") val id: Int,
     @JsonProperty("_type") val docType: String,
     val salutation: KeyValue?,
     @JsonProperty("academic-title") val academicTitle: KeyValue?,
@@ -42,13 +39,13 @@ data class AddressModel(
     var address: Address = Address("", "", "", "", "", null, null),
     var positionName: String?,
     var hoursOfService: String?,
-    @JsonDeserialize(using = DateDeserializer::class)
-    @JsonProperty("_created") val created: OffsetDateTime,
-    @JsonDeserialize(using = DateDeserializer::class)
-    @JsonProperty("_modified") val modified: OffsetDateTime,
-    @JsonDeserialize(using = DateDeserializer::class)
-    @JsonProperty("_contentModified") val contentmodified: OffsetDateTime,
-    @JsonProperty("_parent") val parent: Int?,
+//    @JsonDeserialize(using = DateDeserializer::class)
+//    @JsonProperty("_created") val created: OffsetDateTime,
+//    @JsonDeserialize(using = DateDeserializer::class)
+//    @JsonProperty("_modified") val modified: OffsetDateTime,
+//    @JsonDeserialize(using = DateDeserializer::class)
+//    @JsonProperty("_contentModified") val contentmodified: OffsetDateTime,
+//    @JsonProperty("_parent") val parent: Int?,
 ) {
 
     val telephone: String? get() = contactType("1")

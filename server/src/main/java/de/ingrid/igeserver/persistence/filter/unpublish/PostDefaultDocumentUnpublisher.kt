@@ -56,7 +56,7 @@ class PostDefaultDocumentUnpublisher(
             category = PostDataHistoryLogger.LOG_CATEGORY,
             action = payload.action.name.lowercase(),
             target = docId,
-            data = getRawJsonFromDocument(payload.document),
+            data = getRawJsonFromDocument(payload.document, true),
             logger = PostDataHistoryLogger.LOGGER_NAME,
             catalogIdentifier = payload.catalogIdentifier,
             principal = context.principal
