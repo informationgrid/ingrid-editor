@@ -740,20 +740,6 @@ export abstract class IngridShared extends BaseDoctype {
     field.formControl.enable();
     field.formControl.setValue("");
   }
-  async isUrlAvailable(url: string): Promise<boolean> {
-    try {
-      const response = await fetch(url, {
-        method: "HEAD",
-        mode: "no-cors", // This is to avoid CORS issues
-      });
-      // Check if response status is in the range of 200-299
-      return response.ok;
-    } catch (error) {
-      // If there's an error, it means the URL is not available
-      return false;
-    }
-  }
-
   private informUserAboutThesaurusAnalysis(res: Awaited<ThesaurusResult>[]) {
     this.snack.openFromComponent(ThesaurusReportComponent, {
       duration: 20000,
