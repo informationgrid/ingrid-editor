@@ -84,9 +84,9 @@ export class ConsolidateDialogComponent implements OnInit {
   umthesKeywords: any[];
   freeKeywords: any[];
 
-  gemetKeywordsNew: any[] = [];
-  umthesKeywordsNew: any[] = [];
-  freeKeywordsNew: any[] = [];
+  gemetKeywordsNew: ThesaurusResult[] = [];
+  umthesKeywordsNew: ThesaurusResult[] = [];
+  freeKeywordsNew: ThesaurusResult[] = [];
   isLoading: boolean;
 
   ngOnInit() {
@@ -224,15 +224,15 @@ export class ConsolidateDialogComponent implements OnInit {
       alternateLabel: k["value"].alternativeLabel || null,
     }));
   }
-  private removeDuplicates(arr: Object[], uniqueKey: string) {
+  private removeDuplicates(arr: any[], uniqueKey: string) {
     return arr.filter(
       (item, index, self) =>
         index === self.findIndex((t) => t[uniqueKey] === item[uniqueKey]),
     );
   }
 
-  private sortByStatus(keywords: Object[]) {
-    return keywords.sort((a, b) => (a["status"] === "removed" ? 1 : -1));
+  private sortByStatus(keywords: any[]) {
+    return keywords.sort((a, b) => (a.status === "removed" ? 1 : -1));
   }
 
   private sortKeywordsByStatus() {
