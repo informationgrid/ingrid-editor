@@ -1,3 +1,5 @@
+@import "src/variables.scss";
+
 .keyword-section {
   display: flex;
   margin-top: 12px;
@@ -28,12 +30,12 @@
 
 /* Chip status styles */
 .added-keyword {
-  background-color: #4caf50; /* Green */
+  background-color: $ige-check-color; /* Green */
   color: white;
 }
 
 .removed-keyword {
-  background-color: #f44336; /* Red */
+  background-color: $error-color; /* Red */
   color: white;
 }
 
