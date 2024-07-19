@@ -38,7 +38,10 @@ import { FormToolbarService } from "../toolbar/form-toolbar.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import { ModalService } from "../../../services/modal/modal.service";
-import { IgeDocument } from "../../../models/ige-document";
+import {
+  DocumentWithMetadata,
+  IgeDocument,
+} from "../../../models/ige-document";
 import { FormUtils } from "../../form.utils";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
@@ -110,6 +113,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   error = false;
   // @ts-ignore
   model: IgeDocument = {};
+
+  metadata = this.formStateService.metadata;
 
   paddingWithHeader: string;
 
@@ -274,7 +279,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // reset dirty flag after save
     this.docEvents.afterSave$(this.address).subscribe((data) => {
       this.formStateService.updateMetadata(data.metadata);
-      this.updateFormWithData(data.documentWithMetadata);
+      this.updateFormWithData(data);
     });
 
     this.documentService.documentOperationFinished$
@@ -357,17 +362,20 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         untilDestroyed(this),
         filter((doc) => doc != null),
         tap((doc) => this.formStateService.updateMetadata(doc.metadata)),
-        map((doc) => doc.documentWithMetadata),
-        tap((doc) => this.handleReadOnlyState(doc)),
-        tap((doc) => this.treeService.selectTreeNode(this.address, doc._id)),
+        tap((doc) => this.handleReadOnlyState(doc.documentWithMetadata)),
         tap((doc) =>
-          this.loadSubscription.push(this.updateBreadcrumb(doc._id)),
+          this.treeService.selectTreeNode(this.address, doc.metadata.wrapperId),
+        ),
+        tap((doc) =>
+          this.loadSubscription.push(
+            this.updateBreadcrumb(doc.metadata.wrapperId),
+          ),
         ),
         catchError((error: HttpErrorResponse) =>
           this.handleLoadError(error, previousDocUuid),
         ),
       )
-      .subscribe((doc: IgeDocument) => this.updateFormWithData(doc));
+      .subscribe((doc: DocumentWithMetadata) => this.updateFormWithData(doc));
 
     this.loadSubscription.push(loadSubscription);
   }
@@ -419,12 +427,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  private updateFormWithData(data: IgeDocument) {
+  private updateFormWithData(data: DocumentWithMetadata) {
     if (data === null) {
       return;
     }
 
-    const profile = data._type;
+    const profile = data.metadata.docType;
 
     if (profile === null) {
       throw new Error("Dieses Dokument hat keinen Dokumententyp!");
@@ -447,9 +455,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.cdr.detectChanges();
       }
 
-      this.formOptions.resetModel(data);
-      this.model = data;
-      this.prepareForm(data.hasWritePermission && !this.readonly);
+      this.formOptions.resetModel(data.document);
+      this.model = data.document;
+      this.prepareForm(data.metadata.hasWritePermission && !this.readonly);
 
       this.formInfoModel = { ...this.model };
 

@@ -7,7 +7,7 @@
             (select)="scrollToTreeNode($event)"
         ></ige-breadcrumb>
         <ige-publish-pending
-            [doc]="_model"
+            [metadata]="metadata()"
             [forAddress]="forAddress"
         ></ige-publish-pending>
         <ige-header-title-row

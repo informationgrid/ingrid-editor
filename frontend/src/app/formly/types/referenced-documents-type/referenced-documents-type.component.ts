@@ -129,7 +129,9 @@ export class ReferencedDocumentsTypeComponent
       .pipe(
         tap((response) => (this.totalHits = response.totalHits)),
         map((response) =>
-          this.documentService.mapToDocumentAbstracts(response.hits),
+          this.documentService.mapSearchResponseToDocumentAbstracts(
+            response.hits,
+          ),
         ),
         tap((docs) => (this.docs = docs)),
         tap(() => (this.isLoading = false)),

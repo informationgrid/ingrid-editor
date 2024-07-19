@@ -237,7 +237,7 @@ export class DocumentService {
                 new Date(a._contentModified).getTime() -
                 new Date(b._contentModified).getTime(),
             );
-          return this.mapToDocumentAbstracts(combined, null);
+          return this.mapSearchResponseToDocumentAbstracts(combined);
         }),
         tap((docs) =>
           this.sessionStore.update({ oldestExpiredDocuments: docs }),
@@ -270,7 +270,13 @@ export class DocumentService {
     isAddress?: boolean,
   ): Observable<DocumentAbstract[]> {
     return this.dataService.getChildren(parentId, isAddress).pipe(
-      map((docs) => this.mapToDocumentAbstracts(docs, parentId)),
+      map((docs) => {
+        docs.forEach((doc) => {
+          doc.icon = this.profileService.getDocumentIcon(doc._type);
+          doc.isRoot = parentId === null;
+        });
+        return docs as DocumentAbstract[];
+      }),
       tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs)),
     );
   }
@@ -286,7 +292,7 @@ export class DocumentService {
       // map((data) => this.mapDocumentWithMetadata(data)),
       tap((doc) => {
         if (updateStore) {
-          this.updateTreeStore(doc.documentWithMetadata, address);
+          this.updateTreeStore(doc, address);
         }
       }),
       tap((doc) =>
@@ -420,14 +426,14 @@ export class DocumentService {
       ? this.addressTreeStore
       : this.treeStore;
 
-    if (!saveOptions.dontUpdateForm)
+    if (!saveOptions.dontUpdateForm) {
+      this.dataService.mapDocumentWithMetadata(saveOptions.dataWithMetadata);
       this.docEvents.sendAfterSave(saveOptions.dataWithMetadata);
+    }
 
     const parentId = saveOptions.dataWithMetadata.metadata.parentId;
-    const info = this.mapToDocumentAbstracts(
-      [saveOptions.dataWithMetadata.documentWithMetadata],
-      parentId,
-    )[0];
+    const info = this.mapToDocumentAbstracts([saveOptions.dataWithMetadata])[0];
+    info.isRoot = saveOptions.dataWithMetadata.metadata.parentId === null;
 
     // after renaming a folder the folder must still be expandable
     if (!saveOptions.isNewDoc) {
@@ -479,7 +485,7 @@ export class DocumentService {
       tap((json) =>
         // @ts-ignore
         this.postSaveActions({
-          data: json.documentWithMetadata,
+          // data: json.documentWithMetadata,
           dataWithMetadata: json,
           isNewDoc: false,
           isAddress: isAddress,
@@ -492,14 +498,7 @@ export class DocumentService {
   unpublish(id: number, forAddress: boolean): Observable<any> {
     const store = forAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.unpublish(id).pipe(
-      map(
-        (data) =>
-          this.dataService.mapDocumentWithMetadata(data).documentWithMetadata,
-      ),
-      catchError((error) => {
-        return this.handleUnpublishError(error, id);
-      }),
-      map((json) => this.mapToDocumentAbstracts([json], json._parent)),
+      map((json) => this.mapToDocumentAbstracts([json])),
       tap((json) =>
         store.update({
           datasetsChanged: { type: UpdateType.Update, data: json },
@@ -514,27 +513,16 @@ export class DocumentService {
           "Die Veröffentlichung wurde zurückgezogen.",
         ),
       ),
+      catchError((error) => {
+        return this.handleUnpublishError(error, id);
+      }),
     );
   }
 
   cancelPendingPublishing(id: number, forAddress: boolean): Observable<any> {
     const store = forAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.cancelPendingPublishing(id).pipe(
-      catchError((error) => {
-        if (error?.error?.errorCode === "POST_SAVE_ERROR") {
-          console.error(error?.error?.errorText);
-          this.messageService.sendError(
-            "Problem beim Abbrechen der geplanten Veröffentlichung: " +
-              error?.error?.errorText,
-          );
-          return this.load(id);
-        }
-      }),
-      map(
-        (data) =>
-          this.dataService.mapDocumentWithMetadata(data).documentWithMetadata,
-      ),
-      map((json) => this.mapToDocumentAbstracts([json], json._parent)),
+      map((json) => this.mapToDocumentAbstracts([json])),
       tap((json) =>
         store.update({
           datasetsChanged: { type: UpdateType.Update, data: json },
@@ -548,6 +536,16 @@ export class DocumentService {
           "Die geplante Veröffentlichung wurde abgebrochen.",
         ),
       ),
+      catchError((error) => {
+        if (error?.error?.errorCode === "POST_SAVE_ERROR") {
+          console.error(error?.error?.errorText);
+          this.messageService.sendError(
+            "Problem beim Abbrechen der geplanten Veröffentlichung: " +
+              error?.error?.errorText,
+          );
+          return this.load(id);
+        }
+      }),
     );
   }
 
@@ -607,12 +605,7 @@ export class DocumentService {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     return this.dataService.revert(id).pipe(
-      map((json) =>
-        this.mapToDocumentAbstracts(
-          [json.documentWithMetadata],
-          json.documentWithMetadata._parent,
-        ),
-      ),
+      map((json) => this.mapToDocumentAbstracts([json])),
       map((json) => {
         json[0]._hasChildren = store.getValue().entities[id]._hasChildren;
         return json;
@@ -677,8 +670,8 @@ export class DocumentService {
       tap((docs) => {
         this.messageService.sendInfo("Datensatz wurde kopiert");
 
-        const mappedDocs = docs.map((data) => data.documentWithMetadata);
-        const infos = this.mapToDocumentAbstracts(mappedDocs, dest);
+        // const mappedDocs = docs.map((data) => data.documentWithMetadata);
+        const infos = this.mapToDocumentAbstracts(docs);
 
         this.updateStoreAfterCopy(infos, dest, isAddress);
 
@@ -860,29 +853,49 @@ export class DocumentService {
     this.addressTreeStore.reset();
   }
 
-  mapToDocumentAbstracts(
-    docs: IgeDocument[],
-    parentId?: number,
-  ): DocumentAbstract[] {
+  mapToDocumentAbstracts(docs: DocumentWithMetadata[]): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
-        id: doc._id ? doc._id : null,
-        icon: this.profileService.getDocumentIcon(doc),
+        id: doc.metadata.wrapperId ?? null,
+        icon: this.profileService.getDocumentIcon(doc.metadata.docType),
+        title: doc.document.title || "-Kein Titel-",
+        _uuid: doc.metadata.uuid,
+        _state: doc.metadata.state,
+        _hasChildren: doc.metadata.hasChildren,
+        _parent: doc.metadata.parentId ?? null,
+        _type: doc.metadata.docType,
+        _modified: doc.metadata.modified,
+        _contentModified: doc.metadata.contentModified,
+        _pendingDate: doc.metadata.pendingDate,
+        _tags: doc.metadata.tags,
+        hasWritePermission: doc.metadata.hasWritePermission ?? false,
+        hasOnlySubtreeWritePermission:
+          doc.metadata.hasOnlySubtreeWritePermission ?? false,
+        isAddress: doc.document.isAddress,
+      };
+    });
+  }
+
+  mapSearchResponseToDocumentAbstracts(docs: any[]): DocumentAbstract[] {
+    return docs.map((doc) => {
+      return {
+        id: doc._id,
+        icon: this.profileService.getDocumentIcon(doc.type),
         title: doc.title || "-Kein Titel-",
         _uuid: doc._uuid,
         _state: doc._state,
-        _hasChildren: doc._hasChildren,
-        _parent: doc._parent ?? null,
+        _hasChildren: null,
+        _parent: null,
         _type: doc._type,
-        _modified: doc._modified,
+        _modified: null,
         _contentModified: doc._contentModified,
-        _pendingDate: doc._pendingDate,
+        _pendingDate: null,
         _tags: doc._tags,
         hasWritePermission: doc.hasWritePermission ?? false,
         hasOnlySubtreeWritePermission:
           doc.hasOnlySubtreeWritePermission ?? false,
-        isRoot: parentId === null,
-        isAddress: doc.isAddress,
+        isRoot: null,
+        isAddress: null,
       };
     });
   }
@@ -898,8 +911,8 @@ export class DocumentService {
     }
   }
 
-  private updateTreeStore(doc: IgeDocument, address: boolean) {
-    const absDoc = this.mapToDocumentAbstracts([doc], doc._parent)[0];
+  private updateTreeStore(doc: DocumentWithMetadata, address: boolean) {
+    const absDoc = this.mapToDocumentAbstracts([doc])[0];
     return this.updateOpenedDocumentInTreestore(absDoc, address);
   }
 
@@ -918,7 +931,7 @@ export class DocumentService {
   ): SearchResult {
     return {
       totalHits: result.totalHits,
-      hits: this.mapToDocumentAbstracts(result.hits, null),
+      hits: this.mapSearchResponseToDocumentAbstracts(result.hits),
     } as SearchResult;
   }
 

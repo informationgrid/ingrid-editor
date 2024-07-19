@@ -26,6 +26,7 @@ import {
 import { FieldWrapper } from "@ngx-formly/core";
 import { ConfigService } from "../../services/config/config.service";
 import { ContextHelpService } from "../../services/context-help/context-help.service";
+import { FormStateService } from "../../+form/form-state.service";
 
 @Component({
   selector: "ige-one-column-wrapper",
@@ -45,6 +46,7 @@ export class OneColumnWrapperComponent
   constructor(
     public configService: ConfigService,
     public contextHelpService: ContextHelpService,
+    private formStateService: FormStateService,
   ) {
     super();
   }
@@ -57,7 +59,7 @@ export class OneColumnWrapperComponent
   showContextHelp(infoElement: HTMLElement) {
     this.contextHelpService.showContextHelp(
       this.profile,
-      this.formState.mainModel?._type,
+      this.formStateService.metadata()?.docType,
       this.field.props.contextHelpId || this.fieldId,
       this.props.externalLabel,
       infoElement,

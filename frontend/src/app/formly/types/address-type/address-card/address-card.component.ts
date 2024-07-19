@@ -75,9 +75,7 @@ export class AddressCardComponent implements OnInit {
     }
 
     this.content = {
-      iconClass: this.profileService.getDocumentIcon(
-        <IgeDocument>this.address.ref,
-      ),
+      iconClass: this.profileService.getDocumentIcon(this.address.ref._type),
       role: this.address.type,
       title: this.getTitle(this.address.ref),
       secondTitle: this.getSecondTitle(this.address.ref),

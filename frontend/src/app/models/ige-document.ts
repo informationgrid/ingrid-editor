@@ -21,6 +21,9 @@ export type DocumentState = "P" | "W" | "PW" | "PENDING";
 
 export class DocumentWithMetadata {
   document: IgeDocument;
+  /**
+   * @Deprecated
+   */
   documentWithMetadata: IgeDocument;
   metadata: Metadata;
 }

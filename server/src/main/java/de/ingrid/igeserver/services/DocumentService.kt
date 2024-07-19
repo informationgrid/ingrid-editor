@@ -61,7 +61,7 @@ enum class InitiatorAction {
 }
 
 data class DocumentInfo(
-    val _id: Number,
+    val id: Number,
     val title: String,
     val _uuid: String,
     val _state: String,

@@ -212,7 +212,6 @@ export class RepeatDistributionDetailListComponent
             index === undefined
               ? this.getEmptyEntry()
               : JSON.parse(JSON.stringify(this.model[this.key + ""][index])),
-          formState: { mainModel: { _type: this.formState.mainModel?._type } },
         },
         delayFocusTrap: true,
       })

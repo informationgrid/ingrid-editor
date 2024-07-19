@@ -29,6 +29,7 @@ import {
 import { FieldWrapper } from "@ngx-formly/core";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { ConfigService } from "../../../services/config/config.service";
+import { FormStateService } from "../../../+form/form-state.service";
 
 @Component({
   selector: "ige-inline-help-wrapper",
@@ -47,6 +48,7 @@ export class InlineHelpWrapperComponent
   constructor(
     public configService: ConfigService,
     public contextHelpService: ContextHelpService,
+    private formStateService: FormStateService,
   ) {
     super();
   }
@@ -81,7 +83,7 @@ export class InlineHelpWrapperComponent
       this.props.fieldLabel ?? this.props.label ?? this.props.externalLabel;
     this.contextHelpService.showContextHelp(
       this.profile,
-      this.formState.mainModel?._type,
+      this.formStateService.metadata()?.docType,
       this.field.props.contextHelpId || this.fieldId,
       title,
       infoElement,

@@ -61,6 +61,7 @@ export class GeoDatasetDoctype extends IngridShared {
   constructor() {
     super();
     this.options.required.spatialSystems = true;
+    this.options.required.extraInfoLangData = true;
   }
 
   documentFields = () => {

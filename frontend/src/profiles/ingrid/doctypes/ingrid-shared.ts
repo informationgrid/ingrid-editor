@@ -90,6 +90,7 @@ export abstract class IngridShared extends BaseDoctype {
       resourceDateType: false,
       spatialReferences: true,
       spatialSystems: false,
+      extraInfoLangData: false,
     },
     hide: {
       openData: false,
@@ -1076,13 +1077,11 @@ export abstract class IngridShared extends BaseDoctype {
                   "extraInfoLangData",
                 ),
                 codelistId: "99999999",
-                required: true,
+                required: this.options.required.extraInfoLangData,
                 defaultValue: ["150"],
-                expressions: {
-                  "props.required":
-                    "['InGridGeoDataset', 'InGridPublication', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
-                  className: "field.props.required ? '' : 'optional'",
-                },
+                className: this.options.required.extraInfoLangData
+                  ? ""
+                  : "optional",
               }),
             ])
           : null,

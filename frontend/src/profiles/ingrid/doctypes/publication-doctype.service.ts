@@ -33,6 +33,11 @@ export class PublicationDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
+  constructor() {
+    super();
+    this.options.required.extraInfoLangData = true;
+  }
+
   documentFields = () => {
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection(),

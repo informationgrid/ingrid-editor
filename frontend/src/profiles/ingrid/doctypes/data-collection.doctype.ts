@@ -36,6 +36,7 @@ export class DataCollectionDoctype extends IngridShared {
   constructor() {
     super();
     this.options.hide.openData = false;
+    this.options.required.extraInfoLangData = true;
   }
 
   documentFields = () => {

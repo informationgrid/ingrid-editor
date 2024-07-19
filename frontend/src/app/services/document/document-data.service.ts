@@ -26,6 +26,7 @@ import { PathResponse } from "../../models/path-response";
 import { TagRequest } from "../../models/tag-request.model";
 import { map } from "rxjs/operators";
 import { SaveOptions } from "./document.service";
+import { DocumentAbstract } from "../../store/document/document.model";
 
 @Injectable({
   providedIn: "root",
@@ -42,10 +43,13 @@ export class DocumentDataService {
     );
   }
 
-  getChildren(parentId: number, isAddress = false): Observable<any[]> {
+  getChildren(
+    parentId: number,
+    isAddress = false,
+  ): Observable<Partial<DocumentAbstract>[]> {
     const params = this.createGetChildrenParams(parentId, isAddress);
     const url = `${this.configuration.backendUrl}tree/children` + params;
-    return this.http.get<any[]>(url);
+    return this.http.get<Partial<DocumentAbstract>[]>(url);
   }
 
   load(id: string | number, useUuid = false): Observable<DocumentWithMetadata> {
@@ -144,33 +148,27 @@ export class DocumentDataService {
     if (publishDate != null)
       parameters += "&publishDate=" + publishDate.toISOString();
     if (id === null) {
-      return this.http
-        .post<DocumentWithMetadata>(
-          `${this.configuration.backendUrl}datasets?type=${data._type}${parameters}`,
-          data,
-        )
-        .pipe(map((data) => this.mapDocumentWithMetadata(data)));
+      return this.http.post<DocumentWithMetadata>(
+        `${this.configuration.backendUrl}datasets?type=${data._type}${parameters}`,
+        data,
+      );
     } else {
-      return this.http
-        .put<DocumentWithMetadata>(
-          `${this.configuration.backendUrl}datasets/${id}?version=${version}${parameters}`,
-          data,
-        )
-        .pipe(map((data) => this.mapDocumentWithMetadata(data)));
+      return this.http.put<DocumentWithMetadata>(
+        `${this.configuration.backendUrl}datasets/${id}?version=${version}${parameters}`,
+        data,
+      );
     }
   }
 
   unpublish(id: number): Observable<DocumentWithMetadata> {
-    return this.http
-      .put<DocumentWithMetadata>(
-        this.configuration.backendUrl + "datasets/" + id + "?unpublish=true",
-        {},
-      )
-      .pipe(map((data) => this.mapDocumentWithMetadata(data)));
+    return this.http.put<DocumentWithMetadata>(
+      this.configuration.backendUrl + "datasets/" + id + "?unpublish=true",
+      {},
+    );
   }
 
-  cancelPendingPublishing(id: number): Observable<any> {
-    return this.http.put(
+  cancelPendingPublishing(id: number): Observable<DocumentWithMetadata> {
+    return this.http.put<DocumentWithMetadata>(
       this.configuration.backendUrl +
         "datasets/" +
         id +
@@ -184,12 +182,10 @@ export class DocumentDataService {
   }
 
   revert(id: number): Observable<DocumentWithMetadata> {
-    return this.http
-      .put<DocumentWithMetadata>(
-        this.configuration.backendUrl + "datasets/" + id + "?revert=true",
-        {},
-      )
-      .pipe(map((data) => this.mapDocumentWithMetadata(data)));
+    return this.http.put<DocumentWithMetadata>(
+      this.configuration.backendUrl + "datasets/" + id + "?revert=true",
+      {},
+    );
   }
 
   getPath(id: number): Observable<PathResponse[]> {
@@ -204,19 +200,10 @@ export class DocumentDataService {
     includeTree: boolean,
   ): Observable<DocumentWithMetadata[]> {
     const body = this.prepareCopyCutBody(dest, includeTree);
-    return this.http
-      .post<DocumentWithMetadata[]>(
-        this.configuration.backendUrl +
-          "datasets/" +
-          srcIDs.join(",") +
-          "/copy",
-        body,
-      )
-      .pipe(
-        map((data) => {
-          return data.map((doc) => this.mapDocumentWithMetadata(doc));
-        }),
-      );
+    return this.http.post<DocumentWithMetadata[]>(
+      this.configuration.backendUrl + "datasets/" + srcIDs.join(",") + "/copy",
+      body,
+    );
   }
 
   move(srcIDs: number[], dest: number) {

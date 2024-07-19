@@ -71,7 +71,6 @@ export class TableTypeComponent
   formattedCell: Array<any> = [];
 
   private profile: string;
-  private docType: string;
   private fieldId: string;
 
   constructor(
@@ -131,14 +130,13 @@ export class TableTypeComponent
 
   ngAfterViewInit() {
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
-    this.docType = this.props.docType ?? this.model?._type;
     this.fieldId = <string>this.field.key;
   }
 
   showContextHelp(infoElement: HTMLElement) {
     this.contextHelpService.showContextHelp(
       this.profile,
-      this.docType,
+      this.formStateService.metadata().docType,
       this.fieldId,
       this.props.externalLabel,
       infoElement,
