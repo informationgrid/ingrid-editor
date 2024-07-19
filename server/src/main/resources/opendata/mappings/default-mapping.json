@@ -340,7 +340,7 @@
       "store": true
     },
     "t04_search.searchterm": {
-      "type": "text",
+      "type": "keyword",
       "store": true
     },
     "t017_url_ref.url_link": {
