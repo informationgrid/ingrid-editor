@@ -158,29 +158,25 @@ export class ConsolidateDialogComponent implements OnInit {
                 if (res.thesaurus === "Gemet Schlagworte") {
                   res["status"] = "added";
                   this.gemetKeywordsNew.push(res);
-                  if (!res.alreadyExists) {
-                    if (keyword.label === res.label) {
-                      this.freeKeywordsNew.push({ ...res, status: "removed" });
-                    } else {
-                      this.freeKeywordsNew.push({
-                        ...keyword,
-                        status: "unchanged",
-                      });
-                    }
+                  if (keyword.label === res.label) {
+                    this.freeKeywordsNew.push({ ...res, status: "removed" });
+                  } else {
+                    this.freeKeywordsNew.push({
+                      ...keyword,
+                      status: "unchanged",
+                    });
                   }
                 }
                 if (res.thesaurus === "Umthes Schlagworte") {
                   res["status"] = "added";
                   this.umthesKeywordsNew.push(res);
-                  if (!res.alreadyExists) {
-                    if (keyword.label === res.label) {
-                      this.freeKeywordsNew.push({ ...res, status: "removed" });
-                    } else {
-                      this.freeKeywordsNew.push({
-                        ...keyword,
-                        status: "unchanged",
-                      });
-                    }
+                  if (keyword.label === res.label) {
+                    this.freeKeywordsNew.push({ ...res, status: "removed" });
+                  } else {
+                    this.freeKeywordsNew.push({
+                      ...keyword,
+                      status: "unchanged",
+                    });
                   }
                 }
                 if (res.thesaurus === "Freie Schlagworte") {
@@ -191,7 +187,6 @@ export class ConsolidateDialogComponent implements OnInit {
             }),
         ),
       ]).then(() => {
-        // this.freeKeywordsNew = [...this.freeKeywords, ...this.freeKeywordsNew];
         this.sortKeywordsByStatus();
         this.removeDuplicateKeywords();
         this.isLoading = false;
