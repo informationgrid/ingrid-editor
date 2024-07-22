@@ -200,8 +200,9 @@ class IgeAclService(
 
     fun getDocumentIdsForGroups(principal: Principal, permissionLevel: String, catalogId: String): List<Int> {
         val groups = authUtils.getCurrentUserRoles(catalogId)
-        val hasAccessToRootDocs = authUtils.isAdmin(principal) || hasRootAccess(groups)
-        return if (hasAccessToRootDocs) emptyList() else getAllDatasetIdsFromGroups(groups)
+        // temporary solution for support branch. Full refactor on main branch with commit id 64689353fe18a8ec80d009ee4cd3b5b2921dc9e2
+        val hasWriteAccessToRootDocs = authUtils.isAdmin(principal) || groups.any { RootPermissionType.WRITE == it.permissions?.rootPermission }
+        return if (hasWriteAccessToRootDocs) emptyList() else getAllDatasetIdsFromGroups(groups, permissionLevel)
     }
 
 }
