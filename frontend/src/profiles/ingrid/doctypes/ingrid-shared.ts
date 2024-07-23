@@ -1607,11 +1607,14 @@ export abstract class IngridShared extends BaseDoctype {
       if (isOpenData) field.form.get("resource.accessConstraints").setValue([]);
 
       const conformanceResultCtrl = field.form.get("conformanceResult");
-      conformanceResultCtrl.setValue(
-        (conformanceResultCtrl.value ?? []).filter(
-          (item) => item.specification?.key !== specificationToRemove,
-        ),
-      );
+      // only set conformance value when field is available (#6535)
+      if (conformanceResultCtrl) {
+        conformanceResultCtrl.setValue(
+          (conformanceResultCtrl.value ?? []).filter(
+            (item) => item.specification?.key !== specificationToRemove,
+          ),
+        );
+      }
     };
 
     if (this.cookieService.getCookie(cookieId) === "true") {
