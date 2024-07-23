@@ -31,6 +31,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
@@ -170,10 +171,11 @@ class PostMigrationTask(
                     .putNull("_parent")
                     .put("title", organization)
                     .put("organization", organization)
+                val document = convertToDocument(organizationData)
                 val organizationDoc = documentService.createDocument(
                     auth as Principal,
                     catalogIdentifier,
-                    organizationData,
+                    document,
                     rootFolderId,
                     address = true
                 )
@@ -194,8 +196,9 @@ class PostMigrationTask(
             .put("_type", "FOLDER")
             .putNull("_parent")
             .put("title", "Freie Adressen")
+        val document = convertToDocument(folderData)
         val folderDoc =
-            documentService.createDocument(auth as Principal, catalogIdentifier, folderData, null, true)
+            documentService.createDocument(auth as Principal, catalogIdentifier, document, null, true)
         documentService.docWrapperRepo.flush()
         return folderDoc.wrapper.id!!
     }
@@ -210,11 +213,12 @@ class PostMigrationTask(
             .put("_type", "FOLDER")
             .put("title", title)
 
+        val document = convertToDocument(folderData)
         val folderDoc =
             documentService.createDocument(
                 auth as Principal,
                 catalogIdentifier,
-                folderData,
+                document,
                 migratedObject.parent?.id,
                 false
             )
@@ -441,8 +445,9 @@ class PostMigrationTask(
                     .put("_type", "FOLDER")
                     .put("_parent", parentId.toString())
                     .put("title", title)
+                val document = convertToDocument(folderData)
                 val folderDoc =
-                    documentService.createDocument(auth as Principal, catalogIdentifier, folderData, parentId)
+                    documentService.createDocument(auth as Principal, catalogIdentifier, document, parentId)
                 documentService.docWrapperRepo.flush()
 
                 parentId = folderDoc.wrapper.id!!

@@ -194,7 +194,7 @@ export class AssignedUserBehaviour extends Plugin {
     console.log("currentUUID", currentUUID);
 
     const handled = await FormUtils.handleDirtyForm(
-      this.formStateService.getForm(),
+      this.formStateService,
       this.documentService,
       this.dialog,
       this.forAddress,

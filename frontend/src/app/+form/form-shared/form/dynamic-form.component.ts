@@ -38,14 +38,17 @@ import { FormToolbarService } from "../toolbar/form-toolbar.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
 import { ModalService } from "../../../services/modal/modal.service";
-import { IgeDocument } from "../../../models/ige-document";
+import {
+  DocumentWithMetadata,
+  IgeDocument,
+} from "../../../models/ige-document";
 import { FormUtils } from "../../form.utils";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
 import { SessionQuery } from "../../../store/session.query";
 import { FormularService } from "../../formular.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { debounceTime, filter, map, tap } from "rxjs/operators";
+import { catchError, debounceTime, filter, map, tap } from "rxjs/operators";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import {
   combineLatest,
@@ -110,6 +113,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   error = false;
   // @ts-ignore
   model: IgeDocument = {};
+
+  metadata = this.formStateService.metadata;
 
   paddingWithHeader: string;
 
@@ -272,9 +277,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(() => (this.showBlocker = true));
 
     // reset dirty flag after save
-    this.docEvents
-      .afterSave$(this.address)
-      .subscribe((data) => this.updateFormWithData(data));
+    this.docEvents.afterSave$(this.address).subscribe((data) => {
+      this.formStateService.updateMetadata(data.metadata);
+      this.updateFormWithData(data);
+    });
 
     this.documentService.documentOperationFinished$
       .pipe(untilDestroyed(this))
@@ -355,17 +361,21 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(
         untilDestroyed(this),
         filter((doc) => doc != null),
-        tap((doc) => this.handleReadOnlyState(doc)),
-        tap((doc) => this.treeService.selectTreeNode(this.address, doc._id)),
+        tap((doc) => this.formStateService.updateMetadata(doc.metadata)),
+        tap((doc) => this.handleReadOnlyState(doc.documentWithMetadata)),
         tap((doc) =>
-          this.loadSubscription.push(this.updateBreadcrumb(doc._id)),
+          this.treeService.selectTreeNode(this.address, doc.metadata.wrapperId),
+        ),
+        tap((doc) =>
+          this.loadSubscription.push(
+            this.updateBreadcrumb(doc.metadata.wrapperId),
+          ),
+        ),
+        catchError((error: HttpErrorResponse) =>
+          this.handleLoadError(error, previousDocUuid),
         ),
       )
-      .subscribe(
-        (doc) => this.updateFormWithData(doc),
-        (error: HttpErrorResponse) =>
-          this.handleLoadError(error, previousDocUuid),
-      );
+      .subscribe((doc: DocumentWithMetadata) => this.updateFormWithData(doc));
 
     this.loadSubscription.push(loadSubscription);
   }
@@ -378,7 +388,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.documentService.updateBreadcrumb(id, this.address);
   }
 
-  private handleLoadError(error: HttpErrorResponse, previousDocUuid: string) {
+  private handleLoadError(
+    error: HttpErrorResponse,
+    previousDocUuid: string,
+  ): Observable<any> {
     if (error.status === 403) {
       // select previous document
       const target =
@@ -414,12 +427,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  private updateFormWithData(data: IgeDocument) {
+  private updateFormWithData(data: DocumentWithMetadata) {
     if (data === null) {
       return;
     }
 
-    const profile = data._type;
+    const profile = data.metadata.docType;
 
     if (profile === null) {
       throw new Error("Dieses Dokument hat keinen Dokumententyp!");
@@ -442,9 +455,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         this.cdr.detectChanges();
       }
 
-      this.formOptions.resetModel(data);
-      this.model = data;
-      this.prepareForm(data.hasWritePermission && !this.readonly);
+      this.formOptions.resetModel(data.document);
+      this.model = data.document;
+      this.prepareForm(data.metadata.hasWritePermission && !this.readonly);
 
       this.formInfoModel = { ...this.model };
 
@@ -502,7 +515,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async handleDrop(event: any) {
     let handled = await FormUtils.handleDirtyForm(
-      this.formStateService.getForm(),
+      this.formStateService,
       this.documentService,
       this.dialog,
       this.address,

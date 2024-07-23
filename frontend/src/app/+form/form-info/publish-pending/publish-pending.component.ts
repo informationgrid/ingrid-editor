@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { Component, Input, OnInit } from "@angular/core";
-import { IgeDocument } from "../../../models/ige-document";
+import { Metadata } from "../../../models/ige-document";
 import { DocumentService } from "../../../services/document/document.service";
 
 @Component({
@@ -27,7 +27,7 @@ import { DocumentService } from "../../../services/document/document.service";
   styleUrls: ["./publish-pending.component.scss"],
 })
 export class PublishPendingComponent implements OnInit {
-  @Input() doc: IgeDocument;
+  @Input() metadata: Metadata;
   @Input() forAddress: boolean;
 
   constructor(private documentService: DocumentService) {}
@@ -36,7 +36,7 @@ export class PublishPendingComponent implements OnInit {
 
   stopPublish() {
     this.documentService
-      .cancelPendingPublishing(this.doc._id, this.forAddress)
+      .cancelPendingPublishing(this.metadata.wrapperId, this.forAddress)
       .subscribe();
   }
 }

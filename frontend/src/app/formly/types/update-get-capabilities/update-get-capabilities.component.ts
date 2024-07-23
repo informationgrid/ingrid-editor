@@ -25,6 +25,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { GetCapabilitiesService } from "./get-capabilities-dialog/get-capabilities.service";
 import { filter } from "rxjs/operators";
 import { GetCapabilitiesAnalysis } from "./get-capabilities-dialog/get-capabilities.model";
+import { FormStateService } from "../../../+form/form-state.service";
 
 @Component({
   selector: "ige-update-get-capabilities",
@@ -35,6 +36,7 @@ export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {
   constructor(
     private dialog: MatDialog,
     private getCapService: GetCapabilitiesService,
+    private formStateService: FormStateService,
   ) {
     super();
   }
@@ -53,7 +55,11 @@ export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {
   }
 
   private async updateDataset(values: GetCapabilitiesAnalysis) {
-    await this.getCapService.applyChangesToModel(this.field.model, values);
+    await this.getCapService.applyChangesToModel(
+      this.field.model,
+      values,
+      this.formStateService.metadata().parentId,
+    );
     this.field.options.formState.updateModel();
     this.form.markAsDirty();
   }

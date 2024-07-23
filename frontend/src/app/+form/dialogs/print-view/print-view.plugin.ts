@@ -112,7 +112,11 @@ export class PrintViewPlugin extends Plugin {
       let fields: FormlyFieldConfig[];
       let fieldsPublished = null;
       if (published !== null) {
-        const diff = JsonDiffMerge.jsonDiff(current, published, {});
+        const diff = JsonDiffMerge.jsonDiff(
+          current.documentWithMetadata,
+          published.documentWithMetadata,
+          {},
+        );
         fields = profile.getFieldsForPrint(diff);
         fieldsPublished = clone(fields);
       } else {
@@ -123,7 +127,7 @@ export class PrintViewPlugin extends Plugin {
         data: {
           fields: fields,
           fieldsPublished: fieldsPublished,
-          model: current,
+          model: current.documentWithMetadata,
           modelPublished: published,
         },
       });

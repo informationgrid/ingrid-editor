@@ -21,6 +21,7 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.CopyOptions
+import de.ingrid.igeserver.model.DocumentWithMetadata
 import de.ingrid.igeserver.services.DocumentInfo
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
@@ -51,12 +52,15 @@ interface DatasetsApi {
     fun createDataset(
         principal: Principal,
         @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: @Valid JsonNode,
+        @Parameter(description = "The type of the document", required = true) @RequestParam type: @Valid String,
+        @Parameter(description = "The UUID of the document", required = false) @RequestParam uuid: @Valid String?,
+        @Parameter(description = "The ID of the parent", required = false) @RequestParam parentId: @Valid Int?,
         @Parameter(description = "Is this an address document") @RequestParam(required = false) address: @Valid Boolean,
         @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(
             value = "publish",
             required = false
         ) publish: Boolean
-    ): ResponseEntity<JsonNode>
+    ): ResponseEntity<DocumentWithMetadata>
 
     @PutMapping(value = ["/datasets/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Update a complete dataset")
@@ -89,8 +93,12 @@ interface DatasetsApi {
         @Parameter(description = "Delete the draft version and make the published version the current one.") @RequestParam(
             value = "revert",
             required = false
-        ) revert: Boolean
-    ): ResponseEntity<JsonNode>
+        ) revert: Boolean,
+        @Parameter(description = "Document version") @RequestParam(
+            value = "version",
+            required = false
+        ) version: Int?
+    ): ResponseEntity<DocumentWithMetadata>
 
     @Operation(description = "Copy a dataset or tree under another dataset")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Datasets have been copied successfully.")])
@@ -103,7 +111,7 @@ interface DatasetsApi {
         principal: Principal,
         @Parameter(description = "IDs of the copied datasets", required = true) @PathVariable("ids") ids: List<Int>,
         @Parameter(description = "...", required = true) @RequestBody options: @Valid CopyOptions
-    ): ResponseEntity<List<JsonNode>>
+    ): ResponseEntity<List<DocumentWithMetadata>>
 
     @Operation(description = "Deletes a dataset")
     @ApiResponses(
@@ -160,7 +168,7 @@ interface DatasetsApi {
             value = "publish",
             required = false
         ) publish: Boolean?*/
-    ): ResponseEntity<JsonNode>
+    ): ResponseEntity<DocumentWithMetadata>
 
     @Operation(description = "Retrieve a dataset by a given UUID.")
     @ApiResponses(
@@ -181,7 +189,7 @@ interface DatasetsApi {
             value = "publish",
             required = false
         ) publish: Boolean?
-    ): ResponseEntity<JsonNode>
+    ): ResponseEntity<DocumentWithMetadata>
 
     @Operation(description = "Get the hierarchical path of a document. Retrieve an array of ID of all parents leading to the given dataset ID.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Array of IDs.")])

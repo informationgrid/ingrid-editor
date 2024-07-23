@@ -8,7 +8,7 @@
 >
     <mat-card-content>
         <div class="header flex-row">
-            <ige-document-icon [doc]="address.ref"></ige-document-icon>
+            <ige-document-icon [doc]="$any(address.ref)"></ige-document-icon>
             <div class="title">
                 {{ address.type | codelist: "505" | async }}
             </div>
@@ -34,7 +34,7 @@
                 <button
                     mat-menu-item
                     (click)="gotoAddress.next()"
-                    [disabled]="address.ref._id === undefined"
+                    [disabled]="$any(address.ref)._id === undefined"
                 >
                     Hinspringen
                 </button>
@@ -48,7 +48,7 @@
             </mat-menu>
         </div>
 
-        @if (address.ref?.organization) {
+        @if ($any(address.ref)?.organization) {
             <div
                 class="title address-title"
                 [class.error]="invalidAddressReference"

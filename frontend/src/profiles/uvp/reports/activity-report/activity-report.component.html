@@ -46,7 +46,7 @@
                     </th>
                     <td mat-cell *matCellDef="let element">
                         <ige-document-icon
-                            [doc]="{ _type: element.document_type }"
+                            [doc]="$any({ _type: element.document_type })"
                         ></ige-document-icon>
                         <!--                        {{ element.document_type }}-->
                     </td>

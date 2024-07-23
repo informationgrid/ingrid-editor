@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { IgeDocument } from "../../../models/ige-document";
+import { IgeDocument, Metadata } from "../../../models/ige-document";
 import { Observable, of } from "rxjs";
 import {
   VersionConflictChoice,
@@ -49,7 +49,7 @@ export abstract class SaveBase extends Plugin {
 
   handleError(
     error,
-    data: IgeDocument,
+    data: Metadata,
     address: boolean,
     saveType: "PUBLISH" | "SAVE",
   ): Observable<void> {
@@ -69,7 +69,7 @@ export abstract class SaveBase extends Plugin {
           saveType === "PUBLISH" ? "veröffentlicht" : "gespeichert"
         }, jedoch trat ein Problem danach auf: ` + errorText,
       );
-      this.loadDocument(data._id, address);
+      this.loadDocument(data.wrapperId, address);
     } else if (error?.error?.errorCode === "VERSION_CONFLICT") {
       this.dialog
         .open(VersionConflictDialogComponent)
@@ -186,11 +186,15 @@ export abstract class SaveBase extends Plugin {
   }
 
   protected getIdFromFormData() {
-    return this.getForm()?.value["_id"];
+    return this.getMetadata().wrapperId;
   }
 
   protected getForm() {
     return this.formStateService.getForm();
+  }
+
+  protected getMetadata() {
+    return this.formStateService.metadata();
   }
 
   private loadDocument(id: number, address: boolean) {
@@ -198,8 +202,9 @@ export abstract class SaveBase extends Plugin {
       .load(id, address)
       .pipe(
         tap((data) =>
+          // @ts-ignore
           this.documentService.postSaveActions({
-            data: data,
+            data: data.documentWithMetadata,
             isNewDoc: false,
             isAddress: address,
           }),

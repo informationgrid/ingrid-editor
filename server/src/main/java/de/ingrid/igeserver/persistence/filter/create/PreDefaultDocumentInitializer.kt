@@ -29,7 +29,6 @@ import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DateService
-import de.ingrid.igeserver.services.FIELD_PARENT
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Component
@@ -54,9 +53,8 @@ class PreDefaultDocumentInitializer(
         if (payload.document.uuid.isEmpty()) {
             payload.document.uuid = UUID.randomUUID().toString()
         }
-        val docId = payload.document.uuid
 
-        context.addMessage(Message(this, "Process document data '$docId' before insert"))
+        context.addMessage(Message(this, "Process document data '${payload.document.uuid}' before insert"))
 
         val catalogRef = catalogRepo.findByIdentifier(context.catalogId)
         initializeDocument(payload, context, catalogRef)
@@ -90,18 +88,15 @@ class PreDefaultDocumentInitializer(
     }
 
     protected fun initializeDocumentWrapper(payload: PreCreatePayload, context: Context, catalogRef: Catalog) {
-        val parentId = payload.document.data[FIELD_PARENT]
+        val parentId = payload.parentId
         val parentRef = try {
-            when (parentId == null || parentId.isNull) {
+            when (parentId == null) {
                 true -> null
-                else -> docWrapperRepo.findById(parentId.asInt()).get()
+                else -> docWrapperRepo.findById(parentId).get()
             }
         } catch (ex: EmptyResultDataAccessException) {
             null
         }
-
-        // remove parent from document (only store parent in wrapper)
-        payload.document.data.remove(FIELD_PARENT)
 
         val documentType = payload.document.type
         val newPath = if (parentRef == null) emptyList() else parentRef.path + parentRef.id!!

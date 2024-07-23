@@ -34,6 +34,7 @@ import { ShortTreeNode } from "../sidebars/tree/tree.types";
 import { Router } from "@angular/router";
 import { TranslocoService } from "@ngneat/transloco";
 import { ConfigService } from "../../services/config/config.service";
+import { FormStateService } from "../form-state.service";
 
 @UntilDestroy()
 @Component({
@@ -56,6 +57,7 @@ export class FormInfoComponent implements OnInit {
   path: ShortTreeNode[] = [];
 
   rootName: string;
+  metadata = this.formStateService.metadata;
   private query: AddressTreeQuery | TreeQuery;
 
   constructor(
@@ -64,6 +66,7 @@ export class FormInfoComponent implements OnInit {
     private addressTreeQuery: AddressTreeQuery,
     private cdr: ChangeDetectorRef,
     private translocoService: TranslocoService,
+    private formStateService: FormStateService,
   ) {}
 
   ngOnInit() {

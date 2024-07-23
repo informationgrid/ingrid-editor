@@ -215,6 +215,7 @@ class IndexService(
                         wrapperId = it.wrapperId
                         if (it.parentId != null) {
                             val parentWrapper = documentService.getWrapperById(it.parentId)
+                            // TODO AW: remove parent from data and make available for export in another way
                             data.put(FIELD_PARENT, parentWrapper.uuid)
                         }
                     },

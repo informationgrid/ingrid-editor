@@ -17,9 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { IgeDocument } from "../../models/ige-document";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { SelectOptionUi } from "../codelist/codelist.service";
 
 export type AddressType = "person" | "organization";
 
@@ -62,7 +60,7 @@ export interface Doctype {
   /**
    *
    */
-  fieldsMap: SelectOptionUi[];
+  // fieldsMap: SelectOptionUi[];
 
   cleanFields: FormlyFieldConfig[];
 
@@ -82,9 +80,9 @@ export interface Doctype {
 
   /**
    * In case we need to determine icon class dynamically, you need to implement this function.
-   * @param doc is the document for which the icon shall be determined
+   * @param docType is the document type for which the icon shall be determined
    */
-  getIconClass?(doc: IgeDocument): string;
+  getIconClass?(docType: string): string;
 
   init(help: string[]): Promise<void>;
 }

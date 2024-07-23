@@ -24,8 +24,10 @@ import { MatDialog } from "@angular/material/dialog";
 import { GetCapabilitiesDialogComponent } from "../../../../app/formly/types/update-get-capabilities/get-capabilities-dialog/get-capabilities-dialog.component";
 import { filter } from "rxjs/operators";
 import { GetCapabilitiesService } from "../../../../app/formly/types/update-get-capabilities/get-capabilities-dialog/get-capabilities.service";
-import { DocumentService } from "../../../../app/services/document/document.service";
-import { IgeDocument } from "../../../../app/models/ige-document";
+import {
+  DocumentService,
+  SaveOptions,
+} from "../../../../app/services/document/document.service";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -33,6 +35,7 @@ import { GetCapabilitiesAnalysis } from "../../../../app/formly/types/update-get
 import { TreeQuery } from "../../../../app/store/tree/tree.query";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
+import { DocumentAbstract } from "../../../../app/store/document/document.model";
 
 @Injectable({
   providedIn: "root",
@@ -123,11 +126,9 @@ export class GetCapabilititesWizardPlugin extends Plugin {
       doc === null
         ? null
         : doc._type === "FOLDER"
-          ? doc.id
-          : this.treeQuery.getFirstParentFolder(doc.id + "")?.id;
-    const newDoc = new IgeDocument("InGridGeoService", +parentFolder);
-    const model: IgeDocument = {
-      ...newDoc,
+          ? +doc.id
+          : this.getFirstParentFolderId(doc);
+    const model: any = {
       service: {},
       resource: {},
       spatial: {},
@@ -135,19 +136,30 @@ export class GetCapabilititesWizardPlugin extends Plugin {
       keywords: { gemet: [], umthes: [], free: [] },
       themes: [],
     };
-    await this.getCapService.applyChangesToModel(model, result);
+    await this.getCapService.applyChangesToModel(model, result, parentFolder);
     this.documentService
-      .save({
-        data: model,
-        isNewDoc: true,
-      })
+      .save(
+        SaveOptions.createNewDocument(
+          model,
+          "InGridGeoService",
+          parentFolder,
+          false,
+          null,
+        ),
+      )
       .subscribe((result) => {
         this.router.navigate([
           `${ConfigService.catalogId}/form`,
-          { id: result._uuid },
+          { id: result.metadata.uuid },
         ]);
         snackRef.dismiss();
       });
+  }
+
+  private getFirstParentFolderId(doc: DocumentAbstract) {
+    const result = this.treeQuery.getFirstParentFolder(doc.id + "")?.id;
+    if (result === undefined) return null;
+    return +result;
   }
 
   unregisterForm() {

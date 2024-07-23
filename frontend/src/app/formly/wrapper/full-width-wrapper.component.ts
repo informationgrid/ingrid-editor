@@ -26,6 +26,7 @@ import {
 import { FieldWrapper } from "@ngx-formly/core";
 import { ConfigService } from "../../services/config/config.service";
 import { ContextHelpService } from "../../services/context-help/context-help.service";
+import { FormStateService } from "../../+form/form-state.service";
 
 @Component({
   selector: "ige-full-width-wrapper",
@@ -40,26 +41,25 @@ export class FullWidthWrapperComponent
   fieldComponent: ViewContainerRef;
 
   private profile: string;
-  private docType: string;
   private fieldId: string;
 
   constructor(
     public configService: ConfigService,
     public contextHelpService: ContextHelpService,
+    private formStateService: FormStateService,
   ) {
     super();
   }
 
   ngAfterViewInit() {
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
-    this.docType = this.model._type;
     this.fieldId = <string>this.field.key;
   }
 
   showContextHelp(infoElement: HTMLElement) {
     this.contextHelpService.showContextHelp(
       this.profile,
-      this.docType,
+      this.formStateService.metadata().docType,
       this.field.props.contextHelpId || this.fieldId,
       this.props.externalLabel,
       infoElement,

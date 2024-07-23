@@ -119,11 +119,19 @@ export class SavePlugin extends SaveBase {
     setTimeout(() => {
       this.handleValidationOnSave();
 
+      const metadata = this.getMetadata();
+
       return this.documentService
-        .save({ data: formData, isNewDoc: false, isAddress: this.forAddress })
+        .save({
+          data: formData,
+          id: metadata.wrapperId,
+          version: metadata.version,
+          isNewDoc: false,
+          isAddress: this.forAddress,
+        })
         .pipe(
           catchError((error) =>
-            this.handleError(error, formData, this.forAddress, "SAVE"),
+            this.handleError(error, metadata, this.forAddress, "SAVE"),
           ),
           finalize(() =>
             this.formToolbarService.setButtonState("toolBtnSave", true),

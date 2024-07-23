@@ -23,7 +23,6 @@ import { Doctype } from "./formular/doctype";
 import { ModalService } from "./modal/modal.service";
 import { ProfileStore } from "../store/profile/profile.store";
 import { ProfileAbstract } from "../store/profile/profile.model";
-import { IgeDocument } from "../models/ige-document";
 import { ContextHelpService } from "./context-help/context-help.service";
 import { forkJoin, from, Observable } from "rxjs";
 import { catchError, filter, map, switchMap, take, tap } from "rxjs/operators";
@@ -81,17 +80,17 @@ export class ProfileService {
     return this.getProfiles().find((profile) => profile.id === id);
   }
 
-  getDocumentIcon(doc: IgeDocument): string {
+  getDocumentIcon(docType: string): string {
     const iconClass = this.doctypes
-      .filter((doctype) => doctype.id === doc._type)
+      .filter((doctype) => doctype.id === docType)
       .map(
         (doctype) =>
-          (doctype.getIconClass && doctype.getIconClass(doc)) ||
+          (doctype.getIconClass && doctype.getIconClass(docType)) ||
           doctype.iconClass,
       );
 
     if (!iconClass || iconClass.length === 0 || !iconClass[0]) {
-      console.warn("Unknown document type or iconClass for: ", doc);
+      console.warn("Unknown document type or iconClass for: ", docType);
       return null;
     }
 

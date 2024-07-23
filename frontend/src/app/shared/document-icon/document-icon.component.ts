@@ -21,7 +21,7 @@ import { Component, HostBinding, Input, OnChanges } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { TreeNode } from "../../store/tree/tree-node.model";
 import { TranslocoService } from "@ngneat/transloco";
-import { DocumentState, IgeDocument } from "../../models/ige-document";
+import { DocumentState } from "../../models/ige-document";
 import { ProfileService } from "../../services/profile.service";
 
 @Component({
@@ -33,7 +33,7 @@ export class DocumentIconComponent implements OnChanges {
   tooltip: string;
   iconClass: string;
 
-  @Input() doc: Partial<IgeDocument> | DocumentAbstract | TreeNode;
+  @Input() doc: DocumentAbstract | TreeNode;
 
   @Input() showDelay: number = 0;
   @Input() toolTipModifier: (tooltip: string) => string = (tooltip) => tooltip;
@@ -48,7 +48,7 @@ export class DocumentIconComponent implements OnChanges {
     private profileService: ProfileService,
   ) {}
 
-  updateDocumentState(doc: Partial<IgeDocument> | DocumentAbstract | TreeNode) {
+  updateDocumentState(doc: DocumentAbstract | TreeNode) {
     const state = (<DocumentAbstract>doc)._state || (<TreeNode>doc).state;
     const type = (<DocumentAbstract>doc)._type || (<TreeNode>doc).type;
     const publicationType =
@@ -61,11 +61,11 @@ export class DocumentIconComponent implements OnChanges {
     this.iconClass =
       (<DocumentAbstract>doc).icon ||
       (<TreeNode>doc).iconClass ||
-      this.getIconFromProfile(<IgeDocument>doc);
+      this.getIconFromProfile((<DocumentAbstract>doc)._type);
   }
 
-  private getIconFromProfile(doc: IgeDocument) {
-    return this.profileService.getDocumentIcon(doc);
+  private getIconFromProfile(docType: string) {
+    return this.profileService.getDocumentIcon(docType);
   }
 
   private getTooltip(

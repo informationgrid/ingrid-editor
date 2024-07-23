@@ -29,32 +29,34 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.features.ogc_api_records.model.Record
 import de.ingrid.igeserver.features.ogc_api_records.model.RecordTime
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
 @Service
 class OgcGeoJsonExporter(
-        @Lazy val documentService: DocumentService,
-        val catalogService: CatalogService,
+    @Lazy val documentService: DocumentService,
+    val catalogService: CatalogService,
 ) : IgeExporter {
 
     override val typeInfo: ExportTypeInfo
         get() = ExportTypeInfo(
-                DocumentCategory.DATA,
-                "geojson",
-                "geoJsonIGE",
-                "geoJson Export des IGE",
-                MediaType.APPLICATION_JSON_VALUE,
-                "json",
-                listOf(),
-                false
+            DocumentCategory.DATA,
+            "geojson",
+            "geoJsonIGE",
+            "geoJson Export des IGE",
+            MediaType.APPLICATION_JSON_VALUE,
+            "json",
+            listOf(),
+            false
         )
+
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
-        // TODO: move to utilities to prevent cycle
-        val version = documentService.convertToJsonNode(doc)
-        documentService.removeInternalFieldsForImport(version as ObjectNode)
+        val version = getRawJsonFromDocument(doc, true)
 
         val versions = if (options.includeDraft) {
             Pair(getPublished(catalogId, doc.uuid), version)
@@ -63,23 +65,23 @@ class OgcGeoJsonExporter(
         }
 
         val dataset = versions.first ?: versions.second
-        val isAddress: Boolean = if(dataset?.get("address") == null) false else true
-        if(isAddress) return dataset as Any
-        val record = addExportWrapper(catalogId, versions.first, versions.second)
+        val isAddress: Boolean = dataset?.get("address") != null
+        if (isAddress) return dataset as Any
+        val record = addExportWrapper(doc.uuid, versions.first, versions.second)
         return convertToJsonNode(record)
     }
 
     private fun getPublished(catalogId: String, uuid: String): JsonNode? {
         return try {
             val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
-            documentService.convertToJsonNode(document)
+            getRawJsonFromDocument(document)
         } catch (ex: Exception) {
             // allow to export only draft versions
             null
         }
     }
 
-    private fun addExportWrapper(catalogId: String, publishedVersion: JsonNode?, draftVersion: JsonNode?): Record {
+    private fun addExportWrapper(uuid: String, publishedVersion: JsonNode?, draftVersion: JsonNode?): Record {
 
         val dataset = publishedVersion ?: draftVersion
 
@@ -87,15 +89,15 @@ class OgcGeoJsonExporter(
         val interval: MutableList<String> = mutableListOf()
         interval.add("..") // start date
         interval.add("..") // end date
-        val time = RecordTime( interval, resolution = "P1D" )
+        val time = RecordTime(interval, resolution = "P1D")
 
         return Record(
-                id = dataset!!.get("_uuid"),
-                conformsTo = null,
-                type = "Feature",
-                time,
-                geometry,
-                properties = dataset
+            id = jacksonObjectMapper().createObjectNode().textNode(uuid),
+            conformsTo = null,
+            type = "Feature",
+            time,
+            geometry,
+            properties = dataset
         )
     }
 
@@ -105,8 +107,7 @@ class OgcGeoJsonExporter(
         mapper.registerModule(JavaTimeModule())
 
         val node = mapper.convertValue(record, ObjectNode::class.java)
-        val data = node
-        data.fields().forEach { entry ->
+        node.fields().forEach { entry ->
             node.replace(entry.key, entry.value)
         }
         return node
@@ -116,7 +117,6 @@ class OgcGeoJsonExporter(
     override fun toString(exportedObject: Any): String {
         return exportedObject as String
     }
-
 
 
 }

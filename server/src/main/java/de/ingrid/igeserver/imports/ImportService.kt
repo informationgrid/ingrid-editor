@@ -27,10 +27,8 @@ import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.services.CatalogProfile
-import de.ingrid.igeserver.services.DOCUMENT_STATE
-import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.services.FIELD_PARENT
+import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.getString
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
@@ -213,7 +211,7 @@ class ImportService(
         isLatest: Boolean = true,
         isDraftAndPublished: Boolean = false
     ): DocumentAnalysis {
-        val document = documentService.convertToDocument(doc)
+        val document = convertToDocument(doc, doc.getString("_type"), null, doc.getString("_uuid"))
         document.state = if (forcePublish) DOCUMENT_STATE.PUBLISHED
         else if (isDraftAndPublished) DOCUMENT_STATE.DRAFT_AND_PUBLISHED else DOCUMENT_STATE.DRAFT
         document.isLatest = isLatest
@@ -318,25 +316,31 @@ class ImportService(
             false
         }
 
+        // remove internal fields if any
+        ref.document.data.apply {
+            remove(FIELD_CREATED)
+            remove(FIELD_MODIFIED)
+            remove(FIELD_CREATED_BY)
+            remove(FIELD_MODIFIED_BY)
+            remove(FIELD_PARENT)
+            remove(FIELD_ID)
+        }
+
         val publish = options.publish || ref.forcePublish
-        val parentId = if (ref.isAddress) options.parentAddress else options.parentDocument
         if (!exists && !ref.deleted) {
-            documentService.createDocument(principal, catalogId, ref.document, parentId, ref.isAddress, publish)
+            documentService.createDocument(principal, catalogId, ref.document, ref.parent, ref.isAddress, publish)
             if (ref.isAddress) counter.addresses++ else counter.documents++
         } else if (ref.deleted) {
-            val finalParentId = ref.document.data.getString(FIELD_PARENT)?.toInt() ?: parentId
-
             // undelete first to completely delete afterwards
             removeDeletedFlag(ref.wrapperId!!)
             documentService.deleteDocument(principal, catalogId, ref.wrapperId, true)
-            val newDoc = documentService.createDocument(principal, catalogId, ref.document, parentId, ref.isAddress, publish)
+            val newDoc = documentService.createDocument(principal, catalogId, ref.document, ref.parent, ref.isAddress, publish)
 
-            documentService.updateParent(catalogId, newDoc.wrapper.id!!, finalParentId)
+            documentService.updateParent(catalogId, newDoc.wrapper.id!!, ref.parent)
 
             if (ref.isAddress) counter.addresses++ else counter.documents++
 
         } else if (ref.isAddress && options.overwriteAddresses || !ref.isAddress && options.overwriteDatasets) {
-            val finalParentId = ref.document.data.getString(FIELD_PARENT)?.toInt() ?: parentId
             val wrapperId = ref.wrapperId ?: documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid).id!!
             setVersionInfo(catalogId, wrapperId, ref.document)
             if (publish) {
@@ -344,7 +348,7 @@ class ImportService(
             } else {
                 documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
             }
-            documentService.updateParent(catalogId, wrapperId, finalParentId)
+            documentService.updateParent(catalogId, wrapperId, ref.parent)
 
             counter.overwritten++
         } else {
@@ -377,10 +381,7 @@ class ImportService(
             documentData.remove("parentAsUuid")
             documentService.getWrapperByCatalogAndDocumentUuid(catalogId, it).id
         }
-        when (documentInfo.isAddress) {
-            true -> documentData.put(FIELD_PARENT, explicitParent ?: options.parentAddress)
-            false -> documentData.put(FIELD_PARENT, options.parentDocument)
-        }
+        documentInfo.parent = explicitParent ?: if (documentInfo.isAddress) options.parentAddress else options.parentDocument
     }
 
 }
@@ -392,7 +393,8 @@ data class DocumentAnalysis(
     val exists: Boolean,
     val deleted: Boolean,
     val references: List<DocumentAnalysis> = emptyList(),
-    val forcePublish: Boolean = false
+    val forcePublish: Boolean = false,
+    var parent: Int? = null
 )
 
 data class OptimizedImportAnalysis(

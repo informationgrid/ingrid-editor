@@ -1,5 +1,5 @@
 <div class="title flex-row" *transloco="let t">
-    <ige-document-icon [doc]="_model"></ige-document-icon>
+    <ige-document-icon [doc]="doc"></ige-document-icon>
 
     @if (!showTitleInput) {
         <span
@@ -89,4 +89,4 @@
     }
 </div>
 
-<ige-header-more [showMore]="showMore" [model]="_model"></ige-header-more>
+<ige-header-more [showMore]="showMore"></ige-header-more>

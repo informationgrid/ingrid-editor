@@ -75,7 +75,7 @@ export class AddressTypeComponent
     this.getAddressFromBackend(address.id as string).subscribe((address) => {
       this.addresses.push({
         type: type,
-        ref: address,
+        ref: address.documentWithMetadata,
       });
       this.removeDuplicates();
       this.updateFormControl(this.addresses);
@@ -96,7 +96,7 @@ export class AddressTypeComponent
           (address) => {
             this.addresses.splice(index, 1, {
               type: data.type,
-              ref: address,
+              ref: address.documentWithMetadata,
             });
             this.removeDuplicates();
             this.updateFormControl(this.addresses);
