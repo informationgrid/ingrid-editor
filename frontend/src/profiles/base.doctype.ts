@@ -157,8 +157,6 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         this.addContextHelp((<FormlyFieldConfig>field.fieldArray).fieldGroup);
       }
       if (this.helpIds.indexOf(fieldKey) > -1) {
-        if (!field.model?._type) field.props.docType = this.id;
-
         // automatically add inline help info when special wrapper is used
         if (field.wrappers && field.wrappers.indexOf("inline-help") !== -1) {
           field.props.hasInlineContextHelp = true;
