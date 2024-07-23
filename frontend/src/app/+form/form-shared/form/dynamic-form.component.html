@@ -100,10 +100,10 @@
 
         @if (showJson) {
             <as-split-area [size]="20">
-                <pre
-                    >{{ form.value | json }}
-        </pre
-                >
+                Metadata:
+                <pre>{{ metadata() | json }}</pre>
+                Document:
+                <pre>{{ form.value | json }}</pre>
             </as-split-area>
         }
     </as-split>
