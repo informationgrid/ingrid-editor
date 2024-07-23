@@ -21,8 +21,6 @@ package de.ingrid.igeserver.persistence.model
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.convertToDocument
@@ -135,7 +133,7 @@ abstract class EntityType {
     /**
      * Replace document/address references with their latest version
      */
-    open fun updateReferences(doc: Document, options: UpdateReferenceOptions) {}
+//    open fun updateReferences(doc: Document, options: UpdateReferenceOptions) {}
 
 
     /**
@@ -198,27 +196,6 @@ abstract class EntityType {
         return addressDocs
     }
 
-    fun replaceUuidWithReferenceData(doc: Document, fieldId: String, options: UpdateReferenceOptions) {
-        val addresses = doc.data.path(fieldId)
-        for (address in addresses) {
-            val uuid = if (address.path("ref").isTextual) {
-                address.path("ref").asText()
-            } else {
-                // fix used because references have not been saved with ID but full address
-                // this can be removed later
-                logger.warn("Address reference is stored in a wrong way")
-                address.path("ref").path(FIELD_UUID).asText()
-            }
-            try {
-                val latestDocumentJson = getDocumentForReferenceUuid(options, uuid)
-                (address as ObjectNode).replace("ref", latestDocumentJson)
-            } catch (ex: NotFoundException) {
-                // TODO: what to do with removed references?
-                logger.error("Referenced address was not found: $uuid -> Should we remove it from '${doc.uuid}'?")
-                throw ServerException.withReason("Document '${doc.uuid}' has a reference that could not be resolved: $uuid")
-            }
-        }
-    }
 }
 
 data class UpdateReferenceOptions(

@@ -180,10 +180,6 @@ itself knows how to handle these references. For this you can override the follo
  */
 fun pullReferences(doc: Document): List<Document>
 
-/**
- * Replace document/address references with their latest version
- */
-fun updateReferences(doc: Document, onlyPublished: Boolean)
 ----
 
 There are also other functions where we can hook into, to react on certain events:

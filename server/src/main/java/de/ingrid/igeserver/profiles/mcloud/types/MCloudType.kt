@@ -22,7 +22,6 @@ package de.ingrid.igeserver.profiles.mcloud.types
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.model.EntityType
-import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
 import de.ingrid.igeserver.services.FIELD_UUID
@@ -43,10 +42,6 @@ class MCloudType : EntityType() {
 
     override fun pullReferences(doc: Document): List<Document> {
         return pullLinkedAddresses(doc)
-    }
-
-    override fun updateReferences(doc: Document, options: UpdateReferenceOptions) {
-        updateAddresses(doc, options)
     }
 
     override fun getUploads(doc: Document): List<String> {
@@ -93,8 +88,4 @@ class MCloudType : EntityType() {
         }
     }
 
-
-    private fun updateAddresses(doc: Document, options: UpdateReferenceOptions) {
-        return replaceUuidWithReferenceData(doc, "addresses", options)
-    }
 }

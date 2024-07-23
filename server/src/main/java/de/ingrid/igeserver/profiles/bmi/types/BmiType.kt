@@ -22,7 +22,6 @@ package de.ingrid.igeserver.profiles.bmi.types
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.model.EntityType
-import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
 import de.ingrid.igeserver.services.FIELD_UUID
@@ -43,10 +42,6 @@ class BmiType : EntityType() {
 
     override fun pullReferences(doc: Document): List<Document> {
         return pullLinkedAddresses(doc)
-    }
-
-    override fun updateReferences(doc: Document, options: UpdateReferenceOptions) {
-        updateAddresses(doc, options)
     }
 
     override fun getUploads(doc: Document): List<String> {
@@ -78,8 +73,11 @@ class BmiType : EntityType() {
             // TODO: improve import process so we don't need this
             if (addressJson is ObjectNode) {
                 val uuid = addressJson.path(FIELD_UUID).textValue()
-                val addressDoc = convertToDocument(addressJson, addressJson.getString(FIELD_DOCUMENT_TYPE), null, addressJson.getString(
-                    FIELD_UUID))
+                val addressDoc = convertToDocument(
+                    addressJson, addressJson.getString(FIELD_DOCUMENT_TYPE), null, addressJson.getString(
+                        FIELD_UUID
+                    )
+                )
                 addressDocs.add(addressDoc)
                 (address as ObjectNode).put("ref", uuid)
             }
@@ -93,7 +91,4 @@ class BmiType : EntityType() {
         }
     }
 
-    private fun updateAddresses(doc: Document, options: UpdateReferenceOptions) {
-        return replaceUuidWithReferenceData(doc, "addresses", options)
-    }
 }

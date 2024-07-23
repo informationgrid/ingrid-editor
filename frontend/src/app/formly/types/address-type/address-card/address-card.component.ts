@@ -20,19 +20,26 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   EventEmitter,
   HostListener,
-  Input,
+  input,
   OnInit,
   Output,
 } from "@angular/core";
-import { IgeDocument } from "../../../../models/ige-document";
+import { DocumentWithMetadata } from "../../../../models/ige-document";
 import { ProfileService } from "../../../../services/profile.service";
 import { BackendOption } from "../../../../store/codelist/codelist.model";
+import { DocumentService } from "../../../../services/document/document.service";
 
 export interface AddressRef {
   type: BackendOption;
-  ref: Partial<IgeDocument>;
+  ref: string;
+}
+
+export interface ResolvedAddressWithType {
+  type: BackendOption;
+  address: DocumentWithMetadata;
 }
 
 @Component({
@@ -42,14 +49,18 @@ export interface AddressRef {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddressCardComponent implements OnInit {
-  @Input() address: AddressRef;
-  @Input() disabled = false;
-  @Input() canCopy = false;
+  address = input.required<ResolvedAddressWithType>();
+  disabled = input<boolean>(false);
 
   @Output() remove = new EventEmitter<void>();
   @Output() edit = new EventEmitter<void>();
   @Output() copy = new EventEmitter<void>();
   @Output() gotoAddress = new EventEmitter<void>();
+
+  addressAbstract = computed(
+    () =>
+      this.documentService.mapToDocumentAbstracts([this.address().address])[0],
+  );
 
   content: {
     iconClass?: string;
@@ -62,10 +73,14 @@ export class AddressCardComponent implements OnInit {
   stateInfo: string = "";
   showCopy = false;
 
-  constructor(private profileService: ProfileService) {}
+  constructor(
+    private profileService: ProfileService,
+    private documentService: DocumentService,
+  ) {}
 
   ngOnInit(): void {
-    if (!this.address.ref) {
+    const theAddress = this.address();
+    if (!theAddress.address) {
       console.error("Address reference is null!");
       this.content = {
         title: "Ungültige Adressreferenz",
@@ -75,16 +90,14 @@ export class AddressCardComponent implements OnInit {
     }
 
     this.content = {
-      iconClass: this.profileService.getDocumentIcon(this.address.ref._type),
-      role: this.address.type,
-      title: this.getTitle(this.address.ref),
-      secondTitle: this.getSecondTitle(this.address.ref),
-      emailOrPhone: this.getEmailOrTelephone(this.address.ref),
+      iconClass: this.profileService.getDocumentIcon(
+        theAddress.address.metadata.docType,
+      ),
+      role: theAddress.type,
+      title: this.getTitle(theAddress.address.document),
+      secondTitle: this.getSecondTitle(theAddress.address.document),
+      emailOrPhone: this.getEmailOrTelephone(theAddress.address.document),
     };
-
-    if (typeof this.address.ref === "string") {
-      this.content.title = "Gelöschte Adresse";
-    }
 
     this.stateInfo = this.getAddressInfo();
   }
@@ -112,7 +125,7 @@ export class AddressCardComponent implements OnInit {
   }
 
   private getAddressInfo() {
-    switch (this.address.ref._state) {
+    switch (this.address().address.metadata.state) {
       case "W":
         return "Die Adresse ist nicht veröffentlicht. Ein veröffentlichen des Datensatzes ist aktuell nicht möglich.";
       case "PW":

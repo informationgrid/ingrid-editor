@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.profiles.ingrid.types
 
 import de.ingrid.igeserver.persistence.model.EntityType
-import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
@@ -31,10 +30,6 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
 
     override fun pullReferences(doc: Document): List<Document> {
         return pullLinkedAddresses(doc)
-    }
-
-    override fun updateReferences(doc: Document, options: UpdateReferenceOptions) {
-        updateAddresses(doc, options)
     }
 
     private fun pullLinkedAddresses(doc: Document): MutableList<Document> {
@@ -67,10 +62,6 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
         val result = jdbcTemplate.queryForList(sqlQuery)
 
         return result.map { it["uuid"] as String }
-    }
-
-    private fun updateAddresses(doc: Document, options: UpdateReferenceOptions) {
-        return replaceUuidWithReferenceData(doc, "pointOfContact", options)
     }
 
     override fun getUploads(doc: Document): List<String> {

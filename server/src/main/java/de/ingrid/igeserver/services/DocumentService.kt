@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.TagRequest
 import de.ingrid.igeserver.api.ValidationException
@@ -32,7 +31,6 @@ import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.filter.*
 import de.ingrid.igeserver.persistence.model.EntityType
-import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.repository.CatalogRepository
@@ -176,7 +174,7 @@ class DocumentService(
 
             return if (expandReferences) DocumentData(
                 wrapper,
-                expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogIdentifier))
+                doc
             )
             else DocumentData(wrapper, doc)
         } catch (ex: EmptyResultDataAccessException) {
@@ -206,10 +204,7 @@ class DocumentService(
             doc.wrapperId = wrapper.id
             // TODO AW: doc.data.put(FIELD_PARENT, wrapper.parent?.id) // make parent available in frontend
             // TODO: only call when requested!?
-            return expandInternalReferences(
-                doc,
-                options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport)
-            )
+            return doc
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
         } catch (ex: NoSuchElementException) {
@@ -453,7 +448,7 @@ class DocumentService(
 
             return DocumentData(
                 postWrapper,
-                expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
+                updatedDoc
             )
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
@@ -571,7 +566,7 @@ class DocumentService(
 
             return DocumentData(
                 postWrapper,
-                expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
+                updatedDoc
             )
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
@@ -769,11 +764,7 @@ class DocumentService(
         val finalDoc = result[0] as Document
         entityManager.detach(finalDoc)
         finalDoc.wrapperId = result[1] as Int
-        return expandInternalReferences(
-            finalDoc,
-            resolveLinks = resolveLinks,
-            options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport)
-        )
+        return finalDoc
     }
 
     fun getPendingDocument(catalogId: String, uuid: String): Document {
@@ -873,33 +864,6 @@ class DocumentService(
         return documentTypes
             .find { it.className == docType }!!
             .category
-    }
-
-    private fun expandInternalReferences(
-        docData: Document,
-        onlyPublished: Boolean = false,
-        resolveLinks: Boolean = true,
-        options: UpdateReferenceOptions = UpdateReferenceOptions(onlyPublished)
-    ): Document {
-        // set empty parent fields explicitly to null
-        /*val parent = docData.data.has(FIELD_PARENT)
-        if (!parent || docData.data.get(FIELD_PARENT).asText().isEmpty()) {
-            docData.data.put(FIELD_PARENT, null as String?)
-        }*/
-
-        // get latest references from links
-        if (resolveLinks) {
-            val profile = catalogService.getProfileFromCatalog(options.catalogId!!).identifier
-            val refType = getDocumentType(docData.type, profile)
-
-            try {
-                refType.updateReferences(docData, options)
-            } catch (ex: AccessDeniedException) {
-                throw ForbiddenException.withAccessRights("No access to referenced dataset")
-            }
-        }
-
-        return docData
     }
 
     @Transactional
