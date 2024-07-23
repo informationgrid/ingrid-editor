@@ -1734,9 +1734,7 @@ export abstract class IngridShared extends BaseDoctype {
           codelist,
           "de",
           "NO_SORT",
-        ).map((item, index) =>
-          this.adaptPriorityDatasetItem(item, codelist.entries[index]),
-        );
+        ).map((item) => this.adaptPriorityDatasetItem(item, codelist.entries));
 
         return CodelistService.sortFavorites(
           codelist.id,
@@ -1751,8 +1749,12 @@ export abstract class IngridShared extends BaseDoctype {
     );
   }
 
-  private adaptPriorityDatasetItem(item: SelectOptionUi, entry: CodelistEntry) {
+  private adaptPriorityDatasetItem(
+    item: SelectOptionUi,
+    entries: CodelistEntry[],
+  ) {
     if (item.value === "_SEPARATOR_") return item;
+    const entry = entries.find((e) => e.id === item.value);
     item.label += " {en: " + entry.fields["en"] + "}";
     const parsedData = JSON.parse(entry.data);
     const isValid =
