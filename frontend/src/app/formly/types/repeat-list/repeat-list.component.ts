@@ -232,7 +232,7 @@ export class RepeatListComponent
         startWith(""),
         filter((value) => value !== undefined && value !== null),
         map((value) => this._filter(value)),
-        map((value) => this._markSelected(value)),
+        tap((value) => this._markSelected(value)),
         tap(() => this.cdr.detectChanges()),
       );
 
@@ -340,8 +340,8 @@ export class RepeatListComponent
     this.cdr.detectChanges();
   }
 
-  private _markSelected(value: SelectOptionUi[]): SelectOptionUi[] {
-    return value?.map((option) => {
+  private _markSelected(value: SelectOptionUi[]): void {
+    value?.forEach((option) => {
       const disabledByDefault = this.initialParameterOptions.find(
         (item) => item.value === option.value,
       ).disabled;
@@ -350,7 +350,6 @@ export class RepeatListComponent
           modelOption && (modelOption.key ?? modelOption) === option.value,
       );
       option.disabled = disabledByDefault || optionAlreadySelected;
-      return option;
     });
   }
 
