@@ -40,6 +40,8 @@ export class CodelistPipe implements PipeTransform {
   ): Observable<string> {
     if (!id) return of(value as string);
     if (value === null) return of(null);
+    if (value instanceof Object && value.key === null) return of(value.value);
+
     const codelist = this.codelistQuery.getEntity(id);
 
     if (!codelist) {
