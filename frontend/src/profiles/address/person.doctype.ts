@@ -100,7 +100,10 @@ export class PersonDoctype extends AddressShared {
             fieldLabel:
               "für Anzeige Daten der übergeordneten Organisation verwenden",
             expressions: {
-              hide: "!model?._parent || formState.parentIsFolder",
+              hide: () => {
+                const metadata = this.formStateService.metadata();
+                return !metadata.parentId || metadata.parentIsFolder;
+              },
             },
           }),
         ].filter(Boolean),

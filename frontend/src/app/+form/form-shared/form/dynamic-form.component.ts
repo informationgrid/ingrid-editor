@@ -509,7 +509,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       ...this.formOptions.formState,
       disabled: !writePermission,
       mainModel: this.model,
-      parentIsFolder: this.model._parentIsFolder,
     };
   }
 
