@@ -25,7 +25,6 @@ import { of } from "rxjs";
 import { UntypedFormGroup } from "@angular/forms";
 import { UploadService } from "../../app/shared/upload/upload.service";
 import { ConfigService } from "../../app/services/config/config.service";
-import { FormStateService } from "../../app/+form/form-state.service";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -41,7 +40,6 @@ export class TestDoctype extends BaseDoctype {
 
   private uploadService = inject(UploadService);
   private configService = inject(ConfigService);
-  private formStateService = inject(FormStateService);
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
