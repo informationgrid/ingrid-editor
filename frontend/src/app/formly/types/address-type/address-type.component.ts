@@ -89,6 +89,7 @@ export class AddressTypeComponent
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
+        filter((data) => data),
         distinctUntilKeyChanged("ref"),
         tap((data) => console.log("Value change", data)),
       )
