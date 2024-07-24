@@ -57,10 +57,12 @@ export class AddressCardComponent implements OnInit {
   @Output() copy = new EventEmitter<void>();
   @Output() gotoAddress = new EventEmitter<void>();
 
-  addressAbstract = computed(
-    () =>
-      this.documentService.mapToDocumentAbstracts([this.address().address])[0],
-  );
+  addressAbstract = computed(() => {
+    if (this.address().address === null) return null;
+    return this.documentService.mapToDocumentAbstracts([
+      this.address().address,
+    ])[0];
+  });
 
   content: {
     iconClass?: string;
@@ -89,6 +91,10 @@ export class AddressCardComponent implements OnInit {
       return;
     }
 
+    this.prepareAddress(theAddress);
+  }
+
+  private prepareAddress(theAddress: ResolvedAddressWithType) {
     this.content = {
       iconClass: this.profileService.getDocumentIcon(
         theAddress.address.metadata.docType,

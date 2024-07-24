@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, effect, OnInit, signal } from "@angular/core";
+import { Component, HostBinding, OnInit, signal } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import {
   AddressRef,
@@ -29,7 +29,7 @@ import {
   ChooseAddressDialogData,
   ChooseAddressResponse,
 } from "./choose-address-dialog/choose-address-dialog.component";
-import { distinctUntilKeyChanged, filter, map, tap } from "rxjs/operators";
+import { distinctUntilChanged, filter, map, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
@@ -55,8 +55,9 @@ export class AddressTypeComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
-  addresses = signal<AddressRef[]>([]);
   resolvedAddresses = signal<ResolvedAddressWithType[]>([]);
+
+  @HostBinding("class") hostClass = "";
 
   constructor(
     private dialog: MatDialog,
@@ -65,49 +66,72 @@ export class AddressTypeComponent
     private snack: MatSnackBar,
   ) {
     super();
-    effect(
-      () => {
-        this.resolvedAddresses.set([]);
-        this.addresses().forEach((address) => {
-          this.documentService
-            .load(address.ref, true, false, true)
-            .subscribe((data) =>
-              this.resolvedAddresses.update((values) => [
-                ...values,
-                { type: address.type, address: data },
-              ]),
-            );
-        });
-      },
-      { allowSignalWrites: true },
-    );
   }
 
   ngOnInit(): void {
-    this.addresses.set(this.formControl.value || []);
+    if (this.props.required) this.hostClass = "required";
 
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
         filter((data) => data),
-        distinctUntilKeyChanged("ref"),
+        distinctUntilChanged((a: AddressRef[], b: AddressRef[]) => {
+          const result =
+            a.length === b.length &&
+            a.every(
+              (aItem, index) =>
+                aItem.ref === b[index]?.ref &&
+                aItem.type?.key === b[index]?.type?.key,
+            );
+          return result;
+        }),
         tap((data) => console.log("Value change", data)),
       )
-      .subscribe((value) => this.addresses.set(value || []));
+      .subscribe((value) => {
+        const resolved = this.resolvedAddresses();
+        const addressRefs = value ?? [];
+        // resolved.filter(item => addressRefs.s)
+        this.resolvedAddresses.set(
+          this.getPlaceholderAddresses(addressRefs.length),
+        );
+        addressRefs.forEach((address: AddressRef, index) => {
+          const found =
+            resolved[index]?.address?.metadata?.uuid === address.ref;
+          if (found) {
+            this.resolvedAddresses.update((values) => {
+              values.splice(index, 1, {
+                type: address.type,
+                address: resolved[index].address,
+              });
+              return [...values];
+            });
+          } else {
+            this.documentService
+              .load(address.ref, true, false, true)
+              .subscribe((data) => {
+                this.resolvedAddresses.update((values) => {
+                  values.splice(index, 1, {
+                    type: address.type,
+                    address: data,
+                  });
+                  return [...values];
+                });
+              });
+          }
+        });
+      });
   }
 
   async addToAddresses(address: DocumentAbstract, type: BackendOption) {
-    // this.getAddressFromBackend(address.id as string).subscribe((address) => {
-    this.addresses.update((values) => [
-      ...values,
+    const newValue = [
+      ...this.formControl.value,
       {
         type: type,
         ref: address._uuid,
       },
-    ]);
+    ];
     this.removeDuplicates();
-    this.updateFormControl(this.addresses());
-    // });
+    this.updateFormControl(newValue);
   }
 
   async addAddress() {
@@ -121,18 +145,12 @@ export class AddressTypeComponent
     (await this.callEditDialog(addressRef)).subscribe(
       (data: ChooseAddressResponse) => {
         if (!data) return;
-        // this.getAddressFromBackend(data.address.id as string).subscribe(
-        //   (address) => {
-        this.addresses.update((values) =>
-          values.splice(index, 1, {
-            type: data.type,
-            ref: data.address._uuid,
-          }),
-        );
+        this.formControl.value.splice(index, 1, {
+          type: data.type,
+          ref: data.address._uuid,
+        });
         this.removeDuplicates();
-        this.updateFormControl(this.addresses());
-        // },
-        // );
+        this.updateFormControl(this.formControl.value);
       },
     );
   }
@@ -147,7 +165,7 @@ export class AddressTypeComponent
   }
 
   private removeDuplicates() {
-    const unique = this.addresses().filter(
+    const unique = this.formControl.value.filter(
       (value, index, self) =>
         index ===
         self.findIndex((item) => {
@@ -158,10 +176,10 @@ export class AddressTypeComponent
           return sameType && sameUuid;
         }),
     );
-    if (unique.length !== this.addresses().length) {
+    if (unique.length !== this.formControl.value.length) {
       this.snack.open("Die Adresse ist bereits vorhanden");
     }
-    this.addresses.set(unique);
+    this.updateFormControl(unique);
   }
 
   private async callEditDialog(
@@ -221,12 +239,12 @@ export class AddressTypeComponent
   }
 
   removeAddress(address: ResolvedAddressWithType, index: number) {
-    const value = this.addresses().filter((ref, idx) => idx !== index);
+    const value = this.formControl.value.filter((ref, idx) => idx !== index);
     this.updateFormControl(value);
   }
 
   private updateFormControl(value: AddressRef[]) {
-    this.formControl.setValue(value);
+    this.formControl.setValue([...value]);
     this.formControl.markAsDirty();
   }
 
@@ -245,6 +263,18 @@ export class AddressTypeComponent
   }
 
   drop(event: CdkDragDrop<FormlyFieldConfig>) {
-    moveItemInArray(this.addresses(), event.previousIndex, event.currentIndex);
+    moveItemInArray(
+      this.formControl.value,
+      event.previousIndex,
+      event.currentIndex,
+    );
+  }
+
+  private getPlaceholderAddresses(length: number): ResolvedAddressWithType[] {
+    const placeholder = [];
+    for (let i = 0; i < length; i++) {
+      placeholder.push({ type: null, address: null });
+    }
+    return placeholder;
   }
 }
