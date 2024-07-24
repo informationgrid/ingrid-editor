@@ -7,74 +7,80 @@
     role="listitem"
 >
     <mat-card-content>
-        <div class="header flex-row">
-            <ige-document-icon [doc]="addressAbstract()"></ige-document-icon>
-            <div class="title">
-                <!--                TODO AW: Handle free values!!! -->
-                {{ address().type | codelist: "505" | async }}
-            </div>
-            <div class="flex-1"></div>
-            <button
-                mat-icon-button
-                type="button"
-                class="menu-button"
-                [matMenuTriggerFor]="linkedAddressMenu"
-                matTooltip="Bearbeiten"
-                aria-label="Adresse bearbeiten"
-            >
-                <mat-icon class="dark-blue" svgIcon="Mehr"></mat-icon>
-            </button>
-            <mat-menu #linkedAddressMenu="matMenu">
-                <button
-                    mat-menu-item
-                    (click)="showCopy ? copy.next() : edit.next()"
-                    [disabled]="disabled()"
-                >
-                    {{ showCopy ? "Kopieren" : "Bearbeiten" }}
-                </button>
-                <button
-                    mat-menu-item
-                    (click)="gotoAddress.next()"
-                    [disabled]="
-                        address().address.metadata.wrapperId === undefined
-                    "
-                >
-                    Hinspringen
-                </button>
-                <button
-                    mat-menu-item
-                    (click)="remove.next()"
-                    [disabled]="disabled()"
-                >
-                    Entfernen
-                </button>
-            </mat-menu>
-        </div>
-
-        @if (address().address.document?.organization) {
-            <div
-                class="title address-title"
-                [class.error]="invalidAddressReference"
-            >
-                {{ content.title }}
-            </div>
-            <div class="organization-person">{{ content.secondTitle }}</div>
+        @if (address().address === null) {
+            Lade ...
         } @else {
-            <div class="title address-title">
-                <span
-                    >{{
-                        address().address["academic-title"]
-                            | codelist: "4305"
-                            | async
-                    }} </span
-                >{{ content.title }}
+            <div class="header flex-row">
+                <ige-document-icon
+                    [doc]="addressAbstract()"
+                ></ige-document-icon>
+                <div class="title">
+                    <!--                TODO AW: Handle free values!!! -->
+                    {{ address().type | codelist: "505" | async }}
+                </div>
+                <div class="flex-1"></div>
+                <button
+                    mat-icon-button
+                    type="button"
+                    class="menu-button"
+                    [matMenuTriggerFor]="linkedAddressMenu"
+                    matTooltip="Bearbeiten"
+                    aria-label="Adresse bearbeiten"
+                >
+                    <mat-icon class="dark-blue" svgIcon="Mehr"></mat-icon>
+                </button>
+                <mat-menu #linkedAddressMenu="matMenu">
+                    <button
+                        mat-menu-item
+                        (click)="showCopy ? copy.next() : edit.next()"
+                        [disabled]="disabled()"
+                    >
+                        {{ showCopy ? "Kopieren" : "Bearbeiten" }}
+                    </button>
+                    <button
+                        mat-menu-item
+                        (click)="gotoAddress.next()"
+                        [disabled]="
+                            address().address.metadata.wrapperId === undefined
+                        "
+                    >
+                        Hinspringen
+                    </button>
+                    <button
+                        mat-menu-item
+                        (click)="remove.next()"
+                        [disabled]="disabled()"
+                    >
+                        Entfernen
+                    </button>
+                </mat-menu>
             </div>
-        }
 
-        @if (content.emailOrPhone) {
-            <div class="email">
-                {{ content.emailOrPhone }}
-            </div>
+            @if (address().address.document?.organization) {
+                <div
+                    class="title address-title"
+                    [class.error]="invalidAddressReference"
+                >
+                    {{ content.title }}
+                </div>
+                <div class="organization-person">{{ content.secondTitle }}</div>
+            } @else {
+                <div class="title address-title">
+                    <span
+                        >{{
+                            address().address["academic-title"]
+                                | codelist: "4305"
+                                | async
+                        }} </span
+                    >{{ content.title }}
+                </div>
+            }
+
+            @if (content.emailOrPhone) {
+                <div class="email">
+                    {{ content.emailOrPhone }}
+                </div>
+            }
         }
     </mat-card-content>
 </mat-card>
