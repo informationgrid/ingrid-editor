@@ -47,6 +47,11 @@ class IngridIndexExporter(
     val documentWrapperRepository: DocumentWrapperRepository
 ) : IgeExporter {
 
+
+    override fun exportSql(catalogId: String): String {
+        return "${super.exportSql(catalogId)} AND document.data ->> 'hideAddress' IS DISTINCT FROM 'true'"
+    }
+
     private val typeId = "indexInGridIDF"
 
     override val typeInfo = ExportTypeInfo(
