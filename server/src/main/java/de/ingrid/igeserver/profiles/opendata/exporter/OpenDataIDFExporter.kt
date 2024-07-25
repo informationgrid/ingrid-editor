@@ -133,7 +133,7 @@ class OpenDataIDFExporter(
     fun getModelTransformerClass(docType: String): KClass<out Any>? {
         return when (docType) {
             "OpenDataDoc" -> IngridModelTransformer::class
-            "OpenDataAddressDoc" -> AddressModelTransformer::class
+            "OpenDataAddressDoc" -> OpenDataAddressModelTransformer::class
             else -> null
         }
     }
