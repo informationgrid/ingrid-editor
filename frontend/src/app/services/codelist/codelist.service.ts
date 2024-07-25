@@ -85,7 +85,9 @@ export class CodelistService {
   static mapToSelect = (
     codelist: Codelist,
     language = "de",
-    sortBy: CodelistSort = "label",
+    sortBy:
+      | CodelistSort
+      | ((a: SelectOptionUi, b: SelectOptionUi) => number) = "label",
   ): SelectOptionUi[] => {
     if (!codelist) {
       return [];
@@ -100,11 +102,21 @@ export class CodelistService {
         }) as SelectOptionUi,
     );
 
-    return CodelistService.sortFavorites(
+    const sortFunction =
+      typeof sortBy === "function"
+        ? sortBy
+        : CodelistService.getDefaultSortFunction(sortBy);
+
+    return CodelistService.addFavorites(
       codelist.id,
-      items.sort((a, b) => CodelistService.compareEntries(a, b, sortBy)),
+      sortBy === "NO_SORT" ? items : items.sort(sortFunction),
     );
   };
+
+  private static getDefaultSortFunction(sortBy: CodelistSort) {
+    return (a: SelectOptionUi, b: SelectOptionUi) =>
+      CodelistService.compareEntries(a, b, sortBy);
+  }
 
   private static compareEntries(
     a: SelectOptionUi,
@@ -112,9 +124,6 @@ export class CodelistService {
     sortBy: CodelistSort,
   ) {
     switch (sortBy) {
-      case "NO_SORT":
-        // don't sort
-        return 0;
       case "label":
         return a[sortBy]?.localeCompare(b[sortBy]);
       case "value":
@@ -303,16 +312,16 @@ export class CodelistService {
     );
   }
 
-  static sortFavorites(
+  static addFavorites(
     codelistId: string,
     sortedItems: SelectOptionUi[],
   ): SelectOptionUi[] {
     const favorites = CodelistService.favorites[codelistId] ?? [];
     if (favorites.length === 0) return sortedItems;
 
-    const favoriteItems = favorites
-      .map((item) => sortedItems.find((it) => it.value === item))
-      .filter((item) => item);
+    const favoriteItems = sortedItems.filter((item) =>
+      favorites.find((fav) => item.value === fav),
+    );
 
     if (favoriteItems.length > 0) {
       const separator: SelectOptionUi = new SelectOption(

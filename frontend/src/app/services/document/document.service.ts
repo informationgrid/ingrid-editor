@@ -880,7 +880,7 @@ export class DocumentService {
     return docs.map((doc) => {
       return {
         id: doc._id,
-        icon: this.profileService.getDocumentIcon(doc.type),
+        icon: this.profileService.getDocumentIcon(doc._type),
         title: doc.title || "-Kein Titel-",
         _uuid: doc._uuid,
         _state: doc._state,

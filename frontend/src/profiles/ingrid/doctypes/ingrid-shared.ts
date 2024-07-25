@@ -1732,23 +1732,26 @@ export abstract class IngridShared extends BaseDoctype {
   private getPriorityDatasets(): Observable<SelectOptionUi[]> {
     return this.codelistService.observeRaw("6350").pipe(
       map((codelist) => {
-        const items = CodelistService.mapToSelect(
+        const cls = CodelistService.mapToSelect(
           codelist,
           "de",
-          "NO_SORT",
-        ).map((item) => this.adaptPriorityDatasetItem(item, codelist.entries));
-
-        return CodelistService.sortFavorites(
-          codelist.id,
-          items.sort((a, b) => {
-            // put INVALID items to the end of the list
-            if (a.label.indexOf("INVALID -") === 0) return 1;
-            if (b.label.indexOf("INVALID -") === 0) return -1;
-            return a.label?.localeCompare(b.label);
-          }),
+          this.sortFunctionPriorityDatasets,
+        );
+        return cls.map((item) =>
+          this.adaptPriorityDatasetItem(item, codelist.entries),
         );
       }),
     );
+  }
+
+  private sortFunctionPriorityDatasets(
+    a: SelectOptionUi,
+    b: SelectOptionUi,
+  ): number {
+    // put INVALID items to the end of the list
+    if (a.label.indexOf("INVALID -") === 0) return 1;
+    if (b.label.indexOf("INVALID -") === 0) return -1;
+    return a.label?.localeCompare(b.label);
   }
 
   private adaptPriorityDatasetItem(

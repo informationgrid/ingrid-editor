@@ -91,6 +91,14 @@ private fun getMapLinkUuidsFromService(doc: Document) = doc.data.get("service")?
     ?.mapNotNull { it.getString("uuid") }
     ?: emptyList()
 
+
+fun getHmdkModelMetaverTransformerClass(docType: String): KClass<out Any>? {
+    return when (docType) {
+        "InGridGeoDataset" -> GeodatasetTransformerHmdkMetaver::class
+        "InGridGeoService" -> GeoserviceTransformerHmdkMetaver::class
+        else -> null
+    }
+}
 fun getHmdkModelTransformerClass(docType: String): KClass<out Any>? {
     return when (docType) {
         "InGridSpecialisedTask" -> IngridModelTransformerHmdk::class

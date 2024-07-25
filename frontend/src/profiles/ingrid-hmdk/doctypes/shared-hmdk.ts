@@ -28,26 +28,29 @@ import {
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
 import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
+import { FormStateService } from "../../../app/+form/form-state.service";
 
 @Injectable({ providedIn: "root" })
 export class SharedHmdk {
   private tagsService = inject(TagsService);
+  private formStateService = inject(FormStateService);
 
-  constructor(private doc: IngridShared) {}
-
-  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+  manipulateDocumentFields = (
+    doc: IngridShared,
+    fieldConfig: FormlyFieldConfig[],
+  ) => {
     // add "Veröffentlichung gemäß HmbTG" to "OpenData" Section
-    const openData = this.doc.findFieldElementWithId(fieldConfig, "isOpenData");
-    openData.fieldConfig.push(this.getPublicationHmbTGFieldConfig());
+    const openData = doc.findFieldElementWithId(fieldConfig, "isOpenData");
+    openData.fieldConfig.push(this.getPublicationHmbTGFieldConfig(doc));
     // add "Informationsgegenstand" right after OpenData Section
-    const openDataParent = this.doc.findParentFieldElementWithId(
+    const openDataParent = doc.findParentFieldElementWithId(
       fieldConfig,
       "isOpenData",
     );
-    this.doc.addAfter(openDataParent, this.getInformationHmbTGFieldConfig());
+    doc.addAfter(openDataParent, this.getInformationHmbTGFieldConfig(doc));
 
     // at least one "Herausgeber" is required when Dataset is OpenData
-    const pointOfContact = this.doc.findFieldElementWithId(
+    const pointOfContact = doc.findFieldElementWithId(
       fieldConfig,
       "pointOfContact",
     );
@@ -86,52 +89,52 @@ export class SharedHmdk {
       "Bei aktivierter 'Veröffentlichung gemäß HmbgTG'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
   };
 
-  private getPublicationHmbTGFieldConfig(): FormlyFieldConfig {
-    return this.doc.addCheckboxInline(
+  private getPublicationHmbTGFieldConfig(doc: IngridShared): FormlyFieldConfig {
+    return doc.addCheckboxInline(
       "publicationHmbTG",
       "Veröffentlichung gemäß HmbTG",
       {
         className: "flex-1",
         click: (field: FormlyFieldConfig) =>
-          this.handlePublicationHmbTGClick(field),
+          this.handlePublicationHmbTGClick(doc, field),
       },
     );
   }
 
-  private getInformationHmbTGFieldConfig() {
-    return this.doc.addRepeatList(
-      "informationHmbTG",
-      "Informationsgegenstand",
-      {
-        asSelect: true,
-        expressions: {
-          hide: (field: FormlyFieldConfig) =>
-            field.model.publicationHmbTG !== true &&
-            field.model.isOpenData !== true,
-          "props.disabled":
-            "(field.model.publicationHmbTG !== true && field.model.isOpenData === true) || formState.disabled",
-          "props.required": "field.model.publicationHmbTG === true",
-        },
-        options: this.doc.getCodelistForSelect(
-          "informationsgegenstand",
-          "informationHmbTG",
-          "value",
-        ),
+  private getInformationHmbTGFieldConfig(doc: IngridShared) {
+    return doc.addRepeatList("informationHmbTG", "Informationsgegenstand", {
+      asSelect: true,
+      expressions: {
+        hide: (field: FormlyFieldConfig) =>
+          field.model.publicationHmbTG !== true &&
+          field.model.isOpenData !== true,
+        "props.disabled":
+          "(field.model.publicationHmbTG !== true && field.model.isOpenData === true) || formState.disabled",
+        "props.required": "field.model.publicationHmbTG === true",
       },
-    );
+      options: doc.getCodelistForSelect(
+        "informationsgegenstand",
+        "informationHmbTG",
+        "value",
+      ),
+    });
   }
 
-  private handlePublicationHmbTGClick(field: FormlyFieldConfig) {
+  private handlePublicationHmbTGClick(
+    doc: IngridShared,
+    field: FormlyFieldConfig,
+  ) {
     const checked = field.formControl.value;
     if (checked) {
-      this.handleActivateHmbTG(field);
+      this.handleActivateHmbTG(doc, field);
     } else {
-      this.handleDeactivateHmbTG(field);
+      this.handleDeactivateHmbTG(doc, field);
     }
   }
 
-  private handleActivateHmbTG(field: FormlyFieldConfig) {
+  private handleActivateHmbTG(doc: IngridShared, field: FormlyFieldConfig) {
     const cookieId = "HIDE_HMBTG_INFO";
+    const id = this.formStateService.metadata().wrapperId;
 
     function executeAction(that) {
       // if inspire set access constraint "keine" else empty
@@ -152,12 +155,10 @@ export class SharedHmdk {
       // by ngx-formly, because we update a repeat-component!
       field.options.formState.updateModel();
 
-      that.tagsService
-        .updatePublicationType(field.model._id, "internet", false)
-        .subscribe();
+      that.tagsService.updatePublicationType(id, "internet", false).subscribe();
     }
 
-    if (this.doc.cookieService.getCookie(cookieId) === "true") {
+    if (doc.cookieService.getCookie(cookieId) === "true") {
       executeAction(this);
       return;
     }
@@ -166,7 +167,7 @@ export class SharedHmdk {
       "Mit Aktivierung der Checkbox 'Veröffentlichung gemäß HmbTG' wird diese Metadatenbeschreibung und die dazugehörigen Ressourcen automatisch im Hamburger Transparenzportal veröffentlicht und dort 10 Jahre lang aufbewahrt. Soll die Metadatenbeschreibung dennoch nach HmbTG veröffentlicht werden?";
     const selectOpenData =
       "Wird diese Auswahl gewählt, so werden alle Zugriffsbeschränkungen entfernt. Möchten Sie fortfahren?";
-    this.doc.dialog
+    doc.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
           title: "Hinweis",
@@ -177,7 +178,7 @@ export class SharedHmdk {
       .afterClosed()
       .subscribe((decision) => {
         if (decision === "ok") {
-          this.doc.dialog
+          doc.dialog
             .open(ConfirmDialogComponent, {
               data: <ConfirmDialogData>{
                 title: "Hinweis",
@@ -199,7 +200,7 @@ export class SharedHmdk {
       });
   }
 
-  private handleDeactivateHmbTG(field: FormlyFieldConfig) {
+  private handleDeactivateHmbTG(doc: IngridShared, field: FormlyFieldConfig) {
     function executeAction() {
       // remove all categories
       field.form.get("openDataCategories").setValue([]);
@@ -216,10 +217,11 @@ export class SharedHmdk {
     }
 
     // show warning if data is already published
-    if (field.model._state === "PW" || field.model._state === "P") {
+    const metadata = this.formStateService.metadata();
+    if (metadata.state === "PW" || metadata.state === "P") {
       const HMBTG_INFO_TEXT_MODIFY =
         "Dieser Datensatz ist bereits nach dem HmbTG im Transparenzportal veröffentlicht und bleibt auch nach Entfernen des Häkchens bei der Checkbox 'Veröffentlichung gemäß HmbTG' bis zum Ablauf der 10 Jahre im Transparenzportal veröffentlicht.";
-      this.doc.dialog
+      doc.dialog
         .open(ConfirmDialogComponent, {
           data: <ConfirmDialogData>{
             title: "Hinweis",
@@ -262,7 +264,11 @@ export class SharedHmdk {
         field.form.get("resource.accessConstraints").setValue([{ key: "1" }]);
 
       this.tagsService
-        .updatePublicationType(field.model._id, "internet", false)
+        .updatePublicationType(
+          this.formStateService.metadata().wrapperId,
+          "internet",
+          false,
+        )
         .subscribe();
     }, previous);
   }
