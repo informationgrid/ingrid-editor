@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.persistence.filter.unpublish
 
+import de.ingrid.igeserver.exceptions.NoElasticsearchConnectionException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
@@ -27,8 +28,8 @@ import de.ingrid.igeserver.persistence.filter.persistence.PostDataHistoryLogger
 import de.ingrid.igeserver.services.AuditLogger
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.tasks.IndexingTask
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 /**
@@ -42,12 +43,19 @@ class PostDefaultDocumentUnpublisher(
 ) :
     Filter<PostUnpublishPayload> {
 
+    private val log = logger()
+
     override val profiles = arrayOf<String>()
 
     override fun invoke(payload: PostUnpublishPayload, context: Context): PostUnpublishPayload {
 
         // remove from index
-        this.indexTask.removeFromIndex(context.catalogId, payload.wrapper.uuid, payload.wrapper.category!!)
+        try {
+            this.indexTask.removeFromIndex(context.catalogId, payload.wrapper.uuid, payload.wrapper.category!!)
+        } catch (e: NoElasticsearchConnectionException) {
+            // just give a warning so that delete operation still succeeds for published documents which are not indexed (e.g. hideAddress in ingrid)
+            log.warn("Could not remove '${payload.wrapper.uuid}' from ES index: ${e.message}")
+        }
 
         //log in audit-log
         val docId = payload.document.uuid
