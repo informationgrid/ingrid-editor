@@ -1,5 +1,16 @@
 # Changelog
 
+## 7.2.1 (25.07.2024)
+
+### Bugfixes
+
+- Fehler wenn Favorit bei "INSPIRE - priority data set" (#6579)
+- Falsche Anzeige Personenname bei den Adressen im "Katalogbaum" (#6539)
+- Fehler beim INSPIRE Auswahl bei Informationssystem (#6535)
+- URL Pflege - Allgemeines Leserecht ermöglicht Änderungen an Daten, an denen kein Schreibrecht besteht (#6525)
+- Fehlermeldung bei Abmeldung (#6486)
+- "Kartenlinks" werden nicht im Portal angezeigt (#6399)
+
 ## 7.2.0 (08.07.2024)
 
 ### Features
