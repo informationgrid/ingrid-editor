@@ -41,5 +41,6 @@
             showError && formControl.invalid && formControl.errors?.required
         "
         [ariaLabelledBy]="field | fieldToAriaLabelledBy"
+        [class.required]="props.required"
     ></ige-add-button>
 }
