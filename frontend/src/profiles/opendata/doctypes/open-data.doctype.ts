@@ -283,6 +283,8 @@ export class OpenDataDoctype extends BaseDoctype {
       props: {
         externalLabel: label,
         required: options?.required,
+        supportUpload: options?.supportLink ?? true,
+        supportLink: options?.supportLink ?? true,
         backendUrl: this.configService.getConfiguration().backendUrl,
         infoText: options?.infoText,
         fields: options?.fields[0].fieldGroup,
