@@ -29,7 +29,13 @@ import {
   ChooseAddressDialogData,
   ChooseAddressResponse,
 } from "./choose-address-dialog/choose-address-dialog.component";
-import { distinctUntilChanged, filter, map, tap } from "rxjs/operators";
+import {
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  tap,
+} from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
@@ -44,6 +50,7 @@ import { ConfigService } from "../../../services/config/config.service";
 import { firstValueFrom } from "rxjs";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { BackendOption } from "../../../store/codelist/codelist.model";
+import { DocumentWithMetadata } from "../../../models/ige-document";
 
 @UntilDestroy()
 @Component({
@@ -74,23 +81,22 @@ export class AddressTypeComponent
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
+        debounceTime(0),
         filter((data) => data),
         distinctUntilChanged((a: AddressRef[], b: AddressRef[]) => {
-          const result =
+          return (
             a.length === b.length &&
             a.every(
               (aItem, index) =>
                 aItem.ref === b[index]?.ref &&
                 aItem.type?.key === b[index]?.type?.key,
-            );
-          return result;
+            )
+          );
         }),
-        tap((data) => console.log("Value change", data)),
       )
       .subscribe((value) => {
         const resolved = this.resolvedAddresses();
         const addressRefs = value ?? [];
-        // resolved.filter(item => addressRefs.s)
         this.resolvedAddresses.set(
           this.getPlaceholderAddresses(addressRefs.length),
         );
@@ -98,28 +104,34 @@ export class AddressTypeComponent
           const found =
             resolved[index]?.address?.metadata?.uuid === address.ref;
           if (found) {
-            this.resolvedAddresses.update((values) => {
-              values.splice(index, 1, {
-                type: address.type,
-                address: resolved[index].address,
-              });
-              return [...values];
-            });
+            this.updateResolvedAddresses(
+              index,
+              address.type,
+              resolved[index].address,
+            );
           } else {
             this.documentService
               .load(address.ref, true, false, true)
               .subscribe((data) => {
-                this.resolvedAddresses.update((values) => {
-                  values.splice(index, 1, {
-                    type: address.type,
-                    address: data,
-                  });
-                  return [...values];
-                });
+                this.updateResolvedAddresses(index, address.type, data);
               });
           }
         });
       });
+  }
+
+  private updateResolvedAddresses(
+    index: number,
+    addressType: BackendOption,
+    address: DocumentWithMetadata,
+  ) {
+    this.resolvedAddresses.update((values) => {
+      values.splice(index, 1, {
+        type: addressType,
+        address: address,
+      });
+      return [...values];
+    });
   }
 
   async addToAddresses(address: DocumentAbstract, type: BackendOption) {
@@ -130,7 +142,7 @@ export class AddressTypeComponent
         ref: address._uuid,
       },
     ];
-    this.removeDuplicates();
+    this.removeDuplicates(newValue);
     this.updateFormControl(newValue);
   }
 
@@ -145,12 +157,13 @@ export class AddressTypeComponent
     (await this.callEditDialog(addressRef)).subscribe(
       (data: ChooseAddressResponse) => {
         if (!data) return;
-        this.formControl.value.splice(index, 1, {
-          type: data.type,
+        const copy = this.formControl.value.slice(0);
+        copy.splice(index, 1, {
           ref: data.address._uuid,
+          type: data.type,
         });
-        this.removeDuplicates();
-        this.updateFormControl(this.formControl.value);
+        this.removeDuplicates(copy);
+        this.updateFormControl(copy);
       },
     );
   }
@@ -164,8 +177,8 @@ export class AddressTypeComponent
     );
   }
 
-  private removeDuplicates() {
-    const unique = this.formControl.value.filter(
+  private removeDuplicates(values: AddressRef[]) {
+    const unique = values.filter(
       (value, index, self) =>
         index ===
         self.findIndex((item) => {
@@ -176,10 +189,10 @@ export class AddressTypeComponent
           return sameType && sameUuid;
         }),
     );
-    if (unique.length !== this.formControl.value.length) {
+    if (unique.length !== values.length) {
       this.snack.open("Die Adresse ist bereits vorhanden");
+      this.updateFormControl(unique);
     }
-    this.updateFormControl(unique);
   }
 
   private async callEditDialog(
@@ -268,6 +281,11 @@ export class AddressTypeComponent
       event.previousIndex,
       event.currentIndex,
     );
+    // also update address in template
+    this.resolvedAddresses.update((value) => {
+      moveItemInArray(value, event.previousIndex, event.currentIndex);
+      return value;
+    });
   }
 
   private getPlaceholderAddresses(length: number): ResolvedAddressWithType[] {

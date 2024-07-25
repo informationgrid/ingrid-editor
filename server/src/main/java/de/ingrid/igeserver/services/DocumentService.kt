@@ -163,7 +163,7 @@ class DocumentService(
      * permission when getting the wrapper.
      * TODO: very similar to function "getDocumentByWrapperId(...)" -> refactor
      */
-    fun getDocumentFromCatalog(catalogIdentifier: String, id: Int, expandReferences: Boolean = false): DocumentData {
+    fun getDocumentFromCatalog(catalogIdentifier: String, id: Int): DocumentData {
         try {
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
@@ -172,11 +172,7 @@ class DocumentService(
             // always add wrapper id which is needed when saving documents for authorization check
             doc.wrapperId = id
 
-            return if (expandReferences) DocumentData(
-                wrapper,
-                doc
-            )
-            else DocumentData(wrapper, doc)
+            return DocumentData(wrapper, doc)
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
         }
