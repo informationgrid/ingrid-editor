@@ -83,6 +83,7 @@ export interface RepeatOptions extends Options {
 }
 
 export interface RepeatDetailListOptions extends Options {
+  backendUrl?: string;
   fields?: FormlyFieldConfig[];
   validators?: { [x: string]: { expression: any; message: string } | string[] };
   titleField?: string;
@@ -393,6 +394,31 @@ export class FormFieldHelper {
         required: options?.required,
         titleField: options?.titleField,
         fields: options?.fields,
+      },
+      expressions: expressions,
+      validators: options?.validators,
+    };
+  }
+
+  addRepeatDistributionDetailList(
+    id,
+    label,
+    options?: RepeatDetailListOptions,
+  ): FormlyFieldConfig {
+    const expressions = this.initExpressions(options?.expressions);
+    return {
+      key: id,
+      type: "repeatDistributionDetailList",
+      wrappers: options?.wrappers ?? ["panel"],
+      className: options?.className,
+      props: {
+        externalLabel: label,
+        required: options?.required,
+        supportUpload: options?.supportUpload ?? true,
+        supportLink: options?.supportLink ?? true,
+        backendUrl: options.backendUrl,
+        infoText: options?.infoText,
+        fields: options?.fields[0].fieldGroup,
       },
       expressions: expressions,
       validators: options?.validators,

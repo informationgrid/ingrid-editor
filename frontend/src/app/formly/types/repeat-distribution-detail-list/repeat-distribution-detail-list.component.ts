@@ -56,8 +56,6 @@ interface RepeatDistributionDetailListProps extends FormlyFieldProps {
   infoText: string;
   backendUrl: string;
   fields: FormlyFieldConfig[];
-  supportUpload: boolean;
-  supportLink: boolean;
 }
 
 @Component({
