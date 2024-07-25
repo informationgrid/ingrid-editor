@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, HostBinding, OnInit, signal } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import {
   AddressRef,
@@ -51,6 +51,7 @@ import { firstValueFrom } from "rxjs";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { BackendOption } from "../../../store/codelist/codelist.model";
 import { DocumentWithMetadata } from "../../../models/ige-document";
+import { ValidationErrors } from "@angular/forms";
 
 @UntilDestroy()
 @Component({
@@ -64,74 +65,24 @@ export class AddressTypeComponent
 {
   resolvedAddresses = signal<ResolvedAddressWithType[]>([]);
 
-  @HostBinding("class") hostClass = "";
-
-  constructor(
-    private dialog: MatDialog,
-    private router: Router,
-    private documentService: DocumentService,
-    private snack: MatSnackBar,
-  ) {
-    super();
-  }
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
+  private documentService = inject(DocumentService);
+  private snack = inject(MatSnackBar);
 
   ngOnInit(): void {
-    if (this.props.required) this.hostClass = "required";
-
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
         debounceTime(0),
         filter((data) => data),
-        distinctUntilChanged((a: AddressRef[], b: AddressRef[]) => {
-          return (
-            a.length === b.length &&
-            a.every(
-              (aItem, index) =>
-                aItem.ref === b[index]?.ref &&
-                aItem.type?.key === b[index]?.type?.key,
-            )
-          );
-        }),
+        distinctUntilChanged((a: AddressRef[], b: AddressRef[]) =>
+          this.compareAddressRefs(a, b),
+        ),
       )
-      .subscribe((value) => {
-        const resolved = this.resolvedAddresses();
-        const addressRefs = value ?? [];
-        this.resolvedAddresses.set(
-          this.getPlaceholderAddresses(addressRefs.length),
-        );
-        addressRefs.forEach((address: AddressRef, index) => {
-          const found =
-            resolved[index]?.address?.metadata?.uuid === address.ref;
-          if (found) {
-            this.updateResolvedAddresses(
-              index,
-              address.type,
-              resolved[index].address,
-            );
-          } else {
-            this.documentService
-              .load(address.ref, true, false, true)
-              .subscribe((data) => {
-                this.updateResolvedAddresses(index, address.type, data);
-              });
-          }
-        });
-      });
-  }
+      .subscribe((value) => this.prepareAddressCards(value));
 
-  private updateResolvedAddresses(
-    index: number,
-    addressType: BackendOption,
-    address: DocumentWithMetadata,
-  ) {
-    this.resolvedAddresses.update((values) => {
-      values.splice(index, 1, {
-        type: addressType,
-        address: address,
-      });
-      return [...values];
-    });
+    this.formControl.addValidators(this.allAddressesPublishedValidator());
   }
 
   async addToAddresses(address: DocumentAbstract, type: BackendOption) {
@@ -175,6 +126,40 @@ export class AddressTypeComponent
         this.addToAddresses(data.address, data.type);
       },
     );
+  }
+
+  removeAddress(index: number) {
+    const value = this.formControl.value.filter(
+      (_ref: AddressRef, idx: number) => idx !== index,
+    );
+    this.updateFormControl(value);
+  }
+
+  async gotoAddress(address: ResolvedAddressWithType) {
+    await this.router.navigate([
+      `${ConfigService.catalogId}/address`,
+      { id: address.address.metadata.uuid },
+    ]);
+  }
+
+  // TODO: let ige-form-error handle all error messages
+  getFirstError() {
+    return Object.values(this.formControl.errors).map(
+      (error) => error.message,
+    )[0];
+  }
+
+  drop(event: CdkDragDrop<FormlyFieldConfig>) {
+    moveItemInArray(
+      this.formControl.value,
+      event.previousIndex,
+      event.currentIndex,
+    );
+    // also update address in template
+    this.resolvedAddresses.update((value) => {
+      moveItemInArray(value, event.previousIndex, event.currentIndex);
+      return value;
+    });
   }
 
   private removeDuplicates(values: AddressRef[]) {
@@ -251,41 +236,9 @@ export class AddressTypeComponent
     }
   }
 
-  removeAddress(address: ResolvedAddressWithType, index: number) {
-    const value = this.formControl.value.filter((ref, idx) => idx !== index);
-    this.updateFormControl(value);
-  }
-
   private updateFormControl(value: AddressRef[]) {
     this.formControl.setValue([...value]);
     this.formControl.markAsDirty();
-  }
-
-  gotoAddress(address: ResolvedAddressWithType) {
-    this.router.navigate([
-      `${ConfigService.catalogId}/address`,
-      { id: address.address.metadata.uuid },
-    ]);
-  }
-
-  // TODO: let ige-form-error handle all error messages
-  getFirstError() {
-    return Object.values(this.formControl.errors).map(
-      (error) => error.message,
-    )[0];
-  }
-
-  drop(event: CdkDragDrop<FormlyFieldConfig>) {
-    moveItemInArray(
-      this.formControl.value,
-      event.previousIndex,
-      event.currentIndex,
-    );
-    // also update address in template
-    this.resolvedAddresses.update((value) => {
-      moveItemInArray(value, event.previousIndex, event.currentIndex);
-      return value;
-    });
   }
 
   private getPlaceholderAddresses(length: number): ResolvedAddressWithType[] {
@@ -294,5 +247,69 @@ export class AddressTypeComponent
       placeholder.push({ type: null, address: null });
     }
     return placeholder;
+  }
+
+  private compareAddressRefs(a: AddressRef[], b: AddressRef[]) {
+    return (
+      a.length === b.length &&
+      a.every(
+        (aItem, index) =>
+          aItem.ref === b[index]?.ref &&
+          aItem.type?.key === b[index]?.type?.key,
+      )
+    );
+  }
+
+  private updateResolvedAddresses(
+    index: number,
+    addressType: BackendOption,
+    address: DocumentWithMetadata,
+  ) {
+    this.resolvedAddresses.update((values) => {
+      values.splice(index, 1, {
+        type: addressType,
+        address: address,
+      });
+      return [...values];
+    });
+  }
+
+  private prepareAddressCards(value: AddressRef[]) {
+    const resolved = this.resolvedAddresses();
+    const addressRefs = value ?? [];
+    this.resolvedAddresses.set(
+      this.getPlaceholderAddresses(addressRefs.length),
+    );
+    addressRefs.forEach((address: AddressRef, index) => {
+      const found = resolved[index]?.address?.metadata?.uuid === address.ref;
+      if (found) {
+        this.updateResolvedAddresses(
+          index,
+          address.type,
+          resolved[index].address,
+        );
+      } else {
+        this.documentService
+          .load(address.ref, true, false, true)
+          .subscribe((data) => {
+            this.updateResolvedAddresses(index, address.type, data);
+          });
+      }
+    });
+  }
+
+  private allAddressesPublishedValidator() {
+    return (): ValidationErrors | null => {
+      const oneNotPublished = this.resolvedAddresses().some(
+        (address) => address.address.metadata.state !== "P",
+      );
+      return oneNotPublished
+        ? {
+            addressesPublished: {
+              message: "Alle Adressen müssen veröffentlicht sein",
+            },
+          }
+        : null;
+    };
   }
 }
