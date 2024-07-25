@@ -491,7 +491,7 @@ class DocumentService(
 
     private fun moveLastPublishedDocumentToArchive(catalogId: String, wrapper: DocumentWrapper) {
         try {
-            val lastPublishedDoc = getLastPublishedDocument(catalogId, wrapper.uuid, resolveLinks = false)
+            val lastPublishedDoc = getLastPublishedDocument(catalogId, wrapper.uuid)
             lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
             lastPublishedDoc.wrapperId = wrapper.id
             docRepo.save(lastPublishedDoc)
@@ -725,16 +725,14 @@ class DocumentService(
      *
      * @param wrapperId the wrapper ID of the document
      * @param forExport if the document is requested for export
-     * @param resolveLinks if internal references should be resolved
      * @return the last published document version
      */
     fun getLastPublishedDocument(
         wrapperId: Int,
         forExport: Boolean = false,
-        resolveLinks: Boolean = true
     ): Document {
         val wrapper = getWrapperById(wrapperId)
-        return getLastPublishedDocument(wrapper.catalog!!.identifier, wrapper.uuid, forExport, resolveLinks)
+        return getLastPublishedDocument(wrapper.catalog!!.identifier, wrapper.uuid, forExport)
     }
 
     /**
@@ -744,14 +742,12 @@ class DocumentService(
      * @param catalogId the catalog identifier
      * @param uuid the UUID of the document
      * @param forExport if the document is requested for export
-     * @param resolveLinks if internal references should be resolved
      * @return the last published document version
      */
     fun getLastPublishedDocument(
         catalogId: String,
         uuid: String,
-        forExport: Boolean = false,
-        resolveLinks: Boolean = true
+        forExport: Boolean = false
     ): Document {
         val doc = docWrapperRepo.getDocumentByState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
         if (doc.isEmpty()) throw EmptyResultDataAccessException("Resource with $uuid not found", 1)

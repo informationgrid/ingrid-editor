@@ -157,7 +157,7 @@ private fun anonymizeAddresses(model: IngridModel, uuid: String) {
         Address(null, null, null, null, null, null, null), null, null
     )
     model.data.pointOfContact?.forEach {
-        it.ref = anonymousAddress
+        it.ref = anonymousAddress.uuid
     }
 }
 
