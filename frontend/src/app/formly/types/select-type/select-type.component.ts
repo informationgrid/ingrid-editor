@@ -29,7 +29,7 @@ import { MatSelect, MatSelectChange } from "@angular/material/select";
 import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatPseudoCheckboxState } from "@angular/material/core";
-import { filter, map, take, tap } from "rxjs/operators";
+import { debounceTime, filter, map, take, tap } from "rxjs/operators";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { BackendOption } from "../../../store/codelist/codelist.model";
@@ -84,6 +84,7 @@ export class SelectTypeComponent
     combineLatest([this.formControl.valueChanges, this.optionsLoaded$])
       .pipe(
         untilDestroyed(this),
+        debounceTime(0),
         filter(([, ready]) => ready),
         tap(([value]) => this.updateSelectField(value)),
       )

@@ -35,7 +35,7 @@ import {
   SpatialLocation,
   SpatialLocationWithColor,
 } from "./spatial-list/spatial-list.component";
-import { distinctUntilChanged, tap } from "rxjs/operators";
+import { debounceTime, distinctUntilChanged, tap } from "rxjs/operators";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
@@ -79,6 +79,7 @@ export class LeafletTypeComponent
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
+        debounceTime(0),
         distinctUntilChanged(),
         tap((value: SpatialLocation[]) => (this.locations = value || [])),
       )

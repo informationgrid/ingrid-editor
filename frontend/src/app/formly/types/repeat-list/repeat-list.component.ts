@@ -230,6 +230,7 @@ export class RepeatListComponent
       ).pipe(
         untilDestroyed(this),
         startWith(""),
+        debounceTime(0),
         filter((value) => value !== undefined && value !== null),
         map((value) => this._filter(value)),
         tap((value) => this._markSelected(value)),

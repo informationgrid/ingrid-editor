@@ -35,13 +35,15 @@ import { FieldType } from "@ngx-formly/material/form-field";
 import { FieldTypeConfig, FormlyFieldProps } from "@ngx-formly/core";
 import { AsyncPipe } from "@angular/common";
 import { Observable, of } from "rxjs";
-import { startWith, take } from "rxjs/operators";
+import { debounceTime, startWith, take } from "rxjs/operators";
 import { BackendOption } from "../../../store/codelist/codelist.model";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
 interface UnitInput extends FormlyFieldProps {
   unitOptions: Observable<SelectOptionUi[]>;
 }
 
+@UntilDestroy()
 @Component({
   selector: "ige-unit-input",
   standalone: true,
@@ -76,7 +78,8 @@ export class UnitInputComponent
       this.$options.set(opts);
 
       this.field.fieldGroup[1].formControl.valueChanges
-        .pipe(startWith(unitValue))
+        .pipe(untilDestroyed(this), startWith(unitValue), debounceTime(0))
+
         .subscribe((value: BackendOption) => {
           this.updateUnit(
             opts.find((option) => option.value === value?.key) ?? opts[0],

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import {
   FieldArrayType,
   FieldGroupTypeConfig,
@@ -28,7 +28,7 @@ import {
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { clone, groupByWithIndexReference } from "../../../shared/utils";
-import { startWith, tap } from "rxjs/operators";
+import { debounceTime, startWith, tap } from "rxjs/operators";
 
 export interface RepeatProps extends FormlyFieldProps {
   menuOptions: {
@@ -56,7 +56,7 @@ export class RepeatComponent
   canBeDragged = false;
 
   groupedFields: any;
-  groupedFieldsKeys: string[] = [];
+  groupedFieldsKeys = signal<string[]>([]);
   menuSections: any;
 
   ngOnInit(): void {
@@ -70,6 +70,7 @@ export class RepeatComponent
       .pipe(
         untilDestroyed(this),
         startWith(this.formControl.value as any[]),
+        debounceTime(0),
         tap((value) => this.createGroupedFields(value)),
       )
       .subscribe((value) => this.updateDragState(value));
@@ -132,6 +133,6 @@ export class RepeatComponent
 
   private createGroupedFields(value: any[]) {
     this.groupedFields = groupByWithIndexReference(value, (i) => i._type);
-    this.groupedFieldsKeys = Object.keys(this.groupedFields);
+    this.groupedFieldsKeys.set(Object.keys(this.groupedFields));
   }
 }

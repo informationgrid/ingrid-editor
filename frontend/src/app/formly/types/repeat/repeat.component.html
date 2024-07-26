@@ -10,7 +10,7 @@
 }
 
 <div>
-    @for (key of groupedFieldsKeys; track key) {
+    @for (key of groupedFieldsKeys(); track key) {
         <div
             cdkDropList
             cdkDropListOrientation="vertical"
@@ -81,7 +81,9 @@
         [showRequiredError]="
             showError && formControl.invalid && formControl.errors?.required
         "
-        [showTitle]="groupedFieldsKeys.length == 0"
-        [matTooltip]="groupedFieldsKeys.length == 0 ? undefined : 'Hinzufügen'"
+        [showTitle]="groupedFieldsKeys().length == 0"
+        [matTooltip]="
+            groupedFieldsKeys().length == 0 ? undefined : 'Hinzufügen'
+        "
     ></ige-add-button>
 }

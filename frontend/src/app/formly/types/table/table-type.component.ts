@@ -25,7 +25,7 @@ import {
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { filter, tap } from "rxjs/operators";
+import { debounceTime, filter, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import {
   FormDialogComponent,
@@ -97,6 +97,7 @@ export class TableTypeComponent
       .pipe(
         untilDestroyed(this),
         // distinctUntilChanged(),
+        debounceTime(0),
         tap((value) => this.prepareFormattedValues(value)),
       )
       .subscribe((value) => {
