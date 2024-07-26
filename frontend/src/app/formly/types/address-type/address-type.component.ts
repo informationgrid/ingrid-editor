@@ -87,7 +87,7 @@ export class AddressTypeComponent
 
   async addToAddresses(address: DocumentAbstract, type: BackendOption) {
     const newValue = [
-      ...this.formControl.value,
+      ...(this.formControl.value ?? []),
       {
         type: type,
         ref: address._uuid,
