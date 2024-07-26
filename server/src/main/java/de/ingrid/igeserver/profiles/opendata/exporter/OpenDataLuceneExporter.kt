@@ -78,47 +78,6 @@ class OpenDataLuceneExporter(
                 "export/ingrid/lucene/template-lucene.jte",
                 getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
             )
-
-            "InGridGeoDataset" -> Pair(
-                "export/ingrid/lucene/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
-            )
-
-            "InGridPublication" -> Pair(
-                "export/ingrid/lucene/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
-            )
-
-            "InGridGeoService" -> Pair(
-                "export/ingrid/lucene/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
-            )
-
-            "InGridProject" -> Pair(
-                "export/ingrid/lucene/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
-            )
-
-            "InGridDataCollection" -> Pair(
-                "export/ingrid/lucene/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
-            )
-
-            "InGridInformationSystem" -> Pair(
-                "export/ingrid/lucene/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
-            )
-
-            "InGridOrganisationDoc" -> Pair(
-                "export/ingrid/lucene/template-lucene-address.jte",
-                getMapper(OpenDataDocType.ADDRESS, doc, catalog, options)
-            )
-
-            "InGridPersonDoc" -> Pair(
-                "export/ingrid/lucene/template-lucene-address.jte",
-                getMapper(OpenDataDocType.ADDRESS, doc, catalog, options)
-            )
-
             "FOLDER" -> Pair("export/ingrid/lucene/template-lucene-folder.jte", getMapper(OpenDataDocType.FOLDER, doc, catalog, options))
             else -> {
                 throw ServerException.withReason("Cannot get template for type: ${doc.type}")
