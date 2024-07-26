@@ -106,7 +106,7 @@ describe("RepeatListComponent", () => {
     });
 
     it("should remove a simple value", async () => {
-      spectator.setHostInput("model", { repeatListSimple: ["item 1"] });
+      spectator.setInput("model", { repeatListSimple: ["item 1"] });
       spectator.detectChanges();
 
       checkItemCount(1);
@@ -117,7 +117,7 @@ describe("RepeatListComponent", () => {
     });
 
     it("should show multiple items", async () => {
-      spectator.setHostInput("model", {
+      spectator.setInput("model", {
         repeatListSimple: ["item 1", "item 2", "item 3"],
       });
       spectator.detectChanges();
@@ -195,7 +195,7 @@ describe("RepeatListComponent", () => {
     });
 
     it("should remove an item", async () => {
-      spectator.setHostInput("model", { repeatListCodelist: [{ key: "1" }] });
+      spectator.setInput("model", { repeatListCodelist: [{ key: "1" }] });
       spectator.detectChanges();
 
       removeItem(0);
@@ -339,7 +339,7 @@ describe("RepeatListComponent", () => {
     });
 
     it("should remove a value", async () => {
-      spectator.setHostInput("model", {
+      spectator.setInput("model", {
         repeatListCodelist: [{ label: "remote 2", other: "b" }],
       });
       spectator.detectChanges();
@@ -407,7 +407,7 @@ describe("RepeatListComponent", () => {
     });
 
     it("should remove a chip", async () => {
-      spectator.setHostInput("model", { repeatListCodelist: [{ key: "1" }] });
+      spectator.setInput("model", { repeatListCodelist: [{ key: "1" }] });
       spectator.detectChanges();
 
       removeChip(0);

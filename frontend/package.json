@@ -62,7 +62,7 @@
     "@angular/cli": "^18.1.2",
     "@angular/compiler-cli": "^18.1.2",
     "@datorama/akita-ngdevtools": "^7.0.0",
-    "@ngneat/spectator": "^19.0.0",
+    "@ngneat/spectator": "^16.0.0",
     "@types/file-saver-es": "~2.0.3",
     "@types/flowjs": "~2.13.13",
     "@types/jasmine": "~5.1.4",

@@ -2665,19 +2665,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ngneat/spectator@npm:^19.0.0":
-  version: 19.0.0
-  resolution: "@ngneat/spectator@npm:19.0.0"
+"@ngneat/spectator@npm:^16.0.0":
+  version: 16.0.0
+  resolution: "@ngneat/spectator@npm:16.0.0"
   dependencies:
     "@testing-library/dom": "npm:^8.11.0"
     jquery: "npm:3.6.4"
     replace-in-file: "npm:6.2.0"
     tslib: "npm:^2.6.2"
   peerDependencies:
-    "@angular/animations": ">= 18.0.0"
-    "@angular/common": ">= 18.0.0"
-    "@angular/router": ">= 18.0.0"
-  checksum: 10c0/3779060a016cdd95563a700c1ff48ad41bed1496ff29f879e4f0d1fcd80c0e5a3b216057d919f9582169a0a38d035529a9962dabcf2a518f8d76d876e769c481
+    "@angular/animations": ">= 17.0.0"
+    "@angular/common": ">= 17.0.0"
+    "@angular/router": ">= 17.0.0"
+  checksum: 10c0/03a40469de83faf6c59c6aa6b0257dc4d5ab9c49ea4f0fadedea0940742d1ae9f3ee15d8b52a8d58405031f0ee65e49180c0904d99ffa3c867881f2f77a53c23
   languageName: node
   linkType: hard
 
@@ -7262,7 +7262,7 @@ __metadata:
     "@flowjs/ngx-flow": "npm:^0.8.1"
     "@geoman-io/leaflet-geoman-free": "npm:^2.15.0"
     "@ngneat/dirty-check-forms": "npm:^3.0.3"
-    "@ngneat/spectator": "npm:^19.0.0"
+    "@ngneat/spectator": "npm:^16.0.0"
     "@ngneat/transloco": "npm:6.0.4"
     "@ngneat/until-destroy": "npm:^10.0.0"
     "@ngx-formly/core": "npm:6.3.6"
