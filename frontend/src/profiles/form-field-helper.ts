@@ -90,6 +90,9 @@ export interface RepeatDetailListOptions extends Options {
   infoText?: string;
   supportUpload?: boolean;
   supportLink?: boolean;
+  enableFileUploadOverride?: boolean,
+  enableFileUploadReuse?: boolean,
+  enableFileUploadRename?: boolean,
 }
 
 export interface RepeatListOptions extends Options {
@@ -416,6 +419,9 @@ export class FormFieldHelper {
         required: options?.required,
         supportUpload: options?.supportUpload ?? true,
         supportLink: options?.supportLink ?? true,
+        enableFileUploadOverride: options?.enableFileUploadOverride ?? true,
+        enableFileUploadReuse: options?.enableFileUploadReuse ?? true,
+        enableFileUploadRename: options?.enableFileUploadRename ?? true,
         backendUrl: options.backendUrl,
         infoText: options?.infoText,
         fields: options?.fields[0].fieldGroup,

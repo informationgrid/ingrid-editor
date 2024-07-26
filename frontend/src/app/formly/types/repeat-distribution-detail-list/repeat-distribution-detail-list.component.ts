@@ -53,6 +53,11 @@ import { FieldType } from "@ngx-formly/material";
 import { FormStateService } from "../../../+form/form-state.service";
 
 interface RepeatDistributionDetailListProps extends FormlyFieldProps {
+  supportLink?: boolean;
+  supportUpload?: boolean;
+  enableFileUploadOverride?: boolean,
+  enableFileUploadReuse?: boolean,
+  enableFileUploadRename?: boolean,
   infoText: string;
   backendUrl: string;
   fields: FormlyFieldConfig[];
@@ -116,6 +121,9 @@ export class RepeatDistributionDetailListComponent
           uploadFieldKey: this.getUploadFieldKey(),
           hasExtractZipOption: true,
           infoText: this.field.props.infoText,
+          enableFileUploadOverride: this.field.props.enableFileUploadOverride,
+          enableFileUploadReuse: this.field.props.enableFileUploadReuse,
+          enableFileUploadRename: this.field.props.enableFileUploadRename,
         },
       })
       .afterClosed()

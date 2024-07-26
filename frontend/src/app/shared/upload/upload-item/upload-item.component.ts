@@ -30,6 +30,9 @@ export class UploadItemComponent implements OnInit {
   @Input() file: TransfersWithErrorInfo;
   @Input() flow: FlowDirective;
   @Input() showOnlyProgress = false;
+  @Input() enableFileUploadOverride: boolean;
+  @Input() enableFileUploadReuse: boolean;
+  @Input() enableFileUploadRename: boolean;
 
   @Output() remove = new EventEmitter<string>();
   @Output() useExisting = new EventEmitter<Transfer>();

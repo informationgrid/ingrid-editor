@@ -62,6 +62,9 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   extractZipFiles = false;
   extractInProgress = false;
   infoText;
+  enableFileUploadOverride: boolean;
+  enableFileUploadReuse: boolean;
+  enableFileUploadRename: boolean;
   refreshTimer$: number = null;
 
   constructor(
@@ -78,6 +81,9 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
       allowedUploadTypes?: string[];
       hasExtractZipOption?: boolean;
       infoText?: String;
+      enableFileUploadOverride?: boolean;
+      enableFileUploadReuse?: boolean;
+      enableFileUploadRename?: boolean;
     },
   ) {
     this.docUuid = formStateService.metadata().uuid;
@@ -87,6 +93,9 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
     this.allowedUploadTypes = data.allowedUploadTypes;
     this.hasExtractZipOption = data.hasExtractZipOption;
     this.infoText = data.infoText;
+    this.enableFileUploadOverride = data.enableFileUploadOverride;
+    this.enableFileUploadReuse = data.enableFileUploadReuse;
+    this.enableFileUploadRename = data.enableFileUploadRename;
   }
 
   ngOnInit(): void {
