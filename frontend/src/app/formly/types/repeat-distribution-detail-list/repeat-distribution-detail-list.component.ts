@@ -55,9 +55,10 @@ import { FormStateService } from "../../../+form/form-state.service";
 interface RepeatDistributionDetailListProps extends FormlyFieldProps {
   supportLink?: boolean;
   supportUpload?: boolean;
-  enableFileUploadOverride?: boolean,
-  enableFileUploadReuse?: boolean,
-  enableFileUploadRename?: boolean,
+  enableFileUploadOverride?: boolean;
+  enableFileUploadReuse?: boolean;
+  enableFileUploadRename?: boolean;
+  jsonTemplate?: object,
   infoText: string;
   backendUrl: string;
   fields: FormlyFieldConfig[];
@@ -164,7 +165,7 @@ export class RepeatDistributionDetailListComponent
 
   private addUploadInfoToDatasource(file: LinkInfo) {
     const newRow = this.getEmptyEntry();
-    newRow.title = "";
+    // newRow.title = "";
     newRow[this.getUploadFieldKey()] = {
       asLink: false,
       value: file.file,
@@ -175,15 +176,7 @@ export class RepeatDistributionDetailListComponent
   }
 
   private getEmptyEntry() {
-    const template = {
-      format: { key: null },
-      title: "",
-      description: "",
-      license: null,
-      byClause: "",
-      languages: [],
-      plannedAvailability: null,
-    };
+    const template = this.field.props.jsonTemplate ?? {};
     template[this.getUploadFieldKey()] = {
       asLink: true,
       value: "",

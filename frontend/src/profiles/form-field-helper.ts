@@ -93,6 +93,7 @@ export interface RepeatDetailListOptions extends Options {
   enableFileUploadOverride?: boolean,
   enableFileUploadReuse?: boolean,
   enableFileUploadRename?: boolean,
+  jsonTemplate?: object;
 }
 
 export interface RepeatListOptions extends Options {
@@ -422,6 +423,7 @@ export class FormFieldHelper {
         enableFileUploadOverride: options?.enableFileUploadOverride ?? true,
         enableFileUploadReuse: options?.enableFileUploadReuse ?? true,
         enableFileUploadRename: options?.enableFileUploadRename ?? true,
+        jsonTemplate: options?.jsonTemplate,
         backendUrl: options.backendUrl,
         infoText: options?.infoText,
         fields: options?.fields[0].fieldGroup,

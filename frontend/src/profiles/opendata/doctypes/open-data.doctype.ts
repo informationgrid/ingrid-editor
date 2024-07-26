@@ -101,6 +101,15 @@ export class OpenDataDoctype extends BaseDoctype {
           backendUrl: this.configService.getConfiguration().backendUrl,
           infoText:
             "Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten.",
+          jsonTemplate: {
+            format: { key: null },
+            title: "",
+            description: "",
+            license: null,
+            byClause: "",
+            languages: [],
+            plannedAvailability: null,
+          },
           fields: [
             this.addGroupSimple(null, [
               { key: "_title" },
