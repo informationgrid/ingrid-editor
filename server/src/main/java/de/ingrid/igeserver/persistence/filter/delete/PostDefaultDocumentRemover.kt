@@ -25,8 +25,6 @@ import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PostDeletePayload
 import de.ingrid.igeserver.tasks.IndexingTask
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 /**
@@ -46,7 +44,7 @@ class PostDefaultDocumentRemover(val indexTask: IndexingTask) : Filter<PostDelet
             this.indexTask.removeFromIndex(context.catalogId, payload.wrapper.uuid, payload.wrapper.category!!)
         } catch (e: NoElasticsearchConnectionException) {
             // just give a warning so that delete operation succeeds since it runs in a transaction
-            log.warn("There's no connection to Elasticsearch: ${e.message}")
+            log.warn("Could not remove '${payload.wrapper.uuid}' from ES index: ${e.message}")
         }
 
         return payload
