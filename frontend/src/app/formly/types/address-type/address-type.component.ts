@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { AddressRef } from "./address-card/address-card.component";
 import { MatDialog } from "@angular/material/dialog";
@@ -52,7 +52,7 @@ export class AddressTypeComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
-  addresses: AddressRef[] = [];
+  addresses = signal<AddressRef[]>([]);
 
   constructor(
     private dialog: MatDialog,
@@ -64,21 +64,26 @@ export class AddressTypeComponent
   }
 
   ngOnInit(): void {
-    this.addresses = this.formControl.value || [];
+    this.addresses.set(this.formControl.value || []);
 
     this.formControl.valueChanges
       .pipe(untilDestroyed(this), distinctUntilChanged())
-      .subscribe((value) => (this.addresses = value || []));
+      .subscribe((value) => this.addresses.set(value || []));
   }
 
   async addToAddresses(address: DocumentAbstract, type: BackendOption) {
     this.getAddressFromBackend(address.id as string).subscribe((address) => {
-      this.addresses.push({
-        type: type,
-        ref: address.documentWithMetadata,
+      this.addresses.update((value) => {
+        return [
+          ...value,
+          {
+            type: type,
+            ref: address.documentWithMetadata,
+          },
+        ];
       });
       this.removeDuplicates();
-      this.updateFormControl(this.addresses);
+      this.updateFormControl(this.addresses());
     });
   }
   async addAddress() {
@@ -94,12 +99,14 @@ export class AddressTypeComponent
         if (!data) return;
         this.getAddressFromBackend(data.address.id as string).subscribe(
           (address) => {
-            this.addresses.splice(index, 1, {
+            const copy = this.addresses().slice(0);
+            copy.splice(index, 1, {
               type: data.type,
               ref: address.documentWithMetadata,
             });
+            this.addresses.set(copy);
             this.removeDuplicates();
-            this.updateFormControl(this.addresses);
+            this.updateFormControl(copy);
           },
         );
       },
@@ -116,7 +123,7 @@ export class AddressTypeComponent
   }
 
   private removeDuplicates() {
-    const unique = this.addresses.filter(
+    const unique = this.addresses().filter(
       (value, index, self) =>
         index ===
         self.findIndex((item) => {
@@ -127,10 +134,10 @@ export class AddressTypeComponent
           return sameType && sameUuid;
         }),
     );
-    if (unique.length !== this.addresses.length) {
+    if (unique.length !== this.addresses().length) {
       this.snack.open("Die Adresse ist bereits vorhanden");
     }
-    this.addresses = unique;
+    this.addresses.set(unique);
   }
 
   private async callEditDialog(
@@ -190,7 +197,7 @@ export class AddressTypeComponent
   }
 
   removeAddress(address: AddressRef) {
-    const value = this.addresses.filter((ref) => ref !== address);
+    const value = this.addresses().filter((ref) => ref !== address);
     this.updateFormControl(value);
   }
 
@@ -218,6 +225,8 @@ export class AddressTypeComponent
   }
 
   drop(event: CdkDragDrop<FormlyFieldConfig>) {
-    moveItemInArray(this.addresses, event.previousIndex, event.currentIndex);
+    const copy = this.addresses().slice(0);
+    moveItemInArray(copy, event.previousIndex, event.currentIndex);
+    this.addresses.set(copy);
   }
 }

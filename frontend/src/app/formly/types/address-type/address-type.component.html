@@ -2,7 +2,7 @@
     <ige-form-error>{{ getFirstError() }}</ige-form-error>
 }
 
-@if (addresses.length > 0) {
+@if (addresses().length > 0) {
     <div
         class="address-cards flex-row flex-wrap gap-24 row-gap-12"
         cdkDropList
@@ -12,7 +12,7 @@
         aria-description="Liste der gewählten Adressen"
         role="list"
     >
-        @for (address of addresses; track address; let i = $index) {
+        @for (address of addresses(); track address; let i = $index) {
             <div
                 class="address-card-wrapper"
                 style="max-width: 50%"
@@ -25,7 +25,7 @@
                     (copy)="copyAddress(address)"
                     (remove)="removeAddress(address)"
                     (gotoAddress)="gotoAddress(address)"
-                    [canCopy]="!props.max || props.max > addresses.length"
+                    [canCopy]="!props.max || props.max > addresses().length"
                     [disabled]="formControl.disabled"
                     [address]="address"
                 ></ige-address-card>
@@ -34,7 +34,7 @@
     </div>
 }
 
-@if (formControl.enabled && (!props.max || props.max > addresses.length)) {
+@if (formControl.enabled && (!props.max || props.max > addresses().length)) {
     <ige-add-button
         (add)="addAddress()"
         [showRequiredError]="
