@@ -20,6 +20,7 @@
 import { Component, inject, OnInit, signal } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import {
+  AddressCardComponent,
   AddressRef,
   ResolvedAddressWithType,
 } from "./address-card/address-card.component";
@@ -39,7 +40,12 @@ import {
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
-import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDropList,
+  moveItemInArray,
+} from "@angular/cdk/drag-drop";
 import { FieldTypeConfig, FormlyFieldConfig } from "@ngx-formly/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {
@@ -53,12 +59,24 @@ import { BackendOption } from "../../../store/codelist/codelist.model";
 import { DocumentWithMetadata } from "../../../models/ige-document";
 import { ValidationErrors } from "@angular/forms";
 import { HttpErrorResponse } from "@angular/common/http";
+import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
+import { AddButtonModule } from "../../../shared/add-button/add-button.module";
+import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
 
 @UntilDestroy()
 @Component({
   selector: "ige-address-type",
   templateUrl: "./address-type.component.html",
   styleUrls: ["./address-type.component.scss"],
+  imports: [
+    FormErrorComponent,
+    CdkDropList,
+    CdkDrag,
+    AddressCardComponent,
+    AddButtonModule,
+    FieldToAiraLabelledbyPipe,
+  ],
+  standalone: true,
 })
 export class AddressTypeComponent
   extends FieldType<FieldTypeConfig>

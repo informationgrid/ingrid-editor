@@ -21,16 +21,23 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  EventEmitter,
   HostListener,
   input,
   OnInit,
-  Output,
+  output,
 } from "@angular/core";
 import { DocumentWithMetadata } from "../../../../models/ige-document";
 import { ProfileService } from "../../../../services/profile.service";
 import { BackendOption } from "../../../../store/codelist/codelist.model";
 import { DocumentService } from "../../../../services/document/document.service";
+import { MatCard, MatCardContent } from "@angular/material/card";
+import { MatTooltip } from "@angular/material/tooltip";
+import { AsyncPipe, NgTemplateOutlet } from "@angular/common";
+import { DocumentIconModule } from "../../../../shared/document-icon/document-icon.module";
+import { SharedPipesModule } from "../../../../directives/shared-pipes.module";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { MatIcon } from "@angular/material/icon";
+import { MatIconButton } from "@angular/material/button";
 
 export interface AddressRef {
   type: BackendOption;
@@ -48,15 +55,30 @@ export interface ResolvedAddressWithType {
   templateUrl: "./address-card.component.html",
   styleUrls: ["./address-card.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    MatCard,
+    MatTooltip,
+    MatCardContent,
+    NgTemplateOutlet,
+    DocumentIconModule,
+    SharedPipesModule,
+    AsyncPipe,
+    MatMenuTrigger,
+    MatIcon,
+    MatMenu,
+    MatMenuItem,
+    MatIconButton,
+  ],
+  standalone: true,
 })
 export class AddressCardComponent implements OnInit {
   address = input.required<ResolvedAddressWithType>();
   disabled = input<boolean>(false);
 
-  @Output() remove = new EventEmitter<void>();
-  @Output() edit = new EventEmitter<void>();
-  @Output() copy = new EventEmitter<void>();
-  @Output() gotoAddress = new EventEmitter<void>();
+  remove = output();
+  edit = output();
+  copy = output();
+  gotoAddress = output();
 
   addressAbstract = computed(() => {
     if (this.address().address === null) return null;
@@ -145,7 +167,6 @@ export class AddressCardComponent implements OnInit {
   @HostListener("window: keyup", ["$event"])
   @HostListener("window: keydown", ["$event"])
   hotkeys(event: KeyboardEvent) {
-    this.showCopy = event.ctrlKey && this.copy.observed;
-    // this.showCopy = event.ctrlKey && this.canCopy;
+    this.showCopy = event.ctrlKey;
   }
 }

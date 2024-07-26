@@ -21,13 +21,14 @@
                 Lade ...
             }
         } @else {
-            <div class="header flex-row justify-content-space-between">
+            <div class="header flex-row">
                 <ige-document-icon
                     [doc]="addressAbstract()"
                 ></ige-document-icon>
                 <div class="title">
                     {{ address().type | codelist: "505" | async }}
                 </div>
+                <div class="flex-1"></div>
                 <ng-container [ngTemplateOutlet]="menuButton"></ng-container>
             </div>
 
@@ -75,20 +76,20 @@
         @if (address().address !== null) {
             <button
                 mat-menu-item
-                (click)="showCopy ? copy.next() : edit.next()"
+                (click)="showCopy ? copy.emit() : edit.emit()"
                 [disabled]="disabled()"
             >
                 {{ showCopy ? "Kopieren" : "Bearbeiten" }}
             </button>
             <button
                 mat-menu-item
-                (click)="gotoAddress.next()"
+                (click)="gotoAddress.emit()"
                 [disabled]="address().address.metadata.wrapperId === undefined"
             >
                 Hinspringen
             </button>
         }
-        <button mat-menu-item (click)="remove.next()" [disabled]="disabled()">
+        <button mat-menu-item (click)="remove.emit()" [disabled]="disabled()">
             Entfernen
         </button>
     </mat-menu>
