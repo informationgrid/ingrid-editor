@@ -40,6 +40,7 @@ export interface AddressRef {
 export interface ResolvedAddressWithType {
   type: BackendOption;
   address: DocumentWithMetadata;
+  error?: String;
 }
 
 @Component({

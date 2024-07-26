@@ -52,6 +52,7 @@ import { DocumentAbstract } from "../../../store/document/document.model";
 import { BackendOption } from "../../../store/codelist/codelist.model";
 import { DocumentWithMetadata } from "../../../models/ige-document";
 import { ValidationErrors } from "@angular/forms";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @UntilDestroy()
 @Component({
@@ -264,11 +265,13 @@ export class AddressTypeComponent
     index: number,
     addressType: BackendOption,
     address: DocumentWithMetadata,
+    error: string = null,
   ) {
     this.resolvedAddresses.update((values) => {
       values.splice(index, 1, {
         type: addressType,
         address: address,
+        error: error,
       });
       return [...values];
     });
@@ -289,11 +292,18 @@ export class AddressTypeComponent
           resolved[index].address,
         );
       } else {
-        this.documentService
-          .load(address.ref, true, false, true)
-          .subscribe((data) => {
+        this.documentService.load(address.ref, true, false, true).subscribe({
+          next: (data) => {
             this.updateResolvedAddresses(index, address.type, data);
-          });
+          },
+          error: (err) =>
+            this.updateResolvedAddresses(
+              index,
+              address.type,
+              null,
+              this.prepareAddressLoadError(err),
+            ),
+        });
       }
     });
   }
@@ -301,7 +311,7 @@ export class AddressTypeComponent
   private allAddressesPublishedValidator() {
     return (): ValidationErrors | null => {
       const oneNotPublished = this.resolvedAddresses().some(
-        (address) => address.address.metadata.state !== "P",
+        (address) => address.address?.metadata?.state !== "P",
       );
       return oneNotPublished
         ? {
@@ -311,5 +321,9 @@ export class AddressTypeComponent
           }
         : null;
     };
+  }
+
+  private prepareAddressLoadError(err: HttpErrorResponse) {
+    return err.status === 403 ? "Keine Berechtigung" : "Gelöscht";
   }
 }

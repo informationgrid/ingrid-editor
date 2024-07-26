@@ -8,52 +8,27 @@
 >
     <mat-card-content>
         @if (address().address === null) {
-            Lade ...
+            @if (address().error !== null) {
+                <div
+                    class="error-box flex-row align-items-center justify-content-space-between gap-6"
+                >
+                    <span>{{ address().error }}</span>
+                    <ng-container
+                        [ngTemplateOutlet]="menuButton"
+                    ></ng-container>
+                </div>
+            } @else {
+                Lade ...
+            }
         } @else {
-            <div class="header flex-row">
+            <div class="header flex-row justify-content-space-between">
                 <ige-document-icon
                     [doc]="addressAbstract()"
                 ></ige-document-icon>
                 <div class="title">
-                    <!--                TODO AW: Handle free values!!! -->
                     {{ address().type | codelist: "505" | async }}
                 </div>
-                <div class="flex-1"></div>
-                <button
-                    mat-icon-button
-                    type="button"
-                    class="menu-button"
-                    [matMenuTriggerFor]="linkedAddressMenu"
-                    matTooltip="Bearbeiten"
-                    aria-label="Adresse bearbeiten"
-                >
-                    <mat-icon class="dark-blue" svgIcon="Mehr"></mat-icon>
-                </button>
-                <mat-menu #linkedAddressMenu="matMenu">
-                    <button
-                        mat-menu-item
-                        (click)="showCopy ? copy.next() : edit.next()"
-                        [disabled]="disabled()"
-                    >
-                        {{ showCopy ? "Kopieren" : "Bearbeiten" }}
-                    </button>
-                    <button
-                        mat-menu-item
-                        (click)="gotoAddress.next()"
-                        [disabled]="
-                            address().address.metadata.wrapperId === undefined
-                        "
-                    >
-                        Hinspringen
-                    </button>
-                    <button
-                        mat-menu-item
-                        (click)="remove.next()"
-                        [disabled]="disabled()"
-                    >
-                        Entfernen
-                    </button>
-                </mat-menu>
+                <ng-container [ngTemplateOutlet]="menuButton"></ng-container>
             </div>
 
             @if (address().address.document?.organization) {
@@ -84,3 +59,37 @@
         }
     </mat-card-content>
 </mat-card>
+
+<ng-template #menuButton>
+    <button
+        mat-icon-button
+        type="button"
+        class="menu-button"
+        [matMenuTriggerFor]="linkedAddressMenu"
+        matTooltip="Bearbeiten"
+        aria-label="Adresse bearbeiten"
+    >
+        <mat-icon class="dark-blue" svgIcon="Mehr"></mat-icon>
+    </button>
+    <mat-menu #linkedAddressMenu="matMenu">
+        @if (address().address !== null) {
+            <button
+                mat-menu-item
+                (click)="showCopy ? copy.next() : edit.next()"
+                [disabled]="disabled()"
+            >
+                {{ showCopy ? "Kopieren" : "Bearbeiten" }}
+            </button>
+            <button
+                mat-menu-item
+                (click)="gotoAddress.next()"
+                [disabled]="address().address.metadata.wrapperId === undefined"
+            >
+                Hinspringen
+            </button>
+        }
+        <button mat-menu-item (click)="remove.next()" [disabled]="disabled()">
+            Entfernen
+        </button>
+    </mat-menu>
+</ng-template>
