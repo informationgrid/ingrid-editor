@@ -139,7 +139,7 @@ open class AddressModelTransformer(
     val administrativeArea =
         codelist.getCatalogCodelistValue("6250", displayAddress.data.get("address")?.get("administrativeArea")?.mapToKeyValue())
     val addressDocType = getAddressDocType(displayAddress.type)
-    open fun getAddressDocType(docType: String) = if (docType == "InGridOrganisationDoc") 0 else 2
+    fun getAddressDocType(docType: String) = if (docType == "InGridPersonDoc") 2 else 0
 
     val parentAddresses = ancestorAddressesIncludingSelf.dropLast(1)
 
