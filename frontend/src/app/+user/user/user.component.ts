@@ -20,16 +20,16 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 
 import {
-  AfterContentChecked,
   AfterViewInit,
-  ChangeDetectorRef,
   Component,
+  effect,
   OnInit,
+  signal,
 } from "@angular/core";
 import { UserService } from "../../services/user/user.service";
-import { FrontendUser, User } from "../user";
+import { User } from "../user";
 import { Observable, of } from "rxjs";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
 import { FormControl, UntypedFormGroup } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
@@ -38,7 +38,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { filter, finalize, map, tap } from "rxjs/operators";
+import { finalize, map, tap } from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
 import { ConfigService } from "../../services/config/config.service";
@@ -56,21 +56,22 @@ import {
   templateUrl: "./user.component.html",
   styleUrls: ["../user.styles.scss"],
 })
-export class UserComponent
-  implements OnInit, AfterViewInit, AfterContentChecked
-{
-  users: User[];
+export class UserComponent implements OnInit, AfterViewInit {
+  users = this.userService.users$;
   form = new UntypedFormGroup({});
   menuItems: FormularMenuItem[];
 
-  selectedUser: User;
-  showMore = false;
+  selectedUser = this.userService.selectedUser$;
+  explicitUser = signal<User>(null);
+  loadedUser = signal<User>(null);
+  showMore = signal<boolean>(false);
+  showLoadingUsers = signal<boolean>(false);
   isLoading = false;
   formlyFieldConfig: FormlyFieldConfig[];
-  model: User;
+  // model = signal<User>(null);
   tableWidth: number;
-  selectedUserRole: string;
   query = new FormControl<string>("");
+  private previousSelectedUser: User = null;
 
   constructor(
     private dialog: MatDialog,
@@ -82,9 +83,7 @@ export class UserComponent
     private formMenuService: FormMenuService,
     private session: SessionQuery,
     private snackBar: MatSnackBar,
-    private cdRef: ChangeDetectorRef,
   ) {
-    this.model = new FrontendUser();
     this.groupQuery.selectAll().subscribe((groups) => {
       this.formlyFieldConfig = this.userService.getUserFormFields(
         groups,
@@ -93,6 +92,20 @@ export class UserComponent
       );
     });
     this.tableWidth = this.session.getValue().ui.userTableWidth;
+
+    effect(() => {
+      const user = this.userService.selectedUser$();
+      if (user && this.loadedUser()?.id !== user.id) this.loadUser(user.id);
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.tableWidth = this.session.getValue().ui.userTableWidth;
+  }
+
+  ngOnInit() {
+    this.menuItems = this.formMenuService.getMenuItems("user");
+    this.updateUsers();
   }
 
   groupSelectCallback = (groupIdString: string) => {
@@ -122,62 +135,21 @@ export class UserComponent
     });
   };
 
-  ngAfterViewInit(): void {
-    this.tableWidth = this.session.getValue().ui.userTableWidth;
-  }
-
-  ngAfterContentChecked(): void {
-    this.cdRef.detectChanges();
-  }
-
-  ngOnInit() {
-    this.menuItems = this.formMenuService.getMenuItems("user");
-    this.userService.users$
-      .pipe(untilDestroyed(this))
-      .subscribe((users) => (this.users = users));
-    this.userService.getUsers().subscribe(() => {
-      // select group after groups are fetched, otherwise table has no data
-      // to select from
-      this.userService.selectedUser$
-        .pipe(
-          tap((user) => {
-            if (user == null) this.selectedUser = null;
-          }),
-          filter((user) => !!user),
-          tap((user) => {
-            const previousId = this.selectedUser?.login;
-            this.selectedUser = user;
-            if (user && previousId !== user.login) {
-              this.loadUser(user.id);
-            }
-            this.selectedUserRole = user.role;
-          }),
-          untilDestroyed(this),
-        )
-        .subscribe();
-    });
-
-    // load previously selected user
-    if (this.userService.selectedUser$.value) {
-      this.loadUser(this.userService.selectedUser$.value.id);
-    }
-  }
-
   loadUser(id: number) {
     this.dirtyFormHandled().subscribe((confirmed) => {
       if (confirmed) {
         this.showLoading();
+        this.previousSelectedUser = this.selectedUser();
         this.userService
           .getUser(id)
-          .pipe(finalize(() => this.hideLoading()))
-          .subscribe((user) => {
-            this.selectedUser = user;
-            this.userService.selectedUser$.next(user);
-            this.model = user;
-            this.updateUserForm(user);
-          });
+          .pipe(
+            tap((value) => this.form.patchValue(value)),
+            tap((value) => this.loadedUser.set(value)),
+            finalize(() => this.hideLoading()),
+          )
+          .subscribe();
       } else {
-        this.userService.selectedUser$.next(this.selectedUser);
+        this.explicitUser.set(this.previousSelectedUser);
       }
     });
   }
@@ -192,27 +164,32 @@ export class UserComponent
           })
           .afterClosed()
           .subscribe((result) => {
-            if (result?.id) this.updateUsersAndLoad(result.id);
+            if (result?.id) this.updateUsers();
           });
     });
   }
 
-  private updateUsersAndLoad(userId: number) {
-    this.userService.getUsers().subscribe(() => this.loadUser(userId));
+  private updateUsers() {
+    this.showLoadingUsers.set(true);
+    this.userService
+      .getUsers()
+      .pipe(finalize(() => this.showLoadingUsers.set(false)))
+      .subscribe();
   }
 
   saveUser(user?: User, loadUser: boolean = true): void {
     this.showLoading();
 
-    user = user ?? this.model;
+    user = user ?? this.form.value;
     // send request and handle error
     this.userService
       .updateUser(user)
       .pipe(finalize(() => this.hideLoading()))
       .subscribe(() => {
         if (loadUser) {
+          // this.model.set(user);
           this.form.markAsPristine();
-          this.updateUsersAndLoad(user.id);
+          // this.updateUsersAndLoad(user.id);
           this.snackBar.open("Benutzer wurde gespeichert", "", {
             panelClass: "green",
           });
@@ -222,26 +199,14 @@ export class UserComponent
 
   discardUser(user?: User): void {
     this.showLoading();
-
-    user = user ?? this.model;
-
     this.form.markAsPristine();
-    this.updateUsersAndLoad(user.id);
+    this.updateUsers();
+    this.form.reset();
   }
 
   enableForm() {
     this.form.enable();
     this.form.get("login")?.disable();
-  }
-
-  private updateUserForm(user: FrontendUser) {
-    const mergedUser = {
-      email: "",
-      groups: [],
-      role: "Keiner Rolle zugeordnet",
-      ...user,
-    };
-    this.form.reset(mergedUser);
   }
 
   dirtyFormHandled(): Observable<boolean> {
@@ -291,11 +256,10 @@ export class UserComponent
   }
 
   private async handleAction(action: undefined | "save" | "discard") {
+    const user = this.form.value;
     if (action === "save") {
-      const user = this.model;
       this.saveUser(user, false);
     } else if (action === "discard") {
-      const user = this.form.value;
       this.form.reset(user);
     } else {
       // do nothing
