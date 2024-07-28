@@ -119,7 +119,7 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
       .afterClosed()
       .subscribe((user) => {
         if (user instanceof UserWithDocPermission) {
-          this.userService.selectedUser$.next(user);
+          this.userService.selectedUser$.set(user);
           this.router.navigate([`${ConfigService.catalogId}/manage/user`]);
         }
       });

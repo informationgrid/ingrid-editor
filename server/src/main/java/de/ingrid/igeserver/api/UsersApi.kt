@@ -171,7 +171,7 @@ interface UsersApi {
             description = "Save the user data into the database.",
             required = true
         ) @RequestBody user: @Valid User
-    ): ResponseEntity<Void>
+    ): ResponseEntity<User>
 
     @PutMapping(
         value = ["/users/currentUser"],

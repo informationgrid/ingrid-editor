@@ -2,7 +2,9 @@
     <div class="header-wrapper">
         <div class="user-management-header">
             <div class="page-title">
-                Benutzer (<span data-cy="users-count">{{ users?.length }}</span
+                Benutzer (<span data-cy="users-count">{{
+                    users()?.length
+                }}</span
                 >)
             </div>
             <mat-toolbar>
@@ -50,9 +52,9 @@
         >
             <user-table
                 [query]="query.value"
-                [users]="users"
-                [selectedUser]="userService.selectedUser$"
-                (onUserSelect)="loadUser($event.id)"
+                [users]="users()"
+                [selectedUser]="explicitUser()"
+                (onUserSelect)="selectedUser.set($event)"
             ></user-table>
         </as-split-area>
         <as-split-area
@@ -60,112 +62,106 @@
             id="formUser"
             class="split-pane-content-secondary container-fluid flex-row"
         >
-            @if (!isLoading) {
-                @if (selectedUser) {
-                    <div class="detail-user">
-                        <div class="user-title">
-                            <div class="document-type">
-                                <mat-icon
-                                    [svgIcon]="
-                                        userService.roleIcon[
-                                            this.form.get('role')?.value
-                                        ]
-                                    "
-                                ></mat-icon>
-                            </div>
-                            <span class="label flex-1">
-                                <span>{{
-                                    model.firstName + " " + model.lastName ||
-                                        "Kein Titel"
-                                }}</span>
-                            </span>
-                            <button
-                                data-cy="showMoreData"
-                                mat-icon-button
-                                class="menu-button"
-                                [class.expanded]="showMore"
-                                [matTooltip]="showMore ? 'Schließen' : 'Öffnen'"
-                                (click)="showMore = !showMore"
-                            >
-                                <mat-icon class="rotating animated"
-                                    >keyboard_arrow_down
-                                </mat-icon>
-                            </button>
-                            @if (menuItems.length > 0) {
-                                <button
-                                    data-cy="more-actions"
-                                    mat-icon-button
-                                    class="menu-button"
-                                    matTooltip="Bearbeiten"
-                                    [matMenuTriggerFor]="userMoreMenu"
-                                >
-                                    <mat-icon svgIcon="Mehr"></mat-icon>
-                                </button>
-                            }
-                            <mat-menu #userMoreMenu="matMenu">
-                                @for (menuItem of menuItems; track menuItem) {
-                                    <button
-                                        mat-menu-item
-                                        (click)="menuItem.action()"
-                                        [name]="menuItem.name"
-                                    >
-                                        {{ menuItem.title }}
-                                    </button>
-                                }
-                            </mat-menu>
-                        </div>
-                        <user-header-more
-                            [showMore]="showMore"
-                            [user]="selectedUser"
-                            [form]="form"
-                        ></user-header-more>
-                        <formly-form
-                            id="form"
-                            [form]="form"
-                            [fields]="formlyFieldConfig"
-                            [model]="model"
-                        >
-                        </formly-form>
+            <div class="detail-user" [class.hide]="selectedUser() === null">
+                <div class="user-title">
+                    <div class="document-type">
+                        <mat-icon
+                            [svgIcon]="
+                                userService.roleIcon[form.get('role')?.value]
+                            "
+                        ></mat-icon>
                     </div>
-                } @else {
-                    @if (users?.length > 0) {
-                        <div
-                            class="detail-user no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
+                    <span class="label flex-1">
+                        <span>{{
+                            form.get("firstName")?.value +
+                                " " +
+                                form.get("lastName")?.value || "Kein Titel"
+                        }}</span>
+                    </span>
+                    <button
+                        data-cy="showMoreData"
+                        mat-icon-button
+                        class="menu-button"
+                        [class.expanded]="showMore()"
+                        [matTooltip]="showMore() ? 'Schließen' : 'Öffnen'"
+                        (click)="showMore.set(!showMore())"
+                    >
+                        <mat-icon class="rotating animated"
+                            >keyboard_arrow_down
+                        </mat-icon>
+                    </button>
+                    @if (menuItems.length > 0) {
+                        <button
+                            data-cy="more-actions"
+                            mat-icon-button
+                            class="menu-button"
+                            matTooltip="Bearbeiten"
+                            [matMenuTriggerFor]="userMoreMenu"
                         >
-                            <div>
-                                <img
-                                    src="assets/icons/user-management.png"
-                                    alt="user-management"
-                                />
-                            </div>
-                            <div class="no-selection-text">
-                                Wählen Sie einen Eintrag aus, um Nutzerdaten
-                                anzuzeigen oder Änderungen durchzuführen.
-                            </div>
-                        </div>
+                            <mat-icon svgIcon="Mehr"></mat-icon>
+                        </button>
                     }
-                    @if (users?.length === 0) {
-                        <div
-                            class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
-                        >
-                            <div>
-                                <img
-                                    src="assets/icons/user-management.png"
-                                    alt="user-management"
-                                />
-                            </div>
-                            <div class="no-selection-text">
-                                Noch keine Benutzer erstellt!
-                            </div>
-                            <div class="no-selection-text">
-                                Mit der oben stehenden Funktion „Hinzufügen“
-                                können Sie Benutzer anlegen.
-                            </div>
+                    <mat-menu #userMoreMenu="matMenu">
+                        @for (menuItem of menuItems; track menuItem) {
+                            <button
+                                mat-menu-item
+                                (click)="menuItem.action()"
+                                [name]="menuItem.name"
+                            >
+                                {{ menuItem.title }}
+                            </button>
+                        }
+                    </mat-menu>
+                </div>
+                <user-header-more
+                    [showMore]="showMore()"
+                    [user]="loadedUser()"
+                    [form]="form"
+                ></user-header-more>
+                <formly-form
+                    id="form"
+                    [form]="form"
+                    [fields]="formlyFieldConfig"
+                >
+                    <!--                    [model]="model()"-->
+                </formly-form>
+            </div>
+            @if (!selectedUser()) {
+                @if (users()?.length > 0) {
+                    <div
+                        class="detail-user no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
+                    >
+                        <div>
+                            <img
+                                src="assets/icons/user-management.png"
+                                alt="user-management"
+                            />
                         </div>
-                    }
+                        <div class="no-selection-text">
+                            Wählen Sie einen Eintrag aus, um Nutzerdaten
+                            anzuzeigen oder Änderungen durchzuführen.
+                        </div>
+                    </div>
                 }
-            } @else {
-                <mat-spinner style="margin: 100px auto"></mat-spinner>
+                @if (users()?.length === 0) {
+                    <div
+                        class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
+                    >
+                        <div>
+                            <img
+                                src="assets/icons/user-management.png"
+                                alt="user-management"
+                            />
+                        </div>
+                        <div class="no-selection-text">
+                            Noch keine Benutzer erstellt!
+                        </div>
+                        <div class="no-selection-text">
+                            Mit der oben stehenden Funktion „Hinzufügen“ können
+                            Sie Benutzer anlegen.
+                        </div>
+                    </div>
+                }
             }
         </as-split-area>
     </as-split>
