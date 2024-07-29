@@ -80,10 +80,14 @@ export class ConsolidateDialogComponent implements OnInit {
 
   id: number;
   keywords: any[];
+  isInspireIdentified: boolean;
+
+  inspireTopics: any[];
   gemetKeywords: any[];
   umthesKeywords: any[];
   freeKeywords: any[];
 
+  inspireTopicsNew: ThesaurusResult[] = [];
   gemetKeywordsNew: ThesaurusResult[] = [];
   umthesKeywordsNew: ThesaurusResult[] = [];
   freeKeywordsNew: ThesaurusResult[] = [];
@@ -105,6 +109,8 @@ export class ConsolidateDialogComponent implements OnInit {
         this.isLoading = false;
         return;
       }
+      this.isInspireIdentified = response.isInspireIdentified;
+      this.inspireTopics = response.topicCategories;
       this.gemetKeywords = response.keywords.gemet;
       this.umthesKeywords = response.keywords.umthes;
       this.freeKeywords = response.keywords.free;
@@ -125,7 +131,6 @@ export class ConsolidateDialogComponent implements OnInit {
                 if (!this.freeKeywords.includes(keyword.label)) {
                   const addedRes = { ...res, status: "added" };
                   this.freeKeywordsNew.push(addedRes);
-
                   const removedRes = { ...res, status: "removed" };
                   this.gemetKeywordsNew.push(removedRes);
                 }
@@ -152,9 +157,18 @@ export class ConsolidateDialogComponent implements OnInit {
         ),
         ...this.freeKeywords.map((keyword) =>
           this.keywordAnalysis
-            .assignKeyword(keyword.label, true)
+            .assignKeyword(keyword.label, this.isInspireIdentified)
             .then((res) => {
               if (res.found) {
+                if (res.thesaurus === "INSPIRE-Themen") {
+                  console.log(this.inspireTopics, res);
+                  if (this.inspireTopics.some((t) => t.key === res.value.key)) {
+                    res["status"] = "unchanged";
+                  } else {
+                    res["status"] = "added";
+                  }
+                  this.inspireTopicsNew.push(res);
+                }
                 if (res.thesaurus === "Gemet Schlagworte") {
                   res["status"] = "added";
                   this.gemetKeywordsNew.push(res);
@@ -205,6 +219,10 @@ export class ConsolidateDialogComponent implements OnInit {
       doc.keywords.free = this.freeKeywordsNew
         .filter((k) => k.status !== "removed")
         .map((k) => ({ label: k.label }));
+
+      doc.topicCategories = this.inspireTopicsNew.map((k) => ({
+        key: k.value,
+      }));
 
       this.documentService
         .save({ data: doc, isNewDoc: false, isAddress: false })
