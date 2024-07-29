@@ -261,9 +261,9 @@ export class AddressTypeComponent
   }
 
   private getPlaceholderAddresses(length: number): ResolvedAddressWithType[] {
-    const placeholder = [];
+    const placeholder: ResolvedAddressWithType[] = [];
     for (let i = 0; i < length; i++) {
-      placeholder.push({ type: null, address: null });
+      placeholder.push({ type: null, address: null, error: null });
     }
     return placeholder;
   }
