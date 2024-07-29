@@ -95,6 +95,15 @@
         <div *ngIf="isLoading" class="loading-wrapper">
             <mat-spinner class="content-spinner" diameter="40"></mat-spinner>
         </div>
+        <div class="help flex-row align-items-center">
+            <mat-icon svgIcon="info-24px"></mat-icon>
+            <div class="legend" *ngIf="!isLoading">
+                Klicken sie auf "Übernehmen" um die Änderungen zu speichern.
+            </div>
+            <div class="legend" *ngIf="isLoading">
+                Bitte haben Sie einen Moment Geduld.
+            </div>
+        </div>
     </mat-dialog-content>
 
     <!-- dialog action buttons -->

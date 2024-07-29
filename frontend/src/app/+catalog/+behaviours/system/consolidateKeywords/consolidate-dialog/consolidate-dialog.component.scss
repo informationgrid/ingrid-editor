@@ -53,3 +53,14 @@
     text-overflow: ellipsis;
   }
 }
+
+.help {
+  padding-top: 20px;
+  padding-left: 8px;
+
+  mat-icon {
+    margin-right: 12px;
+    border-radius: 50%;
+    background-color: $ige-background;
+  }
+}
