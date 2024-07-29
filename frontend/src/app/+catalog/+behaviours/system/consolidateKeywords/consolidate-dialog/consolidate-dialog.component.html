@@ -16,7 +16,7 @@
                 Grün markierte Schlagworte werden neu hinzugefügt. Rot markierte
                 werden entfernt.
             </div>
-            @if (isInspireIdentified && inspireThemesNew.length > 0) {
+            @if (isInspireIdentified && inspireThemesNew.length) {
                 <div class="keyword-section" aria-label="INSPIRE Themen">
                     <div class="label-wrapper">
                         <label>INSPIRE Themen</label>
@@ -35,7 +35,7 @@
                     </mat-chip-listbox>
                 </div>
             }
-            @if (isInspireIdentified && inspireTopicsNew.length > 0) {
+            @if (isInspireIdentified && inspireTopicsNew.length) {
                 <div class="keyword-section" aria-label="ISO-Themenkategorie">
                     <div class="label-wrapper">
                         <label>ISO-Themenkategorie</label>
@@ -54,7 +54,7 @@
                     </mat-chip-listbox>
                 </div>
             }
-            @if (gemetKeywordsNew.length > 0) {
+            @if (gemetKeywordsNew.length) {
                 <div class="keyword-section" aria-label="Gemet Schlagworte">
                     <div class="label-wrapper">
                         <label>Gemet Schlagworte</label>
@@ -73,7 +73,7 @@
                     </mat-chip-listbox>
                 </div>
             }
-            @if (umthesKeywordsNew.length > 0) {
+            @if (umthesKeywordsNew.length) {
                 <div class="keyword-section" aria-label="Umthes Schlagworte">
                     <div class="label-wrapper">
                         <label>Umthes Schlagworte</label>
@@ -92,7 +92,7 @@
                     </mat-chip-listbox>
                 </div>
             }
-            @if (freeKeywordsNew.length > 0) {
+            @if (freeKeywordsNew.length) {
                 <div class="keyword-section" aria-label="Freie Schlagworte">
                     <div class="label-wrapper">
                         <label>Freie Schlagworte</label>
