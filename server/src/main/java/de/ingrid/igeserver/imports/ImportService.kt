@@ -290,6 +290,11 @@ class ImportService(
         val notificationType = MessageTarget(NotificationType.IMPORT, catalogId)
 
         analysis.references.forEachIndexed { index, ref ->
+             if (ref.isAddress && options.parentAddress == null) {
+                 val wrapperId = ref.wrapperId
+                 val addressWrapper = documentService.getWrapperById(wrapperId!!)
+                 options.parentAddress = addressWrapper.parent?.id
+             }
             val progress = ((index + 1f) / analysis.references.size) * 100
             notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
             handleParent(ref, options, catalogId)
