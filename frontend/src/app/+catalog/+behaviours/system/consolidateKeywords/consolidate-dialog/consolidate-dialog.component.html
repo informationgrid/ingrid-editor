@@ -35,6 +35,25 @@
                     </mat-chip-listbox>
                 </div>
             }
+            @if (isInspireIdentified && inspireTopicsNew.length > 0) {
+                <div class="keyword-section" aria-label="ISO-Themenkategorie">
+                    <div class="label-wrapper">
+                        <label>ISO-Themenkategorie</label>
+                    </div>
+                    <mat-chip-listbox class="chip-list">
+                        <mat-chip
+                            *ngFor="let keyword of inspireTopicsNew"
+                            [ngClass]="{
+                                'added-keyword': keyword.status === 'added',
+                                'removed-keyword': keyword.status === 'removed'
+                            }"
+                            [aria-label]="keyword.label"
+                        >
+                            {{ keyword.label }}
+                        </mat-chip>
+                    </mat-chip-listbox>
+                </div>
+            }
             @if (gemetKeywordsNew.length > 0) {
                 <div class="keyword-section" aria-label="Gemet Schlagworte">
                     <div class="label-wrapper">

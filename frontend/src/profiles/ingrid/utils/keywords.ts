@@ -180,7 +180,7 @@ export class KeywordAnalysis {
     else return this.addFreeKeyword(item);
   }
 
-  private checkInThemes(item: string): ThesaurusResult {
+  checkInThemes(item: string): ThesaurusResult {
     const id = this.codelistQuery.getCodelistEntryIdByValue("6100", item, "de");
     return {
       thesaurus: "INSPIRE-Themen",
