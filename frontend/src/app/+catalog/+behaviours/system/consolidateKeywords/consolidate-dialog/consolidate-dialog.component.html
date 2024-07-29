@@ -16,19 +16,18 @@
                 Grün markierte Schlagworte werden neu hinzugefügt. Rot markierte
                 werden entfernt.
             </div>
-            @if (isInspireIdentified && inspireTopicsNew.length > 0) {
+            @if (isInspireIdentified && inspireThemesNew.length > 0) {
                 <div class="keyword-section" aria-label="INSPIRE Themen">
                     <div class="label-wrapper">
                         <label>INSPIRE Themen</label>
                     </div>
                     <mat-chip-listbox class="chip-list">
                         <mat-chip
-                            *ngFor="let keyword of inspireTopicsNew"
+                            *ngFor="let keyword of inspireThemesNew"
                             [ngClass]="{
                                 'added-keyword': keyword.status === 'added',
                                 'removed-keyword': keyword.status === 'removed'
                             }"
-                            [disabled]="keyword.status === 'removed'"
                             [aria-label]="keyword.label"
                         >
                             {{ keyword.label }}
@@ -48,7 +47,6 @@
                                 'added-keyword': keyword.status === 'added',
                                 'removed-keyword': keyword.status === 'removed'
                             }"
-                            [disabled]="keyword.status === 'removed'"
                             [aria-label]="keyword.label"
                         >
                             {{ keyword.label }}
@@ -69,7 +67,6 @@
                                 'added-keyword': keyword.status === 'added',
                                 'removed-keyword': keyword.status === 'removed'
                             }"
-                            [disabled]="keyword.status === 'removed'"
                         >
                             {{ keyword.label }}
                         </mat-chip>
@@ -88,7 +85,6 @@
                                 'added-keyword': keyword.status === 'added',
                                 'removed-keyword': keyword.status === 'removed'
                             }"
-                            [disabled]="keyword.status === 'removed'"
                         >
                             {{ keyword.label }}
                         </mat-chip>

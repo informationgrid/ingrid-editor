@@ -82,11 +82,13 @@ export class ConsolidateDialogComponent implements OnInit {
   keywords: any[];
   isInspireIdentified: boolean;
 
+  inspireThemes: any[];
   inspireTopics: any[];
   gemetKeywords: any[];
   umthesKeywords: any[];
   freeKeywords: any[];
 
+  inspireThemesNew: ThesaurusResult[] = [];
   inspireTopicsNew: ThesaurusResult[] = [];
   gemetKeywordsNew: ThesaurusResult[] = [];
   umthesKeywordsNew: ThesaurusResult[] = [];
@@ -99,6 +101,8 @@ export class ConsolidateDialogComponent implements OnInit {
 
   private consolidateKeywords() {
     this.isLoading = true;
+    this.inspireThemesNew = [];
+    this.inspireTopicsNew = [];
     this.gemetKeywordsNew = [];
     this.umthesKeywordsNew = [];
     this.freeKeywordsNew = [];
@@ -110,7 +114,9 @@ export class ConsolidateDialogComponent implements OnInit {
         return;
       }
       this.isInspireIdentified = response.isInspireIdentified;
+      this.inspireThemes = response.themes;
       this.inspireTopics = response.topicCategories;
+
       this.gemetKeywords = response.keywords.gemet;
       this.umthesKeywords = response.keywords.umthes;
       this.freeKeywords = response.keywords.free;
@@ -161,13 +167,13 @@ export class ConsolidateDialogComponent implements OnInit {
             .then((res) => {
               if (res.found) {
                 if (res.thesaurus === "INSPIRE-Themen") {
-                  console.log(this.inspireTopics, res);
-                  if (this.inspireTopics.some((t) => t.key === res.value.key)) {
+                  if (this.inspireThemes.some((t) => t.key === res.value.key)) {
                     res["status"] = "unchanged";
                   } else {
                     res["status"] = "added";
                   }
-                  this.inspireTopicsNew.push(res);
+                  this.inspireThemesNew.push(res);
+                  this.freeKeywordsNew.push({ ...res, status: "removed" });
                 }
                 if (res.thesaurus === "Gemet Schlagworte") {
                   res["status"] = "added";
@@ -220,8 +226,11 @@ export class ConsolidateDialogComponent implements OnInit {
         .filter((k) => k.status !== "removed")
         .map((k) => ({ label: k.label }));
 
-      doc.topicCategories = this.inspireTopicsNew.map((k) => ({
-        key: k.value,
+      doc.themes = this.inspireThemesNew.map((k) => ({
+        key: k.value.key,
+      }));
+      doc.topicCategories = this.inspireThemesNew.map((k) => ({
+        key: KeywordAnalysis.inspireToIsoMapping[k.value.key],
       }));
 
       this.documentService
