@@ -20,12 +20,9 @@
 package de.ingrid.igeserver.persistence.model
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.*
-import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.getRawJsonFromDocument
-import de.ingrid.igeserver.utils.getString
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -110,13 +107,6 @@ abstract class EntityType {
     open fun onUnpublish(doc: Document) {}
 
     /**
-     * Extract referenced documents/addresses and replace them with their ID
-     */
-    open fun pullReferences(doc: Document): List<Document> {
-        return emptyList()
-    }
-
-    /**
      * Get all referenced document UUIDs
      */
     open fun getReferenceIds(doc: Document): List<String> {
@@ -174,26 +164,6 @@ abstract class EntityType {
             ?.filter { it.get(field)?.get("asLink")?.asBoolean()?.not() ?: true }
             ?.map { it.get(field).get("uri").textValue() }
             ?: emptyList()
-    }
-
-    // TODO AW: use function by all profiles
-    fun replaceWithReferenceUuid(doc: Document, fieldId: String): MutableList<Document> {
-        val addressDocs = mutableListOf<Document>()
-
-        val addresses = doc.data.path(fieldId)
-        for (address in addresses) {
-            val addressJson = address.path("ref")
-            // during import address already is replaced by UUID
-            // TODO: improve import process so we don't need this
-            if (addressJson is ObjectNode) {
-                val uuid = addressJson.path(FIELD_UUID).textValue()
-                val addressDoc = convertToDocument(addressJson, addressJson.getString(FIELD_DOCUMENT_TYPE), null, addressJson.getString(
-                    FIELD_UUID))
-                addressDocs.add(addressDoc)
-                (address as ObjectNode).put("ref", uuid)
-            }
-        }
-        return addressDocs
     }
 
 }

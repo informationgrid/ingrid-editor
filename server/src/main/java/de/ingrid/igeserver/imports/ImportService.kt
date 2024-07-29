@@ -216,10 +216,10 @@ class ImportService(
         else if (isDraftAndPublished) DOCUMENT_STATE.DRAFT_AND_PUBLISHED else DOCUMENT_STATE.DRAFT
         document.isLatest = isLatest
         val documentWrapper = getDocumentWrapperOrNull(catalogId, document.uuid)
-        val profile = documentService.catalogService.getProfileFromCatalog(catalogId).identifier
-        val refType = documentService.getDocumentType(document.type, profile)
+//        val profile = documentService.catalogService.getProfileFromCatalog(catalogId).identifier
+//        val refType = documentService.getDocumentType(document.type, profile)
 
-        val references = refType.pullReferences(document)
+        /*val references = refType.pullReferences(document)
             .map {
                 val wrapper = getDocumentWrapperOrNull(catalogId, it.uuid)
                 it.state = DOCUMENT_STATE.DRAFT
@@ -232,7 +232,7 @@ class ImportService(
                     wrapper?.deleted == 1,
                     forcePublish = forcePublish
                 )
-            }
+            }*/
 
         return DocumentAnalysis(
             document,
@@ -240,7 +240,7 @@ class ImportService(
             documentService.isAddress(document.type),
             documentWrapper != null && documentWrapper.deleted == 0,
             documentWrapper?.deleted == 1,
-            references,
+            emptyList(),
             forcePublish
         )
     }

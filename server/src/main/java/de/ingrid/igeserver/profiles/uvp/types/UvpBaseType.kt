@@ -24,16 +24,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import org.springframework.stereotype.Component
 
 @Component
-abstract class UvpBaseType() : EntityType() {
+abstract class UvpBaseType : EntityType() {
     override val profiles = arrayOf("uvp")
-
-    override fun pullReferences(doc: Document): List<Document> {
-        return pullLinkedAddresses(doc)
-    }
-
-    private fun pullLinkedAddresses(doc: Document): MutableList<Document> {
-        return replaceWithReferenceUuid(doc, "pointOfContact")
-    }
 
     override fun getReferenceIds(doc: Document): List<String> {
         return doc.data.path("pointOfContact").map { address ->

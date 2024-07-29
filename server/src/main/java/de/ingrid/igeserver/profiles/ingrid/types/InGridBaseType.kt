@@ -28,14 +28,6 @@ import org.springframework.stereotype.Component
 abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
     override val profiles = arrayOf("ingrid")
 
-    override fun pullReferences(doc: Document): List<Document> {
-        return pullLinkedAddresses(doc)
-    }
-
-    private fun pullLinkedAddresses(doc: Document): MutableList<Document> {
-        return replaceWithReferenceUuid(doc, "pointOfContact")
-    }
-
     override fun getReferenceIds(doc: Document): List<String> {
         return doc.data.path("pointOfContact").map { address ->
             address.path("ref").textValue()

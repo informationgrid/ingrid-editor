@@ -25,7 +25,7 @@ import de.ingrid.igeserver.persistence.filter.PrePublishPayload
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.profiles.mcloud.types.TestType
+import de.ingrid.igeserver.profiles.test.types.TestType
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.SpringContext
 import io.kotest.assertions.throwables.shouldThrow

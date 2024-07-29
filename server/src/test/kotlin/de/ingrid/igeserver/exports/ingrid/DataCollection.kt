@@ -127,7 +127,7 @@ class DataCollection : ShouldSpec() {
         **/
         should("maximalExport") {
             var result = exportJsonToXML(exporter, "/export/ingrid/data-collection.sample.maximal.json")
-            // replace generated UUIDs and windows line endings
+            // replace generated UUIDs
             result = result
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
