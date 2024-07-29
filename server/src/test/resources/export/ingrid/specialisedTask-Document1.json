@@ -18,43 +18,7 @@
         "type": {
           "key": "7"
         },
-        "ref": {
-          "title": "Wemove Test",
-          "hasWritePermission": true,
-          "hasOnlySubtreeWritePermission": false,
-          "_uuid": "107d5e76-2df1-4c0e-8af6-c57ad13bfe9a",
-          "_type": "InGridOrganisationDoc",
-          "_version": 1,
-          "_created": "2022-10-28T10:46:46.900941+02:00",
-          "_modified": "2022-12-16T12:52:09.060888+01:00",
-          "_contentModified": "2022-12-16T12:52:09.060888+01:00",
-          "_createdBy": "Mike Cat-Miller",
-          "_contentModifiedBy": "Mike Cat-Miller",
-          "_state": "W",
-          "_id": "12331",
-          "address": {
-            "country": {
-              "key": "276"
-            }
-          },
-          "contact": [
-            {
-              "type": {
-                "key": "3"
-              },
-              "connection": "adds@fef.fe"
-            },
-            {
-              "type": {
-                "key": "4"
-              },
-              "connection": "https://wemove.com"
-            }
-          ],
-          "organization": "Wemove Test",
-          "positionName": "Positionsname",
-          "_parent": null
-        }
+        "ref": "107d5e76-2df1-4c0e-8af6-c57ad13bfe9a"
       }
     ],
     "advProductGroups": [],
