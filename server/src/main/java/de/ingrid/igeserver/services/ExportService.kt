@@ -20,11 +20,13 @@
 package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.exports.IgeExporter
+import de.ingrid.igeserver.exports.internal.InternalExporter
 import de.ingrid.igeserver.model.ExportRequestParameter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
@@ -61,25 +63,55 @@ class ExportService(val exporterFactory: ExporterFactory) {
     }
 
     fun export(catalogId: String, options: ExportRequestParameter): ExportResult {
-        val docs = options.ids.map { documentService.getWrapperByDocumentIdAndCatalog(it) }
+        val docs = options.ids.map { documentService.getDocumentFromCatalog(catalogId, it) }
         val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
-        val isSingleNonFolderDocument = docs.size == 1 && docs[0].type != "FOLDER"
+        val isSingleNonFolderDocument = docs.size == 1 && docs[0].wrapper.type != "FOLDER"
 
         return if (isSingleNonFolderDocument) {
             val doc = docs[0]
-            val data = handleSingleDataset(options, doc, catalogId)?.toByteArray()
-            val fileName = "${doc.uuid}.${exporter.typeInfo.fileExtension}"
+            val data = handleSingleDataset(options, doc.wrapper, catalogId)
+                ?: throw ServerException.withReason("Document was not exported: ${doc.wrapper.uuid}")
+
+            if (exporter is InternalExporter) {
+                val referencedUuids = documentService.getReferencedUuids(doc.document)
+                val refData = referencedUuids.flatMap {
+                    val ref = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, it)
+                    handleSingleDataset(options, ref, catalogId)?.let {
+                        listOf(Pair(ref.uuid, it))
+                    } ?: emptyList()
+                } .toSet().toList()
+                return ExportResult(
+                    zipToFile(refData + Pair(doc.wrapper.uuid, data), exporter.typeInfo.fileExtension),
+                    "export.zip",
+                    MediaType.valueOf("application/zip")
+                )
+            }
+
+            val fileName = "${doc.wrapper.uuid}.${exporter.typeInfo.fileExtension}"
             val mediaType = MediaType.valueOf(exporter.typeInfo.dataType)
-            ExportResult(data, fileName, mediaType)
+            ExportResult(data.toByteArray(), fileName, mediaType)
         } else {
             val results = docs.flatMap { document ->
-                if (document.type == "FOLDER") handleWithSubDocuments(document, options, catalogId)
-                else handleSingleDataset(options, document, catalogId)?.let { listOf(Pair(document.uuid, it)) }
-                    ?: emptyList()
+                if (document.wrapper.type == "FOLDER") handleWithSubDocuments(document.wrapper, options, catalogId)
+                else {
+                    handleSingleDataset(options, document.wrapper, catalogId)
+                        ?.let {
+                            if (exporter is InternalExporter) {
+                                val referencedUuids = documentService.getReferencedUuids(document.document)
+                                val refData = referencedUuids.flatMap {
+                                    val ref = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, it)
+                                    handleSingleDataset(options, ref, catalogId)?.let {
+                                        listOf(Pair(ref.uuid, it))
+                                    } ?: emptyList()
+                                }.toSet().toList()
+                                refData + Pair(document.wrapper.uuid, it)
+                            } else {
+                                listOf(Pair(document.wrapper.uuid, it))
+                            }
+                        } ?: emptyList()
+                }
+            }.toSet().toList() // remove duplicates
 
-            }
-                // remove duplicates
-                .toSet().toList()
             ExportResult(
                 zipToFile(results, exporter.typeInfo.fileExtension),
                 "export.zip",
