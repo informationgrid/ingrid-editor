@@ -19,11 +19,13 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.types
 
+import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.InitiatorAction
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
+import java.net.URLDecoder
 
 @Component
 class InGridGeoDatasetType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
@@ -36,6 +38,25 @@ class InGridGeoDatasetType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemp
         // identifier must be empty, especially during copy operation (#5234)
         if (initiator == InitiatorAction.COPY) {
             doc.data.put("identifier", "")
+        }
+    }
+
+    override fun getUploads(doc: Document): List<String> {
+        if (doc.data.get("documentFiles") != null) {
+            val files = doc.data.get("documentFiles")
+                .filter { download -> !download.get("link").get("asLink").booleanValue() }
+                .map { download -> getUploadFile(download) }
+
+            return files
+        }
+        return emptyList()
+    }
+
+    private fun getUploadFile(download: JsonNode): String {
+        if (download.get("link").get("uri") != null) {
+            return URLDecoder.decode(download.get("link").get("uri").textValue()!!, "utf-8")
+        } else {
+            return download.get("link").get("value").textValue()
         }
     }
 }
