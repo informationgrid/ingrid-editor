@@ -180,8 +180,6 @@ class OgcRecordService(
             val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, doc)
             if(optimizedImportAnalysis.existingDatasets.isNotEmpty()){
                     val id = optimizedImportAnalysis.existingDatasets[0].uuid
-                    val documentWrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, id)
-                    options.parentDocument = options.parentDocument ?: documentWrapper.parent?.id
                 if(!recordMustExist) {
                     throw ClientException.withReason("Import Failed: Record with ID '$id' already exists.")
                 } else {

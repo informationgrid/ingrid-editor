@@ -52,9 +52,9 @@ class ImportApiController(
 }
 
 data class ImportOptions(
-    var parentDocument: Int? = null,
-    var parentAddress: Int? = null,
-    val publish: Boolean = false,
+    val parentDocument: Int? = null,
+    val parentAddress: Int? = null, 
+    val publish: Boolean = false, 
     val overwriteAddresses: Boolean = false, 
     // so far we always want to overwrite datasets
     val overwriteDatasets: Boolean = true)
