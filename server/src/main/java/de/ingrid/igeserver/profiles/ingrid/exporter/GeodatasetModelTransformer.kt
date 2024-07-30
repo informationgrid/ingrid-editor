@@ -22,7 +22,6 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
-import org.jetbrains.kotlin.util.suffixIfNot
 
 open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
     IngridModelTransformer(transformerConfig) {
@@ -31,18 +30,6 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
 
     override val hierarchyLevel = if (isSeries) "series" else "dataset"
     override val hierarchyLevelName: String? = if (isSeries) "series" else null
-
-
-    init {
-        if (model.data.identifier != null) {
-            val namespace = catalog.settings.config.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
-            this.citationURL = if (model.data.identifier.indexOf("/", 1) == -1) {
-                namespace.suffixIfNot("/") + model.data.identifier
-            } else {
-                model.data.identifier
-            }
-        }
-    }
 
     val featureCatalogueDescription = model.data.featureCatalogueDescription
     val isAdVCompatible = model.data.isAdVCompatible ?: false
