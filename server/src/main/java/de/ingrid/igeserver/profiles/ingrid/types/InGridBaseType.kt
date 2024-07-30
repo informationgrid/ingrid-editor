@@ -19,6 +19,8 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.types
 
+import de.ingrid.igeserver.api.InvalidField
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -77,5 +79,15 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
         return doc.data.get("graphicOverviews")?.let {
             getUploadsFromFileList(it, "fileName")
         } ?: emptyList()
+    }
+
+    override fun onPublish(doc: Document) {
+        val isHvd: Boolean = doc.data.get("hvd")?.booleanValue() ?: false
+        if(isHvd) {
+            val hvdCategories = doc.data.get("hvdCategories")?.size() ?: 0
+            if (hvdCategories == 0){
+                throw ValidationException.withInvalidFields(InvalidField("hvdCategories", "required"))
+            }
+        }
     }
 }
