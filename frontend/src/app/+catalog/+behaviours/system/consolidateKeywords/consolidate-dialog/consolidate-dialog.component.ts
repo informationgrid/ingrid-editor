@@ -142,52 +142,51 @@ export class ConsolidateDialogComponent implements OnInit {
           }),
         ),
 
-        ...this.inspireTopics.map(
-          (topic) =>
-            this.inspireTopicsNew.push({
-              found: true,
-              value: { key: topic.key },
-              label: this.codelistQuery.getCodelistEntryByKey("527", topic.key)
-                .fields["de"],
-              thesaurus: "INSPIRE-Themen",
-              status: "unchanged",
+        ...this.inspireTopics.map((topic) =>
+          this.inspireTopicsNew.push({
+            found: true,
+            value: { key: topic.key },
+            label: this.codelistQuery.getCodelistEntryByKey("527", topic.key)
+              .fields["de"],
+            thesaurus: "INSPIRE-Themen",
+            status: "unchanged",
+          }),
+        ),
+
+        ...this.gemetKeywords.map((keyword) =>
+          this.keywordAnalysis
+            .checkInThesaurus(keyword.label, "gemet")
+            .then((res: ThesaurusResult) => {
+              if (res.found) {
+                res["status"] = "unchanged";
+                this.gemetKeywordsNew.push(res);
+              } else {
+                if (!this.freeKeywords.includes(keyword.label)) {
+                  const addedRes = { ...res, status: "added" };
+                  this.freeKeywordsNew.push(addedRes);
+                  const removedRes = { ...res, status: "removed" };
+                  this.gemetKeywordsNew.push(removedRes);
+                }
+              }
             }),
+        ),
+        ...this.umthesKeywords.map((keyword) =>
+          this.keywordAnalysis
+            .checkInThesaurus(keyword.label, "umthes")
+            .then((res: ThesaurusResult) => {
+              if (res.found) {
+                res["status"] = "unchanged";
+                this.umthesKeywordsNew.push(res);
+              } else {
+                if (!this.freeKeywords.includes(keyword.label)) {
+                  const addedRes = { ...res, status: "added" };
+                  this.freeKeywordsNew.push(addedRes);
 
-          ...this.gemetKeywords.map((keyword) =>
-            this.keywordAnalysis
-              .checkInThesaurus(keyword.label, "gemet")
-              .then((res: ThesaurusResult) => {
-                if (res.found) {
-                  res["status"] = "unchanged";
-                  this.gemetKeywordsNew.push(res);
-                } else {
-                  if (!this.freeKeywords.includes(keyword.label)) {
-                    const addedRes = { ...res, status: "added" };
-                    this.freeKeywordsNew.push(addedRes);
-                    const removedRes = { ...res, status: "removed" };
-                    this.gemetKeywordsNew.push(removedRes);
-                  }
+                  const removedRes = { ...res, status: "removed" };
+                  this.umthesKeywordsNew.push(removedRes);
                 }
-              }),
-          ),
-          ...this.umthesKeywords.map((keyword) =>
-            this.keywordAnalysis
-              .checkInThesaurus(keyword.label, "umthes")
-              .then((res: ThesaurusResult) => {
-                if (res.found) {
-                  res["status"] = "unchanged";
-                  this.umthesKeywordsNew.push(res);
-                } else {
-                  if (!this.freeKeywords.includes(keyword.label)) {
-                    const addedRes = { ...res, status: "added" };
-                    this.freeKeywordsNew.push(addedRes);
-
-                    const removedRes = { ...res, status: "removed" };
-                    this.umthesKeywordsNew.push(removedRes);
-                  }
-                }
-              }),
-          ),
+              }
+            }),
         ),
         ...this.freeKeywords.map((keyword) =>
           this.keywordAnalysis
@@ -201,6 +200,29 @@ export class ConsolidateDialogComponent implements OnInit {
                     res["status"] = "added";
                   }
                   this.inspireThemesNew.push(res);
+                  console.log("themes", res);
+                  const isoKey =
+                    KeywordAnalysis.inspireToIsoMapping[res.value.key];
+                  const inspireTopic = this.codelistQuery.getCodelistEntryByKey(
+                    "527",
+                    isoKey,
+                  );
+                  console.log(this.inspireTopics);
+
+                  const inspireTopicAlreadyExists = this.inspireTopics.some(
+                    (t) => t.key === isoKey,
+                  );
+
+                  const inspireTopicResult: ThesaurusResult = {
+                    found: true,
+                    value: { key: isoKey },
+                    label: inspireTopic.fields["de"],
+                    thesaurus: "INSPIRE-Themen",
+                    status: inspireTopicAlreadyExists ? "unchanged" : "added",
+                  };
+                  this.inspireTopicsNew.push(inspireTopicResult);
+                  console.log(inspireTopic);
+                  console.log("inspireTopicResult", inspireTopicResult);
                   this.freeKeywordsNew.push({ ...res, status: "removed" });
                 }
                 if (res.thesaurus === "Gemet Schlagworte") {
@@ -235,6 +257,11 @@ export class ConsolidateDialogComponent implements OnInit {
             }),
         ),
       ]).then(() => {
+        console.log(this.inspireThemesNew);
+        console.log(this.inspireTopicsNew);
+        this.inspireThemesNew.map((k) => ({
+          key: KeywordAnalysis.inspireToIsoMapping[k.value.key],
+        }));
         this.sortKeywordsByStatus();
         this.removeDuplicateKeywords();
         this.isLoading = false;
@@ -303,6 +330,11 @@ export class ConsolidateDialogComponent implements OnInit {
   private removeDuplicateKeywords() {
     this.inspireThemesNew = this.removeDuplicates(
       this.inspireThemesNew,
+      "label",
+    );
+
+    this.inspireTopicsNew = this.removeDuplicates(
+      this.inspireTopicsNew,
       "label",
     );
 
