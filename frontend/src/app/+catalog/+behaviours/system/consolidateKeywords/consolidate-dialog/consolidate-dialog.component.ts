@@ -162,10 +162,8 @@ export class ConsolidateDialogComponent implements OnInit {
                 this.gemetKeywordsNew.push(res);
               } else {
                 if (!this.freeKeywords.includes(keyword.label)) {
-                  const addedRes = { ...res, status: "added" };
-                  this.freeKeywordsNew.push(addedRes);
-                  const removedRes = { ...res, status: "removed" };
-                  this.gemetKeywordsNew.push(removedRes);
+                  this.freeKeywordsNew.push({ ...res, status: "added" });
+                  this.gemetKeywordsNew.push({ ...res, status: "removed" });
                 }
               }
             }),
@@ -179,11 +177,8 @@ export class ConsolidateDialogComponent implements OnInit {
                 this.umthesKeywordsNew.push(res);
               } else {
                 if (!this.freeKeywords.includes(keyword.label)) {
-                  const addedRes = { ...res, status: "added" };
-                  this.freeKeywordsNew.push(addedRes);
-
-                  const removedRes = { ...res, status: "removed" };
-                  this.umthesKeywordsNew.push(removedRes);
+                  this.freeKeywordsNew.push({ ...res, status: "added" });
+                  this.umthesKeywordsNew.push({ ...res, status: "removed" });
                 }
               }
             }),
@@ -200,14 +195,12 @@ export class ConsolidateDialogComponent implements OnInit {
                     res["status"] = "added";
                   }
                   this.inspireThemesNew.push(res);
-                  console.log("themes", res);
                   const isoKey =
                     KeywordAnalysis.inspireToIsoMapping[res.value.key];
                   const inspireTopic = this.codelistQuery.getCodelistEntryByKey(
                     "527",
                     isoKey,
                   );
-                  console.log(this.inspireTopics);
 
                   const inspireTopicAlreadyExists = this.inspireTopics.some(
                     (t) => t.key === isoKey,
@@ -221,8 +214,6 @@ export class ConsolidateDialogComponent implements OnInit {
                     status: inspireTopicAlreadyExists ? "unchanged" : "added",
                   };
                   this.inspireTopicsNew.push(inspireTopicResult);
-                  console.log(inspireTopic);
-                  console.log("inspireTopicResult", inspireTopicResult);
                   this.freeKeywordsNew.push({ ...res, status: "removed" });
                 }
                 if (res.thesaurus === "Gemet Schlagworte") {
@@ -257,8 +248,6 @@ export class ConsolidateDialogComponent implements OnInit {
             }),
         ),
       ]).then(() => {
-        console.log(this.inspireThemesNew);
-        console.log(this.inspireTopicsNew);
         this.inspireThemesNew.map((k) => ({
           key: KeywordAnalysis.inspireToIsoMapping[k.value.key],
         }));
@@ -284,7 +273,6 @@ export class ConsolidateDialogComponent implements OnInit {
       doc.themes = this.inspireThemesNew.map((k) => ({
         key: k.value.key,
       }));
-      // TODO: check for existing functionality to map inspire themes to isos
       doc.topicCategories = [
         ...this.inspireThemesNew.map((k) => ({
           key: KeywordAnalysis.inspireToIsoMapping[k.value.key],
@@ -322,6 +310,8 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   private sortKeywordsByStatus() {
+    this.inspireThemesNew = this.sortByStatus(this.inspireThemesNew);
+    this.inspireTopicsNew = this.sortByStatus(this.inspireTopicsNew);
     this.gemetKeywordsNew = this.sortByStatus(this.gemetKeywordsNew);
     this.umthesKeywordsNew = this.sortByStatus(this.umthesKeywordsNew);
     this.freeKeywordsNew = this.sortByStatus(this.freeKeywordsNew);
