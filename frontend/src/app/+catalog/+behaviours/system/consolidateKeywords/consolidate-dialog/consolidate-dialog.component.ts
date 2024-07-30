@@ -291,11 +291,11 @@ export class ConsolidateDialogComponent implements OnInit {
     });
   }
 
-  private mapKeywords(keywords: Object[]) {
+  private mapKeywords(keywords: ThesaurusResult[]) {
     return keywords.map((k) => ({
-      id: k["value"].id,
-      label: k["value"].label,
-      alternateLabel: k["value"].alternativeLabel || null,
+      id: k.value.id,
+      label: k.value.label,
+      alternateLabel: k.value.alternativeLabel || null,
     }));
   }
   private removeDuplicates(arr: any[], uniqueKey: string) {
@@ -305,8 +305,8 @@ export class ConsolidateDialogComponent implements OnInit {
     );
   }
 
-  private sortByStatus(keywords: any[]) {
-    return keywords.sort((a, b) => (a.status === "removed" ? 1 : -1));
+  private sortByStatus(keywords: ThesaurusResult[]) {
+    return keywords.sort((a) => (a.status === "removed" ? 1 : -1));
   }
 
   private sortKeywordsByStatus() {
