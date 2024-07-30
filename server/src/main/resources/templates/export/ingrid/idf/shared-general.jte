@@ -265,7 +265,7 @@
     </gmd:referenceSystemInfo>
 @endfor
 <gmd:identificationInfo>
-    <${page.getIdentificationType()} uuid="${page.getCitationURL()}">
+    <${page.getIdentificationType()} @if(page.getCitationURL() != null ) uuid="${page.getCitationURL()}" @endif>
     <gmd:citation>
         <gmd:CI_Citation>
             <gmd:title>
@@ -299,7 +299,7 @@
                     </gmd:date>
                 @endfor
             @endif
-            @if( page.getModel().getType().equals("InGridGeoDataset") )
+            @if( page.getModel().getType().equals("InGridGeoDataset") && page.getCitationURL() != null )
                 <gmd:identifier>
                     <gmd:MD_Identifier>
                         <gmd:code>
