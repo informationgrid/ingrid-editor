@@ -348,7 +348,8 @@ class ImportService(
             } else {
                 documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
             }
-            documentService.updateParent(catalogId, wrapperId, ref.parent)
+            // TODO: we should update parent only when desired (through import options)
+            // documentService.updateParent(catalogId, wrapperId, ref.parent)
 
             counter.overwritten++
         } else {
