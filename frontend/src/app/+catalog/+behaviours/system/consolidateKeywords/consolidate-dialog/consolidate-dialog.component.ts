@@ -39,6 +39,7 @@ import { DocumentDataService } from "../../../../../services/document/document-d
 import { KeywordAnalysis } from "../../../../../../profiles/ingrid/utils/keywords";
 import { ThesaurusResult } from "../../../../../../profiles/ingrid/components/thesaurus-result";
 import { CodelistQuery } from "../../../../../store/codelist/codelist.query";
+import { FormStateService } from "../../../../../+form/form-state.service";
 
 export interface ConsolidateDialogData {
   id: number;
@@ -73,6 +74,7 @@ export class ConsolidateDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<ConsolidateDialogComponent>,
     private snackBar: MatSnackBar,
     private codelistQuery: CodelistQuery,
+    private formStateService: FormStateService,
 
     public configService: ConfigService,
     private keywordAnalysis: KeywordAnalysis,
@@ -81,6 +83,7 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   id: number;
+  form: any;
   keywords: any[];
   isInspireIdentified: boolean;
 
@@ -98,6 +101,9 @@ export class ConsolidateDialogComponent implements OnInit {
   isLoading: boolean;
 
   ngOnInit() {
+    this.form = this.formStateService.getForm().value;
+    console.log(this.form);
+    console.log(this.form.isInspireIdentified);
     this.consolidateKeywords();
   }
 
@@ -109,152 +115,151 @@ export class ConsolidateDialogComponent implements OnInit {
     this.umthesKeywordsNew = [];
     this.freeKeywordsNew = [];
 
-    this.documentDataService.load(this.id, false).subscribe((response) => {
-      if (!response.keywords) {
-        this.keywords = [];
-        this.isLoading = false;
-        return;
-      }
-      this.isInspireIdentified = response.isInspireIdentified;
-      this.inspireThemes = response.themes;
-      this.inspireTopics = response.topicCategories;
+    if (!this.form.keywords) {
+      this.keywords = [];
+      this.isLoading = false;
+      return;
+    }
+    this.isInspireIdentified = this.form.isInspireIdentified;
+    this.inspireThemes = this.isInspireIdentified ? this.form.themes : [];
+    this.inspireTopics = this.form.topicCategories;
 
-      this.gemetKeywords = response.keywords.gemet;
-      this.umthesKeywords = response.keywords.umthes;
-      this.freeKeywords = response.keywords.free;
-      this.keywords = [
-        ...this.gemetKeywords,
-        ...this.umthesKeywords,
-        ...this.freeKeywords,
-      ];
-      Promise.all([
-        ...this.inspireThemes.map((theme) =>
-          Promise.resolve(
-            this.keywordAnalysis.checkInThemes(
-              this.codelistQuery.getCodelistEntryByKey("6100", theme.key)
-                .fields["de"],
-            ),
-          ).then((res: ThesaurusResult) => {
+    this.gemetKeywords = this.form.keywords.gemet;
+    this.umthesKeywords = this.form.keywords.umthes;
+    this.freeKeywords = this.form.keywords.free;
+    this.keywords = [
+      ...this.gemetKeywords,
+      ...this.umthesKeywords,
+      ...this.freeKeywords,
+    ];
+    Promise.all([
+      ...this.inspireThemes.map((theme) =>
+        Promise.resolve(
+          this.keywordAnalysis.checkInThemes(
+            this.codelistQuery.getCodelistEntryByKey("6100", theme.key).fields[
+              "de"
+            ],
+          ),
+        ).then((res: ThesaurusResult) => {
+          if (res.found) {
+            res["status"] = "unchanged";
+            this.inspireThemesNew.push(res);
+          }
+        }),
+      ),
+
+      ...this.inspireTopics.map((topic) =>
+        this.inspireTopicsNew.push({
+          found: true,
+          value: { key: topic.key },
+          label: this.codelistQuery.getCodelistEntryByKey("527", topic.key)
+            .fields["de"],
+          thesaurus: "INSPIRE-Themen",
+          status: "unchanged",
+        }),
+      ),
+
+      ...this.gemetKeywords.map((keyword) =>
+        this.keywordAnalysis
+          .checkInThesaurus(keyword.label, "gemet")
+          .then((res: ThesaurusResult) => {
             if (res.found) {
               res["status"] = "unchanged";
-              this.inspireThemesNew.push(res);
+              this.gemetKeywordsNew.push(res);
+            } else {
+              if (!this.freeKeywords.includes(keyword.label)) {
+                this.freeKeywordsNew.push({ ...res, status: "added" });
+                this.gemetKeywordsNew.push({ ...res, status: "removed" });
+              }
             }
           }),
-        ),
-
-        ...this.inspireTopics.map((topic) =>
-          this.inspireTopicsNew.push({
-            found: true,
-            value: { key: topic.key },
-            label: this.codelistQuery.getCodelistEntryByKey("527", topic.key)
-              .fields["de"],
-            thesaurus: "INSPIRE-Themen",
-            status: "unchanged",
+      ),
+      ...this.umthesKeywords.map((keyword) =>
+        this.keywordAnalysis
+          .checkInThesaurus(keyword.label, "umthes")
+          .then((res: ThesaurusResult) => {
+            if (res.found) {
+              res["status"] = "unchanged";
+              this.umthesKeywordsNew.push(res);
+            } else {
+              if (!this.freeKeywords.includes(keyword.label)) {
+                this.freeKeywordsNew.push({ ...res, status: "added" });
+                this.umthesKeywordsNew.push({ ...res, status: "removed" });
+              }
+            }
           }),
-        ),
-
-        ...this.gemetKeywords.map((keyword) =>
-          this.keywordAnalysis
-            .checkInThesaurus(keyword.label, "gemet")
-            .then((res: ThesaurusResult) => {
-              if (res.found) {
-                res["status"] = "unchanged";
-                this.gemetKeywordsNew.push(res);
-              } else {
-                if (!this.freeKeywords.includes(keyword.label)) {
-                  this.freeKeywordsNew.push({ ...res, status: "added" });
-                  this.gemetKeywordsNew.push({ ...res, status: "removed" });
-                }
-              }
-            }),
-        ),
-        ...this.umthesKeywords.map((keyword) =>
-          this.keywordAnalysis
-            .checkInThesaurus(keyword.label, "umthes")
-            .then((res: ThesaurusResult) => {
-              if (res.found) {
-                res["status"] = "unchanged";
-                this.umthesKeywordsNew.push(res);
-              } else {
-                if (!this.freeKeywords.includes(keyword.label)) {
-                  this.freeKeywordsNew.push({ ...res, status: "added" });
-                  this.umthesKeywordsNew.push({ ...res, status: "removed" });
-                }
-              }
-            }),
-        ),
-        ...this.freeKeywords.map((keyword) =>
-          this.keywordAnalysis
-            .assignKeyword(keyword.label, this.isInspireIdentified)
-            .then((res) => {
-              if (res.found) {
-                if (res.thesaurus === "INSPIRE-Themen") {
-                  if (this.inspireThemes.some((t) => t.key === res.value.key)) {
-                    res["status"] = "unchanged";
-                  } else {
-                    res["status"] = "added";
-                  }
-                  this.inspireThemesNew.push(res);
-                  const isoKey =
-                    KeywordAnalysis.inspireToIsoMapping[res.value.key];
-                  const inspireTopic = this.codelistQuery.getCodelistEntryByKey(
-                    "527",
-                    isoKey,
-                  );
-
-                  const inspireTopicAlreadyExists = this.inspireTopics.some(
-                    (t) => t.key === isoKey,
-                  );
-
-                  const inspireTopicResult: ThesaurusResult = {
-                    found: true,
-                    value: { key: isoKey },
-                    label: inspireTopic.fields["de"],
-                    thesaurus: "INSPIRE-Themen",
-                    status: inspireTopicAlreadyExists ? "unchanged" : "added",
-                  };
-                  this.inspireTopicsNew.push(inspireTopicResult);
-                  this.freeKeywordsNew.push({ ...res, status: "removed" });
-                }
-                if (res.thesaurus === "Gemet Schlagworte") {
-                  res["status"] = "added";
-                  this.gemetKeywordsNew.push(res);
-                  if (keyword.label === res.label) {
-                    this.freeKeywordsNew.push({ ...res, status: "removed" });
-                  } else {
-                    this.freeKeywordsNew.push({
-                      ...keyword,
-                      status: "unchanged",
-                    });
-                  }
-                }
-                if (res.thesaurus === "Umthes Schlagworte") {
-                  res["status"] = "added";
-                  this.umthesKeywordsNew.push(res);
-                  if (keyword.label === res.label) {
-                    this.freeKeywordsNew.push({ ...res, status: "removed" });
-                  } else {
-                    this.freeKeywordsNew.push({
-                      ...keyword,
-                      status: "unchanged",
-                    });
-                  }
-                }
-                if (res.thesaurus === "Freie Schlagworte") {
+      ),
+      ...this.freeKeywords.map((keyword) =>
+        this.keywordAnalysis
+          .assignKeyword(keyword.label, this.isInspireIdentified)
+          .then((res) => {
+            if (res.found) {
+              if (res.thesaurus === "INSPIRE-Themen") {
+                if (this.inspireThemes.some((t) => t.key === res.value.key)) {
                   res["status"] = "unchanged";
-                  this.freeKeywordsNew.push(res);
+                } else {
+                  res["status"] = "added";
+                }
+                this.inspireThemesNew.push(res);
+                const isoKey =
+                  KeywordAnalysis.inspireToIsoMapping[res.value.key];
+                const inspireTopic = this.codelistQuery.getCodelistEntryByKey(
+                  "527",
+                  isoKey,
+                );
+
+                const inspireTopicAlreadyExists = this.inspireTopics.some(
+                  (t) => t.key === isoKey,
+                );
+
+                const inspireTopicResult: ThesaurusResult = {
+                  found: true,
+                  value: { key: isoKey },
+                  label: inspireTopic.fields["de"],
+                  thesaurus: "INSPIRE-Themen",
+                  status: inspireTopicAlreadyExists ? "unchanged" : "added",
+                };
+                this.inspireTopicsNew.push(inspireTopicResult);
+                this.freeKeywordsNew.push({ ...res, status: "removed" });
+              }
+              if (res.thesaurus === "Gemet Schlagworte") {
+                res["status"] = "added";
+                this.gemetKeywordsNew.push(res);
+                if (keyword.label === res.label) {
+                  this.freeKeywordsNew.push({ ...res, status: "removed" });
+                } else {
+                  this.freeKeywordsNew.push({
+                    ...keyword,
+                    status: "unchanged",
+                  });
                 }
               }
-            }),
-        ),
-      ]).then(() => {
-        this.inspireThemesNew.map((k) => ({
-          key: KeywordAnalysis.inspireToIsoMapping[k.value.key],
-        }));
-        this.sortKeywordsByStatus();
-        this.removeDuplicateKeywords();
-        this.isLoading = false;
-      });
+              if (res.thesaurus === "Umthes Schlagworte") {
+                res["status"] = "added";
+                this.umthesKeywordsNew.push(res);
+                if (keyword.label === res.label) {
+                  this.freeKeywordsNew.push({ ...res, status: "removed" });
+                } else {
+                  this.freeKeywordsNew.push({
+                    ...keyword,
+                    status: "unchanged",
+                  });
+                }
+              }
+              if (res.thesaurus === "Freie Schlagworte") {
+                res["status"] = "unchanged";
+                this.freeKeywordsNew.push(res);
+              }
+            }
+          }),
+      ),
+    ]).then(() => {
+      this.inspireThemesNew.map((k) => ({
+        key: KeywordAnalysis.inspireToIsoMapping[k.value.key],
+      }));
+      this.sortKeywordsByStatus();
+      this.removeDuplicateKeywords();
+      this.isLoading = false;
     });
   }
 
