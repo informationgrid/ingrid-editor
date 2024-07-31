@@ -40,23 +40,4 @@ class InGridGeoDatasetType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemp
             doc.data.put("identifier", "")
         }
     }
-
-    override fun getUploads(doc: Document): List<String> {
-        if (doc.data.get("documentFiles") != null) {
-            val files = doc.data.get("documentFiles")
-                .filter { download -> !download.get("link").get("asLink").booleanValue() }
-                .map { download -> getUploadFile(download) }
-
-            return files
-        }
-        return emptyList()
-    }
-
-    private fun getUploadFile(download: JsonNode): String {
-        if (download.get("link").get("uri") != null) {
-            return URLDecoder.decode(download.get("link").get("uri").textValue()!!, "utf-8")
-        } else {
-            return download.get("link").get("value").textValue()
-        }
-    }
 }

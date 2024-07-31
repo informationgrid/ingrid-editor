@@ -525,7 +525,7 @@ export class GeoDatasetDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
       this.addSection("Dokumente", [
-        this.addRepeatDistributionDetailList("documentFiles", "Dokumente", {
+        this.addRepeatDistributionDetailList("fileReferences", "Dokumente", {
           required: false,
           supportLink: false,
           enableFileUploadOverride: false,

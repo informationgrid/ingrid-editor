@@ -74,8 +74,14 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
     }
 
     override fun getUploads(doc: Document): List<String> {
-        return doc.data.get("graphicOverviews")?.let {
+        val graphicOverviews: List<String> = doc.data.get("graphicOverviews")?.let {
             getUploadsFromFileList(it, "fileName")
         } ?: emptyList()
+
+        val fileReferences: List<String> = doc.data.get("fileReferences")?.let {
+            getUploadsFromFileList(it, "link")
+        } ?: emptyList()
+
+        return graphicOverviews + fileReferences
     }
 }
