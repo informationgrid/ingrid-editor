@@ -25,8 +25,6 @@ import { UpdateDatasetInfo } from "../../models/update-dataset-info.model";
 export interface TreeState
   extends EntityState<DocumentAbstract>,
     MultiActiveState {
-  // TODO: what is this used for?
-  openedNodes: DocumentAbstract[];
   openedDocument: DocumentAbstract;
   expandedNodes: string[];
   breadcrumb: ShortTreeNode[];

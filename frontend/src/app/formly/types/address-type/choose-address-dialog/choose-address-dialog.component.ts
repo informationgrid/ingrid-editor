@@ -174,7 +174,6 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   handleTreeError(error: HttpErrorResponse) {
     console.error(error);
     if (error.error.errorText === "No value present") {
-      // TODO: remove address from recentAddresses
       this.documentService.removeFromRecentAddresses(
         this.recentAddressSelect.value.id,
       );

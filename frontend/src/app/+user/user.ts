@@ -17,8 +17,6 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { SelectOption } from "../services/codelist/codelist.service";
-import { Group } from "../models/user-group";
 
 export abstract class User {
   id: number;
@@ -45,7 +43,7 @@ export class FrontendUser extends User {
   groups?: { key: string; value?: string }[];
   readOnly?: boolean;
 
-  constructor(user?: BackendUser, igeGroups?: Group[]) {
+  constructor(user?: BackendUser) {
     super(user);
 
     if (user) {
@@ -79,7 +77,6 @@ export class TreePermission {
   id: number;
   title: string;
   isFolder: boolean;
-  permission: string; // TODO: still used?
   hasWritePermission: boolean;
   hasOnlySubtreeWritePermission: boolean;
   iconClass?: string; // either "UvpOrganisationDoc" or "UvpAddressDoc"

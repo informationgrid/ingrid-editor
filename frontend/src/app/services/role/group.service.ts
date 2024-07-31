@@ -73,7 +73,6 @@ export class GroupService {
   }
 
   updateGroup(group: Group): Observable<any> {
-    // TODO: after saving group reassign group to active user. Necessary? User should not edit his own group!!!
     return this.dataService
       .saveGroup(group)
       .pipe(tap((response) => this.groupStore.update(group.id, response)));
