@@ -1,6 +1,7 @@
 {
   "pageTitle": {
     "default": "IGE-NG",
+    "favIcon": "assets/icons/favicon.ico",
     "dashboard": "Übersicht",
     "form": "Daten",
     "address": "Adressen",
