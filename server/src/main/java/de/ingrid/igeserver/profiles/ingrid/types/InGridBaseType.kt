@@ -19,11 +19,10 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.types
 
-import de.ingrid.igeserver.api.InvalidField
-import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.profiles.ingrid.validator.docQualityValidation
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -82,12 +81,6 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
     }
 
     override fun onPublish(doc: Document) {
-        val isHvd: Boolean = doc.data.get("hvd")?.booleanValue() ?: false
-        if(isHvd) {
-            val hvdCategories = doc.data.get("hvdCategories")?.size() ?: 0
-            if (hvdCategories == 0){
-                throw ValidationException.withInvalidFields(InvalidField("hvdCategories", "required"))
-            }
-        }
+        docQualityValidation(doc)
     }
 }
