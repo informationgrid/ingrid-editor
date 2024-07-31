@@ -45,7 +45,7 @@ export class TabSqlComponent implements OnInit {
 
   result: any;
   aiSearchEnabled =
-    this.config.isSuperAdmin() &&
+    this.config.hasSuperAdminRights() &&
     (this.config.getConfiguration().featureFlags.openAISearch ?? false);
 
   constructor(

@@ -132,6 +132,7 @@ export class ConfigService {
   registeredPlugins: { [x: string]: boolean } = {};
 
   private dataService: ConfigDataService;
+  private isMdAdministrator = false;
   private isAdministrator = false;
   private isSuperAdministrator = false;
   private _hasRootWritePermission = false;
@@ -169,6 +170,8 @@ export class ConfigService {
     this.isSuperAdministrator = userInfo.role === "ige-super-admin";
     this.isAdministrator =
       this.isSuperAdministrator || userInfo.role === "cat-admin";
+    this.isMdAdministrator =
+      this.isAdministrator || userInfo.role === "md-admin";
     this._hasRootWritePermission =
       userInfo.permissions.indexOf("can_write_root") !== -1;
     this.$userInfo.next(userInfo);
@@ -179,11 +182,30 @@ export class ConfigService {
     return this.config;
   }
 
-  isAdmin(): boolean {
+  /**
+   * Checks if the current user is at least a Metadata Administrator.
+   *
+   * @returns {boolean} True if the user is at least a Metadata Administrator, false otherwise.
+   */
+  hasMdAdminRights(): boolean {
+    return this.isMdAdministrator;
+  }
+
+  /**
+   * Checks if the current user is at least a Catalog Administrator.
+   *
+   * @returns {boolean} True if the user is at least a Catalog Administrator, false otherwise.
+   */
+  hasCatAdminRights(): boolean {
     return this.isAdministrator;
   }
 
-  isSuperAdmin(): boolean {
+  /**
+   * Checks if the current user is a Super Administrator.
+   *
+   * @returns {boolean} True if the user is a Super Administrator, false otherwise.
+   */
+  hasSuperAdminRights(): boolean {
     return this.isSuperAdministrator;
   }
 

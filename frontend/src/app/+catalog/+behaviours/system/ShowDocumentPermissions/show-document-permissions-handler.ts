@@ -46,18 +46,12 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
     private dialog: MatDialog,
     private userService: UserService,
     private docEventsService: DocEventsService,
-    private configService: ConfigService,
     private formMenuService: FormMenuService,
     private addressTreeQuery: AddressTreeQuery,
     private documentTreeQuery: TreeQuery,
     private router: Router,
   ) {
     super();
-
-    let role = configService.$userInfo.getValue().role;
-    this.isPrivileged =
-      role === "ige-super-admin" || role === "cat-admin" || role === "md-admin";
-
     inject(PluginService).registerPlugin(this);
   }
 

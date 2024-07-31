@@ -54,7 +54,6 @@ export class AssignedUserBehaviour extends Plugin {
   description =
     "Datensätze erhalten einen verantwortlichen Benutzer, der von Katalog Administratoren geändert werden kann. In der Benutzerverwaltung kann die Verantwortung übertragen werden. Nutzer die Verantwortlichkeiten haben können nicht gelöscht werden";
   defaultActive = true;
-  private readonly isPrivileged: boolean;
 
   constructor(
     private eventService: EventService,
@@ -66,17 +65,12 @@ export class AssignedUserBehaviour extends Plugin {
     private formMenuService: FormMenuService,
     private formStateService: FormStateService,
     private documentService: DocumentService,
-    configService: ConfigService,
+    private configService: ConfigService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
-
-    let role = configService.$userInfo.getValue().role;
-    // TODO: this should be centralized (configService?)
-    this.isPrivileged =
-      role === "ige-super-admin" || role === "cat-admin" || role === "md-admin";
   }
 
   formMenuId: MenuId;
@@ -97,7 +91,7 @@ export class AssignedUserBehaviour extends Plugin {
       : this.documentTreeQuery;
 
     // only add menu item in form if user is privileged
-    if (this.isPrivileged) {
+    if (this.configService.hasMdAdminRights()) {
       const onDocLoad = treeQuery.openedDocument$.subscribe((doc) => {
         const button = {
           title: "Verantwortlichkeit ändern",

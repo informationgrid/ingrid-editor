@@ -124,7 +124,8 @@ export class QueryManagerComponent implements OnInit {
     return queries.map((q) => {
       return {
         ...q,
-        canDelete: this.configService.isAdmin() || q.userId === currentUserId,
+        canDelete:
+          this.configService.hasCatAdminRights() || q.userId === currentUserId,
       };
     });
   }

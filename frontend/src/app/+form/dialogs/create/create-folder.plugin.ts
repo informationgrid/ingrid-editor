@@ -46,7 +46,7 @@ export class CreateFolderPlugin extends Plugin {
 
   eventCreateFolderId = "CREATE_FOLDER";
 
-  private isAdmin = this.config.isAdmin();
+  private isAdmin = this.config.hasCatAdminRights();
 
   constructor(
     private config: ConfigService,

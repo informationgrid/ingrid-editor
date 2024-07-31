@@ -71,7 +71,7 @@ export class MainHeaderComponent implements OnInit {
 
   ngOnInit() {
     let userInfo = this.configService.$userInfo.getValue();
-    this.isAdmin = this.configService.isAdmin();
+    this.isAdmin = this.configService.hasCatAdminRights();
     this.version = userInfo?.version;
     this.externalHelp = userInfo?.externalHelp;
     this.catalogId = userInfo?.currentCatalog.id;
