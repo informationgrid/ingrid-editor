@@ -573,6 +573,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 },
               },
               this.addSelectInline("format", "Format", {
+                required: true,
                 showSearch: true,
                 options: this.getCodelistForSelect("20003", "type").pipe(
                   map((data) => {
@@ -591,15 +592,10 @@ export class GeoDatasetDoctype extends IngridShared {
             ]),
           ],
           validators: {
-            // requiredEntry: {
-            //   expression: (ctrl) => ctrl.value?.length > 0,
-            //   message: "Fehler: Bitte erstellen Sie mindestens einen Eintrag",
-            // },
-            // requiredLicense: {
-            //   expression: (ctrl) => ctrl.value?.every((entry) => entry.license),
-            //   message:
-            //     "Fehler: Es muss für jede Ressource eine Lizenz angegeben werden (Ressource bearbeiten).",
-            // },
+            requiredFormat: {
+              expression: (ctrl) => ctrl.value?.every((entry) => entry.format.key ),
+              message: "Fehler: Es muss für jedes Dokument ein Format angegeben werden (Dokument bearbeiten).",
+            },
           },
         }),
       ]),
