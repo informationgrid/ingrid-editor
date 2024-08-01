@@ -22,11 +22,13 @@ package de.ingrid.igeserver.persistence.filter.publish
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.mcloud.types.TestType
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.DOCUMENT_STATE
+import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.DocumentData
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
@@ -39,11 +41,9 @@ import io.mockk.mockkObject
 class PreDefaultDocumentPublisherTest : FunSpec({
 
     val docService = mockk<DocumentService>()
-    val behaviourService = mockk<BehaviourService>()
-    val publisher = PreDefaultDocumentPublisher(docService, behaviourService)
+    val publisher = PreDefaultDocumentPublisher(docService)
 
     beforeAny {
-        every { behaviourService.get(any(), "plugin.indexing-tags") } returns Behaviour().apply { active = true }
         every { docService.getReferencedWrapperIds(any(), any()) } returns setOf(1)
         mockkObject(SpringContext.Companion)
         every { SpringContext.getBean(DateService::class.java) } answers {

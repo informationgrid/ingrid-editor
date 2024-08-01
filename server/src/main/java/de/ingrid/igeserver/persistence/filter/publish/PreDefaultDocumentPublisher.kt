@@ -25,7 +25,6 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
-import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
@@ -36,7 +35,7 @@ import org.springframework.stereotype.Component
  * Filter for processing document data send from the client before publish
  */
 @Component
-class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService, val behaviourService: BehaviourService): Filter<PrePublishPayload> {
+class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService) : Filter<PrePublishPayload> {
 
     override val profiles = arrayOf<String>()
 
@@ -45,24 +44,12 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService, va
 
         context.addMessage(Message(this, "Process document data '$docId' before publish"))
 
-        if (isPublicationTypeBehaviourActive(context.catalogId)) {
-            checkAllPublishedWithPublicationType(context.catalogId, payload)
-        }
+        checkAllPublishedWithPublicationType(context.catalogId, payload)
 
         // call entity type specific hook
         payload.type.onPublish(payload.document)
 
         return payload
-    }
-
-    private fun isPublicationTypeBehaviourActive(catalogId: String): Boolean {
-        behaviourService.get(catalogId, "plugin.indexing-tags")?.let {
-            val publicationTypesActive = it.active != null && it.active == true
-            if (publicationTypesActive) {
-                return true
-            }
-        }
-        return false
     }
 
     private fun checkAllPublishedWithPublicationType(catalogId: String, payload: PrePublishPayload) {
@@ -83,7 +70,8 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService, va
             refData.wrapper.tags.filter { it == "intranet" || it == "amtsintern" }
 
         val docIsAmtsintern = publicationDocTags.contains("amtsintern")
-        val intranetAndRefsNotAmtsintern = publicationDocTags.contains("intranet") && !refPublicationDocTags.contains("amtsintern")
+        val intranetAndRefsNotAmtsintern =
+            publicationDocTags.contains("intranet") && !refPublicationDocTags.contains("amtsintern")
         val allAreInternet = publicationDocTags.isEmpty() && refPublicationDocTags.isEmpty()
 
         if (!(docIsAmtsintern || intranetAndRefsNotAmtsintern || allAreInternet)) {
@@ -92,7 +80,7 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService, va
                 "Reference has wrong publication type condition: ${
                     publicationDocTags.joinToString(
                         ","
-                    )
+                    ).ifEmpty { "internet" } 
                 } => $tags"
             )
         }
