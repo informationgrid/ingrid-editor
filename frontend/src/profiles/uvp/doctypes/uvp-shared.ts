@@ -251,13 +251,6 @@ export class UvpShared extends BaseDoctype {
                 : false,
             message: "Es muss ein Ansprechpartner als Adresse angegeben sein",
           },
-          publisherPublished: {
-            expression: (ctrl) =>
-              ctrl.value
-                ? ctrl.value.every((row) => row.ref._state === "P")
-                : false,
-            message: "Alle Adressen müssen veröffentlicht sein",
-          },
           maxPublisher: {
             expression: (ctrl) => ctrl.value?.length === 1,
             message: "Es darf maximal nur ein Kontakt angegeben sein",
