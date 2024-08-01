@@ -637,6 +637,8 @@ open class IngridModelTransformer(
             .map { applyRefInfos(it) }
     }
 
+    val fileReferences = data.fileReferences ?: emptyList()
+
     private fun applyRefInfos(it: Reference): Reference {
         val refClass = getLastPublishedDocument(it.uuidRef ?: throw ServerException.withReason("UUID of a reference is NULL")) ?: return it
         it.uuidRefClass = mapDocumentType(refClass.type)
@@ -960,6 +962,7 @@ open class IngridModelTransformer(
                 || distributionFormats.isNotEmpty()
                 || hasDistributorInfo()
                 || !data.references.isNullOrEmpty()
+                || !data.fileReferences.isNullOrEmpty()
                 || isAtomDownload
                 // TODO Refactor after usage clarification #6322
                 // || serviceUrls.isNotEmpty()

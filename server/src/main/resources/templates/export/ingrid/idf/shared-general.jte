@@ -751,6 +751,27 @@ ${contentInfo}
 @if(page.hasDistributionInfo())
     <gmd:distributionInfo>
         <gmd:MD_Distribution>
+            @for( FileReference fileReference : page.getFileReferences() )
+                <gmd:fileReference>
+                    <gmd:File>
+                        <gmd:title>
+                            <gco:CharacterString>${fileReference.getTitle()}</gco:CharacterString>
+                        </gmd:title>
+                        <gmd:description>
+                            <gco:CharacterString>${fileReference.getDescription()}</gco:CharacterString>
+                        </gmd:description>
+                        <gmd:format>
+                            <gco:CharacterString>${fileReference.getFormat().getKey()}</gco:CharacterString>
+                        </gmd:format>
+                        <gmd:link>
+                            <gco:CharacterString>${fileReference.getLink().getUri()}</gco:CharacterString>
+                        </gmd:link>
+                        <gmd:sizeInBytes>
+                            <gco:Integer>${fileReference.getLink().getSizeInBytes()}</gco:Integer>
+                        </gmd:sizeInBytes>
+                    </gmd:File>
+                </gmd:fileReference>
+            @endfor
             @for( DistributionFormat distributionFormat : page.getDistributionFormats() )
                 <gmd:distributionFormat>
                     <gmd:MD_Format>
