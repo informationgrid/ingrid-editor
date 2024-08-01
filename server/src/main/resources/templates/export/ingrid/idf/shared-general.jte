@@ -751,7 +751,7 @@ ${contentInfo}
 @if(page.hasDistributionInfo())
     <gmd:distributionInfo>
         <gmd:MD_Distribution>
-            @for( FileReference fileReference : page.getFileReferences() )
+            @for( FileReference fileReference : page.getFileReferencesWithUrl() )
                 <gmd:fileReference>
                     <gmd:File>
                         <gmd:title>
@@ -764,7 +764,7 @@ ${contentInfo}
                             <gco:CharacterString>${fileReference.getFormat().getKey()}</gco:CharacterString>
                         </gmd:format>
                         <gmd:link>
-                            <gco:CharacterString>${fileReference.getLink().getUri()}</gco:CharacterString>
+                            <gco:CharacterString>${fileReference.getUrl()}</gco:CharacterString>
                         </gmd:link>
                         <gmd:sizeInBytes>
                             <gco:Integer>${fileReference.getLink().getSizeInBytes()}</gco:Integer>

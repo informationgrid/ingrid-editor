@@ -178,6 +178,7 @@ data class FileReference(
     val title: String?,
     val description: String?,
     val format: FileFormat?,
+    var url: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

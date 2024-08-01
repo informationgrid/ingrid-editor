@@ -637,7 +637,14 @@ open class IngridModelTransformer(
             .map { applyRefInfos(it) }
     }
 
-    val fileReferences = data.fileReferences ?: emptyList()
+    private val fileReferences = data.fileReferences ?: emptyList()
+    val fileReferencesWithUrl = addUrlToFileReferences(fileReferences, model.uuid)
+    private fun addUrlToFileReferences(listofFileReferences: List<FileReference>?, datasetUuid: String): List<FileReference>? {
+        listofFileReferences?.forEach {
+            it.url = "${config.uploadExternalUrl}$catalogIdentifier/${datasetUuid}/${it.link.uri}"
+        }
+        return listofFileReferences
+    }
 
     private fun applyRefInfos(it: Reference): Reference {
         val refClass = getLastPublishedDocument(it.uuidRef ?: throw ServerException.withReason("UUID of a reference is NULL")) ?: return it
