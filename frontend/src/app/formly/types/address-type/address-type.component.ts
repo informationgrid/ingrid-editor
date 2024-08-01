@@ -268,8 +268,8 @@ export class AddressTypeComponent
   }
 
   private compareAddressRefs(a: AddressRef[], b: AddressRef[]) {
-    if (a === undefined && b === undefined) return true;
-    if (a === undefined || b === undefined) return false;
+    if (!a && !b) return true;
+    if (!a || !b) return false;
 
     return (
       a.length === b.length &&
