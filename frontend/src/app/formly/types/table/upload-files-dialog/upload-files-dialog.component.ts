@@ -42,6 +42,7 @@ import { AuthenticationFactory } from "../../../../security/auth.factory";
 export interface LinkInfo {
   file: string;
   uri: string;
+  sizeInBytes?: number;
 }
 
 @UntilDestroy()
@@ -131,7 +132,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   private getSuccessfulUploadedFiles(): LinkInfo[] {
     return this.chosenFiles
       .filter((file) => file.transfer.success)
-      .map((file) => ({ file: file.transfer.name, uri: file.transfer.name }));
+      .map((file) => ({ file: file.transfer.name, uri: file.transfer.name, sizeInBytes: file.transfer.size }));
   }
 
   private extractAndCloseDialog(option?: ExtractOption) {
@@ -171,6 +172,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
         zipFile.files.map((file) => ({
           file: file.file,
           uri: decodeURIComponent(file.uri),
+          sizeInBytes: file.size,
         })),
       ),
     );

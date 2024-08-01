@@ -171,6 +171,7 @@ export class RepeatDistributionDetailListComponent
       value: file.file,
       uri: file.uri,
       lastModified: new Date(),
+      sizeInBytes: file.sizeInBytes
     };
     this.replaceItem(null, newRow);
   }

@@ -322,6 +322,7 @@ data class FileName(
     val asLink: Boolean,
     val value: String,
     val uri: String,
+    val sizeInBytes: Number?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

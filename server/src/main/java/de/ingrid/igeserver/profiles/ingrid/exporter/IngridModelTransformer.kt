@@ -41,6 +41,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
+import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
@@ -913,7 +914,8 @@ open class IngridModelTransformer(
             FileName(
                 json.getBoolean("fileName.asLink") ?: throw ServerException.withReason("Preview image 'asLink'-property is NULL"),
                 json.getString("fileName.value") ?: throw ServerException.withReason("Preview image 'value'-property is NULL"),
-                json.getString("fileName.uri") ?: throw ServerException.withReason("Preview image 'uri'-property is NULL")
+                json.getString("fileName.uri") ?: throw ServerException.withReason("Preview image 'uri'-property is NULL"),
+                json.getDouble("fileName.sizeInBytes") ?: null
             ),
             json.getString("fieldDescription")
         )
