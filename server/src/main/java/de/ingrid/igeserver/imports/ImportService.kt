@@ -119,7 +119,7 @@ class ImportService(
         val addressMap = mutableMapOf<String, String>()
         val result = importer[0].run(catalogId, fileContent, addressMap)
         return if (result is ArrayNode) {
-            val analyzedDocs = analyzeMultipleDocumentVersions(result, catalogId)
+            val analyzedDocs = analyzeMultipleDocuments(result, catalogId)
             prepareForImport(importer.map { it.typeInfo.id }, analyzedDocs)
         } else {
             prepareForImport(importer.map { it.typeInfo.id }, listOf(analyzeDoc(catalogId, result)))
@@ -133,37 +133,39 @@ class ImportService(
      * - second draft
      * - others are references of the above
      */
-    private fun analyzeMultipleDocumentVersions(
-        result: JsonNode,
+    private fun analyzeMultipleDocuments(
+        result: ArrayNode,
         catalogId: String
     ): List<DocumentAnalysis> {
-        val refs = if (result.size() > 2) {
-            (result as ArrayNode).mapIndexedNotNull { index, doc ->
-                if (index >= 2) analyzeDoc(catalogId, doc) else null
+
+        return result.flatMap { doc ->
+            // multiple versions
+            if (doc is ArrayNode) {
+                val published = if (!result[0].isNull) {
+                    analyzeDoc(
+                        catalogId,
+                        result[0],
+                        forcePublish = true,
+                        isLatest = false
+                    )
+
+                } else null
+
+                val draft = if (!result[1].isNull) {
+                    analyzeDoc(
+                        catalogId,
+                        result[1],
+                        forcePublish = false,
+                        isLatest = true,
+                        isDraftAndPublished = !result[0].isNull
+                    )
+                } else null
+
+                listOfNotNull(published, draft)
+            } else {
+                listOf(analyzeDoc(catalogId, doc))
             }
-        } else emptyList()
-
-        val published = if (!result[0].isNull) {
-            analyzeDoc(
-                catalogId,
-                result[0],
-                forcePublish = true,
-                isLatest = false
-            ).apply { references = refs }
-
-        } else null
-
-        val draft = if (!result[1].isNull) {
-            analyzeDoc(
-                catalogId,
-                result[1],
-                forcePublish = false,
-                isLatest = true,
-                isDraftAndPublished = !result[0].isNull
-            ).apply { references = refs }
-        } else null
-
-        return listOfNotNull(published, draft)
+        }
     }
 
 
@@ -174,15 +176,21 @@ class ImportService(
         return OptimizedImportAnalysis(
             importers,
             sortedListOfAllReferences,
-            analysis.size,
-            analysis.flatMap { it.references.map { it.document.uuid } }.distinct().size,
-            analysis.filter { it.exists }
+            analysis.filter { !it.isAddress }.size,
+            analysis.filter { it.isAddress }.size,
+//            analysis.flatMap { it.references.filter { it.isAddress }.map { it.document.uuid } }.distinct().size,
+
+            analysis.filter { it.exists && !it.isAddress}
                 .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) },
+            analysis.filter { it.exists && it.isAddress }
+                .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) },
+/*
             analysis.flatMap {
                 it.references
-                    .filter { it.exists }
+                    .filter { it.exists && it.isAddress }
                     .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) }
             }.distinctBy { it.uuid }
+*/
         )
 
     }
@@ -367,11 +375,8 @@ class ImportService(
         } else if (ref.deleted) {
             // undelete first to completely delete afterwards
             removeDeletedFlag(ref.wrapperId!!)
-            documentService.deleteDocument(principal, catalogId, ref.wrapperId, true)
-            val newDoc =
-                documentService.createDocument(principal, catalogId, ref.document, ref.parent, ref.isAddress, publish)
-
-            documentService.updateParent(catalogId, newDoc.wrapper.id!!, ref.parent)
+            documentService.deleteDocument(principal, catalogId, ref.wrapperId, DeleteOptions(true, true))
+            documentService.createDocument(principal, catalogId, ref.document, ref.parent, ref.isAddress, publish)
 
             if (ref.isAddress) counter.addresses++ else counter.documents++
 
@@ -384,7 +389,7 @@ class ImportService(
             } else {
                 documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
             }
-            documentService.updateParent(catalogId, wrapperId, ref.parent)
+//            documentService.updateParent(catalogId, wrapperId, ref.parent)
 
             counter.overwritten++
         } else {
@@ -429,7 +434,7 @@ data class DocumentAnalysis(
     val isAddress: Boolean,
     val exists: Boolean,
     val deleted: Boolean,
-    var references: List<DocumentAnalysis> = emptyList(),
+    /** @Deprecated */ var references: List<DocumentAnalysis> = emptyList(),
     val forcePublish: Boolean = false,
     var parent: Int? = null
 )

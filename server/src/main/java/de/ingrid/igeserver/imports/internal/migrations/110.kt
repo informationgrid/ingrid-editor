@@ -35,17 +35,19 @@ class Migrate110 {
         fun migrate(documents: JsonNode): Migrate110Response {
             val addressRefs = mutableListOf<JsonNode>()
 
-            documents.get("published")?.let { published ->
-                val addresses = (published.get("addresses") as ArrayNode?)?.map {
-                    val uuid = it.getString("ref._uuid")
-                    val ref = it.get("ref")
-                    (it as ObjectNode).put("ref", uuid)
-                    ref
-                }
-                addresses
-                    ?.filter { address -> addressRefs.none { it.getString("_uuid") == address.getString("_uuid") } }
-                    ?.let { addressRefs.addAll(it) }
+            listOf("draft", "published").forEach { type ->
+                documents.get(type)?.let { published ->
+                    val addresses = (published.get("addresses") as ArrayNode?)?.map {
+                        val uuid = it.getString("ref._uuid")
+                        val ref = it.get("ref")
+                        (it as ObjectNode).put("ref", uuid)
+                        ref
+                    }
+                    addresses
+                        ?.filter { address -> addressRefs.none { it.getString("_uuid") == address.getString("_uuid") } }
+                        ?.let { addressRefs.addAll(it) }
 
+                }
             }
             return Migrate110Response(documents, addressRefs)
         }

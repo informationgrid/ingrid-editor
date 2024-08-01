@@ -28,7 +28,7 @@ class Migrate002 {
     companion object {
         fun migrate(documents: ArrayNode): JsonNode {
             val result = jacksonObjectMapper().createObjectNode()
-            result.set<JsonNode>("published", documents[0])
+            result.set<JsonNode>("draft", documents[0])
             return result
         }
     }
