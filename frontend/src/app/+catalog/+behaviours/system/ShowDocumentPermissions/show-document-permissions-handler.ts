@@ -39,13 +39,13 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
   description =
     "Administratoren können die Zugriffsberechtigungen für Dokumente und Adressen anzeigen";
   defaultActive = true;
-  isPrivileged: boolean;
 
   constructor(
     private docEvents: DocEventsService,
     private dialog: MatDialog,
     private userService: UserService,
     private docEventsService: DocEventsService,
+    private configService: ConfigService,
     private formMenuService: FormMenuService,
     private addressTreeQuery: AddressTreeQuery,
     private documentTreeQuery: TreeQuery,
@@ -65,7 +65,7 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
 
   register() {
     super.register();
-    if (this.isPrivileged) {
+    if (this.configService.hasMdAdminRights()) {
       const onEvent = this.docEvents
         .onEvent("SHOW_DOCUMENT_PERMISSIONS")
         .subscribe((event) => {
