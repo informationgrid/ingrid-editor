@@ -94,7 +94,6 @@ export class AddressTypeComponent
       .pipe(
         untilDestroyed(this),
         debounceTime(0),
-        filter((data) => data),
         distinctUntilChanged((a: AddressRef[], b: AddressRef[]) =>
           this.compareAddressRefs(a, b),
         ),
@@ -269,6 +268,9 @@ export class AddressTypeComponent
   }
 
   private compareAddressRefs(a: AddressRef[], b: AddressRef[]) {
+    if (a === undefined && b === undefined) return true;
+    if (a === undefined || b === undefined) return false;
+
     return (
       a.length === b.length &&
       a.every(
