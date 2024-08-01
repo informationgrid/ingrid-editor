@@ -27,31 +27,31 @@ import java.security.Principal
 import java.util.*
 
 interface UserManagementService {
-    fun getUsersWithIgeRoles(principal: Principal): Set<User>
-    fun getUsers(principal: Principal): Set<User>
+    fun getUsersWithIgeRoles(): Set<User>
+    fun getUsers(): Set<User>
 
-    fun getClient(principal: Principal? = null): Closeable
+    fun getClient(): Closeable
 
-    fun getLatestLoginDate(client: Closeable, login: String): Date?
+    fun getLatestLoginDate(login: String): Date?
 
-    fun getUser(client: Closeable, login: String): User
-    fun getKeycloakUserWithUuid(client: Closeable, uuid: String): UserRepresentation
+    fun getUser(login: String): User
+    fun getKeycloakUserWithUuid(uuid: String): UserRepresentation
     fun getRoles(principal: Authentication): Set<String>?
     fun getName(principal: Principal): String?
 
     fun getCurrentPrincipal(): Principal?
-    fun userExists(principal: Principal, userId: String): Boolean
+    fun userExists(userId: String): Boolean
 
     /**
      * Returns the temporary password for the new user
      */
-    fun createUser(principal: Principal, user: User): String
-    fun updateUser(principal: Principal?, user: User)
-    fun requestPasswordChange(principal: Principal?, id: String)
-    fun resetPassword(principal: Principal?, id: String): String
+    fun createUser(user: User): String
+    fun updateUser( user: User)
+    fun requestPasswordChange( id: String)
+    fun resetPassword( id: String): String
 
-    fun removeRoles(principal: Principal?, userId: String, roles: List<String>)
-    fun addRoles(principal: Principal?, userLogin: String, roles: List<String>)
-    fun deleteUser(principal: Principal?, userId: String)
+    fun removeRoles( userId: String, roles: List<String>)
+    fun addRoles( userLogin: String, roles: List<String>)
+    fun deleteUser( userId: String)
     fun initAdminClient(): KeycloakService.KeycloakCloseableClient
 }

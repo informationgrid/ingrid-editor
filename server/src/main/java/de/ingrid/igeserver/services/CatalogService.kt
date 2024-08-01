@@ -369,11 +369,11 @@ class CatalogService(
      */
     fun getAllCatalogUsers(principal: Principal): List<User> {
         val catalogId = getCurrentCatalogForPrincipal(principal)
-        return getAllCatalogUsers(principal, catalogId)
+        return getAllCatalogUsers(catalogId)
     }
 
-    fun getAllCatalogUsers(principal: Principal, catalogId: String): List<User> {
-        val keyCloakUsers = keycloakService.getUsersWithIgeRoles(principal)
+    fun getAllCatalogUsers(catalogId: String): List<User> {
+        val keyCloakUsers = keycloakService.getUsersWithIgeRoles()
         val catalogUsers = getUserOfCatalog(catalogId)
         return keyCloakUsers
             .filter { user -> catalogUsers.any { it.userId == user.login } }

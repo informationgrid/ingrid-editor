@@ -32,8 +32,7 @@ import jakarta.ws.rs.core.Response
 import org.apache.logging.log4j.LogManager
 import org.jboss.resteasy.client.jaxrs.ResteasyClient
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl
-import org.json.simple.JSONObject
-import org.json.simple.parser.JSONParser
+import org.keycloak.OAuth2Constants
 import org.keycloak.admin.client.CreatedResponseUtil
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
@@ -52,23 +51,15 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service
 import java.io.Closeable
 import java.io.InputStream
-import java.net.InetSocketAddress
-import java.net.ProxySelector
 import java.net.URI
-import java.net.URLEncoder
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 import java.security.Principal
-import java.time.Duration
 import java.util.*
-import java.util.concurrent.Executors
 
 
 @Service
 @Profile("!dev")
 class KeycloakService : UserManagementService {
-    
+
     val ROLE_IGE_USER = "ige-user"
 
     companion object {
@@ -83,7 +74,7 @@ class KeycloakService : UserManagementService {
         }
 
         override fun close() {
-            client.close()
+//            client.close()
         }
 
     }
@@ -102,8 +93,8 @@ class KeycloakService : UserManagementService {
     @Value("\${keycloak.realm:InGrid}")
     private lateinit var keycloakRealm: String
 
-    @Value("\${keycloak.resource}")
-    private val keycloakClientId: String? = null
+    @Value("\${frontend.keycloak.resource}")
+    lateinit var keycloakClientId: String
 
     @Value("\${keycloak.proxy-url:#{null}}")
     private val keycloakProxyUrl: String? = null
@@ -111,6 +102,10 @@ class KeycloakService : UserManagementService {
     private var proxyHost = "localhost"
 
     private var proxyPort = 80
+
+    private var restEasyClient: ResteasyClient? = null
+
+    private var keycloakClient: Keycloak? = null
 
     @PostConstruct
     fun init() {
@@ -121,9 +116,10 @@ class KeycloakService : UserManagementService {
                 proxyPort = port
             }
         }
+        this.restEasyClient = buildResteasyClient()
     }
 
-    override fun getUsersWithIgeRoles(principal: Principal): Set<User> {
+    override fun getUsersWithIgeRoles(): Set<User> {
         try {
             initAdminClient().use {
                 val realm = it.realm()
@@ -136,7 +132,7 @@ class KeycloakService : UserManagementService {
         }
     }
 
-    override fun getUsers(principal: Principal): Set<User> {
+    override fun getUsers(): Set<User> {
 
         try {
             initAdminClient().use {
@@ -186,26 +182,20 @@ class KeycloakService : UserManagementService {
 
 
     override fun initAdminClient(): KeycloakCloseableClient {
-        val jsonResponse = this.sendLoginRequest(backendUser!!, backendUserPassword!!)
-        return initClient(jsonResponse["access_token"].toString())
-    }
+        if (keycloakClient == null) {
+            val client: Keycloak = KeycloakBuilder.builder()
+                .serverUrl(keycloakUrl)
+                .realm(keycloakRealm)
+                .clientId(keycloakClientId)
+                .grantType(OAuth2Constants.PASSWORD)
+                .username(backendUser)
+                .password(backendUserPassword)
+                .resteasyClient(restEasyClient)
+                .build()
 
-    /*private fun initClient(principal: Principal?): KeycloakCloseableClient {
-        principal as JwtAuthenticationToken
-        val tokenString = principal.token.tokenValue
-        return initClient(tokenString)
-    }*/
-
-    private fun initClient(tokenString: String): KeycloakCloseableClient {
-        val client: Keycloak = KeycloakBuilder.builder()
-            .serverUrl(keycloakUrl)
-            .realm(keycloakRealm)
-            .clientId(keycloakClientId)
-            .authorization(tokenString)
-            .resteasyClient(buildResteasyClient())
-            .build()
-
-        return KeycloakCloseableClient(client, keycloakRealm)
+            keycloakClient = client
+            return KeycloakCloseableClient(client, keycloakRealm)
+        } else return KeycloakCloseableClient(keycloakClient!!, keycloakRealm)
     }
 
     private fun buildResteasyClient(): ResteasyClient? {
@@ -216,13 +206,15 @@ class KeycloakService : UserManagementService {
         return client.connectionPoolSize(10).build()
     }
 
-    override fun getClient(/*@Deprecated*/principal: Principal?): KeycloakCloseableClient {
+    override fun getClient(): KeycloakCloseableClient {
         return initAdminClient()
     }
 
-    override fun getUser(client: Closeable, login: String): User {
-        val user = getKeycloakUser(client, login)
-        return mapUser(user)
+    override fun getUser(login: String): User {
+        initAdminClient().use { client ->
+            val user = getKeycloakUser(client, login)
+            return mapUser(user)
+        }
     }
 
     private fun getKeycloakUser(client: Closeable, username: String): UserRepresentation {
@@ -237,11 +229,13 @@ class KeycloakService : UserManagementService {
         }
     }
 
-    override fun getKeycloakUserWithUuid(client: Closeable, uuid: String): UserRepresentation {
+    override fun getKeycloakUserWithUuid(uuid: String): UserRepresentation {
         try {
-            return (client as KeycloakCloseableClient).realm().users()
-                .search("id:$uuid", 1, 1)
-                .first()
+            initAdminClient().use { client ->
+                return client.realm().users()
+                    .search("id:$uuid", 1, 1)
+                    .first()
+            }
         } catch (e: NoSuchElementException) {
             throw NotFoundException.withMissingResource(uuid, "User")
         } catch (e: Exception) {
@@ -249,15 +243,17 @@ class KeycloakService : UserManagementService {
         }
     }
 
-    override fun getLatestLoginDate(client: Closeable, login: String): Date? {
+    override fun getLatestLoginDate(login: String): Date? {
         // This only works for Users with an active Session
         try {
-            val userId = getKeycloakUser(client, login).id
-            val userSessions = (client as KeycloakCloseableClient).realm().users()[userId].userSessions
-            return if (userSessions.isEmpty()) {
-                null
-            } else {
-                Date(userSessions.first().start)
+            initAdminClient().use { client ->
+                val userId = getKeycloakUser(client, login).id
+                val userSessions = client.realm().users()[userId].userSessions
+                return if (userSessions.isEmpty()) {
+                    null
+                } else {
+                    Date(userSessions.first().start)
+                }
             }
         } catch (e: Exception) {
             throw ServerException.withReason("Failed to get latest login date for '$login'.", e)
@@ -299,13 +295,13 @@ class KeycloakService : UserManagementService {
         return securityContext?.authentication as JwtAuthenticationToken?
     }
 
-    override fun userExists(principal: Principal, userId: String): Boolean {
+    override fun userExists(userId: String): Boolean {
         initAdminClient().use {
             return it.realm().users().search(userId, true).isNotEmpty()
         }
     }
 
-    override fun createUser(principal: Principal, user: User): String {
+    override fun createUser(user: User): String {
 
         initAdminClient().use {
             val usersResource = it.realm().users()
@@ -339,7 +335,7 @@ class KeycloakService : UserManagementService {
 
     }
 
-    override fun updateUser(principal: Principal?, user: User) {
+    override fun updateUser(user: User) {
 
         initAdminClient().use { client ->
             val kcUser = getKeycloakUser(client, user.login)
@@ -361,19 +357,19 @@ class KeycloakService : UserManagementService {
 
     private fun handleReponseErrorsForUser(error: Response) {
         if (error.status < 400) return
-        
+
         val extraInfo = if (error.entity is InputStream) {
             (error.entity as InputStream).reader().readText()
         } else null
         log.error("Error creating/updating user: $extraInfo")
-        
+
         when (error.status) {
             409 -> throw ConflictException.withReason("New user cannot be created, because another user might have the same email address")
             else -> throw ServerException.withReason("Error creating user: $extraInfo")
         }
     }
 
-    override fun requestPasswordChange(principal: Principal?, id: String) {
+    override fun requestPasswordChange(id: String) {
 
         initAdminClient().use {
 
@@ -395,7 +391,7 @@ class KeycloakService : UserManagementService {
 
     }
 
-    override fun resetPassword(principal: Principal?, id: String): String {
+    override fun resetPassword(id: String): String {
         val password = generatePassword()
 
         initAdminClient().use { client ->
@@ -415,7 +411,7 @@ class KeycloakService : UserManagementService {
         return password
     }
 
-    override fun removeRoles(principal: Principal?, userId: String, roles: List<String>) {
+    override fun removeRoles(userId: String, roles: List<String>) {
 
         initAdminClient().use { client ->
 
@@ -432,7 +428,7 @@ class KeycloakService : UserManagementService {
 
     }
 
-    override fun addRoles(principal: Principal?, userLogin: String, roles: List<String>) {
+    override fun addRoles(userLogin: String, roles: List<String>) {
 
         initAdminClient().use { client ->
 
@@ -447,7 +443,7 @@ class KeycloakService : UserManagementService {
 
     }
 
-    override fun deleteUser(principal: Principal?, userId: String) {
+    override fun deleteUser(userId: String) {
         initAdminClient().use { client ->
 
             val user = getKeycloakUser(client, userId)
@@ -539,29 +535,4 @@ class KeycloakService : UserManagementService {
         return password.joinToString("")
     }
 
-    private fun sendLoginRequest(username: String, password: String): JSONObject {
-        val executor = Executors.newSingleThreadExecutor()
-        val encodedUsername = URLEncoder.encode(username, "utf-8")
-        val encodedPassword = URLEncoder.encode(password, "utf-8")
-        val request = HttpRequest.newBuilder()
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .method(
-                "POST",
-                HttpRequest.BodyPublishers.ofString("client_id=ige-ng-frontend&grant_type=password&username=$encodedUsername&password=$encodedPassword")
-            )
-            .uri(URI.create("$keycloakUrl/realms/$keycloakRealm/protocol/openid-connect/token"))
-            .timeout(Duration.ofSeconds(5))
-            .build()
-        val http = HttpClient.newBuilder()
-            .apply {
-                if (keycloakProxyUrl != null) proxy(ProxySelector.of(InetSocketAddress(proxyHost, proxyPort)))
-            }
-            .connectTimeout(Duration.ofSeconds(10))
-            .followRedirects(HttpClient.Redirect.NORMAL)
-            .executor(executor)
-            .build()
-        val response = http.send(request, HttpResponse.BodyHandlers.ofString())
-        val json = JSONParser().parse(response.body()) as JSONObject
-        return json
-    }
 }

@@ -47,15 +47,15 @@ class KeycloakMockService : UserManagementService {
     @Autowired
     lateinit var config: DevelopmentProperties
 
-    override fun getUsersWithIgeRoles(principal: Principal): Set<User> {
+    override fun getUsersWithIgeRoles(): Set<User> {
         return config.logins?.mapIndexed { index, _ -> mapUser(index)}?.toSet() ?: emptySet()
     }
 
-    override fun getUsers(principal: Principal): Set<User> {
-        return getUsersWithIgeRoles(principal)
+    override fun getUsers(): Set<User> {
+        return getUsersWithIgeRoles()
     }
 
-    override fun getLatestLoginDate(client: Closeable, login: String): Date? {
+    override fun getLatestLoginDate(login: String): Date? {
         return Date()
     }
 
@@ -67,16 +67,16 @@ class KeycloakMockService : UserManagementService {
         return principal.name
     }
 
-    override fun getClient(principal: Principal?): Closeable {
+    override fun getClient(): Closeable {
         return DummyClient()
     }
 
-    override fun getUser(client: Closeable, login: String): User {
+    override fun getUser(login: String): User {
         val index = config.logins?.indexOf(login) ?: throw NotFoundException("Login not found $login")
         return mapUser(index)
     }
 
-    override fun getKeycloakUserWithUuid(client: Closeable, uuid: String): UserRepresentation {
+    override fun getKeycloakUserWithUuid(uuid: String): UserRepresentation {
         val index = config.logins?.indexOf(uuid) ?: throw NotFoundException("Login not found $uuid")
         return mapUserRepresentation(index)
     }
@@ -107,31 +107,31 @@ class KeycloakMockService : UserManagementService {
         return Principal { config.logins?.get(config.currentUser) ?: "unknown" }
     }
 
-    override fun userExists(principal: Principal, userId: String): Boolean {
+    override fun userExists(userId: String): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun createUser(principal: Principal, user: User): String {
+    override fun createUser(user: User): String {
         TODO("Not yet implemented")
     }
 
-    override fun requestPasswordChange(principal: Principal?, id: String) {
+    override fun requestPasswordChange( id: String) {
         TODO("Not yet implemented")
     }
 
-    override fun resetPassword(principal: Principal?, id: String): String {
+    override fun resetPassword( id: String): String {
         TODO("Not yet implemented")
     }
 
-    override fun removeRoles(principal: Principal?, userId: String, roles: List<String>) {
+    override fun removeRoles( userId: String, roles: List<String>) {
         TODO("Not yet implemented")
     }
 
-    override fun addRoles(principal: Principal?, userLogin: String, roles: List<String>) {
+    override fun addRoles( userLogin: String, roles: List<String>) {
         TODO("Not yet implemented")
     }
 
-    override fun deleteUser(principal: Principal?, userId: String) {
+    override fun deleteUser( userId: String) {
         TODO("Not yet implemented")
     }
 
@@ -139,7 +139,7 @@ class KeycloakMockService : UserManagementService {
         TODO("Not yet implemented")
     }
 
-    override fun updateUser(principal: Principal?, user: User) {
+    override fun updateUser( user: User) {
         // do nothing
         log.info("Mocked update user function")
     }

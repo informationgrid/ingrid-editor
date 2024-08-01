@@ -396,7 +396,7 @@ class DatasetsApiController(
         if (isSuperOrCatAdmin) {
             //  only show admins to other admins
             val admins =
-                catalogService.getAllCatalogUsers(principal, catalogId).filter { user -> user.role == "cat-admin" }
+                catalogService.getAllCatalogUsers(catalogId).filter { user -> user.role == "cat-admin" }
                     .toSet()
             // admins can always write
             canWriteUsers.addAll(admins)

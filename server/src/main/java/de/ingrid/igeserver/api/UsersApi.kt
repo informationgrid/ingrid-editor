@@ -151,7 +151,7 @@ interface UsersApi {
             description = "Returns the list of users who are Catalog-Admins for a specific Catalog"
         )]
     )
-    fun listCatAdmins(principal: Principal, @Parameter(description = "Id of the catalog.", required = true) @PathVariable("catalogId") catalogId: String,
+    fun listCatAdmins(@Parameter(description = "Id of the catalog.", required = true) @PathVariable("catalogId") catalogId: String,
     ): ResponseEntity<List<User>>
 
     @PutMapping(
