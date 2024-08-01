@@ -98,10 +98,13 @@ export class ConsolidateDialogComponent implements OnInit {
     this.isInspireIdentified = this.form.isInspireIdentified;
     this.inspireThemes = this.isInspireIdentified ? this.form.themes : [];
     this.inspireTopics = this.form.topicCategories;
+
     this.gemetKeywords = this.form.keywords.gemet;
     this.umthesKeywords = this.form.keywords.umthes;
     this.freeKeywords = this.form.keywords.free;
     this.keywords = [
+      ...this.inspireThemes,
+      ...this.inspireTopics,
       ...this.gemetKeywords,
       ...this.umthesKeywords,
       ...this.freeKeywords,
@@ -186,7 +189,6 @@ export class ConsolidateDialogComponent implements OnInit {
         if (res.thesaurus === "INSPIRE-Themen") {
           this.addInspireKeyword(res);
         } else if (res.thesaurus === "Gemet Schlagworte") {
-          // TODO: check if already in GEMET/Umthes
           if (!this.gemetKeywords.some((k) => k.label === res.label)) {
             res["status"] = "added";
             this.gemetKeywordsNew.push(res);
@@ -212,6 +214,7 @@ export class ConsolidateDialogComponent implements OnInit {
       res["status"] = "unchanged";
     }
     this.inspireThemesNew.push(res);
+
     const isoKey = KeywordAnalysis.inspireToIsoMapping[res.value.key];
     const inspireTopic = this.codelistQuery.getCodelistEntryByKey(
       "527",
@@ -250,7 +253,6 @@ export class ConsolidateDialogComponent implements OnInit {
         ...this.inspireThemesNew.map((k) => ({
           key: KeywordAnalysis.inspireToIsoMapping[k.value.key],
         })),
-        ...this.inspireThemes,
       ];
 
       this.documentService
