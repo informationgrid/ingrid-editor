@@ -75,6 +75,11 @@ data class DocumentInfo(
     val isAddress: Boolean
 )
 
+data class DeleteOptions(
+    val deletePermanently: Boolean? = null,
+    val force: Boolean? = null
+)
+
 @Service
 class DocumentService(
     var docRepo: DocumentRepository,
@@ -625,31 +630,33 @@ class DocumentService(
         }
     }
 
-    fun deleteDocument(principal: Principal, catalogId: String, id: Int, deletePermanently: Boolean? = false) {
+    fun deleteDocument(principal: Principal, catalogId: String, id: Int, options: DeleteOptions = DeleteOptions()) {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
-        val realDelete = deletePermanently ?: !generalProperties.markInsteadOfDelete
-        deleteRecursively(catalogId, id, filterContext, realDelete)
+//        val realDelete = options.deletePermanently ?: !generalProperties.markInsteadOfDelete
+        deleteRecursively(catalogId, id, filterContext, options)
     }
 
-    private fun deleteRecursively(catalogId: String, id: Int, filterContext: Context, realDelete: Boolean) {
+    private fun deleteRecursively(catalogId: String, id: Int, filterContext: Context, options: DeleteOptions) {
         // run pre-delete pipe(s)
         val docData = getDocumentFromCatalog(catalogId, id)
-//        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
-
-//        val data = getLatestDocumentVersion(wrapper, false)
         val docTypeName = docData.document.type
         val docType = getDocumentType(docTypeName, filterContext.profile)
 
         val preDeletePayload = PreDeletePayload(docType, catalogId, docData.document, docData.wrapper)
-        preDeletePipe.runFilters(preDeletePayload, filterContext)
+
+        // ignore validations to forcefully delete a document
+        if (options.force != true) {
+            preDeletePipe.runFilters(preDeletePayload, filterContext)
+        }
 
         // TODO: check if document is referenced by another one and handle
         //       it somehow
 
         findChildrenDocs(catalogId, id, isAddress(docData.wrapper)).hits.forEach {
-            deleteRecursively(catalogId, it.wrapper.id!!, filterContext, realDelete)
+            deleteRecursively(catalogId, it.wrapper.id!!, filterContext, options)
         }
 
+        val realDelete = options.deletePermanently ?: !generalProperties.markInsteadOfDelete
         if (realDelete) {
             // remove all document versions which have the same ID
             docRepo.deleteAllByCatalog_IdentifierAndUuid(catalogId, docData.document.uuid)
