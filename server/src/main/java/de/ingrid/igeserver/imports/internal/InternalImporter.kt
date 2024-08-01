@@ -57,8 +57,10 @@ class InternalImporter : IgeImporter {
         }
 
         return jacksonObjectMapper().createArrayNode().apply {
-            add(documents.get("published"))
-            add(documents.get("draft"))
+            add(jacksonObjectMapper().createArrayNode().apply {
+                add(documents.get("published"))
+                add(documents.get("draft"))
+            })
             if (additionalReferences.isNotEmpty()) addAll(additionalReferences)
         }
     }

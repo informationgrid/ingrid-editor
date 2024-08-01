@@ -1,201 +1,197 @@
-{
-  "title": "geodaten",
-  "_uuid": "3fce9549-eb69-43bc-9304-b3d0cde76394",
-  "_parent": null,
-  "_type": "InGridGeoDataset",
-  "isInspireIdentified": false,
-  "isAdVCompatible": false,
-  "isOpenData": false,
-  "description": "Beschreibung",
-  "alternateTitle": "",
-  "parentIdentifier": "",
-  "pointOfContact": [
-    {
-      "ref": {
-        "_uuid": "855a9c9e-5387-41e2-b0c2-dc043de9c22e",
-        "_type": "InGridOrganisationDoc",
-        "title": "Orga1",
-        "organization": "Orga1",
-        "contact": [
-          {
-            "type": {
-              "key": "3"
-            },
-            "connection": "fegeg@ege.fe"
-          }
-        ],
-        "positionName": "",
-        "hoursOfService": ""
-      },
-      "type": {
-        "key": "12"
-      }
-    },
-    {
-      "ref": {
-        "_uuid": "855a9c9e-5387-41e2-b0c2-dc043de9c22e",
-        "_type": "InGridOrganisationDoc",
-        "title": "Orga1",
-        "organization": "Orga1",
-        "contact": [
-          {
-            "type": {
-              "key": "3"
-            },
-            "connection": "fegeg@ege.fe"
-          }
-        ],
-        "positionName": "",
-        "hoursOfService": ""
-      },
-      "type": {
-        "key": "7"
-      }
-    }
-  ],
-  "graphicOverviews": [],
-  "advProductGroups": [],
-  "themes": [],
-  "openDataCategories": [],
-  "keywords": {
-    "free": [],
-    "geologicalKeywords": [{ "key": "1" }],
-    "internalKeywords": [{ "key": "2" }]
-  },
-  "spatial": {
-    "references": [
+[
+  {
+    "title": "geodaten",
+    "_uuid": "3fce9549-eb69-43bc-9304-b3d0cde76394",
+    "_parent": null,
+    "_type": "InGridGeoDataset",
+    "isInspireIdentified": false,
+    "isAdVCompatible": false,
+    "isOpenData": false,
+    "description": "Beschreibung",
+    "alternateTitle": "",
+    "parentIdentifier": "",
+    "pointOfContact": [
       {
-        "type": "free",
-        "title": "",
-        "value": {
-          "lat1": 49.510944,
-          "lon1": 9.712217,
-          "lat2": 51.822197,
-          "lon2": 13.841935
+        "ref": "855a9c9e-5387-41e2-b0c2-dc043de9c22e",
+        "type": {
+          "key": "12"
+        }
+      },
+      {
+        "ref": "855a9c9e-5387-41e2-b0c2-dc043de9c22e",
+        "type": {
+          "key": "7"
         }
       }
     ],
-    "spatialSystems": [
-      {
-        "key": "84"
-      }
-    ],
-    "description": ""
-  },
-  "temporal": {
-    "events": [
-      {
-        "referenceDate": "2024-04-01T22:00:00Z",
-        "referenceDateType": {
+    "graphicOverviews": [],
+    "advProductGroups": [],
+    "themes": [],
+    "openDataCategories": [],
+    "keywords": {
+      "free": [],
+      "geologicalKeywords": [
+        {
           "key": "1"
         }
-      }
-    ],
-    "resourceDateType": null,
-    "status": null,
-    "resourceDate": null,
-    "resourceDateTypeSince": null
-  },
-  "maintenanceInformation": {
-    "maintenanceAndUpdateFrequency": {
-      "key": null,
-      "value": ""
+      ],
+      "internalKeywords": [
+        {
+          "key": "2"
+        }
+      ]
     },
-    "userDefinedMaintenanceFrequency": {
-      "unit": {
+    "spatial": {
+      "references": [
+        {
+          "type": "free",
+          "title": "",
+          "value": {
+            "lat1": 49.510944,
+            "lon1": 9.712217,
+            "lat2": 51.822197,
+            "lon2": 13.841935
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "84"
+        }
+      ],
+      "description": ""
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2024-04-01T22:00:00Z",
+          "referenceDateType": {
+            "key": "1"
+          }
+        }
+      ],
+      "resourceDateType": null,
+      "status": null,
+      "resourceDate": null,
+      "resourceDateTypeSince": null
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": {
         "key": null,
         "value": ""
-      }
+      },
+      "userDefinedMaintenanceFrequency": {
+        "unit": {
+          "key": null,
+          "value": ""
+        }
+      },
+      "description": ""
     },
-    "description": ""
-  },
-  "extraInfo": {
-    "legalBasicsDescriptions": []
-  },
-  "resource": {
-    "purpose": "",
-    "specificUsage": "",
-    "accessConstraints": [],
-    "useConstraints": [
+    "extraInfo": {
+      "legalBasicsDescriptions": []
+    },
+    "resource": {
+      "purpose": "",
+      "specificUsage": "",
+      "accessConstraints": [],
+      "useConstraints": [
+        {
+          "title": {
+            "key": "19"
+          },
+          "source": "meine Quelle",
+          "note": "my comments to use constraints"
+        }
+      ],
+      "useLimitation": "",
+      "useConstraintsComments": "my comments to use constraints"
+    },
+    "distribution": {
+      "format": []
+    },
+    "digitalTransferOptions": [],
+    "orderInfo": "",
+    "references": [
       {
-        "title": {
-          "key": "19"
+        "type": {
+          "key": "5304"
         },
-        "source": "meine Quelle",
-        "note": "my comments to use constraints"
+        "title": "Meine Verweis",
+        "url": "http://verweis.de",
+        "explanation": ""
       }
     ],
-    "useLimitation": "",
-    "useConstraintsComments": "my comments to use constraints"
-  },
-  "distribution": {
-    "format": []
-  },
-  "digitalTransferOptions": [],
-  "orderInfo": "",
-  "references": [
-    {
-      "type": {
-        "key": "5304"
-      },
-      "title": "Meine Verweis",
-      "url": "http://verweis.de",
-      "explanation": ""
-    }
-  ],
-  "invekosKeywords": [],
-  "subType": {
-    "key": "5"
-  },
-  "metadata": {
-    "language": {
-      "key": "150"
+    "invekosKeywords": [],
+    "subType": {
+      "key": "5"
     },
-    "characterSet": null
-  },
-  "resolution": [],
-  "topicCategories": [
-    {
-      "key": "17"
-    }
-  ],
-  "spatialRepresentationType": [],
-  "lineage": {
-    "statement": "Grundlage"
-  },
-  "identifier": "https://registry.gdi-de.org/id/lfub/9e263e7c-588e-47f1-9dc9-2a7e3b8a2284",
-  "portrayalCatalogueInfo": {
-    "citation": []
-  },
-  "featureCatalogueDescription": {
-    "citation": [],
-    "featureTypes": []
-  },
-  "dataQualityInfo": {
+    "metadata": {
+      "language": {
+        "key": "150"
+      },
+      "characterSet": null
+    },
+    "resolution": [],
+    "topicCategories": [
+      {
+        "key": "17"
+      }
+    ],
+    "spatialRepresentationType": [],
     "lineage": {
-      "source": {
-        "descriptions": [],
-        "processStep": {
-          "description": []
+      "statement": "Grundlage"
+    },
+    "identifier": "https://registry.gdi-de.org/id/lfub/9e263e7c-588e-47f1-9dc9-2a7e3b8a2284",
+    "portrayalCatalogueInfo": {
+      "citation": []
+    },
+    "featureCatalogueDescription": {
+      "citation": [],
+      "featureTypes": []
+    },
+    "dataQualityInfo": {
+      "lineage": {
+        "source": {
+          "descriptions": [],
+          "processStep": {
+            "description": []
+          }
         }
       }
-    }
+    },
+    "dataQuality": {
+      "completenessOmission": {}
+    },
+    "absoluteExternalPositionalAccuracy": {
+      "vertical": null,
+      "horizontal": null,
+      "griddedDataPositionalAccuracy": null
+    },
+    "qualities": [],
+    "dataset": {
+      "languages": ["150"]
+    },
+    "isInspireConform": false,
+    "vectorSpatialRepresentation": [],
+    "fees": "It's for free!",
+    "supplementalInformation": "internal comments",
+    "dataSetURI": "geodatalink info"
   },
-  "dataQuality": {
-    "completenessOmission": {}
-  },
-  "absoluteExternalPositionalAccuracy": {
-    "vertical": null,
-    "horizontal": null,
-    "griddedDataPositionalAccuracy": null
-  },
-  "qualities": [],
-  "dataset": {
-    "languages": ["150"]
-  },
-  "isInspireConform": false,
-  "vectorSpatialRepresentation": [],
-  "fees": "It's for free!",
-  "supplementalInformation": "internal comments",
-  "dataSetURI": "geodatalink info"
-}
+  {
+    "_uuid": "855a9c9e-5387-41e2-b0c2-dc043de9c22e",
+    "_type": "InGridOrganisationDoc",
+    "title": "Orga1",
+    "organization": "Orga1",
+    "contact": [
+      {
+        "type": {
+          "key": "3"
+        },
+        "connection": "fegeg@ege.fe"
+      }
+    ],
+    "positionName": "",
+    "hoursOfService": ""
+  }
+]
