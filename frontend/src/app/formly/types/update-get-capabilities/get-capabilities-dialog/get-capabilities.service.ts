@@ -381,7 +381,7 @@ export class GetCapabilitiesService {
       ),
     );
     const newAddress = await lastValueFrom(result);
-    return [{ ref: newAddress.documentWithMetadata, type: { key: "1" } }];
+    return [{ ref: newAddress.metadata.uuid, type: { key: "1" } }];
   }
 
   private mapTimeSpan(value: TimeReference): any {

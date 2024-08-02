@@ -81,21 +81,25 @@ class ImportService(
                     val progress = ((index + 1f) / totalFiles) * 100
                     notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
                     if (fileContent is ArrayNode) {
-                        listOfNotNull(
-                            if (!fileContent[0].isNull) analyzeDoc(
-                                catalogId,
-                                fileContent[0],
-                                forcePublish = true,
-                                isLatest = false
-                            ) else null,
-                            analyzeDoc(
-                                catalogId,
-                                fileContent[1],
-                                forcePublish = false,
-                                isLatest = true,
-                                isDraftAndPublished = !fileContent[0].isNull
+                        if (fileContent[0] is ArrayNode) {
+                            listOfNotNull(
+                                if (!fileContent[0].isNull) analyzeDoc(
+                                    catalogId,
+                                    fileContent[0],
+                                    forcePublish = true,
+                                    isLatest = false
+                                ) else null,
+                                analyzeDoc(
+                                    catalogId,
+                                    fileContent[1],
+                                    forcePublish = false,
+                                    isLatest = true,
+                                    isDraftAndPublished = !fileContent[0].isNull
+                                )
                             )
-                        )
+                        } else {
+                            listOf(analyzeDoc(catalogId, fileContent[0]))
+                        }
                     } else {
                         listOf(analyzeDoc(catalogId, fileContent))
                     }
