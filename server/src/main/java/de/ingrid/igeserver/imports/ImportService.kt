@@ -141,23 +141,23 @@ class ImportService(
         return result.flatMap { doc ->
             // multiple versions
             if (doc is ArrayNode) {
-                val published = if (!result[0].isNull) {
+                val published = if (!doc[0].isNull) {
                     analyzeDoc(
                         catalogId,
-                        result[0],
+                        doc[0],
                         forcePublish = true,
                         isLatest = false
                     )
 
                 } else null
 
-                val draft = if (!result[1].isNull) {
+                val draft = if (!doc[1].isNull) {
                     analyzeDoc(
                         catalogId,
-                        result[1],
+                        doc[1],
                         forcePublish = false,
                         isLatest = true,
-                        isDraftAndPublished = !result[0].isNull
+                        isDraftAndPublished = !doc[0].isNull
                     )
                 } else null
 
