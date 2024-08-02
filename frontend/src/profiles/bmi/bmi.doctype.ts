@@ -276,5 +276,4 @@ export class BmiDoctype extends BaseDoctype {
         }),
       ]),
     ];
-
 }

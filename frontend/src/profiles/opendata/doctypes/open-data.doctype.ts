@@ -277,5 +277,4 @@ export class OpenDataDoctype extends BaseDoctype {
         }),
       ]),
     ];
-
 }

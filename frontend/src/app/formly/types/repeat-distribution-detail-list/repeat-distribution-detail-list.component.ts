@@ -58,7 +58,7 @@ interface RepeatDistributionDetailListProps extends FormlyFieldProps {
   enableFileUploadOverride?: boolean;
   enableFileUploadReuse?: boolean;
   enableFileUploadRename?: boolean;
-  jsonTemplate?: object,
+  jsonTemplate?: object;
   infoText: string;
   backendUrl: string;
   fields: FormlyFieldConfig[];
@@ -171,7 +171,7 @@ export class RepeatDistributionDetailListComponent
       value: file.file,
       uri: file.uri,
       lastModified: new Date(),
-      sizeInBytes: file.sizeInBytes
+      sizeInBytes: file.sizeInBytes,
     };
     this.replaceItem(null, newRow);
   }

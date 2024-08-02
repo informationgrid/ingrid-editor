@@ -90,9 +90,9 @@ export interface RepeatDetailListOptions extends Options {
   infoText?: string;
   supportUpload?: boolean;
   supportLink?: boolean;
-  enableFileUploadOverride?: boolean,
-  enableFileUploadReuse?: boolean,
-  enableFileUploadRename?: boolean,
+  enableFileUploadOverride?: boolean;
+  enableFileUploadReuse?: boolean;
+  enableFileUploadRename?: boolean;
   jsonTemplate?: object;
 }
 
