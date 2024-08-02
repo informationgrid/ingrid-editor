@@ -80,11 +80,19 @@ class ExportService(val exporterFactory: ExporterFactory) {
                         listOf(Pair(ref.uuid, it))
                     } ?: emptyList()
                 } .toSet().toList()
-                return ExportResult(
-                    zipToFile(refData + Pair(doc.wrapper.uuid, data), exporter.typeInfo.fileExtension),
-                    "export.zip",
-                    MediaType.valueOf("application/zip")
-                )
+                return if (options.addressReferences) {
+                    ExportResult(
+                        zipToFile(refData + Pair(doc.wrapper.uuid, data), exporter.typeInfo.fileExtension),
+                        "export.zip",
+                        MediaType.valueOf("application/zip")
+                    )
+                } else {
+                    ExportResult(
+                        data.toByteArray(),
+                        doc.wrapper.uuid + "." + exporter.typeInfo.fileExtension,
+                        MediaType.valueOf(exporter.typeInfo.dataType)
+                    )
+                }
             }
 
             val fileName = "${doc.wrapper.uuid}.${exporter.typeInfo.fileExtension}"
