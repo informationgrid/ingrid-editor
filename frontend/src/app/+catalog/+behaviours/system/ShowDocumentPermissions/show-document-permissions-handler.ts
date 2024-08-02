@@ -39,7 +39,6 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
   description =
     "Administratoren können die Zugriffsberechtigungen für Dokumente und Adressen anzeigen";
   defaultActive = true;
-  isPrivileged: boolean;
 
   constructor(
     private docEvents: DocEventsService,
@@ -53,11 +52,6 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
     private router: Router,
   ) {
     super();
-
-    let role = configService.$userInfo.getValue().role;
-    this.isPrivileged =
-      role === "ige-super-admin" || role === "cat-admin" || role === "md-admin";
-
     inject(PluginService).registerPlugin(this);
   }
 
@@ -71,7 +65,7 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
 
   register() {
     super.register();
-    if (this.isPrivileged) {
+    if (this.configService.hasMdAdminRights()) {
       const onEvent = this.docEvents
         .onEvent("SHOW_DOCUMENT_PERMISSIONS")
         .subscribe((event) => {

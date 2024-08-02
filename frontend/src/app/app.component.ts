@@ -76,20 +76,6 @@ export class AppComponent implements OnInit {
     //       Catalog Codelists should be loaded initially into the correct store!
     codelistService.fetchCatalogCodelists();
 
-    // TODO: remove profile specific logic here
-    const profile =
-      this.configService.$userInfo.getValue().currentCatalog?.type;
-    if (profile == "mcloud") {
-      this.favIcon.href = "/assets/profiles/mcloud/assets/icons/favicon.ico";
-      titleService.setTitle("mCLOUD Editor");
-    } else if (profile == "uvp") {
-      this.favIcon.href = "/assets/profiles/uvp/assets/icons/favicon.ico";
-      titleService.setTitle("UVP Editor");
-    } else if (profile == "bmi") {
-      //this.favIcon.href = "/assets/profiles/bmi/assets/icons/favicon.ico";
-      titleService.setTitle("Open Data Editor Bund");
-    }
-
     this.showTestBadge =
       this.configService.getConfiguration().featureFlags?.showTestBadge;
     if (this.showTestBadge)
@@ -164,6 +150,7 @@ export class AppComponent implements OnInit {
           newTitle = pageTitle + " | " + mainTitle;
         }
         this.titleService.setTitle(newTitle);
+        this.favIcon.href = this.transloco.translate("pageTitle.favIcon");
       }
     });
   }

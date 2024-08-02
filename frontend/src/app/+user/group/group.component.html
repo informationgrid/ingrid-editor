@@ -44,8 +44,6 @@
         </div>
     </div>
     <as-split (dragEnd)="this.userManagementService.rememberTableWidth($event)">
-        <!-- TODO: restrict role permission to groups! A simple user must not change his own role to admin!!! -->
-
         <!-- GROUP LIST -->
         <as-split-area
             [size]="tableWidth"

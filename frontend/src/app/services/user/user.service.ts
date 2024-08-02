@@ -62,7 +62,7 @@ export class UserService {
     private keycloakService: AuthenticationFactory,
     private groupQuery: GroupQuery,
   ) {
-    if (!this.configService.isAdmin()) {
+    if (!this.configService.hasCatAdminRights()) {
       this.availableRoles = this.availableRoles.filter(
         (o) => o.value != "cat-admin",
       );

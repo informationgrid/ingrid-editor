@@ -140,7 +140,7 @@ describe("TreeComponent", () => {
     // by default return no children when requested (can be overridden)
     db.getChildren.and.returnValue(of([]));
     config = spectator.inject(ConfigService, true);
-    config.isAdmin.and.returnValue(true);
+    config.hasCatAdminRights.and.returnValue(true);
   });
 
   it("should create component", () => {

@@ -56,6 +56,8 @@
     "limitHelpText": "Sie können nur einen Raumbezug anlegen. Ändern oder Löschen des Eintrags führen Sie über das rechte 3-Punkte-Icon aus."
   },
   "pageTitle": {
+    "default": "UVP Editor",
+    "favIcon": "assets/profiles/uvp/assets/icons/favicon.ico",
     "reports": {
       "uvp-monitoring": "Monitoring",
       "activity-report": "Aktivitätsbericht"

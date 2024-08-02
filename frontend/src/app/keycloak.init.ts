@@ -41,7 +41,7 @@ export function initializeKeycloakAndGetUserInfo(
 
 export async function getUserInfo(configService: ConfigService) {
   let userInfo = await configService.getCurrentUserInfo();
-  if (!configService.isSuperAdmin()) {
+  if (!configService.hasSuperAdminRights()) {
     // check if user has any assigned catalog
     if (userInfo.assignedCatalogs.length === 0) {
       throw new IgeError(
