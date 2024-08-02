@@ -81,30 +81,34 @@ class ImportService(
                     val progress = ((index + 1f) / totalFiles) * 100
                     notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
                     if (fileContent is ArrayNode) {
+                        // if another array is inside it should be internal format with published and draft version
                         if (fileContent[0] is ArrayNode) {
+                            val publishedVersion = fileContent[0][0]
+                            val draftVersion = fileContent[0][1]
                             listOfNotNull(
-                                if (!fileContent[0].isNull) analyzeDoc(
+                                if (!publishedVersion.isNull) analyzeDoc(
                                     catalogId,
-                                    fileContent[0],
+                                    publishedVersion,
                                     forcePublish = true,
                                     isLatest = false
                                 ) else null,
-                                analyzeDoc(
+                                if (!draftVersion.isNull) analyzeDoc(
                                     catalogId,
-                                    fileContent[1],
+                                    draftVersion,
                                     forcePublish = false,
                                     isLatest = true,
-                                    isDraftAndPublished = !fileContent[0].isNull
-                                )
+                                    isDraftAndPublished = !publishedVersion.isNull
+                                ) else null
                             )
                         } else {
-                            listOf(analyzeDoc(catalogId, fileContent[0]))
+                            fileContent.map { analyzeDoc(catalogId, it) }
                         }
                     } else {
                         listOf(analyzeDoc(catalogId, fileContent))
                     }
                 }
-                .toList().let { prepareForImport(importers, it) }
+                .distinctBy { it.document.uuid }
+                .let { prepareForImport(importers, it) }
         }
 
         val fileContent = file.readText(Charsets.UTF_8)

@@ -364,9 +364,7 @@ export class GetCapabilitiesService {
     };
 
     if (value.exists) {
-      // TODO AW: when addresses are only stored and loaded as references then we only need to set the uuid here as ref
-      address._uuid = value.uuid;
-      return [{ ref: address, type: { key: "1" } }];
+      return [{ ref: value.uuid, type: { key: "1" } }];
     }
 
     const result = this.documentService.save(

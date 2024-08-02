@@ -36,8 +36,9 @@ class Migrate110 {
             val addressRefs = mutableListOf<JsonNode>()
 
             listOf("draft", "published").forEach { type ->
-                documents.get(type)?.let { published ->
-                    val addresses = (published.get("addresses") as ArrayNode?)?.map {
+                documents.get(type)?.let { docVersion ->
+                    removeMetadata(docVersion)
+                    val addresses = (docVersion.get("addresses") as ArrayNode?)?.map {
                         val uuid = it.getString("ref._uuid")
                         val ref = it.get("ref")
                         (it as ObjectNode).put("ref", uuid)
@@ -45,11 +46,25 @@ class Migrate110 {
                     }
                     addresses
                         ?.filter { address -> addressRefs.none { it.getString("_uuid") == address.getString("_uuid") } }
+                        ?.map { removeMetadata(it) }
                         ?.let { addressRefs.addAll(it) }
 
                 }
             }
             return Migrate110Response(documents, addressRefs)
+        }
+
+        private fun removeMetadata(it: JsonNode?): JsonNode {
+            it as ObjectNode
+            it.remove("_created")
+            it.remove("_modified")
+            it.remove("_contentModified")
+            it.remove("_createdBy")
+            it.remove("_modifiedBy")
+            it.remove("_contentModifiedBy")
+            it.remove("_id")
+            it.remove("_tags")
+            return it
         }
     }
 }
