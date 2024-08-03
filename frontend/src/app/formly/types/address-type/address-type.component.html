@@ -12,11 +12,7 @@
         aria-description="Liste der gewählten Adressen"
         role="list"
     >
-        @for (
-            address of resolvedAddresses();
-            track address.address?.metadata?.uuid;
-            let i = $index
-        ) {
+        @for (address of resolvedAddresses(); track address; let i = $index) {
             <div
                 class="address-card-wrapper"
                 style="max-width: 50%"
