@@ -237,9 +237,9 @@ class ImportService(
 
             override fun compare(a: DocumentAnalysis, b: DocumentAnalysis): Int {
                 return when {
-                    // if other document is in reference list of first document, then it must be listed before
-                    a.references.any { it.document.uuid == b.document.uuid } -> 1
-                    b.references.any { it.document.uuid == a.document.uuid } -> -1
+                    // addresses should be listed first
+                    a.isAddress && !b.isAddress -> -1
+                    b.isAddress && !a.isAddress -> 1
                     else -> 0
                 }
             }

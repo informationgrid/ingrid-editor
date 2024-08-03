@@ -63,8 +63,8 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
         json: ObjectNode,
         payload: PrePublishPayload
     ): String {
-        // TODO AW: remove after separation of metadata is complete (also check import with publication!)
-        var extraFields = ""","title": "${JsonEscape.escapeJson(payload.document.title)}""""
+        var extraFields = if (json.isEmpty) "" else ","
+        extraFields += """"title": "${JsonEscape.escapeJson(payload.document.title)}""""
         if (!json.has("_type")) {
             extraFields += ""","_type": "${JsonEscape.escapeJson(payload.document.type)}""""
         }
