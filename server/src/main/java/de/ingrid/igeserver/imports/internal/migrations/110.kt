@@ -32,13 +32,13 @@ data class Migrate110Response(
 class Migrate110 {
 
     companion object {
-        fun migrate(documents: JsonNode): Migrate110Response {
+        fun migrate(documents: JsonNode, profile: String): Migrate110Response {
             val addressRefs = mutableListOf<JsonNode>()
 
             listOf("draft", "published").forEach { type ->
                 documents.get(type)?.let { docVersion ->
                     removeMetadata(docVersion)
-                    val addresses = (docVersion.get("addresses") as ArrayNode?)?.map {
+                    val addresses = getAddresses(docVersion, profile)?.map {
                         val uuid = it.getString("ref._uuid")
                         val ref = it.get("ref")
                         (it as ObjectNode).put("ref", uuid)
@@ -47,11 +47,19 @@ class Migrate110 {
                     addresses
                         ?.filter { address -> addressRefs.none { it.getString("_uuid") == address.getString("_uuid") } }
                         ?.map { removeMetadata(it) }
+                        ?.distinctBy { it.getString("_uuid") }
                         ?.let { addressRefs.addAll(it) }
 
                 }
             }
             return Migrate110Response(documents, addressRefs)
+        }
+
+        private fun getAddresses(document: JsonNode, profile: String): ArrayNode? {
+            return when (profile) {
+                "mcloud" -> (document.get("addresses") as ArrayNode?)
+                else -> (document.get("pointOfContact") as ArrayNode?)
+            }
         }
 
         private fun removeMetadata(it: JsonNode?): JsonNode {

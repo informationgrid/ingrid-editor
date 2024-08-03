@@ -28,6 +28,7 @@ import de.ingrid.igeserver.imports.internal.migrations.Migrate001
 import de.ingrid.igeserver.imports.internal.migrations.Migrate002
 import de.ingrid.igeserver.imports.internal.migrations.Migrate110
 import de.ingrid.igeserver.services.MapperService
+import de.ingrid.igeserver.utils.getString
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
@@ -39,7 +40,8 @@ class InternalImporter : IgeImporter {
     override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
         val json = mapperService.getJsonNode((data as String))
         var additionalReferences = emptyList<JsonNode>()
-        var version = json.get("_version").asText()
+        var version = json.getString("_version")
+        val profile = json.getString("_profile")!!
 
         var documents = json.get("resources")
         if (version == "0.0.1") {
@@ -51,7 +53,7 @@ class InternalImporter : IgeImporter {
             version = "1.0.0"
         }
         if (version == "1.0.0") {
-            val response = Migrate110.migrate(documents)
+            val response = Migrate110.migrate(documents, profile)
             documents = response.documents
             additionalReferences = response.references
         }
