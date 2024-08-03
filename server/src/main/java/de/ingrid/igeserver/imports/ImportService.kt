@@ -37,11 +37,9 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.InputStream
-import java.nio.charset.Charset
 import java.util.function.BiConsumer
 import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
+import java.util.zip.ZipFile
 
 @Service
 class ImportService(
@@ -188,17 +186,17 @@ class ImportService(
             analysis.filter { it.isAddress }.size,
 //            analysis.flatMap { it.references.filter { it.isAddress }.map { it.document.uuid } }.distinct().size,
 
-            analysis.filter { it.exists && !it.isAddress}
+            analysis.filter { it.exists && !it.isAddress }
                 .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) },
             analysis.filter { it.exists && it.isAddress }
                 .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) },
-/*
-            analysis.flatMap {
-                it.references
-                    .filter { it.exists && it.isAddress }
-                    .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) }
-            }.distinctBy { it.uuid }
-*/
+            /*
+                        analysis.flatMap {
+                            it.references
+                                .filter { it.exists && it.isAddress }
+                                .map { DatasetInfo(it.document.title ?: "???", it.document.type, it.document.uuid) }
+                        }.distinctBy { it.uuid }
+            */
         )
 
     }
@@ -251,10 +249,8 @@ class ImportService(
         val importers = mutableSetOf<String>()
         val addressMap = mutableMapOf<String, String>()
 
-        extractZip(file.inputStream()) { entry, os ->
+        extractZip(file) { entry, os ->
             run {
-                // ignore resource fork files if zipped on MacOS
-                entry.name.contains("__MACOSX").takeIf { it }?.let { return@run }
                 val type = when {
                     entry.name.endsWith(".json") -> ContentType.APPLICATION_JSON.mimeType
                     entry.name.endsWith(".xml") -> ContentType.APPLICATION_XML.mimeType
@@ -299,19 +295,26 @@ class ImportService(
         return factory.getImporterInfos()
     }
 
-    private fun extractZip(file: InputStream, consumerFunction: BiConsumer<ZipEntry, ByteArrayOutputStream>) {
-        ZipInputStream(file, Charset.forName("CP437")).use { zip ->
-            var entry: ZipEntry?
-            while (zip.nextEntry.also { entry = it } != null) {
-                val outStream = ByteArrayOutputStream()
-                val buffer = ByteArray(1024)
-                var length: Int
-                while (zip.read(buffer).also { length = it } != -1) {
-                    outStream.write(buffer, 0, length)
-                }
-                consumerFunction.accept(entry!!, outStream)
+    private fun extractZip(file: File, consumerFunction: BiConsumer<ZipEntry, ByteArrayOutputStream>) {
+        val zipFile = ZipFile(file, Charsets.UTF_8)
+        val entries = zipFile.entries()
+
+        while (entries.hasMoreElements()) {
+            val entry = entries.nextElement() as ZipEntry
+
+            // Ignore macOS metadata files and directories
+            if (entry.name.startsWith("__MACOSX/") || entry.name.startsWith("._") || entry.isDirectory) {
+                continue
             }
 
+            val outputStream = ByteArrayOutputStream()
+            zipFile.getInputStream(entry).use { input ->
+                outputStream.use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            consumerFunction.accept(entry, outputStream)
         }
     }
 
@@ -442,7 +445,8 @@ data class DocumentAnalysis(
     val isAddress: Boolean,
     val exists: Boolean,
     val deleted: Boolean,
-    /** @Deprecated */ var references: List<DocumentAnalysis> = emptyList(),
+    /** @Deprecated */
+    var references: List<DocumentAnalysis> = emptyList(),
     val forcePublish: Boolean = false,
     var parent: Int? = null
 )
