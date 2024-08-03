@@ -244,8 +244,8 @@ export class RepeatListComponent
   }
 
   addToList(option: SelectOptionUi) {
+    // prevent keyboard action on focused select box to automatically add next item to list
     if (this.selector && !this.selector.panelOpen) {
-      // this.inputControl.setValue("");
       setTimeout(() => this.selector.open());
       return;
     }
@@ -430,12 +430,12 @@ export class RepeatListComponent
       return;
     }
 
-    this.addToList(option);
+    /*this.addToList(option);
     if (this.props.multiSelect || $event.ctrlKey) {
       // don't close the selection panel for multi select or ctrl key selection
     } else {
       this.selector.close();
-    }
+    }*/
   }
 
   async addFreeEntry(value: string) {
