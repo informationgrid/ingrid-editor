@@ -115,7 +115,7 @@ export abstract class SaveBase extends Plugin {
     if (!isJsonSchemaError) throw error;
 
     const igeError = new IgeError(
-      "Es trat ein Fehler bei der Validierung auf.",
+      "Es trat ein Fehler bei der JSON-Schema Validierung auf.",
     );
 
     igeError.detail = error?.error?.data?.error
