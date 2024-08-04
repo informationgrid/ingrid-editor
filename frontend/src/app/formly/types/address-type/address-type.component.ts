@@ -333,10 +333,19 @@ export class AddressTypeComponent
       const oneNotPublished = this.resolvedAddresses().some(
         (address) => address.address?.metadata?.state !== "P",
       );
-      return oneNotPublished
+
+      const stillLoading = this.resolvedAddresses().some(
+        (address) =>
+          address.address === null &&
+          address.type === null &&
+          address.error === null,
+      );
+      return oneNotPublished || stillLoading
         ? {
             addressesPublished: {
-              message: "Alle Adressen müssen veröffentlicht sein",
+              message: stillLoading
+                ? "Bitte warten Sie bis die Adressreferenzen geladen sind"
+                : "Alle Adressen müssen veröffentlicht sein",
             },
           }
         : null;
