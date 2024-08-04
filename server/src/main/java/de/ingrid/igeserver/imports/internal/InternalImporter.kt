@@ -21,6 +21,7 @@ package de.ingrid.igeserver.imports.internal
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
@@ -41,7 +42,6 @@ class InternalImporter : IgeImporter {
         val json = mapperService.getJsonNode((data as String))
         var additionalReferences = emptyList<JsonNode>()
         var version = json.getString("_version")
-        val profile = json.getString("_profile")!!
 
         var documents = json.get("resources")
         if (version == "0.0.1") {
@@ -51,7 +51,10 @@ class InternalImporter : IgeImporter {
         if (version == "0.0.2") {
             documents = Migrate002.migrate(documents as ArrayNode)
             version = "1.0.0"
+            (json as ObjectNode).put("_profile", "mcloud")
+
         }
+        val profile = json.getString("_profile")!!
         if (version == "1.0.0") {
             val response = Migrate110.migrate(documents, profile)
             documents = response.documents

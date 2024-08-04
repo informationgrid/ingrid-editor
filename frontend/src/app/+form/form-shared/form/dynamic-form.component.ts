@@ -280,6 +280,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // reset dirty flag after save
     this.docEvents.afterSave$(this.address).subscribe((data) => {
       this.formStateService.updateMetadata(data.metadata);
+      // TODO AW: do not update form data after save, since metadata is enough
       this.updateFormWithData(data);
     });
 
