@@ -1454,10 +1454,16 @@ export abstract class IngridShared extends BaseDoctype {
               "props.required": (field: FormlyFieldConfig) => {
                 return !field.form.value?.uuidRef;
               },
+              "props.disabled": (field: FormlyFieldConfig) => {
+                return !!field.form.value?.uuidRef;
+              },
+              "props.label": (field: FormlyFieldConfig) => {
+                return field.props.disabled ? "URL (nur bei leerem Datensatzverweis)" : "URL"
+              }
             },
             validation: {
               messages: {
-                required: "URL oder Datensatzverweis muss ausgefüllt sein",
+                required: "Entweder URL oder Datensatzverweis muss ausgefüllt sein",
               },
             },
           }),
@@ -1474,6 +1480,9 @@ export abstract class IngridShared extends BaseDoctype {
               hasInlineContextHelp: true,
               expressions: {
                 "props.required": 'field.form.value?.type?.key === "9990"', // Datendownload
+                "props.disabled": (field: FormlyFieldConfig) => {
+                  return !!field.form.value?.uuidRef;
+                },
               },
             },
           ),
@@ -1488,10 +1497,16 @@ export abstract class IngridShared extends BaseDoctype {
           "props.required": (field: FormlyFieldConfig) => {
             return !field.form.value?.url;
           },
+          "props.disabled": (field: FormlyFieldConfig) => {
+            return !!field.form.value?.url;
+          },
+          "props.label": (field: FormlyFieldConfig) => {
+            return field.props.disabled ? "Datensatzverweis (nur bei leerer URL)" : "Datensatzverweis"
+          }
         },
         validation: {
           messages: {
-            required: "URL oder Datensatzverweis muss ausgefüllt sein",
+            required: "Entweder URL oder Datensatzverweis muss ausgefüllt sein",
           },
         },
         asyncValidators: {
