@@ -87,6 +87,7 @@ as-split-area {
   padding-top: 7px;
   display: flex;
   align-items: center;
+  gap: 4px;
 
   .document-type {
     display: flex;
@@ -110,10 +111,6 @@ as-split-area {
 
   button {
     background: $ige-background;
-  }
-
-  > button:nth-of-type(1) {
-    margin-right: 4px;
   }
 }
 

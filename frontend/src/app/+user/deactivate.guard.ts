@@ -126,7 +126,7 @@ export class DeactivateGuard {
       console.log(action);
       type == "group"
         ? (<GroupComponent>component).discardGroup(currentObject)
-        : (<UserComponent>component).discardUser(currentObject);
+        : (<UserComponent>component).discardUser();
     } else {
       // do nothing
     }

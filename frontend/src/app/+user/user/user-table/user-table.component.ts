@@ -82,23 +82,7 @@ export class UserTableComponent
   @Input() tableType: "default" | "simple" | "permission" = "default";
 
   users = input<User[]>(null);
-
-  /*@Input()
-  set users(val: User[]) {
-    if (val) this.isLoading = false;
-    this.dataSource.data = val ?? [];
-
-    // select previously selected group
-    const selectedUser = this.selection.selected[0];
-    if (selectedUser) this.setSelectionToItem(selectedUser?.login, "login");
-  }*/
-
-  @Input()
-  set query(filter: string) {
-    this.dataSource.filter = filter;
-  }
-
-  // if the table data can be exported
+  query = input<string>("");
   canExport = input<boolean>(true);
   defaultSort = input<string>();
   selectedUser = input<User>(null);
@@ -166,6 +150,10 @@ export class UserTableComponent
       },
       { allowSignalWrites: true },
     );
+
+    effect(() => {
+      this.dataSource.filter = this.query();
+    });
   }
 
   ngOnInit() {

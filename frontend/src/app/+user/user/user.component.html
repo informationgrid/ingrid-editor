@@ -78,6 +78,9 @@
                                 form.get("lastName")?.value || "Kein Titel"
                         }}</span>
                     </span>
+                    @if (isLoading()) {
+                        <mat-spinner diameter="24"></mat-spinner>
+                    }
                     <button
                         data-cy="showMoreData"
                         mat-icon-button

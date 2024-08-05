@@ -66,7 +66,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   loadedUser = signal<User>(null);
   showMore = signal<boolean>(false);
   showLoadingUsers = signal<boolean>(false);
-  isLoading = false;
+  isLoading = signal<boolean>(false);
   formlyFieldConfig: FormlyFieldConfig[];
   // model = signal<User>(null);
   tableWidth: number;
@@ -93,10 +93,16 @@ export class UserComponent implements OnInit, AfterViewInit {
     });
     this.tableWidth = this.session.getValue().ui.userTableWidth;
 
-    effect(() => {
-      const user = this.userService.selectedUser$();
-      if (user && this.loadedUser()?.id !== user.id) this.loadUser(user.id);
-    });
+    effect(
+      () => {
+        const user = this.userService.selectedUser$();
+        // set user in case we come from another page
+        // TODO: should be done with URL-parameter to load the user like it's done on document page
+        this.explicitUser.set(user);
+        if (user && this.loadedUser()?.id !== user.id) this.loadUser(user.id);
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   ngAfterViewInit(): void {
@@ -197,7 +203,7 @@ export class UserComponent implements OnInit, AfterViewInit {
       });
   }
 
-  discardUser(user?: User): void {
+  discardUser(): void {
     this.showLoading();
     this.form.markAsPristine();
     this.updateUsers();
@@ -267,12 +273,12 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   private showLoading() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.form.disable();
   }
 
   private hideLoading() {
     this.enableForm();
-    this.isLoading = false;
+    this.isLoading.set(false);
   }
 }
