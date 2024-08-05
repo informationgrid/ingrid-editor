@@ -49,7 +49,6 @@ import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
-import java.io.Closeable
 import java.io.InputStream
 import java.net.URI
 import java.security.Principal
@@ -67,14 +66,10 @@ class KeycloakService : UserManagementService {
         const val EMAIL_VALID_IN_SECONDS = 172800
     }
 
-    class KeycloakCloseableClient(val client: Keycloak, private val realm: String) : Closeable {
+    class KeycloakWithRealm(val client: Keycloak, private val realm: String) {
 
         fun realm(): RealmResource {
             return client.realm(realm)
-        }
-
-        override fun close() {
-//            client.close()
         }
 
     }
@@ -103,9 +98,7 @@ class KeycloakService : UserManagementService {
 
     private var proxyPort = 80
 
-    private var restEasyClient: ResteasyClient? = null
-
-    private var keycloakClient: Keycloak? = null
+    private lateinit var keycloakClient: KeycloakWithRealm
 
     @PostConstruct
     fun init() {
@@ -116,17 +109,15 @@ class KeycloakService : UserManagementService {
                 proxyPort = port
             }
         }
-        this.restEasyClient = buildResteasyClient()
+        initAdminClient()
     }
 
     override fun getUsersWithIgeRoles(): Set<User> {
         try {
-            initAdminClient().use {
-                val realm = it.realm()
-                val usersWithRole = getUsersWithRole(realm).toSet()
-                val userInGroupsWithRole = getUsersInGroupsWithRole(realm).toSet()
-                return usersWithRole + userInGroupsWithRole
-            }
+            val realm = keycloakClient.realm()
+            val usersWithRole = getUsersWithRole(realm).toSet()
+            val userInGroupsWithRole = getUsersInGroupsWithRole(realm).toSet()
+            return usersWithRole + userInGroupsWithRole
         } catch (e: Exception) {
             throw ServerException.withReason("Failed to retrieve users.", e)
         }
@@ -135,11 +126,9 @@ class KeycloakService : UserManagementService {
     override fun getUsers(): Set<User> {
 
         try {
-            initAdminClient().use {
-                return it.realm().users().list()
-                    .map { user -> mapUser(user) }
-                    .toSet()
-            }
+            return keycloakClient.realm().users().list()
+                .map { user -> mapUser(user) }
+                .toSet()
         } catch (e: Exception) {
             throw ServerException.withReason("Failed to retrieve users.", e)
         }
@@ -181,21 +170,19 @@ class KeycloakService : UserManagementService {
     }
 
 
-    override fun initAdminClient(): KeycloakCloseableClient {
-        if (keycloakClient == null) {
-            val client: Keycloak = KeycloakBuilder.builder()
-                .serverUrl(keycloakUrl)
-                .realm(keycloakRealm)
-                .clientId(keycloakClientId)
-                .grantType(OAuth2Constants.PASSWORD)
-                .username(backendUser)
-                .password(backendUserPassword)
-                .resteasyClient(restEasyClient)
-                .build()
+    fun initAdminClient(): KeycloakWithRealm {
+        val client: Keycloak = KeycloakBuilder.builder()
+            .serverUrl(keycloakUrl)
+            .realm(keycloakRealm)
+            .clientId(keycloakClientId)
+            .grantType(OAuth2Constants.PASSWORD)
+            .username(backendUser)
+            .password(backendUserPassword)
+            .resteasyClient(buildResteasyClient())
+            .build()
 
-            keycloakClient = client
-            return KeycloakCloseableClient(client, keycloakRealm)
-        } else return KeycloakCloseableClient(keycloakClient!!, keycloakRealm)
+        keycloakClient = KeycloakWithRealm(client, keycloakRealm)
+        return keycloakClient
     }
 
     private fun buildResteasyClient(): ResteasyClient? {
@@ -206,20 +193,14 @@ class KeycloakService : UserManagementService {
         return client.connectionPoolSize(10).build()
     }
 
-    override fun getClient(): KeycloakCloseableClient {
-        return initAdminClient()
-    }
-
     override fun getUser(login: String): User {
-        initAdminClient().use { client ->
-            val user = getKeycloakUser(client, login)
-            return mapUser(user)
-        }
+        val user = getKeycloakUser(login)
+        return mapUser(user)
     }
 
-    private fun getKeycloakUser(client: Closeable, username: String): UserRepresentation {
+    private fun getKeycloakUser(username: String): UserRepresentation {
         try {
-            return (client as KeycloakCloseableClient).realm().users()
+            return keycloakClient.realm().users()
                 .search(username, true)
                 .first()
         } catch (e: NoSuchElementException) {
@@ -231,11 +212,9 @@ class KeycloakService : UserManagementService {
 
     override fun getKeycloakUserWithUuid(uuid: String): UserRepresentation {
         try {
-            initAdminClient().use { client ->
-                return client.realm().users()
-                    .search("id:$uuid", 1, 1)
-                    .first()
-            }
+            return keycloakClient.realm().users()
+                .search("id:$uuid", 1, 1)
+                .first()
         } catch (e: NoSuchElementException) {
             throw NotFoundException.withMissingResource(uuid, "User")
         } catch (e: Exception) {
@@ -246,14 +225,12 @@ class KeycloakService : UserManagementService {
     override fun getLatestLoginDate(login: String): Date? {
         // This only works for Users with an active Session
         try {
-            initAdminClient().use { client ->
-                val userId = getKeycloakUser(client, login).id
-                val userSessions = client.realm().users()[userId].userSessions
-                return if (userSessions.isEmpty()) {
-                    null
-                } else {
-                    Date(userSessions.first().start)
-                }
+            val userId = getKeycloakUser(login).id
+            val userSessions = keycloakClient.realm().users()[userId].userSessions
+            return if (userSessions.isEmpty()) {
+                null
+            } else {
+                Date(userSessions.first().start)
             }
         } catch (e: Exception) {
             throw ServerException.withReason("Failed to get latest login date for '$login'.", e)
@@ -296,55 +273,44 @@ class KeycloakService : UserManagementService {
     }
 
     override fun userExists(userId: String): Boolean {
-        initAdminClient().use {
-            return it.realm().users().search(userId, true).isNotEmpty()
-        }
+        return keycloakClient.realm().users().search(userId, true).isNotEmpty()
     }
 
     override fun createUser(user: User): String {
+        val usersResource = keycloakClient.realm().users()
+        val password = generatePassword()
 
-        initAdminClient().use {
-            val usersResource = it.realm().users()
-            val password = generatePassword()
-
-            val keycloakUser = mapToKeycloakUser(user).apply {
-                requiredActions = listOf("UPDATE_PASSWORD")
-                credentials = listOf(CredentialRepresentation().apply {
-                    type = CredentialRepresentation.PASSWORD
-                    isTemporary = true
-                    value = password
-                })
-            }
-            val createResponse = usersResource.create(keycloakUser)
-
-            handleReponseErrorsForUser(createResponse) // will throw on error
-
-            val userId = CreatedResponseUtil.getCreatedId(createResponse)
-
-            usersResource.get(userId).apply {
-                val roles = it.realm().roles()
-                val userRoles = mutableListOf(
-                    roles.get(ROLE_IGE_USER).toRepresentation(),
-                )
-                roles().realmLevel().add(userRoles)
-
-                return password
-            }
-
+        val keycloakUser = mapToKeycloakUser(user).apply {
+            requiredActions = listOf("UPDATE_PASSWORD")
+            credentials = listOf(CredentialRepresentation().apply {
+                type = CredentialRepresentation.PASSWORD
+                isTemporary = true
+                value = password
+            })
         }
+        val createResponse = usersResource.create(keycloakUser)
 
+        handleReponseErrorsForUser(createResponse) // will throw on error
+
+        val userId = CreatedResponseUtil.getCreatedId(createResponse)
+
+        usersResource.get(userId).apply {
+            val roles = keycloakClient.realm().roles()
+            val userRoles = mutableListOf(
+                roles.get(ROLE_IGE_USER).toRepresentation(),
+            )
+            roles().realmLevel().add(userRoles)
+
+            return password
+        }
     }
 
     override fun updateUser(user: User) {
+        val kcUser = getKeycloakUser(user.login)
+        mapToKeycloakUser(user, kcUser)
 
-        initAdminClient().use { client ->
-            val kcUser = getKeycloakUser(client, user.login)
-            mapToKeycloakUser(user, kcUser)
-
-            val userResource = client.realm().users().get(kcUser.id)
-            updateKeycloakUser(userResource, kcUser)
-        }
-
+        val userResource = keycloakClient.realm().users().get(kcUser.id)
+        updateKeycloakUser(userResource, kcUser)
     }
 
     private fun updateKeycloakUser(userResource: UserResource, kcUser: UserRepresentation) {
@@ -370,100 +336,76 @@ class KeycloakService : UserManagementService {
     }
 
     override fun requestPasswordChange(id: String) {
-
-        initAdminClient().use {
-
-            val users = it.realm().users()
-            val user = users.search(id, true).getOrNull(0)
-            if (user != null) {
-                try {
-                    users[user.id].executeActionsEmail(listOf("UPDATE_PASSWORD"), EMAIL_VALID_IN_SECONDS)
-                } catch (ex: ForbiddenException) {
-                    throw de.ingrid.igeserver.api.ForbiddenException.withUser("<current>")
-                } catch (ex: Exception) {
-                    throw InvalidParameterException.withInvalidParameters(user.email)
-                }
-            } else {
-                throw NotFoundException.withMissingUserCatalog(id)
+        val users = keycloakClient.realm().users()
+        val user = users.search(id, true).getOrNull(0)
+        if (user != null) {
+            try {
+                users[user.id].executeActionsEmail(listOf("UPDATE_PASSWORD"), EMAIL_VALID_IN_SECONDS)
+            } catch (ex: ForbiddenException) {
+                throw de.ingrid.igeserver.api.ForbiddenException.withUser("<current>")
+            } catch (ex: Exception) {
+                throw InvalidParameterException.withInvalidParameters(user.email)
             }
-
+        } else {
+            throw NotFoundException.withMissingUserCatalog(id)
         }
-
     }
 
     override fun resetPassword(id: String): String {
         val password = generatePassword()
 
-        initAdminClient().use { client ->
-            val kcUser = getKeycloakUser(client, id)
-            kcUser.apply {
-                requiredActions = listOf("UPDATE_PASSWORD")
-                credentials = listOf(CredentialRepresentation().apply {
-                    type = CredentialRepresentation.PASSWORD
-                    isTemporary = true
-                    value = password
-                })
-            }
-
-            val userResource = client.realm().users().get(kcUser.id)
-            updateKeycloakUser(userResource, kcUser)
+        val kcUser = getKeycloakUser(id)
+        kcUser.apply {
+            requiredActions = listOf("UPDATE_PASSWORD")
+            credentials = listOf(CredentialRepresentation().apply {
+                type = CredentialRepresentation.PASSWORD
+                isTemporary = true
+                value = password
+            })
         }
+
+        val userResource = keycloakClient.realm().users().get(kcUser.id)
+        updateKeycloakUser(userResource, kcUser)
         return password
     }
 
     override fun removeRoles(userId: String, roles: List<String>) {
-
-        initAdminClient().use { client ->
-
-            val users = client.realm().users()
-            val user = users.search(userId, true).getOrNull(0)
-            if (user != null) {
-                val rolesRepresentations = getRoleRepresentations(client, roles)
-                users[user.id].roles().realmLevel().remove(rolesRepresentations)
-            } else {
-                throw NotFoundException.withMissingUserCatalog(userId)
-            }
-
+        val users = keycloakClient.realm().users()
+        val user = users.search(userId, true).getOrNull(0)
+        if (user != null) {
+            val rolesRepresentations = getRoleRepresentations(roles)
+            users[user.id].roles().realmLevel().remove(rolesRepresentations)
+        } else {
+            throw NotFoundException.withMissingUserCatalog(userId)
         }
-
     }
 
     override fun addRoles(userLogin: String, roles: List<String>) {
-
-        initAdminClient().use { client ->
-
-            val users = client.realm().users()
-            val user = users.search(userLogin, true).getOrNull(0)
-            if (user != null) {
-                val rolesRepresentations = getRoleRepresentations(client, roles)
-                users[user.id].roles().realmLevel().add(rolesRepresentations)
-            }
-
+        val users = keycloakClient.realm().users()
+        val user = users.search(userLogin, true).getOrNull(0)
+        if (user != null) {
+            val rolesRepresentations = getRoleRepresentations(roles)
+            users[user.id].roles().realmLevel().add(rolesRepresentations)
         }
-
     }
 
     override fun deleteUser(userId: String) {
-        initAdminClient().use { client ->
+        val user = getKeycloakUser(userId)
+        val users = keycloakClient.realm().users()
+        val userResource = users.get(user.id)
 
-            val user = getKeycloakUser(client, userId)
-            val users = client.realm().users()
-            val userResource = users.get(user.id)
-
-            // delete user if it doesn't contain extra roles
-            if (hasOnlyIgeRoles(userResource)) {
-                // delete user
-                val response = users.delete(user.id)
-                if (response.status != 204) {
-                    log.error("Error during deleting keycloak user: $userId", response.status)
-                }
-                return
+        // delete user if it doesn't contain extra roles
+        if (hasOnlyIgeRoles(userResource)) {
+            // delete user
+            val response = users.delete(user.id)
+            if (response.status != 204) {
+                log.error("Error during deleting keycloak user: $userId", response.status)
             }
-
-            // otherwise only remove IGE roles
-            removeIgeRoles(client, userResource)
-
+            return
         }
+
+        // otherwise only remove IGE roles
+        removeIgeRoles(keycloakClient, userResource)
     }
 
     private fun hasOnlyIgeRoles(userResource: UserResource): Boolean {
@@ -473,7 +415,7 @@ class KeycloakService : UserManagementService {
     }
 
     private fun removeIgeRoles(
-        client: KeycloakCloseableClient,
+        client: KeycloakWithRealm,
         userResource: UserResource
     ) {
         userResource.apply {
@@ -492,9 +434,9 @@ class KeycloakService : UserManagementService {
         return roles.filter { !ignoreRoles.contains(it) }
     }
 
-    private fun getRoleRepresentations(client: Closeable, roles: List<String>): List<RoleRepresentation> {
+    private fun getRoleRepresentations(roles: List<String>): List<RoleRepresentation> {
 
-        return (client as KeycloakCloseableClient).realm().roles().list()
+        return keycloakClient.realm().roles().list()
             .filter { roles.contains(it.name) }
 
     }

@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.development
 
 import de.ingrid.igeserver.model.User
-import de.ingrid.igeserver.services.KeycloakService
 import de.ingrid.igeserver.services.UserManagementService
 import org.apache.logging.log4j.kotlin.logger
 import org.keycloak.representations.idm.UserRepresentation
@@ -29,15 +28,8 @@ import org.springframework.context.annotation.Profile
 import org.springframework.security.acls.model.NotFoundException
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
-import java.io.Closeable
 import java.security.Principal
 import java.util.*
-
-class DummyClient : Closeable {
-    override fun close() {
-        // do nothing
-    }
-}
 
 @Service
 @Profile("dev")
@@ -48,7 +40,7 @@ class KeycloakMockService : UserManagementService {
     lateinit var config: DevelopmentProperties
 
     override fun getUsersWithIgeRoles(): Set<User> {
-        return config.logins?.mapIndexed { index, _ -> mapUser(index)}?.toSet() ?: emptySet()
+        return config.logins?.mapIndexed { index, _ -> mapUser(index) }?.toSet() ?: emptySet()
     }
 
     override fun getUsers(): Set<User> {
@@ -65,10 +57,6 @@ class KeycloakMockService : UserManagementService {
 
     override fun getName(principal: Principal): String {
         return principal.name
-    }
-
-    override fun getClient(): Closeable {
-        return DummyClient()
     }
 
     override fun getUser(login: String): User {
@@ -115,31 +103,27 @@ class KeycloakMockService : UserManagementService {
         TODO("Not yet implemented")
     }
 
-    override fun requestPasswordChange( id: String) {
+    override fun requestPasswordChange(id: String) {
         TODO("Not yet implemented")
     }
 
-    override fun resetPassword( id: String): String {
+    override fun resetPassword(id: String): String {
         TODO("Not yet implemented")
     }
 
-    override fun removeRoles( userId: String, roles: List<String>) {
+    override fun removeRoles(userId: String, roles: List<String>) {
         TODO("Not yet implemented")
     }
 
-    override fun addRoles( userLogin: String, roles: List<String>) {
+    override fun addRoles(userLogin: String, roles: List<String>) {
         TODO("Not yet implemented")
     }
 
-    override fun deleteUser( userId: String) {
+    override fun deleteUser(userId: String) {
         TODO("Not yet implemented")
     }
 
-    override fun initAdminClient(): KeycloakService.KeycloakCloseableClient {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateUser( user: User) {
+    override fun updateUser(user: User) {
         // do nothing
         log.info("Mocked update user function")
     }

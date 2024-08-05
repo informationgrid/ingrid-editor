@@ -22,15 +22,12 @@ package de.ingrid.igeserver.services
 import de.ingrid.igeserver.model.User
 import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.security.core.Authentication
-import java.io.Closeable
 import java.security.Principal
 import java.util.*
 
 interface UserManagementService {
     fun getUsersWithIgeRoles(): Set<User>
     fun getUsers(): Set<User>
-
-    fun getClient(): Closeable
 
     fun getLatestLoginDate(login: String): Date?
 
@@ -53,5 +50,4 @@ interface UserManagementService {
     fun removeRoles( userId: String, roles: List<String>)
     fun addRoles( userLogin: String, roles: List<String>)
     fun deleteUser( userId: String)
-    fun initAdminClient(): KeycloakService.KeycloakCloseableClient
 }
