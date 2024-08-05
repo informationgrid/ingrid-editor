@@ -22,6 +22,7 @@ package de.ingrid.igeserver.profiles.ingrid.importer.iso19139
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -43,23 +44,27 @@ import org.springframework.stereotype.Service
 import org.unbescape.json.JsonEscape
 
 data class IsoImportData(
-    val data: Metadata, 
+    val data: Metadata,
     val codelistService: CodelistHandler,
     val catalogId: String,
     val documentService: DocumentService,
     val addressMaps: MutableMap<String, String>
 )
 
+data class IsoConverterOutput(
+    val document: String,
+    val references: ArrayNode
+)
 @Service
 class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService) : IgeImporter {
     private val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
-    
+
     var profileMapper: MutableMap<String, ISOImportProfile> = mutableMapOf()
 
     override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
-        
+
         val xmlDeserializer = XmlMapper(JacksonXmlModule().apply {
             setDefaultUseWrapper(false)
             setXMLTextElementName("innerText")
@@ -76,50 +81,72 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
         } catch (ex: Exception) {
             throw ServerException.withReason("${ex.message} -> ${ex.cause?.toString()}")
         }
-        
+
         log.debug("Created JSON from imported file: $output")
 
-        return jacksonObjectMapper().readValue(output, JsonNode::class.java)
+        return jacksonObjectMapper().createArrayNode().apply {
+            add(jacksonObjectMapper().readValue(output.document, JsonNode::class.java))
+            addAll(output.references)
+        }
     }
-    
-    fun convertIsoToJson(isoData: IsoImportData, catalogProfileId: String): String {
+
+    fun convertIsoToJson(isoData: IsoImportData, catalogProfileId: String): IsoConverterOutput {
         val output: TemplateOutput = JsonStringOutput()
-        
+
         val profileOutput = handleByProfile(isoData, catalogProfileId)
         if (profileOutput != null) return profileOutput
 
+        val model : GeneralMapper
+
         when (val hierarchyLevel = isoData.data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "service" -> {
-                val model = GeoserviceMapper(isoData)
+                model = GeoserviceMapper(isoData)
                 templateEngine.render("imports/ingrid/geoservice.jte", mapOf("model" to model), output)
             }
 
             "dataset" -> {
-                val model = GeodatasetMapper(isoData)
+                model = GeodatasetMapper(isoData)
                 templateEngine.render("imports/ingrid/geodataset.jte", mapOf("model" to model), output)
             }
-            
+
             "series" -> {
-                val model = GeodatasetMapper(isoData)
+                model = GeodatasetMapper(isoData)
                 templateEngine.render("imports/ingrid/geodataset.jte", mapOf("model" to model), output)
             }
-            
+
             "application" -> {
-                val model = ApplicationMapper(isoData)
+                model = ApplicationMapper(isoData)
                 templateEngine.render("imports/ingrid/application.jte", mapOf("model" to model), output)
             }
 
             else -> throw ServerException.withReason("Not supported hierarchy level for import: $hierarchyLevel")
         }
-        return output.toString()
+
+        val references = handleAddressReferences(model)
+
+        return IsoConverterOutput(
+            output.toString(),
+            references
+        )
     }
 
-    private fun handleByProfile(isoData: IsoImportData, profile: String): String? {
-        return profileMapper[profile]?.let {
-            it.handle(isoData.catalogId, isoData.data, isoData.addressMaps)?.let {
+    protected fun handleAddressReferences(model: GeneralMapper): ArrayNode {
+        val outputReferences: TemplateOutput = JsonStringOutput()
+        templateEngine.render("imports/ingrid/address.jte", mapOf("model" to model), outputReferences)
+        return jacksonObjectMapper().readValue(outputReferences.toString(), ArrayNode::class.java)
+
+    }
+
+    private fun handleByProfile(isoData: IsoImportData, profile: String): IsoConverterOutput? {
+        return profileMapper[profile]?.let { mapper ->
+            mapper.handle(isoData.catalogId, isoData.data, isoData.addressMaps)?.let {
                 val output: TemplateOutput = JsonStringOutput()
                 templateEngine.render(it.template, it.mapper, output)
-                output.toString()
+
+                IsoConverterOutput(
+                    output.toString(),
+                    handleAddressReferences(it.mapper)
+                )
             }
         }
     }

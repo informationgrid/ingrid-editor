@@ -89,6 +89,8 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService) : 
     private fun checkPublishState(refData: DocumentData) {
         if (refData.document.state != DOCUMENT_STATE.PUBLISHED) {
             throw ServerException.withReason("Latest referenced dataset not published: ${refData.document.uuid}")
+            // TODO AW: get field-key to show error in form
+//            throw ValidationException.withInvalidFields(InvalidField("pointOfContact", "Nicht veröffentlicht", mapOf("error" to "Latest referenced dataset not published: ${refData.document.uuid}")))
         }
     }
 }

@@ -24,11 +24,8 @@ import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.profiles.mcloud.types.TestType
-import de.ingrid.igeserver.services.DOCUMENT_STATE
-import de.ingrid.igeserver.services.DateService
-import de.ingrid.igeserver.services.DocumentData
-import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.profiles.test.types.TestType
+import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.SpringContext
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec

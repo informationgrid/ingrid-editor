@@ -199,7 +199,7 @@ open class AddressModelTransformer(
 
     fun getLastPublishedDocument(catalogIdentifier: String, uuid: String): Document? {
         return try {
-            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = false)
+            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
         } catch (e: Exception) {
             null
         }
@@ -213,7 +213,7 @@ open class AddressModelTransformer(
         if (wrapper.type == "FOLDER") return mutableListOf()
 
         val convertedDoc = try {
-            val publishedDoc = documentService.getLastPublishedDocument(catalogIdentifier, wrapper.uuid, resolveLinks = false)
+            val publishedDoc = documentService.getLastPublishedDocument(catalogIdentifier, wrapper.uuid)
             DocumentData(wrapper, publishedDoc)
         } catch (ex: EmptyResultDataAccessException) {
             // no published document found

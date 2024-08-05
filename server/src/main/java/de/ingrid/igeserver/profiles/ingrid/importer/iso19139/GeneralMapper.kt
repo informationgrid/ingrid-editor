@@ -88,13 +88,14 @@ open class GeneralMapper(val isoData: IsoImportData) {
         return description.substring(0, beginOfExtra).trim()
     }
 
-    fun getPointOfContacts(): List<PointOfContact> {
+    private val pointOfContacts: List<PointOfContact> by lazy {
         val mainContact = metadata.contact
         val additionalContacts = metadata.identificationInfo[0].identificationInfo?.pointOfContact ?: emptyList()
         val distributors = metadata.distributionInfo?.mdDistribution?.distributor?.map {
             it.mdDistributor.distributorContact
         } ?: emptyList()
-        return (mainContact + additionalContacts + distributors).flatMapIndexed { index: Int, contact: Contact ->
+
+        (mainContact + additionalContacts + distributors).flatMapIndexed { index: Int, contact: Contact ->
             val individualName = extractPersonInfo(contact.responsibleParty?.individualName?.value)
             val organization = contact.responsibleParty?.organisationName?.value
             val communications = getCommunications(contact.responsibleParty?.contactInfo?.ciContact)
@@ -146,6 +147,9 @@ open class GeneralMapper(val isoData: IsoImportData) {
                     uuid = findPersonUuid(individualName)
                         ?: uuid ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[getPersonIdentifier(individualName)] = newUuid }
                 }
+            } else {
+                val identifier = if (individualName != null) getPersonIdentifier(individualName) else organization
+                if (identifier != null) isoData.addressMaps[identifier] = uuid
             }
 
             val pointOfContact = PointOfContact(
@@ -164,6 +168,16 @@ open class GeneralMapper(val isoData: IsoImportData) {
             parents.add(pointOfContact)
             parents
         }
+    }
+
+    fun getUniquePointOfContacts(): List<PointOfContact> {
+        return pointOfContacts.distinctBy { it.refUuid }
+    }
+
+    fun getPointOfContactReferences(): List<PointOfContact> {
+        // references with no type are additional/parent addresses, which need to be created in another step
+        return pointOfContacts
+            .filterNot { it.type.key == null && it.type.value == null }
     }
 
     private fun uuidExists(uuid: String?) = try {

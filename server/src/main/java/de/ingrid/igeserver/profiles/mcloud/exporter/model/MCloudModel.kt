@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.codelists.CodeListService
-import de.ingrid.igeserver.exporter.model.AddressModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.exports.interfaces.dcat.DCAT
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
@@ -49,7 +48,7 @@ data class MCloudModel(
     override val license: String?,
 ) : DCAT {
 
-    override val publisher: AddressModel?
+    override val publisher: String?
         get() {
             return data.addresses
                 ?.firstOrNull { it.type?.key == "10" }

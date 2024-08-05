@@ -63,7 +63,6 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
                 "test-catalog",
                 document.uuid,
                 any(),
-                any()
             )
         } answers {
             if (document.template != null) convertToDocument(SchemaUtils.getJsonFileContent(document.template)).apply {

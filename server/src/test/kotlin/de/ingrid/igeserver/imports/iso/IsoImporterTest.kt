@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.imports.iso
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ArrayNode
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.imports.*
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
@@ -32,6 +31,7 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import mockCodelists
@@ -193,8 +193,6 @@ class IsoImporterTest : AnnotationSpec() {
 
         val result = isoImporter.run("test", data, mutableMapOf())
         changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "D")
-        changeUuidOfOrganisationTo(result, "Referat 1", "A")
-        changeUuidOfOrganisationTo(result, "Abteilung 3", "B")
 
         assertPointOfContact(result, "Objektbesitzer Institut", expectedParentOrganisation)
         assertPointOfContact(result, "2B83F58E-60C2-11D6-884A-0000F4ABB4D8", expectedPersonUnderOrganisation2)
@@ -270,8 +268,8 @@ class IsoImporterTest : AnnotationSpec() {
 
         val data = addPointOfContact(minimalMetadata, pointOfContact)
         val result = isoImporter.run("test", data, mutableMapOf())
-        assertPointOfContact(result, "Objektbesitzer Institut", expectedOrganisationAsPointOfContactMd, true)
-        assertPointOfContact(result, "Objektbesitzer Institut", expectedOrganisationAsPointOfContact, true, 1)
+        assertPointOfContact(result, "Objektbesitzer Institut", expectedOrganisationAsPointOfContact)
+        assertPointOfContactHasTypes(result, "Objektbesitzer Institut", listOf("7", "12"))
     }
 
     private fun addPointOfContact(metadata: String, pointOfContact: String): String {
@@ -288,22 +286,22 @@ class IsoImporterTest : AnnotationSpec() {
     private fun assertPointOfContact(
         json: JsonNode,
         nameOrUuid: String,
-        expected: String,
-        includeType: Boolean = false,
-        index: Int = 0
+        expected: String
     ) {
-        val contacts = json.get("pointOfContact") as? ArrayNode ?: throw RuntimeException()
+        val address = json.find { it.getString("_uuid") == nameOrUuid || it.getString("organization") == nameOrUuid } ?: throw RuntimeException()
+        address.toPrettyString().replace("\r", "").shouldEqualJson(expected)
+    }
 
-        val contact = contacts.mapNotNull { item ->
-            val orgNode = item.getString("ref.organization")
-            val uuid = item.getString("ref._uuid")
-            if (orgNode == nameOrUuid || uuid == nameOrUuid) {
-                val result = if (includeType) item else item.get("ref")
-                result.toPrettyString().replace("\r", "")
-            } else null
-        }
-        if (contact.size <= index) throw RuntimeException("PointOfContact with '$nameOrUuid' at index $index not found")
+    private fun assertPointOfContactHasTypes(
+        json: JsonNode,
+        name: String,
+        types: List<String>
+    ) {
+        val addressUuid = json.find { it.getString("organization") == name }?.getString("_uuid") ?: throw RuntimeException()
+        val presentTypes = json[0].get("pointOfContact")
+            .filter { it.getString("ref") == addressUuid }
+            .map { it.getString("type.key") }
 
-        contact[index].shouldEqualJson(expected)
+        types.containsAll(presentTypes) shouldBe true
     }
 }

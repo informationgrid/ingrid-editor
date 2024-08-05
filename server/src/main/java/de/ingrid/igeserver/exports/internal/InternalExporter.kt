@@ -79,7 +79,7 @@ class InternalExporter(
 
         return jacksonObjectMapper().createObjectNode().apply {
             put("_export_date", OffsetDateTime.now().toString())
-            put("_version", "1.0.0")
+            put("_version", "1.1.0")
             put("_profile", profile)
             set<ObjectNode>("resources", jacksonObjectMapper().createObjectNode().apply {
                 publishedVersion?.let { set<JsonNode>("published", publishedVersion) }

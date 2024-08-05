@@ -22,6 +22,7 @@ import { FieldType } from "@ngx-formly/material";
 import { FormControl, FormGroup } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FieldTypeConfig } from "@ngx-formly/core";
+import { debounceTime } from "rxjs/operators";
 
 @UntilDestroy()
 @Component({
@@ -49,7 +50,7 @@ export class DateRangeTypeComponent
     ]);
 
     this.formControl.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(untilDestroyed(this), debounceTime(0))
       .subscribe((value) => {
         this.rangeFormGroup.setValue(
           value ?? {

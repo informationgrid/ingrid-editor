@@ -300,13 +300,6 @@ export class FormFieldHelper {
         max: options?.max,
       },
       validators: {
-        addressesPublished: {
-          expression: (ctrl) =>
-            ctrl.value
-              ? ctrl.value.every((row) => row.ref._state === "P")
-              : false,
-          message: "Alle Adressen müssen veröffentlicht sein",
-        },
         ...options?.validators,
       },
     };

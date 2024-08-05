@@ -69,6 +69,7 @@ import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { TranslocoService } from "@ngneat/transloco";
+import { IgeError } from "../../../models/ige-error";
 
 @UntilDestroy()
 @Component({
@@ -279,6 +280,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // reset dirty flag after save
     this.docEvents.afterSave$(this.address).subscribe((data) => {
       this.formStateService.updateMetadata(data.metadata);
+      // TODO AW: do not update form data after save, since metadata is enough
       this.updateFormWithData(data);
     });
 
@@ -400,6 +402,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       if (previousDocUuid) commands.push({ id: previousDocUuid });
 
       this.router.navigate(commands);
+    } else if (error.status === 404) {
+      throw new IgeError("Der Datensatz konnte nicht gefunden werden");
     }
     throw error;
   }

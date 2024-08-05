@@ -19,8 +19,8 @@
  */
 import { Component, OnInit, ViewChild } from "@angular/core";
 import {
+  FormControl,
   UntypedFormBuilder,
-  UntypedFormControl,
   UntypedFormGroup,
 } from "@angular/forms";
 import { ExchangeService } from "../exchange.service";
@@ -72,14 +72,11 @@ export class ExportComponent implements OnInit {
 
   ngOnInit() {
     this.optionsFormGroup = this._formBuilder.group({
-      option: new UntypedFormControl("dataset"),
-      drafts: new UntypedFormControl(),
-      format: new UntypedFormControl(),
+      option: new FormControl("dataset"),
+      drafts: new FormControl<boolean>(false),
+      addressReferences: new FormControl<boolean>(false),
+      format: new FormControl(),
     });
-  }
-
-  handleSelected(nodes) {
-    this.selection = nodes;
   }
 
   selectDatasets(ids: number[]) {
@@ -183,6 +180,6 @@ export class ExportComponent implements OnInit {
 
   updateDraftsCheckbox($event: MatSelectChange) {
     this.showDraftsCheckbox = $event.value.type === "internal";
-    this.optionsFormGroup.get("drafts").setValue(false);
+    // this.optionsFormGroup.get("drafts").setValue(false);
   }
 }

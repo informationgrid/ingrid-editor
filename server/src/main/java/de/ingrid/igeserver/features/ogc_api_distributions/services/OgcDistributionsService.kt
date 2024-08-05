@@ -106,7 +106,7 @@ class OgcDistributionsService(
 
     private fun getDocument(collectionId: String, recordId: String): Document {
         try {
-            return documentService.getLastPublishedDocument(collectionId, recordId, false, true)
+            return documentService.getLastPublishedDocument(collectionId, recordId, false)
         } catch (error: Exception) {
             throw NotFoundException.withMissingResource(recordId, "Record")
         }

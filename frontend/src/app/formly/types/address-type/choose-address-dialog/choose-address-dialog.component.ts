@@ -38,7 +38,7 @@ import {
 } from "../../../../services/codelist/codelist.service";
 import { map, tap } from "rxjs/operators";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { AddressRef } from "../address-card/address-card.component";
+import { ResolvedAddressWithType } from "../address-card/address-card.component";
 import { SessionQuery } from "../../../../store/session.query";
 import { DocumentService } from "../../../../services/document/document.service";
 import { ConfigService } from "../../../../services/config/config.service";
@@ -49,7 +49,7 @@ import { BackendOption } from "../../../../store/codelist/codelist.model";
 import { MatSelect } from "@angular/material/select";
 
 export interface ChooseAddressDialogData {
-  address: AddressRef;
+  address: ResolvedAddressWithType;
   allowedTypes: string[];
   skipToType: boolean;
 }
@@ -153,7 +153,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     if (items.length === 1) this.selectedType = items[0].value;
   }
 
-  private updateModel(address: AddressRef) {
+  private updateModel(address: ResolvedAddressWithType) {
     if (!address) {
       return;
     }
@@ -166,7 +166,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
         id: this.selectedType,
       });
     }
-    this.selectedNode.next(address.ref._id);
+    this.selectedNode.next(address.address.metadata.wrapperId);
   }
 
   ngOnDestroy(): void {}
@@ -197,7 +197,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     this.selectedType = $event.id.toString();
   }
 
-  private isTypeAllowed(address: AddressRef) {
+  private isTypeAllowed(address: ResolvedAddressWithType) {
     return (
       this.filterByAllowedTypes([new SelectOption(address.type?.key, "")])
         .length > 0

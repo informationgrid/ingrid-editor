@@ -43,6 +43,7 @@ import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.utils.getString
 import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -62,7 +63,7 @@ class InGridProfile(
     @Autowired
     @JsonIgnore
     lateinit var entityManager: EntityManager
-    
+
     @Autowired
     @JsonIgnore
     private lateinit var transactionManager: PlatformTransactionManager
@@ -361,8 +362,8 @@ class InGridProfile(
     private fun removeReferencesFromDatasets(refs: List<DocumentAnalysis>, uuids: MutableList<String>) {
         refs.forEach { ref ->
             ref.document.data.get("service")?.let {
-                val coupledResources = it.get("coupledResources") as ArrayNode
-                coupledResources.removeAll { node -> node.get("uuid")?.asText() in uuids }
+                (it.get("coupledResources") as ArrayNode?)
+                    ?.removeAll { node -> node.getString("uuid") in uuids }
             }
         }
     }

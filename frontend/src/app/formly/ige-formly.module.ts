@@ -307,6 +307,9 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     SectionWrapper,
     UnitInputComponent,
     SelectGeoDatasetDialog,
+    AddressCardComponent,
+    AddressTypeComponent,
+    PrintTypeComponent,
   ],
   providers: [
     {
@@ -337,8 +340,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     AutocompleteTypeComponent,
     LeafletTypeComponent,
     TableTypeComponent,
-    AddressTypeComponent,
-    AddressCardComponent,
     ChooseAddressDialogComponent,
     SpatialDialogComponent,
     FreeSpatialComponent,
@@ -356,7 +357,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     UvpSectionsComponent,
     ReferencedDocumentsTypeComponent,
     ValidUntilDialogComponent,
-    PrintTypeComponent,
     DocumentReferenceTypeComponent,
     SelectCswRecordDialog,
     CoordinatesSpatialComponent,

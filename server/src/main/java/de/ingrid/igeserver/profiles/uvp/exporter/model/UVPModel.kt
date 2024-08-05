@@ -26,9 +26,9 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.SpatialModel
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
@@ -96,7 +96,7 @@ data class UVPModel(
             ?.firstOrNull()
             ?.ref ?: return null
 
-        val address = documentService?.getLastPublishedDocument(catalogId, ref.uuid, resolveLinks = false)!!
+        val address = documentService?.getLastPublishedDocument(catalogId, ref)!!
         val codelistTransformer = CodelistTransformer(codelistHandler!!, catalogId)
         val addressTransformer =
             AddressModelTransformer(catalogId, codelistTransformer, null, address, documentService!!)

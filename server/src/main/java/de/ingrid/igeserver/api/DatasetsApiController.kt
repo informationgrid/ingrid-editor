@@ -438,7 +438,7 @@ class DatasetsApiController(
         try {
             val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
             // TODO: catalogId is not necessary anymore
-            val docData = documentService.getDocumentFromCatalog(catalogId, id, true)
+            val docData = documentService.getDocumentFromCatalog(catalogId, id)
             val metadata = prepareDocumentWithMetadata(docData)
             return ResponseEntity.ok(metadata)
         } catch (ex: AccessDeniedException) {

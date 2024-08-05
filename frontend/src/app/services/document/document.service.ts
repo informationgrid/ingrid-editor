@@ -44,13 +44,12 @@ import { applyTransaction, HashMap, transaction } from "@datorama/akita";
 import { FormMessageService } from "../form-message.service";
 import { ProfileService } from "../profile.service";
 import { SessionStore } from "../../store/session.store";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { ConfigService, Configuration } from "../config/config.service";
 import { SearchResult } from "../../models/search-result.model";
 import { ServerSearchResult } from "../../models/server-search-result.model";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { StatisticResponse } from "../../models/statistic.model";
-import { IgeError } from "../../models/ige-error";
 import { SessionQuery } from "../../store/session.query";
 import { PathResponse } from "../../models/path-response";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
@@ -298,7 +297,6 @@ export class DocumentService {
       tap((doc) =>
         this.docEvents.sendAfterLoadAndSet(doc.documentWithMetadata),
       ),
-      catchError((e: HttpErrorResponse) => this.handleLoadError(e)),
       finalize(() => this.documentOperationFinished$.next(true)),
     );
   }
@@ -898,17 +896,6 @@ export class DocumentService {
         isAddress: null,
       };
     });
-  }
-
-  private handleLoadError(e: HttpErrorResponse) {
-    if (e.status === 404) {
-      const error = new IgeError();
-      error.setMessage("Der Datensatz konnte nicht gefunden werden");
-      this.modalService.showIgeError(error);
-      return of(null);
-    } else {
-      throw e;
-    }
   }
 
   private updateTreeStore(doc: DocumentWithMetadata, address: boolean) {

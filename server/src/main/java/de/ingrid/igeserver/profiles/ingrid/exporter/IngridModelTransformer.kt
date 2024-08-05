@@ -581,7 +581,7 @@ open class IngridModelTransformer(
         return if (model.type == "InGridGeoDataset") {
             val doc = getLastPublishedDocument(model.uuid)
             documentService.getIncomingReferences(doc, catalogIdentifier)
-                .map { documentService.getLastPublishedDocument(catalogIdentifier, it, resolveLinks = false) }
+                .map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
                 .filter {
                     it.type == "InGridGeoService" && it.data.getString("service.type.key") == "2"
                 }
@@ -726,7 +726,7 @@ open class IngridModelTransformer(
             codelists,
             // Map pointOfContactMD type to pointOfContact for ISO Exports
             if( it.type?.key != "12") it.type else KeyValue("7", "pointOfContact"),
-            getLastPublishedDocument(it.ref?.uuid ?: throw ServerException.withReason("Address-Reference UUID is NULL")) ?: Document().apply {
+            getLastPublishedDocument(it.ref ?: throw ServerException.withReason("Address-Reference UUID is NULL")) ?: Document().apply {
                 data = jacksonObjectMapper().createObjectNode()
                 type = "null-address"
                 modified = OffsetDateTime.now()
@@ -920,10 +920,10 @@ open class IngridModelTransformer(
         }
     }
 
-    fun getLastPublishedDocument(uuid: String, resolveLinks: Boolean = false): Document? {
+    fun getLastPublishedDocument(uuid: String): Document? {
         if (cache.documents.containsKey(uuid)) return cache.documents[uuid]
         return try {
-            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = resolveLinks)
+            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
                 .also { cache.documents[uuid] = it }
         } catch (e: Exception) {
             log.warn("Could not get last published document: $uuid")

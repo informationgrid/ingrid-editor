@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.imports.ingrid_lfubayern
 
 import de.ingrid.igeserver.DummyCatalog
-import de.ingrid.igeserver.imports.changeUuidOfOrganisationTo
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.importer.ISOImportLfUBayern
@@ -76,10 +75,6 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geoservice_full_lfuBayern.xml"), mutableMapOf())
         println(result.toString())
 
-        changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "objektbesitzer_institut")
-        changeUuidOfOrganisationTo(result, "Adressvererbung Test", "adressvererbung_test")
-        changeUuidOfOrganisationTo(result, "Meine Organisation", "meine_organisation")
-        
         result.toPrettyString().shouldEqualJson(
             getFile("ingrid/import/iso_geoservice_full_lfuBayern-expected.json")
         )

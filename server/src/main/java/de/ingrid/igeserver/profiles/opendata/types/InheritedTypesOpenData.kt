@@ -20,17 +20,11 @@
 package de.ingrid.igeserver.profiles.opendata.types
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.model.EntityType
-import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.model.document.impl.AddressType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.opendata.OpenDataProfile
 import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
-import de.ingrid.igeserver.services.FIELD_UUID
-import de.ingrid.igeserver.utils.convertToDocument
-import de.ingrid.igeserver.utils.getString
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
@@ -44,14 +38,6 @@ class OpenDataType : EntityType() {
     val log = logger()
 
 // TODO:   override val jsonSchema = "/bmi/schemes/bmi.schema.json"
-
-    override fun pullReferences(doc: Document): List<Document> {
-        return pullLinkedAddresses(doc)
-    }
-
-    override fun updateReferences(doc: Document, options: UpdateReferenceOptions) {
-        updateAddresses(doc, options)
-    }
 
     override fun getUploads(doc: Document): List<String> {
         if (doc.data.get("distributions") != null) {
@@ -72,34 +58,12 @@ class OpenDataType : EntityType() {
         }
     }
 
-    private fun pullLinkedAddresses(doc: Document): MutableList<Document> {
-        val addressDocs = mutableListOf<Document>()
-
-        val addresses = doc.data.path("addresses")
-        for (address in addresses) {
-            val addressJson = address.path("ref")
-            // during import address already is replaced by UUID
-            // TODO: improve import process so we don't need this
-            if (addressJson is ObjectNode) {
-                val uuid = addressJson.path(FIELD_UUID).textValue()
-                val addressDoc = convertToDocument(addressJson, addressJson.getString(FIELD_DOCUMENT_TYPE), null, addressJson.getString(
-                    FIELD_UUID))
-                addressDocs.add(addressDoc)
-                (address as ObjectNode).put("ref", uuid)
-            }
-        }
-        return addressDocs
-    }
-
     override fun getReferenceIds(doc: Document): List<String> {
         return doc.data.path("addresses").map { address ->
             address.path("ref").textValue()
         }
     }
 
-    private fun updateAddresses(doc: Document, options: UpdateReferenceOptions) {
-        return replaceUuidWithReferenceData(doc, "addresses", options)
-    }
 }
 
 @Component

@@ -20,29 +20,29 @@
 package de.ingrid.igeserver.imports
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.utils.getString
 
 fun changeUuidOfOrganisationTo(json: JsonNode, name: String, uuid: String) {
-    val contacts = json.get("pointOfContact") as? ArrayNode ?: return
-    var oldUuid: String? = null
+    val addressIndex = json.withIndex().find { it.value.getString("organization") == name }?.index
+        ?: throw RuntimeException("Could not replace dynamically generated UUID for $name")
 
-    // First, find and update the uuids for matching organizations
-    contacts.forEach { item ->
-        val orgNode = item.getString("ref.organization")
-        if (orgNode == name) {
-            oldUuid = item.getString("ref._uuid")
-            (item.get("ref") as? ObjectNode)?.put("_uuid", uuid)
-        }
-    }
+    val oldUuid: String? = json[addressIndex].getString("_uuid")
+    (json[addressIndex] as? ObjectNode)?.put("_uuid", uuid)
 
     if (oldUuid == null) return
+
+    // also update uuid in references
+    json[0].get("pointOfContact")
+        .filter { it.getString("ref") == oldUuid }
+        .forEach { (it as ObjectNode).put("ref", uuid) }
+
+
     // Next, update parentAsUuid fields if they match any oldUuid
-    contacts.forEach { item ->
-        val parentAsUuid = item.getString("ref.parentAsUuid")
+    json.forEach { item ->
+        val parentAsUuid = item.getString("parentAsUuid")
         if (oldUuid == parentAsUuid) {
-            (item.get("ref") as? ObjectNode)?.put("parentAsUuid", uuid)
+            (item as? ObjectNode)?.put("parentAsUuid", uuid)
         }
     }
 }
