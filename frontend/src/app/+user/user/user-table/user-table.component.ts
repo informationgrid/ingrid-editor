@@ -87,7 +87,7 @@ export class UserTableComponent
   defaultSort = input<string>();
   selectedUser = input<User>(null);
 
-  onUserSelect = output<User>();
+  onUserSelect = output<User>({});
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -139,6 +139,7 @@ export class UserTableComponent
       if (this.selection.selected[0]?.login !== userLogin) {
         this.setSelectionToItem(userLogin, "login");
         this.updatePaginator(userLogin, "login");
+        this.select(this.selectedUser());
       }
     });
 

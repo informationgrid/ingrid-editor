@@ -54,7 +54,7 @@
                 [query]="query.value"
                 [users]="users()"
                 [selectedUser]="explicitUser()"
-                (onUserSelect)="selectedUser.set($event)"
+                (onUserSelect)="handleUserSelect($event)"
             ></user-table>
         </as-split-area>
         <as-split-area
@@ -88,6 +88,7 @@
                         [class.expanded]="showMore()"
                         [matTooltip]="showMore() ? 'Schließen' : 'Öffnen'"
                         (click)="showMore.set(!showMore())"
+                        [disabled]="isLoading()"
                     >
                         <mat-icon class="rotating animated"
                             >keyboard_arrow_down

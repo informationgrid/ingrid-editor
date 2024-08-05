@@ -135,8 +135,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         }
         if (developmentMode) logger.info("Skip sending welcome mail as development mode is active.")
 
-        user.id = createdUser.id
-        return ResponseEntity.ok(user)
+        return ResponseEntity.ok(getSingleUser(principal, createdUser.userId))
     }
 
     private fun validateLoginName(user: User) {

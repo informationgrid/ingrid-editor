@@ -65,10 +65,8 @@ export class UserComponent implements OnInit, AfterViewInit {
   explicitUser = signal<User>(null);
   loadedUser = signal<User>(null);
   showMore = signal<boolean>(false);
-  showLoadingUsers = signal<boolean>(false);
   isLoading = signal<boolean>(false);
   formlyFieldConfig: FormlyFieldConfig[];
-  // model = signal<User>(null);
   tableWidth: number;
   query = new FormControl<string>("");
   private previousSelectedUser: User = null;
@@ -170,17 +168,16 @@ export class UserComponent implements OnInit, AfterViewInit {
           })
           .afterClosed()
           .subscribe((result) => {
-            if (result?.id) this.updateUsers();
+            if (result?.id) {
+              this.updateUsers();
+              this.userService.selectedUser$.set(result);
+            }
           });
     });
   }
 
   private updateUsers() {
-    this.showLoadingUsers.set(true);
-    this.userService
-      .getUsers()
-      .pipe(finalize(() => this.showLoadingUsers.set(false)))
-      .subscribe();
+    this.userService.getUsers().subscribe();
   }
 
   saveUser(user?: User, loadUser: boolean = true): void {
@@ -280,5 +277,9 @@ export class UserComponent implements OnInit, AfterViewInit {
   private hideLoading() {
     this.enableForm();
     this.isLoading.set(false);
+  }
+
+  handleUserSelect($event: User) {
+    this.selectedUser.set($event);
   }
 }
