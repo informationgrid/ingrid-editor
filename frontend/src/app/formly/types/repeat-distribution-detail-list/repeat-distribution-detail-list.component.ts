@@ -177,7 +177,7 @@ export class RepeatDistributionDetailListComponent
   }
 
   private getEmptyEntry() {
-    const template = this.field.props.jsonTemplate ?? {};
+    const template = structuredClone(this.field.props.jsonTemplate ?? {});
     template[this.getUploadFieldKey()] = {
       asLink: true,
       value: "",
