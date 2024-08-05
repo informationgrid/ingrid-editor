@@ -751,27 +751,6 @@ ${contentInfo}
 @if(page.hasDistributionInfo())
     <gmd:distributionInfo>
         <gmd:MD_Distribution>
-            @for( FileReference fileReference : page.getFileReferencesWithUrl() )
-                <gmd:fileReference>
-                    <gmd:File>
-                        <gmd:title>
-                            <gco:CharacterString>${fileReference.getTitle()}</gco:CharacterString>
-                        </gmd:title>
-                        <gmd:description>
-                            <gco:CharacterString>${fileReference.getDescription()}</gco:CharacterString>
-                        </gmd:description>
-                        <gmd:format>
-                            <gco:CharacterString>${fileReference.getFormat().getKey()}</gco:CharacterString>
-                        </gmd:format>
-                        <gmd:link>
-                            <gco:CharacterString>${fileReference.getUrl()}</gco:CharacterString>
-                        </gmd:link>
-                        <gmd:sizeInBytes>
-                            <gco:Integer>${fileReference.getLink().getSizeInBytes()}</gco:Integer>
-                        </gmd:sizeInBytes>
-                    </gmd:File>
-                </gmd:fileReference>
-            @endfor
             @for( DistributionFormat distributionFormat : page.getDistributionFormats() )
                 <gmd:distributionFormat>
                     <gmd:MD_Format>
@@ -913,6 +892,31 @@ ${contentInfo}
                         </gmd:offLine>
                     </gmd:MD_DigitalTransferOptions>
                 </gmd:transferOptions>
+            @endfor
+            @for( FileReference fileReference : page.getFileReferencesWithUrl() )
+                  <gmd:transferOptions>
+                     <gmd:MD_DigitalTransferOptions>
+                        <gmd:transferSize>
+                           <gco:Real>${fileReference.getLink().getSizeInBytes()}</gco:Real>
+                        </gmd:transferSize>
+                        <gmd:onLine>
+                           <gmd:CI_OnlineResource>
+                              <gmd:linkage>
+                                 <gmd:URL>${fileReference.getUrl()}</gmd:URL>
+                              </gmd:linkage>
+                              <gmd:applicationProfile>
+                                 <gco:CharacterString>${fileReference.getFormat().getKey()}</gco:CharacterString>
+                              </gmd:applicationProfile>
+                              <gmd:name>
+                                 <gco:CharacterString>${fileReference.getTitle()}</gco:CharacterString>
+                              </gmd:name>
+                              <gmd:description>
+                                 <gco:CharacterString>${fileReference.getDescription()}</gco:CharacterString>
+                              </gmd:description>
+                           </gmd:CI_OnlineResource>
+                        </gmd:onLine>
+                     </gmd:MD_DigitalTransferOptions>
+                  </gmd:transferOptions>
             @endfor
         </gmd:MD_Distribution>
     </gmd:distributionInfo>
