@@ -85,7 +85,7 @@ export class UserTableComponent
   query = input<string>("");
   canExport = input<boolean>(true);
   defaultSort = input<string>();
-  selectedUser = input<User>(null);
+  selectedUserLogin = input<string>(null);
 
   onUserSelect = output<User>({});
 
@@ -134,14 +134,19 @@ export class UserTableComponent
       return combined.includes(filterValue.trim().toLowerCase());
     };
 
-    effect(() => {
-      const userLogin = this.selectedUser()?.login;
-      if (this.selection.selected[0]?.login !== userLogin) {
-        this.setSelectionToItem(userLogin, "login");
-        this.updatePaginator(userLogin, "login");
-        this.select(this.selectedUser());
-      }
-    });
+    effect(
+      () => {
+        const userLogin = this.selectedUserLogin() ?? null;
+        const currentSelectionLogin = this.selection.selected[0]?.login ?? null;
+        if (currentSelectionLogin !== userLogin) {
+          this.setSelectionToItem(userLogin, "login");
+          this.updatePaginator(userLogin, "login");
+
+          this.select(this.selection.selected[0]);
+        }
+      },
+      { allowSignalWrites: true },
+    );
 
     effect(
       () => {
@@ -178,6 +183,7 @@ export class UserTableComponent
   }
 
   select(element) {
+    // this.userService.selectedUser$.set(element);
     this.selection.select(element);
     this.onUserSelect.emit(element);
   }

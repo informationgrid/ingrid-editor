@@ -61,8 +61,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   form = new UntypedFormGroup({});
   menuItems: FormularMenuItem[];
 
-  selectedUser = this.userService.selectedUser$;
-  explicitUser = signal<User>(null);
+  explicitUserLogin = signal<string>(null);
   loadedUser = signal<User>(null);
   showMore = signal<boolean>(false);
   isLoading = signal<boolean>(false);
@@ -96,8 +95,10 @@ export class UserComponent implements OnInit, AfterViewInit {
         const user = this.userService.selectedUser$();
         // set user in case we come from another page
         // TODO: should be done with URL-parameter to load the user like it's done on document page
-        this.explicitUser.set(user);
-        if (user && this.loadedUser()?.id !== user.id) this.loadUser(user.id);
+        if (!user) return;
+
+        this.explicitUserLogin.set(user.login);
+        if (this.loadedUser()?.id !== user.id) this.loadUser(user.id);
       },
       { allowSignalWrites: true },
     );
@@ -109,7 +110,7 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.menuItems = this.formMenuService.getMenuItems("user");
-    this.updateUsers();
+    this.userService.getUsers().subscribe();
   }
 
   groupSelectCallback = (groupIdString: string) => {
@@ -143,7 +144,7 @@ export class UserComponent implements OnInit, AfterViewInit {
     this.dirtyFormHandled().subscribe((confirmed) => {
       if (confirmed) {
         this.showLoading();
-        this.previousSelectedUser = this.selectedUser();
+        this.previousSelectedUser = this.userService.selectedUser$();
         this.userService
           .getUser(id)
           .pipe(
@@ -153,7 +154,7 @@ export class UserComponent implements OnInit, AfterViewInit {
           )
           .subscribe();
       } else {
-        this.explicitUser.set(this.previousSelectedUser);
+        this.userService.selectedUser$.set(this.previousSelectedUser);
       }
     });
   }
@@ -169,15 +170,12 @@ export class UserComponent implements OnInit, AfterViewInit {
           .afterClosed()
           .subscribe((result) => {
             if (result?.id) {
-              this.updateUsers();
-              this.userService.selectedUser$.set(result);
+              this.userService
+                .getUsers()
+                .subscribe(() => this.userService.selectedUser$.set(result));
             }
           });
     });
-  }
-
-  private updateUsers() {
-    this.userService.getUsers().subscribe();
   }
 
   saveUser(user?: User, loadUser: boolean = true): void {
@@ -203,7 +201,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   discardUser(): void {
     this.showLoading();
     this.form.markAsPristine();
-    this.updateUsers();
+    this.userService.getUsers().subscribe();
     this.form.reset();
   }
 
@@ -279,7 +277,9 @@ export class UserComponent implements OnInit, AfterViewInit {
     this.isLoading.set(false);
   }
 
-  handleUserSelect($event: User) {
-    this.selectedUser.set($event);
+  handleUserSelect(user: User) {
+    // this.selectedUser.set($event);
+    this.userService.selectedUser$.set(user);
+    // if (this.loadedUser()?.id !== user.id) this.loadUser(user.id);
   }
 }

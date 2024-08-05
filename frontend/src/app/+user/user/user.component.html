@@ -53,7 +53,7 @@
             <user-table
                 [query]="query.value"
                 [users]="users()"
-                [selectedUser]="explicitUser()"
+                [selectedUserLogin]="explicitUserLogin()"
                 (onUserSelect)="handleUserSelect($event)"
             ></user-table>
         </as-split-area>
@@ -62,7 +62,7 @@
             id="formUser"
             class="split-pane-content-secondary container-fluid flex-row"
         >
-            <div class="detail-user" [class.hide]="selectedUser() === null">
+            <div class="detail-user" [class.hide]="loadedUser() === null">
                 <div class="user-title">
                     <div class="document-type">
                         <mat-icon
@@ -130,7 +130,7 @@
                     <!--                    [model]="model()"-->
                 </formly-form>
             </div>
-            @if (!selectedUser()) {
+            @if (!loadedUser()) {
                 @if (users()?.length > 0) {
                     <div
                         class="detail-user no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
