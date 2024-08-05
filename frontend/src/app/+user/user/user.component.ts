@@ -181,7 +181,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   saveUser(user?: User, loadUser: boolean = true): void {
     this.showLoading();
 
-    user = user ?? this.form.value;
+    user = user ?? this.form.getRawValue();
     // send request and handle error
     this.userService
       .updateUser(user)
@@ -257,7 +257,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   private async handleAction(action: undefined | "save" | "discard") {
-    const user = this.form.value;
+    const user = this.form.getRawValue();
     if (action === "save") {
       this.saveUser(user, false);
     } else if (action === "discard") {
