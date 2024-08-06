@@ -198,12 +198,12 @@ export class ConsolidateDialogComponent implements OnInit {
             res["status"] = "added";
             this.umthesKeywordsNew.push(res);
           }
+        } else if (res.thesaurus === "Freie Schlagworte") {
+          res["status"] = "unchanged";
+          this.freeKeywordsNew.push(res);
+          return;
         }
-        this.freeKeywordsNew.push(
-          keyword.label === res.label
-            ? { ...res, status: "removed" }
-            : { ...keyword, status: "unchanged" },
-        );
+        this.freeKeywordsNew.push({ ...res, status: "removed" });
       });
   }
 
