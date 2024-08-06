@@ -61,7 +61,7 @@ export class DeactivateGuard {
     if (nextState?.url.includes(";id=")) return true;
 
     const type = component instanceof UserComponent ? "user" : "group";
-    const currentObject = component.form.value;
+    const currentObject = component.form.getRawValue();
 
     return this.dialog
       .open(ConfirmDialogComponent, {
