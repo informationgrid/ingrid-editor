@@ -186,11 +186,10 @@ export class UserComponent implements OnInit, AfterViewInit {
     this.userService
       .updateUser(user)
       .pipe(finalize(() => this.hideLoading()))
-      .subscribe(() => {
+      .subscribe((modUser) => {
         if (loadUser) {
-          // this.model.set(user);
+          this.loadedUser.set(modUser);
           this.form.markAsPristine();
-          // this.updateUsersAndLoad(user.id);
           this.snackBar.open("Benutzer wurde gespeichert", "", {
             panelClass: "green",
           });
@@ -278,8 +277,6 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   handleUserSelect(user: User) {
-    // this.selectedUser.set($event);
     this.userService.selectedUser$.set(user);
-    // if (this.loadedUser()?.id !== user.id) this.loadUser(user.id);
   }
 }

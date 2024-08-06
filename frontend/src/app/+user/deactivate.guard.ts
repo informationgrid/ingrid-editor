@@ -117,13 +117,11 @@ export class DeactivateGuard {
     currentObject = null,
     component: UserComponent | GroupComponent,
   ) {
-    console.log(currentObject);
     if (action === "save") {
       type == "group"
         ? (<GroupComponent>component).saveGroup()
         : (<UserComponent>component).saveUser(currentObject);
     } else if (action === "discard") {
-      console.log(action);
       type == "group"
         ? (<GroupComponent>component).discardGroup(currentObject)
         : (<UserComponent>component).discardUser();

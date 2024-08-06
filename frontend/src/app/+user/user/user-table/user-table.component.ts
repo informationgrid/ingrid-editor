@@ -136,14 +136,7 @@ export class UserTableComponent
 
     effect(
       () => {
-        const userLogin = this.selectedUserLogin() ?? null;
-        const currentSelectionLogin = this.selection.selected[0]?.login ?? null;
-        if (currentSelectionLogin !== userLogin) {
-          this.setSelectionToItem(userLogin, "login");
-          this.updatePaginator(userLogin, "login");
-
-          this.select(this.selection.selected[0]);
-        }
+        this.handleSelectedUserChange();
       },
       { allowSignalWrites: true },
     );
@@ -151,8 +144,10 @@ export class UserTableComponent
     effect(
       () => {
         if (this.users() === null) return;
+        this.selection.clear();
         this.dataSource.data = this.users();
         this.isLoading.set(false);
+        this.handleSelectedUserChange();
       },
       { allowSignalWrites: true },
     );
@@ -160,6 +155,17 @@ export class UserTableComponent
     effect(() => {
       this.dataSource.filter = this.query();
     });
+  }
+
+  private handleSelectedUserChange() {
+    const userLogin = this.selectedUserLogin() ?? null;
+    const currentSelectionLogin = this.selection.selected[0]?.login ?? null;
+    if (currentSelectionLogin !== userLogin) {
+      this.setSelectionToItem(userLogin, "login");
+      this.updatePaginator(userLogin, "login");
+
+      this.select(this.selection.selected[0]);
+    }
   }
 
   ngOnInit() {
@@ -183,7 +189,6 @@ export class UserTableComponent
   }
 
   select(element) {
-    // this.userService.selectedUser$.set(element);
     this.selection.select(element);
     this.onUserSelect.emit(element);
   }
