@@ -154,6 +154,8 @@ export class UserTableComponent
 
     effect(() => {
       this.dataSource.filter = this.query();
+      const userLogin = this.selection.selected[0]?.login;
+      if (userLogin) this.updatePaginator(userLogin, "login");
     });
   }
 
