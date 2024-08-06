@@ -27,7 +27,7 @@ import {
   signal,
 } from "@angular/core";
 import { UserService } from "../../services/user/user.service";
-import { User } from "../user";
+import { FrontendUser, User } from "../user";
 import { Observable, of } from "rxjs";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
@@ -148,7 +148,7 @@ export class UserComponent implements OnInit, AfterViewInit {
         this.userService
           .getUser(id)
           .pipe(
-            tap((value) => this.form.patchValue(value)),
+            tap((value) => this.updateFormAfterLoad(value)),
             tap((value) => this.loadedUser.set(value)),
             finalize(() => this.hideLoading()),
           )
@@ -157,6 +157,11 @@ export class UserComponent implements OnInit, AfterViewInit {
         this.userService.selectedUser$.set(this.previousSelectedUser);
       }
     });
+  }
+
+  private updateFormAfterLoad(value: FrontendUser) {
+    this.form.patchValue(value);
+    this.form.markAsPristine();
   }
 
   showAddUsersDialog() {
