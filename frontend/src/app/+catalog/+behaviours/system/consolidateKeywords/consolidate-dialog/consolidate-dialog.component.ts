@@ -177,7 +177,7 @@ export class ConsolidateDialogComponent implements OnInit {
     } else {
       if (!this.freeKeywords.includes(keyword.label)) {
         this.freeKeywordsNew.push({ ...res, status: "added" });
-        this.gemetKeywordsNew.push({ ...res, status: "removed" });
+        this.umthesKeywordsNew.push({ ...res, status: "removed" });
       }
     }
   }
