@@ -239,11 +239,9 @@ export class ConsolidateDialogComponent implements OnInit {
       doc.themes = this.inspireThemesNew.map((k) => ({
         key: k.value.key,
       }));
-      doc.topicCategories = [
-        ...this.inspireThemesNew.map((k) => ({
-          key: KeywordAnalysis.inspireToIsoMapping[k.value.key],
-        })),
-      ];
+      doc.topicCategories = this.inspireTopicsNew.map((k) => ({
+        key: k.value.key,
+      }));
 
       this.documentService
         .save({ data: doc, isNewDoc: false, isAddress: false })
