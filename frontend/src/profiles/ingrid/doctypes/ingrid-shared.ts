@@ -1458,12 +1458,15 @@ export abstract class IngridShared extends BaseDoctype {
                 return !!field.form.value?.uuidRef;
               },
               "props.label": (field: FormlyFieldConfig) => {
-                return field.props.disabled ? "URL (nur bei leerem Datensatzverweis)" : "URL"
-              }
+                return field.props.disabled
+                  ? "URL (nur bei leerem Datensatzverweis)"
+                  : "URL";
+              },
             },
             validation: {
               messages: {
-                required: "Entweder URL oder Datensatzverweis muss ausgefüllt sein",
+                required:
+                  "Entweder URL oder Datensatzverweis muss ausgefüllt sein",
               },
             },
           }),
@@ -1501,8 +1504,10 @@ export abstract class IngridShared extends BaseDoctype {
             return !!field.form.value?.url;
           },
           "props.label": (field: FormlyFieldConfig) => {
-            return field.props.disabled ? "Datensatzverweis (nur bei leerer URL)" : "Datensatzverweis"
-          }
+            return field.props.disabled
+              ? "Datensatzverweis (nur bei leerer URL)"
+              : "Datensatzverweis";
+          },
         },
         validation: {
           messages: {
