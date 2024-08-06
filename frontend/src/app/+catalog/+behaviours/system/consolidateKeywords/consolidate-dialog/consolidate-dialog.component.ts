@@ -97,7 +97,7 @@ export class ConsolidateDialogComponent implements OnInit {
 
     this.isInspireIdentified = this.form.isInspireIdentified;
     this.inspireThemes = this.isInspireIdentified ? this.form.themes : [];
-    this.inspireTopics = this.form.topicCategories;
+    this.inspireTopics = this.form.topicCategories || [];
 
     this.gemetKeywords = this.form.keywords.gemet;
     this.umthesKeywords = this.form.keywords.umthes;
