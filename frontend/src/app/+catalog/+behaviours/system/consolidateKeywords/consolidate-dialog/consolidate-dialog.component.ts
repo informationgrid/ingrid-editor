@@ -152,8 +152,7 @@ export class ConsolidateDialogComponent implements OnInit {
       "gemet",
     );
     if (res.found) {
-      res["status"] = "unchanged";
-      this.gemetKeywordsNew.push(res);
+      this.gemetKeywordsNew.push({ ...res, status: "unchanged" });
     } else {
       if (!this.freeKeywords.includes(keyword.label)) {
         this.freeKeywordsNew.push({ ...res, status: "added" });
@@ -168,8 +167,7 @@ export class ConsolidateDialogComponent implements OnInit {
       "umthes",
     );
     if (res.found) {
-      res["status"] = "unchanged";
-      this.umthesKeywordsNew.push(res);
+      this.umthesKeywordsNew.push({ ...res, status: "unchanged" });
     } else {
       if (!this.freeKeywords.includes(keyword.label)) {
         this.freeKeywordsNew.push({ ...res, status: "added" });
@@ -186,17 +184,14 @@ export class ConsolidateDialogComponent implements OnInit {
           this.addInspireKeyword(res);
         } else if (res.thesaurus === "Gemet Schlagworte") {
           if (!this.gemetKeywords.some((k) => k.label === res.label)) {
-            res["status"] = "added";
-            this.gemetKeywordsNew.push(res);
+            this.gemetKeywordsNew.push({ ...res, status: "added" });
           }
         } else if (res.thesaurus === "Umthes Schlagworte") {
           if (!this.umthesKeywords.some((k) => k.label === res.label)) {
-            res["status"] = "added";
-            this.umthesKeywordsNew.push(res);
+            this.umthesKeywordsNew.push({ ...res, status: "added" });
           }
         } else if (res.thesaurus === "Freie Schlagworte") {
-          res["status"] = "unchanged";
-          this.freeKeywordsNew.push(res);
+          this.freeKeywordsNew.push({ ...res, status: "unchanged" });
           return;
         }
         this.freeKeywordsNew.push({ ...res, status: "removed" });
@@ -205,11 +200,10 @@ export class ConsolidateDialogComponent implements OnInit {
 
   private addInspireKeyword(res: ThesaurusResult) {
     if (!this.inspireThemes.some((t) => t.key === res.value.key)) {
-      res["status"] = "added";
+      this.inspireThemesNew.push({ ...res, status: "added" });
     } else {
-      res["status"] = "unchanged";
+      this.inspireThemesNew.push({ ...res, status: "unchanged" });
     }
-    this.inspireThemesNew.push(res);
 
     const isoKey = KeywordAnalysis.inspireToIsoMapping[res.value.key]; // INSPIRE topic key
     const inspireTopic = this.codelistQuery.getCodelistEntryByKey(
