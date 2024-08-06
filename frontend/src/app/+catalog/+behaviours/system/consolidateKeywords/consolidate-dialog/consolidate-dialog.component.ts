@@ -79,6 +79,7 @@ export class ConsolidateDialogComponent implements OnInit {
   umthesKeywordsNew: ThesaurusResult[] = [];
   freeKeywordsNew: ThesaurusResult[] = [];
   isLoading: boolean;
+  buttonClicked: boolean;
 
   ngOnInit() {
     this.consolidateKeywords();

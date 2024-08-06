@@ -160,11 +160,18 @@
         <button
             color="primary"
             mat-flat-button
-            [disabled]="isLoading"
+            data-cy="save-btn"
+            id="save-btn"
+            [disabled]="isLoading || buttonClicked"
             *ngIf="keywords.length"
-            (click)="saveConsolidatedKeywords()"
+            (click)="saveConsolidatedKeywords(); buttonClicked = true"
         >
-            Übernehmen
+            <span *ngIf="!buttonClicked">Übernehmen</span>
+            <mat-spinner
+                *ngIf="buttonClicked"
+                class="button-spinner"
+                diameter="20"
+            ></mat-spinner>
         </button>
     </mat-dialog-actions>
 </div>
