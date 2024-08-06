@@ -203,10 +203,8 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   discardUser(): void {
-    this.showLoading();
     this.form.markAsPristine();
-    this.userService.getUsers().subscribe();
-    this.form.reset();
+    this.form.reset(this.loadedUser());
   }
 
   enableForm() {
