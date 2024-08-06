@@ -81,13 +81,13 @@ export class ConsolidateDialogComponent implements OnInit {
   isLoading: boolean;
 
   ngOnInit() {
-    this.form = this.formStateService.getForm().value;
     this.consolidateKeywords();
   }
 
   private consolidateKeywords() {
     this.isLoading = true;
     this.resetNewKeywords();
+    this.form = this.formStateService.getForm().value;
 
     this.keywords = this.form.keywords;
     if (!this.keywords) {
@@ -111,34 +111,30 @@ export class ConsolidateDialogComponent implements OnInit {
     ];
 
     Promise.all([
-      ...this.inspireThemes.map((theme) => this.handleInspireThemes(theme)),
-      ...this.inspireTopics.map((topic) => this.handleInspireTopics(topic)),
-      ...this.gemetKeywords.map((keyword) => this.handleGemetKeywords(keyword)),
+      ...this.inspireThemes.map((theme) => this.handleInspireTheme(theme)),
+      ...this.inspireTopics.map((topic) => this.handleInspireTopic(topic)),
+      ...this.gemetKeywords.map((keyword) => this.handleGemetKeyword(keyword)),
       ...this.umthesKeywords.map((keyword) =>
-        this.handleUmthesKeywords(keyword),
+        this.handleUmthesKeyword(keyword),
       ),
-      ...this.freeKeywords.map((keyword) => this.handleFreeKeywords(keyword)),
+      ...this.freeKeywords.map((keyword) => this.handleFreeKeyword(keyword)),
     ]).then(() => {
-      this.inspireThemesNew.map((k) => ({
-        key: KeywordAnalysis.inspireToIsoMapping[k.value.key],
-      }));
       this.sortKeywordsByStatus();
       this.removeDuplicateKeywords();
       this.isLoading = false;
     });
   }
 
-  private async handleInspireThemes(theme: { key: string }) {
+  private handleInspireTheme(theme: { key: string }) {
     const res = this.keywordAnalysis.checkInThemes(
       this.codelistQuery.getCodelistEntryByKey("6100", theme.key).fields["de"],
     );
     if (res.found) {
-      res["status"] = "unchanged";
-      this.inspireThemesNew.push(res);
+      this.inspireThemesNew.push({ ...res, status: "unchanged" });
     }
   }
 
-  private handleInspireTopics(topic: { key: string }) {
+  private handleInspireTopic(topic: { key: string }) {
     this.inspireTopicsNew.push({
       found: true,
       value: { key: topic.key },
@@ -150,7 +146,7 @@ export class ConsolidateDialogComponent implements OnInit {
     });
   }
 
-  private async handleGemetKeywords(keyword: { label: string }) {
+  private async handleGemetKeyword(keyword: { label: string }) {
     const res = await this.keywordAnalysis.checkInThesaurus(
       keyword.label,
       "gemet",
@@ -166,7 +162,7 @@ export class ConsolidateDialogComponent implements OnInit {
     }
   }
 
-  private async handleUmthesKeywords(keyword: { label: string }) {
+  private async handleUmthesKeyword(keyword: { label: string }) {
     const res = await this.keywordAnalysis.checkInThesaurus(
       keyword.label,
       "umthes",
@@ -182,7 +178,7 @@ export class ConsolidateDialogComponent implements OnInit {
     }
   }
 
-  private async handleFreeKeywords(keyword: ThesaurusResult) {
+  private async handleFreeKeyword(keyword: ThesaurusResult) {
     await this.keywordAnalysis
       .assignKeyword(keyword.label, this.isInspireIdentified)
       .then((res) => {
@@ -215,7 +211,7 @@ export class ConsolidateDialogComponent implements OnInit {
     }
     this.inspireThemesNew.push(res);
 
-    const isoKey = KeywordAnalysis.inspireToIsoMapping[res.value.key];
+    const isoKey = KeywordAnalysis.inspireToIsoMapping[res.value.key]; // INSPIRE topic key
     const inspireTopic = this.codelistQuery.getCodelistEntryByKey(
       "527",
       isoKey,
