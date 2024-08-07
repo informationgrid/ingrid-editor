@@ -61,10 +61,7 @@ export class DeactivateGuard {
     if (nextState?.url.includes(";id=")) return true;
 
     const type = component instanceof UserComponent ? "user" : "group";
-    const currentObject =
-      component instanceof UserComponent
-        ? component.model
-        : component.form.value;
+    const currentObject = component.form.getRawValue();
 
     return this.dialog
       .open(ConfirmDialogComponent, {
@@ -120,16 +117,14 @@ export class DeactivateGuard {
     currentObject = null,
     component: UserComponent | GroupComponent,
   ) {
-    console.log(currentObject);
     if (action === "save") {
       type == "group"
         ? (<GroupComponent>component).saveGroup()
         : (<UserComponent>component).saveUser(currentObject);
     } else if (action === "discard") {
-      console.log(action);
       type == "group"
         ? (<GroupComponent>component).discardGroup(currentObject)
-        : (<UserComponent>component).discardUser(currentObject);
+        : (<UserComponent>component).discardUser();
     } else {
       // do nothing
     }

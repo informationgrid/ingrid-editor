@@ -114,11 +114,7 @@ export class AssignedUserBehaviour extends Plugin {
     super.register();
 
     // add menu item for user management
-    let selectedUser: User;
     this.subscriptions.push(
-      this.userService.selectedUser$.subscribe((user) => {
-        selectedUser = user;
-      }),
       this.eventService
         .respondToEvent(IgeEvent.DELETE_USER)
         .subscribe((eventResponder) => this.handleEvent(eventResponder)),
@@ -126,7 +122,8 @@ export class AssignedUserBehaviour extends Plugin {
     this.formMenuService.addMenuItem("user", {
       title: "Verantwortung übertragen",
       name: "transfer-responsibility",
-      action: () => this.handleTransferResponsibility(selectedUser),
+      action: () =>
+        this.handleTransferResponsibility(this.userService.selectedUser$()),
     });
   }
 
@@ -221,7 +218,7 @@ export class AssignedUserBehaviour extends Plugin {
         .open(TransferResponsibilityDialogComponent, {
           width: "780px",
           data: {
-            users: this.userService.users$.value,
+            users: this.userService.users$(),
             oldUser: oldUser,
           },
           delayFocusTrap: true,

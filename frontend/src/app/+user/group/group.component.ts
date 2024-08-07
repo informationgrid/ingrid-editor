@@ -336,8 +336,8 @@ export class GroupComponent implements OnInit, AfterViewInit {
       );
   }
 
-  switchToUser($event: User) {
-    this.userService.selectedUser$.next($event);
+  switchToUser(user: User) {
+    this.userService.selectedUser$.set(user);
     this.router.navigate([`${ConfigService.catalogId}/manage/user`]);
   }
 }
