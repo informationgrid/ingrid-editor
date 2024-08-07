@@ -19,58 +19,47 @@
  */
 package de.ingrid.igeserver.research
 
-import de.ingrid.igeserver.IgeServer
-import io.kotest.core.spec.style.ShouldSpec
-import io.kotest.extensions.spring.SpringExtension
+import IntegrationTest
 import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.shouldBe
 import jakarta.persistence.EntityManager
 import org.hibernate.query.NativeQuery
 import org.intellij.lang.annotations.Language
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
 
 
-@SpringBootTest(classes = [IgeServer::class])
-@TestPropertySource(locations = ["classpath:application-test.properties"])
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(scripts = ["/test_data.sql"], config = SqlConfig(encoding = "UTF-8"))
-@AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles(profiles = ["default", "uvp"])
-class ResearchTest : ShouldSpec() {
-
-    override fun extensions() = listOf(SpringExtension)
+class ResearchTest : IntegrationTest() {
 
     @Autowired
     private lateinit var entityManager: EntityManager
 
-    init {
-        should("find by term (exact)") {
-            @Language("PostgreSQL") val sql = """
+    @Test
+    fun findByTerm_exact() {
+        @Language("PostgreSQL") val sql = """
                 SELECT *
                 FROM document
                 WHERE data ->> 'company' = 'LWL-Schulverwaltung Münster';
             """
 
-            val list = execQuery(sql)
-            list.size shouldBeExactly 1
-        }
+        val list = execQuery(sql)
+        list.size shouldBeExactly 1
+        (list[0] as Array<*>)[2] as String shouldBe "4e91e8f8-1e16-c4d2-6689-02adc03fb352"
+    }
 
-        should("find by term (like)") {
-            @Language("PostgreSQL") val sql = """
+    @Test
+    fun findByTerm_like() {
+        @Language("PostgreSQL") val sql = """
             SELECT *
             FROM document document1
             WHERE document1.is_latest = true AND document1.data ->> 'company' LIKE '%verwaltung%';
         """
 
-            val list = execQuery(sql)
-            list.size shouldBeExactly 1
-        }
+        val list = execQuery(sql)
+        list.size shouldBeExactly 1 // although two versions of same document are in database
+        (list[0] as Array<*>)[2] as String shouldBe "4e91e8f8-1e16-c4d2-6689-02adc03fb352"
     }
 
     private fun execQuery(sql: String): List<Any> {
