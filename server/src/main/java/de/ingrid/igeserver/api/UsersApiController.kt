@@ -101,7 +101,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        val userExists = keycloakService.userExists(principal, user.login)
+        val userExists = keycloakService.userExists(user.login)
         if (userExists && newExternalUser) {
             throw ConflictException.withReason("User already exists with login ${user.login}")
         }
@@ -109,8 +109,8 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         logger.debug("Create user ${user.login} (exists in keycloak: $userExists)")
 
         val createdUser = if (userExists) {
-            keycloakService.updateUser(principal, user)
-            keycloakService.addRoles(principal, user.login, listOf(user.role))
+            keycloakService.updateUser(user)
+            keycloakService.addRoles(user.login, listOf(user.role))
             val createdUser = catalogService.createUser(catalogId, user)
             if (!developmentMode) {
                 logger.info("Send welcome email to existing user '${user.login}' (${user.email})")
@@ -119,7 +119,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             createdUser
 
         } else {
-            val password = keycloakService.createUser(principal, user)
+            val password = keycloakService.createUser(user)
             val createdUser = catalogService.createUser(catalogId, user)
             if (!developmentMode) {
                 logger.info("Send welcome email to '${user.login}' (${user.email})")
@@ -161,22 +161,20 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         // if user really deleted (only was connected to one catalog)
         if (deleted) {
             if (!developmentMode) {
-                keycloakService.getClient().use { client ->
-                    val user = keycloakService.getUser(client, login)
-                    logger.info("Send deletion email to '${user.login}' (${user.email})")
-                    try {
-                        email.sendDeletionEmail(
-                            user.email,
-                            user.firstName,
-                            user.lastName,
-                            user.login
-                        )
-                    } catch (ex: Exception) {
-                        throw MailException.withException(ex)
-                    }
+                val user = keycloakService.getUser(login)
+                logger.info("Send deletion email to '${user.login}' (${user.email})")
+                try {
+                    email.sendDeletionEmail(
+                        user.email,
+                        user.firstName,
+                        user.lastName,
+                        user.login
+                    )
+                } catch (ex: Exception) {
+                    throw MailException.withException(ex)
                 }
             }
-            keycloakService.deleteUser(principal, login)
+            keycloakService.deleteUser(login)
         }
 
         return ResponseEntity.ok().build()
@@ -191,18 +189,14 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
-        keycloakService.getClient().use { client ->
+        val login = frontendUser.userId
+        val user = keycloakService.getUser(login)
 
-            val login = frontendUser.userId
-            val user = keycloakService.getUser(client, login)
+        user.latestLogin = this.getMostRecentLoginForUser(login)
 
-            user.latestLogin = this.getMostRecentLoginForUser(login)
-
-            val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-            catalogService.applyIgeUserInfo(user, frontendUser, catalogId)
-            return ResponseEntity.ok(user)
-        }
-
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        catalogService.applyIgeUserInfo(user, frontendUser, catalogId)
+        return ResponseEntity.ok(user)
     }
 
 
@@ -210,34 +204,28 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         val frontendUser =
             userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
 
-        keycloakService.getClient().use { client ->
-            val login = frontendUser.userId
-            val user = keycloakService.getUser(client, login)
-            return ResponseEntity.ok(user.firstName + " " + user.lastName)
-        }
-
+        val login = frontendUser.userId
+        val user = keycloakService.getUser(login)
+        return ResponseEntity.ok(user.firstName + " " + user.lastName)
     }
 
     private fun getSingleUser(principal: Principal, userId: String): User? {
-        keycloakService.getClient().use { client ->
 
-
-            val user = try {
-                keycloakService.getUser(client, userId)
-            } catch (e: Exception) {
-                logger.error("Couldn't find keycloak user with login: $userId")
-                return null
-            }
-
-            val frontendUser =
-                userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
-
-            user.latestLogin = this.getMostRecentLoginForUser(userId)
-
-            val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-            catalogService.applyIgeUserInfo(user, frontendUser, catalogId)
-            return user
+        val user = try {
+            keycloakService.getUser(userId)
+        } catch (e: Exception) {
+            logger.error("Couldn't find keycloak user with login: $userId")
+            return null
         }
+
+        val frontendUser =
+            userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+
+        user.latestLogin = this.getMostRecentLoginForUser(userId)
+
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        catalogService.applyIgeUserInfo(user, frontendUser, catalogId)
+        return user
     }
 
     override fun list(principal: Principal): ResponseEntity<List<User>> {
@@ -291,9 +279,9 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     }
 
 
-    override fun listCatAdmins(principal: Principal, catalogId: String): ResponseEntity<List<User>> {
+    override fun listCatAdmins(catalogId: String): ResponseEntity<List<User>> {
         val filteredUsers =
-            catalogService.getAllCatalogUsers(principal, catalogId).filter { user -> user.role == "cat-admin" }
+            catalogService.getAllCatalogUsers(catalogId).filter { user -> user.role == "cat-admin" }
         return ResponseEntity.ok(filteredUsers)
     }
 
@@ -305,7 +293,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        keycloakService.updateUser(principal, user)
+        keycloakService.updateUser(user)
         catalogService.updateUser(catalogId, user)
         return ResponseEntity.ok(getSingleUser(principal, user.login))
 
@@ -315,17 +303,15 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     override fun updateCurrentUser(principal: Principal, user: User): ResponseEntity<Void> {
         // TODO set access rights so users can update their own info, but nothing else. especially not other users.
         val userId = authUtils.getUsernameFromPrincipal(principal)
-        keycloakService.getClient().use { client ->
-            val kcUser = keycloakService.getUser(client, userId)
+        val kcUser = keycloakService.getUser(userId)
 
-            user.apply {
-                login = userId
-                firstName = user.firstName.ifBlank { kcUser.firstName }
-                lastName = user.lastName.ifBlank { kcUser.lastName }
-                email = user.email.ifBlank { kcUser.email }
-            }
-            keycloakService.updateUser(principal, user)
+        user.apply {
+            login = userId
+            firstName = user.firstName.ifBlank { kcUser.firstName }
+            lastName = user.lastName.ifBlank { kcUser.lastName }
+            email = user.email.ifBlank { kcUser.email }
         }
+        keycloakService.updateUser(user)
         return ResponseEntity.ok().build()
     }
 
@@ -333,52 +319,50 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         principal as Authentication
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
-        keycloakService.getClient(principal).use { client ->
-            val user = keycloakService.getUser(client, userId)
+        val user = keycloakService.getUser(userId)
 
 
-            val lastLogin = this.updateAndGetLastLogin(principal, user.login)
-            val dbUser = catalogService.getUser(userId)
-            val permissions = try {
-                catalogService.getPermissions(principal)
-            } catch (ex: Exception) {
-                emptyList()
-            }
-
-            val currentCatalog = dbUser?.curCatalog ?: dbUser?.catalogs?.elementAtOrNull(0)
-            val groups = currentCatalog?.let { cat ->
-                dbUser?.getGroupsForCatalog(cat.identifier)?.map { it.name!! }?.toSet()
-            } ?: emptySet()
-            val assignedCatalogs = if (authUtils.isSuperAdmin(principal)) catalogService.getCatalogs() else dbUser?.catalogs?.toList() ?: emptyList()
-
-            val userInfo = UserInfo(
-                id = dbUser?.id,
-                login = user.login,
-                name = user.firstName + ' ' + user.lastName,
-                lastName = user.lastName,
-                firstName = user.firstName,
-                email = user.email,
-                assignedCatalogs = assignedCatalogs,
-                role = dbUser?.role?.name,
-                groups = groups,
-                currentCatalog = currentCatalog,
-                version = getVersion(),
-                lastLogin = lastLogin,
-                externalHelp = generalProperties.externalHelp,
-                useElasticsearch = env.activeProfiles.contains("elasticsearch"),
-                permissions = permissions,
-                plugins = behaviourService.get(currentCatalog?.identifier ?: "???")
-            )
-            try {
-                userInfo.currentCatalog?.type?.let {
-                    userInfo.parentProfile = catalogService.getCatalogProfile(it).parentProfile
-                }
-            } catch (ex: NotFoundException) {
-                // ignore not activated catalog
-                logger.warn(ex.message ?: "Catalog profile not found: ${userInfo.currentCatalog?.type}")
-            }
-            return ResponseEntity.ok(userInfo)
+        val lastLogin = this.updateAndGetLastLogin(user.login)
+        val dbUser = catalogService.getUser(userId)
+        val permissions = try {
+            catalogService.getPermissions(principal)
+        } catch (ex: Exception) {
+            emptyList()
         }
+
+        val currentCatalog = dbUser?.curCatalog ?: dbUser?.catalogs?.elementAtOrNull(0)
+        val groups = currentCatalog?.let { cat ->
+            dbUser?.getGroupsForCatalog(cat.identifier)?.map { it.name!! }?.toSet()
+        } ?: emptySet()
+        val assignedCatalogs = if (authUtils.isSuperAdmin(principal)) catalogService.getCatalogs() else dbUser?.catalogs?.toList() ?: emptyList()
+
+        val userInfo = UserInfo(
+            id = dbUser?.id,
+            login = user.login,
+            name = user.firstName + ' ' + user.lastName,
+            lastName = user.lastName,
+            firstName = user.firstName,
+            email = user.email,
+            assignedCatalogs = assignedCatalogs,
+            role = dbUser?.role?.name,
+            groups = groups,
+            currentCatalog = currentCatalog,
+            version = getVersion(),
+            lastLogin = lastLogin,
+            externalHelp = generalProperties.externalHelp,
+            useElasticsearch = env.activeProfiles.contains("elasticsearch"),
+            permissions = permissions,
+            plugins = behaviourService.get(currentCatalog?.identifier ?: "???")
+        )
+        try {
+            userInfo.currentCatalog?.type?.let {
+                userInfo.parentProfile = catalogService.getCatalogProfile(it).parentProfile
+            }
+        } catch (ex: NotFoundException) {
+            // ignore not activated catalog
+            logger.warn(ex.message ?: "Catalog profile not found: ${userInfo.currentCatalog?.type}")
+        }
+        return ResponseEntity.ok(userInfo)
     }
 
     private fun getMostRecentLoginForUser(userIdent: String): Date? {
@@ -386,33 +370,31 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return if (recentLogins.isEmpty()) null else recentLogins[recentLogins.size - 1]
     }
 
-    private fun updateAndGetLastLogin(principal: Principal, userIdent: String): Date? {
-        keycloakService.getClient(principal).use { client ->
-            val lastLoginKeyCloak = keycloakService.getLatestLoginDate(client, userIdent)
-            var recentLogins = catalogService.getRecentLoginsForUser(userIdent)
-            if (lastLoginKeyCloak != null) {
-                when (recentLogins.size) {
-                    0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
-                    1 -> recentLogins.add(lastLoginKeyCloak)
-                    else -> {
-                        if (recentLogins.size > 2) {
-                            logger.warn("More than two recent logins received! Using last 2 values")
-                            recentLogins = recentLogins.subList(recentLogins.size - 2, recentLogins.size)
-                        }
+    private fun updateAndGetLastLogin(userIdent: String): Date? {
+        val lastLoginKeyCloak = keycloakService.getLatestLoginDate(userIdent)
+        var recentLogins = catalogService.getRecentLoginsForUser(userIdent)
+        if (lastLoginKeyCloak != null) {
+            when (recentLogins.size) {
+                0 -> recentLogins.addAll(listOf(lastLoginKeyCloak, lastLoginKeyCloak))
+                1 -> recentLogins.add(lastLoginKeyCloak)
+                else -> {
+                    if (recentLogins.size > 2) {
+                        logger.warn("More than two recent logins received! Using last 2 values")
+                        recentLogins = recentLogins.subList(recentLogins.size - 2, recentLogins.size)
+                    }
 
-                        //only update if most recent dates are not equal
-                        if (recentLogins[1].compareTo(lastLoginKeyCloak) != 0) {
-                            recentLogins = mutableListOf(recentLogins[1], lastLoginKeyCloak)
-                        }
+                    //only update if most recent dates are not equal
+                    if (recentLogins[1].compareTo(lastLoginKeyCloak) != 0) {
+                        recentLogins = mutableListOf(recentLogins[1], lastLoginKeyCloak)
                     }
                 }
-                val user = userRepo.findByUserId(userIdent)
-                if (user != null) {
-                    catalogService.setRecentLoginsForUser(user, recentLogins.toTypedArray())
-                }
             }
-            return if (recentLogins.isEmpty()) null else recentLogins[0]
+            val user = userRepo.findByUserId(userIdent)
+            if (user != null) {
+                catalogService.setRecentLoginsForUser(user, recentLogins.toTypedArray())
+            }
         }
+        return if (recentLogins.isEmpty()) null else recentLogins[0]
     }
 
     private fun getVersion(): Version {
@@ -499,7 +481,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
     override fun listExternal(principal: Principal): ResponseEntity<List<User>> {
 
-        val users = keycloakService.getUsersWithIgeRoles(principal)
+        val users = keycloakService.getUsersWithIgeRoles()
 
         // remove users that are already present in this instance
         val allIgeUserIds = catalogService.getAllIgeUserIds()
@@ -516,27 +498,23 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
     override fun requestPasswordChange(principal: Principal, id: String): ResponseEntity<Void> {
 
-        keycloakService.requestPasswordChange(principal, id)
+        keycloakService.requestPasswordChange(id)
         return ResponseEntity.ok().build()
 
     }
 
     override fun resetPassword(principal: Principal, id: String): ResponseEntity<Void> {
-        keycloakService.getClient().use { client ->
-
-            val user = keycloakService.getUser(client, id)
-            val password = keycloakService.resetPassword(principal, id)
-            logger.debug("Reset password for user $id to $password")
-            if (!developmentMode) email.sendResetPasswordEmail(
-                user.email,
-                user.firstName,
-                user.lastName,
-                password,
-                user.login
-            )
-            return ResponseEntity.ok().build()
-        }
+        val user = keycloakService.getUser(id)
+        val password = keycloakService.resetPassword(id)
+        logger.debug("Reset password for user $id to $password")
+        if (!developmentMode) email.sendResetPasswordEmail(
+            user.email,
+            user.firstName,
+            user.lastName,
+            password,
+            user.login
+        )
+        return ResponseEntity.ok().build()
     }
-
 
 }

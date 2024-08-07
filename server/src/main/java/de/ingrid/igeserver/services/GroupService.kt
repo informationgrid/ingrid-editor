@@ -32,7 +32,6 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
 import de.ingrid.igeserver.repository.UserRepository
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
 import org.springframework.security.acls.domain.BasePermission
 import org.springframework.security.acls.domain.GrantedAuthoritySid
@@ -243,19 +242,17 @@ class GroupService(
 
     fun getUsersOfGroup(id: Int, principal: Principal): List<User> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        keycloakService.getClient().use { client ->
-            val users = userRepo.findByGroups_Id(id)
-                .mapNotNull {
-                    try {
-                        val user = keycloakService.getUser(client, it.userId).apply { role = it.role?.name ?: "" }
-                        catalogService.applyIgeUserInfo(user, it, catalogId)
-                    } catch (e: Exception) {
-                        log.error("Couldn't find keycloak user with login: ${it.userId}")
-                        null
-                    }
+        val users = userRepo.findByGroups_Id(id)
+            .mapNotNull {
+                try {
+                    val user = keycloakService.getUser(it.userId).apply { role = it.role?.name ?: "" }
+                    catalogService.applyIgeUserInfo(user, it, catalogId)
+                } catch (e: Exception) {
+                    log.error("Couldn't find keycloak user with login: ${it.userId}")
+                    null
                 }
-            return users
-        }
+            }
+        return users
     }
 
     fun getUserIdsOfGroup(id: Int, principal: Principal): List<String> = getUserIdsOfGroup(id, principal, emptyList())
