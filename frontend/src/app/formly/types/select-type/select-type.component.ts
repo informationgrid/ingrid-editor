@@ -120,16 +120,22 @@ export class SelectTypeComponent
   }
 
   private updateSelectField(value: any) {
-    if (!this.props.simple) {
+    if (value === undefined) {
+      // if value is undefined, set formControl to null
+      this.formControl.setValue(null, { emitEvent: false });
+    } else if (!this.props.simple) {
+      // if not simple, value is an object. set as object
       if (value?.key != null && value?.value != null) {
         this.formControl.setValue({ key: value.key });
       } else if (value?.key === null && !value?.value) {
         this.formControl.setValue(null);
       }
     } else if (this.props.multiple) {
+      // if simple and multiple, value is an array. set as array
       let simpleValues = value?.map((item) => item?.key ?? item) ?? null;
       this.formControl.setValue(simpleValues, { emitEvent: false });
     } else if (value?.key) {
+      // if simple and not multiple, value is an object. set as string
       this.formControl.setValue(value.key);
     }
     this.cdr.detectChanges();

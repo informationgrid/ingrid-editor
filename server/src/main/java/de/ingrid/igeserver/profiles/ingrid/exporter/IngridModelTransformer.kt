@@ -569,12 +569,7 @@ open class IngridModelTransformer(
     } else {
         // TODO: when document not yet published (ISO-view of draft) then do not generate operatesOn-element (#6241)
         val identifier = getLastPublishedDocument(it.uuid!!)?.data?.getString("identifier") ?: it.uuid
-        val containsNamespace = identifier.contains("://")
-        if (containsNamespace) {
-            identifier
-        } else {
-            namespace + identifier
-        }
+        addNamespaceIfNeeded(identifier)
     }
 
     // type is "Darstellungsdienste" and operation is "GetCapabilities"
@@ -599,13 +594,7 @@ open class IngridModelTransformer(
     }
 
     fun getReferingServiceUuid(service: CrossReference): String {
-        val containsNamespace = model.data.identifier?.contains("://") ?: false
-        return if (containsNamespace) {
-            "${service.uuid}@@${service.objectName}@@${service.serviceUrl ?: ""}@@${model.data.identifier}"
-        } else {
-            val namespaceWithSlash = if (namespace.endsWith("/")) namespace else "$namespace/"
-            "${service.uuid}@@${service.objectName}@@${service.serviceUrl ?: ""}@@${namespaceWithSlash}${model.data.identifier}"
-        }
+        return "${service.uuid}@@${service.objectName}@@${service.serviceUrl.orEmpty()}@@${this.citationURL}"
     }
 
     // TODO: move to specific doc types
@@ -705,9 +694,9 @@ open class IngridModelTransformer(
 
     init {
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
-        this.namespace = catalog.settings.config.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier/"
-        this.citationURL =
-            namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
+        this.namespace = if (catalog.settings.config.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/$catalogIdentifier/" else catalog.settings.config.namespace!!
+        this.citationURL = addNamespaceIfNeeded(model.data.identifier ?: model.uuid)
+
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
                 ?.map { toAddressModelTransformer(it) } ?: emptyList()
@@ -757,12 +746,16 @@ open class IngridModelTransformer(
     private fun getCitationUrlFromDoc(doc: Document): String {
         val identifier = doc.data.getString("identifier")
             ?: throw ServerException.withReason("Identifier of coupled document not found: ${doc.uuid}")
-        return if (identifier.indexOf("/", 1) == -1) {
-            namespace.suffixIfNot("/") + identifier
-        } else {
-            identifier
-        }
+        return addNamespaceIfNeeded(identifier)
     }
+
+    private fun addNamespaceIfNeeded(identifier: String): String =
+        // if identifier is a URI, don't add namespace
+        if (identifier.contains("://"))
+            identifier
+        else
+            namespace.suffixIfNot("/") + identifier
+
 
 
     private fun getCoupledCrossReferences() = model.data.service.coupledResources?.filter { !it.isExternalRef }

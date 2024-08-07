@@ -33,6 +33,7 @@ import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.Geodatase
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.GeoserviceTransformerLfub
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.InformationSystemTransformerLfub
 import de.ingrid.igeserver.utils.getString
+import org.jetbrains.kotlin.util.prefixIfNot
 import kotlin.reflect.KClass
 
 fun lfubUseConstraints(
@@ -48,7 +49,7 @@ fun lfubUseConstraints(
             CharacterStringModel(
                 listOfNotNull(
                     it.title.text.ifEmpty { null },
-                    it.source?.ifEmpty { null },
+                    it.source?.ifEmpty { null }?.prefixIfNot("Datenquelle: "),
                     comment?.ifEmpty { null }
                 ).joinToString("; "),
                 it.title.link

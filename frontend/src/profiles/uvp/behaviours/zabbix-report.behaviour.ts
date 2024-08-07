@@ -39,7 +39,6 @@ export class ZabbixReportBehaviour extends Plugin {
   group = "UVP";
 
   path = "uvp-monitoring";
-  isPrivileged: boolean;
   private menuItemId = "show-zabbix-report";
   private eventName = "SHOW_ZABBIX_REPORT";
 
@@ -48,21 +47,17 @@ export class ZabbixReportBehaviour extends Plugin {
     private docEvents: DocEventsService,
     private dialog: MatDialog,
     private docEventsService: DocEventsService,
-    configService: ConfigService,
+    private configService: ConfigService,
     private formMenuService: FormMenuService,
     private documentTreeQuery: TreeQuery,
   ) {
     super();
-
-    let role = configService.$userInfo.getValue().role;
-    this.isPrivileged =
-      role === "ige-super-admin" || role === "cat-admin" || role === "md-admin";
   }
 
   register() {
     this.addReportTab();
 
-    if (this.isPrivileged) {
+    if (this.configService.hasMdAdminRights()) {
       const onEvent = this.docEvents
         .onEvent(this.eventName)
         .subscribe((event) => {

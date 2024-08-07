@@ -3,7 +3,7 @@
     [dataSource]="dataSource"
     class="width-100"
     matSort
-    [matSortActive]="defaultSort"
+    [matSortActive]="defaultSort()"
     matSortDirection="asc"
 >
     <!-- role icon -->
@@ -124,14 +124,15 @@
     ></tr>
 </table>
 
-@if (isLoading) {
-    <div class="table-spinner">
-        <mat-spinner></mat-spinner>
+@if (isLoading()) {
+    <div class="table-spinner flex-col padding gap-24">
+        Benutzer werden geladen
+        <mat-spinner diameter="48"></mat-spinner>
     </div>
 }
 
 <div class="table-footer">
-    @if (canExport && dataSource.data?.length) {
+    @if (canExport() && dataSource.data?.length) {
         <button mat-flat-button (click)="exportTable()">CSV</button>
     }
     <div class="flex-1"></div>

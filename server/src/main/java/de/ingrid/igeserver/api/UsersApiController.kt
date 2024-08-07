@@ -135,8 +135,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         }
         if (developmentMode) logger.info("Skip sending welcome mail as development mode is active.")
 
-        user.id = createdUser.id
-        return ResponseEntity.ok(user)
+        return ResponseEntity.ok(getSingleUser(principal, createdUser.userId))
     }
 
     private fun validateLoginName(user: User) {
@@ -287,7 +286,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     }
 
 
-    override fun updateUser(principal: Principal, user: User): ResponseEntity<Void> {
+    override fun updateUser(principal: Principal, user: User): ResponseEntity<User> {
         if (!catalogService.canEditUser(principal, user.login)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
@@ -296,7 +295,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
         keycloakService.updateUser(user)
         catalogService.updateUser(catalogId, user)
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok(getSingleUser(principal, user.login))
 
     }
 

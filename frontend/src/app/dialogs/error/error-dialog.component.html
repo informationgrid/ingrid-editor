@@ -48,10 +48,10 @@
             {{ generalErrorMessage }}
         </div>
     }
-    {{ error.message?.error ?? error.message }}
+    <div [innerHTML]="error.message?.error ?? error.message"></div>
     @if (error.items) {
         <ul>
-            @for (item of error.items; track item) {
+            @for (item of $any(error.items); track item) {
                 <li>
                     {{ item }}
                 </li>
@@ -76,7 +76,7 @@
                                 [cdkCopyToClipboard]="
                                     error.detail + error.stacktrace
                                 "
-                                mat-icon-button=""
+                                mat-icon-button
                                 title="Copy Error"
                             >
                                 <mat-icon class="mat-icon"

@@ -104,7 +104,7 @@ class OpenDataIDFExporter(
 
     private fun getModelTransformer(json: Document, catalogId: String, options: ExportOptions): Any {
         val ingridModel: IngridModel?
-        val isAddress = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
+        val isAddress = json.type == "OpenDataAddressDoc"
         ingridModel = if (isAddress) null else mapper.convertValue(json, IngridModel::class.java)
 
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
@@ -130,7 +130,7 @@ class OpenDataIDFExporter(
             )
     }
 
-    fun getModelTransformerClass(docType: String): KClass<out Any>? {
+    private fun getModelTransformerClass(docType: String): KClass<out Any>? {
         return when (docType) {
             "OpenDataDoc" -> IngridModelTransformer::class
             "OpenDataAddressDoc" -> AddressModelTransformer::class

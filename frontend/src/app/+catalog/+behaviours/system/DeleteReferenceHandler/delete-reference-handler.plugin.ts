@@ -52,9 +52,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
   ) {
     super();
 
-    let role = configService.$userInfo.getValue().role;
-    const isPrivileged = role === "ige-super-admin" || role === "cat-admin";
-    if (isPrivileged) {
+    if (configService.hasCatAdminRights()) {
       inject(PluginService).registerPlugin(this);
     } else {
       console.debug(

@@ -15,21 +15,21 @@
             }
         }
         @case ("address-cardPrint") {
-            @for (address of formControl.value; track address) {
+            @for (address of addresses(); track address) {
                 <div>{{ address.type | codelist: "505" | async }}</div>
-                @if (address.ref.organization) {
+                @if (address.data.organization) {
                     <div>
-                        {{ address.ref.organization }}
+                        {{ address.data.organization }}
                     </div>
                 } @else {
                     <div>
                         <!--                    {{ address.ref.salutation | codelist: "4300" | async }}-->
                         {{
-                            address.ref["academic-title"]
+                            address.data["academic-title"]
                                 | codelist: "4305"
                                 | async
                         }}
-                        {{ address.ref.firstName }} {{ address.ref.lastName }}
+                        {{ address.data.firstName }} {{ address.data.lastName }}
                     </div>
                 }
             }

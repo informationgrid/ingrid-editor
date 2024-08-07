@@ -17,26 +17,33 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { FieldType } from "@ngx-formly/material/form-field";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { BehaviorSubject } from "rxjs";
 import { isObject } from "../../../shared/utils";
+import { AsyncPipe, DatePipe } from "@angular/common";
+import { SharedPipesModule } from "../../../directives/shared-pipes.module";
+import { DocumentService } from "../../../services/document/document.service";
 
 @Component({
   selector: "ige-print-type",
   templateUrl: "./print-type.component.html",
   styleUrls: ["./print-type.component.scss"],
+  imports: [DatePipe, SharedPipesModule, AsyncPipe],
+  standalone: true,
 })
 export class PrintTypeComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
-  constructor() {
-    super();
-  }
+  private documentService = inject(DocumentService);
 
-  ngOnInit(): void {}
+  addresses = signal<any>([]);
+
+  ngOnInit(): void {
+    if (this.field.type === "address-cardPrint") this.getAddressRefs();
+  }
 
   getFromOption(value: any): string {
     if (value === null) return "";
@@ -62,5 +69,22 @@ export class PrintTypeComponent
     if (value && unit) return `${value} ${unit}`;
 
     return value ?? "";
+  }
+
+  getAddressRefs() {
+    this.addresses.set([]);
+    (this.formControl.value ?? []).map((address: any) => {
+      this.documentService
+        .load(address.ref, true, false, true)
+        .subscribe((response) => {
+          this.addresses.update((values) => [
+            ...values,
+            {
+              type: address.type,
+              data: response.document,
+            },
+          ]);
+        });
+    });
   }
 }

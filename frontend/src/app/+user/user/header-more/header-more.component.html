@@ -1,18 +1,18 @@
-@if (showMore) {
+@if (showMore()) {
     <div
         [@slideDown]
         data-cy="headerMoreData"
         class="more-info"
-        [formGroup]="form"
+        [formGroup]="form()"
     >
         <div class="flex-row">
             <div>Zuletzt eingeloggt am</div>
-            @if (user.latestLogin) {
+            @if (user().latestLogin) {
                 <div>
                     <span
-                        [title]="user.latestLogin | date: 'long'"
+                        [title]="user().latestLogin | date: 'long'"
                         data-cy="latest-login"
-                        >{{ user.latestLogin | date: "dd.MM.yyyy" }}</span
+                        >{{ user().latestLogin | date: "dd.MM.yyyy" }}</span
                     >
                 </div>
             } @else {
@@ -21,31 +21,33 @@
         </div>
         <div class="flex-row">
             <div>Erstellt am</div>
-            @if (user.creationDate) {
+            @if (user().creationDate) {
                 <div>
                     <span
-                        [title]="user.creationDate | date: 'long'"
+                        [title]="user().creationDate | date: 'long'"
                         data-cy="date-created"
-                        >{{ user.creationDate | date: "dd.MM.yyyy" }}</span
+                        >{{ user().creationDate | date: "dd.MM.yyyy" }}</span
                     >
                 </div>
             }
         </div>
         <div class="flex-row">
             <div>Geändert am</div>
-            @if (user.modificationDate) {
+            @if (user().modificationDate) {
                 <div>
                     <span
-                        [title]="user.modificationDate | date: 'long'"
+                        [title]="user().modificationDate | date: 'long'"
                         data-cy="date-modified"
-                        >{{ user.modificationDate | date: "dd.MM.yyyy" }}</span
+                        >{{
+                            user().modificationDate | date: "dd.MM.yyyy"
+                        }}</span
                     >
                 </div>
             }
         </div>
         <div class="flex-row">
             <div>ID/login</div>
-            <div data-cy="login">{{ user.login }}</div>
+            <div data-cy="login">{{ user().login }}</div>
         </div>
         <div class="padding-below"></div>
     </div>

@@ -309,6 +309,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     SelectGeoDatasetDialog,
     AddressCardComponent,
     AddressTypeComponent,
+    PrintTypeComponent,
   ],
   providers: [
     {
@@ -356,7 +357,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     UvpSectionsComponent,
     ReferencedDocumentsTypeComponent,
     ValidUntilDialogComponent,
-    PrintTypeComponent,
     DocumentReferenceTypeComponent,
     SelectCswRecordDialog,
     CoordinatesSpatialComponent,

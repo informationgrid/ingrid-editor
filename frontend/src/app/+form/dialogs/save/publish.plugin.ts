@@ -204,9 +204,11 @@ export class PublishPlugin extends SaveBase {
           this.formStateService.getForm().controls,
         );
         const error = new IgeError(
-          "Es müssen alle Felder korrekt ausgefüllt werden. " +
-            "STRG + ALT + R zum vorherigen Fehler. " +
-            "STRG + ALT + W zum nächsten Fehler.",
+          `Es müssen alle Felder korrekt ausgefüllt werden.
+          <ul>
+            <li>STRG + ALT + R zum vorherigen Fehler</li>
+            <li>STRG + ALT + W zum nächsten Fehler</li>
+          </ul>`,
         );
         if (validationErrors.length > 0) error.items = validationErrors;
         this.modalService.showIgeError(error);

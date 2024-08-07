@@ -161,7 +161,7 @@ class LfuBayernFields : GeodatasetBase() {
                                         "title": {
                                             "key": "18"
                                         },
-                                        "source": "meine Quelle"
+                                        "source": "Datenquelle: meine Quelle"
                                     }
                                 ],
                                 "useConstraintsComments": "my comments to use constraints"

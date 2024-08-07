@@ -37,18 +37,17 @@ export class GroupDataService {
     this.configuration = configService.getConfiguration();
   }
 
-  saveGroup(role: Group): Observable<any> {
-    // TODO: after saving role reassign role to active user. Necessary? User should not edit his own role!!!
+  saveGroup(group: Group): Observable<any> {
     return this.http.put(
-      this.configuration.backendUrl + "groups/" + role.id,
-      role,
+      this.configuration.backendUrl + "groups/" + group.id,
+      group,
     );
   }
 
-  createGroup(role: Group): Observable<Group> {
+  createGroup(group: Group): Observable<Group> {
     return this.http.post<Group>(
       this.configuration.backendUrl + "groups",
-      role,
+      group,
     );
   }
 

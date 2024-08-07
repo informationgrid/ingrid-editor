@@ -10,5 +10,9 @@
   "docType": {
     "mCloudDoc": "mCLOUD Dokument",
     "McloudAddressDoc": "Adresse"
+  },
+  "pageTitle": {
+    "default": "mCLOUD Editor",
+    "favIcon": "assets/profiles/mcloud/assets/icons/favicon.ico"
   }
 }

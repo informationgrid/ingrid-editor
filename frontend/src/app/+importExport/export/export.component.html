@@ -83,13 +83,17 @@
                                 }
                             </mat-select>
                         </mat-form-field>
-
-                        @if (showDraftsCheckbox) {
+                    </div>
+                    @if (showDraftsCheckbox) {
+                        <div class="flex-col">
                             <mat-checkbox formControlName="drafts">
                                 Auch Entwürfe exportieren
                             </mat-checkbox>
-                        }
-                    </div>
+                            <mat-checkbox formControlName="addressReferences">
+                                Adressreferenzen exportieren
+                            </mat-checkbox>
+                        </div>
+                    }
                 </form>
                 <div class="action-bar flex-row gap-12">
                     <button mat-button color="primary" (click)="cancel()">

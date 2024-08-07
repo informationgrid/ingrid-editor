@@ -66,7 +66,7 @@ export class CopyCutPastePlugin extends Plugin {
       .pipe(tap((event) => (this.eventEl = event.data?.eventEl)));
   }
 
-  isAdmin = this.config.isAdmin();
+  isAdmin = this.config.hasCatAdminRights();
 
   constructor(
     private config: ConfigService,
