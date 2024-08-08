@@ -196,6 +196,10 @@ export class ConsolidateDialogComponent implements OnInit {
           return;
         }
         this.freeKeywordsNew.push({ ...res, status: "removed" });
+        // Case when keyword is found with different label in thesaurus (Kita -> Kindertagesstätte)
+        if (keyword.label !== res.label) {
+          this.freeKeywordsNew.push({ ...keyword, status: "unchanged" });
+        }
       });
   }
 
