@@ -99,6 +99,7 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
     }
 
     private fun removePathPrefix(path: String): String {
+        // example: file:/path/to/schema.json#/definitions/definitionName
         val location = path.substringAfterLast("#")
         val fileName = path.substringBeforeLast("#").substringAfterLast("/")
         return "$fileName#$location"
