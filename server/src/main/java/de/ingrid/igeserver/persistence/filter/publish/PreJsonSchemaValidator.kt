@@ -91,10 +91,16 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
 
         if (!output.valid) {
             // map to prevent leaking of information about server in absoluteKeywordLocation (#5772)
-            val error = output.errors?.map { JsonErrorEntry(it.error, it.instanceLocation) }
+            val error = output.errors?.map { JsonErrorEntry(it.error, removePathPrefix(it.absoluteKeywordLocation ?: it.instanceLocation)) }
             throw ValidationException.withReason(error)
         }
 
         return output
+    }
+
+    private fun removePathPrefix(path: String): String {
+        val location = path.substringAfterLast("#")
+        val fileName = path.substringBeforeLast("#").substringAfterLast("/")
+        return "$fileName#$location"
     }
 }
