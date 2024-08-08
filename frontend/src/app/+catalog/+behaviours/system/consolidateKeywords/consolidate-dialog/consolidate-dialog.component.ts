@@ -68,6 +68,8 @@ export class ConsolidateDialogComponent implements OnInit {
   keywords: any[];
   isInspireIdentified: boolean;
 
+  hasKeywords: boolean;
+
   inspireTopics: any[];
   isoCategories: any[];
   gemetKeywords: any[];
@@ -79,6 +81,7 @@ export class ConsolidateDialogComponent implements OnInit {
   gemetKeywordsNew: ThesaurusResult[] = [];
   umthesKeywordsNew: ThesaurusResult[] = [];
   freeKeywordsNew: ThesaurusResult[] = [];
+
   isLoading: boolean;
   saveButtonClicked: boolean;
 
@@ -92,7 +95,12 @@ export class ConsolidateDialogComponent implements OnInit {
     this.resetNewKeywords();
     this.form = this.formStateService.getForm().value;
     this.keywords = this.form.keywords;
-    if (!this.keywords) {
+
+    this.hasKeywords = Object.values(this.keywords).some(
+      (keywords) => keywords.length > 0,
+    );
+
+    if (!this.hasKeywords) {
       this.isLoading = false;
       return;
     }
@@ -104,13 +112,6 @@ export class ConsolidateDialogComponent implements OnInit {
     this.gemetKeywords = this.form.keywords.gemet;
     this.umthesKeywords = this.form.keywords.umthes;
     this.freeKeywords = this.form.keywords.free;
-    this.keywords = [
-      ...this.inspireTopics,
-      ...this.isoCategories,
-      ...this.gemetKeywords,
-      ...this.umthesKeywords,
-      ...this.freeKeywords,
-    ];
 
     this.inspireTopics.map((theme) => this.handleInspireTopics(theme));
     this.isoCategories.map((category) => this.handleIsoCategories(category));
