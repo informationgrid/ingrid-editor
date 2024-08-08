@@ -11,20 +11,20 @@
     </div>
 
     <mat-dialog-content>
-        @if (this.keywords.length) {
+        @if (this.keywords) {
             <div *ngIf="!isLoading">
                 <div class="no-selection-text">
                     Grün markierte Schlagworte werden neu hinzugefügt. Rot
                     markierte werden entfernt.
                 </div>
-                @if (isInspireIdentified && inspireThemesNew.length) {
+                @if (isInspireIdentified && inspireTopicsNew.length) {
                     <div class="keyword-section" aria-label="INSPIRE Themen">
                         <div class="label-wrapper">
                             <label>INSPIRE Themen</label>
                         </div>
                         <mat-chip-listbox class="chip-list">
                             <mat-chip
-                                *ngFor="let keyword of inspireThemesNew"
+                                *ngFor="let keyword of inspireTopicsNew"
                                 [ngClass]="{
                                     'added-keyword': keyword.status === 'added',
                                     'removed-keyword':
@@ -37,7 +37,7 @@
                         </mat-chip-listbox>
                     </div>
                 }
-                @if (isInspireIdentified && inspireTopicsNew.length) {
+                @if (isInspireIdentified && isoCategoriesNew.length) {
                     <div
                         class="keyword-section"
                         aria-label="ISO-Themenkategorie"
@@ -47,7 +47,7 @@
                         </div>
                         <mat-chip-listbox class="chip-list">
                             <mat-chip
-                                *ngFor="let keyword of inspireTopicsNew"
+                                *ngFor="let keyword of isoCategoriesNew"
                                 [ngClass]="{
                                     'added-keyword': keyword.status === 'added',
                                     'removed-keyword':
@@ -162,13 +162,13 @@
             mat-flat-button
             data-cy="save-btn"
             id="save-btn"
-            [disabled]="isLoading || buttonClicked"
+            [disabled]="isLoading || saveButtonClicked"
             *ngIf="keywords.length"
-            (click)="saveConsolidatedKeywords(); buttonClicked = true"
+            (click)="saveConsolidatedKeywords(); saveButtonClicked = true"
         >
-            <span *ngIf="!buttonClicked">Übernehmen</span>
+            <span *ngIf="!saveButtonClicked">Übernehmen</span>
             <mat-spinner
-                *ngIf="buttonClicked"
+                *ngIf="saveButtonClicked"
                 class="button-spinner"
                 diameter="20"
             ></mat-spinner>
