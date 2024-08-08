@@ -28,7 +28,6 @@ import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 /**
@@ -52,9 +51,6 @@ class PreDefaultDocumentUpdater(
         context.addMessage(Message(this, "Process document data '$docId' before update"))
 
         with(payload.document) {
-            // handle linked docs
-            payload.type.pullReferences(this)
-
             // call entity type specific hook
             payload.type.onUpdate(this)
         }

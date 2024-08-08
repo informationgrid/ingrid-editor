@@ -37,6 +37,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { TranslocoModule } from "@ngneat/transloco";
 
 import { firstValueFrom } from "rxjs";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: "permission-table",
@@ -157,7 +158,9 @@ export class PermissionTableComponent implements ControlValueAccessor {
 
   getDocument(id: number): Promise<IgeDocument> {
     return firstValueFrom(
-      this.documentService.load(id, this.forAddress, false),
+      this.documentService
+        .load(id, this.forAddress, false)
+        .pipe(map((doc) => doc.documentWithMetadata)),
     );
   }
 

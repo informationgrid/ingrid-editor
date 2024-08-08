@@ -20,7 +20,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
+  input,
   OnInit,
 } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
@@ -46,9 +46,9 @@ import { UntypedFormGroup } from "@angular/forms";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderMoreComponent implements OnInit {
-  @Input() user: FrontendUser;
-  @Input() form: UntypedFormGroup;
-  @Input() showMore = false;
+  user = input<FrontendUser>();
+  form = input<UntypedFormGroup>();
+  showMore = input<boolean>(false);
 
   constructor() {}
 

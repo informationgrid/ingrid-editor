@@ -54,7 +54,6 @@ export class AssignedUserBehaviour extends Plugin {
   description =
     "Datensätze erhalten einen verantwortlichen Benutzer, der von Katalog Administratoren geändert werden kann. In der Benutzerverwaltung kann die Verantwortung übertragen werden. Nutzer die Verantwortlichkeiten haben können nicht gelöscht werden";
   defaultActive = true;
-  private readonly isPrivileged: boolean;
 
   constructor(
     private eventService: EventService,
@@ -66,17 +65,12 @@ export class AssignedUserBehaviour extends Plugin {
     private formMenuService: FormMenuService,
     private formStateService: FormStateService,
     private documentService: DocumentService,
-    configService: ConfigService,
+    private configService: ConfigService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
-
-    let role = configService.$userInfo.getValue().role;
-    // TODO: this should be centralized (configService?)
-    this.isPrivileged =
-      role === "ige-super-admin" || role === "cat-admin" || role === "md-admin";
   }
 
   formMenuId: MenuId;
@@ -97,7 +91,7 @@ export class AssignedUserBehaviour extends Plugin {
       : this.documentTreeQuery;
 
     // only add menu item in form if user is privileged
-    if (this.isPrivileged) {
+    if (this.configService.hasMdAdminRights()) {
       const onDocLoad = treeQuery.openedDocument$.subscribe((doc) => {
         const button = {
           title: "Verantwortlichkeit ändern",
@@ -120,11 +114,7 @@ export class AssignedUserBehaviour extends Plugin {
     super.register();
 
     // add menu item for user management
-    let selectedUser: User;
     this.subscriptions.push(
-      this.userService.selectedUser$.subscribe((user) => {
-        selectedUser = user;
-      }),
       this.eventService
         .respondToEvent(IgeEvent.DELETE_USER)
         .subscribe((eventResponder) => this.handleEvent(eventResponder)),
@@ -132,7 +122,8 @@ export class AssignedUserBehaviour extends Plugin {
     this.formMenuService.addMenuItem("user", {
       title: "Verantwortung übertragen",
       name: "transfer-responsibility",
-      action: () => this.handleTransferResponsibility(selectedUser),
+      action: () =>
+        this.handleTransferResponsibility(this.userService.selectedUser$()),
     });
   }
 
@@ -194,7 +185,7 @@ export class AssignedUserBehaviour extends Plugin {
     console.log("currentUUID", currentUUID);
 
     const handled = await FormUtils.handleDirtyForm(
-      this.formStateService.getForm(),
+      this.formStateService,
       this.documentService,
       this.dialog,
       this.forAddress,
@@ -227,7 +218,7 @@ export class AssignedUserBehaviour extends Plugin {
         .open(TransferResponsibilityDialogComponent, {
           width: "780px",
           data: {
-            users: this.userService.users$.value,
+            users: this.userService.users$(),
             oldUser: oldUser,
           },
           delayFocusTrap: true,

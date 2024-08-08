@@ -35,7 +35,6 @@ import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 
@@ -70,11 +69,11 @@ class IDFExporter(val config: Config) : IgeExporter {
 
     private fun getTemplateForDoctype(type: String): String {
         return when (type) {
-            "UvpApprovalProcedureDoc" -> "export/uvp/idf-approval.jte"
-            "UvpNegativePreliminaryAssessmentDoc" -> "export/uvp/idf-negative.jte"
-            "UvpForeignProjectDoc" -> "export/uvp/idf-foreign.jte"
-            "UvpSpatialPlanningProcedureDoc" -> "export/uvp/idf-spatialOrLine.jte"
-            "UvpLineDeterminationDoc" -> "export/uvp/idf-spatialOrLine.jte"
+            "UvpApprovalProcedureDoc" -> "export/uvp/idf/idf-approval.jte"
+            "UvpNegativePreliminaryAssessmentDoc" -> "export/uvp/idf/idf-negative.jte"
+            "UvpForeignProjectDoc" -> "export/uvp/idf/idf-foreign.jte"
+            "UvpSpatialPlanningProcedureDoc" -> "export/uvp/idf/idf-spatialOrLine.jte"
+            "UvpLineDeterminationDoc" -> "export/uvp/idf/idf-spatialOrLine.jte"
             else -> {
                 throw ServerException.withReason("Cannot get template for type: $type")
             }

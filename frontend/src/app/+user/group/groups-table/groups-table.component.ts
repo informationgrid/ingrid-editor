@@ -53,7 +53,7 @@ export class GroupsTableComponent
 {
   @Input()
   set groups(val: Group[]) {
-    if (val) this.isLoading = false;
+    if (val) this.isLoading.set(false);
     this.dataSource.data = val ?? [];
 
     // select previously selected group

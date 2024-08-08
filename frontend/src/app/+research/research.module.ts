@@ -60,6 +60,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { TabSearchComponent } from "./+tab-search/tab-search.component";
 import { TranslocoModule } from "@ngneat/transloco";
+import { ResultTableHeaderComponent } from "./result-table/result-table-header/result-table-header.component";
 
 @NgModule({
   declarations: [
@@ -102,6 +103,7 @@ import { TranslocoModule } from "@ngneat/transloco";
     MatProgressSpinnerModule,
     MatSnackBarModule,
     TranslocoModule,
+    ResultTableHeaderComponent,
   ],
   providers: [
     {

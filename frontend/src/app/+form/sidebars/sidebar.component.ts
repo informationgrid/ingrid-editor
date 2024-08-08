@@ -101,9 +101,9 @@ export class SidebarComponent implements OnInit {
       return;
     }
 
-    let form = this.formStateService.getForm()?.value;
-    const currentId = form?._id;
-    const currentUuid = form?._uuid;
+    let metadata = this.formStateService.metadata();
+    const currentId = metadata?.wrapperId;
+    const currentUuid = metadata?.uuid;
 
     // do not load same node again
     if (

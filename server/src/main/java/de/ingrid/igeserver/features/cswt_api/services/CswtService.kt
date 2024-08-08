@@ -23,8 +23,10 @@ import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.IgeException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.imports.ImportService
+import de.ingrid.igeserver.persistence.filter.publish.JsonErrorEntry
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
@@ -76,83 +78,70 @@ class CswtService(
 
     @Transactional
     fun cswTransaction(xml: String?, collectionId: String, principal: Authentication, options: ImportOptions ): CSWTransactionResult {
-        val transactionResult = CSWTransactionResult()
-
         val factory: DocumentBuilderFactory
         val resultInsert: MutableList<String> = mutableListOf()
         val profile = catalogService.getProfileFromCatalog(collectionId)
 
-        try {
-            factory = DocumentBuilderFactory.newInstance()
-            factory.isNamespaceAware = true
-            val builder = factory.newDocumentBuilder()
-            val xmlDoc = builder.parse(InputSource(StringReader(xml)))
-            val insertDocs = xmlDoc.getElementsByTagName("csw:Insert")
-            val updateDocs = xmlDoc.getElementsByTagName("csw:Update")
-            val deleteDocs = xmlDoc.getElementsByTagName("csw:Delete")
+        factory = DocumentBuilderFactory.newInstance()
+        factory.isNamespaceAware = true
+        val builder = factory.newDocumentBuilder()
+        val xmlDoc = builder.parse(InputSource(StringReader(xml)))
+        val insertDocs = xmlDoc.getElementsByTagName("csw:Insert")
+        val updateDocs = xmlDoc.getElementsByTagName("csw:Update")
+        val deleteDocs = xmlDoc.getElementsByTagName("csw:Delete")
 
-            /**
-             * INSERT DOCS
-             */
-            for (i in 0 until insertDocs.length) {
-                val item: Element = insertDocs.item(i) as Element
-                // separate importAnalyse and import
-                val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","MD_Metadata").item(0)
-                resultInsert.add(utils.getString(metadataDoc, "./gmd:fileIdentifier/gco:CharacterString"))
-                val docData = xmlNodeToString(metadataDoc) // convert Node to String
-                importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = false, null, profile)
-
-            }
-            /**
-             * UPDATE DOCS
-             */
-            for (i in 0 until updateDocs.length) {
-                val item = updateDocs.item(i) as Element
-                val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
-                val propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
-                if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
-                    val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","MD_Metadata").item(0)
-                    val docData = xmlNodeToString(metadataDoc) // convert Node to String
-                    importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = true, propValue, profile )
-                } else {
-                    log.error("Constraint not supported with PropertyName: $propName and Literal: $propValue")
-                    throw Exception("Constraint not supported with PropertyName: $propName and Literal: $propValue")
-                }
-            }
-            /**
-             * DELETE DOCS
-             */
-            for (i in 0 until deleteDocs.length) {
-                val item = deleteDocs.item(i)
-                val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
-                        ?: throw Exception("Missing or empty Constraint \".//ogc:PropertyIsEqualTo/ogc:PropertyName\".")
-                var propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
-                        ?: throw Exception("Missing or empty Constraint \".//ogc:PropertyIsEqualTo/ogc:Literal\".")
-                propValue = propValue.replace("\\s".toRegex(), "")
-
-                // the property "uuid" is still supported for compatibility reasons, see https://dev.informationgrid.eu/redmine/issues/524
-                if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
-                    val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, propValue)
-                    wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
-                }
-            }
-
-            transactionResult.apply {
-                successful = true
-                inserts = insertDocs.length
-                updates = updateDocs.length
-                deletes = deleteDocs.length
-                insertResults = resultInsert
-            }
-
-        } catch (e: IgeException) {
-            transactionResult.apply {
-                successful = false
-                statusCode = e.statusCode as HttpStatusCode
-                errorMessage = prepareException(e)
-            }
-            log.error("Error in CSW transaction", e)
+        /**
+         * INSERT DOCS
+         */
+        for (i in 0 until insertDocs.length) {
+            val item: Element = insertDocs.item(i) as Element
+            // separate importAnalyse and import
+            val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","MD_Metadata").item(0)
+            resultInsert.add(utils.getString(metadataDoc, "./gmd:fileIdentifier/gco:CharacterString"))
+            val docData = xmlNodeToString(metadataDoc) // convert Node to String
+            importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = false, null, profile)
         }
+        /**
+         * UPDATE DOCS
+         */
+        for (i in 0 until updateDocs.length) {
+            val item = updateDocs.item(i) as Element
+            val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
+            val propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
+            if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
+                val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","MD_Metadata").item(0)
+                val docData = xmlNodeToString(metadataDoc) // convert Node to String
+                importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = true, propValue, profile )
+            } else {
+                log.error("Constraint not supported with PropertyName: $propName and Literal: $propValue")
+                throw Exception("Constraint not supported with PropertyName: $propName and Literal: $propValue")
+            }
+        }
+        /**
+         * DELETE DOCS
+         */
+        for (i in 0 until deleteDocs.length) {
+            val item = deleteDocs.item(i)
+            val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
+                    ?: throw Exception("Missing or empty Constraint \".//ogc:PropertyIsEqualTo/ogc:PropertyName\".")
+            var propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
+                    ?: throw Exception("Missing or empty Constraint \".//ogc:PropertyIsEqualTo/ogc:Literal\".")
+            propValue = propValue.replace("\\s".toRegex(), "")
+
+            // the property "uuid" is still supported for compatibility reasons, see https://dev.informationgrid.eu/redmine/issues/524
+            if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
+                val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, propValue)
+                wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
+            }
+        }
+
+        val transactionResult = CSWTransactionResult(
+            successful = true,
+            inserts = insertDocs.length,
+            updates = updateDocs.length,
+            deletes = deleteDocs.length,
+            insertResults = resultInsert
+        )
         return transactionResult
     }
 
@@ -190,12 +179,12 @@ class CswtService(
     }
 
     fun prepareException(exception: Exception): String {
-        var errorMsg = exception.toString()
-        var cause = exception.cause
-        if (cause == null) {
-            cause = exception
-        } else {
-            errorMsg = cause.toString()
+        var errorMsg = exception.cause?.toString() ?: exception.toString()
+        if (exception is ValidationException) {
+            val lastError: JsonErrorEntry? = (exception.data?.get("error") as List<JsonErrorEntry>)?.last()
+            if (lastError != null) {
+                errorMsg += " (${lastError.error}, location: ${lastError.instanceLocation})"
+            }
         }
         return errorMsg
     }

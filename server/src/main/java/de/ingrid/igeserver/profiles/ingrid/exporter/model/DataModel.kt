@@ -33,7 +33,8 @@ import java.util.*
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataModel(
     val description: String?,
-    val _parent: String?,
+    // TODO AW: remove parent from data
+    @Deprecated("parent should not be in data, but as separate metadata") val _parent: String?,
     val parentIdentifier: String?,
     @JsonDeserialize(using = DateDeserializer::class)
     val modifiedMetadata: OffsetDateTime?,

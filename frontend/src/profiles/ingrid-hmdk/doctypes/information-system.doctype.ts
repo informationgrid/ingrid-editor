@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { InformationSystemDoctype } from "../../ingrid/doctypes/information-system.doctype";
 import { SharedHmdk } from "./shared-hmdk";
 import { FormlyFieldConfig } from "@ngx-formly/core";
@@ -27,10 +27,10 @@ import { Observable } from "rxjs";
   providedIn: "root",
 })
 export class InformationSystemDoctypeHMDK extends InformationSystemDoctype {
-  sharedHmdk = new SharedHmdk(this);
+  private sharedHmdk = inject(SharedHmdk);
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    return this.sharedHmdk.manipulateDocumentFields(fieldConfig);
+    return this.sharedHmdk.manipulateDocumentFields(this, fieldConfig);
   };
 
   handleActivateOpenData(field: FormlyFieldConfig) {

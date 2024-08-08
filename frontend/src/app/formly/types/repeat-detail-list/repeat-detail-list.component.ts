@@ -107,7 +107,6 @@ export class RepeatDetailListComponent
               : JSON.parse(
                   JSON.stringify(this.model[this.field.key + ""][index]),
                 ),
-          formState: { mainModel: { _type: this.formState.mainModel?._type } },
         },
       })
       .afterClosed()

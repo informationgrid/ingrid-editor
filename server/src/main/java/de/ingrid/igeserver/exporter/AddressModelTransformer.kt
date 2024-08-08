@@ -32,7 +32,7 @@ import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
 
-class AddressModelTransformer(
+open class AddressModelTransformer(
     val catalogIdentifier: String,
     val codelist: CodelistTransformer,
     val relationType: KeyValue?,
@@ -103,6 +103,7 @@ class AddressModelTransformer(
 
     val id = displayAddress.id
     val uuid = displayAddress.uuid
+    val title = displayAddress.title
 
     //    val isFolder = doc.type == "FOLDER"
     val hoursOfService = displayAddress.data.getString("hoursOfService")
@@ -138,7 +139,7 @@ class AddressModelTransformer(
     val administrativeArea =
         codelist.getCatalogCodelistValue("6250", displayAddress.data.get("address")?.get("administrativeArea")?.mapToKeyValue())
     val addressDocType = getAddressDocType(displayAddress.type)
-    fun getAddressDocType(docType: String) = if (docType == "InGridOrganisationDoc") 0 else 2
+    fun getAddressDocType(docType: String) = if (docType == "InGridPersonDoc") 2 else 0
 
     val parentAddresses = ancestorAddressesIncludingSelf.dropLast(1)
 
@@ -198,7 +199,7 @@ class AddressModelTransformer(
 
     fun getLastPublishedDocument(catalogIdentifier: String, uuid: String): Document? {
         return try {
-            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = false)
+            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
         } catch (e: Exception) {
             null
         }
@@ -212,7 +213,7 @@ class AddressModelTransformer(
         if (wrapper.type == "FOLDER") return mutableListOf()
 
         val convertedDoc = try {
-            val publishedDoc = documentService.getLastPublishedDocument(catalogIdentifier, wrapper.uuid, resolveLinks = false)
+            val publishedDoc = documentService.getLastPublishedDocument(catalogIdentifier, wrapper.uuid)
             DocumentData(wrapper, publishedDoc)
         } catch (ex: EmptyResultDataAccessException) {
             // no published document found

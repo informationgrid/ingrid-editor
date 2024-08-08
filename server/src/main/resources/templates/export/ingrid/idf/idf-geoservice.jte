@@ -7,7 +7,7 @@
 
 !{var page = ((GeodataserviceModelTransformer)map.get("model"));}
 @template.export.template-idf(content = @`
-    @template.export.ingrid.shared-general(page = page, isService = true)
+    @template.export.ingrid.idf.shared-general(page = page, isService = true)
     @if( !page.getConformanceResult().isEmpty() )
         <gmd:dataQualityInfo>
             <gmd:DQ_DataQuality>

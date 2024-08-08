@@ -118,10 +118,10 @@ const val useConstraintCommentsFull = """
                                 <gmd:MD_RestrictionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
                             </gmd:useConstraints>
                             <gmd:otherConstraints>
-                                <gco:CharacterString>Andere Freeware Lizenz; meine Quelle; my comments to use constraints</gco:CharacterString>
+                                <gco:CharacterString>Andere Freeware Lizenz; Datenquelle: meine Quelle; my comments to use constraints</gco:CharacterString>
                             </gmd:otherConstraints>
                             <gmd:otherConstraints>
-                                <gco:CharacterString>{"id":"other-freeware","name":"Andere Freeware Lizenz","url":"","quelle":"meine Quelle"}</gco:CharacterString>
+                                <gco:CharacterString>{"id":"other-freeware","name":"Andere Freeware Lizenz","url":"","quelle":"Datenquelle: meine Quelle"}</gco:CharacterString>
                             </gmd:otherConstraints>
                         </gmd:MD_LegalConstraints>
                     </gmd:resourceConstraints>

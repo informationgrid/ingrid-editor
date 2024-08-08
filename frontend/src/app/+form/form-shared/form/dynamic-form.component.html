@@ -42,7 +42,7 @@
                             [forAddress]="address"
                             [disableTitleEdit]="
                                 formOptions.formState.disabled === true ||
-                                (address && model._type !== 'FOLDER')
+                                (address && metadata()?.docType !== 'FOLDER')
                             "
                         >
                         </ige-form-info>
@@ -59,12 +59,12 @@
                     <div
                         class="form-inner"
                         [class.extra-space-toggle-button]="hasOptionalFields"
-                        [class.hide]="model._type === 'FOLDER'"
+                        [class.hide]="metadata()?.docType === 'FOLDER'"
                     >
                         <form
                             [style.padding-top]="paddingWithHeader"
                             [class.hide-optionals]="!(showAllFields | async)"
-                            [class.hide]="model._type === 'FOLDER'"
+                            [class.hide]="metadata()?.docType === 'FOLDER'"
                         >
                             <div class="requiredDescription">
                                 *Pflichtangabe
@@ -87,7 +87,7 @@
                             </div>
                         </form>
                     </div>
-                    @if (model._type === "FOLDER") {
+                    @if (metadata()?.docType === "FOLDER") {
                         <div class="folder-content">
                             <ige-folder-dashboard
                                 [isAddress]="address"
@@ -100,10 +100,10 @@
 
         @if (showJson) {
             <as-split-area [size]="20">
-                <pre
-                    >{{ form.value | json }}
-        </pre
-                >
+                Metadata:
+                <pre>{{ metadata() | json }}</pre>
+                Document:
+                <pre>{{ form.value | json }}</pre>
             </as-split-area>
         }
     </as-split>

@@ -56,10 +56,6 @@ class OpenDataExporter(
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
-    override fun exportSql(catalogId: String): String {
-        return "${super.exportSql(catalogId)} AND document.type != 'FOLDER'"
-    }
-
     override val typeInfo: ExportTypeInfo
         get() {
             return ExportTypeInfo(
@@ -75,11 +71,18 @@ class OpenDataExporter(
 
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
+        val mapper = jacksonObjectMapper()
+        if (doc.type == "FOLDER") {
+            val luceneDoc = ingridIndexExporter.run(doc, catalogId, options) as String
+            val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
+            return luceneJson.toPrettyString()
+        }
+
         // modify doc type and other fields to be mapped correctly during InGrid export
         val modifiedDoc = addDefaultValues(doc)
+
         val luceneDoc = ingridIndexExporter.run(modifiedDoc, catalogId, options) as String
 
-        val mapper = jacksonObjectMapper()
         val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
 
         val additionalIdf = createAdditionalIdf(modifiedDoc, catalogId)

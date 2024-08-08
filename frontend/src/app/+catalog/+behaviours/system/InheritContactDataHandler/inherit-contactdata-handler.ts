@@ -67,7 +67,7 @@ export class InheritContactDataHandler extends Plugin {
         this.openConfirmDialog().subscribe(async (confirmed) => {
           if (confirmed) {
             const handled = await FormUtils.handleDirtyForm(
-              this.formStateService.getForm(),
+              this.formStateService,
               this.documentService,
               this.dialog,
               this.forAddress,
@@ -109,10 +109,16 @@ export class InheritContactDataHandler extends Plugin {
       this.documentDataService.load(docId),
       this.documentDataService.load(parentId),
     ]).subscribe(([doc, parent]) => {
-      doc.address = parent.address;
-      doc.contact = parent.contact;
+      doc.documentWithMetadata.address = parent.documentWithMetadata.address;
+      doc.documentWithMetadata.contact = parent.documentWithMetadata.contact;
       this.documentService
-        .save({ data: doc, isNewDoc: false, isAddress: true })
+        .save({
+          id: docId,
+          version: this.formStateService.metadata().version,
+          data: doc.documentWithMetadata,
+          isNewDoc: false,
+          isAddress: true,
+        })
         .subscribe();
     });
   }

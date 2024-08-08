@@ -20,11 +20,9 @@
 package de.ingrid.igeserver.persistence.model
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -109,13 +107,6 @@ abstract class EntityType {
     open fun onUnpublish(doc: Document) {}
 
     /**
-     * Extract referenced documents/addresses and replace them with their ID
-     */
-    open fun pullReferences(doc: Document): List<Document> {
-        return emptyList()
-    }
-
-    /**
      * Get all referenced document UUIDs
      */
     open fun getReferenceIds(doc: Document): List<String> {
@@ -132,7 +123,7 @@ abstract class EntityType {
     /**
      * Replace document/address references with their latest version
      */
-    open fun updateReferences(doc: Document, options: UpdateReferenceOptions) {}
+//    open fun updateReferences(doc: Document, options: UpdateReferenceOptions) {}
 
 
     /**
@@ -143,21 +134,29 @@ abstract class EntityType {
     }
 
     private fun getDocumentForReferenceUuid(
-        catalogId: String,
+        options: UpdateReferenceOptions,
         uuid: String,
-        options: UpdateReferenceOptions
     ): JsonNode {
-        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
-        val documentData = documentService.getDocumentFromCatalog(catalogId, wrapper.id!!).also {
-            it.document.data.put(FIELD_TAGS, wrapper.tags.joinToString(","))
+        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(options.catalogId!!, uuid)
+        val documentData = documentService.getDocumentFromCatalog(options.catalogId, wrapper.id!!).also {
+            if (!options.forExport) {
+                it.document.data.put(FIELD_TAGS, wrapper.tags.joinToString(","))
+            }
         }
 
-        val latestDocumentJson = documentService.convertToJsonNode(documentData.document)
-
-        if (options.forExport) {
-            documentService.removeInternalFieldsForImport(latestDocumentJson as ObjectNode)
+        // TODO AW: the extra mapping should not be needed once addresses will be loaded explicitly
+        return if (options.forExport) {
+            getRawJsonFromDocument(documentData.document, true)
+        } else getRawJsonFromDocument(documentData.document).apply {
+            put(FIELD_UUID, uuid)
+            put(FIELD_STATE, documentData.document.state.getState())
+            put(FIELD_DOCUMENT_TYPE, documentData.document.type)
+            put(FIELD_CREATED, documentData.document.created.toString())
+            put(FIELD_MODIFIED, documentData.document.modified.toString())
+            put(FIELD_CONTENT_MODIFIED, documentData.document.contentmodified.toString())
+            put(FIELD_ID, documentData.wrapper.id)
+            put(FIELD_PARENT, documentData.wrapper.id)
         }
-        return latestDocumentJson
     }
 
     protected fun getUploadsFromFileList(fileList: JsonNode?, field: String = "downloadURL"): List<String> {
@@ -167,45 +166,6 @@ abstract class EntityType {
             ?: emptyList()
     }
 
-    fun replaceWithReferenceUuid(doc: Document, fieldId: String): MutableList<Document> {
-        val addressDocs = mutableListOf<Document>()
-
-        val addresses = doc.data.path(fieldId)
-        for (address in addresses) {
-            val addressJson = address.path("ref")
-            // during import address already is replaced by UUID
-            // TODO: improve import process so we don't need this
-            if (addressJson is ObjectNode) {
-                val uuid = addressJson.path(FIELD_UUID).textValue()
-                val addressDoc = documentService.convertToDocument(addressJson)
-                addressDocs.add(addressDoc)
-                (address as ObjectNode).put("ref", uuid)
-            }
-        }
-        return addressDocs
-    }
-
-    fun replaceUuidWithReferenceData(doc: Document, fieldId: String, options: UpdateReferenceOptions) {
-        val addresses = doc.data.path(fieldId)
-        for (address in addresses) {
-            val uuid = if (address.path("ref").isTextual) {
-                address.path("ref").asText()
-            } else {
-                // fix used because references have not been saved with ID but full address
-                // this can be removed later
-                logger.warn("Address reference is stored in a wrong way")
-                address.path("ref").path(FIELD_UUID).asText()
-            }
-            try {
-                val latestDocumentJson = getDocumentForReferenceUuid(options.catalogId!!, uuid, options)
-                (address as ObjectNode).replace("ref", latestDocumentJson)
-            } catch (ex: NotFoundException) {
-                // TODO: what to do with removed references?
-                logger.error("Referenced address was not found: $uuid -> Should we remove it from '${doc.uuid}'?")
-                throw ServerException.withReason("Document '${doc.uuid}' has a reference that could not be resolved: $uuid")
-            }
-        }
-    }
 }
 
 data class UpdateReferenceOptions(

@@ -90,6 +90,7 @@ export abstract class IngridShared extends BaseDoctype {
       resourceDateType: false,
       spatialReferences: true,
       spatialSystems: false,
+      extraInfoLangData: false,
     },
     hide: {
       openData: false,
@@ -1075,13 +1076,11 @@ export abstract class IngridShared extends BaseDoctype {
                   "extraInfoLangData",
                 ),
                 codelistId: "99999999",
-                required: true,
+                required: this.options.required.extraInfoLangData,
                 defaultValue: ["150"],
-                expressions: {
-                  "props.required":
-                    "['InGridGeoDataset', 'InGridPublication', 'InGridDataCollection'].indexOf(formState.mainModel?._type) !== -1",
-                  className: "field.props.required ? '' : 'optional'",
-                },
+                className: this.options.required.extraInfoLangData
+                  ? ""
+                  : "optional",
               }),
             ])
           : null,
@@ -1454,10 +1453,19 @@ export abstract class IngridShared extends BaseDoctype {
               "props.required": (field: FormlyFieldConfig) => {
                 return !field.form.value?.uuidRef;
               },
+              "props.disabled": (field: FormlyFieldConfig) => {
+                return !!field.form.value?.uuidRef;
+              },
+              "props.label": (field: FormlyFieldConfig) => {
+                return field.props.disabled
+                  ? "URL (nur bei leerem Datensatzverweis)"
+                  : "URL";
+              },
             },
             validation: {
               messages: {
-                required: "URL oder Datensatzverweis muss ausgefüllt sein",
+                required:
+                  "Entweder URL oder Datensatzverweis muss ausgefüllt sein",
               },
             },
           }),
@@ -1474,6 +1482,9 @@ export abstract class IngridShared extends BaseDoctype {
               hasInlineContextHelp: true,
               expressions: {
                 "props.required": 'field.form.value?.type?.key === "9990"', // Datendownload
+                "props.disabled": (field: FormlyFieldConfig) => {
+                  return !!field.form.value?.uuidRef;
+                },
               },
             },
           ),
@@ -1488,10 +1499,18 @@ export abstract class IngridShared extends BaseDoctype {
           "props.required": (field: FormlyFieldConfig) => {
             return !field.form.value?.url;
           },
+          "props.disabled": (field: FormlyFieldConfig) => {
+            return !!field.form.value?.url;
+          },
+          "props.label": (field: FormlyFieldConfig) => {
+            return field.props.disabled
+              ? "Datensatzverweis (nur bei leerer URL)"
+              : "Datensatzverweis";
+          },
         },
         validation: {
           messages: {
-            required: "URL oder Datensatzverweis muss ausgefüllt sein",
+            required: "Entweder URL oder Datensatzverweis muss ausgefüllt sein",
           },
         },
         asyncValidators: {
@@ -1607,11 +1626,14 @@ export abstract class IngridShared extends BaseDoctype {
       if (isOpenData) field.form.get("resource.accessConstraints").setValue([]);
 
       const conformanceResultCtrl = field.form.get("conformanceResult");
-      conformanceResultCtrl.setValue(
-        (conformanceResultCtrl.value ?? []).filter(
-          (item) => item.specification?.key !== specificationToRemove,
-        ),
-      );
+      // only set conformance value when field is available (#6535)
+      if (conformanceResultCtrl) {
+        conformanceResultCtrl.setValue(
+          (conformanceResultCtrl.value ?? []).filter(
+            (item) => item.specification?.key !== specificationToRemove,
+          ),
+        );
+      }
     };
 
     if (this.cookieService.getCookie(cookieId) === "true") {
@@ -1729,29 +1751,34 @@ export abstract class IngridShared extends BaseDoctype {
   private getPriorityDatasets(): Observable<SelectOptionUi[]> {
     return this.codelistService.observeRaw("6350").pipe(
       map((codelist) => {
-        const items = CodelistService.mapToSelect(
+        const cls = CodelistService.mapToSelect(
           codelist,
           "de",
-          "NO_SORT",
-        ).map((item, index) =>
-          this.adaptPriorityDatasetItem(item, codelist.entries[index]),
+          this.sortFunctionPriorityDatasets,
         );
-
-        return CodelistService.sortFavorites(
-          codelist.id,
-          items.sort((a, b) => {
-            // put INVALID items to the end of the list
-            if (a.label.indexOf("INVALID -") === 0) return 1;
-            if (b.label.indexOf("INVALID -") === 0) return -1;
-            return a.label?.localeCompare(b.label);
-          }),
+        return cls.map((item) =>
+          this.adaptPriorityDatasetItem(item, codelist.entries),
         );
       }),
     );
   }
 
-  private adaptPriorityDatasetItem(item: SelectOptionUi, entry: CodelistEntry) {
+  private sortFunctionPriorityDatasets(
+    a: SelectOptionUi,
+    b: SelectOptionUi,
+  ): number {
+    // put INVALID items to the end of the list
+    if (a.label.indexOf("INVALID -") === 0) return 1;
+    if (b.label.indexOf("INVALID -") === 0) return -1;
+    return a.label?.localeCompare(b.label);
+  }
+
+  private adaptPriorityDatasetItem(
+    item: SelectOptionUi,
+    entries: CodelistEntry[],
+  ) {
     if (item.value === "_SEPARATOR_") return item;
+    const entry = entries.find((e) => e.id === item.value);
     item.label += " {en: " + entry.fields["en"] + "}";
     const parsedData = JSON.parse(entry.data);
     const isValid =

@@ -35,7 +35,7 @@ export interface DocumentAbstract {
   _tags: string;
   hasWritePermission?: boolean;
   hasOnlySubtreeWritePermission?: boolean;
-  isRoot: boolean;
+  isRoot?: boolean;
   isAddress: boolean;
 }
 

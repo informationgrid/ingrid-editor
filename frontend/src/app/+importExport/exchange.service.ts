@@ -82,11 +82,13 @@ export interface ExportOptions {
   ids: number[];
   exportFormat: string;
   useDraft: boolean;
+  addressReferences?: boolean;
 }
 
 export interface ExportFormOptions {
   drafts: boolean;
   format: any;
+  addressReferences: boolean;
 }
 
 export interface ExportTypeInfo {
@@ -122,6 +124,7 @@ export class ExchangeService {
       ids: docIds,
       exportFormat: options.format.type,
       useDraft: options.drafts,
+      addressReferences: options.addressReferences,
     };
   }
 

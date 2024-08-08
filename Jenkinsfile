@@ -19,6 +19,7 @@ pipeline {
     stages {
         // normal build if it's not the master branch and not the support branch, except if it's a SNAPSHOT-version
         stage('Build') {
+            when { not { buildingTag() } }
             steps {
                 script {
                     // since container is run on host and not within Jenkins, we cannot map init sql file
@@ -39,6 +40,7 @@ pipeline {
         }
 
         stage ('Frontend-Tests') {
+            when { not { buildingTag() } }
             steps {
                 script {
                     try {
@@ -52,11 +54,26 @@ pipeline {
                 }
             }
         }
+
+        stage ('Base-Image Update') {
+            when { buildingTag() }
+            steps {
+                script {
+                    docker.image('ubuntu:20.04').inside("-v /root/.docker/config.json:/root/.docker/config.json --mount type=bind,src=/opt/docker-setup/jenkins-nexus-sonar/jenkins-home/shared-ro-gradle-cache,dst=/.gradle-ro-cache") {
+                        withEnv(["GRADLE_RO_DEP_CACHE=/.gradle-ro-cache"]) {
+                            sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain build -x test'
+                        }
+                    }
+                }
+            }
+        }
+
+
     }
     post {
         always {
-            junit 'server/build/test-results/**/*.xml'
-            junit 'frontend/target/surefire-reports/**/*.xml'
+            junit allowEmptyResults: true, testResults: 'server/build/test-results/**/*.xml'
+            junit allowEmptyResults: true, testResults: 'frontend/target/surefire-reports/**/*.xml'
         }
         changed {
             // send Email with Jenkins' default configuration
@@ -80,9 +97,9 @@ def getCronParams() {
     }
 
     def versionMatcher = /\d\.\d\.\d(.\d)?/
-    if( env.TAG_NAME ==~ versionMatcher && diffInDays < 365) {
-        // once every 7 days between midnight and 6am
-        return 'H H(0-6) */7 * *'
+    if( env.TAG_NAME ==~ versionMatcher && diffInDays < 180) {
+        // every Sunday between midnight and 6am
+        return 'H H(0-6) * * 0'
     }
     else {
         return ''

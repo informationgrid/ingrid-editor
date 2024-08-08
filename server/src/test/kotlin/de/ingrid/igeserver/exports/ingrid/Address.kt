@@ -166,7 +166,7 @@ class Address : ShouldSpec() {
         should("export address hierarchy with no position name") {
             val doc = documentService.getLastPublishedDocument("test-catalog", "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2")
             every {
-                documentService.getLastPublishedDocument("test-catalog", "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2", any(), any())
+                documentService.getLastPublishedDocument("test-catalog", "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2", any())
             } answers {
                 doc.data.put("positionName", null as String?)
                 doc

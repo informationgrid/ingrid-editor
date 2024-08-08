@@ -46,7 +46,7 @@ export class CreateFolderPlugin extends Plugin {
 
   eventCreateFolderId = "CREATE_FOLDER";
 
-  private isAdmin = this.config.isAdmin();
+  private isAdmin = this.config.hasCatAdminRights();
 
   constructor(
     private config: ConfigService,
@@ -103,7 +103,7 @@ export class CreateFolderPlugin extends Plugin {
     // getFirstParentFolder would throw an error
     if (selectedDoc) {
       let handled = await FormUtils.handleDirtyForm(
-        this.formStateService.getForm(),
+        this.formStateService,
         this.documentService,
         this.dialog,
         this.forAddress,

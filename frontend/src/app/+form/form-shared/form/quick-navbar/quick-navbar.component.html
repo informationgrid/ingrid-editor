@@ -1,8 +1,8 @@
-@if (model._type != "FOLDER") {
+@if (doc?._type != "FOLDER") {
     <div class="navigation-bar-wrapper">
         <div class="navigation-bar flex-row">
             <ige-document-icon
-                [doc]="model"
+                [doc]="doc"
                 [toolTipModifier]="addTitleToTooltip"
             ></ige-document-icon>
             <ige-header-navigation

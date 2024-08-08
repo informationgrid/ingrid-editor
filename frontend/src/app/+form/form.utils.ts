@@ -25,8 +25,9 @@ import {
   ConfirmDialogData,
 } from "../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { FormGroup, UntypedFormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { firstValueFrom } from "rxjs";
+import { FormStateService } from "./form-state.service";
 
 export class FormUtils {
   static timestamp: number = 0;
@@ -58,11 +59,13 @@ export class FormUtils {
   }
 
   static async handleDirtyForm(
-    form: FormGroup,
+    formStateService: FormStateService,
     documentService: DocumentService,
     dialog: MatDialog,
     isAddress: boolean,
   ): Promise<boolean> {
+    const form = formStateService.getForm();
+    const metadata = formStateService.metadata();
     const formHasChanged = form?.dirty;
     if (formHasChanged) {
       console.log("Dirty fields:", this.getDirtyState(form));
@@ -72,6 +75,8 @@ export class FormUtils {
       if (decision === "save") {
         await firstValueFrom(
           documentService.save({
+            id: metadata.wrapperId,
+            version: metadata.version,
             data: value,
             isNewDoc: false,
             isAddress: isAddress,

@@ -37,7 +37,6 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
-import java.time.OffsetDateTime
 import kotlin.reflect.KClass
 
 @Service
@@ -74,7 +73,7 @@ class IngridIdfExporterExternalLfub(
 
     override fun getIngridModel(doc: Document, catalogId: String): IngridModel {
         val uuid = getUuidAnonymous(catalogId)
-        return mapper.convertValue(doc, IngridModel::class.java).apply { 
+        return mapper.convertValue(doc, IngridModel::class.java).apply {
             anonymizeAddresses(this, uuid)
             removeOfflineAccessReferences(this.data)
         }
@@ -104,7 +103,7 @@ class IngridLuceneExporterExternalLfub(
                 val model = data.mapper.convertValue(data.doc, IngridModel::class.java)
                 anonymizeAddresses(model, uuidAnonymous)
                 removeOfflineAccessReferences(model.data)
-                
+
                 getLfuBayernExternalTransformer(data.doc.type)
                     ?.constructors
                     ?.first()
@@ -152,15 +151,13 @@ class IngridISOExporterExternalLfub(
 }
 
 private fun anonymizeAddresses(model: IngridModel, uuid: String) {
-    val exampleDate = OffsetDateTime.now()
     val anonymousAddress = AddressModel(
-        uuid, 0, "InGridOrganisationDoc", null, null, null, null,
+        uuid, "InGridOrganisationDoc", null, null, null, null,
         null, null, emptyList(), null,
-        Address(null, null, null, null, null, null, null), null, null,
-        exampleDate, exampleDate, exampleDate, null
+        Address(null, null, null, null, null, null, null), null, null
     )
     model.data.pointOfContact?.forEach {
-        it.ref = anonymousAddress
+        it.ref = anonymousAddress.uuid
     }
 }
 

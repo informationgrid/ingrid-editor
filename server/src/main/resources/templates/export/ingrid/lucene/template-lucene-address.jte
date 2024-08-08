@@ -13,7 +13,7 @@
 {
     "iPlugId": "ige-ng_${catalog.getIdentifier()}",
     "dataSourceName": "iPlug IGE-NG (${catalog.getIdentifier()})",
-    "title": "${page.getDoc().getTitle()}",
+    "title": "${page.getTitle()}",
     "partner": [
         "${partner}"
     ],

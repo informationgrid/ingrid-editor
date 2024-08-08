@@ -183,7 +183,7 @@
                         <gco:CharacterString>Quellenvermerk: meine Quelle</gco:CharacterString>
                     </gmd:otherConstraints>
                     <gmd:otherConstraints>
-                        <gco:CharacterString>{"id":"other-opensource","name":"Andere Open Source Lizenz","url":"","quelle":"meine Quelle"}</gco:CharacterString>
+                        <gco:CharacterString>{"id":"other-opensource","name":"Andere Open Source Lizenz","url":"","quelle":"Datenquelle: meine Quelle"}</gco:CharacterString>
                     </gmd:otherConstraints>
                 </gmd:MD_LegalConstraints>
             </gmd:resourceConstraints>

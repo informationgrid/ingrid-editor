@@ -8,7 +8,7 @@
 
 !{var page = ((DataCollectionModelTransformer)map.get("model"));}
 @template.export.template-idf(content = @`
-    @template.export.ingrid.shared-general(page = page, contentInfo = @`
+    @template.export.ingrid.idf.shared-general(page = page, contentInfo = @`
         @if (page.hasContentInfo())
             <gmd:contentInfo>
                 <gmd:MD_FeatureCatalogueDescription>

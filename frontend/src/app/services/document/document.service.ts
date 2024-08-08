@@ -36,7 +36,7 @@ import {
   switchMap,
   tap,
 } from "rxjs/operators";
-import { IgeDocument } from "../../models/ige-document";
+import { DocumentWithMetadata, IgeDocument } from "../../models/ige-document";
 import { DocumentDataService } from "./document-data.service";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { TreeStore } from "../../store/tree/tree.store";
@@ -44,18 +44,15 @@ import { applyTransaction, HashMap, transaction } from "@datorama/akita";
 import { FormMessageService } from "../form-message.service";
 import { ProfileService } from "../profile.service";
 import { SessionStore } from "../../store/session.store";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { ConfigService, Configuration } from "../config/config.service";
 import { SearchResult } from "../../models/search-result.model";
 import { ServerSearchResult } from "../../models/server-search-result.model";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { StatisticResponse } from "../../models/statistic.model";
-import { IgeError } from "../../models/ige-error";
 import { SessionQuery } from "../../store/session.query";
 import { PathResponse } from "../../models/path-response";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
-import { TreeQuery } from "../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 import {
   ResearchResponse,
   ResearchService,
@@ -239,7 +236,7 @@ export class DocumentService {
                 new Date(a._contentModified).getTime() -
                 new Date(b._contentModified).getTime(),
             );
-          return this.mapToDocumentAbstracts(combined, null);
+          return this.mapSearchResponseToDocumentAbstracts(combined);
         }),
         tap((docs) =>
           this.sessionStore.update({ oldestExpiredDocuments: docs }),
@@ -272,7 +269,13 @@ export class DocumentService {
     isAddress?: boolean,
   ): Observable<DocumentAbstract[]> {
     return this.dataService.getChildren(parentId, isAddress).pipe(
-      map((docs) => this.mapToDocumentAbstracts(docs, parentId)),
+      map((docs) => {
+        docs.forEach((doc) => {
+          doc.icon = this.profileService.getDocumentIcon(doc._type);
+          doc.isRoot = parentId === null;
+        });
+        return docs as DocumentAbstract[];
+      }),
       tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs)),
     );
   }
@@ -282,16 +285,18 @@ export class DocumentService {
     address?: boolean,
     updateStore = true,
     useUuid = false,
-  ): Observable<IgeDocument> {
+  ): Observable<DocumentWithMetadata> {
     this.documentOperationFinished$.next(false);
     return this.dataService.load(id, useUuid).pipe(
+      // map((data) => this.mapDocumentWithMetadata(data)),
       tap((doc) => {
         if (updateStore) {
           this.updateTreeStore(doc, address);
         }
       }),
-      tap((doc) => this.docEvents.sendAfterLoadAndSet(doc)),
-      catchError((e: HttpErrorResponse) => this.handleLoadError(e)),
+      tap((doc) =>
+        this.docEvents.sendAfterLoadAndSet(doc.documentWithMetadata),
+      ),
       finalize(() => this.documentOperationFinished$.next(true)),
     );
   }
@@ -320,24 +325,25 @@ export class DocumentService {
     });
   }
 
-  save(saveOptions: SaveOptions): Observable<IgeDocument> {
-    const doc = this.preSaveActions(saveOptions.data, saveOptions.isAddress);
+  save(saveOptions: SaveOptions): Observable<DocumentWithMetadata> {
+    const doc = this.preSaveActions(
+      saveOptions.data,
+      saveOptions.type,
+      saveOptions.isAddress,
+    );
 
-    if (saveOptions.noVisualUpdates) {
-      return this.dataService.save(doc, saveOptions.isAddress).pipe(
-        tap((json) => {
-          saveOptions.data = json;
-          this.postSaveActions(saveOptions);
-        }),
-        finalize(() => this.documentOperationFinished$.next(true)),
-      );
-    }
-
-    return this.dataService.save(doc, saveOptions.isAddress).pipe(
-      tap(() => this.messageService.sendInfo("Ihre Eingabe wurde gespeichert")),
+    return this.dataService.save(doc, saveOptions).pipe(
+      tap(() => {
+        if (!saveOptions.noVisualUpdates) {
+          this.messageService.sendInfo("Ihre Eingabe wurde gespeichert");
+        }
+      }),
       tap((json) => {
-        saveOptions.data = json;
-        this.postSaveActions(saveOptions);
+        const postSaveOptions: PostSaveOptions = {
+          ...saveOptions,
+          dataWithMetadata: json,
+        };
+        this.postSaveActions(postSaveOptions);
       }),
       finalize(() => this.documentOperationFinished$.next(true)),
     );
@@ -362,8 +368,12 @@ export class DocumentService {
     );
   }
 
-  private preSaveActions(data: IgeDocument, isAddress: boolean): IgeDocument {
-    if (isAddress && data._type !== "FOLDER") {
+  private preSaveActions(
+    data: IgeDocument,
+    docType: string,
+    isAddress: boolean,
+  ): IgeDocument {
+    if (isAddress && docType !== "FOLDER") {
       // recreate address title, as it can not be changed manually for addresses
       data.title = this.createAddressTitle(data);
     }
@@ -409,16 +419,19 @@ export class DocumentService {
     return processed;
   }
 
-  postSaveActions(saveOptions: SaveOptions) {
+  postSaveActions(saveOptions: PostSaveOptions) {
     const store = saveOptions.isAddress
       ? this.addressTreeStore
       : this.treeStore;
 
-    if (!saveOptions.dontUpdateForm)
-      this.docEvents.sendAfterSave(saveOptions.data);
+    if (!saveOptions.dontUpdateForm) {
+      this.dataService.mapDocumentWithMetadata(saveOptions.dataWithMetadata);
+      this.docEvents.sendAfterSave(saveOptions.dataWithMetadata);
+    }
 
-    const parentId = saveOptions.data._parent;
-    const info = this.mapToDocumentAbstracts([saveOptions.data], parentId)[0];
+    const parentId = saveOptions.dataWithMetadata.metadata.parentId;
+    const info = this.mapToDocumentAbstracts([saveOptions.dataWithMetadata])[0];
+    info.isRoot = saveOptions.dataWithMetadata.metadata.parentId === null;
 
     // after renaming a folder the folder must still be expandable
     if (!saveOptions.isNewDoc) {
@@ -451,22 +464,27 @@ export class DocumentService {
 
   // FIXME: this should be added with a plugin
   publish(
+    id: number,
+    version: number,
+    docType: string,
     data: IgeDocument,
     isAddress: boolean,
     publishDate: Date = null,
   ): Observable<any> {
-    const doc = this.preSaveActions(data, isAddress);
+    const doc = this.preSaveActions(data, docType, isAddress);
 
-    return this.dataService.publish(doc, publishDate).pipe(
+    return this.dataService.publish(id, version, doc, publishDate).pipe(
       // catchError((error) => this.handlePublishError(error, data, isAddress)),
-      filter((response) => response),
+      filter((response) => response !== null && response !== undefined),
       tap(() => {
         if (!publishDate)
           this.messageService.sendInfo("Das Dokument wurde veröffentlicht.");
       }),
       tap((json) =>
+        // @ts-ignore
         this.postSaveActions({
-          data: json,
+          // data: json.documentWithMetadata,
+          dataWithMetadata: json,
           isNewDoc: false,
           isAddress: isAddress,
         }),
@@ -478,10 +496,7 @@ export class DocumentService {
   unpublish(id: number, forAddress: boolean): Observable<any> {
     const store = forAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.unpublish(id).pipe(
-      catchError((error) => {
-        return this.handleUnpublishError(error, id);
-      }),
-      map((json) => this.mapToDocumentAbstracts([json], json._parent)),
+      map((json) => this.mapToDocumentAbstracts([json])),
       tap((json) =>
         store.update({
           datasetsChanged: { type: UpdateType.Update, data: json },
@@ -496,23 +511,16 @@ export class DocumentService {
           "Die Veröffentlichung wurde zurückgezogen.",
         ),
       ),
+      catchError((error) => {
+        return this.handleUnpublishError(error, id);
+      }),
     );
   }
 
   cancelPendingPublishing(id: number, forAddress: boolean): Observable<any> {
     const store = forAddress ? this.addressTreeStore : this.treeStore;
     return this.dataService.cancelPendingPublishing(id).pipe(
-      catchError((error) => {
-        if (error?.error?.errorCode === "POST_SAVE_ERROR") {
-          console.error(error?.error?.errorText);
-          this.messageService.sendError(
-            "Problem beim Abbrechen der geplanten Veröffentlichung: " +
-              error?.error?.errorText,
-          );
-          return this.load(id);
-        }
-      }),
-      map((json) => this.mapToDocumentAbstracts([json], json._parent)),
+      map((json) => this.mapToDocumentAbstracts([json])),
       tap((json) =>
         store.update({
           datasetsChanged: { type: UpdateType.Update, data: json },
@@ -526,6 +534,16 @@ export class DocumentService {
           "Die geplante Veröffentlichung wurde abgebrochen.",
         ),
       ),
+      catchError((error) => {
+        if (error?.error?.errorCode === "POST_SAVE_ERROR") {
+          console.error(error?.error?.errorText);
+          this.messageService.sendError(
+            "Problem beim Abbrechen der geplanten Veröffentlichung: " +
+              error?.error?.errorText,
+          );
+          return this.load(id);
+        }
+      }),
     );
   }
 
@@ -581,11 +599,11 @@ export class DocumentService {
     console.error(error?.error?.errorText);
   }
 
-  revert(id: string, isAddress: boolean): Observable<any> {
+  revert(id: number, isAddress: boolean): Observable<any> {
     const store = isAddress ? this.addressTreeStore : this.treeStore;
 
     return this.dataService.revert(id).pipe(
-      map((json) => this.mapToDocumentAbstracts([json], json._parent)),
+      map((json) => this.mapToDocumentAbstracts([json])),
       map((json) => {
         json[0]._hasChildren = store.getValue().entities[id]._hasChildren;
         return json;
@@ -650,7 +668,8 @@ export class DocumentService {
       tap((docs) => {
         this.messageService.sendInfo("Datensatz wurde kopiert");
 
-        const infos = this.mapToDocumentAbstracts(docs, dest);
+        // const mappedDocs = docs.map((data) => data.documentWithMetadata);
+        const infos = this.mapToDocumentAbstracts(docs);
 
         this.updateStoreAfterCopy(infos, dest, isAddress);
 
@@ -832,46 +851,55 @@ export class DocumentService {
     this.addressTreeStore.reset();
   }
 
-  mapToDocumentAbstracts(
-    docs: IgeDocument[],
-    parentId?: number,
-  ): DocumentAbstract[] {
+  mapToDocumentAbstracts(docs: DocumentWithMetadata[]): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
-        id: doc._id ? doc._id : null,
-        icon: this.profileService.getDocumentIcon(doc),
-        title: doc.title || "-Kein Titel-",
-        _uuid: doc._uuid,
-        _state: doc._state,
-        _hasChildren: doc._hasChildren,
-        _parent: doc._parent ?? null,
-        _type: doc._type,
-        _modified: doc._modified,
-        _contentModified: doc._contentModified,
-        _pendingDate: doc._pendingDate,
-        _tags: doc._tags,
-        hasWritePermission: doc.hasWritePermission ?? false,
+        id: doc.metadata.wrapperId ?? null,
+        icon: this.profileService.getDocumentIcon(doc.metadata.docType),
+        title: doc.document.title || "-Kein Titel-",
+        _uuid: doc.metadata.uuid,
+        _state: doc.metadata.state,
+        _hasChildren: doc.metadata.hasChildren,
+        _parent: doc.metadata.parentId ?? null,
+        _type: doc.metadata.docType,
+        _modified: doc.metadata.modified,
+        _contentModified: doc.metadata.contentModified,
+        _pendingDate: doc.metadata.pendingDate,
+        _tags: doc.metadata.tags,
+        hasWritePermission: doc.metadata.hasWritePermission ?? false,
         hasOnlySubtreeWritePermission:
-          doc.hasOnlySubtreeWritePermission ?? false,
-        isRoot: parentId === null,
-        isAddress: doc.isAddress,
+          doc.metadata.hasOnlySubtreeWritePermission ?? false,
+        isAddress: doc.document.isAddress,
       };
     });
   }
 
-  private handleLoadError(e: HttpErrorResponse) {
-    if (e.status === 404) {
-      const error = new IgeError();
-      error.setMessage("Der Datensatz konnte nicht gefunden werden");
-      this.modalService.showIgeError(error);
-      return of(null);
-    } else {
-      throw e;
-    }
+  mapSearchResponseToDocumentAbstracts(docs: any[]): DocumentAbstract[] {
+    return docs.map((doc) => {
+      return {
+        id: doc._id,
+        icon: this.profileService.getDocumentIcon(doc._type),
+        title: doc.title || "-Kein Titel-",
+        _uuid: doc._uuid,
+        _state: doc._state,
+        _hasChildren: null,
+        _parent: null,
+        _type: doc._type,
+        _modified: null,
+        _contentModified: doc._contentModified,
+        _pendingDate: null,
+        _tags: doc._tags,
+        hasWritePermission: doc.hasWritePermission ?? false,
+        hasOnlySubtreeWritePermission:
+          doc.hasOnlySubtreeWritePermission ?? false,
+        isRoot: null,
+        isAddress: null,
+      };
+    });
   }
 
-  private updateTreeStore(doc: IgeDocument, address: boolean) {
-    const absDoc = this.mapToDocumentAbstracts([doc], doc._parent)[0];
+  private updateTreeStore(doc: DocumentWithMetadata, address: boolean) {
+    const absDoc = this.mapToDocumentAbstracts([doc])[0];
     return this.updateOpenedDocumentInTreestore(absDoc, address);
   }
 
@@ -890,7 +918,7 @@ export class DocumentService {
   ): SearchResult {
     return {
       totalHits: result.totalHits,
-      hits: this.mapToDocumentAbstracts(result.hits, null),
+      hits: this.mapSearchResponseToDocumentAbstracts(result.hits),
     } as SearchResult;
   }
 
@@ -1092,9 +1120,42 @@ export class DocumentService {
 
 export class SaveOptions {
   data: IgeDocument;
+  id: number;
+  version: number;
+  type?: string;
+  parentId?: number;
   isNewDoc?: boolean;
   isAddress?: boolean;
+  uuid?: string;
   path?: number[];
   noVisualUpdates?: boolean;
   dontUpdateForm?: boolean;
+
+  static createNewDocument(
+    data: IgeDocument,
+    type: string,
+    parentId: number,
+    isAddress: boolean,
+    pathIds: number[] = null,
+    skipFormUpdate: boolean = false,
+    uuid: string = null,
+  ) {
+    return {
+      id: null,
+      version: null,
+      type: type,
+      parentId: parentId,
+      data: data,
+      isNewDoc: true,
+      isAddress: isAddress,
+      uuid: uuid,
+      path: pathIds,
+      noVisualUpdates: skipFormUpdate,
+      dontUpdateForm: skipFormUpdate,
+    };
+  }
+}
+
+export class PostSaveOptions extends SaveOptions {
+  dataWithMetadata: DocumentWithMetadata;
 }

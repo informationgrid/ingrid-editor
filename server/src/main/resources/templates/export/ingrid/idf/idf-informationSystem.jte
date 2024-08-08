@@ -6,7 +6,7 @@
 
 !{var page = ((InformationSystemModelTransformer)map.get("model"));}
 @template.export.template-idf(content = @`
-    @template.export.ingrid.shared-general(page = page)
+    @template.export.ingrid.idf.shared-general(page = page)
     @if(page.hasDataQualityInfo())
         <gmd:dataQualityInfo>
             <gmd:DQ_DataQuality>

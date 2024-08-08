@@ -8,6 +8,6 @@
 !{var docInfo = ((DocInfo)map.get("docInfo"));}
 
 @template.export.template-idf(content = @`
-    @template.export.uvp.shared-general(page = page)
-    @template.export.uvp.shared-steps(page = page, docInfo = docInfo)
+    @template.export.uvp.idf.shared-general(page = page)
+    @template.export.uvp.idf.shared-steps(page = page, docInfo = docInfo)
 `)

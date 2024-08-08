@@ -20,19 +20,34 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
+  computed,
   HostListener,
-  Input,
+  input,
   OnInit,
-  Output,
+  output,
 } from "@angular/core";
-import { IgeDocument } from "../../../../models/ige-document";
+import { DocumentWithMetadata } from "../../../../models/ige-document";
 import { ProfileService } from "../../../../services/profile.service";
 import { BackendOption } from "../../../../store/codelist/codelist.model";
+import { DocumentService } from "../../../../services/document/document.service";
+import { MatCard, MatCardContent } from "@angular/material/card";
+import { MatTooltip } from "@angular/material/tooltip";
+import { AsyncPipe, NgTemplateOutlet } from "@angular/common";
+import { DocumentIconModule } from "../../../../shared/document-icon/document-icon.module";
+import { SharedPipesModule } from "../../../../directives/shared-pipes.module";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { MatIcon } from "@angular/material/icon";
+import { MatIconButton } from "@angular/material/button";
 
 export interface AddressRef {
   type: BackendOption;
-  ref: Partial<IgeDocument>;
+  ref: string;
+}
+
+export interface ResolvedAddressWithType {
+  type: BackendOption;
+  address: DocumentWithMetadata;
+  error?: String;
 }
 
 @Component({
@@ -40,16 +55,37 @@ export interface AddressRef {
   templateUrl: "./address-card.component.html",
   styleUrls: ["./address-card.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    MatCard,
+    MatTooltip,
+    MatCardContent,
+    NgTemplateOutlet,
+    DocumentIconModule,
+    SharedPipesModule,
+    AsyncPipe,
+    MatMenuTrigger,
+    MatIcon,
+    MatMenu,
+    MatMenuItem,
+    MatIconButton,
+  ],
+  standalone: true,
 })
 export class AddressCardComponent implements OnInit {
-  @Input() address: AddressRef;
-  @Input() disabled = false;
-  @Input() canCopy = false;
+  address = input.required<ResolvedAddressWithType>();
+  disabled = input<boolean>(false);
 
-  @Output() remove = new EventEmitter<void>();
-  @Output() edit = new EventEmitter<void>();
-  @Output() copy = new EventEmitter<void>();
-  @Output() gotoAddress = new EventEmitter<void>();
+  remove = output();
+  edit = output();
+  copy = output();
+  gotoAddress = output();
+
+  addressAbstract = computed(() => {
+    if (this.address().address === null) return null;
+    return this.documentService.mapToDocumentAbstracts([
+      this.address().address,
+    ])[0];
+  });
 
   content: {
     iconClass?: string;
@@ -62,10 +98,14 @@ export class AddressCardComponent implements OnInit {
   stateInfo: string = "";
   showCopy = false;
 
-  constructor(private profileService: ProfileService) {}
+  constructor(
+    private profileService: ProfileService,
+    private documentService: DocumentService,
+  ) {}
 
   ngOnInit(): void {
-    if (!this.address.ref) {
+    const theAddress = this.address();
+    if (!theAddress.address) {
       console.error("Address reference is null!");
       this.content = {
         title: "Ungültige Adressreferenz",
@@ -74,19 +114,19 @@ export class AddressCardComponent implements OnInit {
       return;
     }
 
+    this.prepareAddress(theAddress);
+  }
+
+  private prepareAddress(theAddress: ResolvedAddressWithType) {
     this.content = {
       iconClass: this.profileService.getDocumentIcon(
-        <IgeDocument>this.address.ref,
+        theAddress.address.metadata.docType,
       ),
-      role: this.address.type,
-      title: this.getTitle(this.address.ref),
-      secondTitle: this.getSecondTitle(this.address.ref),
-      emailOrPhone: this.getEmailOrTelephone(this.address.ref),
+      role: theAddress.type,
+      title: this.getTitle(theAddress.address.document),
+      secondTitle: this.getSecondTitle(theAddress.address.document),
+      emailOrPhone: this.getEmailOrTelephone(theAddress.address.document),
     };
-
-    if (typeof this.address.ref === "string") {
-      this.content.title = "Gelöschte Adresse";
-    }
 
     this.stateInfo = this.getAddressInfo();
   }
@@ -114,7 +154,7 @@ export class AddressCardComponent implements OnInit {
   }
 
   private getAddressInfo() {
-    switch (this.address.ref._state) {
+    switch (this.address().address.metadata.state) {
       case "W":
         return "Die Adresse ist nicht veröffentlicht. Ein veröffentlichen des Datensatzes ist aktuell nicht möglich.";
       case "PW":
@@ -127,7 +167,6 @@ export class AddressCardComponent implements OnInit {
   @HostListener("window: keyup", ["$event"])
   @HostListener("window: keydown", ["$event"])
   hotkeys(event: KeyboardEvent) {
-    this.showCopy = event.ctrlKey && this.copy.observed;
-    // this.showCopy = event.ctrlKey && this.canCopy;
+    this.showCopy = event.ctrlKey;
   }
 }

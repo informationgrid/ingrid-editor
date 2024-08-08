@@ -6,7 +6,7 @@
 
 !{var page = ((ProjectModelTransformer)map.get("model"));}
 @template.export.template-idf(content = @`
-    @template.export.ingrid.shared-general(page = page, additionalCitation = @`
+    @template.export.ingrid.idf.shared-general(page = page, additionalCitation = @`
         @if(TransformationTools.hasValue(page.getManager()))
         <gmd:citedResponsibleParty>
             <gmd:CI_ResponsibleParty>

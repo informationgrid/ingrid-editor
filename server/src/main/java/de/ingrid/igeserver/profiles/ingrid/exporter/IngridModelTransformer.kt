@@ -552,24 +552,25 @@ open class IngridModelTransformer(
     }
 
     fun getOperatesOn() = data.service.coupledResources?.flatMap {
-        val finalIdentifier = if (it.isExternalRef) {
-            it.identifier
-        } else {
-            // TODO: when document not yet published (ISO-view of draft) then do not generate operatesOn-element (#6241)
-            val identifier = getLastPublishedDocument(it.uuid!!)?.data?.get("identifier")?.asText() ?: it.uuid
-            val containsNamespace = identifier.contains("://")
-            if (containsNamespace) {
-                identifier
-            } else {
-                namespace + identifier
-            }
-        }
+        val finalIdentifier = getCoupledResourceIdentifier(it)
 
         // for each layername create an operatesOn-element
         if (it.layerNames.isNullOrEmpty()) listOf(OperatesOn(it.uuid, finalIdentifier, null))
         else it.layerNames.map { layername: String -> OperatesOn(it.uuid, finalIdentifier, layername) }
 
     } ?: emptyList()
+
+    fun getCoupledResourceIdentifiers() = model.data.service.coupledResources?.map { getCoupledResourceIdentifier(it) } ?: emptyList()
+
+    private fun getCoupledResourceIdentifier(
+        it: CoupledResource
+    ) = if (it.isExternalRef) {
+        it.identifier
+    } else {
+        // TODO: when document not yet published (ISO-view of draft) then do not generate operatesOn-element (#6241)
+        val identifier = getLastPublishedDocument(it.uuid!!)?.data?.getString("identifier") ?: it.uuid
+        addNamespaceIfNeeded(identifier)
+    }
 
     // type is "Darstellungsdienste" and operation is "GetCapabilities"
     val capabilitiesUrl =
@@ -580,26 +581,20 @@ open class IngridModelTransformer(
         return if (model.type == "InGridGeoDataset") {
             val doc = getLastPublishedDocument(model.uuid)
             documentService.getIncomingReferences(doc, catalogIdentifier)
-                .map { documentService.getLastPublishedDocument(catalogIdentifier, it, resolveLinks = false) }
+                .map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
                 .filter {
-                    it.type == "InGridGeoService" && it.data.get("service").get("type").get("key").asText() == "2"
+                    it.type == "InGridGeoService" && it.data.getString("service.type.key") == "2"
                 }
                 .mapNotNull {
                     it.data.get("service").get("operations")
-                        .firstOrNull { isCapabilitiesEntry(it) }?.get("methodCall")?.asText()
+                        .firstOrNull { isCapabilitiesEntry(it) }?.getString("methodCall")
                 }
         } else emptyList()
 
     }
 
     fun getReferingServiceUuid(service: CrossReference): String {
-        val containsNamespace = model.data.identifier?.contains("://") ?: false
-        return if (containsNamespace) {
-            "${service.uuid}@@${service.objectName}@@${service.serviceUrl ?: ""}@@${model.data.identifier}"
-        } else {
-            val namespaceWithSlash = if (namespace.endsWith("/")) namespace else "$namespace/"
-            "${service.uuid}@@${service.objectName}@@${service.serviceUrl ?: ""}@@${namespaceWithSlash}${model.data.identifier}"
-        }
+        return "${service.uuid}@@${service.objectName}@@${service.serviceUrl.orEmpty()}@@${this.citationURL}"
     }
 
     // TODO: move to specific doc types
@@ -699,9 +694,9 @@ open class IngridModelTransformer(
 
     init {
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
-        this.namespace = catalog.settings.config.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier/"
-        this.citationURL =
-            namespace.suffixIfNot("/") + model.uuid // TODO: in classic IDF_UTIL.getUUIDFromString is used
+        this.namespace = if (catalog.settings.config.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/$catalogIdentifier/" else catalog.settings.config.namespace!!
+        this.citationURL = addNamespaceIfNeeded(model.data.identifier ?: model.uuid)
+
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
                 ?.map { toAddressModelTransformer(it) } ?: emptyList()
@@ -721,7 +716,6 @@ open class IngridModelTransformer(
                 getOperationName(it.name),
                 it.description,
                 it.methodCall,
-                citationURL
             )
         } ?: emptyList()
     }
@@ -732,7 +726,7 @@ open class IngridModelTransformer(
             codelists,
             // Map pointOfContactMD type to pointOfContact for ISO Exports
             if( it.type?.key != "12") it.type else KeyValue("7", "pointOfContact"),
-            getLastPublishedDocument(it.ref?.uuid ?: throw ServerException.withReason("Address-Reference UUID is NULL")) ?: Document().apply {
+            getLastPublishedDocument(it.ref ?: throw ServerException.withReason("Address-Reference UUID is NULL")) ?: Document().apply {
                 data = jacksonObjectMapper().createObjectNode()
                 type = "null-address"
                 modified = OffsetDateTime.now()
@@ -750,14 +744,18 @@ open class IngridModelTransformer(
     }
 
     private fun getCitationUrlFromDoc(doc: Document): String {
-        val identifier = doc.data.get("identifier")?.asText()
+        val identifier = doc.data.getString("identifier")
             ?: throw ServerException.withReason("Identifier of coupled document not found: ${doc.uuid}")
-        return if (identifier.indexOf("/", 1) == -1) {
-            namespace.suffixIfNot("/") + identifier
-        } else {
-            identifier
-        }
+        return addNamespaceIfNeeded(identifier)
     }
+
+    private fun addNamespaceIfNeeded(identifier: String): String =
+        // if identifier is a URI, don't add namespace
+        if (identifier.contains("://"))
+            identifier
+        else
+            namespace.suffixIfNot("/") + identifier
+
 
 
     private fun getCoupledCrossReferences() = model.data.service.coupledResources?.filter { !it.isExternalRef }
@@ -822,7 +820,7 @@ open class IngridModelTransformer(
             uuid = uuid,
             objectName = doc.title ?: "???",
             objectType = mapDocumentType(doc.type),
-            description = doc.data.get("description")?.asText(),
+            description = doc.data.getString("description"),
             graphicOverview = generateBrowseGraphics(
                 listOfNotNull(convertToGraphicOverview(doc.data.get("graphicOverviews")?.get(0))), uuid
             ).firstOrNull()?.uri,
@@ -882,7 +880,7 @@ open class IngridModelTransformer(
         if (asCoupledResource != null) return KeyValue("3600", null)
 
         val asReference = data.get("references")
-            ?.find { it.get("uuidRef")?.asText() == this.model.uuid }
+            ?.find { it.getString("uuidRef") == this.model.uuid }
 
         return if (asReference != null) {
             createKeyValueFromJsonNode(asReference.get("type"))
@@ -922,10 +920,10 @@ open class IngridModelTransformer(
         }
     }
 
-    fun getLastPublishedDocument(uuid: String, resolveLinks: Boolean = false): Document? {
+    fun getLastPublishedDocument(uuid: String): Document? {
         if (cache.documents.containsKey(uuid)) return cache.documents[uuid]
         return try {
-            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = resolveLinks)
+            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
                 .also { cache.documents[uuid] = it }
         } catch (e: Exception) {
             log.warn("Could not get last published document: $uuid")
@@ -992,7 +990,6 @@ data class DisplayOperation(
     val name: String?,
     val description: String?,
     val methodCall: String?,
-    val identifierLink: String?
 )
 
 data class OperatesOn(val uuidref: String?, val href: String?, val title: String?)

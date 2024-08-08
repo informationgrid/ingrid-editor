@@ -71,34 +71,13 @@ val expectedOrganisationWithPositionName = """
 
 val expectedOrganisationAsPointOfContact = """
 { 
-  "ref": {
-    "_uuid": "e3db6665-5670-4543-85a6-f55ea6a4e7a6",
-    "_type": "InGridOrganisationDoc",
-    "title": "Objektbesitzer Institut",
-    "organization": "Objektbesitzer Institut",
-    "contact": [],
-    "positionName": "",
-    "hoursOfService": ""
-  },
-  "type": {
-    "key": "7"
-  }    
-}""".trimIndent()
-
-val expectedOrganisationAsPointOfContactMd = """
-{ 
-  "ref": {
-    "_uuid": "e3db6665-5670-4543-85a6-f55ea6a4e7a6",
-    "_type": "InGridOrganisationDoc",
-    "title": "Objektbesitzer Institut",
-    "organization": "Objektbesitzer Institut",
-    "contact": [],
-    "positionName": "",
-    "hoursOfService": ""
-  },
-  "type": {
-    "key": "12"
-  }    
+  "_uuid": "e3db6665-5670-4543-85a6-f55ea6a4e7a6",
+  "_type": "InGridOrganisationDoc",
+  "title": "Objektbesitzer Institut",
+  "organization": "Objektbesitzer Institut",
+  "contact": [],
+  "positionName": "",
+  "hoursOfService": ""
 }""".trimIndent()
 
 val expectedOrganisationReferat1 = """

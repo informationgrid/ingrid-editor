@@ -114,6 +114,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
         if (response) {
           this.addValuesFromResponse(response);
           this.removeDeselectedValues(response);
+          this.cdr.detectChanges();
         }
       });
   }

@@ -30,6 +30,8 @@ import { CdkTextareaAutosize } from "@angular/cdk/text-field";
 import { UntypedFormGroup } from "@angular/forms";
 import { IgeDocument } from "../../../models/ige-document";
 import { FormMenuService, FormularMenuItem } from "../../form-menu.service";
+import { DocumentAbstract } from "../../../store/document/document.model";
+import { FormStateService } from "../../form-state.service";
 
 @Component({
   selector: "ige-header-title-row",
@@ -43,7 +45,16 @@ export class HeaderTitleRowComponent implements OnInit {
   }
 
   @Input() set model(value: IgeDocument) {
+    // TODO AW: _model only needed for tooltip => Refactor
     this._model = value;
+    const metadata = this.formStateService.metadata();
+    // @ts-ignore
+    this.doc = {
+      ...value,
+      _type: metadata.docType,
+      _state: metadata.state,
+      _tags: metadata.tags,
+    };
     this.updateHeaderMenuOptions();
   }
 
@@ -58,12 +69,14 @@ export class HeaderTitleRowComponent implements OnInit {
   showTitleInput = false;
   showMore = false;
   showMoreActions = false;
+  doc: DocumentAbstract;
 
   moreActions: FormularMenuItem[];
 
   constructor(
     private cdRef: ChangeDetectorRef,
     private formMenuService: FormMenuService,
+    private formStateService: FormStateService,
   ) {}
 
   ngOnInit() {

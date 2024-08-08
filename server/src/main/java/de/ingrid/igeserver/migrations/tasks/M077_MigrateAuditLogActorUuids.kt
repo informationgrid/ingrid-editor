@@ -59,15 +59,13 @@ class M077_MigrateAuditLogActorUuids : MigrationBase("0.77") {
         ClosableTransaction(transactionManager).use {
             val keycloakUuids = entityManager.createNativeQuery(uuidSql).resultList
 
-            userManagementService.getClient().use { client ->
-                keycloakUuids
-                    .filterNotNull()
-                    .forEach { uuid ->
-                        getLogin(uuid as String)?.let { login ->
-                            migrateUUIDToLogin(login, uuid)
-                        }
+            keycloakUuids
+                .filterNotNull()
+                .forEach { uuid ->
+                    getLogin(uuid as String)?.let { login ->
+                        migrateUUIDToLogin(login, uuid)
                     }
-            }
+                }
         }
     }
 
@@ -79,14 +77,12 @@ class M077_MigrateAuditLogActorUuids : MigrationBase("0.77") {
     }
 
     private fun getLogin(uuid: String): String? {
-        userManagementService.getClient().use { client ->
-            try {
-                val user = userManagementService.getKeycloakUserWithUuid(client, uuid)
-                return user.username
-            } catch (e: Exception) {
-                log.info("User with uuid '$uuid' not found. Ignore if uuid is a username.")
-                return null
-            }
+        try {
+            val user = userManagementService.getKeycloakUserWithUuid(uuid)
+            return user.username
+        } catch (e: Exception) {
+            log.info("User with uuid '$uuid' not found. Ignore if uuid is a username.")
+            return null
         }
     }
 }

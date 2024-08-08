@@ -56,13 +56,6 @@ export class McloudDoctype extends BaseDoctype {
                   : false,
               message: "Es muss ein Herausgeber als Adresse angegeben sein",
             },
-            publisherPublished: {
-              expression: (ctrl) =>
-                ctrl.value
-                  ? ctrl.value.every((row) => row.ref._state === "P")
-                  : false,
-              message: "Alle Adressen müssen veröffentlicht sein",
-            },
           },
         }),
         this.addRepeatChip("keywords", "Schlagworte"),
@@ -117,7 +110,7 @@ export class McloudDoctype extends BaseDoctype {
                   } else {
                     return `<a href="${
                       this.configService.getConfiguration().backendUrl
-                    }upload/${form.get("_uuid").value}/${
+                    }upload/${this.formStateService.metadata().uuid}/${
                       link.uri
                     }" class="no-text-transform icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${
                       link.uri

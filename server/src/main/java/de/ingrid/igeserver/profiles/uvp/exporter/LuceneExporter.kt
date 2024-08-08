@@ -47,7 +47,7 @@ class LuceneExporter(
 
         val output: TemplateOutput = JsonStringOutput()
         val catalog = catalogRepo.findByIdentifier(catalogId)
-        templateEngine.render("export/uvp/template-lucene.jte", getMapFromObject(doc, catalog), output)
+        templateEngine.render("export/uvp/lucene/template-lucene.jte", getMapFromObject(doc, catalog), output)
         return output.toString()
     }
 

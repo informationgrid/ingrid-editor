@@ -194,43 +194,41 @@ class ExpiredDatasetsTask(
     ) {
         val emailDatasetMap = this.createMailDatasetMap(expiredDatasetList)
         val it: Iterator<Map.Entry<String, List<ExpiredDataset>>> = emailDatasetMap.entries.iterator()
-        keycloakService.initAdminClient().use { client ->
 
-            while (it.hasNext()) {
-                val (login, expDatasets) = it.next()
+        while (it.hasNext()) {
+            val (login, expDatasets) = it.next()
 
-                val recipient = keycloakService.getUser(client, login).email
+            val recipient = keycloakService.getUser(login).email
 
-                val subject =
-                    if (ExpiryState.EXPIRED == expiryState) mailProps.subjectDatasetIsExpired else mailProps.subjectDatasetWillExpire
+            val subject =
+                if (ExpiryState.EXPIRED == expiryState) mailProps.subjectDatasetIsExpired else mailProps.subjectDatasetWillExpire
 
-                val output = StringOutput()
+            val output = StringOutput()
 
-                val baseTemplate =
-                    if (ExpiryState.EXPIRED == expiryState) "export/expired-template.jte" else "export/will-expire-template.jte"
+            val baseTemplate =
+                if (ExpiryState.EXPIRED == expiryState) "export/expired-template.jte" else "export/will-expire-template.jte"
 
-                // check if profile specific template exists, otherwise use default
-                val template =
-                    if (templateEngine.hasTemplate("${catalogType}/${baseTemplate}")) "${catalogType}/${baseTemplate}" else baseTemplate
-                templateEngine.render(
-                    template,
-                    mapOf(
-                        "map" to mapOf(
-                            "datasets" to expDatasets,
-                            "linkstub" to linkstub,
-                        ),
+            // check if profile specific template exists, otherwise use default
+            val template =
+                if (templateEngine.hasTemplate("${catalogType}/${baseTemplate}")) "${catalogType}/${baseTemplate}" else baseTemplate
+            templateEngine.render(
+                template,
+                mapOf(
+                    "map" to mapOf(
+                        "datasets" to expDatasets,
+                        "linkstub" to linkstub,
                     ),
-                    output
-                )
+                ),
+                output
+            )
 
-                val text = output.toString()
-                log.debug("Sending expired datasets mail to $recipient")
-                emailService.sendEmail(
-                    recipient,
-                    subject,
-                    text
-                )
-            }
+            val text = output.toString()
+            log.debug("Sending expired datasets mail to $recipient")
+            emailService.sendEmail(
+                recipient,
+                subject,
+                text
+            )
         }
     }
 

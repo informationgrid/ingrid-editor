@@ -174,7 +174,7 @@ export class TestDoctype extends BaseDoctype {
                   } else {
                     return `<a href="${
                       this.configService.getConfiguration().backendUrl
-                    }upload/${form.get("_uuid").value}/${
+                    }upload/${this.formStateService.metadata().uuid}/${
                       link.uri
                     }" class="no-text-transform icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${
                       link.uri

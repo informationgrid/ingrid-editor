@@ -17,9 +17,9 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { Injectable, signal } from "@angular/core";
 import { BackendUser, FrontendUser, User } from "../../+user/user";
-import { BehaviorSubject, Observable } from "rxjs";
+import { Observable } from "rxjs";
 import { UserDataService } from "./user-data.service";
 import { catchError, map, tap } from "rxjs/operators";
 import { SelectOption, SelectOptionUi } from "../codelist/codelist.service";
@@ -52,8 +52,8 @@ export class UserService {
     author: "author",
   };
 
-  selectedUser$ = new BehaviorSubject<User>(null);
-  users$ = new BehaviorSubject<User[]>([]);
+  selectedUser$ = signal<User>(null);
+  users$ = signal<User[]>(null);
 
   constructor(
     private dataService: UserDataService,
@@ -62,15 +62,11 @@ export class UserService {
     private keycloakService: AuthenticationFactory,
     private groupQuery: GroupQuery,
   ) {
-    if (!this.configService.isAdmin()) {
+    if (!this.configService.hasCatAdminRights()) {
       this.availableRoles = this.availableRoles.filter(
         (o) => o.value != "cat-admin",
       );
     }
-  }
-
-  fetchUsers(): void {
-    this.getUsers().subscribe();
   }
 
   getUsers(): Observable<FrontendUser[]> {
@@ -84,7 +80,7 @@ export class UserService {
           )
           .sort((a, b) => a.login.localeCompare(b.login)),
       ),
-      tap((users) => this.users$.next(users ? users : [])),
+      tap((users) => this.users$.set(users ?? [])),
     );
   }
 
@@ -116,6 +112,13 @@ export class UserService {
 
     return this.dataService.saveUser(userForBackend).pipe(
       map((u) => new FrontendUser(u)),
+      tap((user) =>
+        this.users$.update((value) => {
+          const index = value.findIndex((u) => u.id === user.id);
+          value[index] = user;
+          return [...value];
+        }),
+      ),
       catchError((error) => {
         if (error.status === 404) {
           throw new IgeError(

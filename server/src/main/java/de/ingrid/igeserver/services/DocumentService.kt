@@ -19,11 +19,7 @@
  */
 package de.ingrid.igeserver.services
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.TagRequest
 import de.ingrid.igeserver.api.ValidationException
@@ -35,7 +31,6 @@ import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.FindAllResults
 import de.ingrid.igeserver.persistence.filter.*
 import de.ingrid.igeserver.persistence.model.EntityType
-import de.ingrid.igeserver.persistence.model.UpdateReferenceOptions
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.repository.CatalogRepository
@@ -64,7 +59,7 @@ enum class InitiatorAction {
 }
 
 data class DocumentInfo(
-    val _id: Number,
+    val id: Number,
     val title: String,
     val _uuid: String,
     val _state: String,
@@ -78,6 +73,11 @@ data class DocumentInfo(
     val hasWritePermission: Boolean,
     val hasOnlySubtreeWritePermission: Boolean,
     val isAddress: Boolean
+)
+
+data class DeleteOptions(
+    val deletePermanently: Boolean? = null,
+    val force: Boolean? = null
 )
 
 @Service
@@ -168,7 +168,7 @@ class DocumentService(
      * permission when getting the wrapper.
      * TODO: very similar to function "getDocumentByWrapperId(...)" -> refactor
      */
-    fun getDocumentFromCatalog(catalogIdentifier: String, id: Int, expandReferences: Boolean = false): DocumentData {
+    fun getDocumentFromCatalog(catalogIdentifier: String, id: Int): DocumentData {
         try {
             val wrapper = docWrapperRepo.findById(id).get()
             val doc = docRepo.getByCatalogAndUuidAndIsLatestIsTrue(wrapper.catalog!!, wrapper.uuid)
@@ -177,11 +177,7 @@ class DocumentService(
             // always add wrapper id which is needed when saving documents for authorization check
             doc.wrapperId = id
 
-            return if (expandReferences) DocumentData(
-                wrapper,
-                expandInternalReferences(doc, options = UpdateReferenceOptions(catalogId = catalogIdentifier))
-            )
-            else DocumentData(wrapper, doc)
+            return DocumentData(wrapper, doc)
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
         }
@@ -207,12 +203,9 @@ class DocumentService(
             doc.hasWritePermission = wrapper.hasWritePermission
             doc.hasOnlySubtreeWritePermission = wrapper.hasOnlySubtreeWritePermission
             doc.wrapperId = wrapper.id
-            doc.data.put(FIELD_PARENT, wrapper.parent?.id) // make parent available in frontend
+            // TODO AW: doc.data.put(FIELD_PARENT, wrapper.parent?.id) // make parent available in frontend
             // TODO: only call when requested!?
-            return expandInternalReferences(
-                doc,
-                options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport)
-            )
+            return doc
         } catch (ex: EmptyResultDataAccessException) {
             throw NotFoundException.withMissingResource(id.toString(), null)
         } catch (ex: NoSuchElementException) {
@@ -307,23 +300,6 @@ class DocumentService(
     fun createDocument(
         principal: Principal,
         catalogId: String,
-        data: JsonNode,
-        parentId: Int?,
-        address: Boolean = false,
-        publish: Boolean = false,
-        initiator: InitiatorAction = InitiatorAction.DEFAULT
-    ): DocumentData {
-        (data as ObjectNode).put(FIELD_PARENT, parentId)
-        val document = convertToDocument(data)
-        return createDocument(principal, catalogId, document, parentId, address, publish, initiator)
-
-    }
-
-
-    @Transactional
-    fun createDocument(
-        principal: Principal,
-        catalogId: String,
         document: Document,
         parentId: Int?,
         address: Boolean = false,
@@ -336,7 +312,7 @@ class DocumentService(
         val docType = getDocumentType(docTypeName, filterContext.profile)
 
         // run pre-create pipe(s)
-        val preCreatePayload = PreCreatePayload(docType, catalogId, document, getCategoryFromType(docTypeName, address), initiator)
+        val preCreatePayload = PreCreatePayload(docType, catalogId, document, parentId, getCategoryFromType(docTypeName, address), initiator)
         preCreatePipe.runFilters(preCreatePayload, filterContext)
 
         val preUpdatePayload = PreUpdatePayload(docType, catalogId, preCreatePayload.document, preCreatePayload.wrapper)
@@ -391,75 +367,6 @@ class DocumentService(
         val postWrapper = runPostUpdatePipes(docType, catalogId, newDocument, newWrapper, filterContext, publish)
 
         return DocumentData(postWrapper, newDocument)
-    }
-
-    /**
-     * Map data-field from entity to root
-     */
-    fun convertToJsonNode(document: Document): JsonNode {
-
-        val node = jacksonObjectMapper().convertValue(document, ObjectNode::class.java)
-        val data = node.remove("data")
-        data.fields().forEach { entry ->
-            node.replace(entry.key, entry.value)
-        }
-        return node
-
-    }
-
-    fun convertToDocument(docJson: JsonNode): Document {
-
-        return Document().apply {
-            title = docJson.get("title")?.asText() ?: ""
-            type = docJson.get(FIELD_DOCUMENT_TYPE).asText()
-            version = docJson.get(FIELD_VERSION)?.asInt()
-            if (docJson.hasNonNull(FIELD_UUID)) {
-                uuid = docJson.get(FIELD_UUID).asText()
-            }
-            data = removeInternalFields(docJson as ObjectNode)
-        }
-
-    }
-
-    private fun removeInternalFields(node: ObjectNode): ObjectNode {
-        val copy = jacksonObjectMapper().createObjectNode().setAll<ObjectNode>(node)
-        listOf(
-            FIELD_VERSION,
-            FIELD_CREATED_USER_EXISTS,
-            FIELD_MODIFIED_USER_EXISTS,
-            FIELD_CREATED,
-            FIELD_MODIFIED,
-            FIELD_CONTENT_MODIFIED,
-            FIELD_CREATED_BY,
-            FIELD_MODIFIED_BY,
-            FIELD_CONTENT_MODIFIED_BY,
-            FIELD_UUID,
-            FIELD_ID,
-            FIELD_DOCUMENT_TYPE,
-            FIELD_TAGS,
-            FIELD_STATE,
-            "title",
-            "hasWritePermission",
-            "hasOnlySubtreeWritePermission",
-            "_wrapperId",
-//            FIELD_PARENT // the parent is only stored in document wrapper -> still needed in default document update
-        )
-            .forEach { copy.remove(it) }
-        return copy
-    }
-
-    // TODO: refactor since removeInternalFields does almost the same, find out difference and why
-    fun removeInternalFieldsForImport(json: ObjectNode) {
-        listOf(
-//            FIELD_ID,
-            FIELD_VERSION,
-//            FIELD_CREATED,
-//            FIELD_MODIFIED,
-            FIELD_STATE,
-            FIELD_HAS_CHILDREN,
-            "hasWritePermission",
-            "hasOnlySubtreeWritePermission"
-        ).forEach { json.remove(it) }
     }
 
     fun publishPendingDocuments(principal: Principal, catalogId: String) {
@@ -542,7 +449,7 @@ class DocumentService(
 
             return DocumentData(
                 postWrapper,
-                expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
+                updatedDoc
             )
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
@@ -589,7 +496,7 @@ class DocumentService(
 
     private fun moveLastPublishedDocumentToArchive(catalogId: String, wrapper: DocumentWrapper) {
         try {
-            val lastPublishedDoc = getLastPublishedDocument(catalogId, wrapper.uuid, resolveLinks = false)
+            val lastPublishedDoc = getLastPublishedDocument(catalogId, wrapper.uuid)
             lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
             lastPublishedDoc.wrapperId = wrapper.id
             docRepo.save(lastPublishedDoc)
@@ -660,7 +567,7 @@ class DocumentService(
 
             return DocumentData(
                 postWrapper,
-                expandInternalReferences(updatedDoc, options = UpdateReferenceOptions(catalogId = catalogId))
+                updatedDoc
             )
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
@@ -677,9 +584,6 @@ class DocumentService(
             title = newDocument.title
             data = newDocument.data
             version = newDocument.version // discover concurrent editing conflict
-
-            // remove parent from document (only store parent in wrapper)
-            data.remove(FIELD_PARENT)
 
             // set name of user who modifies document
             modifiedby = authUtils.getFullNameFromPrincipal(principal)
@@ -726,31 +630,33 @@ class DocumentService(
         }
     }
 
-    fun deleteDocument(principal: Principal, catalogId: String, id: Int, deletePermanently: Boolean? = false) {
+    fun deleteDocument(principal: Principal, catalogId: String, id: Int, options: DeleteOptions = DeleteOptions()) {
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
-        val realDelete = deletePermanently ?: !generalProperties.markInsteadOfDelete
-        deleteRecursively(catalogId, id, filterContext, realDelete)
+//        val realDelete = options.deletePermanently ?: !generalProperties.markInsteadOfDelete
+        deleteRecursively(catalogId, id, filterContext, options)
     }
 
-    private fun deleteRecursively(catalogId: String, id: Int, filterContext: Context, realDelete: Boolean) {
+    private fun deleteRecursively(catalogId: String, id: Int, filterContext: Context, options: DeleteOptions) {
         // run pre-delete pipe(s)
         val docData = getDocumentFromCatalog(catalogId, id)
-//        val wrapper = getWrapperByDocumentIdAndCatalog(catalogId, id)
-
-//        val data = getLatestDocumentVersion(wrapper, false)
         val docTypeName = docData.document.type
         val docType = getDocumentType(docTypeName, filterContext.profile)
 
         val preDeletePayload = PreDeletePayload(docType, catalogId, docData.document, docData.wrapper)
-        preDeletePipe.runFilters(preDeletePayload, filterContext)
+
+        // ignore validations to forcefully delete a document
+        if (options.force != true) {
+            preDeletePipe.runFilters(preDeletePayload, filterContext)
+        }
 
         // TODO: check if document is referenced by another one and handle
         //       it somehow
 
         findChildrenDocs(catalogId, id, isAddress(docData.wrapper)).hits.forEach {
-            deleteRecursively(catalogId, it.wrapper.id!!, filterContext, realDelete)
+            deleteRecursively(catalogId, it.wrapper.id!!, filterContext, options)
         }
 
+        val realDelete = options.deletePermanently ?: !generalProperties.markInsteadOfDelete
         if (realDelete) {
             // remove all document versions which have the same ID
             docRepo.deleteAllByCatalog_IdentifierAndUuid(catalogId, docData.document.uuid)
@@ -826,16 +732,14 @@ class DocumentService(
      *
      * @param wrapperId the wrapper ID of the document
      * @param forExport if the document is requested for export
-     * @param resolveLinks if internal references should be resolved
      * @return the last published document version
      */
     fun getLastPublishedDocument(
         wrapperId: Int,
         forExport: Boolean = false,
-        resolveLinks: Boolean = true
     ): Document {
         val wrapper = getWrapperById(wrapperId)
-        return getLastPublishedDocument(wrapper.catalog!!.identifier, wrapper.uuid, forExport, resolveLinks)
+        return getLastPublishedDocument(wrapper.catalog!!.identifier, wrapper.uuid, forExport)
     }
 
     /**
@@ -845,14 +749,12 @@ class DocumentService(
      * @param catalogId the catalog identifier
      * @param uuid the UUID of the document
      * @param forExport if the document is requested for export
-     * @param resolveLinks if internal references should be resolved
      * @return the last published document version
      */
     fun getLastPublishedDocument(
         catalogId: String,
         uuid: String,
-        forExport: Boolean = false,
-        resolveLinks: Boolean = true
+        forExport: Boolean = false
     ): Document {
         val doc = docWrapperRepo.getDocumentByState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
         if (doc.isEmpty()) throw EmptyResultDataAccessException("Resource with $uuid not found", 1)
@@ -861,11 +763,7 @@ class DocumentService(
         val finalDoc = result[0] as Document
         entityManager.detach(finalDoc)
         finalDoc.wrapperId = result[1] as Int
-        return expandInternalReferences(
-            finalDoc,
-            resolveLinks = resolveLinks,
-            options = UpdateReferenceOptions(catalogId = catalogId, forExport = forExport)
-        )
+        return finalDoc
     }
 
     fun getPendingDocument(catalogId: String, uuid: String): Document {
@@ -967,33 +865,6 @@ class DocumentService(
             .category
     }
 
-    private fun expandInternalReferences(
-        docData: Document,
-        onlyPublished: Boolean = false,
-        resolveLinks: Boolean = true,
-        options: UpdateReferenceOptions = UpdateReferenceOptions(onlyPublished)
-    ): Document {
-        // set empty parent fields explicitly to null
-        val parent = docData.data.has(FIELD_PARENT)
-        if (!parent || docData.data.get(FIELD_PARENT).asText().isEmpty()) {
-            docData.data.put(FIELD_PARENT, null as String?)
-        }
-
-        // get latest references from links
-        if (resolveLinks) {
-            val profile = catalogService.getProfileFromCatalog(options.catalogId!!).identifier
-            val refType = getDocumentType(docData.type, profile)
-
-            try {
-                refType.updateReferences(docData, options)
-            } catch (ex: AccessDeniedException) {
-                throw ForbiddenException.withAccessRights("No access to referenced dataset")
-            }
-        }
-
-        return docData
-    }
-
     @Transactional
     fun replaceAddress(catalogId: String, source: String, target: String) {
         val refIds = docRepo.getDocIdsWithReferenceTo(catalogId, """\: \"$source\"""")
@@ -1093,6 +964,10 @@ class DocumentService(
                 }
                 docWrapperRepo.save(it)
             }
+    }
+
+    fun detachDocumentFromDatabase(doc: Any) {
+        this.entityManager.detach(doc);
     }
 }
 

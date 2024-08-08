@@ -204,9 +204,11 @@ export class PublishPlugin extends SaveBase {
           this.formStateService.getForm().controls,
         );
         const error = new IgeError(
-          "Es müssen alle Felder korrekt ausgefüllt werden. " +
-            "STRG + ALT + R zum vorherigen Fehler. " +
-            "STRG + ALT + W zum nächsten Fehler.",
+          `Es müssen alle Felder korrekt ausgefüllt werden.
+          <ul>
+            <li>STRG + ALT + R zum vorherigen Fehler</li>
+            <li>STRG + ALT + W zum nächsten Fehler</li>
+          </ul>`,
         );
         if (validationErrors.length > 0) error.items = validationErrors;
         this.modalService.showIgeError(error);
@@ -288,17 +290,25 @@ export class PublishPlugin extends SaveBase {
   }
 
   saveWithData(data, delay: Date = null) {
+    const metadata = this.getMetadata();
     this.documentService
-      .publish(data, this.forAddress, delay)
+      .publish(
+        metadata.wrapperId,
+        metadata.version,
+        metadata.docType,
+        data,
+        this.forAddress,
+        delay,
+      )
       .pipe(
         catchError((error) =>
-          this.handleError(error, data, this.forAddress, "PUBLISH"),
+          this.handleError(error, metadata, this.forAddress, "PUBLISH"),
         ),
         tap(() => {
           this.documentService.publishState$.next(false);
           if (delay != null) {
             this.documentService.reload$.next({
-              uuid: data._uuid,
+              uuid: metadata.uuid,
               forAddress: this.forAddress,
             });
           }
@@ -308,7 +318,7 @@ export class PublishPlugin extends SaveBase {
   }
 
   revert() {
-    const docId = this.getForm().value._id;
+    const docId = this.getMetadata().wrapperId;
 
     const message =
       "Wollen Sie diesen Datensatz wirklich auf die letzte Veröffentlichungsversion zurücksetzen?";
@@ -383,7 +393,7 @@ export class PublishPlugin extends SaveBase {
   }
 
   private checkForAllParentsPublished() {
-    const id: number = this.getForm().value._id;
+    const id: number = this.getMetadata().wrapperId;
     return this.tree
       .getParents(id)
       .every((entity) => entity._type === "FOLDER" || entity._state === "P");
@@ -392,7 +402,7 @@ export class PublishPlugin extends SaveBase {
   private validateDataset() {
     const isValid = this.validateBeforePublish();
     this.documentService
-      .validateDocument(this.getForm().value._id)
+      .validateDocument(this.getMetadata().wrapperId)
       .pipe(
         catchError((e) => {
           const error = this.prepareValidationError(e);

@@ -109,6 +109,12 @@ export class GlobalErrorHandler implements ErrorHandler {
         return "Mindestens einer der untergeordneten Datensätze ist veröffentlicht. Sie müssen die Veröffentlichung von untergeordneten Datensätzen ebenfalls zurückziehen, bevor Sie fortfahren können.";
       case "MAIL_ERROR":
         return `Es gab ein Problem beim Versenden der Email: ${error.errorText}`;
+      case "VALIDATION_ERROR":
+        return error?.data?.error?.indexOf(
+          "Reference has wrong publication type condition",
+        ) !== -1
+          ? "Eine Referenz hat ein niedrigeres Veröffentlichungsrecht und kann nicht exportiert werden. Es gelten folgende Regeln:<ul><li>Internet => nur Internet-Referenzen</li><li>Intranet => nur Intranet- und Internet-Referenzen</li><li>amtsintern => keine Einschränkung</li></ul>"
+          : null;
       case "FORBIDDEN":
         switch (error.errorText) {
           case "No access to referenced dataset":

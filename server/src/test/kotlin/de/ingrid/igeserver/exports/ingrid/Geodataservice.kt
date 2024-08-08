@@ -176,7 +176,6 @@ class Geodataservice : ShouldSpec() {
                     "test-catalog",
                     "1000",
                     any(),
-                    any()
                 )
             } returns convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.sample.json"))
 
@@ -197,7 +196,6 @@ class Geodataservice : ShouldSpec() {
                     "test-catalog",
                     "1000",
                     any(),
-                    any()
                 )
             } returns convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.sample.json")).apply {
                 data.put("parentIdentifier", "8282cf1f-c681-4402-b41e-b32cd08a4220")

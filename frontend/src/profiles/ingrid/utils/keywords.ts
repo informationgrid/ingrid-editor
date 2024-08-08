@@ -166,7 +166,7 @@ export class KeywordAnalysis {
     }
   }
 
-  public async assignKeyword(item: string, checkThemes: boolean) {
+  private async assignKeyword(item: string, checkThemes: boolean) {
     if (checkThemes) {
       const resultTheme = this.checkInThemes(item);
       if (resultTheme.found) return resultTheme;
@@ -180,8 +180,9 @@ export class KeywordAnalysis {
     else return this.addFreeKeyword(item);
   }
 
-  checkInThemes(item: string): ThesaurusResult {
-    const id = this.codelistQuery.getCodelistEntryIdByValue("6100", item, "de");
+  private checkInThemes(item: string): ThesaurusResult {
+    const id = this.codelistQuery.getCodelistEntryByValue("6100", item, "de")
+      ?.id;
     return {
       thesaurus: "INSPIRE-Themen",
       found: id !== undefined,
@@ -199,7 +200,7 @@ export class KeywordAnalysis {
     };
   }
 
-  public async checkInThesaurus(
+  private async checkInThesaurus(
     item: string,
     thesaurus: string,
   ): Promise<ThesaurusResult> {

@@ -108,7 +108,7 @@ class EnhanceGroupsTask(
         catalogIdentifier: String,
         forAddress: Boolean = false
     ): Set<Int> {
-        val rootIds = aclService.getDatasetIdsFromGroups(listOf(group), forAddress)
+        val rootIds = aclService.getDatasetIdsSetInGroups(listOf(group), isAddress = forAddress)
         val rootDescendentIds = rootIds.flatMap {
             documentService.getAllDescendantIds(catalogIdentifier, it)
         }

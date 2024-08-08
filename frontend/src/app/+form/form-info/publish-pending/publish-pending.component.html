@@ -1,11 +1,11 @@
-@if (doc._pendingDate) {
+@if (metadata.pendingDate) {
     <div class="publish-pending-info">
         <div *transloco="let t; read: 'publish'">
             {{ t("formWithPronoun") }} wird am
-            {{ doc._pendingDate | date: "dd.MM.yyyy" }} veröffentlicht.
+            {{ metadata.pendingDate | date: "dd.MM.yyyy" }} veröffentlicht.
         </div>
         <div *transloco="let t; read: 'dashboard'">
-            @if (doc.hasWritePermission) {
+            @if (metadata.hasWritePermission) {
                 <button
                     mat-button
                     color="primary"

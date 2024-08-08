@@ -70,27 +70,13 @@ class CswtApiController (
         @Parameter(description = "## Dataset Folder ID \n **Custom Parameter** \n\n Add Dataset to Folder with UUID") @RequestParam(value = "datasetFolderId", required = false) datasetFolderId: String?,
         @Parameter(description = "## Address Folder ID \n **Custom Parameter** \n\n Add Address to Folder with UUID") @RequestParam(value = "addressFolderId", required = false) addressFolderId: String?,
     ): ResponseEntity<ByteArray> {
-        var statusCode: HttpStatusCode? = null
-        var xmlResponse: ByteArray? = null
+        var transactionResult: CSWTransactionResult;
 
         try {
             if(service != "CSW" ) throw ClientException.withReason("Request parameter 'SERVICE' must be 'CSW'. Value '$service' not supported.")
             if(request != "Transaction") throw ClientException.withReason("Request parameter 'REQUEST' only accepts value 'Transaction'. Value '$request' not supported.")
             apiValidationService.validateRequestParams(allRequestParams, listOf("catalog", "SERVICE", "REQUEST" , "datasetFolderId", "addressFolderId"))
             apiValidationService.validateCollection(catalog)
-        } catch (e: IgeException) {
-            log.error("Error in CSW transaction", e)
-            val paramErrorResult = CSWTransactionResult(
-                successful = false,
-                statusCode = e.statusCode as HttpStatusCode,
-                errorMessage = ogcCswtService.prepareException(e)
-            )
-
-            xmlResponse = ogcCswtService.prepareXmlResponse(paramErrorResult)
-            statusCode = e.statusCode
-        }
-
-        if(xmlResponse == null){
             val options = ImportOptions(
                 publish = true,
                 parentDocument = if(!datasetFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(catalog, datasetFolderId)).id } else null,
@@ -98,11 +84,18 @@ class CswtApiController (
                 overwriteAddresses = true,
                 overwriteDatasets = true
             )
-            val transactionResult: CSWTransactionResult = ogcCswtService.cswTransaction(data, catalog, principal, options)
-            xmlResponse = ogcCswtService.prepareXmlResponse(transactionResult)
-            statusCode = if(transactionResult.statusCode == null) HttpStatus.OK else transactionResult.statusCode as HttpStatusCode
+            transactionResult = ogcCswtService.cswTransaction(data, catalog, principal, options)
         }
-
+        catch (e: IgeException) {
+            transactionResult = CSWTransactionResult(
+                successful = false,
+                statusCode = e.statusCode as HttpStatusCode,
+                errorMessage = ogcCswtService.prepareException(e)
+            )
+            log.error("Error in CSW transaction", e)
+        }
+        val xmlResponse = ogcCswtService.prepareXmlResponse(transactionResult)
+        val statusCode = if (transactionResult.statusCode == null) HttpStatus.OK else transactionResult.statusCode as HttpStatusCode
         return ResponseEntity.status(statusCode!!).body(xmlResponse)
     }
 }

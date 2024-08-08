@@ -27,7 +27,6 @@ import {
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { Map, MapOptions, Rectangle } from "leaflet";
-import { ModalService } from "../../../services/modal/modal.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatDialog } from "@angular/material/dialog";
 import { SpatialDialogComponent } from "./spatial-dialog/spatial-dialog.component";
@@ -36,10 +35,9 @@ import {
   SpatialLocation,
   SpatialLocationWithColor,
 } from "./spatial-list/spatial-list.component";
-import { distinctUntilChanged, tap } from "rxjs/operators";
+import { debounceTime, distinctUntilChanged, tap } from "rxjs/operators";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
-import { ConfigService } from "../../../services/config/config.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { TranslocoService } from "@ngneat/transloco";
 
@@ -64,15 +62,9 @@ export class LeafletTypeComponent
   private drawnSpatialRefs: Rectangle[] = [];
   mapHasMoved = false;
 
-  private profile: string;
-  private docType: string;
-  private fieldId: string;
-
   constructor(
-    private modalService: ModalService,
     private dialog: MatDialog,
     private contextHelpService: ContextHelpService,
-    private configService: ConfigService,
     private leafletService: LeafletService,
     private _changeDetectionRef: ChangeDetectorRef,
     private translocoService: TranslocoService,
@@ -87,6 +79,7 @@ export class LeafletTypeComponent
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
+        debounceTime(0),
         distinctUntilChanged(),
         tap((value: SpatialLocation[]) => (this.locations = value || [])),
       )
@@ -123,11 +116,6 @@ export class LeafletTypeComponent
       this.formControl.setValue([]);
       throw Error("Problem initializing the map component: " + e.message);
     }
-
-    this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
-    // TODO: this.model is not the whole model!!! How to get the _type?
-    this.docType = this.props.docType ?? this.model?._type;
-    this.fieldId = <string>this.field.key;
   }
 
   private updateLocations(locations: SpatialLocationWithColor[]) {

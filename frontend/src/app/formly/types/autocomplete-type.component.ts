@@ -20,7 +20,7 @@
 import { Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { Observable, of } from "rxjs";
-import { filter, map, startWith, tap } from "rxjs/operators";
+import { debounceTime, filter, map, startWith, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
@@ -54,6 +54,7 @@ export class AutocompleteTypeComponent
       .pipe(
         untilDestroyed(this),
         startWith(<string>this.formControl.value ?? ""),
+        debounceTime(0),
         map((value) => {
           let name = typeof value === "string" ? value : value?.value;
 

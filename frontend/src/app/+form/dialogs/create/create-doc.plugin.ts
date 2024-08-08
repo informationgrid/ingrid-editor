@@ -44,7 +44,7 @@ export class CreateDocumentPlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
-  isAdmin = this.config.isAdmin();
+  isAdmin = this.config.hasCatAdminRights();
 
   constructor(
     private config: ConfigService,
@@ -98,7 +98,7 @@ export class CreateDocumentPlugin extends Plugin {
 
     if (selectedDoc) {
       let handled = await FormUtils.handleDirtyForm(
-        this.formStateService.getForm(),
+        this.formStateService,
         this.documentService,
         this.dialog,
         this.forAddress,

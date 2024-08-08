@@ -209,7 +209,10 @@ export class DocumentReferenceTypeComponent
     return await firstValueFrom(
       this.docService.load(item.uuid, false, false, true).pipe(
         map((doc) => {
-          return this.mapToDocumentReference(doc, item.layerNames);
+          return this.mapToDocumentReference(
+            doc.documentWithMetadata,
+            item.layerNames,
+          );
         }),
       ),
     );

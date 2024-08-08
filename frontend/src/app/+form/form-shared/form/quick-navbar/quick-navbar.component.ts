@@ -17,11 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input } from "@angular/core";
+import { Component, inject, Input } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { IgeDocument } from "../../../../models/ige-document";
 import { SessionQuery } from "../../../../store/session.query";
 import { SessionStore } from "../../../../store/session.store";
+import { FormStateService } from "../../../form-state.service";
+import { DocumentAbstract } from "../../../../store/document/document.model";
 
 @UntilDestroy()
 @Component({
@@ -35,14 +37,26 @@ export class QuickNavbarComponent {
 
   @Input() numberOfErrors: number = 0;
 
-  @Input() model: IgeDocument;
+  @Input() set model(value: IgeDocument) {
+    const metadata = this.formStateService.metadata();
+    // @ts-ignore
+    this.doc = {
+      ...value,
+      _type: metadata.docType,
+      _state: metadata.state,
+      _tags: metadata.tags,
+    };
+  }
+
+  private formStateService = inject(FormStateService);
+  doc: DocumentAbstract;
 
   optionalButtonState = this.session.select(
     (state) => state.ui.toggleFieldsButtonShowAll,
   );
 
   addTitleToTooltip = (tooltip: string): string =>
-    tooltip + ": " + this.model.title;
+    tooltip + ": " + this.doc.title;
 
   constructor(
     private session: SessionQuery,

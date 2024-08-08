@@ -24,11 +24,11 @@ import {
   Input,
   OnInit,
 } from "@angular/core";
-import { IgeDocument } from "../../../models/ige-document";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { ProfileQuery } from "../../../store/profile/profile.query";
 import { ConfigService } from "../../../services/config/config.service";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
+import { FormStateService } from "../../form-state.service";
 
 @Component({
   selector: "ige-header-more",
@@ -49,7 +49,6 @@ import { ContextHelpService } from "../../../services/context-help/context-help.
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderMoreComponent implements OnInit {
-  @Input() model: IgeDocument;
   @Input() showMore = false;
   hideFields: any;
   migrated: boolean;
@@ -57,6 +56,9 @@ export class HeaderMoreComponent implements OnInit {
   private contextHelpService = inject(ContextHelpService);
   private profileQuery = inject(ProfileQuery);
   private configService = inject(ConfigService);
+  private formStateService = inject(FormStateService);
+
+  metadata = this.formStateService.metadata;
 
   ngOnInit() {
     this.hideFields =
@@ -70,11 +72,7 @@ export class HeaderMoreComponent implements OnInit {
     const catCreateDate =
       this.configService.$userInfo.getValue().currentCatalog.created;
     // compare the creation dates of document and catalog
-    this.migrated = new Date(this.model._created) < new Date(catCreateDate);
-  }
-
-  mapDocumentType(type: string) {
-    return this.profileQuery.getEntity(type).label;
+    this.migrated = new Date(this.metadata().created) < new Date(catCreateDate);
   }
 
   showHelp() {

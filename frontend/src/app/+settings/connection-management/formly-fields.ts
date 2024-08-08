@@ -117,7 +117,7 @@ export class ConnectionForm extends FormFieldHelper {
       this.addCheckboxInline("https", "verwende HTTPS", {
         expressions: {
           "props.label":
-            "model.https ? 'HTTPS (Zertifikat \"elasticsearch-ca.pem\" muss vorhanden sein)' : 'HTTPS'",
+            "model.https ? 'HTTPS (Zertifikat \"/elasticsearch-ca.pem\" muss vorhanden sein)' : 'HTTPS'",
         },
       }),
       this.addCheckboxInline("isSecure", "ist abgesichert"),

@@ -71,7 +71,7 @@ export class MainHeaderComponent implements OnInit {
 
   ngOnInit() {
     let userInfo = this.configService.$userInfo.getValue();
-    this.isAdmin = this.configService.isAdmin();
+    this.isAdmin = this.configService.hasCatAdminRights();
     this.version = userInfo?.version;
     this.externalHelp = userInfo?.externalHelp;
     this.catalogId = userInfo?.currentCatalog.id;
@@ -105,9 +105,10 @@ export class MainHeaderComponent implements OnInit {
   }
 
   async logout() {
-    const hasNavigated = await this.router.navigate([
-      `${ConfigService.catalogId}`,
-    ]);
+    const hasNavigated = await this.router.navigate(
+      [`${ConfigService.catalogId}/logout`],
+      { skipLocationChange: true },
+    );
 
     if (!hasNavigated) {
       return;

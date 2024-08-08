@@ -19,11 +19,14 @@
  */
 import { HttpClient } from "@angular/common/http";
 import { ConfigService, Configuration } from "../config/config.service";
-import { IgeDocument } from "../../models/ige-document";
+import { DocumentWithMetadata, IgeDocument } from "../../models/ige-document";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
 import { PathResponse } from "../../models/path-response";
 import { TagRequest } from "../../models/tag-request.model";
+import { map } from "rxjs/operators";
+import { SaveOptions } from "./document.service";
+import { DocumentAbstract } from "../../store/document/document.model";
 
 @Injectable({
   providedIn: "root",
@@ -40,80 +43,132 @@ export class DocumentDataService {
     );
   }
 
-  getChildren(parentId: number, isAddress = false): Observable<any[]> {
+  getChildren(
+    parentId: number,
+    isAddress = false,
+  ): Observable<Partial<DocumentAbstract>[]> {
     const params = this.createGetChildrenParams(parentId, isAddress);
     const url = `${this.configuration.backendUrl}tree/children` + params;
-    return this.http.get<any[]>(url);
+    return this.http.get<Partial<DocumentAbstract>[]>(url);
   }
 
-  load(id: string | number, useUuid = false): Observable<IgeDocument> {
+  load(id: string | number, useUuid = false): Observable<DocumentWithMetadata> {
     if (useUuid) {
-      return this.http.get<IgeDocument>(
-        this.configuration.backendUrl + "datasetsByUuid/" + id,
-      );
+      return this.http
+        .get<DocumentWithMetadata>(
+          this.configuration.backendUrl + "datasetsByUuid/" + id,
+        )
+        .pipe(map((data) => this.mapDocumentWithMetadata(data)));
     } else {
-      return this.http.get<IgeDocument>(
-        this.configuration.backendUrl + "datasets/" + id,
-      );
+      return this.http
+        .get<DocumentWithMetadata>(
+          this.configuration.backendUrl + "datasets/" + id,
+        )
+        .pipe(map((data) => this.mapDocumentWithMetadata(data)));
     }
   }
 
-  loadPublished(id: string, useUuid = false): Observable<IgeDocument> {
+  mapDocumentWithMetadata(data: DocumentWithMetadata): DocumentWithMetadata {
+    data.documentWithMetadata = {
+      ...data.document,
+      _id: data.metadata.wrapperId,
+      _uuid: data.metadata.uuid,
+      _type: data.metadata.docType,
+      _parent: data.metadata.parentId,
+      _created: data.metadata.created,
+      _modified: data.metadata.modified,
+      _metadataDate: data.metadata.metadataDate,
+      _responsibleUser: data.metadata.responsibleUser,
+      _contentModified: data.metadata.contentModified,
+      _createdBy: data.metadata.createdBy,
+      _creatorExists: data.metadata.createdUserExists,
+      _modifierExists: data.metadata.modifiedUserExists,
+      _contentModifiedBy: data.metadata.contentModifiedBy,
+      _hasChildren: data.metadata.hasChildren,
+      _pendingDate: data.metadata.pendingDate,
+      _tags: data.metadata.tags,
+      _version: data.metadata.version,
+      _state: data.metadata.state,
+      hasWritePermission: data.metadata.hasWritePermission,
+      hasOnlySubtreeWritePermission:
+        data.metadata.hasOnlySubtreeWritePermission,
+    };
+    return data;
+  }
+
+  loadPublished(id: string, useUuid = false): Observable<DocumentWithMetadata> {
     if (useUuid) {
-      return this.http.get<IgeDocument>(
-        this.configuration.backendUrl +
-          "datasetsByUuid/" +
-          id +
-          "?publish=true",
-      );
+      return this.http
+        .get<DocumentWithMetadata>(
+          this.configuration.backendUrl +
+            "datasetsByUuid/" +
+            id +
+            "?publish=true",
+        )
+        .pipe(map((data) => this.mapDocumentWithMetadata(data)));
     } else {
-      return this.http.get<IgeDocument>(
-        this.configuration.backendUrl + "datasets/" + id + "?publish=true",
-      );
+      return this.http
+        .get<DocumentWithMetadata>(
+          this.configuration.backendUrl + "datasets/" + id + "?publish=true",
+        )
+        .pipe(map((data) => this.mapDocumentWithMetadata(data)));
     }
   }
 
-  save(data: IgeDocument, isAddress?: boolean): Observable<any> {
-    const params = isAddress ? "?address=true" : "";
-    if (data._id) {
-      return this.http.put(
-        this.configuration.backendUrl + "datasets/" + data._id + params,
-        data,
-      );
+  save(
+    data: IgeDocument,
+    options: SaveOptions,
+  ): Observable<DocumentWithMetadata> {
+    let params = options.isAddress ? "&address=true" : "";
+    params += options.parentId != null ? "&parentId=" + options.parentId : "";
+    if (options.id != null) {
+      return this.http
+        .put<DocumentWithMetadata>(
+          `${this.configuration.backendUrl}datasets/${options.id}?version=${options.version}${params}`,
+          data,
+        )
+        .pipe(map((data) => this.mapDocumentWithMetadata(data)));
     } else {
-      return this.http.post(
-        this.configuration.backendUrl + "datasets" + params,
-        data,
-      );
+      return this.http
+        .post<DocumentWithMetadata>(
+          `${this.configuration.backendUrl}datasets?type=${options.type}${params}`,
+          data,
+        )
+        .pipe(map((data) => this.mapDocumentWithMetadata(data)));
     }
   }
 
-  publish(data: IgeDocument, publishDate: Date = null): Observable<any> {
-    let parameters = "?publish=true";
+  publish(
+    id: number,
+    version: number,
+    data: IgeDocument,
+    publishDate: Date = null,
+  ): Observable<DocumentWithMetadata> {
+    let parameters = "&publish=true";
     if (publishDate != null)
       parameters += "&publishDate=" + publishDate.toISOString();
-    if (data._id === undefined) {
-      return this.http.post(
-        this.configuration.backendUrl + "datasets" + parameters,
+    if (id === null) {
+      return this.http.post<DocumentWithMetadata>(
+        `${this.configuration.backendUrl}datasets?type=${data._type}${parameters}`,
         data,
       );
     } else {
-      return this.http.put(
-        this.configuration.backendUrl + "datasets/" + data._id + parameters,
+      return this.http.put<DocumentWithMetadata>(
+        `${this.configuration.backendUrl}datasets/${id}?version=${version}${parameters}`,
         data,
       );
     }
   }
 
-  unpublish(id: number): Observable<any> {
-    return this.http.put(
+  unpublish(id: number): Observable<DocumentWithMetadata> {
+    return this.http.put<DocumentWithMetadata>(
       this.configuration.backendUrl + "datasets/" + id + "?unpublish=true",
       {},
     );
   }
 
-  cancelPendingPublishing(id: number): Observable<any> {
-    return this.http.put(
+  cancelPendingPublishing(id: number): Observable<DocumentWithMetadata> {
+    return this.http.put<DocumentWithMetadata>(
       this.configuration.backendUrl +
         "datasets/" +
         id +
@@ -126,8 +181,8 @@ export class DocumentDataService {
     return this.http.delete(this.configuration.backendUrl + "datasets/" + ids);
   }
 
-  revert(id: string): Observable<IgeDocument> {
-    return this.http.put<IgeDocument>(
+  revert(id: number): Observable<DocumentWithMetadata> {
+    return this.http.put<DocumentWithMetadata>(
       this.configuration.backendUrl + "datasets/" + id + "?revert=true",
       {},
     );
@@ -143,9 +198,9 @@ export class DocumentDataService {
     srcIDs: number[],
     dest: number,
     includeTree: boolean,
-  ): Observable<IgeDocument[]> {
+  ): Observable<DocumentWithMetadata[]> {
     const body = this.prepareCopyCutBody(dest, includeTree);
-    return this.http.post<IgeDocument[]>(
+    return this.http.post<DocumentWithMetadata[]>(
       this.configuration.backendUrl + "datasets/" + srcIDs.join(",") + "/copy",
       body,
     );

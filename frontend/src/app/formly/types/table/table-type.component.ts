@@ -25,7 +25,7 @@ import {
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { filter, tap } from "rxjs/operators";
+import { debounceTime, filter, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import {
   FormDialogComponent,
@@ -48,6 +48,7 @@ import {
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { ValidationErrors } from "@angular/forms";
+import { FormStateService } from "../../../+form/form-state.service";
 
 @UntilDestroy()
 @Component({
@@ -70,7 +71,6 @@ export class TableTypeComponent
   formattedCell: Array<any> = [];
 
   private profile: string;
-  private docType: string;
   private fieldId: string;
 
   constructor(
@@ -78,6 +78,7 @@ export class TableTypeComponent
     private cdr: ChangeDetectorRef,
     public contextHelpService: ContextHelpService,
     public configService: ConfigService,
+    private formStateService: FormStateService,
   ) {
     super();
   }
@@ -96,6 +97,7 @@ export class TableTypeComponent
       .pipe(
         untilDestroyed(this),
         // distinctUntilChanged(),
+        debounceTime(0),
         tap((value) => this.prepareFormattedValues(value)),
       )
       .subscribe((value) => {
@@ -129,14 +131,13 @@ export class TableTypeComponent
 
   ngAfterViewInit() {
     this.profile = this.configService.$userInfo.getValue().currentCatalog.type;
-    this.docType = this.props.docType ?? this.model?._type;
     this.fieldId = <string>this.field.key;
   }
 
   showContextHelp(infoElement: HTMLElement) {
     this.contextHelpService.showContextHelp(
       this.profile,
-      this.docType,
+      this.formStateService.metadata().docType,
       this.fieldId,
       this.props.externalLabel,
       infoElement,
@@ -381,7 +382,7 @@ export class TableTypeComponent
         this.props.columns[this.batchMode ? index - 1 : index].props;
       if (options.onClick) {
         options.onClick(
-          this.form.root.get("_uuid").value,
+          this.formStateService.metadata().uuid,
           element[uploadKey].uri,
           $event,
         );

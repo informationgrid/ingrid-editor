@@ -108,7 +108,7 @@ class IndexExporterAddress(
     private fun getParentTitle(parent: DocumentWrapper?): List<String> {
         if (parent == null || parent.type == "FOLDER") return emptyList()
 
-        val publishedDoc = documentService.getLastPublishedDocument(parent.catalog!!.identifier, parent.uuid, resolveLinks = false)
+        val publishedDoc = documentService.getLastPublishedDocument(parent.catalog!!.identifier, parent.uuid)
         return getParentTitle(parent.parent) + (publishedDoc.title ?: "")
     }
 

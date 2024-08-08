@@ -40,7 +40,7 @@ export class HelpContextButtonComponent {
   @Input() fieldId: string;
   @Input() description: string;
   @Input() label: string;
-  @Input() docType: string;
+  @Input() docType: string = "all";
 
   constructor(
     private contextHelpService: ContextHelpService,

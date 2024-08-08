@@ -24,6 +24,7 @@ import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.messaging.JobsNotifier
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.services.DeleteOptions
 import de.ingrid.igeserver.services.DocumentService
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.core.test.TestCase
@@ -118,7 +119,7 @@ class ImportServiceTest : ShouldSpec() {
             val result = service.importAnalyzedDatasets(principal, "", analysis, options, Message())
 
             result shouldBe ImportCounter(1, 0, 0, 0)
-            verify(exactly = 1) { docService.deleteDocument(any(), any(), any(), true) }
+            verify(exactly = 1) { docService.deleteDocument(any(), any(), any(), DeleteOptions(true, true)) }
             verify(exactly = 1) { docService.createDocument(any(), any(), any<Document>(), any(), any(), any(), any()) }
         }
 

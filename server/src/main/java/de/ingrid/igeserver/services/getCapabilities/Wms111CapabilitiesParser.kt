@@ -109,6 +109,10 @@ class Wms111CapabilitiesParser(
                         unionOfBoundingBoxes
                     )
                     spatialReferences = boxes
+                    // TODO: extract SRS from WMS 111 doc (https://www.geoportal.rlp.de/mapbender/php/wms.php?layer_id=36695&REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS&withChilds=1)
+                    // val layerCRSs = getSpatialReferenceSystems(layerNode, "wms:CRS")
+
+                    spatialSystems = emptyList()
                 }
                 coupledResourcesList.add(newDataset)
             } else {
@@ -317,7 +321,7 @@ class Wms111CapabilitiesParser(
     }
 
     private fun getCoordType(bboxNode: Node): CoordType? {
-        val crs = xPathUtils.getString(bboxNode, "@CRS") ?: return null
+        val crs = xPathUtils.getString(bboxNode, "@SRS") ?: xPathUtils.getString(bboxNode, "@CRS") ?: return null
         val code = crs.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
         return getCoordTypeByEPSGCode(code)
     }

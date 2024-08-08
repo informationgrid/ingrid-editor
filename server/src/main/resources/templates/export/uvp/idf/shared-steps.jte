@@ -17,16 +17,16 @@
                     <to>${((StepPublicDisclosure) step).getDisclosureDate().getEnd()}</to>
                 </datePeriod>
                 @if(((StepPublicDisclosure) step).isPublishable("announcementDocs"))
-                    @template.export.uvp.shared-docs(type = "technicalDocs", docs = ((StepPublicDisclosure) step).getAnnouncementDocs(), docInfo = docInfo)
+                    @template.export.uvp.idf.shared-docs(type = "technicalDocs", docs = ((StepPublicDisclosure) step).getAnnouncementDocs(), docInfo = docInfo)
                 @endif
                 @if(((StepPublicDisclosure) step).isPublishable("applicationDocs"))
-                    @template.export.uvp.shared-docs(type = "applicationDocs", docs = ((StepPublicDisclosure) step).getApplicationDocs(), docInfo = docInfo)
+                    @template.export.uvp.idf.shared-docs(type = "applicationDocs", docs = ((StepPublicDisclosure) step).getApplicationDocs(), docInfo = docInfo)
                 @endif
                 @if(((StepPublicDisclosure) step).isPublishable("reportsRecommendationDocs"))
-                    @template.export.uvp.shared-docs(type = "reportsRecommendationsDocs", docs = ((StepPublicDisclosure) step).getReportsRecommendationDocs(), docInfo = docInfo)
+                    @template.export.uvp.idf.shared-docs(type = "reportsRecommendationsDocs", docs = ((StepPublicDisclosure) step).getReportsRecommendationDocs(), docInfo = docInfo)
                 @endif
                 @if(((StepPublicDisclosure) step).isPublishable("furtherDocs"))
-                    @template.export.uvp.shared-docs(type = "moreDocs", docs = ((StepPublicDisclosure) step).getFurtherDocs(), docInfo = docInfo)
+                    @template.export.uvp.idf.shared-docs(type = "moreDocs", docs = ((StepPublicDisclosure) step).getFurtherDocs(), docInfo = docInfo)
                 @endif
             </step>
         @elseif (step instanceof StepPublicHearing)
@@ -35,15 +35,15 @@
                     <from>${((StepPublicHearing) step).getPublicHearingDate().getStart()}</from>
                     <to>${((StepPublicHearing) step).getPublicHearingDate().getEnd()}</to>
                 </datePeriod>
-                @template.export.uvp.shared-docs(type = "considerationDocs", docs = ((StepPublicHearing) step).getConsiderationDocs(), docInfo = docInfo)
+                @template.export.uvp.idf.shared-docs(type = "considerationDocs", docs = ((StepPublicHearing) step).getConsiderationDocs(), docInfo = docInfo)
             </step>
         @elseif (step instanceof StepDecisionOfAdmission)
             <step type="phase3">
                 <date>
                     <from>${((StepDecisionOfAdmission) step).getDecisionDate()}</from>
                 </date>
-                @template.export.uvp.shared-docs(type = "approvalDocs", docs = ((StepDecisionOfAdmission) step).getApprovalDocs(), docInfo = docInfo)
-                @template.export.uvp.shared-docs(type = "designDocs", docs = ((StepDecisionOfAdmission) step).getDecisionDocs(), docInfo = docInfo)
+                @template.export.uvp.idf.shared-docs(type = "approvalDocs", docs = ((StepDecisionOfAdmission) step).getApprovalDocs(), docInfo = docInfo)
+                @template.export.uvp.idf.shared-docs(type = "designDocs", docs = ((StepDecisionOfAdmission) step).getDecisionDocs(), docInfo = docInfo)
             </step>
         @endif
     @endfor

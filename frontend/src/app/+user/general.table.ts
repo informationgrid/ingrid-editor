@@ -20,13 +20,14 @@
 import { MatPaginator } from "@angular/material/paginator";
 import { MatTableDataSource } from "@angular/material/table";
 import { SelectionModel } from "@angular/cdk/collections";
+import { signal } from "@angular/core";
 
 export class GeneralTable {
   declare paginator: MatPaginator;
   declare dataSource: MatTableDataSource<any>;
   declare selection: SelectionModel<any>;
 
-  isLoading = true;
+  isLoading = signal<boolean>(true);
 
   updatePaginator(id: any, field: string) {
     if (this.paginator) {

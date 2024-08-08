@@ -41,8 +41,9 @@ class ActivityReportApiController(
         activityQueryOptions: ActivityQueryOptions
     ): ResponseEntity<List<ActivityReportItem>> {
         val catalogIdentifier = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalogId = catalogService.getCatalogById(catalogIdentifier).id
 
-        val nativeQuery = entityManager.createNativeQuery(getActivitySql(catalogIdentifier, activityQueryOptions))
+        val nativeQuery = entityManager.createNativeQuery(getActivitySql(catalogIdentifier, activityQueryOptions, catalogId))
         val resultList = nativeQuery.resultList as List<Array<out Any?>>
 
 
@@ -61,7 +62,7 @@ class ActivityReportApiController(
     }
 
     @Language("PostgreSQL")
-    fun getActivitySql(catalogIdentifier: String, activityQueryOptions: ActivityQueryOptions) = """
+    fun getActivitySql(catalogIdentifier: String, activityQueryOptions: ActivityQueryOptions, catalogId: Int?) = """
         SELECT
             timestamp,
             message->>'target' as dataset_uuid,
@@ -74,6 +75,7 @@ class ActivityReportApiController(
         FROM audit_log LEFT JOIN document ON message#>'{data,pointOfContact}'->0->>'ref' = document.uuid
         WHERE message @> '{"cat": "data-history","catalogIdentifier": "$catalogIdentifier"}'
           AND message#>>'{data,_type}' NOT IN ('UvpOrganisationDoc', 'UvpAddressDoc', 'FOLDER')
+          AND (document.catalog_id=$catalogId OR document.catalog_id IS NULL)
           ${activityQueryOptions.from?.let { "AND timestamp >= '$it'" } ?: ""}
           ${activityQueryOptions.to?.let { "AND timestamp <= '$it'" } ?: ""}
           ${(activityQueryOptions.actions?.let { if (it.isNotEmpty()) "AND message->>'action' IN (${it.joinToString(",") { "'$it'" }})" else "" }) ?: ""}

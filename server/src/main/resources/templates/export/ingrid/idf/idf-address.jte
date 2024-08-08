@@ -10,7 +10,7 @@
 idfTag = "idfResponsibleParty",
 idfAdditionalAttributes = @`type="${page.getAddressDocType()}" uuid="${page.getUuid()}"`,
 content = @`
-    @template.export.ingrid.addresses(
+    @template.export.ingrid.idf.addresses(
     addresses = List.of(page),
     isAddressExport = true,
     wrapperElement = "gmd:pointOfContact"

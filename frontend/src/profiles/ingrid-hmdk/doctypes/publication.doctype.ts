@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { SharedHmdk } from "./shared-hmdk";
 import { Observable } from "rxjs";
 import { PublicationDoctype } from "../../ingrid/doctypes/publication-doctype.service";
@@ -27,10 +27,10 @@ import { PublicationDoctype } from "../../ingrid/doctypes/publication-doctype.se
   providedIn: "root",
 })
 export class PublicationDoctypeHMDK extends PublicationDoctype {
-  sharedHmdk = new SharedHmdk(this);
+  private sharedHmdk = inject(SharedHmdk);
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    return this.sharedHmdk.manipulateDocumentFields(fieldConfig);
+    return this.sharedHmdk.manipulateDocumentFields(this, fieldConfig);
   };
 
   handleActivateOpenData(field: FormlyFieldConfig) {
