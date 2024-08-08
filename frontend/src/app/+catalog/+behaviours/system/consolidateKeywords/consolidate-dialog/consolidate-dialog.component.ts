@@ -21,6 +21,7 @@ import { KeywordAnalysis } from "../../../../../../profiles/ingrid/utils/keyword
 import { ThesaurusResult } from "../../../../../../profiles/ingrid/components/thesaurus-result";
 import { CodelistQuery } from "../../../../../store/codelist/codelist.query";
 import { FormStateService } from "../../../../../+form/form-state.service";
+import { removeDuplicates } from "../../../../../shared/utils";
 
 export interface ConsolidateDialogData {
   id: number;
@@ -296,23 +297,11 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   private removeDuplicateKeywords() {
-    this.inspireThemesNew = this.removeDuplicates(
-      this.inspireThemesNew,
-      "label",
-    );
-    this.inspireTopicsNew = this.removeDuplicates(
-      this.inspireTopicsNew,
-      "label",
-    );
-    this.gemetKeywordsNew = this.removeDuplicates(
-      this.gemetKeywordsNew,
-      "label",
-    );
-    this.umthesKeywordsNew = this.removeDuplicates(
-      this.umthesKeywordsNew,
-      "label",
-    );
-    this.freeKeywordsNew = this.removeDuplicates(this.freeKeywordsNew, "label");
+    this.inspireThemesNew = removeDuplicates(this.inspireThemesNew, "label");
+    this.inspireTopicsNew = removeDuplicates(this.inspireTopicsNew, "label");
+    this.gemetKeywordsNew = removeDuplicates(this.gemetKeywordsNew, "label");
+    this.umthesKeywordsNew = removeDuplicates(this.umthesKeywordsNew, "label");
+    this.freeKeywordsNew = removeDuplicates(this.freeKeywordsNew, "label");
   }
 
   private resetNewKeywords() {
