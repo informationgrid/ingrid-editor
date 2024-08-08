@@ -7,15 +7,16 @@
         <button mat-icon-button mat-dialog-close>
             <mat-icon>close</mat-icon>
         </button>
-        <h1 mat-dialog-title>Schlagwörter konsolidieren</h1>
+        <h1 mat-dialog-title>Schlagworte konsolidieren</h1>
     </div>
 
     <mat-dialog-content>
         @if (this.keywords) {
             <div *ngIf="!isLoading">
                 <div class="no-selection-text">
-                    Grün markierte Schlagworte werden neu hinzugefügt. Rot
-                    markierte werden entfernt.
+                    Bestehende Schlagworte werden hier auf ihre Aktualität
+                    geprüft. Grün markierte Schlagworte werden neu hinzugefügt.
+                    Rot markierte werden entfernt.
                 </div>
                 @if (isInspireIdentified && inspireTopicsNew.length) {
                     <div class="keyword-section" aria-label="INSPIRE Themen">
@@ -136,7 +137,7 @@
                     Klicken sie auf "Übernehmen" um die Änderungen zu speichern.
                 </div>
                 <div class="legend" *ngIf="isLoading">
-                    Bitte haben Sie einen Moment Geduld.
+                    Schlagworte werden analysiert...
                 </div>
             </div>
         } @else {

@@ -53,8 +53,8 @@ import { ConsolidateDialogComponent } from "./consolidate-dialog/consolidate-dia
 @Injectable({ providedIn: "root" })
 export class ConsolidateKeywordsPlugin extends Plugin {
   id = "plugin.consolidate.keywords";
-  name = "Schlagwörter konsolidieren";
-  description = "Schlagwörter konsolidieren"; // TODO
+  name = "Schlagworte konsolidieren";
+  description = "Schlagworte konsolidieren"; // TODO
   defaultActive = true;
   forAddress = false; // TODO
   private readonly isPrivileged: boolean;
@@ -119,7 +119,7 @@ export class ConsolidateKeywordsPlugin extends Plugin {
       const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
         (doc) => {
           const button = {
-            title: "Schlagwörter konsolidieren",
+            title: "Schlagworte konsolidieren",
             name: "consolidate-keywords",
             action: () =>
               this.docEventsService.sendEvent({

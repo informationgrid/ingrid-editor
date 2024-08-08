@@ -134,6 +134,9 @@ export class ConsolidateDialogComponent implements OnInit {
     );
     if (res.found) {
       this.inspireTopicsNew.push({ ...res, status: "unchanged" });
+    } else {
+      // TODO:
+      // this.inspireTopicsNew.push({ ...res, status: "removed" });
     }
   }
 
