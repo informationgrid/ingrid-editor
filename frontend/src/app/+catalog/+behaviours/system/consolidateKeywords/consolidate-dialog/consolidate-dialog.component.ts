@@ -227,25 +227,31 @@ export class ConsolidateDialogComponent implements OnInit {
 
   saveConsolidatedKeywords() {
     this.documentDataService.load(this.id, false).subscribe((doc) => {
-      doc.keywords.gemet = this.mapKeywords(
+      doc.document.keywords.gemet = this.mapKeywords(
         this.gemetKeywordsNew.filter((k) => k.status !== "removed"),
       );
-      doc.keywords.umthes = this.mapKeywords(
+      doc.document.keywords.umthes = this.mapKeywords(
         this.umthesKeywordsNew.filter((k) => k.status !== "removed"),
       );
-      doc.keywords.free = this.freeKeywordsNew
+      doc.document.keywords.free = this.freeKeywordsNew
         .filter((k) => k.status !== "removed")
         .map((k) => ({ label: k.label }));
 
-      doc.themes = this.inspireThemesNew.map((k) => ({
+      doc.document.themes = this.inspireThemesNew.map((k) => ({
         key: k.value.key,
       }));
-      doc.topicCategories = this.inspireTopicsNew.map((k) => ({
+      doc.document.topicCategories = this.inspireTopicsNew.map((k) => ({
         key: k.value.key,
       }));
 
       this.documentService
-        .save({ data: doc, isNewDoc: false, isAddress: false })
+        .save({
+          id: this.id,
+          version: doc.metadata.version, // TODO: Do I need to increment version ??
+          data: doc.document,
+          isNewDoc: false,
+          isAddress: false,
+        })
         .subscribe(() => {
           this.snackBar.open("Schlagworte konsolidiert", "", {
             panelClass: "green",

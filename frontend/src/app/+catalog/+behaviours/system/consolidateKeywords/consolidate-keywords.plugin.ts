@@ -91,7 +91,7 @@ export class ConsolidateKeywordsPlugin extends Plugin {
         .onEvent("OPEN_CONSOLIDATE_KEYWORDS_DIALOG")
         .subscribe(async (event) => {
           const handled = await FormUtils.handleDirtyForm(
-            this.formStateService.getForm(),
+            this.formStateService,
             this.documentService,
             this.dialog,
             false,
@@ -104,7 +104,7 @@ export class ConsolidateKeywordsPlugin extends Plugin {
             async (confirmed) => {
               if (confirmed) {
                 const handled = await FormUtils.handleDirtyForm(
-                  this.formStateService.getForm(),
+                  this.formStateService,
                   this.documentService,
                   this.dialog,
                   this.forAddress,
