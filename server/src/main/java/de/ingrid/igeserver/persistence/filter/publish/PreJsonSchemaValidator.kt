@@ -25,10 +25,15 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
 import net.pwall.json.schema.JSONSchema
+import net.pwall.json.schema.parser.Parser
 import net.pwall.json.schema.output.BasicOutput
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
 import org.unbescape.json.JsonEscape
+import org.json.simple.JSONObject
+import org.json.simple.JSONArray
+import org.json.simple.parser.JSONParser
+import java.io.File
 
 data class JsonErrorEntry(
     val error: String,
@@ -82,7 +87,7 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
             return null
         }
 
-        val schema = JSONSchema.parseFile(resource.file)
+        val schema = enrichSchemaWithConditions(resource.file) ?: JSONSchema.parseFile(resource.file)
         val output = schema.validateBasic(json)
         log.debug("Document valid: ${output.valid}")
         output.errors?.forEach {
@@ -97,4 +102,36 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
 
         return output
     }
+
+    private fun loadSchemaAsJsonObject(filePath: String): JSONObject {
+        val file = File(filePath)
+        val content = file.readText()
+        val parser = JSONParser()
+        return parser.parse(content) as JSONObject
+    }
+    private fun enrichSchemaWithConditions(resourceFile: String): JSONSchema? {
+        val resourceJson = loadSchemaAsJsonObject(File(resourceFile).absolutePath)
+        val schemaType = resourceJson["\$ref"].toString().substringAfterLast("/")
+
+        val conditionsFile = PreJsonSchemaValidator::class.java.getResource("/conditions.schema.json")
+        if (conditionsFile == null) {
+            log.error("JSON-Schema of validation conditions not found: /conditions.schema.json")
+            return null
+        }
+
+        val conditionSchema = loadSchemaAsJsonObject(File(conditionsFile.file).absolutePath)
+        val conditions = (conditionSchema["schemaType"] as JSONObject)[schemaType]
+
+        return if (conditions == null) null else {
+            val newSchema = loadSchemaAsJsonObject(File(resourceFile).absolutePath)
+            val definitions = newSchema["definitions"] as JSONObject
+            (definitions[schemaType] as JSONObject).putIfAbsent("allOf", JSONArray())
+            val conditionsArray = (definitions[schemaType] as JSONObject)["allOf"] as JSONArray
+            conditionsArray.addAll((conditions as JSONObject)["allOf"] as JSONArray)
+            val schemaString = newSchema.toJSONString() // Convert JSONObject to String
+            val baseUri = File(resourceFile).toURI() // Get base URI so schema references can be handled
+            Parser().parse(schemaString, baseUri) // convert JSONObject to JSONSchema
+        }
+    }
+
 }

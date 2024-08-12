@@ -1,0 +1,384 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "profile": {
+    "ingrid": {
+      "isOpenData": {
+        "anyOf": [
+          {
+            "properties": {
+              "isAdVCompatible": {
+                "const": null
+              }
+            }
+          },
+          {
+            "allOf": [
+              {
+                "properties": {
+                  "openDataCategories": {
+                    "minItems": 1
+                  }
+                },
+                "required": ["openDataCategories"]
+              },
+              {
+                "properties": {
+                  "references": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    },
+                    "contains": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "object",
+                          "properties": {
+                            "key": {
+                              "type": "string",
+                              "const": "9990"
+                            }
+                          },
+                          "required": ["key"]
+                        }
+                      },
+                      "required": ["type"]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "hvd": {
+        "allOf": [
+          {
+            "properties": {
+              "hvdCategories": {
+                "minItems": 1
+              }
+            },
+            "required": ["hvdCategories"]
+          },
+          {
+            "properties": {
+              "isOpenData": {
+                "const": true
+              }
+            }
+          }
+        ]
+      },
+      "isAdVCompatible": {
+        "anyOf": [
+          {
+            "properties": {
+              "isAdVCompatible": {
+                "const": null
+              }
+            }
+          },
+          {
+            "allOf": [
+              {
+                "properties": {
+                  "advProductGroups": {
+                    "minItems": 1
+                  }
+                },
+                "required": ["advProductGroups"]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "schemaType": {
+    "GeoDataset": {
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "isOpenData": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/profile/ingrid/isOpenData"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "hvd": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/profile/ingrid/hvd"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "isAdVCompatible": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/profile/ingrid/isAdVCompatible"
+          }
+        }
+      ]
+    },
+    "InformationSystem": {
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "isOpenData": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/profile/ingrid/isOpenData"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "isAdVCompatible": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/profile/ingrid/isAdVCompatible"
+          }
+        }
+      ]
+    },
+    "GeoService": {
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "isOpenData": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/profile/ingrid/isOpenData"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "isAdVCompatible": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/profile/ingrid/isAdVCompatible"
+          }
+        }
+      ]
+    },
+    "Publication": {
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "isOpenData": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/profile/ingrid/isOpenData"
+          }
+        }
+      ]
+    },
+    "DataCollection": {
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "isOpenData": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/profile/ingrid/isOpenData"
+          }
+        }
+      ]
+    },
+    "GeoDatasetHmdk": {
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "isAdVCompatible": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "isAdVCompatible": {
+                    "const": null
+                  }
+                }
+              },
+              {
+                "allOf": [
+                  {
+                    "properties": {
+                      "advProductGroups": {
+                        "minItems": 1
+                      }
+                    },
+                    "required": ["advProductGroups"]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "isOpenData": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "isOpenData": {
+                    "const": null
+                  }
+                }
+              },
+              {
+                "allOf": [
+                  {
+                    "properties": {
+                      "informationHmbTG": {
+                        "minItems": 1
+                      }
+                    },
+                    "required": ["informationHmbTG"]
+                  },
+                  {
+                    "properties": {
+                      "openDataCategories": {
+                        "minItems": 1
+                      }
+                    },
+                    "required": ["openDataCategories"]
+                  },
+                  {
+                    "properties": {
+                      "references": {
+                        "type": "array",
+                        "items": {
+                          "type": "object"
+                        },
+                        "contains": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "object",
+                              "properties": {
+                                "key": {
+                                  "type": "string",
+                                  "const": "9990"
+                                }
+                              },
+                              "required": ["key"]
+                            }
+                          },
+                          "required": ["type"]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "pointOfContact": {
+                        "type": "array",
+                        "items": {
+                          "type": "object"
+                        },
+                        "contains": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "object",
+                              "properties": {
+                                "key": {
+                                  "type": "string",
+                                  "const": "10"
+                                }
+                              },
+                              "required": ["key"]
+                            }
+                          },
+                          "required": ["type"]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "hvd": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "allOf": [
+              {
+                "properties": {
+                  "hvdCategories": {
+                    "minItems": 1
+                  }
+                },
+                "required": ["hvdCategories"]
+              },
+              {
+                "properties": {
+                  "isOpenData": {
+                    "const": true
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
