@@ -593,8 +593,12 @@ export class GeoDatasetDoctype extends IngridShared {
           ],
           validators: {
             requiredFormat: {
-              expression: (ctrl) =>
-                ctrl.value?.every((entry) => entry.format.key),
+              expression: (ctrl) => {
+                if (!ctrl.value || ctrl.value.length === 0) {
+                  return true;
+                }
+                return ctrl.value?.every((entry) => entry?.format?.key);
+              },
               message:
                 "Fehler: Es muss für jedes Dokument ein Format angegeben werden (Dokument bearbeiten).",
             },
