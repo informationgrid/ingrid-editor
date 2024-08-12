@@ -26,10 +26,10 @@ import org.intellij.lang.annotations.Language
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
-@Profile("ingrid")
+@Profile("ingrid | ingrid-hmdk")
 @Component
 class OgcApiResearchQueryIngrid: OgcApiResearchQuery() {
-    override val profiles = listOf("ingrid")
+    override val profiles = listOf("ingrid", "ingrid-hmdk")
 
     override lateinit var ogcParameter: OgcFilterParameter
 
