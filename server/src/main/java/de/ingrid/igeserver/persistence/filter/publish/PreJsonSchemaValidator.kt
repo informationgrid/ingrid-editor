@@ -110,7 +110,7 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
         return parser.parse(content) as JSONObject
     }
     private fun enrichSchemaWithConditions(resourceFile: String): JSONSchema? {
-        val resourceJson = loadSchemaAsJsonObject(File(resourceFile).absolutePath)
+        val resourceJson = loadSchemaAsJsonObject(resourceFile)
         val schemaType = resourceJson["\$ref"].toString().substringAfterLast("/")
 
         val conditionsFile = PreJsonSchemaValidator::class.java.getResource("/conditions.schema.json")
@@ -119,11 +119,11 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
             return null
         }
 
-        val conditionSchema = loadSchemaAsJsonObject(File(conditionsFile.file).absolutePath)
+        val conditionSchema = loadSchemaAsJsonObject(conditionsFile.file)
         val conditions = (conditionSchema["schemaType"] as JSONObject)[schemaType]
 
         return if (conditions == null) null else {
-            val newSchema = loadSchemaAsJsonObject(File(resourceFile).absolutePath)
+            val newSchema = loadSchemaAsJsonObject(resourceFile)
             val definitions = newSchema["definitions"] as JSONObject
             (definitions[schemaType] as JSONObject).putIfAbsent("allOf", JSONArray())
             val conditionsArray = (definitions[schemaType] as JSONObject)["allOf"] as JSONArray
