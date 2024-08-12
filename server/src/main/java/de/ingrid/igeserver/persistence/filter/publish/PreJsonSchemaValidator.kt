@@ -123,11 +123,14 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
         val conditions = (conditionSchema["schemaType"] as JSONObject)[schemaType]
 
         return if (conditions == null) null else {
+            val conditionsAsString = conditions.toString()
+            val parser = JSONParser()
+            val newConditionObject = parser.parse(conditionsAsString)
             val newSchema = loadSchemaAsJsonObject(resourceFile)
             val definitions = newSchema["definitions"] as JSONObject
             (definitions[schemaType] as JSONObject).putIfAbsent("allOf", JSONArray())
             val conditionsArray = (definitions[schemaType] as JSONObject)["allOf"] as JSONArray
-            conditionsArray.addAll((conditions as JSONObject)["allOf"] as JSONArray)
+            conditionsArray.addAll((newConditionObject as JSONObject)["allOf"] as JSONArray)
             val schemaString = newSchema.toJSONString() // Convert JSONObject to String
             val baseUri = File(resourceFile).toURI() // Get base URI so schema references can be handled
             Parser().parse(schemaString, baseUri) // convert JSONObject to JSONSchema
