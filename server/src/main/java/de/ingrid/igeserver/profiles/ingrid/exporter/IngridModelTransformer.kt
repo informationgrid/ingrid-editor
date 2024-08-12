@@ -146,11 +146,15 @@ open class IngridModelTransformer(
 
     val browseGraphics = generateBrowseGraphics(graphicOverviews, model.uuid)
 
+    private fun getDownloadLink(datasetUuid: String, fileName: String): String {
+        return "${config.uploadExternalUrl}$catalogIdentifier/$datasetUuid/$fileName"
+    }
+
     private fun generateBrowseGraphics(graphicOverviews: List<GraphicOverview>?, datasetUuid: String): List<BrowseGraphic> =
         graphicOverviews?.map {
             BrowseGraphic(
                 if (it.fileName.asLink) it.fileName.uri // TODO encode uri
-                else "${config.uploadExternalUrl}$catalogIdentifier/${datasetUuid}/${it.fileName.uri}",
+                else getDownloadLink(datasetUuid, it.fileName.uri),
                 it.fileDescription
             )
         } ?: emptyList()
@@ -641,7 +645,7 @@ open class IngridModelTransformer(
     val fileReferencesWithUrl = addUrlToFileReferences(fileReferences, model.uuid)
     private fun addUrlToFileReferences(listofFileReferences: List<FileReference>?, datasetUuid: String): List<FileReference>? {
         listofFileReferences?.forEach {
-            it.url = "${config.uploadExternalUrl}$catalogIdentifier/${datasetUuid}/${it.link.uri}"
+            it.url = getDownloadLink(datasetUuid, it.link.uri)
         }
         return listofFileReferences
     }
