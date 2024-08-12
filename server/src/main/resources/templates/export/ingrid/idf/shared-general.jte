@@ -913,6 +913,9 @@ ${contentInfo}
                               <gmd:description>
                                  <gco:CharacterString>${fileReference.getDescription()}</gco:CharacterString>
                               </gmd:description>
+                              <gmd:function>
+                                  <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="download">download</gmd:CI_OnLineFunctionCode>
+                              </gmd:function>
                            </gmd:CI_OnlineResource>
                         </gmd:onLine>
                      </gmd:MD_DigitalTransferOptions>
