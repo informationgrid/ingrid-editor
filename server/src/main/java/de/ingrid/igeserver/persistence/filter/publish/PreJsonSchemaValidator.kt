@@ -120,14 +120,16 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
         }
 
         val conditionSchema = loadSchemaAsJsonObject(conditionsFile.file)
-        val conditions = (conditionSchema["schemaType"] as JSONObject)[schemaType]
+        val schemaTypeValidations = (conditionSchema["schemaType"] as JSONObject)[schemaType]
+        val conditionRefs = (conditionSchema["conditions"] as JSONObject)
 
-        return if (conditions == null) null else {
+        return if (schemaTypeValidations == null) null else {
             val newSchema = loadSchemaAsJsonObject(resourceFile)
+            newSchema["conditions"] = conditionRefs // hand over references of conditions.schema.json
             val definitions = newSchema["definitions"] as JSONObject
             (definitions[schemaType] as JSONObject).putIfAbsent("allOf", JSONArray())
             val conditionsArray = (definitions[schemaType] as JSONObject)["allOf"] as JSONArray
-            conditionsArray.addAll((conditions as JSONObject)["allOf"] as JSONArray)
+            conditionsArray.addAll((schemaTypeValidations as JSONObject)["allOf"] as JSONArray)
             val schemaString = newSchema.toJSONString() // Convert JSONObject to String
             val baseUri = File(resourceFile).toURI() // Get base URI so schema references can be handled
             Parser().parse(schemaString, baseUri) // convert JSONObject to JSONSchema
