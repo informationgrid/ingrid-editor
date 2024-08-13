@@ -80,7 +80,15 @@ export class CatalogCodelistsComponent implements OnInit {
     map((codelists) => codelists.sort((a, b) => a.name.localeCompare(b.name))),
     delay(0), // set initial value in next rendering cycle!
     tap((options) => (this.codelistsValue = options)),
-    tap((options) => this.setInitialValue()),
+    tap((options) => {
+      let codelistId = localStorage.getItem(this.codelistStorageKey);
+      localStorage.removeItem(this.codelistStorageKey);
+      let codelist = this.codelistsValue.find(
+        (option) => option.id === codelistId,
+      );
+      if (codelist) this.selectCodelist(codelist);
+      this.setInitialValue();
+    }),
   );
 
   selectedCodelist: Codelist;
@@ -92,8 +100,8 @@ export class CatalogCodelistsComponent implements OnInit {
   filteredOptions: Codelist[] = [];
 
   private codelistsValue: Codelist[];
+  private readonly codelistStorageKey = "codelist.selected.before.reload";
   showAllCodelists: boolean = true;
-  showRefreshButton: boolean = false;
 
   constructor(
     private codelistService: CodelistService,
@@ -230,16 +238,16 @@ export class CatalogCodelistsComponent implements OnInit {
       .updateCodelist(this.selectedCodelist)
       .pipe(
         tap(() => {
-          this._snackBar.open("Codeliste gespeichert");
-          this.showRefreshButton = true;
+          // store currently selected codelist
+          localStorage.setItem(
+            this.codelistStorageKey,
+            this.selectedCodelist.id,
+          );
+          window.location.reload();
         }),
+        tap(() => this._snackBar.open("Codeliste gespeichert")),
       )
       .subscribe();
-  }
-
-  refreshWindow() {
-    this.showRefreshButton = false;
-    window.location.reload();
   }
 
   private modifyCodelistEntry(oldId: string, result: CodelistEntry) {
