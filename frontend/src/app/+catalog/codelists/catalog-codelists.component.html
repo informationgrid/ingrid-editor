@@ -72,6 +72,15 @@
                 >
                     <button
                         mat-flat-button
+                        color="accent"
+                        style="margin-right: auto"
+                        [hidden]="!showRefreshButton"
+                        (click)="refreshWindow()"
+                    >
+                        Aktualisieren
+                    </button>
+                    <button
+                        mat-flat-button
                         mat-stroked-button
                         (click)="resetCodelist()"
                     >

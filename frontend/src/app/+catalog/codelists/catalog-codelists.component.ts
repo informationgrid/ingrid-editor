@@ -93,6 +93,7 @@ export class CatalogCodelistsComponent implements OnInit {
 
   private codelistsValue: Codelist[];
   showAllCodelists: boolean = true;
+  showRefreshButton: boolean = false;
 
   constructor(
     private codelistService: CodelistService,
@@ -227,8 +228,18 @@ export class CatalogCodelistsComponent implements OnInit {
   save() {
     this.codelistService
       .updateCodelist(this.selectedCodelist)
-      .pipe(tap(() => this._snackBar.open("Codeliste gespeichert")))
+      .pipe(
+        tap(() => {
+          this._snackBar.open("Codeliste gespeichert");
+          this.showRefreshButton = true;
+        }),
+      )
       .subscribe();
+  }
+
+  refreshWindow() {
+    this.showRefreshButton = false;
+    window.location.reload();
   }
 
   private modifyCodelistEntry(oldId: string, result: CodelistEntry) {
