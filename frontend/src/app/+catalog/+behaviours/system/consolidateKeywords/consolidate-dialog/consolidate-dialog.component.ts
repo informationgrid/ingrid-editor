@@ -68,6 +68,13 @@ export class ConsolidateDialogComponent implements OnInit {
   keywords: any[];
   isInspireIdentified: boolean;
 
+  keywordCategories = {
+    gemet: "Gemet Schlagworte",
+    umthes: "Umthes Schlagworte",
+    free: "Freie Schlagworte",
+    themes: "INSPIRE-Themen",
+  };
+
   hasKeywords: boolean;
 
   inspireTopics: any[];
@@ -86,12 +93,7 @@ export class ConsolidateDialogComponent implements OnInit {
   saveButtonClicked: boolean;
 
   ngOnInit() {
-    this.consolidateKeywords();
-  }
-
-  private consolidateKeywords() {
     this.isLoading = true;
-
     this.resetNewKeywords();
     this.form = this.formStateService.getForm().value;
     this.keywords = this.form.keywords;
@@ -113,20 +115,23 @@ export class ConsolidateDialogComponent implements OnInit {
     this.umthesKeywords = this.form.keywords.umthes;
     this.freeKeywords = this.form.keywords.free;
 
-    this.inspireTopics.map((theme) => this.handleInspireTopics(theme));
-    this.isoCategories.map((category) => this.handleIsoCategories(category));
-
-    Promise.all([
-      ...this.gemetKeywords.map((keyword) => this.handleGemetKeyword(keyword)),
-      ...this.umthesKeywords.map((keyword) =>
-        this.handleUmthesKeyword(keyword),
-      ),
-      ...this.freeKeywords.map((keyword) => this.handleFreeKeyword(keyword)),
-    ]).then(() => {
+    this.consolidateKeywords().then(() => {
       this.sortKeywordsByStatus();
       this.removeDuplicateKeywords();
       this.isLoading = false;
     });
+  }
+
+  private async consolidateKeywords() {
+    this.inspireTopics.forEach((theme) => this.handleInspireTopics(theme));
+    this.isoCategories.forEach((category) =>
+      this.handleIsoCategories(category),
+    );
+    await this.assignKeywords([
+      ...this.gemetKeywords,
+      ...this.umthesKeywords,
+      ...this.freeKeywords,
+    ]);
   }
 
   private handleInspireTopics(theme: { key: string }) {
@@ -153,63 +158,64 @@ export class ConsolidateDialogComponent implements OnInit {
     });
   }
 
-  private async handleGemetKeyword(keyword: { label: string }) {
-    const res = await this.keywordAnalysis.checkInThesaurus(
+  private async assignKeyword(keyword: ThesaurusResult) {
+    const res = await this.keywordAnalysis.assignKeyword(
       keyword.label,
-      "gemet",
+      this.isInspireIdentified,
     );
-    if (res.found) {
-      this.gemetKeywordsNew.push({ ...res, status: "unchanged" });
-    } else {
-      if (!this.freeKeywords.includes(keyword.label)) {
-        this.freeKeywordsNew.push({ ...res, status: "added" });
-        this.gemetKeywordsNew.push({ ...res, status: "removed" });
-      }
-    }
-  }
 
-  private async handleUmthesKeyword(keyword: { label: string }) {
-    const res = await this.keywordAnalysis.checkInThesaurus(
-      keyword.label,
-      "umthes",
-    );
-    if (res.found) {
-      this.umthesKeywordsNew.push({ ...res, status: "unchanged" });
-    } else {
-      if (!this.freeKeywords.includes(keyword.label)) {
-        this.freeKeywordsNew.push({ ...res, status: "added" });
-        this.umthesKeywordsNew.push({ ...res, status: "removed" });
-      }
-    }
-  }
+    const keywordSets = {
+      [this.keywordCategories.gemet]: this.gemetKeywords,
+      [this.keywordCategories.umthes]: this.umthesKeywords,
+      [this.keywordCategories.free]: this.freeKeywords,
+    };
+    const keywordNewSets = {
+      [this.keywordCategories.gemet]: this.gemetKeywordsNew,
+      [this.keywordCategories.umthes]: this.umthesKeywordsNew,
+      [this.keywordCategories.free]: this.freeKeywordsNew,
+    };
 
-  private async handleFreeKeyword(keyword: ThesaurusResult) {
-    await this.keywordAnalysis
-      .assignKeyword(keyword.label, this.isInspireIdentified)
-      .then((res) => {
-        if (res.thesaurus === "INSPIRE-Themen") {
-          this.addInspireKeyword(res);
-        } else if (res.thesaurus === "Gemet Schlagworte") {
-          if (!this.gemetKeywords.some((k) => k.label === res.label)) {
-            this.gemetKeywordsNew.push({ ...res, status: "added" });
-          }
-        } else if (res.thesaurus === "Umthes Schlagworte") {
-          if (!this.umthesKeywords.some((k) => k.label === res.label)) {
-            this.umthesKeywordsNew.push({ ...res, status: "added" });
-          }
-        } else if (res.thesaurus === "Freie Schlagworte") {
-          this.freeKeywordsNew.push({ ...res, status: "unchanged" });
+    switch (res.thesaurus) {
+      case "INSPIRE-Themen":
+        this.addInspireKeyword(res);
+        break;
+
+      case this.keywordCategories.gemet:
+      case this.keywordCategories.umthes:
+      case this.keywordCategories.free:
+        const keywords = keywordSets[res.thesaurus];
+        const newKeywords = keywordNewSets[res.thesaurus];
+
+        if (!keywords.some((k) => k.label === res.label)) {
+          newKeywords.push({ ...res, status: "added" });
+        } else {
+          newKeywords.push({ ...res, status: "unchanged" });
           return;
         }
-        // Case when keyword is found with different label in thesaurus (Kita -> Kindertagesstätte)
-        if (keyword.label !== res.label) {
-          this.freeKeywordsNew.push({ ...keyword, status: "unchanged" });
-        } else {
-          this.freeKeywordsNew.push({ ...res, status: "removed" });
+        break;
+    }
+
+    // Case when keyword is found with different label in thesaurus (Kita -> Kindertagesstätte)
+    if (keyword.label !== res.label) {
+      this.freeKeywordsNew.push({ ...keyword, status: "unchanged" });
+    } else {
+      if (this.freeKeywords.some((k) => k.label === res.label)) {
+        this.freeKeywordsNew.push({ ...res, status: "removed" });
+      }
+    }
+
+    [this.keywordCategories.gemet, this.keywordCategories.umthes].forEach(
+      (thesaurus) => {
+        if (keywordSets[thesaurus].some((k) => k.label === res.label)) {
+          keywordNewSets[thesaurus].push({ ...res, status: "removed" });
         }
-      });
+      },
+    );
   }
 
+  private async assignKeywords(keywords: ThesaurusResult[]): Promise<any> {
+    return Promise.all(keywords.map((keyword) => this.assignKeyword(keyword)));
+  }
   private addInspireKeyword(res: ThesaurusResult) {
     if (!this.inspireTopics.some((t) => t.key === res.value.key)) {
       this.inspireTopicsNew.push({ ...res, status: "added" });
@@ -236,7 +242,6 @@ export class ConsolidateDialogComponent implements OnInit {
     this.isoCategoriesNew.push(isoCategory);
     this.freeKeywordsNew.push({ ...res, status: "removed" });
   }
-
   saveConsolidatedKeywords() {
     this.documentDataService.load(this.id, false).subscribe((doc) => {
       doc.document.keywords.gemet = this.mapKeywords(

@@ -19,13 +19,14 @@
  */
 import { ThesaurusResult } from "../components/thesaurus-result";
 import { HttpClient } from "@angular/common/http";
-import { firstValueFrom } from "rxjs";
+import { firstValueFrom, throwError, timeout } from "rxjs";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { inject, Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IgeError } from "../../../app/models/ige-error";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { catchError } from "rxjs/operators";
 
 export interface KeywordSectionOptions {
   priorityDataset?: boolean;
@@ -203,24 +204,54 @@ export class KeywordAnalysis {
   async checkInThesaurus(
     item: string,
     thesaurus: string,
+    timeoutDuration = 10000,
   ): Promise<ThesaurusResult> {
-    const response = await firstValueFrom(
-      this.http.get<any[]>(
-        `${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(
-          item,
-        )}&type=EXACT`,
-      ),
-    );
     const thesaurusName =
       thesaurus === "gemet" ? "Gemet Schlagworte" : "Umthes Schlagworte";
-    if (response.length > 0) {
+
+    try {
+      const response = await firstValueFrom(
+        this.http
+          .get<any[]>(
+            `${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(
+              item,
+            )}&type=EXACT`,
+          )
+          .pipe(
+            timeout(timeoutDuration), // Set the timeout for the HTTP request
+            catchError((err) => {
+              // Handle timeout error or other errors
+              if (err.name === "TimeoutError") {
+                return throwError(() => new Error("Request timed out"));
+              }
+              return throwError(() => err);
+            }),
+          ),
+      );
+
+      if (response.length > 0) {
+        return {
+          thesaurus: thesaurusName,
+          found: true,
+          value: response[0],
+          label: response[0].label,
+        };
+      }
+
       return {
         thesaurus: thesaurusName,
-        found: true,
-        value: response[0],
-        label: response[0].label,
+        found: false,
+        value: null,
+        label: item,
+      };
+    } catch (error) {
+      console.error("Error in checkInThesaurus:", error);
+      return {
+        thesaurus: thesaurusName,
+        found: false,
+        value: null,
+        label: item,
       };
     }
-    return { thesaurus: thesaurusName, found: false, value: null, label: item };
   }
 }

@@ -18,27 +18,12 @@
  * limitations under the Licence.
  */
 import { inject, Injectable } from "@angular/core";
-import {
-  EventData,
-  EventResponder,
-  EventService,
-  IgeEvent,
-  IgeEventResultType,
-} from "../../../../services/event/event.service";
+import { EventService } from "../../../../services/event/event.service";
 import { TreeQuery } from "../../../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
-import { filter, map } from "rxjs/operators";
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from "../../../../dialogs/confirm/confirm-dialog.component";
-import { UserService } from "../../../../services/user/user.service";
-import { User } from "../../../../+user/user";
+import { map } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
-import { PermissionsDialogComponent } from "../ShowDocumentPermissions/permissions-dialog/permissions-dialog.component";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { FormMenuService, MenuId } from "../../../../+form/form-menu.service";
-import { TransferResponsibilityDialogComponent } from "../../../../+user/user/transfer-responsibility-dialog/transfer-responsibility-dialog.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfigService } from "../../../../services/config/config.service";
 import { FormUtils } from "../../../../+form/form.utils";
@@ -60,16 +45,13 @@ export class ConsolidateKeywordsPlugin extends Plugin {
   private readonly isPrivileged: boolean;
 
   constructor(
-    private eventService: EventService,
     private docEvents: DocEventsService,
     private docEventsService: DocEventsService,
     private documentTreeQuery: TreeQuery,
-    private documentDataService: DocumentDataService,
     private formMenuService: FormMenuService,
     private formStateService: FormStateService,
     private documentService: DocumentService,
     configService: ConfigService,
-    private snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {
     super();

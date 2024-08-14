@@ -164,7 +164,7 @@
             data-cy="save-btn"
             id="save-btn"
             [disabled]="isLoading || saveButtonClicked"
-            *ngIf="keywords.length"
+            *ngIf="this.hasKeywords"
             (click)="saveConsolidatedKeywords(); saveButtonClicked = true"
         >
             <span *ngIf="!saveButtonClicked">Übernehmen</span>
