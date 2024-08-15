@@ -54,7 +54,7 @@ export class UvpShared extends BaseDoctype {
       key: "title",
       type: "input",
       label: "Titel",
-      width: "300px",
+      class: "longtext-no-wrap",
       props: {
         label: "Titel",
         appearance: "outline",
@@ -65,6 +65,7 @@ export class UvpShared extends BaseDoctype {
       key: "downloadURL",
       type: "upload",
       label: "Link",
+      width: "150px",
       wrappers: ["form-field", "inline-help"],
       props: {
         label: "Link",
@@ -75,10 +76,10 @@ export class UvpShared extends BaseDoctype {
         },
         formatter: (link: any) => {
           if (link.asLink) {
-            return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
+            return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table longtext-no-wrap">
                          <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri}  </a> `;
           } else {
-            return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
+            return `<span class="clickable-text icon-in-table longtext-no-wrap">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
           }
         },
       },
@@ -103,7 +104,7 @@ export class UvpShared extends BaseDoctype {
       key: "validUntil",
       type: "datepicker",
       label: "Gültig bis",
-      width: "100px",
+      width: "120px",
       props: {
         label: "Gültig bis",
         appearance: "outline",
