@@ -28,13 +28,9 @@ ige-add-button {
   .explanation {
     white-space: normal;
     overflow: hidden;
+    overflow-wrap: anywhere;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-  }
-
-  .title,
-  .url {
-    overflow-wrap: anywhere;
   }
 
   .url {
