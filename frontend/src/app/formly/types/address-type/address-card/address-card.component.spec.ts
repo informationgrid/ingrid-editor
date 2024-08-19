@@ -85,7 +85,7 @@ describe("AddressCardComponent", () => {
     doc.metadata = { state: "PW", docType: "" };
     spectator.fixture.componentRef.setInput("address", {
       type: { key: "1" },
-      address: [doc],
+      address: doc,
     });
     spectator.detectChanges();
 
