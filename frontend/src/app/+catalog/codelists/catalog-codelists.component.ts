@@ -81,15 +81,12 @@ export class CatalogCodelistsComponent implements OnInit {
     delay(0), // set initial value in next rendering cycle!
     tap((options) => (this.codelistsValue = options)),
     tap((options) => {
-      let codelistId = localStorage.getItem(this.codelistStorageKey);
-      localStorage.removeItem(this.codelistStorageKey);
-      let codelist = this.codelistsValue.find(
-        (option) => option.id === codelistId,
-      );
-      if (codelist) this.selectCodelist(codelist);
+      this.activateRememberedCodelist();
       this.setInitialValue();
     }),
   );
+
+  private readonly CODELIST_STORAGE_KEY = "codelist.selected.before.reload";
 
   selectedCodelist: Codelist;
   codelistSelect = new FormControl();
@@ -100,7 +97,6 @@ export class CatalogCodelistsComponent implements OnInit {
   filteredOptions: Codelist[] = [];
 
   private codelistsValue: Codelist[];
-  private readonly codelistStorageKey = "codelist.selected.before.reload";
   showAllCodelists: boolean = true;
 
   constructor(
@@ -240,9 +236,10 @@ export class CatalogCodelistsComponent implements OnInit {
         tap(() => {
           // store currently selected codelist
           localStorage.setItem(
-            this.codelistStorageKey,
+            this.CODELIST_STORAGE_KEY,
             this.selectedCodelist.id,
           );
+          // reload window to hard reset forms that rely on codelists
           window.location.reload();
         }),
         tap(() => this._snackBar.open("Codeliste gespeichert")),
@@ -292,6 +289,16 @@ export class CatalogCodelistsComponent implements OnInit {
       this.codelistSelect.setValue(initialValue);
       this.selectCodelist(initialValue);
     }
+  }
+
+  // retrieve temporarily saved "current" codelist, and remove from localStorage
+  private activateRememberedCodelist() {
+    let codelistId = localStorage.getItem(this.CODELIST_STORAGE_KEY);
+    localStorage.removeItem(this.CODELIST_STORAGE_KEY);
+    let codelist = this.codelistsValue.find(
+      (option) => option.id === codelistId,
+    );
+    if (codelist) this.selectCodelist(codelist);
   }
 
   resetAllCodelists() {
