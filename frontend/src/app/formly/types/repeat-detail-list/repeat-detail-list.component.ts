@@ -98,18 +98,19 @@ export class RepeatDetailListComponent
   }
 
   private openDialog(index?: number) {
+    const isNewEntry = index === null;
     this.dialog
       .open(FormDialogComponent, {
         width: "90vw",
         maxWidth: "950px",
         data: <FormDialogData>{
           fields: this.props.fields,
-          model:
-            index === null
-              ? {}
-              : JSON.parse(
-                  JSON.stringify(this.model[this.field.key + ""][index]),
-                ),
+          model: isNewEntry
+            ? {}
+            : JSON.parse(
+                JSON.stringify(this.model[this.field.key + ""][index]),
+              ),
+          newEntry: isNewEntry,
         },
       })
       .afterClosed()
