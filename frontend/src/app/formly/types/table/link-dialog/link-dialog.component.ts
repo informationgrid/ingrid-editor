@@ -39,7 +39,7 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
 
   options: FormlyFormOptions = {};
 
-  data: FormDialogData = { fields: [], model: {} };
+  data: FormDialogData = { fields: [], model: null };
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -55,8 +55,7 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.data = {
       fields: this.adaptFields(),
-      model: {},
-      newEntry: true,
+      model: null,
     };
   }
 
