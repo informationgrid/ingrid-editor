@@ -26,7 +26,6 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 export interface FormDialogData {
   fields: FormlyFieldConfig[];
   model: any;
-  newEntry?: boolean;
 }
 
 @UntilDestroy()
@@ -40,14 +39,16 @@ export class FormDialogComponent implements OnInit, OnDestroy {
   titleText: string;
   options: FormlyFormOptions = {};
   disabled = true;
+  isExistingEntry: boolean;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: FormDialogData,
     private dlgRef: MatDialogRef<string>,
   ) {
-    this.titleText = data?.newEntry
-      ? "Eintrag hinzufügen"
-      : "Eintrag bearbeiten";
+    this.isExistingEntry = data.model != null;
+    this.titleText = this.isExistingEntry
+      ? "Eintrag bearbeiten"
+      : "Eintrag hinzufügen";
     this.form.statusChanges.pipe(untilDestroyed(this)).subscribe((value) => {
       setTimeout(() => {
         if (value === "VALID") this.disabled = false;
@@ -57,7 +58,7 @@ export class FormDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (!this.data.newEntry) {
+    if (this.isExistingEntry) {
       setTimeout(() => {
         this.form.markAllAsTouched();
         // @ts-ignore
