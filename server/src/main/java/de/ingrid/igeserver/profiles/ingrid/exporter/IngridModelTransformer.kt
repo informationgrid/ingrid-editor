@@ -749,7 +749,7 @@ open class IngridModelTransformer(
         return addNamespaceIfNeeded(identifier)
     }
 
-    private fun addNamespaceIfNeeded(identifier: String): String =
+    open fun addNamespaceIfNeeded(identifier: String): String =
         // if identifier is a URI, don't add namespace
         if (identifier.contains("://"))
             identifier
