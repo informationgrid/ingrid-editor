@@ -45,10 +45,10 @@ export class FormDialogComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: FormDialogData,
     private dlgRef: MatDialogRef<string>,
   ) {
-    this.titleText = data?.newEntry
-      ? "Eintrag hinzufügen"
-      : "Eintrag bearbeiten";
-
+    this.titleText =
+      Object.keys(this.data?.model).length === 0
+        ? "Eintrag hinzufügen"
+        : "Eintrag bearbeiten";
     this.form.statusChanges.pipe(untilDestroyed(this)).subscribe((value) => {
       setTimeout(() => {
         if (value === "VALID") this.disabled = false;
