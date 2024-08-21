@@ -183,7 +183,7 @@ class DocumentService(
         }
     }
 
-    fun getWrapperByDocumentIdAndCatalog(id: Int): DocumentWrapper {
+    fun getWrapperByDocumentId(id: Int): DocumentWrapper {
         try {
             return docWrapperRepo.findById(id).get()
         } catch (ex: EmptyResultDataAccessException) {
@@ -686,7 +686,7 @@ class DocumentService(
     }
 
     private fun markDocumentAsDeleted(id: Int) {
-        val markedDoc = getWrapperByDocumentIdAndCatalog(id).apply { deleted = 1 }
+        val markedDoc = getWrapperByDocumentId(id).apply { deleted = 1 }
         docWrapperRepo.save(markedDoc)
     }
 
@@ -952,7 +952,7 @@ class DocumentService(
     }
 
     private fun getPathFromWrapper(id: Int) =
-        getWrapperByDocumentIdAndCatalog(id).path
+        getWrapperByDocumentId(id).path
 
     private fun updatePathForAllChildren(catalogId: String, path: List<Int>, id: Int) {
         findChildrenWrapper(catalogId, id).hits
@@ -967,7 +967,7 @@ class DocumentService(
     }
 
     fun detachDocumentFromDatabase(doc: Any) {
-        this.entityManager.detach(doc);
+        this.entityManager.detach(doc)
     }
 }
 
