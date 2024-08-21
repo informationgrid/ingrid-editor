@@ -336,7 +336,6 @@ class ImportService(
             if (ref.isAddress) counter.addresses++ else counter.documents++
 
         } else if (ref.isAddress && options.overwriteAddresses || !ref.isAddress && options.overwriteDatasets) {
-            val finalParentId = ref.document.data.getString(FIELD_PARENT)?.toInt() ?: parentId
             val wrapperId = ref.wrapperId ?: documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid).id!!
             setVersionInfo(catalogId, wrapperId, ref.document)
             if (publish) {
@@ -344,7 +343,6 @@ class ImportService(
             } else {
                 documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
             }
-            documentService.updateParent(catalogId, wrapperId, finalParentId)
 
             counter.overwritten++
         } else {
