@@ -54,7 +54,7 @@ export class UvpShared extends BaseDoctype {
       key: "title",
       type: "input",
       label: "Titel",
-      class: "longtext-no-wrap",
+      width: "300px",
       props: {
         label: "Titel",
         appearance: "outline",
@@ -65,7 +65,6 @@ export class UvpShared extends BaseDoctype {
       key: "downloadURL",
       type: "upload",
       label: "Link",
-      width: "150px",
       wrappers: ["form-field", "inline-help"],
       props: {
         label: "Link",

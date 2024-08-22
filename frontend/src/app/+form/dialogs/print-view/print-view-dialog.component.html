@@ -20,12 +20,14 @@
 
     <div content id="print-content" class="preview-dialog">
         @if (!compareView) {
-            <formly-form
-                [form]="form"
-                [fields]="data.fields"
-                [model]="data.model"
-                [options]="options"
-            ></formly-form>
+            <div class="preview-print">
+                <formly-form
+                    [form]="form"
+                    [fields]="data.fields"
+                    [model]="data.model"
+                    [options]="options"
+                ></formly-form>
+            </div>
         }
         @if (compareView) {
             <as-split>
