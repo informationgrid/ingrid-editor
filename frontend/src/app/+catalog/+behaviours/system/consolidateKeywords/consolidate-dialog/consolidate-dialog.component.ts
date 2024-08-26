@@ -169,7 +169,7 @@ export class ConsolidateDialogComponent implements OnInit {
       [this.keywordCategories.umthes]: this.umthesKeywords,
       [this.keywordCategories.free]: this.freeKeywords,
     };
-    const keywordNewSets = {
+    const keywordSetsNew = {
       [this.keywordCategories.gemet]: this.gemetKeywordsNew,
       [this.keywordCategories.umthes]: this.umthesKeywordsNew,
       [this.keywordCategories.free]: this.freeKeywordsNew,
@@ -184,16 +184,26 @@ export class ConsolidateDialogComponent implements OnInit {
       case this.keywordCategories.umthes:
       case this.keywordCategories.free:
         const keywords = keywordSets[res.thesaurus];
-        const newKeywords = keywordNewSets[res.thesaurus];
+        const newKeywords = keywordSetsNew[res.thesaurus];
 
         if (!keywords.some((k) => k.label === res.label)) {
           newKeywords.push({ ...res, status: "added" });
         } else {
           newKeywords.push({ ...res, status: "unchanged" });
-          return;
         }
         break;
     }
+
+    // Add removed status if keyword is found in other thesaurus
+    [
+      this.keywordCategories.gemet,
+      this.keywordCategories.umthes,
+      this.keywordCategories.free,
+    ].forEach((thesaurus) => {
+      if (keywordSets[thesaurus].some((k) => k.label === res.label)) {
+        keywordSetsNew[thesaurus].push({ ...res, status: "removed" });
+      }
+    });
 
     // Case when keyword is found with different label in thesaurus (Kita -> Kindertagesstätte)
     if (keyword.label !== res.label) {
@@ -203,14 +213,6 @@ export class ConsolidateDialogComponent implements OnInit {
         this.freeKeywordsNew.push({ ...res, status: "removed" });
       }
     }
-
-    [this.keywordCategories.gemet, this.keywordCategories.umthes].forEach(
-      (thesaurus) => {
-        if (keywordSets[thesaurus].some((k) => k.label === res.label)) {
-          keywordNewSets[thesaurus].push({ ...res, status: "removed" });
-        }
-      },
-    );
   }
 
   private async assignKeywords(keywords: ThesaurusResult[]): Promise<any> {
