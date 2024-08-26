@@ -18,13 +18,11 @@
  * limitations under the Licence.
  */
 import { inject, Injectable } from "@angular/core";
-import { EventService } from "../../../../services/event/event.service";
 import { TreeQuery } from "../../../../store/tree/tree.query";
 import { map } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { FormMenuService, MenuId } from "../../../../+form/form-menu.service";
-import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfigService } from "../../../../services/config/config.service";
 import { FormUtils } from "../../../../+form/form.utils";
 import { FormStateService } from "../../../../+form/form-state.service";
@@ -32,7 +30,6 @@ import { DocumentService } from "../../../../services/document/document.service"
 import { PluginService } from "../../../../services/plugin/plugin.service";
 import { Plugin } from "../../plugin";
 import { Observable } from "rxjs";
-import { DocumentDataService } from "../../../../services/document/document-data.service";
 import { ConsolidateDialogComponent } from "./consolidate-dialog/consolidate-dialog.component";
 
 @Injectable({ providedIn: "root" })
