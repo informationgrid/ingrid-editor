@@ -164,15 +164,19 @@ export class ConsolidateDialogComponent implements OnInit {
       this.isInspireIdentified,
     );
 
-    const keywordSets = {
-      [this.keywordCategories.gemet]: this.gemetKeywords,
-      [this.keywordCategories.umthes]: this.umthesKeywords,
-      [this.keywordCategories.free]: this.freeKeywords,
-    };
-    const keywordSetsNew = {
-      [this.keywordCategories.gemet]: this.gemetKeywordsNew,
-      [this.keywordCategories.umthes]: this.umthesKeywordsNew,
-      [this.keywordCategories.free]: this.freeKeywordsNew,
+    const keywordMap = {
+      [this.keywordCategories.gemet]: {
+        original: this.gemetKeywords,
+        new: this.gemetKeywordsNew,
+      },
+      [this.keywordCategories.umthes]: {
+        original: this.umthesKeywords,
+        new: this.umthesKeywordsNew,
+      },
+      [this.keywordCategories.free]: {
+        original: this.freeKeywords,
+        new: this.freeKeywordsNew,
+      },
     };
 
     switch (res.thesaurus) {
@@ -183,13 +187,11 @@ export class ConsolidateDialogComponent implements OnInit {
       case this.keywordCategories.gemet:
       case this.keywordCategories.umthes:
       case this.keywordCategories.free:
-        const keywords = keywordSets[res.thesaurus];
-        const newKeywords = keywordSetsNew[res.thesaurus];
-
-        if (!keywords.some((k) => k.label === res.label)) {
-          newKeywords.push({ ...res, status: "added" });
+        const keywordCategory = keywordMap[res.thesaurus];
+        if (!keywordCategory.original.some((k) => k.label === res.label)) {
+          keywordCategory.new.push({ ...res, status: "added" });
         } else {
-          newKeywords.push({ ...res, status: "unchanged" });
+          keywordCategory.new.push({ ...res, status: "unchanged" });
         }
         break;
     }
@@ -200,8 +202,8 @@ export class ConsolidateDialogComponent implements OnInit {
       this.keywordCategories.umthes,
       this.keywordCategories.free,
     ].forEach((thesaurus) => {
-      if (keywordSets[thesaurus].some((k) => k.label === res.label)) {
-        keywordSetsNew[thesaurus].push({ ...res, status: "removed" });
+      if (keywordMap[thesaurus].original.some((k) => k.label === res.label)) {
+        keywordMap[thesaurus].new.push({ ...res, status: "removed" });
       }
     });
 
