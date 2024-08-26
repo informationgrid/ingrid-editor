@@ -96,8 +96,10 @@ export class ConsolidateDialogComponent implements OnInit {
     this.isLoading = true;
     this.resetNewKeywords();
     this.form = this.formStateService.getForm().value;
-    this.hasKeywords = Object.values(this.form.keywords).some(
-      (keywords: Object[]) => keywords.length > 0,
+    this.keywords = this.form.keywords;
+
+    this.hasKeywords = Object.values(this.keywords).some(
+      (keywords) => keywords.length > 0,
     );
 
     if (!this.hasKeywords) {
@@ -113,25 +115,23 @@ export class ConsolidateDialogComponent implements OnInit {
     this.umthesKeywords = this.form.keywords.umthes;
     this.freeKeywords = this.form.keywords.free;
 
-    this.keywords = [
-      ...this.gemetKeywords,
-      ...this.umthesKeywords,
-      ...this.freeKeywords,
-    ];
-
-    this.consolidateKeywords(this.keywords).then(() => {
+    this.consolidateKeywords().then(() => {
       this.sortKeywordsByStatus();
       this.removeDuplicateKeywords();
       this.isLoading = false;
     });
   }
 
-  private async consolidateKeywords(keywords: any[]) {
+  private async consolidateKeywords() {
     this.inspireTopics.forEach((theme) => this.handleInspireTopics(theme));
     this.isoCategories.forEach((category) =>
       this.handleIsoCategories(category),
     );
-    await this.assignKeywords(keywords);
+    await this.assignKeywords([
+      ...this.gemetKeywords,
+      ...this.umthesKeywords,
+      ...this.freeKeywords,
+    ]);
   }
 
   private handleInspireTopics(theme: { key: string }) {
@@ -190,19 +190,10 @@ export class ConsolidateDialogComponent implements OnInit {
           newKeywords.push({ ...res, status: "added" });
         } else {
           newKeywords.push({ ...res, status: "unchanged" });
-          // return;
+          return;
         }
-      // break;
+        break;
     }
-
-    // Add "removed" chip if keyword is found in different thesaurus
-    [this.gemetKeywords, this.umthesKeywords, this.freeKeywords].forEach(
-      (keyword) => {
-        if (keyword.some((k) => k.label === res.label)) {
-          keyword.push({ ...res, status: "removed" });
-        }
-      },
-    );
 
     // Case when keyword is found with different label in thesaurus (Kita -> Kindertagesstätte)
     if (keyword.label !== res.label) {
@@ -212,6 +203,14 @@ export class ConsolidateDialogComponent implements OnInit {
         this.freeKeywordsNew.push({ ...res, status: "removed" });
       }
     }
+
+    [this.keywordCategories.gemet, this.keywordCategories.umthes].forEach(
+      (thesaurus) => {
+        if (keywordSets[thesaurus].some((k) => k.label === res.label)) {
+          keywordNewSets[thesaurus].push({ ...res, status: "removed" });
+        }
+      },
+    );
   }
 
   private async assignKeywords(keywords: ThesaurusResult[]): Promise<any> {
