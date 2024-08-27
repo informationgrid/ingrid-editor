@@ -402,8 +402,7 @@ class DatasetsApiController(
             canWriteUsers.addAll(admins)
             canOnlyReadUsers.removeAll(admins)
         } else {
-            val principalManagedUsers = catalogService.getAllCatalogUserIds(principal)
-                .filter { catalogService.canEditUser(principal, it) }
+            val principalManagedUsers = catalogService.getEditableUsernamesForCurrentCatalog(principal)
             val principalLogin = authUtils.getUsernameFromPrincipal(principal)
             // filter list to only show users which the md-admin principal can edit + himself
             canWriteUsers.retainAll { principalManagedUsers.contains(it.login) || it.login == principalLogin }

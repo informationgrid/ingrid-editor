@@ -234,8 +234,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             val allUsers = catalogService.getAllCatalogUsers(principal)
             return ResponseEntity.ok(allUsers.filter { it.role != "ige-super-admin" })
         }
-        val userIds = catalogService.getAllCatalogUserIds(principal)
-            .filter { catalogService.canEditUser(principal, it) }
+        val userIds = catalogService.getEditableUsernamesForCurrentCatalog(principal)
 
         return ResponseEntity.ok(userIds.mapNotNull { getSingleUser(principal, it) })
 

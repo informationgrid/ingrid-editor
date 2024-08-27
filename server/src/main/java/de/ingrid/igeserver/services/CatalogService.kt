@@ -383,23 +383,52 @@ class CatalogService(
             }
     }
 
-    fun getAllCatalogUserIds(principal: Principal): List<String> {
+    private fun getAllCatalogUsernames(principal: Principal): List<String> {
         val catalogId = getCurrentCatalogForPrincipal(principal)
         return userRepo.findAllUserIdsByCatalogId(catalogId)
     }
 
-    fun canEditUser(principal: Principal, userId: String): Boolean {
+    fun getEditableUsernamesForCurrentCatalog(principal: Principal): List<String> =
+        filterEditableUsers(principal, getAllCatalogUsernames(principal))
+
+    /**
+     * Check if the principal can edit the user
+     *
+     * To check more than one user use filterEditableUsers
+     * for better performance
+     *
+     * @param principal the principal
+     * @param username the username to check
+     * @return true if the principal can edit the user
+     */
+    fun canEditUser(principal: Principal, username: String) =
+        filterEditableUsers(principal, listOf(username)).isNotEmpty()
+
+    /**
+     * Filter users that are editable by the principal
+     * @param principal the principal
+     * @param usernames list of usernames ids to check
+     * @return list of usernames that are editable by the principal
+     */
+    fun filterEditableUsers(principal: Principal, usernames: List<String>): List<String> {
         // admins have access to every user
-        if (authUtils.isAdmin(principal)) return true
-        val requestedUser = userRepo.findByUserId(userId)
+        if (authUtils.isAdmin(principal)) return usernames
+        val groupAccessCache = mutableMapOf<Int, Boolean>()
 
-        // meta admins don't have access to superadmins and katadmins
-        if (listOf("ige-super-admin", "cat-admin").contains(requestedUser?.role?.name)) return false
+        return usernames.filter { username ->
+            val requestedUser = userRepo.findByUserId(username)
+            // meta admins don't have access to superadmins and katadmins
+            if (listOf("ige-super-admin", "cat-admin").contains(requestedUser?.role?.name)) return@filter false
 
-        // check principal has rights for all groups of the requested user (in the active catalog) or the user has no groups
-        val catalogId = getCurrentCatalogForPrincipal(principal)
-        return requestedUser?.groups?.filter { it.catalog?.identifier == catalogId }
-            ?.all { hasRightsForGroup(principal, it) } ?: true
+            // check principal has rights for all groups of the requested user (in the active catalog) or the user has no groups
+            val catalogId = getCurrentCatalogForPrincipal(principal)
+            requestedUser?.groups?.filter { it.catalog?.identifier == catalogId }
+                ?.all { group ->
+                    groupAccessCache.getOrPut(group.id!!) {
+                        hasRightsForGroup(principal, group)
+                    }
+                } ?: true
+        }
     }
 
     fun hasRightsForGroup(
