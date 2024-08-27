@@ -109,8 +109,12 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.showLoading();
     this.menuItems = this.formMenuService.getMenuItems("user");
-    this.userService.getUsers().subscribe();
+    this.userService
+      .getUsers()
+      .pipe(finalize(() => this.hideLoading()))
+      .subscribe();
   }
 
   groupSelectCallback = (groupIdString: string) => {
