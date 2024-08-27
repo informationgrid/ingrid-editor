@@ -62,10 +62,10 @@ class IgeAclService(
 
         var isAllowed: Boolean
         permissionLevels.forEach { permissionLevel ->
-            val permissionLevelUuids = getDatasetIdsSetInGroups(listOf(group), permissionLevel)
-            permissionLevelUuids.forEach { uuid ->
+            val permissionLevelIds = getDatasetIdsSetInGroups(listOf(group), permissionLevel)
+            permissionLevelIds.forEach { id ->
                 val acl = this.aclService.readAclById(
-                    ObjectIdentityImpl(DocumentWrapper::class.java, uuid)
+                    ObjectIdentityImpl(DocumentWrapper::class.java, id)
                 )
                 @Suppress("UNREACHABLE_CODE")
                 isAllowed = when (permissionLevel) {
