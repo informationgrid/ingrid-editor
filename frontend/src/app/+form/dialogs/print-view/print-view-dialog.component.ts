@@ -44,6 +44,10 @@ import { DialogTemplateModule } from "../../../shared/dialog-template/dialog-tem
         font-size: 14px;
         border: none;
       }
+      .preview-print {
+        max-width: min(950px, 90vw);
+        margin: auto !important;
+      }
     `,
   ],
   providers: [MixedDragDropConfig],

@@ -66,6 +66,7 @@ ige-form-label {
     padding-top: 6px;
     padding-bottom: 6px;
     word-break: break-all;
+    align-items: baseline;
   }
 
   ::ng-deep .disabled mat-cell {

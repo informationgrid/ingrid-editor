@@ -1125,7 +1125,7 @@ export abstract class IngridShared extends BaseDoctype {
                   key: "pass",
                   type: "ige-select",
                   label: "Grad",
-                  width: "100px",
+                  width: "130px",
                   props: {
                     required: true,
                     label: "Grad",
