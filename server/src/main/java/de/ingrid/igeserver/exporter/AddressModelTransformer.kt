@@ -27,6 +27,7 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.igeserver.utils.mapToKeyValue
+import de.ingrid.mdek.upload.Config
 import org.springframework.dao.EmptyResultDataAccessException
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
@@ -37,7 +38,8 @@ open class AddressModelTransformer(
     val codelist: CodelistTransformer,
     val relationType: KeyValue?,
     val doc: Document,
-    val documentService: DocumentService
+    val documentService: DocumentService,
+    val config: Config?,
 ) {
 
     var displayAddress: Document
@@ -85,7 +87,7 @@ open class AddressModelTransformer(
 
     fun getHierarchy(): List<AddressModelTransformer> =
         ancestorAddressesIncludingSelf.map {
-            AddressModelTransformer(catalogIdentifier, codelist, null, it.document, documentService)
+            AddressModelTransformer(catalogIdentifier, codelist, null, it.document, documentService, config)
         }
 
     private fun determineEldestAncestor(): DocumentData? = ancestorAddressesIncludingSelf.firstOrNull()
@@ -169,7 +171,9 @@ open class AddressModelTransformer(
                 doc.type,
                 doc.data.get("description")?.textValue(),
                 if (doc.data.has("graphicOverviews")) {
-                    doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")?.get("uri")?.textValue()
+                    val fileName = doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")
+                    if (fileName?.get("asLink")?.booleanValue() == true) fileName.get("uri")?.textValue() // TODO encode uri
+                    else "${config?.uploadExternalUrl}$catalogIdentifier/${doc.uuid}/${fileName?.get("uri")?.textValue()}"
                 } else null
             )
         }.filterNotNull()

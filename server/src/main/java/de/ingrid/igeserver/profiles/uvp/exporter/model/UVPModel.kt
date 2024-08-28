@@ -99,12 +99,12 @@ data class UVPModel(
         val address = documentService?.getLastPublishedDocument(catalogId, ref)!!
         val codelistTransformer = CodelistTransformer(codelistHandler!!, catalogId)
         val addressTransformer =
-            AddressModelTransformer(catalogId, codelistTransformer, null, address, documentService!!)
+            AddressModelTransformer(catalogId, codelistTransformer, null, address, documentService!!, null)
         nonHiddenAncestorAddresses = addressTransformer.getAncestorAddressesIncludingSelf(address.wrapperId)
 
         return if (nonHiddenAncestorAddresses!!.size > 0) {
             val result = nonHiddenAncestorAddresses!!.last().document
-            AddressModelTransformer(catalogId, codelistTransformer, null, result, documentService!!)
+            AddressModelTransformer(catalogId, codelistTransformer, null, result, documentService!!, null)
         } else null
 
     }

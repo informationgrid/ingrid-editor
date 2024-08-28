@@ -732,7 +732,8 @@ open class IngridModelTransformer(
                 modified = OffsetDateTime.now()
                 wrapperId = -1
             },
-            documentService
+            documentService,
+            config
         )
 
     private fun getCitationFromGeodataset(uuid: String?): String? {

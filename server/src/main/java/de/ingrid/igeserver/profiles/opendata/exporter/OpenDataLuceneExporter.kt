@@ -111,7 +111,8 @@ class OpenDataLuceneExporter(
                     data.codelistTransformer,
                     null,
                     data.doc,
-                    documentService = documentService
+                    documentService = documentService,
+                    config = config
                 )
             }
 

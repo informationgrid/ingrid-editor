@@ -114,7 +114,7 @@ class IngridIDFExporter(
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
         return if (isAddress)
-            transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService)
+            transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService, config)
         else
             transformerClass.constructors.first().call(
                 TransformerConfig(
