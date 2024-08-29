@@ -24,8 +24,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
-import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.utils.setAdminAuthentication
@@ -114,21 +114,19 @@ class EnhanceGroupsTask(
     private fun getReferencedAddressIds(
         docIds: Set<Int>,
         catalogIdentifier: String,
-    ): Set<Int> {
-        return docIds
-            .map { documentService.getWrapperById(it) }
-            .flatMap { wrapper -> getAllReferencedDocumentIds(wrapper, catalogIdentifier) }
-            .toSet()
-    }
+    ): Set<Int> = docIds
+        .map { documentService.getWrapperById(it) }
+        .flatMap { wrapper -> getAllReferencedDocumentIds(wrapper, catalogIdentifier) }
+        .toSet()
 
     private fun getAllReferencedDocumentIds(
         wrapper: DocumentWrapper,
         catalogIdentifier: String,
     ) = listOf(
-        DOCUMENT_STATE.PUBLISHED,
-        DOCUMENT_STATE.DRAFT,
-        DOCUMENT_STATE.DRAFT_AND_PUBLISHED,
-        DOCUMENT_STATE.PENDING,
+        DocumentState.PUBLISHED,
+        DocumentState.DRAFT,
+        DocumentState.DRAFT_AND_PUBLISHED,
+        DocumentState.PENDING,
     ).mapNotNull {
         try {
             documentService.docRepo.getByCatalog_IdentifierAndUuidAndState(catalogIdentifier, wrapper.uuid, it)
@@ -145,19 +143,17 @@ class EnhanceGroupsTask(
         }
     }
 
-    private fun getCatalogsForTask(): List<String> {
-        return try {
-            entityManager
-                .createQuery(
-                    "SELECT version FROM VersionInfo version WHERE version.key = 'doEnhanceGroups'",
-                    VersionInfo::class.java,
-                )
-                .resultList
-                .map { it.value!! }
-        } catch (e: Exception) {
-            log.warn("Could not query version_info table")
-            emptyList()
-        }
+    private fun getCatalogsForTask(): List<String> = try {
+        entityManager
+            .createQuery(
+                "SELECT version FROM VersionInfo version WHERE version.key = 'doEnhanceGroups'",
+                VersionInfo::class.java,
+            )
+            .resultList
+            .map { it.value!! }
+    } catch (e: Exception) {
+        log.warn("Could not query version_info table")
+        emptyList()
     }
 
     private fun removePostMigrationInfo(catalogIdentifier: String) {

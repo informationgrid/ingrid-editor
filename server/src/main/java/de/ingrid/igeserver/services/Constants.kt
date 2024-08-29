@@ -47,7 +47,7 @@ const val FIELD_PUBLISHED = "published"
 const val FIELD_ARCHIVE = "archive"
 const val FIELD_VERSION = "_version"
 
-enum class DOCUMENT_STATE {
+enum class DocumentState {
     DRAFT,
     PUBLISHED,
     PENDING,

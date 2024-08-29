@@ -242,15 +242,15 @@ open class IngridModelTransformer(
 
     fun padARS(ars: String): String = ars.padEnd(12, '0')
 
-    fun getSpatialReferenceComponents(type: COORD_TYPE): String = spatialReferences
+    fun getSpatialReferenceComponents(type: CoordinateType): String = spatialReferences
         .filter { it.value != null }
         .map {
             // null check is done above
             when (type) {
-                COORD_TYPE.Lat1 -> it.value!!.lat1
-                COORD_TYPE.Lat2 -> it.value!!.lat2
-                COORD_TYPE.Lon1 -> it.value!!.lon1
-                COORD_TYPE.Lon2 -> it.value!!.lon2
+                CoordinateType.Lat1 -> it.value!!.lat1
+                CoordinateType.Lat2 -> it.value!!.lat2
+                CoordinateType.Lon1 -> it.value!!.lon1
+                CoordinateType.Lon2 -> it.value!!.lon2
             }.toFloat()
         }
         .joinToString(",", "[", "]")
@@ -989,7 +989,7 @@ open class IngridModelTransformer(
     open val mapLinkUrl: String? = null
 }
 
-enum class COORD_TYPE { Lat1, Lat2, Lon1, Lon2 }
+enum class CoordinateType { Lat1, Lat2, Lon1, Lon2 }
 
 /**
  * convert to values that used for displaying preview on portal

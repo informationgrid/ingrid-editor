@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.DOCUMENT_STATE
+import de.ingrid.igeserver.services.DocumentState
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -64,7 +64,7 @@ class JpaTest : IntegrationTest() {
             catalog = cat
             created = OffsetDateTime.now()
             contentmodified = OffsetDateTime.now()
-            state = DOCUMENT_STATE.DRAFT
+            state = DocumentState.DRAFT
         }
         em.persist(doc)
 
@@ -118,7 +118,7 @@ class JpaTest : IntegrationTest() {
             catalog = cat
             created = OffsetDateTime.now()
             contentmodified = OffsetDateTime.now()
-            state = DOCUMENT_STATE.DRAFT
+            state = DocumentState.DRAFT
         }
         em.persist(doc)
 
@@ -174,7 +174,7 @@ class JpaTest : IntegrationTest() {
             catalog = cat
             created = OffsetDateTime.now()
             contentmodified = OffsetDateTime.now()
-            state = DOCUMENT_STATE.DRAFT
+            state = DocumentState.DRAFT
         }
         em.persist(doc)
 
@@ -217,7 +217,5 @@ class JpaTest : IntegrationTest() {
         result2.size shouldBeExactly 7
     }
 
-    private fun convertDate(date: OffsetDateTime?): String? {
-        return date?.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
-    }
+    private fun convertDate(date: OffsetDateTime?): String? = date?.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
 }

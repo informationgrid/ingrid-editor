@@ -25,9 +25,9 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
-import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.DocumentState
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
 
@@ -87,7 +87,7 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService) : 
     }
 
     private fun checkPublishState(refData: DocumentData) {
-        if (refData.document.state != DOCUMENT_STATE.PUBLISHED) {
+        if (refData.document.state != DocumentState.PUBLISHED) {
             throw ServerException.withReason("Latest referenced dataset not published: ${refData.document.uuid}")
             // TODO AW: get field-key to show error in form
 //            throw ValidationException.withInvalidFields(InvalidField("pointOfContact", "Nicht veröffentlicht", mapOf("error" to "Latest referenced dataset not published: ${refData.document.uuid}")))

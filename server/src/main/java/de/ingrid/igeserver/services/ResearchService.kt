@@ -329,7 +329,7 @@ class ResearchService {
             }
     }
 
-    private fun determineDocumentState(state: String) = DOCUMENT_STATE.valueOf(state).getState()
+    private fun determineDocumentState(state: String) = DocumentState.valueOf(state).getState()
 
     fun querySql(
         principal: Principal,

@@ -32,9 +32,9 @@ import de.ingrid.igeserver.api.messaging.NotificationType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.CatalogProfile
-import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DeleteOptions
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.services.FIELD_CREATED
 import de.ingrid.igeserver.services.FIELD_CREATED_BY
 import de.ingrid.igeserver.services.FIELD_ID
@@ -288,11 +288,11 @@ class ImportService(
     ): DocumentAnalysis {
         val document = convertToDocument(doc, doc.getString("_type"), null, doc.getString("_uuid"))
         document.state = if (forcePublish) {
-            DOCUMENT_STATE.PUBLISHED
+            DocumentState.PUBLISHED
         } else if (isDraftAndPublished) {
-            DOCUMENT_STATE.DRAFT_AND_PUBLISHED
+            DocumentState.DRAFT_AND_PUBLISHED
         } else {
-            DOCUMENT_STATE.DRAFT
+            DocumentState.DRAFT
         }
         document.isLatest = isLatest
         val documentWrapper = getDocumentWrapperOrNull(catalogId, document.uuid)

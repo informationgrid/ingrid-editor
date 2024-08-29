@@ -357,7 +357,7 @@ class DocumentService(
         }
 
         if (publish) {
-            preUpdatePayload.document.state = DOCUMENT_STATE.PUBLISHED
+            preUpdatePayload.document.state = DocumentState.PUBLISHED
 
             val prePublishPayload = PrePublishPayload(docType, catalogId, preUpdatePayload.document, preUpdatePayload.wrapper)
             prePublishPipe.runFilters(prePublishPayload, filterContext)
@@ -404,7 +404,7 @@ class DocumentService(
 
                     val latestDoc = getDocumentFromCatalog(catalogId, wrapper.id!!)
                     latestDoc.document.apply {
-                        state = DOCUMENT_STATE.PUBLISHED
+                        state = DocumentState.PUBLISHED
                         contentmodified = OffsetDateTime.now()
                     }
                     val updatedPublishedDoc = docRepo.save(latestDoc.document)
@@ -484,9 +484,9 @@ class DocumentService(
     ): Boolean {
         var newVersionCreated = false
 
-        if (docData.document.state == DOCUMENT_STATE.PUBLISHED) {
+        if (docData.document.state == DocumentState.PUBLISHED) {
             docData.document.isLatest = false
-            if (!nextStateIsDraft && !delayedPublication) docData.document.state = DOCUMENT_STATE.ARCHIVED
+            if (!nextStateIsDraft && !delayedPublication) docData.document.state = DocumentState.ARCHIVED
             docRepo.save(docData.document)
 
             entityManager.detach(docData.document)
@@ -494,12 +494,12 @@ class DocumentService(
             prepareDocumentForCopy(docData.document)
 
             docData.document.state = if (nextStateIsDraft) {
-                DOCUMENT_STATE.DRAFT_AND_PUBLISHED
+                DocumentState.DRAFT_AND_PUBLISHED
             } else {
-                DOCUMENT_STATE.PUBLISHED
+                DocumentState.PUBLISHED
             }
             newVersionCreated = true
-        } else if (docData.document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED && !nextStateIsDraft && !delayedPublication) {
+        } else if (docData.document.state == DocumentState.DRAFT_AND_PUBLISHED && !nextStateIsDraft && !delayedPublication) {
             moveLastPublishedDocumentToArchive(docData.document.catalog!!.identifier, docData.wrapper)
             newVersionCreated = true
         }
@@ -516,7 +516,7 @@ class DocumentService(
     private fun moveLastPublishedDocumentToArchive(catalogId: String, wrapper: DocumentWrapper) {
         try {
             val lastPublishedDoc = getLastPublishedDocument(catalogId, wrapper.uuid)
-            lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
+            lastPublishedDoc.state = DocumentState.ARCHIVED
             lastPublishedDoc.wrapperId = wrapper.id
             docRepo.save(lastPublishedDoc)
         } catch (_: EmptyResultDataAccessException) {
@@ -553,7 +553,7 @@ class DocumentService(
 
         val newDatasetVersionCreated = handleUpdateOnPublishedOnlyDocument(docData, false, publishDate != null)
 
-        docData.document.state = if (publishDate == null) DOCUMENT_STATE.PUBLISHED else DOCUMENT_STATE.PENDING
+        docData.document.state = if (publishDate == null) DocumentState.PUBLISHED else DocumentState.PENDING
 
         if (newDatasetVersionCreated) {
             data.version = docData.document.version
@@ -717,7 +717,7 @@ class DocumentService(
         val docData = getDocumentFromCatalog(catalogId, id)
 
         // check if draft and published field are filled
-        assert(docData.document.state == DOCUMENT_STATE.DRAFT)
+        assert(docData.document.state == DocumentState.DRAFT)
 
         // run pre-revert pipe(s)
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
@@ -774,7 +774,7 @@ class DocumentService(
         uuid: String,
         forExport: Boolean = false,
     ): Document {
-        val doc = docWrapperRepo.getDocumentByState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
+        val doc = docWrapperRepo.getDocumentByState(catalogId, uuid, DocumentState.PUBLISHED)
         if (doc.isEmpty()) throw EmptyResultDataAccessException("Resource with $uuid not found", 1)
 
         val result = doc[0] as Array<*>
@@ -784,7 +784,7 @@ class DocumentService(
         return finalDoc
     }
 
-    fun getPendingDocument(catalogId: String, uuid: String): Document = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PENDING)
+    fun getPendingDocument(catalogId: String, uuid: String): Document = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DocumentState.PENDING)
 
     fun unpublishDocument(principal: Principal, catalogId: String, id: Int): DocumentData {
         // remove publish
@@ -800,7 +800,7 @@ class DocumentService(
         preUnpublishPipe.runFilters(preUnpublishPayload, filterContext)
 
         // update state of published version
-        lastPublished.state = DOCUMENT_STATE.WITHDRAWN
+        lastPublished.state = DocumentState.WITHDRAWN
         lastPublished.isLatest = false
         docRepo.save(lastPublished)
 
@@ -809,11 +809,11 @@ class DocumentService(
             // copy published version to draft
             entityManager.detach(lastPublished)
             prepareDocumentForCopy(lastPublished)
-            lastPublished.state = DOCUMENT_STATE.DRAFT
+            lastPublished.state = DocumentState.DRAFT
             docRepo.save(lastPublished)
         } else {
             // set different state
-            currentDoc.document.state = DOCUMENT_STATE.DRAFT
+            currentDoc.document.state = DocumentState.DRAFT
             docRepo.save(currentDoc.document)
         }
 
@@ -841,7 +841,7 @@ class DocumentService(
 
         // if no draft version exists, move pending version to draft
         val updatedDoc = if (pendingDoc.isLatest) {
-            pendingDoc.state = if (wasPublishedBefore) DOCUMENT_STATE.DRAFT_AND_PUBLISHED else DOCUMENT_STATE.DRAFT
+            pendingDoc.state = if (wasPublishedBefore) DocumentState.DRAFT_AND_PUBLISHED else DocumentState.DRAFT
             pendingDoc.wrapperId = id
             docRepo.save(pendingDoc)
         } else {
@@ -949,8 +949,8 @@ class DocumentService(
             if (newParentId == null) null else getDocumentFromCatalog(catalogId, newParentId)
 
         // check parent is published if moved dataset also has been published
-        if (parent != null && parent.wrapper.type != DocumentCategory.FOLDER.value && docData.document.state != DOCUMENT_STATE.DRAFT) {
-            if (parent.document.state == DOCUMENT_STATE.DRAFT) {
+        if (parent != null && parent.wrapper.type != DocumentCategory.FOLDER.value && docData.document.state != DocumentState.DRAFT) {
+            if (parent.document.state == DocumentState.DRAFT) {
                 throw ValidationException.withReason(
                     "Parent '${parent.document.uuid}' must be published, since moved dataset '${docData.document.uuid}' is also published",
                     errorCode = "PARENT_IS_NOT_PUBLISHED",

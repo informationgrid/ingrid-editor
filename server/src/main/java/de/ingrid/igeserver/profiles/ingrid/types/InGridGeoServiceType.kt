@@ -22,7 +22,7 @@ package de.ingrid.igeserver.profiles.ingrid.types
 import de.ingrid.igeserver.api.InvalidField
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.DOCUMENT_STATE
+import de.ingrid.igeserver.services.DocumentState
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -36,7 +36,7 @@ class InGridGeoServiceType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemp
         val allCoupledResourcesPublished = doc.data.get("service")?.get("coupledResources")
             ?.filter { !it.get("isExternalRef").asBoolean() }
             ?.map { documentService.docRepo.getByCatalogAndUuidAndIsLatestIsTrue(doc.catalog!!, it.get("uuid").asText()) }
-            ?.all { it.state == DOCUMENT_STATE.PUBLISHED } ?: true
+            ?.all { it.state == DocumentState.PUBLISHED } ?: true
 
         if (!allCoupledResourcesPublished) throw ValidationException.withInvalidFields(InvalidField("service.coupledResources", "COUPLED_RESOURCES_MUST_BE_PUBLISHED"))
     }
