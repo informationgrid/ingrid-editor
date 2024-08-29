@@ -34,6 +34,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.CoupledResource
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileName
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileReference
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.GraphicOverview
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
@@ -163,16 +164,17 @@ open class IngridModelTransformer(
 
     val browseGraphics = generateBrowseGraphics(graphicOverviews, model.uuid)
 
-    private fun getDownloadLink(datasetUuid: String, fileName: String): String {
-        return "${config.uploadExternalUrl}$catalogIdentifier/$datasetUuid/$fileName"
-    }
+    private fun getDownloadLink(datasetUuid: String, fileName: String): String = "${config.uploadExternalUrl}$catalogIdentifier/$datasetUuid/$fileName"
 
     private fun generateBrowseGraphics(graphicOverviews: List<GraphicOverview>?, datasetUuid: String): List<BrowseGraphic> =
         graphicOverviews?.map {
             BrowseGraphic(
-                if (it.fileName.asLink) it.fileName.uri // TODO encode uri
-                else getDownloadLink(datasetUuid, it.fileName.uri),
-                it.fileDescription
+                if (it.fileName.asLink) {
+                    it.fileName.uri // TODO encode uri
+                } else {
+                    getDownloadLink(datasetUuid, it.fileName.uri)
+                },
+                it.fileDescription,
             )
         } ?: emptyList()
 
@@ -941,7 +943,7 @@ open class IngridModelTransformer(
                 json.getBoolean("fileName.asLink") ?: throw ServerException.withReason("Preview image 'asLink'-property is NULL"),
                 json.getString("fileName.value") ?: throw ServerException.withReason("Preview image 'value'-property is NULL"),
                 json.getString("fileName.uri") ?: throw ServerException.withReason("Preview image 'uri'-property is NULL"),
-                json.getDouble("fileName.sizeInBytes") ?: null
+                json.getDouble("fileName.sizeInBytes") ?: null,
             ),
             json.getString("fieldDescription"),
         )
@@ -979,18 +981,16 @@ open class IngridModelTransformer(
         return value
     }
 
-    fun hasDistributionInfo(): Boolean {
-        return digitalTransferOptions.isNotEmpty()
-                || distributionFormats.isNotEmpty()
-                || hasDistributorInfo()
-                || !data.references.isNullOrEmpty()
-                || !data.fileReferences.isNullOrEmpty()
-                || isAtomDownload
-                // TODO Refactor after usage clarification #6322
-                // || serviceUrls.isNotEmpty()
-                // || getCoupledServiceUrls().isNotEmpty()
-                || getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs().isNotEmpty()
-    }
+    fun hasDistributionInfo(): Boolean = digitalTransferOptions.isNotEmpty() ||
+        distributionFormats.isNotEmpty() ||
+        hasDistributorInfo() ||
+        !data.references.isNullOrEmpty() ||
+        !data.fileReferences.isNullOrEmpty() ||
+        isAtomDownload ||
+        // TODO Refactor after usage clarification #6322
+        // || serviceUrls.isNotEmpty()
+        // || getCoupledServiceUrls().isNotEmpty()
+        getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs().isNotEmpty()
 
     fun hasDistributorInfo(): Boolean = data.orderInfo?.isNotEmpty() == true || data.fees?.isNotEmpty() == true
 
