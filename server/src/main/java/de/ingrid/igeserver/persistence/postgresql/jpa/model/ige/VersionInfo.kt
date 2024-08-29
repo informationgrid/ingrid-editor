@@ -29,7 +29,7 @@ import jakarta.persistence.*
 class VersionInfo {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @field:JsonProperty("db_id")
     var id: Int? = null
 
@@ -38,5 +38,4 @@ class VersionInfo {
 
     @Column()
     var value: String? = null
-
 }

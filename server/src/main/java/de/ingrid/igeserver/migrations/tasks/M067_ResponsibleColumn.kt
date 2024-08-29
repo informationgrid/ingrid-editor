@@ -46,5 +46,4 @@ class M067_ResponsibleColumn : MigrationBase("0.67") {
             entityManager.createNativeQuery(sqlUpdate).executeUpdate()
         }
     }
-
 }

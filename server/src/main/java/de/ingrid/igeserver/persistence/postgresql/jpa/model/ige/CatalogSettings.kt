@@ -29,7 +29,7 @@ data class CatalogSettings(
     var lastLogSummary: IndexMessage? = null, // TODO: store summary in Quartz Job
     @JsonSetter(nulls = Nulls.SKIP)
     var config: CatalogConfig = CatalogConfig(),
-    var exports: List<ExportConfig> = emptyList()
+    var exports: List<ExportConfig> = emptyList(),
 )
 
 data class ExportConfig(
@@ -48,7 +48,7 @@ data class CatalogConfig(
     var atomDownloadUrl: String? = null,
     var spatialReference: Any? = null,
     val expiredDatasetConfig: ExpiredDatasetConfig? = null,
-    var codelistFavorites: MutableMap<String, List<String>>? = null
+    var codelistFavorites: MutableMap<String, List<String>>? = null,
 )
 
 data class ExpiredDatasetConfig(
@@ -60,7 +60,7 @@ data class ExpiredDatasetConfig(
 
 data class ConnectionConfig(
     val ibus: List<IBusConfig>? = null,
-    val elasticsearch: List<ElasticConfig>? = null
+    val elasticsearch: List<ElasticConfig>? = null,
 )
 
 interface WithId {
@@ -68,12 +68,12 @@ interface WithId {
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class IBusConfig (
+data class IBusConfig(
     override var id: String? = null,
     val name: String,
     val ip: String = "127.0.0.1",
-    val port: Int = 9900
-): WithId
+    val port: Int = 9900,
+) : WithId
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ElasticConfig(
@@ -82,5 +82,5 @@ data class ElasticConfig(
     val hosts: List<String>,
     val username: String? = null,
     val password: String? = null,
-    val https: Boolean? = null
-): WithId
+    val https: Boolean? = null,
+) : WithId

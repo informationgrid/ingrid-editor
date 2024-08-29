@@ -39,12 +39,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class BmiProfile(
-        @JsonIgnore val codelistRepo: CodelistRepository,
-        @JsonIgnore val catalogRepo: CatalogRepository,
-        @JsonIgnore val codelistHandler: CodelistHandler,
-        @JsonIgnore val query: QueryRepository,
-        @JsonIgnore val dateService: DateService,
-        @JsonIgnore val authUtils: AuthUtils,
+    @JsonIgnore val codelistRepo: CodelistRepository,
+    @JsonIgnore val catalogRepo: CatalogRepository,
+    @JsonIgnore val codelistHandler: CodelistHandler,
+    @JsonIgnore val query: QueryRepository,
+    @JsonIgnore val dateService: DateService,
+    @JsonIgnore val authUtils: AuthUtils,
 ) : CatalogProfile {
 
     override val identifier = "bmi"
@@ -56,25 +56,29 @@ class BmiProfile(
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Filter", arrayOf(
+                "state",
+                "Filter",
+                arrayOf(
                     Draft(),
-                    ExceptFolders()
+                    ExceptFolders(),
                 ),
                 viewComponent = ViewComponent.CHECKBOX,
-                combine = Operator.AND
-            )
+                combine = Operator.AND,
+            ),
         )
     }
 
     override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Filter", arrayOf(
+                "state",
+                "Filter",
+                arrayOf(
                     Draft(),
-                    ExceptFolders()
+                    ExceptFolders(),
                 ),
-                viewComponent = ViewComponent.CHECKBOX
-            )
+                viewComponent = ViewComponent.CHECKBOX,
+            ),
         )
     }
 
@@ -346,7 +350,6 @@ class BmiProfile(
                 add(toCodelistEntry("http://dcat-ap.de/def/licenses/other-closed", "Andere geschlossene Lizenz"))
                 add(toCodelistEntry("http://dcat-ap.de/def/licenses/other-commercial", "Andere kommerzielle Lizenz"))
                 add(toCodelistEntry("http://dcat-ap.de/def/licenses/other-freeware", "Andere Freeware Lizenz"))
-
             }
         }
         val codelist20005 = Codelist().apply {
@@ -374,7 +377,6 @@ class BmiProfile(
                 add(toCodelistEntry("state", "Ebene der Bundesländer"))
                 add(toCodelistEntry("administrativeDistrict", "Ebene der Landkreise und Regierungsbezirke"))
                 add(toCodelistEntry("municipality", "kommunale Ebene"))
-
             }
         }
         val codelist20007 = Codelist().apply {
@@ -432,51 +434,58 @@ class BmiProfile(
     }
 
     private fun removeAndAddCodelist(catalogId: String, codelist: Codelist) {
-
         codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, codelist.identifier)
         codelistRepo.flush()
         codelistRepo.save(codelist)
-
     }
 
     private fun toCodelistEntry(id: String, german: String): JsonNode {
         return jacksonObjectMapper().createObjectNode().apply {
             put("id", id)
-            set<JsonNode>("localisations", jacksonObjectMapper().createObjectNode().apply {
-                put("de", german)
-            })
+            set<JsonNode>(
+                "localisations",
+                jacksonObjectMapper().createObjectNode().apply {
+                    put("de", german)
+                },
+            )
         }
     }
 
     private fun toISOCodelistEntry(id: String, german: String, iso: String): JsonNode {
         return jacksonObjectMapper().createObjectNode().apply {
             put("id", id)
-            set<JsonNode>("localisations", jacksonObjectMapper().createObjectNode().apply {
-                put("de", german)
-                put("iso", iso)
-            })
+            set<JsonNode>(
+                "localisations",
+                jacksonObjectMapper().createObjectNode().apply {
+                    put("de", german)
+                    put("iso", iso)
+                },
+            )
         }
     }
 
-    override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String>{
+    override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> {
         val isSuperAdmin = authUtils.containsRole(principal, "ige-super-admin")
         val isCatAdmin = authUtils.containsRole(principal, "cat-admin")
 
         val newPermissions: MutableList<String> = permissions.toMutableList()
 
-        if(isCatAdmin) {
+        if (isCatAdmin) {
             newPermissions.add(Permissions.manage_content.name)
         }
 
-        return  if(isSuperAdmin) {
+        return if (isSuperAdmin) {
             newPermissions.filter { permission ->
                 (!permission.equals(Permissions.manage_ibus.name))
             }
         } else {
-            newPermissions.filter { permission -> (!permission.equals(Permissions.can_import.name)
-                    && !permission.equals(Permissions.can_export.name)
-                    && !permission.equals(Permissions.manage_codelist_repository.name)
-                    && !permission.equals(Permissions.manage_ibus.name))
+            newPermissions.filter { permission ->
+                (
+                    !permission.equals(Permissions.can_import.name) &&
+                        !permission.equals(Permissions.can_export.name) &&
+                        !permission.equals(Permissions.manage_codelist_repository.name) &&
+                        !permission.equals(Permissions.manage_ibus.name)
+                    )
             }
         }
     }

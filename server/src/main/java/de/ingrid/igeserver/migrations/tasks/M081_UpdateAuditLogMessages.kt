@@ -36,7 +36,6 @@ class M081_UpdateAuditLogMessages : MigrationBase("0.81") {
     @Autowired
     private lateinit var transactionManager: PlatformTransactionManager
 
-
     private val updateSql = """
         UPDATE audit_log SET
             logger = 'audit.data-history',
@@ -53,5 +52,4 @@ class M081_UpdateAuditLogMessages : MigrationBase("0.81") {
                 .executeUpdate()
         }
     }
-
 }

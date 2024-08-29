@@ -48,7 +48,7 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                 Operation(
                     getOperationName(it.svOperationMetadata?.operationName?.value),
                     it.svOperationMetadata?.operationDescription?.value,
-                    it.svOperationMetadata?.connectPoint?.getOrNull(0)?.ciOnlineResource?.linkage?.url
+                    it.svOperationMetadata?.connectPoint?.getOrNull(0)?.ciOnlineResource?.linkage?.url,
                 )
             } ?: emptyList()
     }
@@ -125,18 +125,19 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     ?: false
             }
             ?.flatMap { it.mdDigitalTransferOptions?.onLine?.map { online -> online.ciOnlineResource } ?: emptyList() }
-            ?.map { CoupledResourceModel(
-                null, it?.linkage?.url, it?.name?.value, true,
+            ?.map {
+                CoupledResourceModel(
+                    null, it?.linkage?.url, it?.name?.value, true,
 //                    layerNames = it.title?.split(",") ?: emptyList()) } ?: emptyList()
                 )
             } ?: emptyList()
 
         return internalLinks + externalLinks
     }
-    
+
     private fun groupItemsByUuid(items: List<OperatesOn>?): List<CoupledResourceModel> {
         if (items == null) return emptyList()
-        
+
         val groupedMap = mutableMapOf<String, MutableList<String>>()
 
         for (item in items) {
@@ -144,13 +145,12 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             if (!item.title.isNullOrEmpty()) texts.add(item.title)
         }
 
-        return groupedMap.map { (uuid, layerNames) -> 
+        return groupedMap.map { (uuid, layerNames) ->
             CoupledResourceModel(uuid, null, null, false, layerNames = layerNames)
         }
     }
 
     fun getResolutions(): List<Resolution> {
-
         val description = info?.abstract?.value ?: return emptyList()
         var scale = listOf<String>()
         var groundResolution = listOf<String>()
@@ -176,9 +176,8 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                 scale.getOrNull(it)?.split(":")?.getOrNull(1)?.trim()?.toFloat(), // "1:1000"
                 groundResolution.getOrNull(it)?.substring(0, groundResolution.getOrNull(it)?.length?.minus(1)!!)?.trim()
                     ?.toFloat(),
-                scanResolution.getOrNull(it)?.trim()?.toFloat()
+                scanResolution.getOrNull(it)?.trim()?.toFloat(),
             )
         }
     }
-
 }

@@ -72,7 +72,7 @@ class AuditLogger {
         data: JsonNode? = null,
         logger: String? = null,
         catalogIdentifier: String? = null,
-        principal: Principal? = null
+        principal: Principal? = null,
     ) {
         getLogger(logger).info(createLogMessage(category, action, target, data, catalogIdentifier, principal))
     }
@@ -82,8 +82,14 @@ class AuditLogger {
      * NOTE This method only retrieves log messages that are persisted in the database
      */
     fun find(
-        logger: String?, id: String?, user: String?, action: String?, from: LocalDate?, to: LocalDate?,
-        sort: String?, sortOrder: String?
+        logger: String?,
+        id: String?,
+        user: String?,
+        action: String?,
+        from: LocalDate?,
+        to: LocalDate?,
+        sort: String?,
+        sortOrder: String?,
     ): FindAllResults<AuditLogRecord> {
         // TODO: migrate
         /*val queryMap = listOfNotNull(
@@ -115,7 +121,7 @@ class AuditLogger {
         target: String?,
         data: JsonNode?,
         catalogIdentifier: String? = null,
-        principal: Principal? = userService.getCurrentPrincipal()
+        principal: Principal? = userService.getCurrentPrincipal(),
     ): JsonNode {
         return jacksonObjectMapper().createObjectNode().apply {
             put(RECORD_TYPE, RECORD_TYPE_VALUE)

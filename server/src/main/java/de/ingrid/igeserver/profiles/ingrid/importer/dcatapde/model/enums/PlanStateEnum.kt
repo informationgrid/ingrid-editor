@@ -29,10 +29,11 @@ import java.util.stream.Stream
 enum class PlanStateEnum(val value: String) {
     IN_PREPARATION("inPreparation"),
     FIXED("fixed"),
-    UNKNOWN("unknown");
+    UNKNOWN("unknown"),
+    ;
 
     class Converter : EnumConverter<PlanStateEnum>(
-        PlanStateEnum::class.java
+        PlanStateEnum::class.java,
     )
 
     @JsonValue
@@ -42,6 +43,7 @@ enum class PlanStateEnum(val value: String) {
 
     companion object {
         private const val uriPrefix = "https://specs.diplanung.de/resource/planState#"
+
         @JsonCreator
         fun fromValue(text: String?): PlanStateEnum? {
             if (text == null) {
@@ -55,7 +57,8 @@ enum class PlanStateEnum(val value: String) {
             val enumValues = java.lang.String.join(
                 ", ",
                 Stream.of(*entries.toTypedArray()).map { anEnum: PlanStateEnum -> uriPrefix + anEnum.toString() }
-                    .toList())
+                    .toList(),
+            )
             throw IllegalArgumentException("PlanStateEnum value has to be one of [$enumValues], was $text")
         }
 

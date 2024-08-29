@@ -51,7 +51,7 @@ class IngridExporterHmdk(
         "json",
         listOf("ingrid-hmdk"),
         isPublic = true,
-        useForPublish = true
+        useForPublish = true,
     )
 }
 
@@ -71,7 +71,7 @@ class IngridExporterHmdkMetaver(
         "json",
         listOf("ingrid-hmdk"),
         isPublic = true,
-        useForPublish = true
+        useForPublish = true,
     )
 }
 
@@ -80,7 +80,7 @@ class IngridIdfExporterHmdk(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
+    @Lazy documentService: DocumentService,
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? =
@@ -92,7 +92,7 @@ class IngridIdfExporterHmdkMetaver(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
+    @Lazy documentService: DocumentService,
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? =
@@ -104,7 +104,7 @@ class IngridLuceneExporterHmdk(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
+    @Lazy documentService: DocumentService,
 ) :
     IngridLuceneExporter(
         codelistHandler,
@@ -129,8 +129,8 @@ class IngridLuceneExporterHmdk(
                             TransformerCache(),
                             data.doc,
                             documentService,
-                            data.tags
-                        )
+                            data.tags,
+                        ),
                     ) ?: super.getTransformer(data)
             }
 
@@ -143,7 +143,7 @@ class IngridLuceneExporterHmdk(
 class IngridISOExporterHmdk(
     idfExporter: IngridIdfExporterHmdk,
     luceneExporter: IngridLuceneExporterHmdk,
-    documentWrapperRepository: DocumentWrapperRepository
+    documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridExporterHmdk(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
@@ -153,12 +153,11 @@ class IngridISOExporterHmdk(
         "Export von HMDK Dokumenten in ISO für die Vorschau im Editor.",
         "text/xml",
         "xml",
-        listOf("ingrid-hmdk")
+        listOf("ingrid-hmdk"),
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val indexString = super.run(doc, catalogId, options) as String
         return getISOFromElasticDocumentString(indexString)
     }
-
 }

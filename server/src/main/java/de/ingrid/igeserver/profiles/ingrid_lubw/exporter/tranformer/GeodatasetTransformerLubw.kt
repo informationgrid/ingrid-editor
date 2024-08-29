@@ -30,10 +30,12 @@ class GeodatasetTransformerLubw(transformerConfig: TransformerConfig) : Geodatas
     private val docData = doc.data
 
     override val systemEnvironment =
-        if (!super.systemEnvironment.isNullOrEmpty()) super.systemEnvironment
-        else docData.getString("dataQualityInfo.lineage.source.environmentDescription")
+        if (!super.systemEnvironment.isNullOrEmpty()) {
+            super.systemEnvironment
+        } else {
+            docData.getString("dataQualityInfo.lineage.source.environmentDescription")
+        }
 
     override fun getDescriptiveKeywords(): List<Thesaurus> =
         amendLubwDescriptiveKeywords(docData, super.getDescriptiveKeywords())
-
 }

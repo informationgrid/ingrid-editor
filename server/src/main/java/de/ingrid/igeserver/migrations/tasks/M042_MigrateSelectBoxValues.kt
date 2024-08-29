@@ -102,7 +102,7 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
         item: ObjectNode,
         catalogIdentifier: String,
         field: String,
-        value: String
+        value: String,
     ): String? {
         var codelist = this.codelistHandler.getCodelists(listOf(codelistId))
         if (codelist.isEmpty()) {
@@ -121,7 +121,6 @@ class M042_MigrateSelectBoxValues : MigrationBase("0.42") {
         } else {
             entry.id
         }
-
     }
 
     private fun migrateNestedField(doc: Document, field: String, nestedField: String) {

@@ -88,12 +88,11 @@ class DocumentWrapper {
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(
-            name = "path",
-            columnDefinition = "text[]"
+        name = "path",
+        columnDefinition = "text[]",
     )
     var path: List<Int> = emptyList()
         get() = if (field == null) emptyList() else field // field can actually be null if in db table null
-
 
     @Formula(value = "(select count(dw.id) from document_wrapper dw where dw.parent_id = id and dw.deleted = 0)")
     var countChildren: Int = 0
@@ -105,7 +104,6 @@ class DocumentWrapper {
     @Column(name = "tags", columnDefinition = "text[]")
     var tags: List<String> = emptyList()
         get() = field ?: emptyList() // field can actually be null if in db table null
-
 
     @Column
     @JsonSerialize(using = DateSerializer::class)

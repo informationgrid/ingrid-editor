@@ -72,5 +72,4 @@ class M027_AddRoleTable : MigrationBase("0.27") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

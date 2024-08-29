@@ -30,22 +30,21 @@ import net.weta.components.communication.configuration.ClientConfiguration
 import net.weta.components.communication.tcp.StartCommunication
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.annotation.Profile
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
 @Service
-class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties): IPlug, IConnection {
+class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties) : IPlug, IConnection {
 
     val log = logger()
 
     private var iBusClient: BusClient? = null
-    
+
     private var iBusConfigMap: Map<String, Int> = emptyMap()
 
     // this ensures that the service is started after the migration tasks
     @EventListener(ApplicationReadyEvent::class)
-    fun init() = setupConnections()  
+    fun init() = setupConnections()
 
     fun setupConnections() {
         try {
@@ -57,11 +56,11 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
             log.error("Could not connect to iBus", e)
         }
     }
-    
+
     fun getIBus(id: String): IBus {
         return iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!) ?: throw ServerException.withReason("iBus with id '$id' not found. There are ${iBusClient?.cacheableIBusses?.size} iBusses registered.")
     }
-    
+
     override fun isConnected(id: String): Boolean {
         return try {
             iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!)?.metadata != null
@@ -107,7 +106,7 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
     override fun getDetails(
         p0: Array<out IngridHit>?,
         p1: IngridQuery?,
-        p2: Array<out String>?
+        p2: Array<out String>?,
     ): Array<IngridHitDetail> {
         TODO("Not yet implemented")
     }
@@ -123,5 +122,4 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
     override fun configure(p0: PlugDescription?) {
         TODO("Not yet implemented")
     }
-
 }

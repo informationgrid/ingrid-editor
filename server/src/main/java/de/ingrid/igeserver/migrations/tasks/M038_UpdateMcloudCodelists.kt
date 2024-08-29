@@ -44,7 +44,6 @@ class M038_UpdateMcloudCodelists : MigrationBase("0.38") {
     @Autowired
     private lateinit var transactionManager: PlatformTransactionManager
 
-
     override fun exec() {
         log.info("Update mCLOUD Codelists!")
 
@@ -62,5 +61,4 @@ class M038_UpdateMcloudCodelists : MigrationBase("0.38") {
             }
         }
     }
-
 }

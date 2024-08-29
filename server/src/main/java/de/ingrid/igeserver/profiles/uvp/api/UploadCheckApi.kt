@@ -35,7 +35,7 @@ interface UploadCheckApi {
     @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun checkUploads(
-        principal: Principal
+        principal: Principal,
     ): ResponseEntity<List<UploadCheckReport>>
 }
 
@@ -45,5 +45,5 @@ data class UploadCheckReport(
     val valid: Boolean,
     val uuid: String,
     val state: String,
-    val error: String? = null
+    val error: String? = null,
 )

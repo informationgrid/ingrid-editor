@@ -85,5 +85,4 @@ class Catalog {
             SpringContext.getBean(DateService::class.java)
         }
     }
-
 }

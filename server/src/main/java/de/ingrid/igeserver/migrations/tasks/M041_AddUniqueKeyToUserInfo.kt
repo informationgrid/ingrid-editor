@@ -46,5 +46,4 @@ class M041_AddUniqueKeyToUserInfo : MigrationBase("0.41") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

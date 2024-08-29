@@ -34,23 +34,22 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
-
 @Service
 class OgcHtmlExporter(
-        @Lazy val documentService: DocumentService,
-        val catalogService: CatalogService,
-        val ogcHtmlConverterService: OgcHtmlConverterService
+    @Lazy val documentService: DocumentService,
+    val catalogService: CatalogService,
+    val ogcHtmlConverterService: OgcHtmlConverterService,
 ) : IgeExporter {
 
     override val typeInfo = ExportTypeInfo(
-            DocumentCategory.DATA,
-            "html",
-            "htmlIGE",
-            "HTML Export des IGE",
-            MediaType.TEXT_HTML_VALUE,
-            "text/html",
-            emptyList(),
-            false
+        DocumentCategory.DATA,
+        "html",
+        "htmlIGE",
+        "HTML Export des IGE",
+        MediaType.TEXT_HTML_VALUE,
+        "text/html",
+        emptyList(),
+        false,
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
@@ -86,9 +85,7 @@ class OgcHtmlExporter(
         return (draftVersion ?: publishedVersion) as ObjectNode
     }
 
-
     override fun toString(exportedObject: Any): String {
         return exportedObject as String
     }
-
 }

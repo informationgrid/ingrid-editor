@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service
 @Profile("ingrid")
 class M083_AddIndices : MigrationBase("0.83") {
 
-
     @Qualifier("inGridProfile")
     @Autowired
     private lateinit var ingridProfile: InGridProfile

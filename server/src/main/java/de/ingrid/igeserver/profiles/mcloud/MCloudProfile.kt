@@ -34,7 +34,6 @@ import de.ingrid.igeserver.research.quickfilter.Spatial
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
@@ -56,37 +55,45 @@ class MCloudProfile(
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Allgemein", arrayOf(
+                "state",
+                "Allgemein",
+                arrayOf(
                     Draft(),
-                    ExceptFolders()
+                    ExceptFolders(),
                 ),
                 viewComponent = ViewComponent.CHECKBOX,
-                combine = Operator.AND
+                combine = Operator.AND,
             ),
             FacetGroup(
-                "spatial", "Raumbezug", arrayOf(
-                    Spatial()
+                "spatial",
+                "Raumbezug",
+                arrayOf(
+                    Spatial(),
                 ),
-                viewComponent = ViewComponent.SPATIAL
+                viewComponent = ViewComponent.SPATIAL,
             ),
             FacetGroup(
-                "timeRef", "Aktualität der Metadaten", arrayOf(
-                    TimeSpan()
+                "timeRef",
+                "Aktualität der Metadaten",
+                arrayOf(
+                    TimeSpan(),
                 ),
-                viewComponent = ViewComponent.TIMESPAN
-            )
+                viewComponent = ViewComponent.TIMESPAN,
+            ),
         )
     }
 
     override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Allgemein", arrayOf(
+                "state",
+                "Allgemein",
+                arrayOf(
                     Draft(),
-                    ExceptFolders()
+                    ExceptFolders(),
                 ),
-                viewComponent = ViewComponent.CHECKBOX
-            )
+                viewComponent = ViewComponent.CHECKBOX,
+            ),
         )
     }
 
@@ -366,14 +373,17 @@ class MCloudProfile(
         return {}.javaClass.getResource("/mcloud/default-settings.json")?.readText() ?: ""
     }
 
-    override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String>{
+    override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> {
         val isSuperAdmin = authUtils.containsRole(principal, "ige-super-admin")
 
-        return  if(isSuperAdmin) {
+        return if (isSuperAdmin) {
             permissions
         } else {
-            permissions.filter { permission -> (!permission.equals(Permissions.can_import.name)
-                    && !permission.equals(Permissions.can_export.name))
+            permissions.filter { permission ->
+                (
+                    !permission.equals(Permissions.can_import.name) &&
+                        !permission.equals(Permissions.can_export.name)
+                    )
             }
         }
     }

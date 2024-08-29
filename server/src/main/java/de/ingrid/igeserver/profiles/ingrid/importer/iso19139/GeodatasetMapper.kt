@@ -35,7 +35,6 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             ?.mapNotNull { it.value }
             ?.mapNotNull { codeListService.getCodeListEntryId("527", it, "iso") }
             ?.map { KeyValue(it) } ?: emptyList()
-
     }
 
     fun getCharacterSet(): KeyValue? {
@@ -124,10 +123,15 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         val isGeoReferenced = metadata.spatialRepresentationInfo?.filter { it.mdGeoreferenceable != null }
         val isGeoRectified = metadata.spatialRepresentationInfo?.filter { it.mdGeorectified != null }
 
-        return if (!isGeoReferenced.isNullOrEmpty()) mapGeoReferencedRepresentation(isGeoReferenced[0].mdGeoreferenceable!!)
-        else if (!isGeoRectified.isNullOrEmpty()) mapGeoRectifiedRepresentation(isGeoRectified[0].mdGeorectified!!)
-        else if (!isGeneral.isNullOrEmpty()) mapGeneralRepresentation(isGeneral[0].mdGridSpatialRepresentation!!)
-        else null
+        return if (!isGeoReferenced.isNullOrEmpty()) {
+            mapGeoReferencedRepresentation(isGeoReferenced[0].mdGeoreferenceable!!)
+        } else if (!isGeoRectified.isNullOrEmpty()) {
+            mapGeoRectifiedRepresentation(isGeoRectified[0].mdGeorectified!!)
+        } else if (!isGeneral.isNullOrEmpty()) {
+            mapGeneralRepresentation(isGeneral[0].mdGridSpatialRepresentation!!)
+        } else {
+            null
+        }
     }
 
     private fun mapGeneralRepresentation(node: MDGridSpatialRepresentation): GridSpatialRepresentation {
@@ -143,7 +147,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             null,
             null,
             null,
-            null
+            null,
         )
     }
 
@@ -162,7 +166,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             KeyValue(pointId),
             null,
             null,
-            null
+            null,
         )
     }
 
@@ -179,7 +183,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             null,
             node.controlPointAvailability.boolean?.value ?: false,
             node.orientationParameterAvailability.boolean?.value ?: false,
-            node.georeferencedParameters.value?.value
+            node.georeferencedParameters.value?.value,
         )
     }
 
@@ -196,7 +200,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             AxesDimProperty(
                 KeyValue(nameId),
                 it.mdDimension?.dimensionSize?.value ?: 0,
-                it.mdDimension?.resolution?.scale?.value ?: 0f
+                it.mdDimension?.resolution?.scale?.value ?: 0f,
             )
         }
     }
@@ -213,7 +217,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         val pointInPixel: KeyValue?,
         val controlPointAvailability: Boolean?,
         val orientationParameterAvailability: Boolean?,
-        val geoRefParameters: String?
+        val geoRefParameters: String?,
     )
 
     data class AxesDimProperty(
@@ -231,61 +235,73 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
     private fun mapQuality(report: DQReport): Quality? {
         val info =
             // if (report.dqTemporalValidity != null) QualityInfo("temporalValidity", "", report.dqTemporalValidity)
-            if (report.dqTemporalConsistency != null) QualityInfo(
-                "temporalConsistency",
-                "7120",
-                report.dqTemporalConsistency
-            )
-//            else if (report.dqAccuracyOfATimeMeasurement != null) QualityInfo("", ", (report.)
-            else if (report.dqQuantitativeAttributeAccuracy != null) QualityInfo(
-                "quantitativeAttributeAccuracy",
-                "7127",
-                report.dqQuantitativeAttributeAccuracy
-            )
-            else if (report.dqNonQuantitativeAttributeAccuracy != null) QualityInfo(
-                "nonQuantitativeAttributeAccuracy",
-                "7126",
-                report.dqNonQuantitativeAttributeAccuracy
-            )
-            else if (report.dqThematicClassificationCorrectness != null) QualityInfo(
-                "thematicClassificationCorrectness",
-                "7125",
-                report.dqThematicClassificationCorrectness
-            )
-            else if (report.dqRelativeInternalPositionalAccuracy != null) QualityInfo(
-                "relativeInternalPositionalAccuracy",
-                "7128",
-                report.dqRelativeInternalPositionalAccuracy
-            )
-//            else if (report.dqGriddedDataPositionalAccuracy != null) QualityInfo("", ", (report.)
+            if (report.dqTemporalConsistency != null) {
+                QualityInfo(
+                    "temporalConsistency",
+                    "7120",
+                    report.dqTemporalConsistency,
+                )
+            } //            else if (report.dqAccuracyOfATimeMeasurement != null) QualityInfo("", ", (report.)
+            else if (report.dqQuantitativeAttributeAccuracy != null) {
+                QualityInfo(
+                    "quantitativeAttributeAccuracy",
+                    "7127",
+                    report.dqQuantitativeAttributeAccuracy,
+                )
+            } else if (report.dqNonQuantitativeAttributeAccuracy != null) {
+                QualityInfo(
+                    "nonQuantitativeAttributeAccuracy",
+                    "7126",
+                    report.dqNonQuantitativeAttributeAccuracy,
+                )
+            } else if (report.dqThematicClassificationCorrectness != null) {
+                QualityInfo(
+                    "thematicClassificationCorrectness",
+                    "7125",
+                    report.dqThematicClassificationCorrectness,
+                )
+            } else if (report.dqRelativeInternalPositionalAccuracy != null) {
+                QualityInfo(
+                    "relativeInternalPositionalAccuracy",
+                    "7128",
+                    report.dqRelativeInternalPositionalAccuracy,
+                )
+            } //            else if (report.dqGriddedDataPositionalAccuracy != null) QualityInfo("", ", (report.)
 //            else if (report.dqAbsoluteExternalPositionalAccuracy != null) QualityInfo("", ", (report.)
-            else if (report.dqTopologicalConsistency != null) QualityInfo(
-                "topologicalConsistency",
-                "7115",
-                report.dqTopologicalConsistency
-            )
-            else if (report.dqFormatConsistency != null) QualityInfo(
-                "formatConsistency",
-                "7114",
-                report.dqFormatConsistency
-            )
-            else if (report.dqDomainConsistency != null) QualityInfo(
-                "domainConsistency",
-                "7113",
-                report.dqDomainConsistency
-            )
-            else if (report.dqConceptualConsistency != null) QualityInfo(
-                "conceptualConsistency",
-                "7112",
-                report.dqConceptualConsistency
-            )
-//            else if (report.dqCompletenessOmission != null) QualityInfo("", ", (report.)
-            else if (report.dqCompletenessCommission != null) QualityInfo(
-                "completenessComission",
-                "7109",
-                report.dqCompletenessCommission
-            )
-            else return null
+            else if (report.dqTopologicalConsistency != null) {
+                QualityInfo(
+                    "topologicalConsistency",
+                    "7115",
+                    report.dqTopologicalConsistency,
+                )
+            } else if (report.dqFormatConsistency != null) {
+                QualityInfo(
+                    "formatConsistency",
+                    "7114",
+                    report.dqFormatConsistency,
+                )
+            } else if (report.dqDomainConsistency != null) {
+                QualityInfo(
+                    "domainConsistency",
+                    "7113",
+                    report.dqDomainConsistency,
+                )
+            } else if (report.dqConceptualConsistency != null) {
+                QualityInfo(
+                    "conceptualConsistency",
+                    "7112",
+                    report.dqConceptualConsistency,
+                )
+            } //            else if (report.dqCompletenessOmission != null) QualityInfo("", ", (report.)
+            else if (report.dqCompletenessCommission != null) {
+                QualityInfo(
+                    "completenessComission",
+                    "7109",
+                    report.dqCompletenessCommission,
+                )
+            } else {
+                return null
+            }
 
         if (info.element.nameOfMeasure == null) return null
 
@@ -331,7 +347,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             Resolution(
                 scales?.getOrNull(it),
                 groundResolutions?.getOrNull(it),
-                scanResolutions?.getOrNull(it)
+                scanResolutions?.getOrNull(it),
             )
         }
     }
@@ -347,7 +363,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                         CatalogInfo(
                             title,
                             it.citation.date.getOrNull(0)?.date?.date?.dateTime,
-                            it.citation.edition?.value
+                            it.citation.edition?.value,
                         )
                     } ?: emptyList()
             } ?: emptyList()
@@ -364,7 +380,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                         CatalogInfo(
                             title,
                             it.citation.date.getOrNull(0)?.date?.date?.dateTime,
-                            it.citation.edition?.value
+                            it.citation.edition?.value,
                         )
                     } ?: emptyList()
             } ?: emptyList()
@@ -374,13 +390,13 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         return PositionalAccuracy(
             getVerticalAbsoluteExternalPositionalAccuracy(),
             getHorizontalAbsoluteExternalPositionalAccuracy(),
-            getGriddedDataPositionalAccuracy()
+            getGriddedDataPositionalAccuracy(),
         )
     }
 
     fun getGeometryContexts(): List<GeometryContextInternal> {
         return metadata.spatialRepresentationInfo
-            ?.mapNotNull {it.mdGeometryContext }
+            ?.mapNotNull { it.mdGeometryContext }
             ?.map {
                 val feature = it.geometricFeature?.nominalFeature ?: it.geometricFeature?.ordinalFeature ?: it.geometricFeature?.scalarFeature ?: it.geometricFeature?.otherFeature
                 GeometryContextInternal(
@@ -392,11 +408,11 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     feature?.minValue?.value?.toDouble(),
                     feature?.maxValue?.value?.toDouble(),
                     feature?.units?.value,
-                    mapGeometryContextAttributes(feature?.featureAttributes?.featureAttributes?.attribute)
+                    mapGeometryContextAttributes(feature?.featureAttributes?.featureAttributes?.attribute),
                 )
             } ?: emptyList()
     }
-    
+
     fun getDatasetURI(): String? {
         return metadata.dataSetURI?.value
     }
@@ -406,7 +422,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             val item = attribute.RegularFeatureAttribute ?: attribute.OtherFeatureAttribute
             KeyValue(
                 item?.attributeCode?.value ?: item?.attributeContent?.value,
-                item?.attributeDescription?.value
+                item?.attributeDescription?.value,
             )
         } ?: emptyList()
     }
@@ -464,20 +480,20 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
 data class QualityInfo(
     val type: String,
     val codelist: String,
-    val element: DQReportElement
+    val element: DQReportElement,
 )
 
 data class CatalogInfo(
     val title: KeyValue?,
     val date: String?,
-    val edition: String?
+    val edition: String?,
 )
 
 data class Quality(
     val type: String,
     val measureType: KeyValue?,
     val value: Number?,
-    val parameter: String?
+    val parameter: String?,
 )
 
 data class VectorSpatialRepresentation(
@@ -489,7 +505,7 @@ data class VectorSpatialRepresentation(
 data class PositionalAccuracy(
     val vertical: Double?,
     val horizontal: Double?,
-    val griddedDataPositionalAccuracy: Double?
+    val griddedDataPositionalAccuracy: Double?,
 )
 
 data class GeometryContextInternal(

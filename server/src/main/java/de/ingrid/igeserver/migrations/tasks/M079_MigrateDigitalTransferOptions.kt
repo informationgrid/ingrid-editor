@@ -68,20 +68,26 @@ class M079_MigrateDigitalTransferOptions : MigrationBase("0.79") {
                         it as Document
                         try {
                             var changed = false
-                            it.data.get("digitalTransferOptions")?.forEach {options -> 
+                            it.data.get("digitalTransferOptions")?.forEach { options ->
                                 options as ObjectNode?
                                 val transferSize = options?.get("transferSize")
                                 if (transferSize != null && !transferSize.isNull) {
                                     changed = true
-                                    options.set<ObjectNode>("transferSize", jacksonObjectMapper().createObjectNode().apply { 
-                                        put("value", transferSize.asDouble())
-                                        set<ObjectNode>("unit", jacksonObjectMapper().createObjectNode().apply { 
-                                            put("key", "MB")
-                                        })
-                                    })
+                                    options.set<ObjectNode>(
+                                        "transferSize",
+                                        jacksonObjectMapper().createObjectNode().apply {
+                                            put("value", transferSize.asDouble())
+                                            set<ObjectNode>(
+                                                "unit",
+                                                jacksonObjectMapper().createObjectNode().apply {
+                                                    put("key", "MB")
+                                                },
+                                            )
+                                        },
+                                    )
                                 }
                             }
-                            
+
                             if (changed) {
                                 log.info("Migrated doc with dbID ${it.id}")
                                 docRepo.save(it)
@@ -92,7 +98,6 @@ class M079_MigrateDigitalTransferOptions : MigrationBase("0.79") {
                     }
                 page++
             } while (documents.size == pageSize)
-
         }
     }
 }

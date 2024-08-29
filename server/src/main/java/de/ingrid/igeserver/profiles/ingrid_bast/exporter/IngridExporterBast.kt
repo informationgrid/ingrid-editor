@@ -53,7 +53,7 @@ class IngridExporterBast(
             "json",
             listOf("ingrid-bast"),
             isPublic = true,
-            useForPublish = true
+            useForPublish = true,
         )
 }
 
@@ -62,7 +62,7 @@ class IngridIdfExporterBast(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
+    @Lazy documentService: DocumentService,
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
     override val typeInfo = ExportTypeInfo(
@@ -84,7 +84,7 @@ class IngridLuceneExporterBast(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
+    @Lazy documentService: DocumentService,
 ) :
     IngridLuceneExporter(
         codelistHandler,
@@ -106,8 +106,8 @@ class IngridLuceneExporterBast(
                         TransformerCache(),
                         data.doc,
                         documentService,
-                        data.tags
-                    )
+                        data.tags,
+                    ),
                 )
             }
 
@@ -118,12 +118,12 @@ class IngridLuceneExporterBast(
     override fun getTemplateForDoctype(
         doc: Document,
         catalog: Catalog,
-        options: ExportOptions
+        options: ExportOptions,
     ): Pair<String, Map<String, Any>> {
         return when (doc.type) {
             "InGridGeoDataset",
             "InGridGeoService",
-            "InGridDataCollection"
+            "InGridDataCollection",
             -> Pair(
                 "export/ingrid-bast/lucene/template-lucene-bast.jte",
                 getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
@@ -138,7 +138,7 @@ class IngridLuceneExporterBast(
 class IngridISOExporterBast(
     idfExporter: IngridIdfExporterBast,
     luceneExporter: IngridLuceneExporterBast,
-    documentWrapperRepository: DocumentWrapperRepository
+    documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridExporterBast(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
@@ -148,12 +148,11 @@ class IngridISOExporterBast(
         "Export von Bast Dokumenten in ISO für die Vorschau im Editor.",
         "text/xml",
         "xml",
-        listOf("ingrid-bast")
+        listOf("ingrid-bast"),
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val indexString = super.run(doc, catalogId, options) as String
         return getISOFromElasticDocumentString(indexString)
     }
-
 }

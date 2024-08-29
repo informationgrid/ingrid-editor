@@ -49,5 +49,4 @@ class M050_AddCreatedByRelation : MigrationBase("0.50") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

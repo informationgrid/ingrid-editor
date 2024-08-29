@@ -41,13 +41,13 @@ interface DataHistoryApi {
     @Operation(description = "Get the previous versions of datasets which match the given parameters. The results can also be sorted.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Datasets found")])
     fun find(
-            principal: Principal,
-            @Parameter(description = "Restrict the result to versions of the dataset with the specified id.") @RequestParam(value = "id", required = false) id: String?,
-            @Parameter(description = "Restrict the result to versions created by the specified user.") @RequestParam(value = "user", required = false) user: String?,
-            @Parameter(description = "Restrict the result to versions created by the specified action.") @RequestParam(value = "action", required = false) action: String?,
-            @Parameter(description = "Restrict the result to versions created after (and including) the specified date.") @RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate?,
-            @Parameter(description = "Restrict the result to versions created before (and including) the specified date.") @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate?,
-            @Parameter(description = "Sort by a given field.") @RequestParam(value = "sort", required = false) sort: String?,
-            @Parameter(description = "Define the sort order.") @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") sortOrder: String?
-        ): ResponseEntity<SearchResult<DataHistoryRecord>>
+        principal: Principal,
+        @Parameter(description = "Restrict the result to versions of the dataset with the specified id.") @RequestParam(value = "id", required = false) id: String?,
+        @Parameter(description = "Restrict the result to versions created by the specified user.") @RequestParam(value = "user", required = false) user: String?,
+        @Parameter(description = "Restrict the result to versions created by the specified action.") @RequestParam(value = "action", required = false) action: String?,
+        @Parameter(description = "Restrict the result to versions created after (and including) the specified date.") @RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: LocalDate?,
+        @Parameter(description = "Restrict the result to versions created before (and including) the specified date.") @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: LocalDate?,
+        @Parameter(description = "Sort by a given field.") @RequestParam(value = "sort", required = false) sort: String?,
+        @Parameter(description = "Define the sort order.") @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") sortOrder: String?,
+    ): ResponseEntity<SearchResult<DataHistoryRecord>>
 }

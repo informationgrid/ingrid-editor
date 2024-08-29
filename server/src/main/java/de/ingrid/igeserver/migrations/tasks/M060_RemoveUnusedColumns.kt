@@ -46,5 +46,4 @@ class M060_RemoveUnusedColumns : MigrationBase("0.60") {
             entityManager.createNativeQuery(sqlUpdate).executeUpdate()
         }
     }
-
 }

@@ -42,7 +42,6 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
     val horizontalPositionalAccuracy = model.data.absoluteExternalPositionalAccuracy?.horizontal
     val griddedDataPositionalAccuracy = model.data.absoluteExternalPositionalAccuracy?.griddedDataPositionalAccuracy
 
-
     val conformanceResult = model.data.conformanceResult ?: emptyList()
 
     data class DisplayableQuality(
@@ -79,7 +78,6 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
         "quantitativeAttributeAccuracy" to "DQ_QuantitativeAttributeAccuracy",
         "relativeInternalPositionalAccuracy" to "DQ_RelativeInternalPositionalAccuracy",
     )
-
 
     private fun getMeasureIdentification(type: String, measureKey: String?): String? {
         return when (type) {
@@ -235,7 +233,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
     fun getDisplayableQuality(quality: Quality): DisplayableQuality {
         return DisplayableQuality(
             nameOfMeasure = codelists.getValue(
-                qualitytypeCodelistMap.getOrDefault(quality._type, ""), quality.measureType
+                qualitytypeCodelistMap.getOrDefault(quality._type, ""), quality.measureType,
             ) ?: "",
             tagName = qualitytypeTagnameMap.getOrDefault(quality._type, ""),
             measureIdentification = getMeasureIdentification(quality._type, quality.measureType?.key),
@@ -247,7 +245,6 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
 
     val qualities = model.data.qualities?.map { getDisplayableQuality(it) } ?: emptyList()
 
-
     val lineageStatement = model.data.lineage?.statement
     val lineageProcessStepDescriptions =
         data.dataQualityInfo?.lineage?.source?.processStep?.description?.map { codelists.getValue("", it) }
@@ -258,6 +255,4 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
         !lineageStatement.isNullOrEmpty() || lineageProcessStepDescriptions.isNotEmpty() || lineageSourceDescriptions.isNotEmpty()
 
     val portrayalCatalogueCitations = model.data.portrayalCatalogueInfo?.citation ?: emptyList()
-
 }
-

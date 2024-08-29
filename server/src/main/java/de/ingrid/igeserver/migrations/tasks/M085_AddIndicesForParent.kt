@@ -31,7 +31,6 @@ import org.springframework.transaction.PlatformTransactionManager
 @Profile("ingrid")
 class M085_AddIndicesForParent : MigrationBase("0.85") {
 
-
     @Autowired
     lateinit var entityManager: EntityManager
 
@@ -44,7 +43,7 @@ class M085_AddIndicesForParent : MigrationBase("0.85") {
                 .createNativeQuery(
                     """
                     CREATE INDEX IF NOT EXISTS document_wrapper_parent_id_index ON document_wrapper (parent_id);
-                """.trimIndent()
+                    """.trimIndent(),
                 )
                 .executeUpdate()
         }

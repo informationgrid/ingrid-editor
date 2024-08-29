@@ -55,9 +55,11 @@ class Query {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var user: UserInfo? = null
-    
+
     val userId: String?
-        get() { return user?.userId }
+        get() {
+            return user?.userId
+        }
 
     @Column(nullable = false)
     var name: String? = null
@@ -81,5 +83,4 @@ class Query {
 
     @Column
     var global: Boolean = false
-
 }

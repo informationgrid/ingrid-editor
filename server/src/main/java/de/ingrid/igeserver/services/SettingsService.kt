@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class SettingsService(
-    val repoSettings: SettingsRepository
+    val repoSettings: SettingsRepository,
 ) {
 
 //    private val objectDataTypes = listOf("default", "dsc_ecs", "metadata", "IDF_1.0")
@@ -51,7 +51,7 @@ class SettingsService(
     fun getConnectionConfig(id: String): WithId? {
         return getIBusConfig().find { it.id!! == id } ?: getElasticConfig().find { it.id!! == id }
     }
-    
+
     fun setIBusConfig(config: List<IBusConfig>) {
         addIdIfNeeded(config)
         this.updateItem("ibus", config)
@@ -104,9 +104,8 @@ class SettingsService(
         val md5 = pd.hashCode().toString()
 
         return pd.apply { md5Hash = md5 }
-
     }
-    
+
     fun <T> getItemAsList(key: String): List<T> {
         val iBusJson = repoSettings.findByKey(key)?.value ?: return emptyList()
         return jacksonObjectMapper().convertValue(iBusJson, object : TypeReference<List<T>>() {})

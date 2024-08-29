@@ -28,6 +28,7 @@ class EIANumber : QuickFilter() {
     override val id = "eapNumber"
     override val label = ""
     override val filter = ""
+
     @Language("PostgreSQL")
     override fun filter(parameter: List<*>?) = """jsonb_path_exists(jsonb_strip_nulls(data), '$.eiaNumbers')
           AND EXISTS(SELECT

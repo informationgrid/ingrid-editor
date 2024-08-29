@@ -48,5 +48,4 @@ class M024_ModifyCatalogTable : MigrationBase("0.24") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

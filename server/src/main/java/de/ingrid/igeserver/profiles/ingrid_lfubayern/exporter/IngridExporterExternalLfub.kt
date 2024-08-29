@@ -56,7 +56,7 @@ class IngridExporterExternalLfub(
             "json",
             listOf("ingrid-lfubayern"),
             isPublic = false,
-            useForPublish = true
+            useForPublish = true,
         )
 }
 
@@ -65,7 +65,7 @@ class IngridIdfExporterExternalLfub(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
+    @Lazy documentService: DocumentService,
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? =
@@ -78,8 +78,6 @@ class IngridIdfExporterExternalLfub(
             removeOfflineAccessReferences(this.data)
         }
     }
-
-
 }
 
 @Service
@@ -117,8 +115,8 @@ class IngridLuceneExporterExternalLfub(
                             TransformerCache(),
                             data.doc,
                             documentService,
-                            data.tags
-                        )
+                            data.tags,
+                        ),
                     ) ?: super.getTransformer(data)
             }
 
@@ -131,7 +129,7 @@ class IngridLuceneExporterExternalLfub(
 class IngridISOExporterExternalLfub(
     idfExporter: IngridIdfExporterExternalLfub,
     luceneExporter: IngridLuceneExporterExternalLfub,
-    documentWrapperRepository: DocumentWrapperRepository
+    documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridExporterExternalLfub(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
@@ -141,7 +139,7 @@ class IngridISOExporterExternalLfub(
         "Export von LfuBayern Dokumenten in ISO für die Vorschau im Editor.",
         "text/xml",
         "xml",
-        listOf("ingrid-lfubayern")
+        listOf("ingrid-lfubayern"),
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
@@ -154,7 +152,7 @@ private fun anonymizeAddresses(model: IngridModel, uuid: String) {
     val anonymousAddress = AddressModel(
         uuid, "InGridOrganisationDoc", null, null, null, null,
         null, null, emptyList(), null,
-        Address(null, null, null, null, null, null, null), null, null
+        Address(null, null, null, null, null, null, null), null, null,
     )
     model.data.pointOfContact?.forEach {
         it.ref = anonymousAddress.uuid

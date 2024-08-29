@@ -26,12 +26,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class OgcApiResearchQueryFactory(
-    private val ogcApiSearchFilterList: List<OgcApiResearchQuery>
-)  {
+    private val ogcApiSearchFilterList: List<OgcApiResearchQuery>,
+) {
     fun getQuery(profile: CatalogProfile, ogcFilterParameter: OgcFilterParameter): ResearchQuery {
         try {
             val filter = ogcApiSearchFilterList.filter { ogcApiSearchFilter: OgcApiResearchQuery -> ogcApiSearchFilter.profiles.contains(profile.identifier) }
-            if (filter.size > 1 ) throw ConfigurationException.withReason("Record query is not possible. The profile '$profile' has more than one OgcApiResearchQuery.")
+            if (filter.size > 1) throw ConfigurationException.withReason("Record query is not possible. The profile '$profile' has more than one OgcApiResearchQuery.")
             return filter.first().createQuery(ogcFilterParameter)
         } catch (e: NoSuchElementException) {
             throw ConfigurationException.withReason("Record query is not possible. The profile '$profile' does not have a OgcApiResearchQuery.")

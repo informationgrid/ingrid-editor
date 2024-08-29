@@ -48,5 +48,4 @@ class M073_UvpDisableResponsibleUser : MigrationBase("0.73") {
             }
         }
     }
-
 }

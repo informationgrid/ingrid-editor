@@ -37,7 +37,7 @@ class UrlRequestService {
 
     fun getStatus(url: String): Int {
         return try {
-            log.debug("Check URL '${url}' ...")
+            log.debug("Check URL '$url' ...")
             val requestHead = createHttpRequest("HEAD", url)
             var status = httpRequestSyncStatusCode(requestHead)
             // if server responds with NOT ALLOWED try with GET request

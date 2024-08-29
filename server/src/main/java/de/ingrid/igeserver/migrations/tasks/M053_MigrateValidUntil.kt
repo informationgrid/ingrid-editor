@@ -48,9 +48,8 @@ class M053_MigrateValidUntil : MigrationBase("0.53") {
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
             entityManager.createNativeQuery(
-                """UPDATE document SET data = (replace(data\:\:text, 'expiryDate', 'validUntil')\:\:jsonb)"""
+                """UPDATE document SET data = (replace(data\:\:text, 'expiryDate', 'validUntil')\:\:jsonb)""",
             ).executeUpdate()
         }
     }
-
 }

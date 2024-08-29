@@ -31,7 +31,7 @@ data class OgcFilterParameter(
     val type: List<String>?,
     val bbox: List<Float>?,
     val datetime: String?,
-    val qParameter: List<String>?
+    val qParameter: List<String>?,
 )
 
 abstract class OgcApiResearchQuery {
@@ -41,7 +41,9 @@ abstract class OgcApiResearchQuery {
 
     abstract fun profileSpecificClauses(): MutableList<BoolFilter>?
 
-    fun profiles(): List<String> { return profiles }
+    fun profiles(): List<String> {
+        return profiles
+    }
 
     private fun ogcDateTimeConverter(datetime: String): List<String> {
         val dateArray = datetime.split("/")
@@ -54,7 +56,7 @@ abstract class OgcApiResearchQuery {
         try {
             instance = Instant.parse(date)
         } catch (ex: AccessDeniedException) {
-            throw ClientException.withReason("Malformed request syntax of DateTime:  $date")  // how to throw correct error ?
+            throw ClientException.withReason("Malformed request syntax of DateTime:  $date") // how to throw correct error ?
         }
 
         return instance.toString()
@@ -80,7 +82,7 @@ abstract class OgcApiResearchQuery {
         if (ogcParameter.type != null) {
             val typeList = mutableListOf<String>()
             for (name in ogcParameter.type) {
-                typeList.add("document_wrapper.type = '${name}'")
+                typeList.add("document_wrapper.type = '$name'")
             }
             clausesList.add(BoolFilter("OR", typeList, null, null, false))
         }
@@ -99,7 +101,7 @@ abstract class OgcApiResearchQuery {
         return ResearchQuery(
             term = null,
             clauses = BoolFilter(op = "AND", value = null, clauses = clauses(ogcFilterParameter), parameter = null, isFacet = true),
-            pagination = ResearchPaging(1, ogcParameter.queryLimit, ogcParameter.queryOffset)
+            pagination = ResearchPaging(1, ogcParameter.queryLimit, ogcParameter.queryOffset),
         )
     }
 }

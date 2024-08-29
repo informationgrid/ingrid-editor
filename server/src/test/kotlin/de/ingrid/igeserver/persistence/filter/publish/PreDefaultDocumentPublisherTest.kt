@@ -34,7 +34,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 
-
 class PreDefaultDocumentPublisherTest : FunSpec({
 
     val docService = mockk<DocumentService>()
@@ -51,7 +50,7 @@ class PreDefaultDocumentPublisherTest : FunSpec({
     fun mockRefWithTag(tags: List<String>) {
         every { docService.getDocumentFromCatalog(any(), any()) } returns DocumentData(
             DocumentWrapper().apply { this.tags = tags },
-            Document().apply { state = DOCUMENT_STATE.PUBLISHED }
+            Document().apply { state = DOCUMENT_STATE.PUBLISHED },
         )
     }
 
@@ -123,6 +122,4 @@ class PreDefaultDocumentPublisherTest : FunSpec({
             PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("amtsintern") })
         publisher.invoke(payload, DefaultContext("", "", null, null))
     }
-
-
 })

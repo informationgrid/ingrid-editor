@@ -33,7 +33,6 @@ import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import org.apache.commons.io.IOUtils
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -53,7 +52,7 @@ class UploadApiController(
     private val catalogService: CatalogService,
     private val storage: Storage,
     private val aclService: IgeAclService,
-    private val documentService: DocumentService
+    private val documentService: DocumentService,
 ) : UploadApi {
 
     private val fileInfos: ConcurrentHashMap<String, FileInfo> = ConcurrentHashMap()
@@ -98,7 +97,7 @@ class UploadApiController(
         // check if file exists already
         if (!replace) {
             if (storage.exists(catalogId, userID, docUuid, flowFilename)) {
-                log.info("File already exists: $flowFilename");
+                log.info("File already exists: $flowFilename")
                 val items = arrayOf(storage.getInfo(catalogId, userID, docUuid, flowFilename))
 
                 val uploadResponse =
@@ -135,7 +134,7 @@ class UploadApiController(
                         flowIdentifier,
                         flowTotalChunks,
                         flowTotalSize,
-                        replace
+                        replace,
                     )
                     log.info("Upload complete: $flowFilename")
                 } catch (ex: Exception) {
@@ -148,7 +147,6 @@ class UploadApiController(
         }
         return this.createUploadResponse(files)
     }
-
 
     /**
      * Create the upload response from a list of files
@@ -168,7 +166,7 @@ class UploadApiController(
         principal: Principal,
         docUuid: String,
         file: String,
-        conflictHandling: ConflictHandling
+        conflictHandling: ConflictHandling,
     ): ResponseEntity<UploadResponse> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         checkWritePermission(catalogId, docUuid, principal as Authentication)
@@ -186,14 +184,13 @@ class UploadApiController(
         val files = storage.extract(catalogId, userID, docUuid, file, conflictHandling)
 
         return this.createUploadResponse(files)
-
     }
 
     data class StorageParameters(
         val catalog: String,
         val userID: String,
         val datasetID: String,
-        val file: String
+        val file: String,
     )
 
     private val downloadHashCache = Collections.synchronizedMap(object : LinkedHashMap<String, StorageParameters>() {
@@ -206,7 +203,7 @@ class UploadApiController(
     override fun getFileDownloadHash(
         request: HttpServletRequest,
         principal: Principal,
-        docUuid: String
+        docUuid: String,
     ): ResponseEntity<String> {
         val requestURI = request.requestURI
 
@@ -217,8 +214,8 @@ class UploadApiController(
         checkReadPermission(catalogId, docUuid, principal as Authentication)
 
         val info = StorageParameters(catalogId, principal.getName(), docUuid, file)
-        if (storage.exists(info.catalog, info.userID, info.datasetID, info.file).not()
-            && storage.isArchived(info.catalog, info.datasetID, info.file).not()
+        if (storage.exists(info.catalog, info.userID, info.datasetID, info.file).not() &&
+            storage.isArchived(info.catalog, info.datasetID, info.file).not()
         ) {
             throw NotFoundException.withMissingResource(info.file, "file")
         }
@@ -230,7 +227,7 @@ class UploadApiController(
 
     override fun getFileByHash(
         request: HttpServletRequest,
-        hash: String
+        hash: String,
     ): ResponseEntity<StreamingResponseBody> {
         val params = downloadHashCache[hash] ?: throw NotFoundException.withMissingHash(hash)
         downloadHashCache.remove(hash)
@@ -252,7 +249,7 @@ class UploadApiController(
         response.header("Content-Disposition", "attachment; filename=\"${params.file}\"")
         response.header(
             "Content-Length",
-            storage.getInfo(params.catalog, params.userID, params.datasetID, params.file).size
+            storage.getInfo(params.catalog, params.userID, params.datasetID, params.file).size,
         )
         return ResponseEntity<StreamingResponseBody>(fileStream, HttpStatus.OK)
     }

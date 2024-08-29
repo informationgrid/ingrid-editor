@@ -47,7 +47,7 @@ class GeoserviceMapperLfUBayern(isoData: IsoImportData) : GeoserviceMapper(isoDa
                 if (entryId == null) KeyValue(null, it) else KeyValue(entryId)
             } ?: emptyList()
     }
-    
+
     fun getInternalKeywords(): List<KeyValue> {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "LfU Bayern Internal Keywords" }

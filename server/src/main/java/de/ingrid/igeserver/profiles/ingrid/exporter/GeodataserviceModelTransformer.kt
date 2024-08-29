@@ -44,7 +44,6 @@ open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) 
             if (model.data.service.systemEnvironment.isNullOrEmpty().not()) description += " Systemumgebung: ${model.data.service.systemEnvironment};"
             if (model.data.service.explanation.isNullOrEmpty().not()) description += " Erläuterung zum Fachbezug: ${model.data.service.explanation};"
 
-
             return description.removeSuffix(";")
         }
 
@@ -52,7 +51,4 @@ open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) 
     val history = data.service.implementationHistory
     val conformanceResult = model.data.conformanceResult ?: emptyList()
     val hasAccessConstraint = model.data.service.hasAccessConstraints ?: false
-
-
 }
-

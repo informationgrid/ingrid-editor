@@ -51,7 +51,7 @@ class OpenDataLuceneExporter(
     val codelistHandler: CodelistHandler,
     val config: Config,
     val catalogService: CatalogService,
-    @Lazy val documentService: DocumentService
+    @Lazy val documentService: DocumentService,
 ) {
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
@@ -76,7 +76,7 @@ class OpenDataLuceneExporter(
         return when (doc.type) {
             "InGridSpecialisedTask" -> Pair(
                 "export/ingrid/lucene/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options)
+                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options),
             )
             "FOLDER" -> Pair("export/ingrid/lucene/template-lucene-folder.jte", getMapper(OpenDataDocType.FOLDER, doc, catalog, options))
             else -> {
@@ -86,7 +86,6 @@ class OpenDataLuceneExporter(
     }
 
     private fun getMapper(type: OpenDataDocType, doc: Document, catalog: Catalog, options: ExportOptions): Map<String, Any> {
-
         val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier)
         val data = TransformerData(type, catalog.identifier, codelistTransformer, doc, options.tags)
 
@@ -97,10 +96,9 @@ class OpenDataLuceneExporter(
                 "model" to transformer,
                 "catalog" to catalog,
                 "partner" to mapCodelistValue("110", catalog.settings.config.partner),
-                "provider" to mapCodelistValue("111", catalog.settings.config.provider)
-            )
+                "provider" to mapCodelistValue("111", catalog.settings.config.provider),
+            ),
         )
-
     }
 
     fun getTransformer(data: TransformerData): Any {
@@ -112,7 +110,7 @@ class OpenDataLuceneExporter(
                     null,
                     data.doc,
                     documentService = documentService,
-                    config = config
+                    config = config,
                 )
             }
 
@@ -127,8 +125,8 @@ class OpenDataLuceneExporter(
                         TransformerCache(),
                         data.doc,
                         documentService,
-                        data.tags
-                    )
+                        data.tags,
+                    ),
                 )
             }
 
@@ -136,7 +134,7 @@ class OpenDataLuceneExporter(
                 FolderModelTransformer(
                     data.mapper.convertValue(data.doc, FolderModel::class.java),
                     data.catalogIdentifier,
-                    data.codelistTransformer
+                    data.codelistTransformer,
                 )
             }
         }
@@ -150,13 +148,15 @@ class OpenDataLuceneExporter(
         override fun writeUserContent(value: String?) {
             if (value == null) return
             super.writeUserContent(
-                JsonEscape.escapeJson(value)
+                JsonEscape.escapeJson(value),
             )
         }
     }
 
     enum class OpenDataDocType {
-        ADDRESS, DOCUMENT, FOLDER
+        ADDRESS,
+        DOCUMENT,
+        FOLDER,
     }
 }
 
@@ -166,5 +166,5 @@ data class TransformerData(
     val codelistTransformer: CodelistTransformer,
     val doc: Document,
     val tags: List<String>,
-    val mapper: ObjectMapper = ObjectMapper().registerKotlinModule()
+    val mapper: ObjectMapper = ObjectMapper().registerKotlinModule(),
 )

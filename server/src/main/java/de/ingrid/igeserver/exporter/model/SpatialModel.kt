@@ -54,7 +54,6 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
         }
 
         return "[[[${value.lon1}, ${value.lat1}], [${value.lon2}, ${value.lat1}], [${value.lon2}, ${value.lat2}], [${value.lon1}, ${value.lat2}], [${value.lon1}, ${value.lat1}]]]"
-
     }
 
     private fun getWktCoordinates(): String? {
@@ -78,10 +77,11 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
     }
 
     fun getWktCoordinatesISO(): String? =
-        if (this.wkt != null)
+        if (this.wkt != null) {
             convertWktToGml32(this.wkt)
-        else null
-
+        } else {
+            null
+        }
 
     private fun getWktType(): String? {
         if (this.wkt != null) {

@@ -19,8 +19,8 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.export_catalog
 
-import de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat
 import de.ingrid.igeserver.configuration.ConfigurationException
+import de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat
 import org.springframework.stereotype.Service
 
 @Service

@@ -74,15 +74,20 @@ open class AddressModelTransformer(
     fun getPositionName(): String? =
         if (displayAddress.data.getString("positionName")
                 .isNullOrEmpty()
-        ) determinePositionNameFromAncestors() else displayAddress.data.getString("positionName")
-
+        ) {
+            determinePositionNameFromAncestors()
+        } else {
+            displayAddress.data.getString("positionName")
+        }
 
     private fun determineDisplayAddress(): Document {
         val nonHiddenAddress = ancestorAddressesIncludingSelf
 
         return if (nonHiddenAddress.size > 0) {
             nonHiddenAddress.last().document
-        } else doc
+        } else {
+            doc
+        }
     }
 
     fun getHierarchy(): List<AddressModelTransformer> =
@@ -126,7 +131,8 @@ open class AddressModelTransformer(
         listOfNotNull(
             // "Postbox" is a fixed string needed for portal display
             this.poBox?.let { "Postbox $it" },
-            this.zipPoBox?.let { it + this.city?.let { " $it" } }).filter { it.isNotEmpty() }
+            this.zipPoBox?.let { it + this.city?.let { " $it" } },
+        ).filter { it.isNotEmpty() }
             .joinToString(", ")
     val telephone = contactType("1")
     val fax = contactType("2")
@@ -172,13 +178,17 @@ open class AddressModelTransformer(
                 doc.data.get("description")?.textValue(),
                 if (doc.data.has("graphicOverviews")) {
                     val fileName = doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")
-                    if (fileName?.get("asLink")?.booleanValue() == true) fileName.get("uri")?.textValue() // TODO encode uri
-                    else "${config?.uploadExternalUrl}$catalogIdentifier/${doc.uuid}/${fileName?.get("uri")?.textValue()}"
-                } else null
+                    if (fileName?.get("asLink")?.booleanValue() == true) {
+                        fileName.get("uri")?.textValue() // TODO encode uri
+                    } else {
+                        "${config?.uploadExternalUrl}$catalogIdentifier/${doc.uuid}/${fileName?.get("uri")?.textValue()}"
+                    }
+                } else {
+                    null
+                },
             )
         }.filterNotNull()
     }
-
 
     /**
      *  Get all published children of address including.
@@ -193,7 +203,7 @@ open class AddressModelTransformer(
                     it.wrapper.uuid,
                     getAddressDocType(it.wrapper.type),
                     getIndividualName(it.document),
-                    it.document.data.getString("organization")
+                    it.document.data.getString("organization"),
                 )
             }.toMutableList()
     }
@@ -207,7 +217,6 @@ open class AddressModelTransformer(
         } catch (e: Exception) {
             null
         }
-
     }
 
     fun getAncestorAddressesIncludingSelf(id: Int?): MutableList<DocumentData> {
@@ -239,7 +248,6 @@ open class AddressModelTransformer(
     private fun contactType(type: String): String? = displayAddress.data.get("contact")
         ?.firstOrNull { it.get("type")?.getString("key") == type }
         ?.getString("connection")
-
 }
 
 data class ObjectReference(
@@ -247,12 +255,12 @@ data class ObjectReference(
     val name: String,
     val type: String,
     val description: String?,
-    val graphicOverview: String?
+    val graphicOverview: String?,
 )
 
 data class SubordinatedParty(
     val uuid: String,
     val type: Int,
     val individualName: String?,
-    val organisationName: String?
+    val organisationName: String?,
 )

@@ -79,7 +79,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         longitude2 = 10.336552045994994,
                         latitude2 = 53.74180783201885,
                         name = "Landschaftsform",
-                        type = "free"
+                        type = "free",
                     ),
                     LocationBean(
                         longitude1 = 9.67106756436431,
@@ -87,7 +87,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         longitude2 = 10.299690875096376,
                         latitude2 = 53.722265833076975,
                         name = "Bauwerke",
-                        type = "free"
+                        type = "free",
                     ),
                     LocationBean(
                         longitude1 = 10.113665839720433,
@@ -95,7 +95,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         longitude2 = 10.19057884115737,
                         latitude2 = 53.65732655156777,
                         name = "Unsichtbares_Objekt",
-                        type = "free"
+                        type = "free",
                     ),
                     LocationBean(
                         longitude1 = 9.785231755556373,
@@ -103,7 +103,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         longitude2 = 10.25634551900814,
                         latitude2 = 53.598858415633444,
                         name = "Sehenswerte_Objekte",
-                        type = "free"
+                        type = "free",
                     ),
                     LocationBean(
                         longitude1 = 9.67477416867641,
@@ -111,7 +111,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         longitude2 = 10.344173832806435,
                         latitude2 = 53.7278730217161,
                         name = "Bergbau",
-                        type = "free"
+                        type = "free",
                     ),
                     LocationBean(
                         longitude1 = 9.787805791266315,
@@ -119,7 +119,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         longitude2 = 10.407430505549277,
                         latitude2 = 53.7408895104767,
                         name = "Wasser_und_Wasserbau",
-                        type = "free"
+                        type = "free",
                     ),
                     LocationBean(
                         longitude1 = 9.734985189819458,
@@ -127,7 +127,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         longitude2 = 10.27983875300683,
                         latitude2 = 53.70619674206265,
                         name = "GeologischeObjekte",
-                        type = "free"
+                        type = "free",
                     ),
                     LocationBean(
                         longitude1 = 9.798392734190172,
@@ -135,7 +135,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         longitude2 = 10.002871458386743,
                         latitude2 = 53.59727214182555,
                         name = "Stein_und_Fels",
-                        type = "free"
+                        type = "free",
                     ),
                     LocationBean(
                         longitude1 = 9.76557384658799,
@@ -143,12 +143,12 @@ class CapabilitiesServiceTest : ShouldSpec({
                         longitude2 = 10.302925462393098,
                         latitude2 = 53.72715089146115,
                         name = "Geotope",
-                        type = "free"
-                    )
+                        type = "free",
+                    ),
                 )
                 spatialReferenceSystems shouldContainExactly listOf(
                     KeyValue("25832", "EPSG 25832: ETRS89 / UTM Zone 32N"),
-                    KeyValue("4326", "EPSG 4326: WGS 84 / geographisch")
+                    KeyValue("4326", "EPSG 4326: WGS 84 / geographisch"),
                 )
                 address shouldBe AddressBean(
                     _state = "W",
@@ -160,37 +160,39 @@ class CapabilitiesServiceTest : ShouldSpec({
                     postcode = "21109",
                     country = KeyValue("276", "Germany"),
                     state = KeyValue("6", "Hamburg"),
-                    phone = "+49 40 42826 5450"
+                    phone = "+49 40 42826 5450",
                 )
                 operations shouldContainExactly listOf(
                     OperationBean(
                         listOf(
                             "http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx?",
-                            "http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx"
+                            "http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx",
                         ),
                         listOf(7, 8),
                         "GetCapabilities",
-                        KeyValue("1", "GetCapabilities")
+                        KeyValue("1", "GetCapabilities"),
                     ),
                     OperationBean(
                         listOf(
                             "http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx?",
-                            "http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx"
-                        ), listOf(7, 8), "DescribeFeatureType", KeyValue("2", "DescribeFeatureType")
+                            "http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx",
+                        ),
+                        listOf(7, 8), "DescribeFeatureType", KeyValue("2", "DescribeFeatureType"),
                     ),
                     OperationBean(
                         listOf(
                             "http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx?",
-                            "http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx"
-                        ), listOf(7, 8), "GetFeature", KeyValue("3", "GetFeature")
-                    )
+                            "http://gateway.hamburg.de/OGCFassade/HH_WFS_Geotourismus.aspx",
+                        ),
+                        listOf(7, 8), "GetFeature", KeyValue("3", "GetFeature"),
+                    ),
                 )
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "www.geoinfo.hamburg.de",
                         KeyValue(null, "Informationen im Internet"),
-                        "www.geoinfo.hamburg.de"
-                    )
+                        "www.geoinfo.hamburg.de",
+                    ),
                 )
                 timeSpan shouldBe null
                 conformities shouldBe emptyList()
@@ -212,7 +214,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                 versions shouldContainExactly listOf(KeyValue("2", "OGC:WFS 2.0"), KeyValue("1", "OGC:WFS 1.1.0"))
                 fees shouldBe KeyValue(
                     "25",
-                    "Datenlizenz Deutschland – Zero – Version 2.0 (https://www.govdata.de/dl-de/zero-2-0)"
+                    "Datenlizenz Deutschland – Zero – Version 2.0 (https://www.govdata.de/dl-de/zero-2-0)",
                 )
                 accessConstraints shouldContainExactly listOf(KeyValue(null, "Es gelten keine Beschränkungen."))
                 boundingBoxes shouldContainExactly listOf(
@@ -222,8 +224,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                         51.946050,
                         7.045330,
                         "gis:moer_stolpersteine",
-                        "free"
-                    )
+                        "free",
+                    ),
                 )
                 spatialReferenceSystems shouldContainExactly listOf(
                     KeyValue("25832", "EPSG 25832: ETRS89 / UTM Zone 32N"),
@@ -241,37 +243,39 @@ class CapabilitiesServiceTest : ShouldSpec({
                     postcode = "47475",
                     country = KeyValue("276", "Germany"),
                     state = KeyValue(null, "NRW"),
-                    phone = "+49(0)2842/9070-110"
+                    phone = "+49(0)2842/9070-110",
                 )
                 operations shouldContainExactly listOf(
                     OperationBean(
                         listOf(
                             "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?",
-                            "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine"
+                            "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine",
                         ),
                         listOf(7, 8),
                         "GetCapabilities",
-                        KeyValue("1", "GetCapabilities")
+                        KeyValue("1", "GetCapabilities"),
                     ),
                     OperationBean(
                         listOf(
                             "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?",
-                            "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine"
-                        ), listOf(7, 8), "DescribeFeatureType", KeyValue("2", "DescribeFeatureType")
+                            "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine",
+                        ),
+                        listOf(7, 8), "DescribeFeatureType", KeyValue("2", "DescribeFeatureType"),
                     ),
                     OperationBean(
                         listOf(
                             "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine?",
-                            "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine"
-                        ), listOf(7, 8), "GetFeature", KeyValue("3", "GetFeature")
-                    )
+                            "https://geoservices.krzn.de/security-proxy/services/wfs_moer_stolpersteine",
+                        ),
+                        listOf(7, 8), "GetFeature", KeyValue("3", "GetFeature"),
+                    ),
                 )
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "https://geoservices.krzn.de",
                         KeyValue(null, "Informationen im Internet"),
-                        "https://geoservices.krzn.de"
-                    )
+                        "https://geoservices.krzn.de",
+                    ),
                 )
                 timeSpan shouldBe null
                 conformities shouldBe emptyList()
@@ -301,7 +305,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     "lakes",
                     "boundaries",
                     "water",
-                    "hydro"
+                    "hydro",
                 )
                 serviceType shouldBe "WFS"
                 dataServiceType shouldBe "2" // since SpatialDataServiceType is set
@@ -315,7 +319,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                         longitude2 = 180.0,
                         latitude2 = 90.0,
                         name = "The Great Northern Forest",
-                        type = "free"
+                        type = "free",
                     ),
                     LocationBean(
                         longitude1 = -180.0,
@@ -323,15 +327,15 @@ class CapabilitiesServiceTest : ShouldSpec({
                         longitude2 = 180.0,
                         latitude2 = 90.0,
                         name = "The Great Northern Lakes",
-                        type = "free"
-                    )
+                        type = "free",
+                    ),
                 )
                 spatialReferenceSystems shouldContainExactly listOf(
                     KeyValue(null, "urn:ogc:def:crs:EPSG::6269"),
                     KeyValue(null, "urn:ogc:def:crs:EPSG::32615"),
                     KeyValue(null, "urn:ogc:def:crs:EPSG::32616"),
                     KeyValue(null, "urn:ogc:def:crs:EPSG::32617"),
-                    KeyValue(null, "urn:ogc:def:crs:EPSG::32618")
+                    KeyValue(null, "urn:ogc:def:crs:EPSG::32618"),
                 )
                 address shouldBe AddressBean(
                     _state = "W",
@@ -343,48 +347,52 @@ class CapabilitiesServiceTest : ShouldSpec({
                     postcode = "12345",
                     country = KeyValue(null, "USA"),
                     state = KeyValue(null, "Rural County"),
-                    phone = "1.800.BIG.WOOD"
+                    phone = "1.800.BIG.WOOD",
                 )
                 operations shouldContainExactly listOf(
                     OperationBean(
                         listOf(
                             "http://www.BlueOx.org/wfs/wfs.cgi?",
-                            "http://www.BlueOx.org/wfs/wfs.cgi"
+                            "http://www.BlueOx.org/wfs/wfs.cgi",
                         ),
                         listOf(7, 8),
                         "GetCapabilities",
-                        KeyValue("1", "GetCapabilities")
+                        KeyValue("1", "GetCapabilities"),
                     ),
                     OperationBean(
                         listOf(
                             "http://www.BlueOx.org/wfs/wfs.cgi?",
-                            "http://www.BlueOx.org/wfs/wfs.cgi"
-                        ), listOf(7, 8), "DescribeFeatureType", KeyValue("2", "DescribeFeatureType")
+                            "http://www.BlueOx.org/wfs/wfs.cgi",
+                        ),
+                        listOf(7, 8), "DescribeFeatureType", KeyValue("2", "DescribeFeatureType"),
                     ),
                     OperationBean(
                         listOf(
                             "http://www.BlueOx.org/wfs/wfs.cgi?",
-                            "http://www.BlueOx.org/wfs/wfs.cgi"
-                        ), listOf(7, 8), "GetFeature", KeyValue("3", "GetFeature")
+                            "http://www.BlueOx.org/wfs/wfs.cgi",
+                        ),
+                        listOf(7, 8), "GetFeature", KeyValue("3", "GetFeature"),
                     ),
                     OperationBean(
                         listOf(
                             "http://www.BlueOx.org/wfs/wfs.cgi?",
-                            "http://www.BlueOx.org/wfs/wfs.cgi"
-                        ), listOf(7, 8), "LockFeature", KeyValue("4", "LockFeature")
+                            "http://www.BlueOx.org/wfs/wfs.cgi",
+                        ),
+                        listOf(7, 8), "LockFeature", KeyValue("4", "LockFeature"),
                     ),
                     OperationBean(
                         listOf(
-                            "http://www.BlueOx.org/wfs/wfs.cgi"
-                        ), listOf(8), "Transaction", KeyValue("5", "Transaction")
-                    )
+                            "http://www.BlueOx.org/wfs/wfs.cgi",
+                        ),
+                        listOf(8), "Transaction", KeyValue("5", "Transaction"),
+                    ),
                 )
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://www.BlueOx.org/contactUs",
                         KeyValue(null, "Informationen im Internet"),
-                        "http://www.BlueOx.org/contactUs"
-                    )
+                        "http://www.BlueOx.org/contactUs",
+                    ),
                 )
                 timeSpan shouldBe null
                 conformities shouldBe listOf(ConformityBean(3, "Please enter a title", "2006-04-22"))
@@ -392,8 +400,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                     UrlBean(
                         "http://my-download-resource-locator",
                         KeyValue("5066", "Verweis zu Dienst"),
-                        "http://my-download-resource-locator"
-                    )
+                        "http://my-download-resource-locator",
+                    ),
                 )
                 timeReference shouldBe listOf(TimeReferenceBean(1, formatter.parse("2007-11-13")))
             }
@@ -407,7 +415,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                 title shouldBe "Acme Corp. Map Server"
                 description shouldBe "WMT Map Server maintained by Acme Corporation.  Contact: webmaster@wmt.acme.com.  High-quality maps showing roadrunner nests and possible ambush locations."
                 keywords shouldContainExactly listOf(
-                    "bird", "roadrunner", "ambush", "road", "transportation", "atlas", "river", "canal", "waterway"
+                    "bird", "roadrunner", "ambush", "road", "transportation", "atlas", "river", "canal", "waterway",
                 )
                 serviceType shouldBe "WMS"
                 dataServiceType shouldBe "2"
@@ -446,7 +454,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                 )*/
                 spatialReferenceSystems shouldContainExactly listOf(
                     KeyValue(null, "EPSG:26986"),
-                    KeyValue("4326", "EPSG 4326: WGS 84 / geographisch")
+                    KeyValue("4326", "EPSG 4326: WGS 84 / geographisch"),
                 )
                 address shouldBe AddressBean(
                     _state = "W",
@@ -459,7 +467,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     postcode = "20771",
                     country = KeyValue(null, "USA"),
                     state = KeyValue(null, "MD"),
-                    phone = "+1 301 286-1569"
+                    phone = "+1 301 286-1569",
                 )
                 operations?.shouldHaveSize(3)
                 operations shouldContainExactly listOf(
@@ -467,22 +475,22 @@ class CapabilitiesServiceTest : ShouldSpec({
                         listOf("http://hostname:port/path"),
                         listOf(7),
                         "GetCapabilities",
-                        KeyValue("1", "GetCapabilities")
+                        KeyValue("1", "GetCapabilities"),
                     ),
                     OperationBean(listOf("http://hostname:port/path"), listOf(7), "GetMap", KeyValue("2", "GetMap")),
                     OperationBean(
                         listOf("http://hostname:port/path"),
                         listOf(7),
                         "GetFeatureInfo",
-                        KeyValue("3", "GetFeatureInfo")
+                        KeyValue("3", "GetFeatureInfo"),
                     ),
                 )
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://hostname/",
                         KeyValue(null, "Informationen im Internet"),
-                        "http://hostname/"
-                    )
+                        "http://hostname/",
+                    ),
                 )
                 timeSpan shouldBe null
                 /*conformities shouldBe listOf(
@@ -522,7 +530,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     "atlas",
                     "river",
                     "canal",
-                    "waterway"
+                    "waterway",
                 )
                 serviceType shouldBe "WMS"
                 dataServiceType shouldBe "2"
@@ -536,12 +544,12 @@ class CapabilitiesServiceTest : ShouldSpec({
                         90.0,
                         180.0,
                         "Raumbezug von: Acme Corp. Map Server",
-                        "free"
-                    )
+                        "free",
+                    ),
                 )
                 spatialReferenceSystems shouldContainExactly listOf(
                     KeyValue("84", "CRS 84: CRS 84 / mathematisch"),
-                    KeyValue("4230", "EPSG 4230: ED50 / geographisch")
+                    KeyValue("4230", "EPSG 4230: ED50 / geographisch"),
                 )
                 coupledResources shouldContainExactly listOf(
                     GeoDataset(
@@ -552,9 +560,9 @@ class CapabilitiesServiceTest : ShouldSpec({
                         spatialSystems = listOf(
                             KeyValue(null, "EPSG:26986"),
                             KeyValue("84", "CRS 84: CRS 84 / mathematisch"),
-                            KeyValue("4230", "EPSG 4230: ED50 / geographisch")
+                            KeyValue("4230", "EPSG 4230: ED50 / geographisch"),
                         ),
-                        keywords = listOf("bird", "roadrunner", "ambush")
+                        keywords = listOf("bird", "roadrunner", "ambush"),
                     ),
                     GeoDataset(
                         null,
@@ -567,16 +575,16 @@ class CapabilitiesServiceTest : ShouldSpec({
                                 90.0,
                                 180.0,
                                 "Raumbezug von: Acme Corp. Map Server",
-                                "free"
-                            )
+                                "free",
+                            ),
                         ),
                         description = "Roads at a scale of 1 to 1 million.",
                         spatialSystems = listOf(
                             KeyValue("84", "CRS 84: CRS 84 / mathematisch"),
-                            KeyValue("4230", "EPSG 4230: ED50 / geographisch")
+                            KeyValue("4230", "EPSG 4230: ED50 / geographisch"),
                         ),
-                        keywords = listOf("road", "transportation", "atlas", "bird", "roadrunner", "ambush")
-                    )
+                        keywords = listOf("road", "transportation", "atlas", "bird", "roadrunner", "ambush"),
+                    ),
                 )
                 address shouldBe AddressBean(
                     _state = "W",
@@ -589,48 +597,48 @@ class CapabilitiesServiceTest : ShouldSpec({
                     postcode = "20771",
                     country = KeyValue(null, "USA"),
                     state = KeyValue(null, "MD"),
-                    phone = "+1 301 555-1212"
+                    phone = "+1 301 555-1212",
                 )
                 operations shouldContainExactly listOf(
                     OperationBean(
                         listOf("http://hostname/path?"),
                         listOf(7),
                         "GetCapabilities",
-                        KeyValue("1", "GetCapabilities")
+                        KeyValue("1", "GetCapabilities"),
                     ),
                     OperationBean(listOf("http://hostname/path?"), listOf(7), "GetMap", KeyValue("2", "GetMap")),
                     OperationBean(
                         listOf("http://hostname/path?"),
                         listOf(7),
                         "GetFeatureInfo",
-                        KeyValue("3", "GetFeatureInfo")
+                        KeyValue("3", "GetFeatureInfo"),
                     ),
                 )
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://hostname/my-online-resource",
                         KeyValue(null, "Informationen im Internet"),
-                        "http://hostname/my-online-resource"
-                    )
+                        "http://hostname/my-online-resource",
+                    ),
                 )
                 timeSpan shouldBe null
                 conformities shouldBe listOf(
                     ConformityBean(
                         level = 3,
                         specification = "Verordening (EG) nr. 976/2009 van de Commissie van 19 oktober 2009 tot uitvoering van Richtlijn 2007/2/EG van het Europees Parlement en de Raad wat betreft de netwerkdiensten",
-                        "2009-10-19"
-                    )
+                        "2009-10-19",
+                    ),
                 )
                 resourceLocators shouldBe listOf(
                     UrlBean(
                         url = "http://ogc.beta.agiv.be/ogc/wms/vrbgINSP?",
                         type = KeyValue("5066", "Verweis zu Dienst"),
-                        title = "http://ogc.beta.agiv.be/ogc/wms/vrbgINSP?"
-                    )
+                        title = "http://ogc.beta.agiv.be/ogc/wms/vrbgINSP?",
+                    ),
                 )
                 timeReference shouldBe listOf(
                     TimeReferenceBean(1, formatter.parse("2003-01-01")),
-                    TimeReferenceBean(2, formatter.parse("2003-05-10"))
+                    TimeReferenceBean(2, formatter.parse("2003-05-10")),
                 )
             }
         }
@@ -643,7 +651,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                 title shouldBe "deegree WCS"
                 description shouldBe "deegree WCS being OGC WCS 1.0.0 reference implementation"
                 keywords shouldContainExactly listOf(
-                    "deegree", "DGM", "DGM25"
+                    "deegree", "DGM", "DGM25",
                 )
                 serviceType shouldBe "WCS"
                 dataServiceType shouldBe "3"
@@ -661,7 +669,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                                         "free"
                                     )
                                 )
-                */
+                 */
                 /*spatialReferenceSystems shouldContainExactly listOf(
                     KeyValue("84", "CRS 84: CRS 84 / mathematisch"),
                     KeyValue("4230", "EPSG 4230: ED50 / geographisch")
@@ -675,7 +683,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     postcode = "14777",
                     country = KeyValue("276", "Deutschland"),
                     state = KeyValue("4", "Brandenburg"),
-                    phone = "+49 341 5634369"
+                    phone = "+49 341 5634369",
                 )
 
                 operations?.shouldHaveSize(3)
@@ -683,28 +691,31 @@ class CapabilitiesServiceTest : ShouldSpec({
                     OperationBean(
                         listOf(
                             "http://localhost:8080/wpvs/services?",
-                            "http://localhost:8080/wpvs/services?"
-                        ), listOf(7, 8), "GetCapabilities", KeyValue("1", "GetCapabilities")
+                            "http://localhost:8080/wpvs/services?",
+                        ),
+                        listOf(7, 8), "GetCapabilities", KeyValue("1", "GetCapabilities"),
                     ),
                     OperationBean(
                         listOf(
                             "http://localhost:8080/wpvs/services?",
-                            "http://localhost:8080/wpvs/services?"
-                        ), listOf(7, 8), "DescribeCoverage", KeyValue(null, "DescribeCoverage")
+                            "http://localhost:8080/wpvs/services?",
+                        ),
+                        listOf(7, 8), "DescribeCoverage", KeyValue(null, "DescribeCoverage"),
                     ),
                     OperationBean(
                         listOf(
                             "http://localhost:8080/wpvs/services?",
-                            "http://localhost:8080/wpvs/services?"
-                        ), listOf(7, 8), "GetCoverage", KeyValue(null, "GetCoverage")
+                            "http://localhost:8080/wpvs/services?",
+                        ),
+                        listOf(7, 8), "GetCoverage", KeyValue(null, "GetCoverage"),
                     ),
                 )
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://www.geodatenzentrum.de",
                         KeyValue(null, "Informationen im Internet"),
-                        "http://www.geodatenzentrum.de"
-                    )
+                        "http://www.geodatenzentrum.de",
+                    ),
                 )
                 /*timeSpan null
                 conformities shouldBe listOf(
@@ -734,7 +745,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                 title shouldBe "CubeWerx Demonstation WCS"
                 description shouldBe "A demonstration server used to illustrate CubeWerx's compilance with the Web Coverage Service 1.1.0 implementation specification"
                 keywords shouldContainExactly listOf(
-                    "Web Coverage Service", "06-083", "CubeWerx", "GeoTIFF", "Imagery"
+                    "Web Coverage Service", "06-083", "CubeWerx", "GeoTIFF", "Imagery",
                 )
                 serviceType shouldBe "WCS"
                 dataServiceType shouldBe "3"
@@ -753,29 +764,29 @@ class CapabilitiesServiceTest : ShouldSpec({
                     country = KeyValue(null, "Canada"),
                     state = KeyValue(null, "Quebec"),
                     phone = "123-456-7890",
-                    email = "pvretano[at]cubewerx[dot]com"
+                    email = "pvretano[at]cubewerx[dot]com",
                 )
 
                 operations shouldContainExactly listOf(
                     OperationBean(
                         listOf("http://demo.cubewerx.com/demo/cubeserv/cubeserv.cgi?service=WMS&"),
-                        listOf(7), "GetCapabilities", KeyValue("1", "GetCapabilities")
+                        listOf(7), "GetCapabilities", KeyValue("1", "GetCapabilities"),
                     ),
                     OperationBean(
                         listOf("http://demo.cubewerx.com/demo/cubeserv/cubeserv.cgi?service=WMS&"),
-                        listOf(7), "DescribeCoverage", KeyValue(null, "DescribeCoverage")
+                        listOf(7), "DescribeCoverage", KeyValue(null, "DescribeCoverage"),
                     ),
                     OperationBean(
                         listOf("http://demo.cubewerx.com/demo/cubeserv/cubeserv.cgi?service=WMS&"),
-                        listOf(7), "GetCoverage", KeyValue(null, "GetCoverage")
+                        listOf(7), "GetCoverage", KeyValue(null, "GetCoverage"),
                     ),
                 )
                 onlineResources shouldContainExactly listOf(
                     UrlBean(
                         "http://www.cubewerx.com/~pvretano",
                         KeyValue(null, "Informationen im Internet"),
-                        "http://www.cubewerx.com/~pvretano"
-                    )
+                        "http://www.cubewerx.com/~pvretano",
+                    ),
                 )
                 timeSpan shouldBe null
                 conformities shouldBe emptyList()
@@ -806,18 +817,18 @@ class CapabilitiesServiceTest : ShouldSpec({
                     "DGM200",
                     "Digitales Gelände Modell 200 m",
                     "Digital Terrain Model Grid Width 200 m",
-                    "DEM"
+                    "DEM",
                 )
                 serviceType shouldBe "WCS"
                 dataServiceType shouldBe "3"
                 versions shouldContainExactly listOf(
                     KeyValue(null, "OGC:WCS 2.0.1"),
                     KeyValue(null, "OGC:WCS 1.1.1"),
-                    KeyValue(null, "OGC:WCS 1.1.0")
+                    KeyValue(null, "OGC:WCS 1.1.0"),
                 )
                 fees shouldBe KeyValue(
                     null,
-                    "Diese Daten können geldleistungsfrei gemäß der Verordnung zur Festlegung der Nutzungsbestimmungen für die Bereitstellung von Geodaten des Bundes (GeoNutzV) vom 19. März 2013 (Bundesgesetzblatt Jahrgang 2013 Teil I Nr. 14) genutzt werden, siehe https://sg.geodatenzentrum.de/web_public/gdz/lizenz/geonutzv.pdf. Der Quellenvermerk ist zu beachten. | Quellenvermerk: © GeoBasis-DE / BKG <Jahr>"
+                    "Diese Daten können geldleistungsfrei gemäß der Verordnung zur Festlegung der Nutzungsbestimmungen für die Bereitstellung von Geodaten des Bundes (GeoNutzV) vom 19. März 2013 (Bundesgesetzblatt Jahrgang 2013 Teil I Nr. 14) genutzt werden, siehe https://sg.geodatenzentrum.de/web_public/gdz/lizenz/geonutzv.pdf. Der Quellenvermerk ist zu beachten. | Quellenvermerk: © GeoBasis-DE / BKG <Jahr>",
                 )
                 accessConstraints shouldContainExactly listOf(KeyValue(null, "Es gelten keine Zugriffsbeschränkungen."))
                 boundingBoxes shouldContainExactly listOf(
@@ -827,8 +838,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                         55.0611433089022,
                         15.57402035157314,
                         "Grid Coverage",
-                        "free"
-                    )
+                        "free",
+                    ),
                 )
                 spatialReferenceSystems?.shouldHaveSize(20)
                 address shouldBe AddressBean(
@@ -840,21 +851,21 @@ class CapabilitiesServiceTest : ShouldSpec({
                     country = KeyValue("276", "Deutschland"),
                     state = KeyValue(null, "xxx"),
                     phone = "+49 (0) 123 456 789",
-                    email = "dlz[at]my-domain.net"
+                    email = "dlz[at]my-domain.net",
                 )
 
                 operations shouldContainExactly listOf(
                     OperationBean(
                         listOf("https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"),
-                        listOf(7), "GetCapabilities", KeyValue("1", "GetCapabilities")
+                        listOf(7), "GetCapabilities", KeyValue("1", "GetCapabilities"),
                     ),
                     OperationBean(
                         listOf("https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"),
-                        listOf(7), "DescribeCoverage", KeyValue(null, "DescribeCoverage")
+                        listOf(7), "DescribeCoverage", KeyValue(null, "DescribeCoverage"),
                     ),
                     OperationBean(
                         listOf("https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"),
-                        listOf(7), "GetCoverage", KeyValue(null, "GetCoverage")
+                        listOf(7), "GetCoverage", KeyValue(null, "GetCoverage"),
                     ),
                 )
                 onlineResources shouldContainExactly emptyList()
@@ -876,7 +887,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     "Coordinate Reference System",
                     "transformation",
                     "conversion",
-                    "coordinate operation"
+                    "coordinate operation",
                 )
                 serviceType shouldBe "WCTS"
                 dataServiceType shouldBe "4"
@@ -895,25 +906,25 @@ class CapabilitiesServiceTest : ShouldSpec({
                     country = KeyValue("276", "Germany"),
                     state = KeyValue(null, "NRW"),
                     phone = "++49 228 732838",
-                    email = "poth@lat-lon.de"
+                    email = "poth@lat-lon.de",
                 )
 
                 operations shouldContainExactly listOf(
                     OperationBean(
                         listOf("www.lat-lon.de/transform"),
-                        listOf(7), "GetCapabilities", KeyValue("1", "GetCapabilities")
+                        listOf(7), "GetCapabilities", KeyValue("1", "GetCapabilities"),
                     ),
                     OperationBean(
                         listOf("www.lat-lon.de/transform"),
-                        listOf(7), "Transform", KeyValue("2", "Transform")
+                        listOf(7), "Transform", KeyValue("2", "Transform"),
                     ),
                     OperationBean(
                         listOf("www.lat-lon.de/transform"),
-                        listOf(7), "IsTransformable", KeyValue("3", "IsTransformable")
+                        listOf(7), "IsTransformable", KeyValue("3", "IsTransformable"),
                     ),
                     OperationBean(
                         listOf("www.lat-lon.de/transform"),
-                        listOf(7), "GetResourceByID", KeyValue("5", "GetResourceById")
+                        listOf(7), "GetResourceByID", KeyValue("5", "GetResourceById"),
                     ),
                 )
                 onlineResources shouldContainExactly emptyList()
@@ -939,7 +950,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     "ISO19115",
                     "con terra",
                     "Catalogue Service",
-                    "metadata"
+                    "metadata",
                 )
                 serviceType shouldBe "CSW"
                 dataServiceType shouldBe "1"
@@ -948,8 +959,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 accessConstraints shouldContainExactly listOf(
                     KeyValue(
                         null,
-                        "Basic authentication (RFC 2617) is required for all data manipulation requests"
-                    )
+                        "Basic authentication (RFC 2617) is required for all data manipulation requests",
+                    ),
                 )
                 boundingBoxes shouldContainExactly emptyList()
                 spatialReferenceSystems shouldContainExactly emptyList()
@@ -963,7 +974,7 @@ class CapabilitiesServiceTest : ShouldSpec({
                     country = KeyValue("276", "Germany"),
                     state = KeyValue(null, "NRW"),
                     phone = "+49-251-7474-402",
-                    email = "voges@conterra.de"
+                    email = "voges@conterra.de",
                 )
 
                 operations?.shouldHaveSize(5)
@@ -971,28 +982,33 @@ class CapabilitiesServiceTest : ShouldSpec({
                     OperationBean(
                         listOf(
                             "http://www.conterra.de/catalog?",
-                            "http://www.conterra.de/catalog?"
-                        ), listOf(7, 8), "GetCapabilities", KeyValue("1", "GetCapabilities")
+                            "http://www.conterra.de/catalog?",
+                        ),
+                        listOf(7, 8), "GetCapabilities", KeyValue("1", "GetCapabilities"),
                     ),
                     OperationBean(
                         listOf(
-                            "http://linux2:7070/axis/services/CSW20_Discovery_SOAP_Port"
-                        ), listOf(8), "DescribeRecord", KeyValue("4", "DescribeRecord")
+                            "http://linux2:7070/axis/services/CSW20_Discovery_SOAP_Port",
+                        ),
+                        listOf(8), "DescribeRecord", KeyValue("4", "DescribeRecord"),
                     ),
                     OperationBean(
                         listOf(
-                            "http://linux2:7070/axis/services/CSW20_Discovery_SOAP_Port"
-                        ), listOf(8), "GetRecords", KeyValue("2", "GetRecords")
+                            "http://linux2:7070/axis/services/CSW20_Discovery_SOAP_Port",
+                        ),
+                        listOf(8), "GetRecords", KeyValue("2", "GetRecords"),
                     ),
                     OperationBean(
                         listOf(
-                            "http://linux2:7070/axis/services/CSW20_Discovery_SOAP_Port"
-                        ), listOf(8), "GetRecordById", KeyValue("3", "GetRecordById")
+                            "http://linux2:7070/axis/services/CSW20_Discovery_SOAP_Port",
+                        ),
+                        listOf(8), "GetRecordById", KeyValue("3", "GetRecordById"),
                     ),
                     OperationBean(
                         listOf(
-                            "http://linux2:7070/axis/services/CSW20_Publication_SOAP_Port"
-                        ), listOf(8), "Harvest", KeyValue("7", "Harvest")
+                            "http://linux2:7070/axis/services/CSW20_Publication_SOAP_Port",
+                        ),
+                        listOf(8), "Harvest", KeyValue("7", "Harvest"),
                     ),
                 )
                 onlineResources!! shouldHaveSize 0
@@ -1000,30 +1016,30 @@ class CapabilitiesServiceTest : ShouldSpec({
                     UrlBean(
                         url = "http://www.wemove.com/my-resource-locator",
                         type = KeyValue("5066", "Verweis zu Dienst"),
-                        title = "http://www.wemove.com/my-resource-locator"
-                    )
+                        title = "http://www.wemove.com/my-resource-locator",
+                    ),
                 )
                 timeReference shouldBe listOf(
                     TimeReferenceBean(1, formatter.parse("2009-07-02")),
                     TimeReferenceBean(2, formatter.parse("2012-10-22")),
-                    TimeReferenceBean(3, formatter.parse("2013-11-26"))
+                    TimeReferenceBean(3, formatter.parse("2013-11-26")),
                 )
                 timeSpan shouldBe TimeReferenceBean(
                     from = formatter.parse("2009-08-20"),
-                    to = formatter.parse("2010-04-29")
+                    to = formatter.parse("2010-04-29"),
                 )
 
                 conformities shouldBe listOf(
                     ConformityBean(
                         level = 1,
                         specification = "COMMISSION REGULATION (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services",
-                        "2010-12-08"
+                        "2010-12-08",
                     ),
                     ConformityBean(
                         level = 1,
                         specification = "REGOLAMENTO (UE) N. 1089/2010 DELLA COMMISSIONE del 23 novembre 2010 recante attuazione della direttiva 2007/2/CE del Parlamento europeo e del Consiglio per quanto riguarda l'interoperabilità dei set di dati territoriali e dei servizi di dati territoriali",
-                        "2010-12-08"
-                    )
+                        "2010-12-08",
+                    ),
                 )
             }
         }
@@ -1043,8 +1059,8 @@ class CapabilitiesServiceTest : ShouldSpec({
                 accessConstraints shouldContainExactly listOf(
                     KeyValue(
                         null,
-                        "Die im BBD Portal zur Verfügung gestellten Daten können gemäß der Verordnung zur Festlegung der Nutzungsbestimmungen für die Bereitstellung von Geodaten des Bundes -GeoNutzV- (http://www.geodatenzentrum.de/docpdf/geonutzv.pdf) genutzt werden.                        Im Übrigen gelten folgende Nutzungsbedingungen:                        Die im BBD Portal enthaltenen PSI Daten ermöglichen es, im Rahmen der räumlichen und zeitlichen Auflösung Deformationen der Erdoberfläche zu identifizieren.             Angesichts der Eigenschaften der Daten und der intrinsischen Grenzen der PSI Technologie können die im BBD Portal vorhandenen PSI Daten in keinem Fall als Echtzeit-Messung von Bodenbewegungen betrachtet werden.             Die im BBD Portal vorhandenen PSI Daten dürfen unter keinen Umständen als alleinige Entscheidungsgrundlage verwendet werden.                        Die im BBD Portal enthaltenen PSI Daten sind ein Produkt von hohem wissenschaftlichen Niveau und das Ergebnis der besten derzeit verfügbaren Techniken.             Daher müssen sie von entsprechend geschultem Fachpersonal interpretiert und angewendet werden.             Zu diesem Zweck ist es unerlässlich, dass der Nutzer des BBD Portals die Hinweise zur Nutzung für die korrekte Verwendung von PSI Daten sorgfältig liest und berücksichtigt.                        Die Daten des BBD Portals stellen ein nicht interpretiertes Produkt dar. Ihre Nutzung muss bewusst, umsichtig erfolgen.                        Eigentümer des BBD Portals und der darin enthaltenen Daten ist die Bundesrepublik Deutschland, vertreten durch die BGR.                        Datenschutz            https://www.bgr.bund.de/DE/Allgemeines/Wm/Impressum/datenschutzerklaerung.html?nn=1798032                        Impressum            https://www.bgr.bund.de/DE/Allgemeines/Wm/Impressum/impressum_node.html                        © Bundesanstalt für Geowissenschaften und Rohstoffe 2021            Contains modified Copernicus Sentinel data 2015-2021"
-                    )
+                        "Die im BBD Portal zur Verfügung gestellten Daten können gemäß der Verordnung zur Festlegung der Nutzungsbestimmungen für die Bereitstellung von Geodaten des Bundes -GeoNutzV- (http://www.geodatenzentrum.de/docpdf/geonutzv.pdf) genutzt werden.                        Im Übrigen gelten folgende Nutzungsbedingungen:                        Die im BBD Portal enthaltenen PSI Daten ermöglichen es, im Rahmen der räumlichen und zeitlichen Auflösung Deformationen der Erdoberfläche zu identifizieren.             Angesichts der Eigenschaften der Daten und der intrinsischen Grenzen der PSI Technologie können die im BBD Portal vorhandenen PSI Daten in keinem Fall als Echtzeit-Messung von Bodenbewegungen betrachtet werden.             Die im BBD Portal vorhandenen PSI Daten dürfen unter keinen Umständen als alleinige Entscheidungsgrundlage verwendet werden.                        Die im BBD Portal enthaltenen PSI Daten sind ein Produkt von hohem wissenschaftlichen Niveau und das Ergebnis der besten derzeit verfügbaren Techniken.             Daher müssen sie von entsprechend geschultem Fachpersonal interpretiert und angewendet werden.             Zu diesem Zweck ist es unerlässlich, dass der Nutzer des BBD Portals die Hinweise zur Nutzung für die korrekte Verwendung von PSI Daten sorgfältig liest und berücksichtigt.                        Die Daten des BBD Portals stellen ein nicht interpretiertes Produkt dar. Ihre Nutzung muss bewusst, umsichtig erfolgen.                        Eigentümer des BBD Portals und der darin enthaltenen Daten ist die Bundesrepublik Deutschland, vertreten durch die BGR.                        Datenschutz            https://www.bgr.bund.de/DE/Allgemeines/Wm/Impressum/datenschutzerklaerung.html?nn=1798032                        Impressum            https://www.bgr.bund.de/DE/Allgemeines/Wm/Impressum/impressum_node.html                        © Bundesanstalt für Geowissenschaften und Rohstoffe 2021            Contains modified Copernicus Sentinel data 2015-2021",
+                    ),
                 )
                 boundingBoxes shouldContainExactly listOf(
                     LocationBean(
@@ -1053,14 +1069,14 @@ class CapabilitiesServiceTest : ShouldSpec({
                         longitude2 = 15.560505271487509,
                         latitude2 = 55.056673348249255,
                         name = "map_cache_vertical",
-                        type = "free"
-                    )
+                        type = "free",
+                    ),
                 )
                 spatialReferenceSystems shouldContainExactly listOf(
                     KeyValue(
                         "3857",
-                        "EPSG 3857: WGS 84 / Pseudo-Mercator"
-                    )
+                        "EPSG 3857: WGS 84 / Pseudo-Mercator",
+                    ),
                 )
                 address shouldBe AddressBean(
                     _state = "W",
@@ -1072,17 +1088,18 @@ class CapabilitiesServiceTest : ShouldSpec({
                     country = KeyValue("276", "Germany"),
                     state = KeyValue(null, "Lower Saxony"),
                     phone = "+49 (0)511 643 3056",
-                    email = "BBD@bgr.de"
+                    email = "BBD@bgr.de",
                 )
 
                 operations shouldContainExactly listOf(
                     OperationBean(
                         listOf(
                             "https://bodenbewegungsdienst.bgr.de/velocity_vertical/WMTS/1.0.0/WMTSCapabilities.xml",
-                        ), listOf(7),
+                        ),
+                        listOf(7),
                         null /* do not set method call so that it doesn't appear in ISO (#3651) */,
-                        KeyValue("1", "GetCapabilities")
-                    )
+                        KeyValue("1", "GetCapabilities"),
+                    ),
                     // Only import GetCapabilities - Operation (#3651)
                     /*,
                     OperationBean(
@@ -1104,7 +1121,7 @@ class CapabilitiesServiceTest : ShouldSpec({
 fun getDocument(name: String): Document {
     val reader = InputStreamReader(
         CapabilitiesServiceTest::class.java.getResourceAsStream("/getCapabilitites/$name")!!,
-        StandardCharsets.UTF_8
+        StandardCharsets.UTF_8,
     )
 
     return DocumentBuilderFactory.newInstance().apply {

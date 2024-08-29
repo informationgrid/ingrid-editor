@@ -31,7 +31,7 @@ class OpenDataModelTransformerAdditional(
     val doc: Document,
     val codelistHandler: CodelistHandler,
     val catalogId: String,
-    val config: Config
+    val config: Config,
 ) {
     fun getDistributions(): List<Distribution> {
         return doc.data.get("distributions")?.map { dist ->
@@ -44,7 +44,7 @@ class OpenDataModelTransformerAdditional(
                 mapLicense(dist.getString("license.key")),
                 dist.getStringOrEmpty("byClause"),
                 dist.get("languages").mapNotNull { mapLanguage(it) },
-                mapAvailability(dist.getStringOrEmpty("availability.key"))
+                mapAvailability(dist.getStringOrEmpty("availability.key")),
             )
         } ?: emptyList()
     }
@@ -59,13 +59,13 @@ class OpenDataModelTransformerAdditional(
 
     fun getCreated() = doc.created.toString()
     fun getModified() = doc.modified.toString()
-    fun getPeriodicity() = "" //doc.data.getmodified.toString()
+    fun getPeriodicity() = "" // doc.data.getmodified.toString()
     fun getKeywords() = emptyList<String>()
     fun getAddresses() = doc.data.get("pointOfContact").map {
         AddressInfo(
             mapAddressType(it.getString("type.key") ?: ""),
             it.getString("ref.organization") ?: "",
-            emptyList()
+            emptyList(),
         )
     }
 
@@ -90,8 +90,11 @@ class OpenDataModelTransformerAdditional(
     fun getTemporalEnd(): String? = null
 
     private fun getDownloadLink(dist: JsonNode, uuid: String): String {
-        return if (dist.getBoolean("link.asLink") == true) dist.getString("link.uri") ?: ""// TODO encode uri
-        else "${config.uploadExternalUrl}$catalogId/${uuid}/${dist.getString("link.uri")}"
+        return if (dist.getBoolean("link.asLink") == true) {
+            dist.getString("link.uri") ?: "" // TODO encode uri
+        } else {
+            "${config.uploadExternalUrl}$catalogId/$uuid/${dist.getString("link.uri")}"
+        }
     }
 
     private fun mapAvailability(key: String?): String {
@@ -119,12 +122,12 @@ data class Distribution(
     val license: License?,
     val byClause: String,
     val languages: List<String>,
-    val availability: String
+    val availability: String,
 )
 
 data class License(
     val url: String,
-    val name: String
+    val name: String,
 )
 
 data class AddressInfo(

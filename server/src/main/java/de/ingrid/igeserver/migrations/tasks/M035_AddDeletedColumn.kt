@@ -47,5 +47,4 @@ class M035_AddDeletedColumn : MigrationBase("0.35") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

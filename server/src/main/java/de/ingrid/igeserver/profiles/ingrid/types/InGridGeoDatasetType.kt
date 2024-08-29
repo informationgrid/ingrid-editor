@@ -21,7 +21,6 @@ package de.ingrid.igeserver.profiles.ingrid.types
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.InitiatorAction
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 

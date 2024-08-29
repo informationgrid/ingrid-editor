@@ -56,7 +56,7 @@ class M062_MigrateProcessStepType : MigrationBase("0.62") {
             docs.forEach { doc ->
                 doc as Document
                 try {
-                    if (doc.type == "InGridGeoDataset" ) {
+                    if (doc.type == "InGridGeoDataset") {
                         if (migrateProcessStep(doc)) {
                             log.info("Migrated doc with dbID ${doc.id}")
                             docRepo.save(doc)
@@ -73,14 +73,13 @@ class M062_MigrateProcessStepType : MigrationBase("0.62") {
         val processStep: ObjectNode = doc.data.get("dataQualityInfo")?.get("lineage")?.get("source")?.get("processStep") as ObjectNode? ?: return false
         val description = processStep.get("description")?.textValue() ?: return false
 
-
-
-
         val newStructure = jacksonObjectMapper().createArrayNode().apply {
-            add(jacksonObjectMapper().createObjectNode().apply {
-                putNull("key")
-                put("value", description)
-            })
+            add(
+                jacksonObjectMapper().createObjectNode().apply {
+                    putNull("key")
+                    put("value", description)
+                },
+            )
         }
 
         processStep.set<ObjectNode>("description", newStructure)

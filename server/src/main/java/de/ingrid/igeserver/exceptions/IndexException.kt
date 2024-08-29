@@ -22,10 +22,10 @@ package de.ingrid.igeserver.exceptions
 import de.ingrid.igeserver.ServerException
 import org.springframework.http.HttpStatus
 
-open class IndexException: ServerException {
+open class IndexException : ServerException {
 
     protected constructor(statusCode: HttpStatus, errorCode: String, errorText: String, data: Map<String, Any?>? = null, cause: Throwable? = null) :
-            super(statusCode, errorCode, errorText, data, cause)
+        super(statusCode, errorCode, errorText, data, cause)
 
     companion object {
         private const val ERROR_CODE = "INDEXING_ERROR"
@@ -36,7 +36,7 @@ open class IndexException: ServerException {
         /**
          * Factory method for missing configuration value
          */
-        fun wasCancelled() : IndexException {
+        fun wasCancelled(): IndexException {
             return IndexException(STATUS_CODE, ERROR_CODE_CANCEL, "Indexing was cancelled")
         }
 
@@ -46,7 +46,7 @@ open class IndexException: ServerException {
         fun withReason(reason: String, cause: Throwable? = null): IndexException {
             return IndexException(STATUS_CODE, ERROR_CODE, reason, null, cause)
         }
-        
+
         fun folderWithNoPublishedDocs(uuid: String): IndexException {
             return IndexException(STATUS_CODE, ERROR_CODE_FOLDER_WITH_NO_CHILDREN, uuid)
         }

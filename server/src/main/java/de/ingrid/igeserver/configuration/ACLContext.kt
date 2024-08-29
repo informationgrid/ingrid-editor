@@ -39,7 +39,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import javax.sql.DataSource
 
-
 @Configuration
 @EnableAutoConfiguration
 @EnableMethodSecurity
@@ -50,7 +49,7 @@ class ACLContext(val dataSource: DataSource, val cacheManager: CacheManager) {
         return SpringCacheBasedAclCache(
             cacheManager.getCache("aclCache"),
             permissionGrantingStrategy(),
-            aclAuthorizationStrategy()
+            aclAuthorizationStrategy(),
         )
     }
 
@@ -78,7 +77,6 @@ class ACLContext(val dataSource: DataSource, val cacheManager: CacheManager) {
         return IgeAclPermissionEvaluator(aclService(), authUtils)
     }
 
-
     @Bean
     fun lookupStrategy(): LookupStrategy {
         val strategy = BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), ConsoleAuditLogger())
@@ -95,5 +93,4 @@ class ACLContext(val dataSource: DataSource, val cacheManager: CacheManager) {
         jdbcMutableAclService.setSidIdentityQuery("select currval(pg_get_serial_sequence('acl_sid', 'id'))")
         return jdbcMutableAclService
     }
-
 }

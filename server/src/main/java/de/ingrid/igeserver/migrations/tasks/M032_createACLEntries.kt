@@ -41,11 +41,11 @@ class M032_createACLEntries : MigrationBase("0.32") {
     private val insertClass = """
         INSERT INTO acl_class VALUES (1, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'java.lang.Integer')
     """.trimIndent()
-    
+
     private val insertSid = """
         INSERT INTO acl_sid VALUES (1, true, 'ige')
     """.trimIndent()
-    
+
     private val insertRootSql = """
         INSERT INTO acl_object_identity
             (object_id_class, object_id_identity,
@@ -63,23 +63,22 @@ class M032_createACLEntries : MigrationBase("0.32") {
     private val updateWrapperPath = """
         UPDATE document_wrapper SET path=CAST(:path as text[]) WHERE uuid=:uuid
     """.trimIndent()
-    
+
     private val updateSequences = """
         ALTER SEQUENCE acl_sid_id_seq RESTART WITH 2;
     """.trimIndent()
 
     override fun exec() {}
-    
+
     override fun postExec() {
         ClosableTransaction(transactionManager).use {
-
             entityManager.createNativeQuery(
                 """
                 truncate table acl_class cascade;
                 truncate table acl_entry cascade ;
                 truncate table acl_object_identity cascade ;
                 truncate table acl_sid cascade ;
-            """.trimIndent()
+                """.trimIndent(),
             ).executeUpdate()
 
             entityManager.createNativeQuery(insertClass).executeUpdate()
@@ -103,7 +102,6 @@ class M032_createACLEntries : MigrationBase("0.32") {
     }
 
     private fun addChildren(uuid: String, previousUuids: MutableList<String>) {
-
         previousUuids.add(uuid)
         val childrenIds = entityManager
             .createQuery("SELECT dw.id FROM DocumentWrapper dw where dw.parent is not null and dw.parent.id is '$uuid'")
@@ -128,7 +126,5 @@ class M032_createACLEntries : MigrationBase("0.32") {
         }
 
         // TODO: increase id generators for tables with inserted data
-
     }
-
 }

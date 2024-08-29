@@ -31,21 +31,27 @@ import org.springframework.stereotype.Service
 class ConnectionService(
     private val iBusService: IBusService,
     private val elasticsearchService: ElasticsearchService,
-    private val settingsService: SettingsService
+    private val settingsService: SettingsService,
 ) {
     fun getIndexerForConnection(id: String): IIndexManager {
         return when (val connection = settingsService.getConnectionConfig(id)) {
             is IBusConfig -> IBusIndexer(connection.name, iBusService.getIBus(id))
-            is ElasticConfig -> ElasticIndexer(connection.name, elasticsearchService.getClient(id)
+            is ElasticConfig -> ElasticIndexer(
+                connection.name,
+                elasticsearchService.getClient(id),
             )
             else -> throw ServerException.withReason("Unknown Connection-Config Class: ${connection?.javaClass}")
         }
     }
 
     private fun getConnectionService(id: String): IConnection {
-        return if (iBusService.containsId(id)) iBusService
-        else if (elasticsearchService.containsId(id)) elasticsearchService
-        else throw ServerException.withReason("Connection-ID not found: $id")
+        return if (iBusService.containsId(id)) {
+            iBusService
+        } else if (elasticsearchService.containsId(id)) {
+            elasticsearchService
+        } else {
+            throw ServerException.withReason("Connection-ID not found: $id")
+        }
     }
 
     fun isConnected(id: String): Boolean {

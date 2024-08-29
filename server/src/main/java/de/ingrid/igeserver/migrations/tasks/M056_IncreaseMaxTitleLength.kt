@@ -45,5 +45,4 @@ class M056_IncreaseMaxTitleLength : MigrationBase("0.56") {
             entityManager.createNativeQuery(sqlUpdate).executeUpdate()
         }
     }
-
 }

@@ -27,13 +27,10 @@ class GeoserviceMapperHMDK(isoData: IsoImportData) : GeoserviceMapper(isoData) {
 
     val publicationHmbTG = containsKeyword("hmbtg")
 
-
     fun getInformationHmbTG(): List<KeyValue> {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "HmbTG-Informationsgegenstand" }
             ?.flatMap { it.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
             ?.map { KeyValue(it) } ?: emptyList()
     }
-
-
 }

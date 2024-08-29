@@ -69,7 +69,7 @@ class IsoImporterTest : AnnotationSpec() {
         changeUuidOfOrganisationTo(result, "Some Organisation", "some_organisation")
 
         result.toPrettyString().shouldEqualJson(
-            getFile("ingrid/import/iso_geoservice_full-expected.json")
+            getFile("ingrid/import/iso_geoservice_full-expected.json"),
         )
     }
 
@@ -81,7 +81,7 @@ class IsoImporterTest : AnnotationSpec() {
         changeUuidOfOrganisationTo(result, "Some Organisation", "some_organisation")
 
         result.toPrettyString().shouldEqualJson(
-            getFile("ingrid/import/iso_geodataset_full-expected.json")
+            getFile("ingrid/import/iso_geodataset_full-expected.json"),
         )
     }
 
@@ -90,7 +90,8 @@ class IsoImporterTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService)
 
         val data = addPointOfContact(
-            minimalMetadata, """
+            minimalMetadata,
+            """
             <gmd:pointOfContact>
                     <gmd:CI_ResponsibleParty uuid="2B83F58E-60C2-11D6-884A-0000F4ABB4D8">
                         <gmd:individualName>
@@ -101,7 +102,7 @@ class IsoImporterTest : AnnotationSpec() {
                         </gmd:role>
                     </gmd:CI_ResponsibleParty>
                 </gmd:pointOfContact>
-        """.trimIndent()
+            """.trimIndent(),
         )
 
         val result = isoImporter.run("test", data, mutableMapOf())
@@ -113,7 +114,8 @@ class IsoImporterTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService)
 
         val data = addPointOfContact(
-            minimalMetadata, """
+            minimalMetadata,
+            """
             <gmd:pointOfContact>
                     <gmd:CI_ResponsibleParty uuid="2B83F58E-60C2-11D6-884A-0000F4ABB4D8">
                         <gmd:individualName>
@@ -127,7 +129,7 @@ class IsoImporterTest : AnnotationSpec() {
                         </gmd:role>
                     </gmd:CI_ResponsibleParty>
                 </gmd:pointOfContact>
-        """.trimIndent()
+            """.trimIndent(),
         )
 
         val result = isoImporter.run("test", data, mutableMapOf())
@@ -139,7 +141,8 @@ class IsoImporterTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService)
 
         val data = addPointOfContact(
-            minimalMetadata, """
+            minimalMetadata,
+            """
             <gmd:pointOfContact>
                     <gmd:CI_ResponsibleParty uuid="2B83F58E-60C2-11D6-884A-0000F4ABB4D8">
                         <gmd:individualName>
@@ -156,7 +159,7 @@ class IsoImporterTest : AnnotationSpec() {
                         </gmd:role>
                     </gmd:CI_ResponsibleParty>
                 </gmd:pointOfContact>
-        """.trimIndent()
+            """.trimIndent(),
         )
 
         val result = isoImporter.run("test", data, mutableMapOf())
@@ -171,7 +174,8 @@ class IsoImporterTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService)
 
         val data = addPointOfContact(
-            minimalMetadata, """
+            minimalMetadata,
+            """
             <gmd:pointOfContact>
                     <gmd:CI_ResponsibleParty uuid="2B83F58E-60C2-11D6-884A-0000F4ABB4D8">
                         <gmd:individualName>
@@ -188,7 +192,7 @@ class IsoImporterTest : AnnotationSpec() {
                         </gmd:role>
                     </gmd:CI_ResponsibleParty>
                 </gmd:pointOfContact>
-        """.trimIndent()
+            """.trimIndent(),
         )
 
         val result = isoImporter.run("test", data, mutableMapOf())
@@ -203,7 +207,8 @@ class IsoImporterTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService)
 
         val data = addPointOfContact(
-            minimalMetadata, """
+            minimalMetadata,
+            """
             <gmd:pointOfContact>
                     <gmd:CI_ResponsibleParty uuid="2B83F58E-60C2-11D6-884A-0000F4ABB4D8">
                         <gmd:organisationName>
@@ -214,7 +219,7 @@ class IsoImporterTest : AnnotationSpec() {
                         </gmd:role>
                     </gmd:CI_ResponsibleParty>
                 </gmd:pointOfContact>
-        """.trimIndent()
+            """.trimIndent(),
         )
 
         val result = isoImporter.run("test", data, mutableMapOf())
@@ -228,7 +233,8 @@ class IsoImporterTest : AnnotationSpec() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService)
 
         val data = addPointOfContact(
-            minimalMetadata, """
+            minimalMetadata,
+            """
                 <gmd:pointOfContact>
                     <gmd:CI_ResponsibleParty uuid="febad8bb-626c-4d54-b415-d957adf3b4bb">
                         <gmd:organisationName>
@@ -242,7 +248,7 @@ class IsoImporterTest : AnnotationSpec() {
                         </gmd:role>
                     </gmd:CI_ResponsibleParty>
                 </gmd:pointOfContact>
-        """.trimIndent()
+            """.trimIndent(),
         )
 
         val result = isoImporter.run("test", data, mutableMapOf())
@@ -286,7 +292,7 @@ class IsoImporterTest : AnnotationSpec() {
     private fun assertPointOfContact(
         json: JsonNode,
         nameOrUuid: String,
-        expected: String
+        expected: String,
     ) {
         val address = json.find { it.getString("_uuid") == nameOrUuid || it.getString("organization") == nameOrUuid } ?: throw RuntimeException()
         address.toPrettyString().replace("\r", "").shouldEqualJson(expected)
@@ -295,7 +301,7 @@ class IsoImporterTest : AnnotationSpec() {
     private fun assertPointOfContactHasTypes(
         json: JsonNode,
         name: String,
-        types: List<String>
+        types: List<String>,
     ) {
         val addressUuid = json.find { it.getString("organization") == name }?.getString("_uuid") ?: throw RuntimeException()
         val presentTypes = json[0].get("pointOfContact")

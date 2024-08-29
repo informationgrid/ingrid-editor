@@ -42,7 +42,7 @@ class M020_AddCodelistTable : MigrationBase("0.20") {
 
     @Autowired
     private lateinit var transactionManager: PlatformTransactionManager
-    
+
     @Autowired
     lateinit var catalogService: CatalogService
 

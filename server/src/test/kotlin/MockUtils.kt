@@ -36,7 +36,7 @@ fun mockCatalog(catalogService: CatalogService) {
             identifier = "test-catalog"
             settings = CatalogSettings().apply {
                 config = CatalogConfig().apply {
-                    //namespace = "namespace"
+                    // namespace = "namespace"
                     atomDownloadUrl = "https://dev.informationgrid.eu/interface-search/dls/service/"
                 }
             }
@@ -65,14 +65,17 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
                 any(),
             )
         } answers {
-            if (document.template != null) convertToDocument(SchemaUtils.getJsonFileContent(document.template)).apply {
-                wrapperId = document.id
-                uuid = document.uuid
-                data.put("_parent", document.parent)
-                if (document.organization != null) data.put("organization", document.organization)
-                if (document.personName != null) data.put("lastName", document.personName)
+            if (document.template != null) {
+                convertToDocument(SchemaUtils.getJsonFileContent(document.template)).apply {
+                    wrapperId = document.id
+                    uuid = document.uuid
+                    data.put("_parent", document.parent)
+                    if (document.organization != null) data.put("organization", document.organization)
+                    if (document.personName != null) data.put("lastName", document.personName)
+                }
+            } else {
+                throw EmptyResultDataAccessException(1)
             }
-            else throw EmptyResultDataAccessException(1)
         }
         if (document.id != null) {
             every { documentService.getWrapperById(document.id.toInt()) } answers {
@@ -96,6 +99,5 @@ fun mockedDocumentSimple(id: Number, document: MockDocument): DocumentWrapper {
         uuid = document.uuid
     }
 }
-
 
 fun createDocumentWrapper() = DocumentWrapper().apply { type = "testDocType" }

@@ -39,9 +39,8 @@ interface ZabbixReportApi {
     @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun getReport(
-        principal: Principal
+        principal: Principal,
     ): ResponseEntity<List<ProblemReportItem>>
-
 
     @Operation
     @GetMapping(value = ["/{datasetId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -49,7 +48,7 @@ interface ZabbixReportApi {
     fun getDatasetReport(
         principal: Principal,
         @Parameter(description = "The dataset ID for which the report should be gathered", required = true)
-        @PathVariable datasetId: Int
+        @PathVariable datasetId: Int,
     ): ResponseEntity<List<ProblemReportItem>>
 }
 
@@ -61,5 +60,5 @@ data class ProblemReportItem(
     val url: String,
     val docUrl: String,
     val docUuid: String,
-    val resolved: Boolean
+    val resolved: Boolean,
 )

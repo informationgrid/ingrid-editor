@@ -37,10 +37,11 @@ enum class ProcedureTypeEnum(val value: String) {
     COMPLETE_EXTRAPOLATION("completeExtrapolation"),
     UPDATE("update"),
     NEW_ANNOUNCEMENT("newAnnouncement"),
-    UNKNOWN("unknown");
+    UNKNOWN("unknown"),
+    ;
 
     class Converter : EnumConverter<ProcedureTypeEnum>(
-        ProcedureTypeEnum::class.java
+        ProcedureTypeEnum::class.java,
     )
 
     @JsonValue
@@ -50,6 +51,7 @@ enum class ProcedureTypeEnum(val value: String) {
 
     companion object {
         private const val uriPrefix = "https://specs.diplanung.de/resource/procedureType#"
+
         @JsonCreator
         fun fromValue(text: String?): ProcedureTypeEnum? {
             if (text == null) {
@@ -63,7 +65,8 @@ enum class ProcedureTypeEnum(val value: String) {
             val enumValues = java.lang.String.join(
                 ", ",
                 Stream.of(*entries.toTypedArray()).map { anEnum: ProcedureTypeEnum -> uriPrefix + anEnum.toString() }
-                    .toList())
+                    .toList(),
+            )
             throw IllegalArgumentException("ProcedureTypeEnum value has to be one of [$enumValues], was $text")
         }
 

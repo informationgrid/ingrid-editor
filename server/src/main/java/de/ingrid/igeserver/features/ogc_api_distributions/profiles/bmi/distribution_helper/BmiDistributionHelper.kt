@@ -34,15 +34,15 @@ import org.springframework.stereotype.Service
 @Profile("bmi")
 @Service
 class BmiDistributionHelper(
-    private val storage: Storage
-): OgcDistributionHelper {
+    private val storage: Storage,
+) : OgcDistributionHelper {
 
     override val typeInfo: DistributionTypeInfo
         get() = DistributionTypeInfo(
             "bmi",
             "BMI",
             description = "BMI distribution Helper",
-            emptyList()
+            emptyList(),
         )
 
     override fun canHandleDistribution(profile: String): Boolean = "bmi" == profile
@@ -53,7 +53,7 @@ class BmiDistributionHelper(
         return if (distributionId.isNullOrEmpty()) {
             allDistributions
         } else {
-            val filteredDistributions = allDistributions.filter() { it.getString("link.uri") == distributionId }
+            val filteredDistributions = allDistributions.filter { it.getString("link.uri") == distributionId }
             convertListToJsonNode(filteredDistributions)
         }
     }
@@ -63,11 +63,11 @@ class BmiDistributionHelper(
         collectionId: String,
         userID: String,
         recordId: String,
-        distributionId: String?
+        distributionId: String?,
     ): List<String> {
         val missingFiles: MutableList<String> = mutableListOf()
 
-        distributions.forEach() { distribution ->
+        distributions.forEach { distribution ->
             val currentDistributionId = distribution.getString("link.uri")!!
             val isLink = distribution.getBoolean("link.asLink")!!
             isLink.ifFalse {
@@ -80,5 +80,4 @@ class BmiDistributionHelper(
 
     private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode =
         jacksonObjectMapper().valueToTree(listOfJsonNodes)
-
 }

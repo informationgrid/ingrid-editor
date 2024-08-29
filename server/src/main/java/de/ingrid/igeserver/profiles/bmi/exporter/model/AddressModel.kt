@@ -24,10 +24,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.codelists.CodeListService
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
@@ -100,7 +100,6 @@ data class AddressModel(
     }
 
     private fun addInternalFields(publishedParent: Document, wrapper: DocumentWrapper): AddressModel {
-
         val visibleAddress = publishedParent.data.apply {
             put("_id", wrapper.id)
             put("_uuid", publishedParent.uuid)
@@ -132,7 +131,7 @@ data class AddressModel(
         ?.connection
 }
 
-data class ContactModel(val type: KeyValue?, val connection: String?){
+data class ContactModel(val type: KeyValue?, val connection: String?) {
     val typeLabel: String?
         get() = AddressModel.codeListService?.getCodeListValue("4430", type?.key, "en")
 }
@@ -146,7 +145,7 @@ data class Address(
     @JsonProperty("zip-po-box") val zipPoBox: String?,
     @JsonProperty("po-box") val poBox: String?,
     val administrativeArea: KeyValue?,
-    val country: KeyValue?
+    val country: KeyValue?,
 ) {
     val countryKey = country?.key ?: ""
 

@@ -26,13 +26,13 @@ data class CIOnlineResource(
     val applicationProfile: CharacterString?,
     val name: CharacterString?,
     val description: CharacterString?,
-    val function: CIOnlineFunctionCode?
+    val function: CIOnlineFunctionCode?,
 )
 
 data class CIOnlineFunctionCode(
-    @JacksonXmlProperty(localName = "CI_OnLineFunctionCode") val code: CodelistAttributes?
+    @JacksonXmlProperty(localName = "CI_OnLineFunctionCode") val code: CodelistAttributes?,
 )
 
 data class Linkage(
-    @JacksonXmlProperty(localName = "URL") val url: String?
+    @JacksonXmlProperty(localName = "URL") val url: String?,
 )

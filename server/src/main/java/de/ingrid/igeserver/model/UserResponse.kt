@@ -24,5 +24,5 @@ package de.ingrid.igeserver.model
  */
 data class UserResponse(
     var user: User,
-    var readOnly: Boolean = false
+    var readOnly: Boolean = false,
 )

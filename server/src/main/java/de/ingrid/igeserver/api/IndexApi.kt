@@ -42,17 +42,19 @@ interface IndexApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @PostMapping(value = ["/index/config/cron"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun setConfig(
-            principal: Principal,
-            @Parameter(description = "The catalog ID and the cron pattern for which the configuration is saved", required = true)
-            @RequestBody config: @Valid IndexCronOptions): ResponseEntity<Void>
+        principal: Principal,
+        @Parameter(description = "The catalog ID and the cron pattern for which the configuration is saved", required = true)
+        @RequestBody config: @Valid IndexCronOptions,
+    ): ResponseEntity<Void>
 
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])
     @PostMapping(value = ["/index/config/exports"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun setExportConfig(
-            principal: Principal,
-            @Parameter(description = "The catalog ID and the cron pattern for which the configuration is saved", required = true)
-            @RequestBody config: @Valid List<ExportConfig>): ResponseEntity<Void>
+        principal: Principal,
+        @Parameter(description = "The catalog ID and the cron pattern for which the configuration is saved", required = true)
+        @RequestBody config: @Valid List<ExportConfig>,
+    ): ResponseEntity<Void>
 
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(responseCode = "500", description = "Unexpected error")])

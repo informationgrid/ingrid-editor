@@ -25,7 +25,6 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -40,12 +39,14 @@ class OgcDistributionsApiController(
 
     val log = logger()
 
-    @PostMapping("/collections/{collectionId}/items/{recordId}/distributions", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]) //"multipart/form-data",
-    @Operation(tags=["OGC/Distributions"], responses = [], summary = "Upload distributions (files) to a specific collection and record", hidden = false )
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Distributions uploaded successfully"),
-        ApiResponse(responseCode = "400", description = "Invalid request")
-    ])
+    @PostMapping("/collections/{collectionId}/items/{recordId}/distributions", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]) // "multipart/form-data",
+    @Operation(tags = ["OGC/Distributions"], responses = [], summary = "Upload distributions (files) to a specific collection and record", hidden = false)
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Distributions uploaded successfully"),
+            ApiResponse(responseCode = "400", description = "Invalid request"),
+        ],
+    )
     fun postDistribution(
         @RequestHeader allHeaders: Map<String, String>,
         principal: Authentication,
@@ -59,11 +60,13 @@ class OgcDistributionsApiController(
     }
 
     @DeleteMapping("/collections/{collectionId}/items/{recordId}/distributions")
-    @Operation(tags=["OGC/Distributions"], responses = [], summary = "Delete an existing distribution (file)", hidden = false )
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Distribution deleted successfully"),
-        ApiResponse(responseCode = "400", description = "Invalid request")
-    ])
+    @Operation(tags = ["OGC/Distributions"], responses = [], summary = "Delete an existing distribution (file)", hidden = false)
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Distribution deleted successfully"),
+            ApiResponse(responseCode = "400", description = "Invalid request"),
+        ],
+    )
     fun deleteDistribution(
         @RequestHeader allHeaders: Map<String, String>,
         principal: Authentication,
@@ -75,5 +78,4 @@ class OgcDistributionsApiController(
         ogcDistributionsService.handleDeleteDistribution(principal, userID, collectionId, recordId, distributionId)
         return ResponseEntity.ok().build()
     }
-
 }

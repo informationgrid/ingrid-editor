@@ -25,7 +25,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
 
 data class EXExtentOrig(
-    @JacksonXmlProperty(localName = "EX_Extent") val extend: EXExtent?
+    @JacksonXmlProperty(localName = "EX_Extent") val extend: EXExtent?,
 )
 
 @JacksonXmlRootElement(
@@ -35,21 +35,21 @@ data class EXExtent(
     val description: CharacterString?,
     val geographicElement: List<EXGeographicDescription>?,
     val temporalElement: List<EXTemporalExtent>?,
-    val verticalElement: List<EXVerticalExtent>?
+    val verticalElement: List<EXVerticalExtent>?,
 )
 
 data class EXVerticalExtent(
-    @JacksonXmlProperty(localName = "EX_VerticalExtent") val verticalElement: VerticalExtent?
+    @JacksonXmlProperty(localName = "EX_VerticalExtent") val verticalElement: VerticalExtent?,
 )
 
 data class VerticalExtent(
     val minimumValue: Real,
     val maximumValue: Real,
-    val verticalCRS: VerticalCRS
+    val verticalCRS: VerticalCRS,
 )
 
 data class VerticalCRS(
-    @JacksonXmlProperty(localName = "VerticalCRS") val verticalCRS: VerticalCRSChoice
+    @JacksonXmlProperty(localName = "VerticalCRS") val verticalCRS: VerticalCRSChoice,
 )
 
 data class VerticalCRSChoice(
@@ -62,44 +62,44 @@ data class VerticalCRSChoice(
 )
 
 data class VerticalDatumWrapper(
-    val verticalDatum: VerticalDatum?
+    val verticalDatum: VerticalDatum?,
 )
 
 data class VerticalDatum(
-    val name: String?
+    val name: String?,
 )
 
 data class VerticalCS(
-    @JacksonXmlProperty(localName = "VerticalCS") val verticalCS: VerticalCSChoice?
+    @JacksonXmlProperty(localName = "VerticalCS") val verticalCS: VerticalCSChoice?,
 )
 
 data class VerticalCSChoice(
     val identifier: CharacterString,
-    val axis: CoordinateSystemAxisWrapper
+    val axis: CoordinateSystemAxisWrapper,
 )
 
 data class CoordinateSystemAxisWrapper(
-    @JacksonXmlProperty(localName = "CoordinateSystemAxis") val coordinateSystemAxis: CoordinateSystemAxis?
+    @JacksonXmlProperty(localName = "CoordinateSystemAxis") val coordinateSystemAxis: CoordinateSystemAxis?,
 )
 
 data class CoordinateSystemAxis(
-    @JacksonXmlProperty(isAttribute = true) val uom: String?
+    @JacksonXmlProperty(isAttribute = true) val uom: String?,
 )
 
 @JacksonXmlRootElement(
     namespace = "http://www.isotc211.org/2005/gmd",
 )
 data class EXTemporalExtent(
-    @JacksonXmlProperty(localName = "EX_TemporalExtent") val extent: TemportalExtentSub?
+    @JacksonXmlProperty(localName = "EX_TemporalExtent") val extent: TemportalExtentSub?,
 )
 
 data class TemportalExtentSub(
-    val extent: TemportalExtent?
+    val extent: TemportalExtent?,
 )
 
 data class TemportalExtent(
     @JacksonXmlProperty(localName = "TimePeriod") val timePeriod: TimePeriod?,
-    @JacksonXmlProperty(localName = "TimeInstant") val timeInstant: TimeInstant?
+    @JacksonXmlProperty(localName = "TimeInstant") val timeInstant: TimeInstant?,
 )
 
 data class TimeInstant(val timePosition: String)
@@ -121,25 +121,24 @@ class TemporalPosition {
     val value: String? = null
 }
 
-
 @JacksonXmlRootElement(
     namespace = "http://www.isotc211.org/2005/gmd",
 )
 data class EXGeographicDescription(
     @JacksonXmlProperty(localName = "EX_BoundingPolygon") val boundingPolygon: BoundingPolygon?,
     @JacksonXmlProperty(localName = "EX_GeographicBoundingBox") val geographicBoundingBox: GeographicBoundingBox?,
-    @JacksonXmlProperty(localName = "EX_GeographicDescription") val geographicDescription: GeographicDescription?
+    @JacksonXmlProperty(localName = "EX_GeographicDescription") val geographicDescription: GeographicDescription?,
 )
 
 data class BoundingPolygon(
-    val polygon: ObjectNode? = null
+    val polygon: ObjectNode? = null,
 )
 
 class GeographicBoundingBox(
     val westBoundLongitude: Decimal?,
     val eastBoundLongitude: Decimal?,
     val southBoundLatitude: Decimal?,
-    val northBoundLatitude: Decimal?
+    val northBoundLatitude: Decimal?,
 )
 
 data class GeographicDescription(
@@ -148,13 +147,13 @@ data class GeographicDescription(
 )
 
 data class BoolType(
-    @JacksonXmlProperty(localName = "Boolean") val value: String?
+    @JacksonXmlProperty(localName = "Boolean") val value: String?,
 )
 
 data class Identifier(
-    @JacksonXmlProperty(localName = "MD_Identifier") val mdIdentifier: MDIdentifier?
+    @JacksonXmlProperty(localName = "MD_Identifier") val mdIdentifier: MDIdentifier?,
 )
 
 data class MDIdentifier(
-    val code: CharacterString?
+    val code: CharacterString?,
 )

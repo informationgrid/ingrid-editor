@@ -76,7 +76,7 @@ open class ApplicationMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     ServiceUrl(
                         resource.name?.value ?: "",
                         resource.linkage.url ?: "",
-                        resource.description?.value
+                        resource.description?.value,
                     )
                 } ?: emptyList()
         } ?: emptyList()

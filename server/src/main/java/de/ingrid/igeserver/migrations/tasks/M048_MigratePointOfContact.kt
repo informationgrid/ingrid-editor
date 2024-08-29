@@ -56,7 +56,7 @@ class M048_MigratePointOfContact : MigrationBase("0.48") {
         ClosableTransaction(transactionManager).use {
             val docs = entityManager.createQuery(
                 "SELECT doc FROM Document doc WHERE doc.catalog.type='uvp'",
-                Document::class.java
+                Document::class.java,
             ).resultList
             setAdminAuthentication("Migration", "Task")
 

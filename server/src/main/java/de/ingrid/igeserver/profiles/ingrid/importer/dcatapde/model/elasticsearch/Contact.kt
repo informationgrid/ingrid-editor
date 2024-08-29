@@ -64,21 +64,21 @@ class Contact : Serializable {
             hasRegion,
             hasCountryName,
             hasEmail,
-            hasTelephone
+            hasTelephone,
         )
     }
 
     override fun toString(): String {
         return "Contact{" +
-                "fn='" + fn + '\'' +
-                ", hasOrganizationName='" + hasOrganizationName + '\'' +
-                ", hasPostalCode='" + hasPostalCode + '\'' +
-                ", hasStreetAddress='" + hasStreetAddress + '\'' +
-                ", hasLocality='" + hasLocality + '\'' +
-                ", hasRegion='" + hasRegion + '\'' +
-                ", hasCountryName='" + hasCountryName + '\'' +
-                ", hasEmail='" + hasEmail + '\'' +
-                ", hasTelephone='" + hasTelephone + '\'' +
-                '}'
+            "fn='" + fn + '\'' +
+            ", hasOrganizationName='" + hasOrganizationName + '\'' +
+            ", hasPostalCode='" + hasPostalCode + '\'' +
+            ", hasStreetAddress='" + hasStreetAddress + '\'' +
+            ", hasLocality='" + hasLocality + '\'' +
+            ", hasRegion='" + hasRegion + '\'' +
+            ", hasCountryName='" + hasCountryName + '\'' +
+            ", hasEmail='" + hasEmail + '\'' +
+            ", hasTelephone='" + hasTelephone + '\'' +
+            '}'
     }
 }

@@ -37,7 +37,6 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
 
-
 @Service
 class IngridExporterLubw(
     idfExporter: IngridIdfExporterLubw,
@@ -55,7 +54,7 @@ class IngridExporterLubw(
             "json",
             listOf("ingrid-lubw"),
             isPublic = true,
-            useForPublish = true
+            useForPublish = true,
         )
 }
 
@@ -64,7 +63,7 @@ class IngridIdfExporterLubw(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
+    @Lazy documentService: DocumentService,
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
     override fun getModelTransformerClass(docType: String): KClass<out Any>? =
         getLubwModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
@@ -75,7 +74,7 @@ class IngridLuceneExporterLubw(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
+    @Lazy documentService: DocumentService,
 ) :
     IngridLuceneExporter(
         codelistHandler,
@@ -92,11 +91,11 @@ class IngridLuceneExporterLubw(
             "InGridGeoService",
             "InGridProject",
             "InGridDataCollection",
-            "InGridInformationSystem"
+            "InGridInformationSystem",
             -> Pair(
-                    "export/ingrid-lubw/lucene/template-lucene-lubw.jte",
-                    getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
-                )
+                "export/ingrid-lubw/lucene/template-lucene-lubw.jte",
+                getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
+            )
 
             else -> super.getTemplateForDoctype(doc, catalog, options)
         }
@@ -115,8 +114,8 @@ class IngridLuceneExporterLubw(
                         TransformerCache(),
                         data.doc,
                         documentService,
-                        data.tags
-                    )
+                        data.tags,
+                    ),
                 )
             }
 
@@ -129,7 +128,7 @@ class IngridLuceneExporterLubw(
 class IngridISOExporterLubw(
     idfExporter: IngridIdfExporterLubw,
     luceneExporter: IngridLuceneExporterLubw,
-    documentWrapperRepository: DocumentWrapperRepository
+    documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridExporterLubw(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
@@ -139,12 +138,11 @@ class IngridISOExporterLubw(
         "Export von LUBW Dokumenten in ISO für die Vorschau im Editor.",
         "text/xml",
         "xml",
-        listOf("ingrid-lubw")
+        listOf("ingrid-lubw"),
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val indexString = super.run(doc, catalogId, options) as String
         return getISOFromElasticDocumentString(indexString)
     }
-
 }

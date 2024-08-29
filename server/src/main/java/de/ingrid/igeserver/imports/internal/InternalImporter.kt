@@ -52,7 +52,6 @@ class InternalImporter : IgeImporter {
             documents = Migrate002.migrate(documents as ArrayNode)
             version = "1.0.0"
             (json as ObjectNode).put("_profile", "mcloud")
-
         }
         val profile = json.getString("_profile")!!
         if (version == "1.0.0") {
@@ -62,10 +61,12 @@ class InternalImporter : IgeImporter {
         }
 
         return jacksonObjectMapper().createArrayNode().apply {
-            add(jacksonObjectMapper().createArrayNode().apply {
-                add(documents.get("published"))
-                add(documents.get("draft"))
-            })
+            add(
+                jacksonObjectMapper().createArrayNode().apply {
+                    add(documents.get("published"))
+                    add(documents.get("draft"))
+                },
+            )
             if (additionalReferences.isNotEmpty()) addAll(additionalReferences)
         }
     }
@@ -82,7 +83,6 @@ class InternalImporter : IgeImporter {
             "internal",
             "Internes Format",
             "Datenformat, welches für die interne Verarbeitung verwendet wird",
-            emptyList()
+            emptyList(),
         )
-
 }

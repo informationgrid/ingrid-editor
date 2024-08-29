@@ -49,7 +49,7 @@ class OpenDataExporter(
     @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
     val ingridIndexExporter: IngridIndexExporter,
     val codelistHandler: CodelistHandler,
-    val uploadConfig: Config
+    val uploadConfig: Config,
 ) : IgeExporter {
 
     val log = logger()
@@ -65,10 +65,9 @@ class OpenDataExporter(
                 "Export der Datensätze für die weitere Verwendung im Exporter.",
                 MediaType.APPLICATION_JSON_VALUE,
                 "json",
-                listOf("opendata")
+                listOf("opendata"),
             )
         }
-
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val mapper = jacksonObjectMapper()
@@ -114,12 +113,11 @@ class OpenDataExporter(
     }
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
-
         return mapOf(
             "map" to mapOf(
-                "model" to OpenDataModelTransformerAdditional(json, codelistHandler, catalogId, uploadConfig), //jacksonObjectMapper().convertValue(json, OpenDataModel::class.java),
-                "catalogId" to catalogId
-            )
+                "model" to OpenDataModelTransformerAdditional(json, codelistHandler, catalogId, uploadConfig), // jacksonObjectMapper().convertValue(json, OpenDataModel::class.java),
+                "catalogId" to catalogId,
+            ),
         )
     }
 
@@ -138,11 +136,11 @@ class OpenDataExporter(
                         doc,
                         codelistHandler,
                         catalogId,
-                        uploadConfig
-                    )
-                )
+                        uploadConfig,
+                    ),
+                ),
             ),
-            output
+            output,
         )
         return output.toString()
     }
@@ -154,47 +152,75 @@ class OpenDataExporter(
             data.apply {
                 val outer = this
 
-                set<JsonNode>("pointOfContact", get("addresses").apply {
-                    (get(0)?.get("type") as ObjectNode?)?.put("key", 12)
-                })
+                set<JsonNode>(
+                    "pointOfContact",
+                    get("addresses").apply {
+                        (get(0)?.get("type") as ObjectNode?)?.put("key", 12)
+                    },
+                )
                 put("alternateTitle", getString("landingPage"))
                 set<JsonNode>("openDataCategories", get("openDataCategories"))
-                set<JsonNode>("spatial", mapper.createObjectNode().apply {
-                    set<JsonNode>("references", if (outer.get("spatial") == null || outer.get("spatial").isEmpty) mapper.createArrayNode() else outer.get("spatial"))
-                    set<JsonNode>("spatialSystems", null)
-                })
+                set<JsonNode>(
+                    "spatial",
+                    mapper.createObjectNode().apply {
+                        set<JsonNode>("references", if (outer.get("spatial") == null || outer.get("spatial").isEmpty) mapper.createArrayNode() else outer.get("spatial"))
+                        set<JsonNode>("spatialSystems", null)
+                    },
+                )
                 get("keywords")?.let {
-                    set<JsonNode>("keywords", mapper.createObjectNode().apply {
-                        set<JsonNode>("free", mapper.createArrayNode().apply {
-                            it.forEach {
-                                add(mapper.createObjectNode().apply {
-                                    put("id", null as String?)
-                                    put("label", it.asText())
-                                })
-                            }
-
-                        })
-                    })
+                    set<JsonNode>(
+                        "keywords",
+                        mapper.createObjectNode().apply {
+                            set<JsonNode>(
+                                "free",
+                                mapper.createArrayNode().apply {
+                                    it.forEach {
+                                        add(
+                                            mapper.createObjectNode().apply {
+                                                put("id", null as String?)
+                                                put("label", it.asText())
+                                            },
+                                        )
+                                    }
+                                },
+                            )
+                        },
+                    )
                 }
-                set<JsonNode>("metadata", mapper.createObjectNode().apply {
-                    set<JsonNode>("language", mapper.createObjectNode().apply {
-                        put("key", 150)
-                    })
-                })
+                set<JsonNode>(
+                    "metadata",
+                    mapper.createObjectNode().apply {
+                        set<JsonNode>(
+                            "language",
+                            mapper.createObjectNode().apply {
+                                put("key", 150)
+                            },
+                        )
+                    },
+                )
                 put("isOpenData", true)
                 set<JsonNode>("openDataCategories", get("DCATThemes"))
-                set<JsonNode>("resource", mapper.createObjectNode().apply {
-                    put("purpose", outer.getString("legalBasis"))
-                    put("specificUsage", outer.getString("specificUsage"))
-                })
-                set<JsonNode>("temporal", mapper.createObjectNode().apply {
-                    set<JsonNode>("resourceDateType", outer.getPath("temporal.rangeType"))
-                    set<JsonNode>("resourceDate", outer.getPath("temporal.timeSpanDate"))
-                    set<JsonNode>("resourceRange", outer.getPath("temporal.timeSpanRange"))
-                })
-                set<JsonNode>("maintenanceInformation", mapper.createObjectNode().apply {
-                    set<JsonNode>("maintenanceAndUpdateFrequency", outer.get("periodicity"))
-                })
+                set<JsonNode>(
+                    "resource",
+                    mapper.createObjectNode().apply {
+                        put("purpose", outer.getString("legalBasis"))
+                        put("specificUsage", outer.getString("specificUsage"))
+                    },
+                )
+                set<JsonNode>(
+                    "temporal",
+                    mapper.createObjectNode().apply {
+                        set<JsonNode>("resourceDateType", outer.getPath("temporal.rangeType"))
+                        set<JsonNode>("resourceDate", outer.getPath("temporal.timeSpanDate"))
+                        set<JsonNode>("resourceRange", outer.getPath("temporal.timeSpanRange"))
+                    },
+                )
+                set<JsonNode>(
+                    "maintenanceInformation",
+                    mapper.createObjectNode().apply {
+                        set<JsonNode>("maintenanceAndUpdateFrequency", outer.get("periodicity"))
+                    },
+                )
             }
         }
     }
@@ -203,7 +229,7 @@ class OpenDataExporter(
         override fun writeUserContent(value: String?) {
             if (value == null) return
             super.writeUserContent(
-                StringEscapeUtils.escapeXml10(value)
+                StringEscapeUtils.escapeXml10(value),
             )
         }
     }

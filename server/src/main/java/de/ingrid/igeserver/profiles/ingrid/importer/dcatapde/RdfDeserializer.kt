@@ -151,7 +151,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
         record.procedurePeriod = handleProperties(
             model,
             dataset,
-            listOf("procedurePeriod")
+            listOf("procedurePeriod"),
         )["procedurePeriod"] as PeriodOfTime?
         // TODO refactor to remove procedureStartDate handling once k1 and k3 have updated
         if (record.procedurePeriod != null && record.procedurePeriod!!.startDate != null) {
@@ -172,7 +172,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
         record.developmentFreezePeriod = handleProperties(
             model,
             dataset,
-            listOf("developmentFreezePeriod")
+            listOf("developmentFreezePeriod"),
         )["developmentFreezePeriod"] as PeriodOfTime?
         val publishers = createAgents(model, dataset, "dct", "publisher").iterator()
         record.publisher = if (publishers.hasNext()) publishers.next() else null
@@ -281,7 +281,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
         dataset: Resource,
         ns: String,
         localname: String,
-        allowedProperties: List<String>
+        allowedProperties: List<String>,
     ): Set<Map<String, Any>> {
         val p = model.getProperty(model.getNsPrefixURI(ns), localname)
         val maps: MutableSet<Map<String, Any>> = HashSet()
@@ -361,14 +361,14 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
                     featuresNode.forEach(
                         Consumer { feature: JsonNode ->
                             geometries.add(
-                                feature["geometry"]
+                                feature["geometry"],
                             )
-                        }
+                        },
                     )
                     val objectNode = mapper.createObjectNode()
                     objectNode.set<JsonNode>(
                         "type",
-                        mapper.convertValue("GeometryCollection", JsonNode::class.java)
+                        mapper.convertValue("GeometryCollection", JsonNode::class.java),
                     )
                     objectNode.set<JsonNode>("geometries", geometries)
                     return mapper.readValue(objectNode.toString(), Map::class.java) as Map<String, Any>
@@ -500,7 +500,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
             "mapLayerNames",
             "modified",
             "temporal",
-            "title"
+            "title",
         )
         private val processStepProperties: List<String> =
             mutableListOf("identifier", "distribution", "passNumber", "processStepType", "temporal", "title")
@@ -513,7 +513,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
             "MultiPoint",
             "MultiLineString",
             "MultiPolygon",
-            "GeometryCollection"
+            "GeometryCollection",
         )
     }
 }

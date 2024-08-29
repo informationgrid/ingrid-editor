@@ -44,5 +44,4 @@ class M063_FingerprintColumn : MigrationBase("0.63") {
             entityManager.createNativeQuery(sqlUpdate).executeUpdate()
         }
     }
-
 }

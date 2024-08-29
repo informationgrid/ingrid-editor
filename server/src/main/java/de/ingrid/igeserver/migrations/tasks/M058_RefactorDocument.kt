@@ -45,5 +45,4 @@ class M058_RefactorDocument : MigrationBase("0.58") {
             entityManager.createNativeQuery(sqlUpdate).executeUpdate()
         }
     }
-
 }

@@ -29,43 +29,42 @@ import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.type.SqlTypes
 
 @Entity
-@Table(name="permission_group")
+@Table(name = "permission_group")
 class Group {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="catalog_id", nullable=false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "catalog_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var catalog: Catalog? = null
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="manager_id", nullable=false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var manager: UserInfo? = null
 
-    @ManyToMany(mappedBy = "groups", fetch=FetchType.LAZY)
+    @ManyToMany(mappedBy = "groups", fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var user: MutableSet<UserInfo> = HashSet()
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     var name: String? = null
 
     @Column
     var description: String? = null
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name="permissions", columnDefinition="jsonb")
+    @Column(name = "permissions", columnDefinition = "jsonb")
     @JsonProperty("permissions")
     var permissions: PermissionsData? = null
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "data", columnDefinition = "jsonb")
     var data: GroupData? = null
-
 }

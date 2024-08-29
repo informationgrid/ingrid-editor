@@ -230,5 +230,4 @@ CREATE INDEX IDX_QRTZ_FT_TG
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

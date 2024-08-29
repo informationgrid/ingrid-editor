@@ -44,5 +44,4 @@ class M064_AddTagsColumn : MigrationBase("0.64") {
             entityManager.createNativeQuery(sqlUpdate).executeUpdate()
         }
     }
-
 }

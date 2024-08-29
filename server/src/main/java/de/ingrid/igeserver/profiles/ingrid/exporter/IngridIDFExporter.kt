@@ -44,7 +44,6 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
 
-
 @Service
 class IngridIDFExporter(
     val codelistHandler: CodelistHandler,
@@ -65,7 +64,7 @@ class IngridIDFExporter(
         "text/xml",
         "xml",
         listOf("ingrid"),
-        false
+        false,
     )
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -77,7 +76,7 @@ class IngridIDFExporter(
         templateEngine.render(
             getTemplateForDoctype(doc.type),
             getMapFromObject(doc, catalogId, options),
-            output
+            output,
         )
         // pretty printing takes around 5ms
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
@@ -86,7 +85,6 @@ class IngridIDFExporter(
         log.debug(prettyXml)
         return prettyXml
     }
-
 
     private fun getTemplateForDoctype(type: String): String {
         return when (type) {
@@ -113,9 +111,9 @@ class IngridIDFExporter(
         val transformerClass = getModelTransformerClass(json.type)
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
-        return if (isAddress)
+        return if (isAddress) {
             transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService, config)
-        else
+        } else {
             transformerClass.constructors.first().call(
                 TransformerConfig(
                     getIngridModel(json, catalogId),
@@ -126,9 +124,10 @@ class IngridIDFExporter(
                     TransformerCache(),
                     json,
                     documentService,
-                    exportOptions.tags
-                )
+                    exportOptions.tags,
+                ),
             )
+        }
     }
 
     fun getIngridModel(doc: Document, catalogId: String): IngridModel = mapper.convertValue(doc, IngridModel::class.java)
@@ -148,15 +147,13 @@ class IngridIDFExporter(
         }
     }
 
-
     private fun getMapFromObject(json: Document, catalogId: String, options: ExportOptions): Map<String, Any> {
         val modelTransformer = getModelTransformer(json, catalogId, options)
         return mapOf(
             "map" to mapOf(
-                "model" to modelTransformer
+                "model" to modelTransformer,
             ),
         )
-
     }
 }
 
@@ -164,7 +161,7 @@ private class XMLStringOutput : StringOutput() {
     override fun writeUserContent(value: String?) {
         if (value == null) return
         super.writeUserContent(
-            StringEscapeUtils.escapeXml10(value)
+            StringEscapeUtils.escapeXml10(value),
 //                .replace("\n", "&#10;")
 //                .replace("\r", "&#13;")
 //                .replace("\t", "&#9;")

@@ -47,5 +47,4 @@ class M025_AddCodelistColumn : MigrationBase("0.25") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

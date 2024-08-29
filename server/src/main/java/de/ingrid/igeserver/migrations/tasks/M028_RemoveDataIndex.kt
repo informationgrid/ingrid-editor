@@ -47,5 +47,4 @@ class M028_RemoveDataIndex : MigrationBase("0.28") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

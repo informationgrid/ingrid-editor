@@ -53,7 +53,7 @@ class M082_MigrateCatalogSettings : MigrationBase("0.82") {
               UPDATE settings
               SET value = ((REPLACE(CAST(value as text), '"url"', '"name"'))\:\:jsonb)
               WHERE key = 'ibus';
-          """.trimIndent()
+                    """.trimIndent(),
                 )
                 .executeUpdate()
 
@@ -67,7 +67,7 @@ class M082_MigrateCatalogSettings : MigrationBase("0.82") {
                  FROM jsonb_array_elements(settings.value) AS elements(value)
               )
               WHERE jsonb_path_exists(value, '$.publicationTypes');
-          """.trimIndent()
+                    """.trimIndent(),
                 )
                 .executeUpdate()
 
@@ -90,7 +90,7 @@ class M082_MigrateCatalogSettings : MigrationBase("0.82") {
                        FROM updated_elements
                        WHERE settings.id = updated_elements.id) 
             WHERE key='ibus';
-          """.trimIndent()
+                    """.trimIndent(),
                 )
                 .executeUpdate()
         }

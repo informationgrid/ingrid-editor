@@ -79,18 +79,18 @@ class ExportService(val exporterFactory: ExporterFactory) {
                     handleSingleDataset(options, ref, catalogId)?.let {
                         listOf(Pair(ref.uuid, it))
                     } ?: emptyList()
-                } .toSet().toList()
+                }.toSet().toList()
                 return if (options.addressReferences) {
                     ExportResult(
                         zipToFile(refData + Pair(doc.wrapper.uuid, data), exporter.typeInfo.fileExtension),
                         "export.zip",
-                        MediaType.valueOf("application/zip")
+                        MediaType.valueOf("application/zip"),
                     )
                 } else {
                     ExportResult(
                         data.toByteArray(),
                         doc.wrapper.uuid + "." + exporter.typeInfo.fileExtension,
-                        MediaType.valueOf(exporter.typeInfo.dataType)
+                        MediaType.valueOf(exporter.typeInfo.dataType),
                     )
                 }
             }
@@ -100,8 +100,9 @@ class ExportService(val exporterFactory: ExporterFactory) {
             ExportResult(data.toByteArray(), fileName, mediaType)
         } else {
             val results = docs.flatMap { document ->
-                if (document.wrapper.type == "FOLDER") handleWithSubDocuments(document.wrapper, options, catalogId)
-                else {
+                if (document.wrapper.type == "FOLDER") {
+                    handleWithSubDocuments(document.wrapper, options, catalogId)
+                } else {
                     handleSingleDataset(options, document.wrapper, catalogId)
                         ?.let {
                             if (exporter is InternalExporter) {
@@ -123,7 +124,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
             ExportResult(
                 zipToFile(results, exporter.typeInfo.fileExtension),
                 "export.zip",
-                MediaType.valueOf("application/zip")
+                MediaType.valueOf("application/zip"),
             )
         }
     }
@@ -148,7 +149,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
     private fun handleSingleDataset(
         options: ExportRequestParameter,
         doc: DocumentWrapper,
-        catalogId: String
+        catalogId: String,
     ): String? {
         val docVersion =
             if (!options.useDraft) {
@@ -157,11 +158,13 @@ class ExportService(val exporterFactory: ExporterFactory) {
                 } catch (ex: NotFoundException) {
                     return null
                 }
-            } else documentService.getDocumentByWrapperId(
-                catalogId,
-                doc.id!!,
-                true
-            )
+            } else {
+                documentService.getDocumentByWrapperId(
+                    catalogId,
+                    doc.id!!,
+                    true,
+                )
+            }
         val exporter = getExporter(DocumentCategory.DATA, options.exportFormat)
         val result = exporter.run(docVersion, catalogId, ExportOptions(options.useDraft, null, doc.tags))
         return if (result is ObjectNode) result.toPrettyString() else result as String
@@ -169,13 +172,13 @@ class ExportService(val exporterFactory: ExporterFactory) {
 
     private fun getPublishedVersion(
         catalogId: String,
-        doc: DocumentWrapper
+        doc: DocumentWrapper,
     ): Document {
         return try {
             documentService.getLastPublishedDocument(
                 catalogId,
                 doc.uuid,
-                true
+                true,
             )
         } catch (ex: Exception) {
             throw NotFoundException.withMissingPublishedVersion(doc.uuid)
@@ -185,16 +188,17 @@ class ExportService(val exporterFactory: ExporterFactory) {
     private fun handleWithSubDocuments(
         doc: DocumentWrapper,
         options: ExportRequestParameter,
-        catalogId: String
+        catalogId: String,
     ): List<Pair<String, String>> {
         val isFolder = doc.type == "FOLDER"
         val result = if (isFolder) null else handleSingleDataset(options, doc, catalogId)
 
         val children = documentService.findChildren(catalogId, doc.id)
         val resultList = children.hits.flatMap { handleWithSubDocuments(it.wrapper, options, catalogId) }
-        return if (result == null)
+        return if (result == null) {
             resultList
-        else
+        } else {
             resultList + Pair(doc.uuid, result)
+        }
     }
 }

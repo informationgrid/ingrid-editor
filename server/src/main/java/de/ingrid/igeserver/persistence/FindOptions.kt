@@ -25,5 +25,5 @@ class FindOptions(
     val size: Int? = null,
     val sortField: String? = null,
     val sortOrder: String? = null,
-    val resolveReferences: Boolean = false
+    val resolveReferences: Boolean = false,
 ) : QueryOptions(queryType)

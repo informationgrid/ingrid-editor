@@ -32,7 +32,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 data class GeoDataset(
     var uuid: String? = null,
     var objectIdentifier: String? = null,
@@ -42,14 +41,14 @@ data class GeoDataset(
     var description: String? = null,
     var spatialSystems: List<KeyValue>? = null,
     var keywords: List<String>? = null,
-    var exists: Boolean = false
+    var exists: Boolean = false,
 )
 
 data class OperationBean(
     var addressList: List<String>? = null,
     var platform: List<Int>? = null,
     var methodCall: String? = null,
-    var name: KeyValue? = null
+    var name: KeyValue? = null,
 )
 
 data class TimeReferenceBean(var type: Int = -1, var date: Date? = null, var from: Date? = null, var to: Date? = null)
@@ -75,7 +74,7 @@ data class UrlBean(
     var url: String? = null,
     var type: KeyValue? = null,
     var title: String? = null,
-    var explanation: String? = null
+    var explanation: String? = null,
 )
 
 data class LocationBean(
@@ -84,7 +83,7 @@ data class LocationBean(
     var latitude2: Double? = null,
     var longitude2: Double? = null,
     var name: String? = null,
-    var type: String? = null
+    var type: String? = null,
 )
 
 class CapabilitiesBean {
@@ -136,7 +135,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
     protected fun mapToOperationBean(
         doc: Document,
         xPathsOfMethods: Array<String>,
-        platformsOfMethods: Array<Int>
+        platformsOfMethods: Array<Int>,
     ): OperationBean {
         val opBean = OperationBean()
         val methodAddresses = mutableListOf<String>()
@@ -155,13 +154,13 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
 
     protected fun mapToTimeReferenceBean(doc: Document, xPath: String): TimeReferenceBean? {
         val date = xPathUtils.getString(doc, xPath)
-        // determine type of date 
+        // determine type of date
         val dateType = getDateType(xPath)
 
         if (date != null && dateType != null) {
             return TimeReferenceBean(
                 dateType,
-                this.getSimpleDate(date)
+                this.getSimpleDate(date),
             )
         }
 
@@ -181,7 +180,6 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         val beans = mutableListOf<ConformityBean>()
         val conformityNodes = xPathUtils.getNodeList(doc, xPath)
         if (conformityNodes != null) {
-
             for (index in 0 until conformityNodes.length) {
                 val bean = ConformityBean()
                 val degree =
@@ -190,14 +188,14 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
                 // TODO: convert title to specific language!?
                 bean.specification = xPathUtils.getString(
                     conformityNodes.item(index),
-                    "inspire_common:Specification/inspire_common:Title"
+                    "inspire_common:Specification/inspire_common:Title",
                 )
                     ?.replace("\t", " ")
                     ?.replace("\n", " ")
                     ?.replace("  ", " ")
                 bean.publishDate = xPathUtils.getString(
                     conformityNodes.item(index),
-                    "inspire_common:Specification/inspire_common:DateOfPublication"
+                    "inspire_common:Specification/inspire_common:DateOfPublication",
                 )
                 beans.add(bean)
             }
@@ -219,10 +217,16 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
     }
 
     private fun getDateType(xPath: String): Int? {
-        if (xPath.indexOf("DateOfPublication") != -1) return 2 else if (xPath.indexOf("DateOfCreation") != -1) return 1 else if (xPath.indexOf(
-                "DateOfLastRevision"
+        if (xPath.indexOf("DateOfPublication") != -1) {
+            return 2
+        } else if (xPath.indexOf("DateOfCreation") != -1) {
+            return 1
+        } else if (xPath.indexOf(
+                "DateOfLastRevision",
             ) != -1
-        ) return 3
+        ) {
+            return 3
+        }
         return null
     }
 
@@ -288,7 +292,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
     protected fun mapVersionsFromCodelist(
         listId: String,
         versionList: List<String>,
-        versionSyslistMap: Map<String, String>
+        versionSyslistMap: Map<String, String>,
     ): List<KeyValue> {
         return versionList.map {
             val entryId = versionSyslistMap[it]
@@ -298,13 +302,15 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
                     log.warn("Version could not be mapped!")
                 }
                 KeyValue(entryId, value)
-            } else KeyValue(null, it)
+            } else {
+                KeyValue(null, it)
+            }
         }.toSet().toList()
     }
 
     protected fun mapValuesFromCodelist(
         listId: String,
-        values: List<String>
+        values: List<String>,
     ): List<KeyValue> {
         return values.map {
             val itemId = codelistHandler.getCodeListEntryId(listId, it, "de")
@@ -321,7 +327,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
     protected fun getOnlineResources(doc: Document?, xPath: String?): List<UrlBean> {
         val urls = mutableListOf<UrlBean>()
         val orNodes = xPathUtils.getNodeList(doc, xPath) ?: return urls
-        
+
         for (i in 0 until orNodes.length) {
             val url = UrlBean()
             val link = xPathUtils.getString(orNodes.item(i), "@xlink:href")
@@ -400,25 +406,25 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
             // add Temporal References if available
             mapToTimeReferenceBean(
                 doc,
-                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:DateOfCreation"
+                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:DateOfCreation",
             )?.let { bean.timeReference.add(it) }
             mapToTimeReferenceBean(
                 doc,
-                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:DateOfPublication"
+                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:DateOfPublication",
             )?.let { bean.timeReference.add(it) }
             mapToTimeReferenceBean(
                 doc,
-                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:DateOfLastRevision"
+                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:DateOfLastRevision",
             )?.let { bean.timeReference.add(it) }
 
             // add Timespan if available
             val startDate = xPathUtils.getString(
                 doc,
-                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:TemporalExtent/inspire_common:IntervalOfDates/inspire_common:StartingDate"
+                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:TemporalExtent/inspire_common:IntervalOfDates/inspire_common:StartingDate",
             )
             val endDate = xPathUtils.getString(
                 doc,
-                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:TemporalExtent/inspire_common:IntervalOfDates/inspire_common:EndDate"
+                "$xpathExtCap/inspire_common:TemporalReference/inspire_common:TemporalExtent/inspire_common:IntervalOfDates/inspire_common:EndDate",
             )
             if (startDate != null || endDate != null) {
                 bean.timeSpan = TimeReferenceBean().apply {
@@ -455,7 +461,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
     protected fun getSpatialReferenceSystems(
         doc: Node,
         xpathDefault: String,
-        xpathOther: String? = null
+        xpathOther: String? = null,
     ): List<KeyValue> {
         val result = mutableListOf<KeyValue>()
         val crs = xPathUtils.getStringArray(doc, xpathDefault)
@@ -477,7 +483,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
                 val splittedItem = item.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 splittedItem[splittedItem.size - 1]
             }
-            val value: String? = codelistHandler.getCodelistValue("100", itemId.toString());
+            val value: String? = codelistHandler.getCodelistValue("100", itemId.toString())
             val srsBean = if (value.isNullOrEmpty()) {
                 KeyValue(null, item)
             } else {
@@ -490,7 +496,6 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         }
         return result
     }
-
 
     /**
      * @param type
@@ -524,7 +529,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         val documentFilter = BoolFilter("OR", null, listOf(personFilter, organizationFilter), null, false)
         researchService.query(
             catalogId,
-            ResearchQuery(null, documentFilter)
+            ResearchQuery(null, documentFilter),
         ).hits.getOrNull(0)?.let {
             address.uuid = it._uuid
             address.type = it._type
@@ -536,14 +541,14 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
     protected fun checkForCoupledResource(
         researchService: ResearchService,
         catalogId: String,
-        id: String
+        id: String,
     ): GeoDataset? {
         val conditions = mutableListOf("document1.data ->> 'identifier' = '$id'", "deleted = 0")
         val documentFilter = BoolFilter("AND", conditions, null, null, false)
         val coupledResourceQuery = ResearchQuery(null, documentFilter)
         val hit = researchService.query(
             catalogId,
-            coupledResourceQuery
+            coupledResourceQuery,
         ).hits.getOrNull(0)
         if (hit != null) {
             return GeoDataset().apply {
@@ -556,18 +561,18 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         } else {
             // if no dataset was found then try another search if a namespace exists in the id
             // In this case remove the namespace search again (INGRID34-6)
-            val separatorPos = id.indexOf('#');
+            val separatorPos = id.indexOf('#')
             if (separatorPos != -1) {
-                return checkForCoupledResource(researchService, catalogId, id.substring(separatorPos + 1));
+                return checkForCoupledResource(researchService, catalogId, id.substring(separatorPos + 1))
             }
         }
 
-        return null;
+        return null
     }
 
     protected fun getKeyValue(codelistId: String, value: String?, valueField: String = "de"): KeyValue? {
         if (value == null) return null
-        
+
         if (codelistId == "6200" && value.lowercase() == "de") {
             val id = codelistHandler.getCodeListEntryId(codelistId, "Deutschland", "de")
             return KeyValue(id, null)
@@ -576,7 +581,7 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
             val id = codelistHandler.getCatalogCodelistKey(catalogId, codelistId, value)
             return KeyValue(id, value)
         }
-        
+
         var id = codelistHandler.getCodeListEntryId(codelistId, value, valueField)
         if (id == null && valueField == "de") {
             id = codelistHandler.getCodeListEntryId(codelistId, value, "en")

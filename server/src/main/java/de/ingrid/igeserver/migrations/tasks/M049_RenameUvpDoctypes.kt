@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
- * Rename document types 
+ * Rename document types
  *  UvpAdmissionProcedureDoc -> UvpApprovalProcedureDoc
  *  UvpNegativePreliminaryExaminationDoc -> UvpNegativePreliminaryAssessmentDoc
  */
@@ -46,16 +46,16 @@ class M049_RenameUvpDoctypes : MigrationBase("0.49") {
     override fun exec() {
         ClosableTransaction(transactionManager).use {
             val renameAdmissionProcedure = entityManager.createNativeQuery(
-                "UPDATE document SET type = 'UvpApprovalProcedureDoc' WHERE type = 'UvpAdmissionProcedureDoc'"
+                "UPDATE document SET type = 'UvpApprovalProcedureDoc' WHERE type = 'UvpAdmissionProcedureDoc'",
             )
             val renameNegativPreliminary = entityManager.createNativeQuery(
-                "UPDATE document SET type = 'UvpNegativePreliminaryAssessmentDoc' WHERE type = 'UvpNegativePreliminaryExaminationDoc'"
+                "UPDATE document SET type = 'UvpNegativePreliminaryAssessmentDoc' WHERE type = 'UvpNegativePreliminaryExaminationDoc'",
             )
             val renameAdmissionProcedureInWrapper = entityManager.createNativeQuery(
-                "UPDATE document_wrapper SET type = 'UvpApprovalProcedureDoc' WHERE type = 'UvpAdmissionProcedureDoc'"
+                "UPDATE document_wrapper SET type = 'UvpApprovalProcedureDoc' WHERE type = 'UvpAdmissionProcedureDoc'",
             )
             val renameNegativPreliminaryInWrapper = entityManager.createNativeQuery(
-                "UPDATE document_wrapper SET type = 'UvpNegativePreliminaryAssessmentDoc' WHERE type = 'UvpNegativePreliminaryExaminationDoc'"
+                "UPDATE document_wrapper SET type = 'UvpNegativePreliminaryAssessmentDoc' WHERE type = 'UvpNegativePreliminaryExaminationDoc'",
             )
 
             renameAdmissionProcedure.executeUpdate()
@@ -64,5 +64,4 @@ class M049_RenameUvpDoctypes : MigrationBase("0.49") {
             renameNegativPreliminaryInWrapper.executeUpdate()
         }
     }
-
 }

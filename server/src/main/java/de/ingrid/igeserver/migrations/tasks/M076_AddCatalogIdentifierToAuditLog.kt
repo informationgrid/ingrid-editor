@@ -52,5 +52,4 @@ class M076_AddCatalogIdentifierToAuditLog : MigrationBase("0.76") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

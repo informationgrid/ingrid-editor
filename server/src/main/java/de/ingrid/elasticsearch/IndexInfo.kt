@@ -24,8 +24,8 @@ import java.io.Serializable
 data class IndexInfo(
     var toIndex: String,
     var _toAlias: String? = null,
-    var docIdField: String? = null
-): Serializable {
+    var docIdField: String? = null,
+) : Serializable {
     private var realIndexName: String? = null
     fun getRealIndexName(): String = realIndexName ?: toIndex
 
@@ -35,7 +35,7 @@ data class IndexInfo(
 
     val toAlias = _toAlias
         get() = field ?: toIndex
-    
+
     companion object {
         private const val serialVersionUID = -2290409004042430234L
     }

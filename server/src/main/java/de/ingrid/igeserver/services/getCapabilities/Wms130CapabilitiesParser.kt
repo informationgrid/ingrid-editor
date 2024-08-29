@@ -26,14 +26,13 @@ import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 
-
 /**
  * @author André Wallat
  */
 class Wms130CapabilitiesParser(
     codelistHandler: CodelistHandler,
     private val researchService: ResearchService,
-    catalogId: String
+    catalogId: String,
 ) :
     GeneralCapabilitiesParser(XPathUtils(Wms130NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
@@ -83,7 +82,7 @@ class Wms130CapabilitiesParser(
         doc: Document,
         rootCRSs: List<KeyValue>,
         unionOfBoundingBoxes: LocationBean?,
-        commonKeywords: List<String>
+        commonKeywords: List<String>,
     ): List<GeoDataset> {
         // Spatial Reference Systems (SRS / CRS)
         // Note: The root <Layer> element shall include a sequence of zero or more
@@ -140,7 +139,7 @@ class Wms130CapabilitiesParser(
         val getCapabilitiesOp = OperationBean()
         getCapabilitiesOp.name = KeyValue(
             codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"),
-            "GetCapabilities"
+            "GetCapabilities",
         )
         getCapabilitiesOp.methodCall = "GetCapabilities"
         val getCapabilitiesOpPlatform: MutableList<Int> = ArrayList()
@@ -157,7 +156,7 @@ class Wms130CapabilitiesParser(
         val getMapOp = OperationBean()
         getMapOp.name = KeyValue(
             codelistHandler.getCodeListEntryId("5110", "GetMap", "de"),
-            "GetMap"
+            "GetMap",
         )
         getMapOp.methodCall = "GetMap"
         val getMapOpPlatform: MutableList<Int> = ArrayList()
@@ -175,7 +174,7 @@ class Wms130CapabilitiesParser(
             val getFeatureInfoOp = OperationBean()
             getFeatureInfoOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5110", "GetFeatureInfo", "de"),
-                "GetFeatureInfo"
+                "GetFeatureInfo",
             )
             getFeatureInfoOp.methodCall = "GetFeatureInfo"
             val getFeatureInfoOpPlatform: MutableList<Int> = ArrayList()
@@ -189,17 +188,17 @@ class Wms130CapabilitiesParser(
         }
         return operations
     }
-    
+
     private fun getAddress(doc: Document): AddressBean {
         val address = AddressBean()
         setNameInAddressBean(
             address,
-            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactPersonPrimary/wms:ContactPerson")
+            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactPersonPrimary/wms:ContactPerson"),
         )
         address.organization =
             xPathUtils.getString(
                 doc,
-                "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactPersonPrimary/wms:ContactOrganization"
+                "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactPersonPrimary/wms:ContactOrganization",
             )
 
         address.email =
@@ -214,12 +213,12 @@ class Wms130CapabilitiesParser(
             xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:PostCode")
         address.country = getKeyValue(
             "6200",
-            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:Country")
+            xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:Country"),
         )
         address.state = getKeyValue(
             "6250",
             xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:StateOrProvince"),
-            "name"
+            "name",
         )
         address.phone = xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactVoiceTelephone")
         // address.fax = xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactFacsimileTelephone")
@@ -258,7 +257,7 @@ class Wms130CapabilitiesParser(
     private fun getBoundingBoxesFromLayers(doc: Document): List<LocationBean> {
         val bboxes: MutableList<LocationBean> = ArrayList()
         val layers = xPathUtils.getNodeList(doc, "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer")
-        
+
         if (layers.length == 0) {
             val layer = xPathUtils.getNode(doc, "/wms:WMS_Capabilities/wms:Capability/wms:Layer")
             if (layer != null) {
@@ -267,7 +266,7 @@ class Wms130CapabilitiesParser(
             }
             return bboxes
         }
-        
+
         for (i in 0 until layers.length) {
             val layer = layers.item(i)
             val box = getBoundingBoxFromLayer(layer)

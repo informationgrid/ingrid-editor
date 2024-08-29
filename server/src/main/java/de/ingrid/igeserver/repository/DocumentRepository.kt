@@ -35,7 +35,7 @@ interface DocumentRepository : JpaRepository<Document, Int> {
     fun findAllByCatalogAndIsLatestIsTrueAndUuidIn(catalog: Catalog, uuid: List<String>): List<Document>
 
     // caution! no deleted, latest checks. used for post-migration
-    fun  findAllByCatalog_Identifier(catalog_identifier: String): List<Document>
+    fun findAllByCatalog_Identifier(catalog_identifier: String): List<Document>
 
     fun countByCatalog_IdentifierAndStateAndIsLatestIsTrue(catalog_identifier: String, state: DOCUMENT_STATE): Long
 
@@ -46,7 +46,7 @@ interface DocumentRepository : JpaRepository<Document, Int> {
     fun getByCatalog_IdentifierAndUuidAndState(
         catalog_identifier: String,
         uuid: String,
-        state: DOCUMENT_STATE
+        state: DOCUMENT_STATE,
     ): Document
 
     @Modifying
@@ -74,16 +74,18 @@ interface DocumentRepository : JpaRepository<Document, Int> {
         UPDATE document
         SET data = (replace(data\:\:text, :source, :target)\:\:jsonb)
         WHERE id IN :refIds
-        """, nativeQuery = true
+        """,
+        nativeQuery = true,
     )
     fun replaceReference(
         @Param("source") source: String,
         @Param("target") target: String,
-        @Param("refIds") refIds: List<Int>
+        @Param("refIds") refIds: List<Int>,
     )
 
     @Modifying
-    @Query(value = """
+    @Query(
+        value = """
         SELECT doc.id as docId
                      FROM catalog,
                           document_wrapper dw, document doc
@@ -92,16 +94,24 @@ interface DocumentRepository : JpaRepository<Document, Int> {
                        AND (doc.state = 'PUBLISHED' OR doc.state = 'DRAFT' OR doc.state = 'DRAFT_AND_PUBLISHED' OR doc.state = 'PENDING')
                        AND dw.category = 'data'
                        AND (replace(doc.data\:\:text, ':', '\\:') ilike %:source%)
-    """, nativeQuery = true)
+    """,
+        nativeQuery = true,
+    )
     fun getDocIdsWithReferenceTo(@Param("catalogIdent") catalogId: String, @Param("source") source: String): List<Int>
 
-    @Query("""
+    @Query(
+        """
         SELECT doc.uuid FROM document_wrapper dw, document doc, catalog cat WHERE dw.uuid = doc.uuid AND dw.deleted = 0 AND dw.catalog_id = cat.id AND doc.catalog_id = cat.id AND cat.identifier = :catalogIdentifier AND doc.data->>'organization' = :name
-    """, nativeQuery = true)
+    """,
+        nativeQuery = true,
+    )
     fun findAddressByOrganisationName(@Param("catalogIdentifier") catalogIdentifier: String, @Param("name") name: String): List<String>
 
-    @Query("""
+    @Query(
+        """
         SELECT doc.uuid FROM document_wrapper dw, document doc, catalog cat WHERE dw.uuid = doc.uuid AND dw.deleted = 0 AND dw.catalog_id = cat.id AND doc.catalog_id = cat.id AND cat.identifier = :catalogIdentifier AND doc.data->>'firstName' = :firstname AND doc.data->>'lastName' = :lastname
-    """, nativeQuery = true)
+    """,
+        nativeQuery = true,
+    )
     fun findAddressByPerson(@Param("catalogIdentifier") catalogIdentifier: String, @Param("firstname") firstname: String?, @Param("lastname") lastname: String?): List<String>
 }

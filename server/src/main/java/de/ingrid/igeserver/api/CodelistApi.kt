@@ -41,12 +41,12 @@ interface CodelistApi {
     @Operation
     @RequestMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.POST])
     fun updateCodelists(): ResponseEntity<List<CodeList>>
-    
+
     @Operation
     @RequestMapping(value = ["/{ids}"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     fun getCodelistsByIds(
         principal: Principal,
-        @Parameter(description = "The ID of the codelists.", required = true) @PathVariable("ids") ids: List<String>
+        @Parameter(description = "The ID of the codelists.", required = true) @PathVariable("ids") ids: List<String>,
     ): ResponseEntity<List<CodeList>>
 
     @Operation
@@ -58,16 +58,16 @@ interface CodelistApi {
     fun updateCatalogCodelist(
         principal: Principal,
         @Parameter() @PathVariable id: String,
-        @Parameter() @RequestBody codelist: Codelist
+        @Parameter() @RequestBody codelist: Codelist,
     ): ResponseEntity<Codelist>
-    
+
     @Operation
     @DeleteMapping(value = ["/manage/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun resetCatalogCodelist(
         principal: Principal,
-        @Parameter() @PathVariable id: String?
+        @Parameter() @PathVariable id: String?,
     ): ResponseEntity<List<CodeList>>
-    
+
     @Operation
     @PostMapping(value = ["/favorites/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun updateFavorites(
@@ -75,5 +75,4 @@ interface CodelistApi {
         @Parameter() @PathVariable id: String,
         @Parameter() @RequestBody favorites: List<String>?,
     ): ResponseEntity<Unit>
-
 }

@@ -76,7 +76,7 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
         println(result.toString())
 
         result.toPrettyString().shouldEqualJson(
-            getFile("ingrid/import/iso_geoservice_full_lfuBayern-expected.json")
+            getFile("ingrid/import/iso_geoservice_full_lfuBayern-expected.json"),
         )
     }
 

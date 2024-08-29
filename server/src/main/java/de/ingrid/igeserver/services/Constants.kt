@@ -48,7 +48,13 @@ const val FIELD_ARCHIVE = "archive"
 const val FIELD_VERSION = "_version"
 
 enum class DOCUMENT_STATE {
-    DRAFT, PUBLISHED, PENDING, DRAFT_AND_PUBLISHED, ARCHIVED, WITHDRAWN;
+    DRAFT,
+    PUBLISHED,
+    PENDING,
+    DRAFT_AND_PUBLISHED,
+    ARCHIVED,
+    WITHDRAWN,
+    ;
 
     @JsonValue
     fun getState(): String = when (name) {
@@ -58,13 +64,13 @@ enum class DOCUMENT_STATE {
         "ARCHIVED" -> "A"
         else -> "W"
     }
-
 }
 
 enum class DocumentCategory(val value: String) {
     // used in FIELD_CATEGORY
     DATA("data"),
     ADDRESS("address"),
+
     // used in FIELD_DOCUMENT_TYPE
-    FOLDER("FOLDER")
+    FOLDER("FOLDER"),
 }

@@ -44,7 +44,7 @@ class URLChecker(
     val notifier: JobsNotifier,
     val referenceHandlerFactory: ReferenceHandlerFactory,
     val urlRequestService: UrlRequestService,
-    val catalogService: CatalogService
+    val catalogService: CatalogService,
 ) : IgeJob() {
 
     companion object {
@@ -52,7 +52,6 @@ class URLChecker(
     }
 
     override val log = logger()
-
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun run(context: JobExecutionContext) {
@@ -73,7 +72,6 @@ class URLChecker(
                 }.also {
                     finishJob(context, it)
                     notifier.sendMessage(notificationType, it)
-
                 }
                 throw ClientException.withReason(msg)
             }
@@ -91,7 +89,8 @@ class URLChecker(
                         semaphore.withPermit {
                             notifier.sendMessage(
                                 notificationType,
-                                message.apply { this.progress = calcProgress(index, urls.size) })
+                                message.apply { this.progress = calcProgress(index, urls.size) },
+                            )
                             checkAndReportUrl(urlReport)
                         }
                     }
@@ -106,13 +105,13 @@ class URLChecker(
             }.also {
                 finishJob(context, it)
                 notifier.sendMessage(notificationType, it)
-
             }
             log.debug("Task finished: URLChecker for '${info.catalogId}'")
         } catch (ex: Exception) {
             notifier.endMessage(
                 notificationType,
-                message.apply { this.errors.add("Exception occurred: ${ex.message}") })
+                message.apply { this.errors.add("Exception occurred: ${ex.message}") },
+            )
             throw ex
         }
     }
@@ -132,7 +131,7 @@ class URLChecker(
     }
 
     private fun convertToUrlList(
-        docs: List<DocumentLinks>
+        docs: List<DocumentLinks>,
     ): List<UrlReport> {
         val urls = mutableMapOf<String, UrlReport>()
         docs.forEach { doc ->
@@ -156,11 +155,13 @@ class URLChecker(
 
     private suspend fun checkAndReportUrl(info: UrlReport) {
         return try {
-            (withContext(Dispatchers.IO) {
-                // encode URL to handle those with special characters like umlauts
-                // alternatively we might use: url.toURI().toASCIIString()
-                URL(UrlTool.getEncodedUnicodeUrl(info.url)).openConnection()
-            } as HttpURLConnection).let {
+            (
+                withContext(Dispatchers.IO) {
+                    // encode URL to handle those with special characters like umlauts
+                    // alternatively we might use: url.toURI().toASCIIString()
+                    URL(UrlTool.getEncodedUnicodeUrl(info.url)).openConnection()
+                } as HttpURLConnection
+                ).let {
                 it.connectTimeout = 3000
                 it.readTimeout = 1500
                 it.instanceFollowRedirects = true
@@ -179,6 +180,6 @@ class URLChecker(
         val profile: String,
         val catalogId: String,
         val referenceHandler: ReferenceHandler?,
-        val groupDocIds: List<Int>
+        val groupDocIds: List<Int>,
     )
 }

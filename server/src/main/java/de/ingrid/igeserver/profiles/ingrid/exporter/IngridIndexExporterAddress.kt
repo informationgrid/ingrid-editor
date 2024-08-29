@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service
 class IngridIndexExporterAddress(
     @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
     @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
-    documentWrapperRepository: DocumentWrapperRepository
+    documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
@@ -40,7 +40,6 @@ class IngridIndexExporterAddress(
         "application/json",
         "json",
         listOf("ingrid"),
-        false
+        false,
     )
-
 }

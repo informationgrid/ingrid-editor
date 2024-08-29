@@ -59,5 +59,4 @@ class M026_AddUserGroupTable : MigrationBase("0.26") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

@@ -50,7 +50,7 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
                     OR data->'references' @> '[{"uuidRef": "${doc.uuid}"}]' 
                     OR data->'parentIdentifier' @> (jsonb('"${doc.uuid}"')))
                 )
-            """.trimIndent()
+        """.trimIndent()
         val result = jdbcTemplate.queryForList(sqlQuery)
 
         return result.map { it["uuid"] as String }

@@ -54,5 +54,4 @@ class M034_ModifyPremissionGroupTable : MigrationBase("0.34") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

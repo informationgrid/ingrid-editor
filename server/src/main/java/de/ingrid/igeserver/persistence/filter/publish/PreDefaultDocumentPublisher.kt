@@ -64,7 +64,7 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService) : 
 
     private fun checkPublicationCondition(
         refData: DocumentData,
-        publicationDocTags: List<String>
+        publicationDocTags: List<String>,
     ) {
         val refPublicationDocTags =
             refData.wrapper.tags.filter { it == "intranet" || it == "amtsintern" }
@@ -79,9 +79,9 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService) : 
             throw ValidationException.withReason(
                 "Reference has wrong publication type condition: ${
                     publicationDocTags.joinToString(
-                        ","
-                    ).ifEmpty { "internet" } 
-                } => $tags"
+                        ",",
+                    ).ifEmpty { "internet" }
+                } => $tags",
             )
         }
     }

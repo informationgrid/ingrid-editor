@@ -44,9 +44,8 @@ import java.time.OffsetDateTime
 class IngridIndexExporter(
     @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
     @Qualifier("ingridLuceneExporter") val luceneExporter: IngridLuceneExporter,
-    val documentWrapperRepository: DocumentWrapperRepository
+    val documentWrapperRepository: DocumentWrapperRepository,
 ) : IgeExporter {
-
 
     override fun exportSql(catalogId: String): String {
         return "${super.exportSql(catalogId)} AND document.data ->> 'hideAddress' IS DISTINCT FROM 'true'"
@@ -63,7 +62,7 @@ class IngridIndexExporter(
         "json",
         listOf("ingrid"),
         isPublic = false,
-        useForPublish = true
+        useForPublish = true,
     )
 
     private lateinit var xpathUtils: XPathUtils
@@ -80,7 +79,7 @@ class IngridIndexExporter(
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val idf = idfExporter.run(doc, catalogId, options)
-        val luceneDoc = luceneExporter.run(doc, catalogId, options ) as String
+        val luceneDoc = luceneExporter.run(doc, catalogId, options) as String
 
         val mapper = jacksonObjectMapper()
         val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
@@ -113,25 +112,25 @@ class IngridIndexExporter(
             XMLUtils.createOrReplaceTextNode(
                 xpathUtils.getNode(
                     idf,
-                    "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:Date"
-                ), date
+                    "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:Date",
+                ),
+                date,
             )
         } else if (xpathUtils.nodeExists(idf, "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:DateTime")) {
             XMLUtils.createOrReplaceTextNode(
                 xpathUtils.getNode(
                     idf,
-                    "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:DateTime"
-                ), date
+                    "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:DateTime",
+                ),
+                date,
             )
         }
-
     }
 
     private fun getPreviousFingerprint(catalogId: String, uuid: String): FingerprintInfo? {
         val wrapper = documentWrapperRepository.findByCatalog_IdentifierAndUuid(catalogId, uuid)
         return wrapper.fingerprint?.find { it.exportType == typeId }
     }
-
 
     override fun calculateFingerprint(doc: Any): String {
         doc as ElasticDocument
@@ -141,7 +140,7 @@ class IngridIndexExporter(
         val idfDoc = convertStringToDocument(idf)
 
         return createFingerprint(
-            transformIDFtoIso(idfDoc!!).also { prepareIsoForFingerprinting(it) }
+            transformIDFtoIso(idfDoc!!).also { prepareIsoForFingerprinting(it) },
         )
     }
 

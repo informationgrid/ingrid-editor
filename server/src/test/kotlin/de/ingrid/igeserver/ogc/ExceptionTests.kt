@@ -25,17 +25,14 @@ import io.mockk.every
 import io.mockk.mockk
 import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.transaction.PlatformTransactionManager
-
 
 @WithMockUser(username = "user1", authorities = ["cat-admin"])
 class ExceptionTests : IntegrationTest() {
@@ -72,7 +69,6 @@ class ExceptionTests : IntegrationTest() {
         }.returns(true)
     }
 
-
     @Test
     fun getCollection() {
         mockMvc.perform(get("/api/ogc/collections/$collectionId"))
@@ -88,10 +84,9 @@ class ExceptionTests : IntegrationTest() {
 //            .andExpect(MockMvcResultMatchers.jsonPath("$.errorText").value("Resource of type 'collection' with id '$wrongCollectionId' is missing."))
     }
 
-
     @Test
     fun getRecord() {
-        for(format in formats) {
+        for (format in formats) {
             mockMvc.perform(get("/api/ogc/collections/$collectionId/items/$recordId").param("f", format))
                 .andDo(print())
                 .andExpect(status().isOk)
@@ -128,5 +123,4 @@ class ExceptionTests : IntegrationTest() {
                 .executeUpdate()
         }
     }
-
 }

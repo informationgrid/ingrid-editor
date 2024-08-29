@@ -39,7 +39,7 @@ class GemetThesaurusTest : ShouldSpec({
         thesaurus.search("Wald", searchOptionsExact) shouldBe listOf(Keyword("http://www.eionet.europa.eu/gemet/concept/9349", "Wald", "wood"))
     }
     should("return a list of matches to a given string with contains search") {
-        val results = thesaurus.search("Wald", searchOptions) 
+        val results = thesaurus.search("Wald", searchOptions)
         results shouldHaveAtLeastSize 10
     }
 })

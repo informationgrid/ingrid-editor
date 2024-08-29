@@ -52,7 +52,6 @@ class M074_UpdateGroups : MigrationBase("0.74") {
     @Autowired
     private lateinit var transactionManager: PlatformTransactionManager
 
-
     override fun exec() {
         log.info("Update acls for groups.")
 
@@ -69,9 +68,7 @@ class M074_UpdateGroups : MigrationBase("0.74") {
         }
     }
 
-
     private fun updateGroupSidsOfCatalog(catalogIdentifier: String) {
-
         ClosableTransaction(transactionManager).use {
             groupService
                 .getAll(catalogIdentifier)
@@ -83,11 +80,10 @@ class M074_UpdateGroups : MigrationBase("0.74") {
                                 UPDATE acl_sid
                                 SET sid = '$newSid'
                                 WHERE sid = '$legacySid';
-                            """.trimIndent()
+                    """.trimIndent()
 
                     entityManager.createNativeQuery(sql).executeUpdate()
                 }
         }
     }
 }
-

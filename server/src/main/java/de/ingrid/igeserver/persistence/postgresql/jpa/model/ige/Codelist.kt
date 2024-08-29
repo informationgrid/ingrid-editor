@@ -57,8 +57,7 @@ class Codelist {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var catalog: Catalog? = null
-    
+
     @Column
     var defaultEntry: String? = null
-
 }

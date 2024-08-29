@@ -24,7 +24,7 @@ data class ResearchQuery(
     val clauses: BoolFilter?,
     val orderByField: String? = "title",
     val orderByDirection: String? = "ASC",
-    val pagination: ResearchPaging = ResearchPaging()
+    val pagination: ResearchPaging = ResearchPaging(),
 )
 
 data class BoolFilter(
@@ -32,11 +32,11 @@ data class BoolFilter(
     val value: List<String>?,
     val clauses: List<BoolFilter>?,
     val parameter: List<String?>?,
-    val isFacet: Boolean = true
+    val isFacet: Boolean = true,
 )
 
 data class ResearchPaging(
     val page: Int = 1,
     val pageSize: Int = Int.MAX_VALUE,
-    val offset: Int = 0
+    val offset: Int = 0,
 )

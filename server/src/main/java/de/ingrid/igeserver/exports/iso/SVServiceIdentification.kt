@@ -45,7 +45,7 @@ open class SVServiceIdentification(
 )
 
 data class SpecificUsage(
-    @JacksonXmlProperty(localName = "MD_Usage") val usage: MDUsage?
+    @JacksonXmlProperty(localName = "MD_Usage") val usage: MDUsage?,
 )
 
 data class MDUsage(
@@ -54,17 +54,17 @@ data class MDUsage(
 )
 
 data class Status(
-    @JacksonXmlProperty(localName = "MD_ProgressCode") val code: CodelistAttributes?
+    @JacksonXmlProperty(localName = "MD_ProgressCode") val code: CodelistAttributes?,
 )
 
 data class GraphicOverview(
-    @JacksonXmlProperty(localName = "MD_BrowseGraphic") val mdBrowseGraphic: MDBrowseGraphic?
+    @JacksonXmlProperty(localName = "MD_BrowseGraphic") val mdBrowseGraphic: MDBrowseGraphic?,
 )
 
 data class MDBrowseGraphic(
     val fileName: CharacterString,
     val fileDescription: CharacterString?,
-    val fileType: CharacterString?
+    val fileType: CharacterString?,
 )
 
 data class OperatesOn(
@@ -74,7 +74,7 @@ data class OperatesOn(
 )
 
 data class ContainsOperation(
-    @JacksonXmlProperty(localName = "SV_OperationMetadata") val svOperationMetadata: SVOperationMetadata?
+    @JacksonXmlProperty(localName = "SV_OperationMetadata") val svOperationMetadata: SVOperationMetadata?,
 )
 
 data class SVOperationMetadata(
@@ -85,20 +85,20 @@ data class SVOperationMetadata(
 )
 
 data class DCPList(
-    @JacksonXmlProperty(localName = "DCPList") val code: CodelistAttributes?
+    @JacksonXmlProperty(localName = "DCPList") val code: CodelistAttributes?,
 
 )
 
 data class ConnectPoint(
-    @JacksonXmlProperty(localName = "CI_OnlineResource") val ciOnlineResource: CIOnlineResource?
+    @JacksonXmlProperty(localName = "CI_OnlineResource") val ciOnlineResource: CIOnlineResource?,
 )
 
 data class CouplingType(
-    @JacksonXmlProperty(localName = "SV_CouplingType") val code: CodelistAttributes?
+    @JacksonXmlProperty(localName = "SV_CouplingType") val code: CodelistAttributes?,
 )
 
 data class CoupledResource(
-    @JacksonXmlProperty(localName = "SV_CoupledResource") val resource: SVCoupledResource?
+    @JacksonXmlProperty(localName = "SV_CoupledResource") val resource: SVCoupledResource?,
 )
 
 data class SVCoupledResource(
@@ -115,16 +115,16 @@ class LocalName {
 }
 
 data class ResourceConstraint(
-    @JacksonXmlProperty(localName = "MD_LegalConstraints") val legalConstraint: MDLegalConstraint?
+    @JacksonXmlProperty(localName = "MD_LegalConstraints") val legalConstraint: MDLegalConstraint?,
 )
 
 data class MDLegalConstraint(
     val useLimitation: List<CharacterString>?,
     val accessConstraints: List<MDRestrictionCode>?,
     val useConstraints: List<MDRestrictionCode>?,
-    val otherConstraints: List<CharacterString>?
+    val otherConstraints: List<CharacterString>?,
 )
 
 data class MDRestrictionCode(
-    @JacksonXmlProperty(localName = "MD_RestrictionCode") val code: CodelistAttributes?
+    @JacksonXmlProperty(localName = "MD_RestrictionCode") val code: CodelistAttributes?,
 )

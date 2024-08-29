@@ -34,7 +34,7 @@ import kotlin.reflect.KClass
 fun amendHMDKDescriptiveKeywords(
     docData: JsonNode,
     codelists: CodelistTransformer,
-    previousKeywords: List<Thesaurus>
+    previousKeywords: List<Thesaurus>,
 ): List<Thesaurus> {
     val publicationHmbTG = docData.getBoolean("publicationHmbTG") ?: false
     val informationHmbTG = docData.get("informationHmbTG")
@@ -49,39 +49,41 @@ fun amendHMDKDescriptiveKeywords(
             keywords = informationHmbTG.map { KeywordIso(it.key) },
             date = "2013-08-02",
             name = "HmbTG-Informationsgegenstand",
-            showType = true
+            showType = true,
         )
         keywords += Thesaurus(keywords = informationHmbTG.map { KeywordIso(it.value) })
     }
 
-    if (publicationHmbTG)
+    if (publicationHmbTG) {
         keywords += Thesaurus(keywords = listOf(KeywordIso(name = "hmbtg", link = null)))
+    }
 
     return keywords
 }
-
 
 fun getMapUrl(doc: Document?, tags: List<String>): String {
     // if the service has access constraints, we do not want to show the mapUrl
     if (doc == null || (doc.data.get("service")?.getBoolean("hasAccessConstraints") == true)) return ""
 
     return generateMapUrl(
-        if (doc.type == "InGridGeoService")
-        // all coupled resources uuids for services
+        if (doc.type == "InGridGeoService") {
+            // all coupled resources uuids for services
             getMapLinkUuidsFromService(doc)
-        else
-        // only use the uuid of the geodataset
+        } else {
+            // only use the uuid of the geodataset
             listOf(doc.uuid)
-        , tags
+        },
+        tags,
     )
 }
 
 private fun generateMapUrl(uuids: List<String>, tags: List<String>): String {
     val baseUrl =
-        if (tags.contains("intranet") || tags.contains("amtsintern"))
+        if (tags.contains("intranet") || tags.contains("amtsintern")) {
             "https://geofos.fhhnet.stadt.hamburg.de/fhh-atlas/?mdid="
-        else
+        } else {
             "https://geoportal-hamburg.de/geo-online/?mdid="
+        }
 
     return baseUrl + uuids.joinToString(",")
 }
@@ -90,7 +92,6 @@ private fun getMapLinkUuidsFromService(doc: Document) = doc.data.get("service")?
     ?.filter { !it.get("isExternalRef").asBoolean() }
     ?.mapNotNull { it.getString("uuid") }
     ?: emptyList()
-
 
 fun getHmdkModelMetaverTransformerClass(docType: String): KClass<out Any>? {
     return when (docType) {

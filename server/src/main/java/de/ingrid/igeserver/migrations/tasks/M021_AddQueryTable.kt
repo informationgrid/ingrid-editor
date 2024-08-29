@@ -63,5 +63,4 @@ class M021_AddQueryTable : MigrationBase("0.21") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

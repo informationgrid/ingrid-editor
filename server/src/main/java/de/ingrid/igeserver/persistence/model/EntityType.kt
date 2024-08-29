@@ -27,7 +27,6 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 
-
 /**
  * Base interface for all entity types
  */
@@ -42,7 +41,6 @@ abstract class EntityType {
     @Autowired
     @Lazy
     protected lateinit var documentService: DocumentService
-
 
     /**
      * Category of the entity type
@@ -125,7 +123,6 @@ abstract class EntityType {
      */
 //    open fun updateReferences(doc: Document, options: UpdateReferenceOptions) {}
 
-
     /**
      * Extract referenced uploads
      */
@@ -147,15 +144,17 @@ abstract class EntityType {
         // TODO AW: the extra mapping should not be needed once addresses will be loaded explicitly
         return if (options.forExport) {
             getRawJsonFromDocument(documentData.document, true)
-        } else getRawJsonFromDocument(documentData.document).apply {
-            put(FIELD_UUID, uuid)
-            put(FIELD_STATE, documentData.document.state.getState())
-            put(FIELD_DOCUMENT_TYPE, documentData.document.type)
-            put(FIELD_CREATED, documentData.document.created.toString())
-            put(FIELD_MODIFIED, documentData.document.modified.toString())
-            put(FIELD_CONTENT_MODIFIED, documentData.document.contentmodified.toString())
-            put(FIELD_ID, documentData.wrapper.id)
-            put(FIELD_PARENT, documentData.wrapper.id)
+        } else {
+            getRawJsonFromDocument(documentData.document).apply {
+                put(FIELD_UUID, uuid)
+                put(FIELD_STATE, documentData.document.state.getState())
+                put(FIELD_DOCUMENT_TYPE, documentData.document.type)
+                put(FIELD_CREATED, documentData.document.created.toString())
+                put(FIELD_MODIFIED, documentData.document.modified.toString())
+                put(FIELD_CONTENT_MODIFIED, documentData.document.contentmodified.toString())
+                put(FIELD_ID, documentData.wrapper.id)
+                put(FIELD_PARENT, documentData.wrapper.id)
+            }
         }
     }
 
@@ -165,11 +164,10 @@ abstract class EntityType {
             ?.map { it.get(field).get("uri").textValue() }
             ?: emptyList()
     }
-
 }
 
 data class UpdateReferenceOptions(
     val onlyPublished: Boolean = false,
     val forExport: Boolean = false,
-    val catalogId: String? = null
+    val catalogId: String? = null,
 )

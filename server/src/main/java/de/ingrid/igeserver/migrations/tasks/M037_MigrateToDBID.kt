@@ -68,7 +68,6 @@ class M037_MigrateToDBID : MigrationBase("0.37") {
 
     override fun exec() {
         ClosableTransaction(transactionManager).use {
-
             try {
                 migrateAclClass()
                 migrateAclObjectIdentities()
@@ -78,13 +77,12 @@ class M037_MigrateToDBID : MigrationBase("0.37") {
                 it.markForRollback()
                 throw e
             }
-
         }
     }
 
     private fun migratePermissions() {
-
-        @Suppress("UNCHECKED_CAST") val groups: List<Group> = entityManager.createQuery("SELECT g FROM Group g").resultList as List<Group>
+        @Suppress("UNCHECKED_CAST")
+        val groups: List<Group> = entityManager.createQuery("SELECT g FROM Group g").resultList as List<Group>
         groups.forEach { group ->
             // val catalogIdentifier = group.catalog?.identifier
             val docPermissionChanges = migratePermissionFor(group.permissions?.documents)
@@ -93,7 +91,6 @@ class M037_MigrateToDBID : MigrationBase("0.37") {
                 entityManager.persist(group)
             }
         }
-
     }
 
     private fun migratePermissionFor(permissions: List<JsonNode>?): Boolean {
@@ -102,7 +99,6 @@ class M037_MigrateToDBID : MigrationBase("0.37") {
         permissions.forEach { permission ->
             permission as ObjectNode
             val uuid = permission.get("uuid").asText()
-
 
             try {
                 val id = entityManager.createQuery("SELECT dw.id FROM DocumentWrapper dw WHERE dw.uuid = :uuid")
@@ -128,7 +124,6 @@ class M037_MigrateToDBID : MigrationBase("0.37") {
     }
 
     private fun addChildren(id: Int, previousUuids: MutableList<Int>) {
-
         previousUuids.add(id)
         val childrenIds = entityManager
             .createQuery("SELECT dw.id FROM DocumentWrapper dw where dw.parent is not null and dw.parent.id is $id")
@@ -146,7 +141,6 @@ class M037_MigrateToDBID : MigrationBase("0.37") {
     }
 
     private fun migrateAclObjectIdentities() {
-
         removeInvalidACLs()
 
         val objIdentities = entityManager.createNativeQuery(sqlAllObjectIdentities).resultList
@@ -161,17 +155,14 @@ class M037_MigrateToDBID : MigrationBase("0.37") {
     }
 
     private fun removeInvalidACLs() {
-
         val numRemoved = entityManager
             .createNativeQuery("DELETE FROM acl_object_identity WHERE id IN (SELECT acl.id FROM acl_object_identity acl LEFT OUTER JOIN document_wrapper dw ON acl.object_id_identity = dw.uuid WHERE dw.id IS NULL)")
             .executeUpdate()
 
         log.info("Removed $numRemoved rows from acl_object_identity, since they were not connected to a document anymore")
-
     }
 
     private fun migrateAclClass() {
         entityManager.createNativeQuery(sqlUpdateAclClass).executeUpdate()
     }
-
 }

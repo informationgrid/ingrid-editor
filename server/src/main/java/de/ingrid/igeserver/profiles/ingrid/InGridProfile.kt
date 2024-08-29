@@ -57,7 +57,7 @@ class InGridProfile(
     @JsonIgnore @Lazy val documentService: DocumentService,
     @JsonIgnore val query: QueryRepository,
     @JsonIgnore val dateService: DateService,
-    @JsonIgnore val openDataCategory: OpenDataCategory
+    @JsonIgnore val openDataCategory: OpenDataCategory,
 ) : CatalogProfile {
 
     @Autowired
@@ -81,37 +81,47 @@ class InGridProfile(
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Allgemein", arrayOf(
+                "state",
+                "Allgemein",
+                arrayOf(
                     Published(),
                     ExceptFolders(),
-                    TitleSearch()
+                    TitleSearch(),
                 ),
                 viewComponent = ViewComponent.CHECKBOX,
-                combine = Operator.AND
+                combine = Operator.AND,
             ),
             FacetGroup(
-                "spatial", "Raumbezug", arrayOf(
-                    SpatialInGrid()
+                "spatial",
+                "Raumbezug",
+                arrayOf(
+                    SpatialInGrid(),
                 ),
-                viewComponent = ViewComponent.SPATIAL
+                viewComponent = ViewComponent.SPATIAL,
             ),
             FacetGroup(
-                "timeRef", "Zeitbezug", arrayOf(
-                    TimeSpan()
+                "timeRef",
+                "Zeitbezug",
+                arrayOf(
+                    TimeSpan(),
                 ),
-                viewComponent = ViewComponent.TIMESPAN
+                viewComponent = ViewComponent.TIMESPAN,
             ),
             FacetGroup(
-                "docType", "Datensatztyp", arrayOf(
-                    DocumentTypes()
+                "docType",
+                "Datensatztyp",
+                arrayOf(
+                    DocumentTypes(),
                 ),
-                viewComponent = ViewComponent.SELECT
+                viewComponent = ViewComponent.SELECT,
             ),
             FacetGroup(
-                "openDataCategory", "OpenData Kategorie", arrayOf(
-                    openDataCategory
+                "openDataCategory",
+                "OpenData Kategorie",
+                arrayOf(
+                    openDataCategory,
                 ),
-                viewComponent = ViewComponent.SELECT
+                viewComponent = ViewComponent.SELECT,
             ),
         )
     }
@@ -119,12 +129,14 @@ class InGridProfile(
     override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Allgemein", arrayOf(
+                "state",
+                "Allgemein",
+                arrayOf(
                     Published(),
-                    ExceptFolders()
+                    ExceptFolders(),
                 ),
-                viewComponent = ViewComponent.CHECKBOX
-            )
+                viewComponent = ViewComponent.CHECKBOX,
+            ),
         )
     }
 
@@ -146,7 +158,7 @@ class InGridProfile(
             null -> {
                 codelistHandler.removeAndAddCodelists(
                     catalogId,
-                    listOf(codelist6006, codelist1350, codelist6250, codelist3535, codelist3555)
+                    listOf(codelist6006, codelist1350, codelist6250, codelist3535, codelist3555),
                 )
             }
 
@@ -300,13 +312,14 @@ class InGridProfile(
             description = "Zeigt alle Dokumente an, die keine Adresse angegeben haben"
             data = jacksonObjectMapper().createObjectNode().apply {
                 put(
-                    "sql", """
+                    "sql",
+                    """
                 SELECT document1.*, document_wrapper.category
                 FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid
                 WHERE document1.is_latest = true AND document_wrapper.category = 'data'
                   AND document_wrapper.type <> 'FOLDER'
                   AND (data ->> 'pointOfContact' IS NULL OR data -> 'pointOfContact' = '[]'\:\:jsonb)
-            """.trimIndent()
+                    """.trimIndent(),
                 )
             }
             global = true
@@ -323,7 +336,7 @@ class InGridProfile(
                     CREATE INDEX IF NOT EXISTS parentIdentGin  ON document USING gin((data -> 'parentIdentifier'));
                     CREATE INDEX IF NOT EXISTS coupledResourcesGin ON document USING gin((data->'service'->'coupledResources'));
                     CREATE INDEX IF NOT EXISTS referencesGin ON document USING gin((data->'references'));
-                """.trimIndent()
+                    """.trimIndent(),
                 )
                 .executeUpdate()
         }

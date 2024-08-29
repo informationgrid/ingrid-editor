@@ -22,10 +22,10 @@ package de.ingrid.igeserver.model
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 
 data class IndexCronOptions(
-    val cronPattern: String
+    val cronPattern: String,
 )
 
 data class IndexOptions(
     val cronPattern: String,
-    val exports: List<ExportConfig>
+    val exports: List<ExportConfig>,
 )

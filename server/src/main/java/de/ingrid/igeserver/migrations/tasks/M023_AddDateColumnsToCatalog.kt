@@ -49,7 +49,5 @@ class M023_AddDateColumnsToCatalog : MigrationBase("0.23") {
         ClosableTransaction(transactionManager).use {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
-
     }
-
 }

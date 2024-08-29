@@ -40,7 +40,7 @@ class GroupsApiController(
     private val catalogService: CatalogService,
     private val groupService: GroupService,
     private val igeAclService: IgeAclService,
-    private val authUtils: AuthUtils
+    private val authUtils: AuthUtils,
 ) : GroupsApi {
 
     override fun createGroup(principal: Principal, group: Group): ResponseEntity<Group> {
@@ -48,7 +48,7 @@ class GroupsApiController(
         // check if user has permission to create group
         if (!igeAclService.hasRightsForGroup(
                 principal as Authentication,
-                group
+                group,
             )
         ) {
             return ResponseEntity(HttpStatus.FORBIDDEN)
@@ -93,48 +93,53 @@ class GroupsApiController(
         groups = groups
             .filter { principalHasRightsForGroupsPermissions(principalId, principal, it) }
 
-        return ResponseEntity.ok(groups.map {
-            FrontendGroup(it, userBelongsToGroup(userGroupIds, it))
-        })
+        return ResponseEntity.ok(
+            groups.map {
+                FrontendGroup(it, userBelongsToGroup(userGroupIds, it))
+            },
+        )
     }
 
     private fun principalHasRightsForGroupsPermissions(
         principalId: String,
         principal: Principal,
-        group: Group
+        group: Group,
     ) = group.manager?.userId == principalId || igeAclService.hasRightsForGroup(
         principal as Authentication,
-        group
+        group,
     )
 
     private fun userBelongsToGroup(
         userGroupIds: List<Int>,
-        group: Group
+        group: Group,
     ) = userGroupIds.contains(group.id!!)
 
     private fun userBelongsToGroup(
         principal: Principal,
-        groupId: Int
+        groupId: Int,
     ): Boolean {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val userGroupIds = catalogService.getUser(userId)?.groups?.map { it.id!! } ?: emptyList()
         return userGroupIds.contains(groupId)
     }
 
-
     override fun updateGroup(principal: Principal, id: Int, group: Group): ResponseEntity<Group> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isCatAdmin = authUtils.isAdmin(principal)
         // user is not allowed to edit groups he is a member of except for cat admin
-        if (userBelongsToGroup(principal, group.id!!) && !isCatAdmin) return ResponseEntity.status(HttpStatus.FORBIDDEN)
-            .build()
+        if (userBelongsToGroup(principal, group.id!!) && !isCatAdmin) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .build()
+        }
 
         // check if user still would have rights to edited group
         if (!igeAclService.hasRightsForGroup(
                 principal as Authentication,
-                group
+                group,
             )
-        ) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        ) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
 
         val updatedGroup = groupService.update(catalogId, id, group, true)
         return ResponseEntity.ok(updatedGroup)
@@ -143,9 +148,11 @@ class GroupsApiController(
     override fun getUsersOfGroup(principal: Principal, id: Int): ResponseEntity<List<UserResponse>> {
         val users = groupService.getUsersOfGroup(id, principal)
         val editableUsernames = catalogService.filterEditableUsers(principal, users.map { it.login })
-        return ResponseEntity.ok(users.map {
-            UserResponse(it, readOnly = editableUsernames.contains(it.login).not())
-        })
+        return ResponseEntity.ok(
+            users.map {
+                UserResponse(it, readOnly = editableUsernames.contains(it.login).not())
+            },
+        )
     }
 
     override fun getManagerOfGroup(principal: Principal, id: Int): ResponseEntity<User> {
@@ -154,7 +161,6 @@ class GroupsApiController(
             null -> ResponseEntity.notFound().build()
             else -> ResponseEntity.ok(User(manager.userId))
         }
-
     }
 
     override fun updateManager(principal: Principal, id: Int, userId: String): ResponseEntity<Group> {

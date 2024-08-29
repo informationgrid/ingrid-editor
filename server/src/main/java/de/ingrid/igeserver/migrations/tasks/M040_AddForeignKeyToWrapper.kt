@@ -46,5 +46,4 @@ class M040_AddForeignKeyToWrapper : MigrationBase("0.40") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

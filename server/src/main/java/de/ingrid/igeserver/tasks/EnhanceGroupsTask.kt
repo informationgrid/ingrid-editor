@@ -51,7 +51,7 @@ class EnhanceGroupsTask(
         val catalogs = getCatalogsForTask()
         if (catalogs.isEmpty()) return
 
-        setAdminAuthentication("EnhanceGroups","Task")
+        setAdminAuthentication("EnhanceGroups", "Task")
 
         catalogs.forEach { catalog ->
             log.info("Execute EnhanceGroupTask for catalog: $catalog")
@@ -61,9 +61,7 @@ class EnhanceGroupsTask(
                 log.info("Finished EnhanceGroupTask for catalog: $catalog")
             }
         }
-
     }
-
 
     fun enhanceGroupsWithReferencedAddresses(catalogIdentifier: String) {
         groupService
@@ -84,7 +82,6 @@ class EnhanceGroupsTask(
                             .put("isFolder", false)
                     }
 
-
                 val addressPermissions = group.permissions?.addresses ?: emptyList()
                 group.permissions?.addresses = addressPermissions + newAddressPermissions
 
@@ -92,21 +89,20 @@ class EnhanceGroupsTask(
             }
     }
 
-
     private fun getAllAccessibleAddresses(
         group: Group,
-        catalogIdentifier: String
+        catalogIdentifier: String,
     ): Set<Int> = this.getAllAccessibleDatasets(group, catalogIdentifier, true)
 
     private fun getAllAccessibleDocuments(
         group: Group,
-        catalogIdentifier: String
+        catalogIdentifier: String,
     ): Set<Int> = this.getAllAccessibleDatasets(group, catalogIdentifier, false)
 
     private fun getAllAccessibleDatasets(
         group: Group,
         catalogIdentifier: String,
-        forAddress: Boolean = false
+        forAddress: Boolean = false,
     ): Set<Int> {
         val rootIds = aclService.getDatasetIdsSetInGroups(listOf(group), isAddress = forAddress)
         val rootDescendentIds = rootIds.flatMap {
@@ -117,7 +113,7 @@ class EnhanceGroupsTask(
 
     private fun getReferencedAddressIds(
         docIds: Set<Int>,
-        catalogIdentifier: String
+        catalogIdentifier: String,
     ): Set<Int> {
         return docIds
             .map { documentService.getWrapperById(it) }
@@ -127,17 +123,17 @@ class EnhanceGroupsTask(
 
     private fun getAllReferencedDocumentIds(
         wrapper: DocumentWrapper,
-        catalogIdentifier: String
+        catalogIdentifier: String,
     ) = listOf(
         DOCUMENT_STATE.PUBLISHED,
         DOCUMENT_STATE.DRAFT,
         DOCUMENT_STATE.DRAFT_AND_PUBLISHED,
-        DOCUMENT_STATE.PENDING
+        DOCUMENT_STATE.PENDING,
     ).mapNotNull {
         try {
             documentService.docRepo.getByCatalog_IdentifierAndUuidAndState(catalogIdentifier, wrapper.uuid, it)
         } catch (e: Exception) {
-            //no document with specific state found
+            // no document with specific state found
             null
         }
     }.flatMap {
@@ -149,13 +145,12 @@ class EnhanceGroupsTask(
         }
     }
 
-
     private fun getCatalogsForTask(): List<String> {
         return try {
             entityManager
                 .createQuery(
                     "SELECT version FROM VersionInfo version WHERE version.key = 'doEnhanceGroups'",
-                    VersionInfo::class.java
+                    VersionInfo::class.java,
                 )
                 .resultList
                 .map { it.value!! }
@@ -168,9 +163,8 @@ class EnhanceGroupsTask(
     private fun removePostMigrationInfo(catalogIdentifier: String) {
         entityManager
             .createQuery(
-                "DELETE FROM VersionInfo version WHERE version.key = 'doEnhanceGroups' AND version.value = '${catalogIdentifier}'"
+                "DELETE FROM VersionInfo version WHERE version.key = 'doEnhanceGroups' AND version.value = '$catalogIdentifier'",
             )
             .executeUpdate()
     }
-
 }

@@ -36,7 +36,6 @@ import de.ingrid.igeserver.research.quickfilter.Spatial
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.services.*
 import de.ingrid.igeserver.utils.AuthUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
@@ -46,7 +45,7 @@ class UvpProfile(
     @JsonIgnore val query: QueryRepository,
     @JsonIgnore val dateService: DateService,
     @JsonIgnore val authUtils: AuthUtils,
-    @JsonIgnore val behaviourService: BehaviourService
+    @JsonIgnore val behaviourService: BehaviourService,
 ) : CatalogProfile {
 
     companion object {
@@ -62,68 +61,83 @@ class UvpProfile(
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Allgemein", arrayOf(
+                "state",
+                "Allgemein",
+                arrayOf(
                     Published(),
                     ExceptFolders(),
-                    TitleSearch()
+                    TitleSearch(),
                 ),
                 viewComponent = ViewComponent.CHECKBOX,
-                combine = Operator.AND
+                combine = Operator.AND,
             ),
             FacetGroup(
-                "spatial", "Raumbezug", arrayOf(
-                    Spatial()
+                "spatial",
+                "Raumbezug",
+                arrayOf(
+                    Spatial(),
                 ),
-                viewComponent = ViewComponent.SPATIAL
+                viewComponent = ViewComponent.SPATIAL,
             ),
             FacetGroup(
-                "timeRef", "Zeitbezug", arrayOf(
-                    TimeSpan()
+                "timeRef",
+                "Zeitbezug",
+                arrayOf(
+                    TimeSpan(),
                 ),
-                viewComponent = ViewComponent.TIMESPAN
+                viewComponent = ViewComponent.TIMESPAN,
             ),
             FacetGroup(
-                "docType", "Verfahrenstyp", arrayOf(
-                    ProcedureTypes()
+                "docType",
+                "Verfahrenstyp",
+                arrayOf(
+                    ProcedureTypes(),
                 ),
-                viewComponent = ViewComponent.SELECT
+                viewComponent = ViewComponent.SELECT,
             ),
             FacetGroup(
-                "eiaNumber", "UVP Nummer", arrayOf(
-                    EIANumber()
+                "eiaNumber",
+                "UVP Nummer",
+                arrayOf(
+                    EIANumber(),
                 ),
-                viewComponent = ViewComponent.SELECT
+                viewComponent = ViewComponent.SELECT,
             ),
             FacetGroup(
-                "processStep", "Verfahrensschritt", arrayOf(
-                    ProcessStep()
+                "processStep",
+                "Verfahrensschritt",
+                arrayOf(
+                    ProcessStep(),
                 ),
-                viewComponent = ViewComponent.SELECT
-            )
+                viewComponent = ViewComponent.SELECT,
+            ),
         )
     }
 
     override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Allgemein", arrayOf(
+                "state",
+                "Allgemein",
+                arrayOf(
                     Published(),
-                    ExceptFolders()
+                    ExceptFolders(),
                 ),
-                viewComponent = ViewComponent.CHECKBOX
-            )
+                viewComponent = ViewComponent.CHECKBOX,
+            ),
         )
     }
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
-
     }
 
     override fun initCatalogQueries(catalogId: String) {
-        val behaviours = listOf("plugin.tags", "plugin.assigned.user").map { Behaviour().apply {
-            name = it
-            active = false
-        }}
+        val behaviours = listOf("plugin.tags", "plugin.assigned.user").map {
+            Behaviour().apply {
+                name = it
+                active = false
+            } 
+        }
         behaviourService.save(catalogId, behaviours)
     }
 
@@ -142,17 +156,16 @@ class UvpProfile(
         val isAdmin = authUtils.isAdmin(principal)
         val isMdAdmin = authUtils.containsRole(principal, "md-admin")
 
-        return if (isAdmin)
-        // catalog and super admins can create uvp report
+        return if (isAdmin) {
+            // catalog and super admins can create uvp report
             permissions + "can_create_uvp_report"
-        else if (isMdAdmin)
+        } else if (isMdAdmin) {
             permissions
-        else {
+        } else {
             // authors can not import or export
             permissions.filterNot {
                 listOf(Permissions.can_import.name, Permissions.can_export.name).contains(it)
             }
         }
-
     }
 }

@@ -45,5 +45,4 @@ class Role {
 
     @OneToMany(mappedBy = "role")
     var users: MutableSet<UserInfo> = HashSet()
-
 }

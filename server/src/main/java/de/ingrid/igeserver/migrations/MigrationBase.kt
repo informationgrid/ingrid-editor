@@ -20,7 +20,9 @@
 package de.ingrid.igeserver.migrations
 
 enum class VersionCompare {
-    SAME, LOWER, HIGHER
+    SAME,
+    LOWER,
+    HIGHER,
 }
 
 abstract class MigrationBase(val versionString: String) : MigrationStrategy {

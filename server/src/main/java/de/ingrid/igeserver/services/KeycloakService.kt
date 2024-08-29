@@ -54,7 +54,6 @@ import java.net.URI
 import java.security.Principal
 import java.util.*
 
-
 @Service
 @Profile("!dev")
 class KeycloakService : UserManagementService {
@@ -71,7 +70,6 @@ class KeycloakService : UserManagementService {
         fun realm(): RealmResource {
             return client.realm(realm)
         }
-
     }
 
     private val log = LogManager.getLogger(KeycloakService::class.java)
@@ -124,7 +122,6 @@ class KeycloakService : UserManagementService {
     }
 
     override fun getUsers(): Set<User> {
-
         try {
             return keycloakClient.realm().users().list()
                 .map { user -> mapUser(user) }
@@ -132,12 +129,11 @@ class KeycloakService : UserManagementService {
         } catch (e: Exception) {
             throw ServerException.withReason("Failed to retrieve users.", e)
         }
-
     }
 
     private fun getUsersWithRole(
         realm: RealmResource,
-        ignoreUsers: Set<User> = emptySet()
+        ignoreUsers: Set<User> = emptySet(),
     ): List<User> {
         return try {
             val roles = realm.roles()
@@ -154,7 +150,7 @@ class KeycloakService : UserManagementService {
 
     private fun getUsersInGroupsWithRole(
         realm: RealmResource,
-        ignoreUsers: Set<User> = emptySet()
+        ignoreUsers: Set<User> = emptySet(),
     ): List<User> {
         return try {
             val groups = realm.groups()
@@ -168,7 +164,6 @@ class KeycloakService : UserManagementService {
             emptyList()
         }
     }
-
 
     fun initAdminClient(): KeycloakWithRealm {
         val client: Keycloak = KeycloakBuilder.builder()
@@ -282,11 +277,13 @@ class KeycloakService : UserManagementService {
 
         val keycloakUser = mapToKeycloakUser(user).apply {
             requiredActions = listOf("UPDATE_PASSWORD")
-            credentials = listOf(CredentialRepresentation().apply {
-                type = CredentialRepresentation.PASSWORD
-                isTemporary = true
-                value = password
-            })
+            credentials = listOf(
+                CredentialRepresentation().apply {
+                    type = CredentialRepresentation.PASSWORD
+                    isTemporary = true
+                    value = password
+                },
+            )
         }
         val createResponse = usersResource.create(keycloakUser)
 
@@ -326,7 +323,9 @@ class KeycloakService : UserManagementService {
 
         val extraInfo = if (error.entity is InputStream) {
             (error.entity as InputStream).reader().readText()
-        } else null
+        } else {
+            null
+        }
         log.error("Error creating/updating user: $extraInfo")
 
         when (error.status) {
@@ -357,11 +356,13 @@ class KeycloakService : UserManagementService {
         val kcUser = getKeycloakUser(id)
         kcUser.apply {
             requiredActions = listOf("UPDATE_PASSWORD")
-            credentials = listOf(CredentialRepresentation().apply {
-                type = CredentialRepresentation.PASSWORD
-                isTemporary = true
-                value = password
-            })
+            credentials = listOf(
+                CredentialRepresentation().apply {
+                    type = CredentialRepresentation.PASSWORD
+                    isTemporary = true
+                    value = password
+                },
+            )
         }
 
         val userResource = keycloakClient.realm().users().get(kcUser.id)
@@ -416,14 +417,14 @@ class KeycloakService : UserManagementService {
 
     private fun removeIgeRoles(
         client: KeycloakWithRealm,
-        userResource: UserResource
+        userResource: UserResource,
     ) {
         userResource.apply {
             val roles = client.realm().roles()
             roles().realmLevel().remove(
                 listOf(
-                    roles.get(ROLE_IGE_USER).toRepresentation()
-                )
+                    roles.get(ROLE_IGE_USER).toRepresentation(),
+                ),
             )
         }
     }
@@ -435,14 +436,11 @@ class KeycloakService : UserManagementService {
     }
 
     private fun getRoleRepresentations(roles: List<String>): List<RoleRepresentation> {
-
         return keycloakClient.realm().roles().list()
             .filter { roles.contains(it.name) }
-
     }
 
     private fun mapToKeycloakUser(user: User, existingUserRep: UserRepresentation? = null): UserRepresentation {
-
         val userRep = existingUserRep ?: UserRepresentation().apply { isEnabled = true }
         userRep.attributes = userRep.attributes ?: mutableMapOf()
         userRep.attributes["phoneNumber"] = listOf(user.phoneNumber)
@@ -455,7 +453,6 @@ class KeycloakService : UserManagementService {
             lastName = user.lastName
             email = user.email
         }
-
     }
 
     // reduced char set for more readable passwords (should only be used for one-time passwords)
@@ -476,5 +473,4 @@ class KeycloakService : UserManagementService {
 
         return password.joinToString("")
     }
-
 }

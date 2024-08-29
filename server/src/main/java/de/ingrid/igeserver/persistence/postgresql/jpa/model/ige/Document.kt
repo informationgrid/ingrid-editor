@@ -105,7 +105,6 @@ class Document {
     @JsonProperty("_contentModifiedBy")
     var contentmodifiedby: String? = null
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "createdbyuser", nullable = true)
     @JsonIgnore
@@ -144,5 +143,4 @@ class StateEnumConverter : AttributeConverter<DOCUMENT_STATE, String> {
     override fun convertToDatabaseColumn(attribute: DOCUMENT_STATE): String = attribute.name
 
     override fun convertToEntityAttribute(dbData: String): DOCUMENT_STATE = DOCUMENT_STATE.valueOf(dbData)
-
 }

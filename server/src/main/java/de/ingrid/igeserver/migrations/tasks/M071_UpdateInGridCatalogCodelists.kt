@@ -51,5 +51,4 @@ class M071_UpdateInGridCatalogCodelists : MigrationBase("0.71") {
             }
         }
     }
-
 }

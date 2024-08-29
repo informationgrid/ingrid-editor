@@ -46,9 +46,9 @@ data class DataModel(
     val decisionDate: String?,
     val prelimAssessment: Boolean = false,
     val uvpNegativeDecisionDocs: List<Document>?,
-    val eiaNumbers: List<KeyValue>?
+    val eiaNumbers: List<KeyValue>?,
 
-    ) {
+) {
     var uvpNumbers: List<UVPNumber> = emptyList()
 
     fun convertEiaNumbers(catalogId: String) {
@@ -61,7 +61,7 @@ data class DataModel(
                 UVPNumber(
                     codeValue,
                     data.get("type").textValue(),
-                    data.get("cat").textValue()
+                    data.get("cat").textValue(),
                 )
             } else {
                 null
@@ -76,12 +76,12 @@ data class DataModel(
             when (type) {
                 "publicDisclosure" -> jacksonObjectMapper().treeToValue(
                     step,
-                    StepPublicDisclosure::class.java
+                    StepPublicDisclosure::class.java,
                 ) // Step1
                 "publicHearing" -> jacksonObjectMapper().treeToValue(step, StepPublicHearing::class.java) // Step1
                 "decisionOfAdmission" -> jacksonObjectMapper().treeToValue(
                     step,
-                    StepDecisionOfAdmission::class.java
+                    StepDecisionOfAdmission::class.java,
                 ) // Step1
                 else -> {
                     null
@@ -115,7 +115,7 @@ data class StepPublicDisclosure(
     val reportsRecommendationDocs: List<Document>?,
     val reportsRecommendationDocsPublishDuringDisclosure: Boolean = true,
     val furtherDocs: List<Document>?,
-    val furtherDocsPublishDuringDisclosure: Boolean = true
+    val furtherDocsPublishDuringDisclosure: Boolean = true,
 ) : Step {
     fun isPublishable(tableName: String): Boolean {
         val today = Date().toInstant().toString()
@@ -127,14 +127,13 @@ data class StepPublicDisclosure(
             "furtherDocs" -> !furtherDocsPublishDuringDisclosure || startDate <= today
             else -> true
         }
-
     }
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class StepPublicHearing(
     val type: String,
-    val considerationDocs: List<Document>?
+    val considerationDocs: List<Document>?,
 ) : Step {
 
     var publicHearingDate: RangeModel? = null
@@ -148,7 +147,7 @@ data class StepDecisionOfAdmission(
     val type: String,
     val decisionDate: String,
     val approvalDocs: List<Document>?,
-    val decisionDocs: List<Document>?
+    val decisionDocs: List<Document>?,
 ) : Step
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -158,11 +157,9 @@ data class Document(val title: String, val downloadURL: DownloadUrl, val validUn
      * Document is not expired when validUntil date is not set or date is before today
      */
     fun isNotExpired() = validUntil == null || !LocalDate.now().isAfter(LocalDate.ofInstant(validUntil.toInstant(), ZoneId.systemDefault()))
-
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DownloadUrl(val uri: String, val asLink: Boolean) {
     fun getUriEncoded() = UriUtils.encode(uri, StandardCharsets.UTF_8)
-
 }

@@ -51,7 +51,7 @@ fun convertWktToGml32(wkt: String): String {
         // add gml:id attribute to root element
         .replace(
             Regex("<gml:(Point|MultiPoint|LineString|MultiLineString|Polygon|MultiPolygon|MultiGeometry)\\b"),
-            """<gml:$1 gml:id="$1_ID_${UUID.randomUUID()}""""
+            """<gml:$1 gml:id="$1_ID_${UUID.randomUUID()}"""",
         )
 }
 
@@ -61,7 +61,9 @@ fun convertGml32ToWkt(input: String?): String? {
         val parser = Parser(config)
         val wktObj = parser.parse(input.byteInputStream(StandardCharsets.UTF_8))
         wktObj.toString()
-    } else null
+    } else {
+        null
+    }
 }
 
 fun convertWktToGeoJson(wkt: String): String {
@@ -100,6 +102,5 @@ private fun determineType(geometry: Geometry): QName? {
         is MultiPolygon -> GML.MultiSurface
         is GeometryCollection -> GML.MultiGeometry
         else -> throw IllegalArgumentException("Geometry type is currently not supported: " + geometry.geometryType)
-
     }
 }

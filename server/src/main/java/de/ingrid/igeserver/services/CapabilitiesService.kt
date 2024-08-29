@@ -38,25 +38,25 @@ import javax.xml.XMLConstants
 import javax.xml.parsers.DocumentBuilderFactory
 
 @Service
-class CapabilitiesService constructor(val capabilitiesParserFactory: GetCapabilitiesParserFactory){
+class CapabilitiesService constructor(val capabilitiesParserFactory: GetCapabilitiesParserFactory) {
 
     fun analyzeGetRecordUrl(url: String): GetRecordUrlAnalysis {
         val doc = getDocumentFromUrl(url)
         val xpath = XPathUtils()
         val id = xpath.getString(
             doc,
-            "//identificationInfo/MD_DataIdentification//identifier/MD_Identifier/code/CharacterString"
+            "//identificationInfo/MD_DataIdentification//identifier/MD_Identifier/code/CharacterString",
         ) ?: throw ServerException.withReason("Identifier could not be found in record")
         val title = xpath.getString(
             doc,
-            "//identificationInfo/MD_DataIdentification//citation/CI_Citation/title/CharacterString"
+            "//identificationInfo/MD_DataIdentification//citation/CI_Citation/title/CharacterString",
         ) ?: throw ServerException.withReason("Title could not be found in record")
         val uuid = xpath.getString(doc, "//MD_Metadata/fileIdentifier/CharacterString") ?: throw ServerException.withReason("Uuid could not be found in record")
         val downloads = mutableListOf<String>()
 
         val resources = xpath.getNodeList(
             doc,
-            "//MD_DigitalTransferOptions/onLine/CI_OnlineResource/function/CI_OnLineFunctionCode"
+            "//MD_DigitalTransferOptions/onLine/CI_OnlineResource/function/CI_OnLineFunctionCode",
         )
         for (j in 0 until resources.length) {
             val codeListValue = resources.item(j).attributes.getNamedItem("codeListValue").getNodeValue()
@@ -77,7 +77,7 @@ class CapabilitiesService constructor(val capabilitiesParserFactory: GetCapabili
         val inputSource = InputSource(reader)
         // Build a document from the xml response
         val factory = DocumentBuilderFactory.newInstance()
-        // nameSpaceAware is false by default. Otherwise we would have to    
+        // nameSpaceAware is false by default. Otherwise we would have to
         // query for the correct namespace for every evaluation
         factory.isNamespaceAware = namespaceAware
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true)
@@ -100,7 +100,7 @@ class CapabilitiesService constructor(val capabilitiesParserFactory: GetCapabili
 
     fun analyzeGetCapabilitiesUrl(principal: Principal, catalogId: String, url: String): CapabilitiesBean {
         val document = getDocumentFromUrl(url, true)
-        
+
         return capabilitiesParserFactory.get(document, catalogId).getCapabilitiesData(document)
     }
 

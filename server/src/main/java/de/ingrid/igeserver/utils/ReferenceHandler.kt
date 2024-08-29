@@ -34,7 +34,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
     abstract fun getURLsFromCatalog(catalogId: String, groupDocIds: List<Int>, profile: String): List<DocumentLinks>
 
     abstract fun getProfile(): String
-    
+
     abstract val urlFields: List<String>
 
     open fun replaceUrl(catalogId: String, source: UrlReport, replaceUrl: String): Int {
@@ -58,7 +58,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         catalogId: String,
         doc: DatasetInfo,
         source: UrlReport,
-        urlFields: List<String>
+        urlFields: List<String>,
     ) = entityManager.createNativeQuery(countReplaceUrlSql(urlFields))
         .unwrap(NativeQuery::class.java)
         .setParameter("catalogId", catalogId)
@@ -71,7 +71,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         catalogId: String,
         uuid: String,
         sourceUrl: String,
-        replaceUrl: String
+        replaceUrl: String,
     ) {
         val query = replaceUrlSql(urlField).format(sourceUrl, replaceUrl)
         entityManager.createNativeQuery(query)
@@ -86,7 +86,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
         filterByDocId: Int?,
         catalogId: String? = null,
         extraJsonbFields: Array<String>? = null,
-        groupDocIds: List<Int> = emptyList()
+        groupDocIds: List<Int> = emptyList(),
     ): List<Array<Any?>> {
         var query = if (filterByDocId == null) sql else "$sql AND doc.id = $filterByDocId"
         if (catalogId != null) query = "$sql AND catalog.identifier = '$catalogId'"
@@ -135,7 +135,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
             AND cat.identifier = :catalogId 
             AND dw.uuid = :uuid
             AND (${urlFields.joinToString(" OR ") { """(doc.data\:\:text ilike CONCAT('%"$it"\: "',:uri, '"%'))""" }})
-         """.trimIndent()
+        """.trimIndent()
     }
 }
 
@@ -144,20 +144,25 @@ data class DocumentLinks(
     val docUuid: String,
     val docs: MutableList<UploadInfo>,
     val title: String = "",
-    val type: String = ""
+    val type: String = "",
 ) {
     fun getDocsByLatestValidUntilDate(): List<UploadInfo> {
         val response = mutableListOf<UploadInfo>()
         docs.forEach { doc ->
             val found = response.find { it.uri == doc.uri }
-            if (found == null) response.add(doc)
-            else {
+            if (found == null) {
+                response.add(doc)
+            } else {
                 if (found.validUntil != null) {
                     val date1 = LocalDate.parse(found.validUntil, DateTimeFormatter.ISO_DATE_TIME)
-                    val date2 = if (doc.validUntil == null) null else LocalDate.parse(
-                        doc.validUntil,
-                        DateTimeFormatter.ISO_DATE_TIME
-                    )
+                    val date2 = if (doc.validUntil == null) {
+                        null
+                    } else {
+                        LocalDate.parse(
+                            doc.validUntil,
+                            DateTimeFormatter.ISO_DATE_TIME,
+                        )
+                    }
                     if (date2 == null || date2.isAfter(date1)) {
                         response.remove(found)
                         response.add(doc)

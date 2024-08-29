@@ -27,7 +27,6 @@ import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.UploadInfo
 import jakarta.persistence.EntityManager
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
@@ -88,7 +87,7 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
     private fun mapQueryResults(
         result: List<Array<Any?>>,
         resultNegativeDocs: List<Array<Any?>>,
-        onlyLinks: Boolean = false
+        onlyLinks: Boolean = false,
     ): List<DocumentLinks> {
         val uniqueList = mutableListOf<DocumentLinks>()
         // TODO: logic in both forEachs almost the same
@@ -104,8 +103,8 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
                         docUuid,
                         getUrlsFromJsonField(data, onlyLinks),
                         it[3].toString(),
-                        it[4].toString()
-                    )
+                        it[4].toString(),
+                    ),
                 )
             } else {
                 existingDoc.docs.addAll(getUrlsFromJsonField(data, onlyLinks))
@@ -124,11 +123,11 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
                         getUrlsFromJsonFieldTable(
                             data,
                             "uvpNegativeDecisionDocs",
-                            onlyLinks
+                            onlyLinks,
                         ).toMutableList(),
                         it[3].toString(),
-                        it[4].toString()
-                    )
+                        it[4].toString(),
+                    ),
                 )
             } else {
                 existingDoc.docs.addAll(getUrlsFromJsonField(data, onlyLinks))
@@ -139,20 +138,21 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
     }
 
     private fun getUrlsFromJsonField(json: JsonNode, onlyLinks: Boolean = false): MutableList<UploadInfo> {
-        return (getUrlsFromJsonFieldTable(json, "applicationDocs", onlyLinks)
-                + getUrlsFromJsonFieldTable(json, "announcementDocs", onlyLinks)
-                + getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs", onlyLinks)
-                + getUrlsFromJsonFieldTable(json, "furtherDocs", onlyLinks)
-                + getUrlsFromJsonFieldTable(json, "considerationDocs", onlyLinks)
-                + getUrlsFromJsonFieldTable(json, "approvalDocs", onlyLinks)
-                + getUrlsFromJsonFieldTable(json, "decisionDocs", onlyLinks)
-                ).toMutableList()
+        return (
+            getUrlsFromJsonFieldTable(json, "applicationDocs", onlyLinks) +
+                getUrlsFromJsonFieldTable(json, "announcementDocs", onlyLinks) +
+                getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs", onlyLinks) +
+                getUrlsFromJsonFieldTable(json, "furtherDocs", onlyLinks) +
+                getUrlsFromJsonFieldTable(json, "considerationDocs", onlyLinks) +
+                getUrlsFromJsonFieldTable(json, "approvalDocs", onlyLinks) +
+                getUrlsFromJsonFieldTable(json, "decisionDocs", onlyLinks)
+            ).toMutableList()
     }
 
     private fun getUrlsFromJsonFieldTable(
         json: JsonNode,
         tableField: String,
-        onlyLinks: Boolean = false
+        onlyLinks: Boolean = false,
     ): List<UploadInfo> {
         return json.get(tableField)
             ?.filter { it.get("downloadURL").get("asLink").asBoolean() == onlyLinks }
@@ -167,18 +167,17 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
         val uri = it.get("downloadURL")?.get("uri")?.textValue() ?: return null
         return UploadInfo(field, uri, expiredDate)
     }
-    
+
     private data class UrlTableFields(
-            val applicationDocs: List<TableDef>?,
-            val announcementDocs: List<TableDef>?,
-            val reportsRecommendationDocs: List<TableDef>?,
-            val furtherDocs: List<TableDef>?,
-            val considerationDocs: List<TableDef>?,
-            val approvalDocs: List<TableDef>?,
-            val decisionDocs: List<TableDef>?,
+        val applicationDocs: List<TableDef>?,
+        val announcementDocs: List<TableDef>?,
+        val reportsRecommendationDocs: List<TableDef>?,
+        val furtherDocs: List<TableDef>?,
+        val considerationDocs: List<TableDef>?,
+        val approvalDocs: List<TableDef>?,
+        val decisionDocs: List<TableDef>?,
     )
-    
+
     private data class TableDef(val downloadUrl: UrlDef, val validUntil: String?)
     private data class UrlDef(val asLink: Boolean, val uri: String)
-
 }

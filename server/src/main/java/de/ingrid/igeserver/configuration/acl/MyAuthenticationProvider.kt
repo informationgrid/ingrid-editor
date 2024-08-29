@@ -33,11 +33,11 @@ import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMap
 import java.security.Principal
 import java.util.*
 
-//@Service
+// @Service
 class MyAuthenticationProvider(
     val userRepository: UserRepository,
     val roleRepository: RoleRepository,
-    val authUtils: AuthUtils
+    val authUtils: AuthUtils,
 ) : AuthenticationProvider {
 
     private var grantedAuthoritiesMapper: GrantedAuthoritiesMapper? = null
@@ -48,8 +48,7 @@ class MyAuthenticationProvider(
 
     // TODO: try to cache function since it's been called on each request
     override fun authenticate(authentication: Authentication?): Authentication {
-
-        val token = authentication// as KeycloakAuthenticationToken
+        val token = authentication // as KeycloakAuthenticationToken
         val grantedAuthorities: MutableList<GrantedAuthority> = ArrayList()
 
         var isSuperAdmin = false
@@ -60,7 +59,7 @@ class MyAuthenticationProvider(
         }*/
 
         // TODO: make function static
-        val username = authUtils.getUsernameFromPrincipal(authentication as Principal);
+        val username = authUtils.getUsernameFromPrincipal(authentication as Principal)
         var userDb = userRepository.findByUserId(username)
         userDb = checkAndCreateSuperUser(userDb, isSuperAdmin, username)
 
@@ -73,40 +72,36 @@ class MyAuthenticationProvider(
                 .map { it.id }
                 .forEach { grantedAuthorities.add(SimpleGrantedAuthority("GROUP_$it")) }
 
-
             if (groups.any { it.permissions?.rootPermission == RootPermissionType.WRITE }) {
                 grantedAuthorities.add(
-                    SimpleGrantedAuthority("SPECIAL_write_root")
+                    SimpleGrantedAuthority("SPECIAL_write_root"),
                 )
             } else if (groups.any { it.permissions?.rootPermission == RootPermissionType.READ }) {
                 grantedAuthorities.add(
-                    SimpleGrantedAuthority("SPECIAL_read_root")
+                    SimpleGrantedAuthority("SPECIAL_read_root"),
                 )
             }
         }
-
 
         // add roles
         val role = userDb?.role?.name
         if (role != null) {
             // add acl access role for everyone
-                grantedAuthorities.addAll(
-                    listOf(
-                        SimpleGrantedAuthority(role),
-                        SimpleGrantedAuthority("ROLE_ACL_ACCESS")
-                    )
-                )
-
+            grantedAuthorities.addAll(
+                listOf(
+                    SimpleGrantedAuthority(role),
+                    SimpleGrantedAuthority("ROLE_ACL_ACCESS"),
+                ),
+            )
         }
 
-        return authentication!! //KeycloakAuthenticationToken(token.account, token.isInteractive, grantedAuthorities)
-
+        return authentication!! // KeycloakAuthenticationToken(token.account, token.isInteractive, grantedAuthorities)
     }
 
     private fun checkAndCreateSuperUser(
         userDb: UserInfo?,
         isSuperAdmin: Boolean,
-        username: String
+        username: String,
     ): UserInfo? {
         var userDb1 = userDb
         if (userDb1 == null && isSuperAdmin) {
@@ -127,5 +122,4 @@ class MyAuthenticationProvider(
     override fun supports(authentication: Class<*>?): Boolean {
         return true // false // KeycloakAuthenticationToken::class.java.isAssignableFrom(authentication)
     }
-
 }

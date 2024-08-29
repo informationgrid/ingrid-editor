@@ -39,5 +39,4 @@ class Settings {
     @Type(JsonType::class)
     @Column(name = "value", columnDefinition = "jsonb")
     var value: Any? = null
-
 }

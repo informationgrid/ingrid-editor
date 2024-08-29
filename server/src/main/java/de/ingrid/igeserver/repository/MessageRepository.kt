@@ -28,7 +28,6 @@ interface MessageRepository : JpaRepository<Message, Int> {
 
     fun findAllByCatalog_Identifier(catalog_identifier: String?): List<Message>
 
-
     @PreAuthorize("#message.catalog != null || (#message.catalog == null && hasAuthority('ROLE_ige-super-admin'))")
     fun save(@Param("message") message: Message): Message
 

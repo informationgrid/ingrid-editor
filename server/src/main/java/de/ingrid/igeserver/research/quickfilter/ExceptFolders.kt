@@ -28,4 +28,3 @@ class ExceptFolders : QuickFilter() {
     override val label = "Ordner nicht anzeigen"
     override val filter = "document1.type != 'FOLDER'"
 }
-

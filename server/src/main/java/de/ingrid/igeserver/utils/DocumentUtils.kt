@@ -34,7 +34,6 @@ fun documentInPublishedState(document: Document) =
     document.state == DOCUMENT_STATE.PUBLISHED || document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED || document.state == DOCUMENT_STATE.PENDING
 
 fun convertToDocument(docJson: JsonNode, docType: String? = null, docVersion: Int? = null, docUuid: String? = null): Document {
-
     return Document().apply {
         title = docJson.getStringOrEmpty("title")
         if (docType != null) type = docType
@@ -44,13 +43,11 @@ fun convertToDocument(docJson: JsonNode, docType: String? = null, docVersion: In
         // all document-data except title go into the data field
         data = (docJson as ObjectNode).apply { remove("title") }
     }
-
 }
 
 fun prepareDocumentWithMetadata(
-    docData: DocumentData
+    docData: DocumentData,
 ): DocumentWithMetadata {
-
     val metadata = DocMetadata(
         docData.wrapper.countChildren > 0,
         docData.wrapper.parent?.id,
@@ -60,7 +57,7 @@ fun prepareDocumentWithMetadata(
         docData.wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME),
         docData.wrapper.tags.joinToString(","),
         docData.wrapper.responsibleUser?.id,
-        docData.wrapper.fingerprint?.let {it[0].date.toString()},
+        docData.wrapper.fingerprint?.let { it[0].date.toString() },
         docData.wrapper.hasWritePermission,
         docData.wrapper.hasOnlySubtreeWritePermission,
         docData.wrapper.id!!,

@@ -45,7 +45,7 @@ class SNSGemetThesaurus : ThesaurusService() {
 
         val response = sendRequest(
             "GET",
-            "$searchUrlTemplate/getConceptsMatchingKeyword?keyword=${encodedTerm}&search_mode=${searchMode}&thesaurus_uri=${ConceptType.CONCEPT}&language=${language}"
+            "$searchUrlTemplate/getConceptsMatchingKeyword?keyword=$encodedTerm&search_mode=$searchMode&thesaurus_uri=${ConceptType.CONCEPT}&language=$language",
         )
         val json = jacksonObjectMapper().readValue<ArrayNode>(response)
         return mapToKeywordList(json)
@@ -56,13 +56,13 @@ class SNSGemetThesaurus : ThesaurusService() {
             // get alternate English name
             val englishResponse = sendRequest(
                 "GET",
-                "$searchUrlTemplate/getConcept?concept_uri=${it.getStringOrEmpty("uri")}&language=en"
+                "$searchUrlTemplate/getConcept?concept_uri=${it.getStringOrEmpty("uri")}&language=en",
             )
             val englishNode = jacksonObjectMapper().readValue<ObjectNode>(englishResponse)
             Keyword(
                 it.getStringOrEmpty("uri"),
                 it.getStringOrEmpty("preferredLabel.string"),
-                englishNode.getString("preferredLabel.string")
+                englishNode.getString("preferredLabel.string"),
             )
         }
     }
@@ -80,7 +80,8 @@ class SNSGemetThesaurus : ThesaurusService() {
 enum class ConceptType(private val value: String) {
     CONCEPT("http://www.eionet.europa.eu/gemet/concept/"),
     GROUP("http://www.eionet.europa.eu/gemet/group/"),
-    SOUPERGROUP("http://www.eionet.europa.eu/gemet/supergroup/");
+    SOUPERGROUP("http://www.eionet.europa.eu/gemet/supergroup/"),
+    ;
 
     override fun toString(): String {
         return value

@@ -46,7 +46,6 @@ class Message {
     @OnDelete(action = OnDeleteAction.CASCADE)
     var catalog: Catalog? = null
 
-
     @Column
     @JsonSerialize(using = DateSerializer::class)
     @JsonDeserialize(using = DateDeserializer::class)
@@ -56,5 +55,4 @@ class Message {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "message", columnDefinition = "jsonb")
     var message: Message = Message("")
-
 }

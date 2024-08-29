@@ -52,5 +52,4 @@ class M052_AddMessagesTable : MigrationBase("0.52") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

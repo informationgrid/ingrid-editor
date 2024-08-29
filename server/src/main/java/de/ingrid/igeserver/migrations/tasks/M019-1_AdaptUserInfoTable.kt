@@ -59,5 +59,4 @@ class `M019-1_AdaptUserInfoTable` : MigrationBase("0.19.1") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

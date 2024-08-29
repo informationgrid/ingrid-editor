@@ -43,7 +43,7 @@ class SchedulerService(factory: SchedulerFactoryBean) {
         }
         val triggerKey = TriggerKey(jobKey.name, jobKey.group)
         if (scheduler.checkExists(triggerKey)) scheduler.unscheduleJob(triggerKey)
-        
+
         val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
             .usingJobData(jobDataMap)
             .withPriority(jobPriority)
@@ -78,9 +78,8 @@ class SchedulerService(factory: SchedulerFactoryBean) {
         jobKey: JobKey,
         jobDataMap: JobDataMap? = null,
         jobPriority: Int = DEFAULT_PRIORITY,
-        checkRunning: Boolean = true
+        checkRunning: Boolean = true,
     ) {
-
         when (command) {
             JobCommand.start -> {
                 if (scheduler.checkExists(jobKey).not()) {
@@ -119,9 +118,11 @@ class SchedulerService(factory: SchedulerFactoryBean) {
 
         val cronSchedule = getCronSchedule(cron)
         val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
-            .usingJobData(JobDataMap().apply {
-                put("catalogId", catalogId)
-            })
+            .usingJobData(
+                JobDataMap().apply {
+                    put("catalogId", catalogId)
+                },
+            )
             .withSchedule(cronSchedule)
             .withIdentity(triggerKey)
             .build()
@@ -139,7 +140,9 @@ class SchedulerService(factory: SchedulerFactoryBean) {
             if (cron.last() == '*') {
                 val fixedCron = cron.substring(0..cron.length - 2) + "?"
                 CronScheduleBuilder.cronSchedule(fixedCron)
-            } else throw ServerException.withReason(ex.message ?: "Cron expression could not be parsed")
+            } else {
+                throw ServerException.withReason(ex.message ?: "Cron expression could not be parsed")
+            }
         }
     }
 }

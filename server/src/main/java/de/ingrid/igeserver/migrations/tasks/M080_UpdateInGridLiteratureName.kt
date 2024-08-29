@@ -65,7 +65,7 @@ class M080_UpdateInGridLiteratureName : MigrationBase("0.80") {
                 SET type = 'InGridPublication'
                 WHERE type = 'InGridLiterature';
                 
-                """.trimIndent()
+        """.trimIndent()
 
         entityManager.createNativeQuery(sql).executeUpdate()
     }

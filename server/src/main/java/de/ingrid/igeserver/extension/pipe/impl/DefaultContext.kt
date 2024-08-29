@@ -30,10 +30,10 @@ import java.util.*
  * Default implementation of a filter context
  */
 open class DefaultContext(
-    override val catalogId: String, 
+    override val catalogId: String,
     override val profile: String,
-    override val parentProfile: String?, 
-    override val principal: Principal?
+    override val parentProfile: String?,
+    override val principal: Principal?,
 ) : Context {
 
     companion object {
@@ -43,7 +43,7 @@ open class DefaultContext(
         fun withCurrentProfile(
             catalogId: String,
             catalogService: CatalogService,
-            principal: Principal?
+            principal: Principal?,
         ): DefaultContext {
             val profile = catalogService.getProfileFromCatalog(catalogId)
             return DefaultContext(catalogId, profile.identifier, profile.parentProfile, principal)

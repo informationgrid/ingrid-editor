@@ -38,7 +38,7 @@ class M055_UpdateQueryTable : MigrationBase("0.55") {
     private val sqlNewColumn = """
         alter table query add global boolean default false;
     """.trimIndent()
-    
+
     private val sqlUpdate = """
         UPDATE query SET global=true WHERE user_id IS NULL;
     """.trimIndent()
@@ -49,5 +49,4 @@ class M055_UpdateQueryTable : MigrationBase("0.55") {
             entityManager.createNativeQuery(sqlUpdate).executeUpdate()
         }
     }
-
 }

@@ -58,7 +58,7 @@ class M065_MigrateKeywords : MigrationBase("0.65") {
                 "InGridInformationSystem",
                 "InGridLiterature",
                 "InGridProject",
-                "InGridSpecialisedTask"
+                "InGridSpecialisedTask",
             )
             setAdminAuthentication("Migration", "Task")
 
@@ -84,19 +84,20 @@ class M065_MigrateKeywords : MigrationBase("0.65") {
         val umthesKeywords: ArrayNode =
             doc.data.get("keywordsUmthes") as ArrayNode? ?: jacksonObjectMapper().createArrayNode()
 
-        
         val newStructure = jacksonObjectMapper().createObjectNode().apply {
             val simpleConverted = jacksonObjectMapper().createArrayNode().apply {
                 simpleKeywords.forEach {
-                    add(jacksonObjectMapper().createObjectNode().apply {
-                        put("label", it.asText())
-                    })
+                    add(
+                        jacksonObjectMapper().createObjectNode().apply {
+                            put("label", it.asText())
+                        },
+                    )
                 }
             }
             set<ArrayNode>("free", simpleConverted)
             set<ArrayNode>("umthes", umthesKeywords)
         }
-        
+
         doc.data.set<ArrayNode>("keywords", newStructure)
         doc.data.remove("keywordsUmthes")
         return true

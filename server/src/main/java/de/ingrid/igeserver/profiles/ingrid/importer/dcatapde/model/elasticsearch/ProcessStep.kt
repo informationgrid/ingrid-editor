@@ -53,12 +53,12 @@ class ProcessStep : Serializable {
 
     override fun toString(): String {
         return "ProcessStep{" +
-                "identifier='" + identifier + '\'' +
-                ", passNumber='" + passNumber + '\'' +
-                ", processStepType=" + processStepType +
-                ", temporal=" + temporal +
-                ", title='" + title + '\'' +
-                ", distributions=" + distributions +
-                '}'
+            "identifier='" + identifier + '\'' +
+            ", passNumber='" + passNumber + '\'' +
+            ", processStepType=" + processStepType +
+            ", temporal=" + temporal +
+            ", title='" + title + '\'' +
+            ", distributions=" + distributions +
+            '}'
     }
 }

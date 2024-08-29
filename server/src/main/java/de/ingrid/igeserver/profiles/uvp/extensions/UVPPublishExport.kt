@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component
 class UVPPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,
-    val indexingTask: IndexingTask
+    val indexingTask: IndexingTask,
 ) : Filter<PostPublishPayload> {
 
     val log = logger()
@@ -44,14 +44,14 @@ class UVPPublishExport(
     override val profiles = arrayOf("uvp")
 
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
-
         val docId = payload.document.uuid
         val isDocument = payload.wrapper.category == "data"
         val isAddress = payload.wrapper.category == "address"
 
         try {
-            if (isDocument) indexUvpDoc(context, docId, DocumentCategory.DATA)
-            else if (isAddress) {
+            if (isDocument) {
+                indexUvpDoc(context, docId, DocumentCategory.DATA)
+            } else if (isAddress) {
                 indexUvpDoc(context, docId, DocumentCategory.ADDRESS)
                 indexReferencedUvpDocs(context, docId)
             }
@@ -60,7 +60,6 @@ class UVPPublishExport(
         }
 
         return payload
-
     }
 
     private fun indexReferencedUvpDocs(context: Context, docId: String) {
@@ -79,17 +78,14 @@ class UVPPublishExport(
                 AND d.state = 'PUBLISHED'
                 AND dw.deleted = 0
                 AND data->'pointOfContact' @> '[{"ref": "$docId"}]');
-            """.trimIndent()
+            """.trimIndent(),
         )
 
         docsWithReferences.forEach { indexUvpDoc(context, it, DocumentCategory.DATA) }
-
     }
 
     private fun indexUvpDoc(context: Context, docId: String, category: DocumentCategory) {
-
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
         indexingTask.updateDocument(context.catalogId, category, docId)
-
     }
 }

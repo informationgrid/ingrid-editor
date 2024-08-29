@@ -40,7 +40,7 @@ class IndexExporterAddress(
     val catalogRepo: CatalogRepository,
     val codelistService: CodeListService,
     val docWrapperRepo: DocumentWrapperRepository,
-    @Lazy val documentService: DocumentService
+    @Lazy val documentService: DocumentService,
 ) : IgeExporter {
 
     override val typeInfo = ExportTypeInfo(
@@ -51,7 +51,7 @@ class IndexExporterAddress(
         "application/json",
         "json",
         listOf("uvp"),
-        false
+        false,
     )
 
     override fun exportSql(catalogId: String) = """document.state = 'PUBLISHED'"""
@@ -84,12 +84,12 @@ class IndexExporterAddress(
             set<ArrayNode>("t021_communication.commtype_value", commTypeValues)
             set<ArrayNode>("t021_communication.comm_value", commValues)
             set<ArrayNode>(
-                "datatype", jacksonObjectMapper().createArrayNode()
+                "datatype",
+                jacksonObjectMapper().createArrayNode()
                     .add("dsc_ecs_address")
                     .add("address")
-                    .add("IDF_1.0")
+                    .add("IDF_1.0"),
             )
-
         }.toString()
     }
 

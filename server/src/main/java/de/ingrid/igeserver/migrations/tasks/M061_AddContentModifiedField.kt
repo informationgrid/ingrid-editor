@@ -45,7 +45,7 @@ class M061_AddContentModifiedField : MigrationBase("0.61") {
     private val migrateColumnSQL = """
         UPDATE document SET contentmodified = modified;
         UPDATE document SET contentmodifiedby = modifiedby;
-        """.trimIndent()
+    """.trimIndent()
 
     override fun exec() {
         ClosableTransaction(transactionManager).use {
@@ -53,5 +53,4 @@ class M061_AddContentModifiedField : MigrationBase("0.61") {
             entityManager.createNativeQuery(migrateColumnSQL).executeUpdate()
         }
     }
-
 }

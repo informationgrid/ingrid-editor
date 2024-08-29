@@ -47,23 +47,23 @@ class UserInfo {
     @JoinTable(
         name = "catalog_user_info",
         joinColumns = [JoinColumn(name = "user_info_id")],
-        inverseJoinColumns = [JoinColumn(name = "catalog_id")]
+        inverseJoinColumns = [JoinColumn(name = "catalog_id")],
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var catalogs: MutableSet<Catalog> = LinkedHashSet()
-    
+
     @ManyToOne
-    @JoinColumn(name="role_id")
+    @JoinColumn(name = "role_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var role: Role? = null
-    
+
     @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_group",
         joinColumns = [JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false)],
-        inverseJoinColumns = [JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false)]
+        inverseJoinColumns = [JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false)],
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
@@ -107,8 +107,7 @@ class UserInfo {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "data", columnDefinition = "jsonb")
     var data: UserInfoData? = null
-    
+
     fun getGroupsForCatalog(catalogIdentifier: String): Set<Group> =
         groups.filter { it.catalog?.identifier == catalogIdentifier }.toSet()
-
 }

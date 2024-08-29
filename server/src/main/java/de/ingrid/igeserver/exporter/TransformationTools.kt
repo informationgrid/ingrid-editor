@@ -58,12 +58,13 @@ class TransformationTools {
             return UUID.randomUUID().toString()
         }
 
-
         // TODO: move to MappingUtils class and refactor to use already present map iso639LanguageMapping
         @kotlin.jvm.JvmStatic
         fun getLanguageISO639_2Value(language: KeyValue): String {
-            if (language.key == null) return language.value
-                ?: throw ServerException.withReason("Could not map document language: $language")
+            if (language.key == null) {
+                return language.value
+                    ?: throw ServerException.withReason("Could not map document language: $language")
+            }
             return when (language.key) {
                 "150" -> "ger"
                 "123" -> "eng"
@@ -100,8 +101,10 @@ class TransformationTools {
 
         @kotlin.jvm.JvmStatic
         fun getISO3166_1_Alpha_3FromNumericLanguageCode(language: KeyValue): String {
-            if (language.key == null) return language.value
-                ?: throw ServerException.withReason("Could not map document language: $language")
+            if (language.key == null) {
+                return language.value
+                    ?: throw ServerException.withReason("Could not map document language: $language")
+            }
             return when (language.key) {
                 "4" -> "AFG"
                 "818" -> "EGY"
@@ -352,11 +355,5 @@ class TransformationTools {
                 else -> throw ServerException.withReason("Could not map document language key: language.key")
             }
         }
-
-
     }
-
-
-
-
 }

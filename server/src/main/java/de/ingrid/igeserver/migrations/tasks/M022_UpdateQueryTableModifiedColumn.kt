@@ -52,5 +52,4 @@ class M022_UpdateQueryTableModifiedColumn : MigrationBase("0.22") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

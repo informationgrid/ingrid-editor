@@ -35,5 +35,4 @@ class UvpAddressType(jdbcTemplate: JdbcTemplate) : AddressType(jdbcTemplate) {
     override val referenceFieldInDocuments = "pointOfContact"
 
     val log = logger()
-
 }

@@ -19,16 +19,16 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.profiles.ingrid
 
-import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcApiResearchQuery
 import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcFilterParameter
+import de.ingrid.igeserver.model.BoolFilter
 import org.intellij.lang.annotations.Language
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Profile("ingrid | ingrid-hmdk")
 @Component
-class OgcApiResearchQueryIngrid: OgcApiResearchQuery() {
+class OgcApiResearchQueryIngrid : OgcApiResearchQuery() {
     override val profiles = listOf("ingrid", "ingrid-hmdk")
 
     override lateinit var ogcParameter: OgcFilterParameter

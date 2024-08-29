@@ -39,7 +39,7 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
         "GeoService" to "/export/ingrid/geo-service.minimal.sample.json",
 //        "Project" to "/export/ingrid/project.sample.maximal.json",
 //        "DataCollection" to "/export/ingrid/data-collection.sample.maximal.json",
-        "InformationSystem" to "/export/ingrid/information-system.maximal.sample.json"
+        "InformationSystem" to "/export/ingrid/information-system.maximal.sample.json",
     )
 
     override suspend fun beforeSpec(spec: Spec) {
@@ -49,7 +49,7 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                 this.codelistHandler,
                 this.config,
                 this.catalogService,
-                this.documentService
+                this.documentService,
             )
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog("ingrid-lfubayern")
         every { codelistHandler.getCatalogCodelistValue(any(), "20000", "1") } returns "geological eins"
@@ -64,7 +64,8 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                 val context = jacksonObjectMapper().readTree(
                     """{
                             "dataSetURI": "https://my-dataseturi.com"
-                        }""".trimIndent()
+                        }
+                    """.trimIndent(),
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
@@ -75,7 +76,8 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                 val context = jacksonObjectMapper().readTree(
                     """{
                             "supplementalInformation": "internal comments"
-                        }""".trimIndent()
+                        }
+                    """.trimIndent(),
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
@@ -91,7 +93,8 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                                     {"key": "2"}
                                 ]
                             }
-                        }""".trimIndent()
+                        }
+                    """.trimIndent(),
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
@@ -108,7 +111,8 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                                     {"key": "2"}
                                 ]
                             }
-                        }""".trimIndent()
+                        }
+                    """.trimIndent(),
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
@@ -124,7 +128,8 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                 val context = jacksonObjectMapper().readTree(
                     """{
                             "fees": "It is free!"
-                        }""".trimIndent()
+                        }
+                    """.trimIndent(),
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
@@ -137,7 +142,8 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                             "resource": {
                                 "useConstraintsComments": "my comments to use constraints"
                             }
-                       },""".trimIndent()
+                       },
+                    """.trimIndent(),
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
@@ -158,7 +164,8 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                                 ],
                                 "useConstraintsComments": "my comments to use constraints"
                             }
-                       },""".trimIndent()
+                       },
+                    """.trimIndent(),
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)

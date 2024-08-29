@@ -59,7 +59,7 @@ class M066_MigrateGeoNames : MigrationBase("0.66") {
                 "InGridInformationSystem",
                 "InGridLiterature",
                 "InGridProject",
-                "InGridSpecialisedTask"
+                "InGridSpecialisedTask",
             )
             setAdminAuthentication("Migration", "Task")
 

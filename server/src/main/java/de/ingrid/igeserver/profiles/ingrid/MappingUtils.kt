@@ -32,9 +32,8 @@ val inVeKoSKeywordMapping = mapOf(
     "http://inspire.ec.europa.eu/metadata-codelist/IACSData/iacs" to "IACS",
     "http://inspire.ec.europa.eu/metadata-codelist/IACSData/agriculturalArea" to "Landwirtschaftliche Fläche",
     "http://inspire.ec.europa.eu/metadata-codelist/IACSData/lpis" to "LPIS",
-    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/referenceParcel" to "Referenzparzelle"
+    "http://inspire.ec.europa.eu/metadata-codelist/IACSData/referenceParcel" to "Referenzparzelle",
 )
-
 
 val hvdKeywordMapping = mapOf(
     "http://data.europa.eu/bna/c_ac64a52d" to "Georaum",
@@ -42,7 +41,7 @@ val hvdKeywordMapping = mapOf(
     "http://data.europa.eu/bna/c_164e0bf5" to "Meteorologie",
     "http://data.europa.eu/bna/c_e1da4e07" to "Statistik",
     "http://data.europa.eu/bna/c_a9135398" to "Unternehmen und Eigentümerschaft von Unternehmen",
-    "http://data.europa.eu/bna/c_b79e35eb" to "Mobilität"
+    "http://data.europa.eu/bna/c_b79e35eb" to "Mobilität",
 )
 
 val iso639LanguageMapping = mapOf(
@@ -74,7 +73,7 @@ val iso639LanguageMapping = mapOf(
     "hsb" to "182",
     "dsb" to "113",
     "fry" to "142",
-    "nds" to "306"
+    "nds" to "306",
 )
 
 fun getISOFromElasticDocumentString(elasticString: String): String {

@@ -50,19 +50,32 @@ class RecordPLUProperties : Serializable {
     //    private CollectionProperties collection;
     var extras: Map<String, Any>? = null
 
-    var contact: @Valid @NotNull(message = "dcat:contactPoint must not be null") Contact? = null
+    var contact:
+        @Valid
+        @NotNull(message = "dcat:contactPoint must not be null")
+        Contact? = null
 
-    var description: @NotNull(message = "dct:description must not be null") String? = null
+    var description:
+        @NotNull(message = "dct:description must not be null")
+        String? = null
 
-    var identifier: @NotNull(message = "dct:identifier must not be null") String? = null
+    var identifier:
+        @NotNull(message = "dct:identifier must not be null")
+        String? = null
 
-    var title: @NotNull(message = "dct:title must not be null") String? = null
+    var title:
+        @NotNull(message = "dct:title must not be null")
+        String? = null
 
     var planName: String? = null
 
-    var planState: @NotNull(message = "plu:planState must not be null") PlanStateEnum? = null
+    var planState:
+        @NotNull(message = "plu:planState must not be null")
+        PlanStateEnum? = null
 
-    var procedureState: @NotNull(message = "plu:procedureState must not be null") ProcedureStateEnum? = null
+    var procedureState:
+        @NotNull(message = "plu:procedureState must not be null")
+        ProcedureStateEnum? = null
 
     @Deprecated("")
     var procedureStartDate: Instant? = null
@@ -116,7 +129,7 @@ class RecordPLUProperties : Serializable {
             bbox,
             geometry,
             centroid,
-            geographicName,  //                collection,
+            geographicName, //                collection,
             extras,
             contact,
             description,
@@ -140,40 +153,40 @@ class RecordPLUProperties : Serializable {
             planType,
             planTypeFine,
             procedureType,
-            processSteps
+            processSteps,
         )
     }
 
     override fun toString(): String {
         return "RecordPLUProperties{" +
-                "id='" + id + '\'' +
-                ", bbox=" + bbox +
-                ", geometry=" + geometry +
-                ", centroid=" + centroid +
-                ", geographicName='" + geographicName + '\'' +  //                ", collection=" + collection +
-                ", extras=" + extras +
-                ", contact=" + contact +
-                ", description='" + description + '\'' +
-                ", identifier='" + identifier + '\'' +
-                ", title='" + title + '\'' +
-                ", planName='" + planName + '\'' +
-                ", planState=" + planState +
-                ", procedureState=" + procedureState +
-                ", procedureStartDate=" + procedureStartDate +
-                ", developmentFreezePeriod=" + developmentFreezePeriod +
-                ", publisher=" + publisher +
-                ", maintainers=" + maintainers +
-                ", contributors=" + contributors +
-                ", distributions=" + distributions +
-                ", issued=" + issued +
-                ", modified=" + modified +
-                ", relation='" + relation + '\'' +
-                ", notification='" + notification + '\'' +
-                ", admsIdentifier='" + admsIdentifier + '\'' +
-                ", planType=" + planType +
-                ", planTypeFine='" + planTypeFine + '\'' +
-                ", procedureType=" + procedureType +
-                ", processSteps=" + processSteps +
-                '}'
+            "id='" + id + '\'' +
+            ", bbox=" + bbox +
+            ", geometry=" + geometry +
+            ", centroid=" + centroid +
+            ", geographicName='" + geographicName + '\'' + //                ", collection=" + collection +
+            ", extras=" + extras +
+            ", contact=" + contact +
+            ", description='" + description + '\'' +
+            ", identifier='" + identifier + '\'' +
+            ", title='" + title + '\'' +
+            ", planName='" + planName + '\'' +
+            ", planState=" + planState +
+            ", procedureState=" + procedureState +
+            ", procedureStartDate=" + procedureStartDate +
+            ", developmentFreezePeriod=" + developmentFreezePeriod +
+            ", publisher=" + publisher +
+            ", maintainers=" + maintainers +
+            ", contributors=" + contributors +
+            ", distributions=" + distributions +
+            ", issued=" + issued +
+            ", modified=" + modified +
+            ", relation='" + relation + '\'' +
+            ", notification='" + notification + '\'' +
+            ", admsIdentifier='" + admsIdentifier + '\'' +
+            ", planType=" + planType +
+            ", planTypeFine='" + planTypeFine + '\'' +
+            ", procedureType=" + procedureType +
+            ", processSteps=" + processSteps +
+            '}'
     }
 }

@@ -26,7 +26,6 @@ import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import jakarta.annotation.PostConstruct
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import java.util.*
@@ -78,7 +77,7 @@ class SetupDevelopUsers(
         val persistedUser = userRepo.save(user)
         val kat1 = catalogRepo.findById(1).get()
         persistedUser.catalogs = mutableSetOf(kat1)
-        persistedUser.curCatalog = kat1;
+        persistedUser.curCatalog = kat1
         userRepo.save(persistedUser)
     }
 }

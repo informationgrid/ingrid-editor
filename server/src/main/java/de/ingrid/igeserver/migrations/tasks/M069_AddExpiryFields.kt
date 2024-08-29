@@ -46,5 +46,4 @@ class M069_AddExpiryFields : MigrationBase("0.69") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

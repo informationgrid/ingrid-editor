@@ -48,5 +48,4 @@ class M068_AddIngridQuery : MigrationBase("0.68") {
             }
         }
     }
-
 }

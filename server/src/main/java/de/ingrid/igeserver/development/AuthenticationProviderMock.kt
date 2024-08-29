@@ -31,7 +31,6 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 
-
 @Profile("dev")
 @Primary
 @Service
@@ -44,7 +43,6 @@ class AuthenticationProviderMock : AuthenticationProvider {
     lateinit var userRepo: UserRepository
 
     override fun authenticate(authentication: Authentication?): Authentication {
-
         val userId = config.logins?.get(config.currentUser)
             ?: throw NotFoundException("The user ${config.currentUser} could not be found in application-dev.properties")
 
@@ -57,13 +55,11 @@ class AuthenticationProviderMock : AuthenticationProvider {
         } else {
             // add acl access role for everyone
             listOf(SimpleGrantedAuthority("ROLE_$role"), SimpleGrantedAuthority(role), SimpleGrantedAuthority("ROLE_ACL_ACCESS"))
-
         }
-        return UsernamePasswordAuthenticationToken(user, "", groups + roles )
+        return UsernamePasswordAuthenticationToken(user, "", groups + roles)
     }
 
     override fun supports(authentication: Class<*>?): Boolean {
         return true
     }
-
 }

@@ -48,5 +48,4 @@ class M070_UvpDisableTags : MigrationBase("0.70") {
             }
         }
     }
-
 }

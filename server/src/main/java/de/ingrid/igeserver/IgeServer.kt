@@ -39,14 +39,14 @@ import org.springframework.scheduling.annotation.EnableScheduling
     DevelopmentProperties::class,
     MailProperties::class,
     ZabbixProperties::class,
-    GeneralProperties::class
+    GeneralProperties::class,
 )
 @Import(value = [BeansConfiguration::class, SpringConfiguration::class])
 @EnableScheduling
 @EnableCaching
 class IgeServer
 
-//private val log = logger()
+// private val log = logger()
 
 fun main(args: Array<String>) {
 //    log.info("Starting application")

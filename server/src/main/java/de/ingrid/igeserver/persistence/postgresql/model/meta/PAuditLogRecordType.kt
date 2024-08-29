@@ -34,12 +34,11 @@ class AuditLogRecordData(
     val target: String? = null,
     val data: JsonNode? = null,
     val record_type: String? = null,
-    val catalogIdentifier: String? = null
+    val catalogIdentifier: String? = null,
 ) {
 
     companion object {
         @JvmStatic
         protected val TYPE_NAME = "AuditLog"
     }
-
 }

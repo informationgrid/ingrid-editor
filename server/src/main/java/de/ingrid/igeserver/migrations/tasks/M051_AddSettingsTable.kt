@@ -51,5 +51,4 @@ class M051_AddSettingsTable : MigrationBase("0.51") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

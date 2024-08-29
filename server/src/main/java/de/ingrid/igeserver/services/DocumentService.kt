@@ -55,7 +55,9 @@ import java.time.ZoneOffset
 import java.util.*
 
 enum class InitiatorAction {
-    DEFAULT, COPY, IMPORT
+    DEFAULT,
+    COPY,
+    IMPORT,
 }
 
 data class DocumentInfo(
@@ -72,12 +74,12 @@ data class DocumentInfo(
     val _tags: String,
     val hasWritePermission: Boolean,
     val hasOnlySubtreeWritePermission: Boolean,
-    val isAddress: Boolean
+    val isAddress: Boolean,
 )
 
 data class DeleteOptions(
     val deletePermanently: Boolean? = null,
-    val force: Boolean? = null
+    val force: Boolean? = null,
 )
 
 @Service
@@ -90,7 +92,7 @@ class DocumentService(
     var dateService: DateService,
     var generalProperties: GeneralProperties,
     val authUtils: AuthUtils,
-    val catalogService: CatalogService
+    val catalogService: CatalogService,
 ) : MapperService() {
 
     // this must be initialized lazily because of cyclic dependencies otherwise
@@ -150,7 +152,7 @@ class DocumentService(
     fun getWrapperByCatalogAndDocumentUuid(
         catalogIdentifier: String,
         uuid: String,
-        includeDeleted: Boolean = false
+        includeDeleted: Boolean = false,
     ): DocumentWrapper {
         try {
             return if (includeDeleted) {
@@ -221,9 +223,8 @@ class DocumentService(
     fun findChildren(
         catalogId: String,
         parentId: Int?,
-        docCat: DocumentCategory = DocumentCategory.DATA
+        docCat: DocumentCategory = DocumentCategory.DATA,
     ): FindAllResults<DocumentData> {
-
         val wrappers = if (parentId == null) {
             docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value)
         } else {
@@ -243,16 +244,15 @@ class DocumentService(
 
         return FindAllResults(
             docsData.size.toLong(),
-            docsData
+            docsData,
         )
     }
 
     fun findChildrenWrapper(
         catalogId: String,
         parentId: Int?,
-        docCat: DocumentCategory = DocumentCategory.DATA
+        docCat: DocumentCategory = DocumentCategory.DATA,
     ): FindAllResults<DocumentWrapper> {
-
         val docs = if (parentId == null) {
             docWrapperRepo.findAllByCatalog_IdentifierAndParent_IdAndCategory(catalogId, null, docCat.value)
         } else {
@@ -261,9 +261,8 @@ class DocumentService(
 
         return FindAllResults(
             docs.size.toLong(),
-            docs
+            docs,
         )
-
     }
 
     /**
@@ -276,10 +275,14 @@ class DocumentService(
         } else {
             docs.hits
                 .flatMap { doc ->
-                    if (doc.wrapper.countChildren > 0) getAllDescendantIds(
-                        catalogId,
-                        doc.wrapper.id!!
-                    ) + doc.wrapper.id!! else listOf(doc.wrapper.id!!)
+                    if (doc.wrapper.countChildren > 0) {
+                        getAllDescendantIds(
+                            catalogId,
+                            doc.wrapper.id!!,
+                        ) + doc.wrapper.id!!
+                    } else {
+                        listOf(doc.wrapper.id!!)
+                    }
                 }
         }
     }
@@ -304,9 +307,8 @@ class DocumentService(
         parentId: Int?,
         address: Boolean = false,
         publish: Boolean = false,
-        initiator: InitiatorAction = InitiatorAction.DEFAULT
+        initiator: InitiatorAction = InitiatorAction.DEFAULT,
     ): DocumentData {
-
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
         val docTypeName = document.type
         val docType = getDocumentType(docTypeName, filterContext.profile)
@@ -317,7 +319,6 @@ class DocumentService(
 
         val preUpdatePayload = PreUpdatePayload(docType, catalogId, preCreatePayload.document, preCreatePayload.wrapper)
         preUpdatePipe.runFilters(preUpdatePayload, filterContext)
-
 
         // check for permission of parent explicitly, since save operations with no ID (create)
         // are excluded from permission check
@@ -331,7 +332,7 @@ class DocumentService(
             val isSuperOrCatAdmin = authUtils.isAdmin(principal)
             val hasRootWrite = checkForRootPermissions(
                 sidRetrievalStrategy.getSids(principal as Authentication),
-                listOf(BasePermission.WRITE)
+                listOf(BasePermission.WRITE),
             )
             if (!isSuperOrCatAdmin && !hasRootWrite) {
                 throw AccessDeniedException("No rights to create document")
@@ -398,7 +399,6 @@ class DocumentService(
                     log.error("Error during publishing pending document: ${wrapper.uuid}", e)
                 }
             }
-
     }
 
     @Transactional
@@ -420,7 +420,7 @@ class DocumentService(
             throw ConcurrentModificationException.withConflictingResource(
                 docData.document.id.toString(),
                 dbVersion!!,
-                data.version!!
+                data.version!!,
             )
         }
 
@@ -449,13 +449,13 @@ class DocumentService(
 
             return DocumentData(
                 postWrapper,
-                updatedDoc
+                updatedDoc,
             )
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
                 preUpdatePayload.document.id.toString(),
                 dbVersion!!,
-                data.version!!
+                data.version!!,
             )
         }
     }
@@ -463,7 +463,7 @@ class DocumentService(
     private fun handleUpdateOnPublishedOnlyDocument(
         docData: DocumentData,
         nextStateIsDraft: Boolean = true,
-        delayedPublication: Boolean = false
+        delayedPublication: Boolean = false,
     ): Boolean {
         var newVersionCreated = false
 
@@ -476,9 +476,11 @@ class DocumentService(
 
             prepareDocumentForCopy(docData.document)
 
-            docData.document.state = if (nextStateIsDraft)
+            docData.document.state = if (nextStateIsDraft) {
                 DOCUMENT_STATE.DRAFT_AND_PUBLISHED
-            else DOCUMENT_STATE.PUBLISHED
+            } else {
+                DOCUMENT_STATE.PUBLISHED
+            }
             newVersionCreated = true
         } else if (docData.document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED && !nextStateIsDraft && !delayedPublication) {
             moveLastPublishedDocumentToArchive(docData.document.catalog!!.identifier, docData.wrapper)
@@ -500,8 +502,10 @@ class DocumentService(
             lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
             lastPublishedDoc.wrapperId = wrapper.id
             docRepo.save(lastPublishedDoc)
-        } catch (_: EmptyResultDataAccessException) { /* no published version -> do nothing */
-        } catch (ex: ServerException) { /* maybe not existing address reference? -> do nothing */
+        } catch (_: EmptyResultDataAccessException) {
+            /* no published version -> do nothing */
+        } catch (ex: ServerException) {
+            /* maybe not existing address reference? -> do nothing */
             log.warn("The last published document could not be loaded correctly: ${ex.message}. Ignore error to be able to publish latest draft.")
         }
     }
@@ -526,7 +530,7 @@ class DocumentService(
             throw ConcurrentModificationException.withConflictingResource(
                 docData.document.id.toString(),
                 dbVersion!!,
-                data.version!!
+                data.version!!,
             )
         }
 
@@ -542,13 +546,11 @@ class DocumentService(
         val preUpdatePayload = PreUpdatePayload(docType, catalogId, finalUpdatedDoc, docData.wrapper)
         preUpdatePipe.runFilters(preUpdatePayload, filterContext)
 
-
         // run pre-publish pipe(s)
         val prePublishPayload = PrePublishPayload(docType, catalogId, preUpdatePayload.document, preUpdatePayload.wrapper)
         prePublishPipe.runFilters(prePublishPayload, filterContext)
 
         try {
-
             val updatedDoc = docRepo.save(preUpdatePayload.document)
             val updatedWrapper = if (publishDate != null) {
                 preUpdatePayload.wrapper.pending_date = publishDate.toInstant().atOffset(ZoneOffset.UTC)
@@ -567,13 +569,13 @@ class DocumentService(
 
             return DocumentData(
                 postWrapper,
-                updatedDoc
+                updatedDoc,
             )
         } catch (ex: ObjectOptimisticLockingFailureException) {
             throw ConcurrentModificationException.withConflictingResource(
                 preUpdatePayload.document.id.toString(),
                 dbVersion!!,
-                data.version!!
+                data.version!!,
             )
         }
     }
@@ -601,7 +603,7 @@ class DocumentService(
         updatedDocument: Document,
         updatedWrapper: DocumentWrapper,
         filterContext: Context,
-        publish: Boolean
+        publish: Boolean,
     ): DocumentWrapper {
         try {
             // make sure database has current state
@@ -616,7 +618,7 @@ class DocumentService(
                         docType,
                         catalogId,
                         postUpdatePayload.document,
-                        postUpdatePayload.wrapper
+                        postUpdatePayload.wrapper,
                     )
                 postPublishPipe.runFilters(postPublishPayload, filterContext)
                 postPersistencePipe.runFilters(postPublishPayload as PostPersistencePayload, filterContext)
@@ -695,7 +697,6 @@ class DocumentService(
     }
 
     fun revertDocument(principal: Principal, catalogId: String, id: Int): DocumentData {
-
         val docData = getDocumentFromCatalog(catalogId, id)
 
         // check if draft and published field are filled
@@ -754,7 +755,7 @@ class DocumentService(
     fun getLastPublishedDocument(
         catalogId: String,
         uuid: String,
-        forExport: Boolean = false
+        forExport: Boolean = false,
     ): Document {
         val doc = docWrapperRepo.getDocumentByState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
         if (doc.isEmpty()) throw EmptyResultDataAccessException("Resource with $uuid not found", 1)
@@ -842,10 +843,11 @@ class DocumentService(
 
     @Deprecated("Is not secured")
     fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
-        return if (includeFolders)
+        return if (includeFolders) {
             docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
-        else
+        } else {
             docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
+        }
     }
 
     fun isAddress(wrapper: DocumentWrapper): Boolean {
@@ -882,7 +884,7 @@ class DocumentService(
 
     fun getReferencedWrapperIds(
         catalogIdentifier: String,
-        document: Document?
+        document: Document?,
     ): Set<Int> {
         if (document == null) return setOf()
 
@@ -891,7 +893,7 @@ class DocumentService(
     }
 
     fun getReferencedUuids(
-        document: Document?
+        document: Document?,
     ): Set<String> {
         if (document == null) return setOf()
 
@@ -902,7 +904,7 @@ class DocumentService(
 
     fun getIncomingReferences(
         document: Document?,
-        catalogId: String
+        catalogId: String,
     ): Set<String> {
         if (document == null) return setOf()
         val profile = catalogService.getProfileFromCatalog(catalogId).identifier
@@ -924,7 +926,9 @@ class DocumentService(
         aclService.updateParent(wrapperId, newParentId)
 
         // get new parent path
-        val newPath = if (newParentId == null) emptyList() else {
+        val newPath = if (newParentId == null) {
+            emptyList()
+        } else {
             getPathFromWrapper(newParentId) + newParentId
         }
 
@@ -938,7 +942,7 @@ class DocumentService(
             if (parent.document.state == DOCUMENT_STATE.DRAFT) {
                 throw ValidationException.withReason(
                     "Parent '${parent.document.uuid}' must be published, since moved dataset '${docData.document.uuid}' is also published",
-                    errorCode = "PARENT_IS_NOT_PUBLISHED"
+                    errorCode = "PARENT_IS_NOT_PUBLISHED",
                 )
             }
         }

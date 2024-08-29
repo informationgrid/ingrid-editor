@@ -54,7 +54,7 @@ class M075_MigrateGeoNamesAgain : MigrationBase("0.75") {
     override fun postExec() {
         val pageSize = 100
         var page = 1
-        
+
         ClosableTransaction(transactionManager).use {
             val docTypesToMigrate = listOf(
                 "InGridGeoDataset",
@@ -63,12 +63,12 @@ class M075_MigrateGeoNamesAgain : MigrationBase("0.75") {
                 "InGridInformationSystem",
                 "InGridLiterature",
                 "InGridProject",
-                "InGridSpecialisedTask"
+                "InGridSpecialisedTask",
             )
             setAdminAuthentication("Migration", "Task")
-            
+
             log.info("Start migration of geo-name")
-            
+
             do {
                 log.info("Handling page $page")
                 val docs = entityManager.createQuery("SELECT doc FROM Document doc")
@@ -89,7 +89,7 @@ class M075_MigrateGeoNamesAgain : MigrationBase("0.75") {
                             log.error("Error migrating document with dbID ${it.id}", ex)
                         }
                     }
-                
+
                 page++
             } while (docs.size == pageSize)
         }

@@ -48,7 +48,6 @@ class M054_UpdateGroups : MigrationBase("0.54") {
     @Autowired
     private lateinit var transactionManager: PlatformTransactionManager
 
-
     override fun exec() {
         log.info("Update acls for groups.")
 
@@ -72,8 +71,4 @@ class M054_UpdateGroups : MigrationBase("0.54") {
                 groupService.update(catalogIdentifier, group.id!!, group, true)
             }
     }
-
-
-
 }
-

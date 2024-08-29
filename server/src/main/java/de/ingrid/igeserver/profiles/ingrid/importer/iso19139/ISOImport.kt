@@ -48,13 +48,14 @@ data class IsoImportData(
     val codelistService: CodelistHandler,
     val catalogId: String,
     val documentService: DocumentService,
-    val addressMaps: MutableMap<String, String>
+    val addressMaps: MutableMap<String, String>,
 )
 
 data class IsoConverterOutput(
     val document: String,
-    val references: ArrayNode
+    val references: ArrayNode,
 )
+
 @Service
 class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService) : IgeImporter {
     private val log = logger()
@@ -64,14 +65,14 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
     var profileMapper: MutableMap<String, ISOImportProfile> = mutableMapOf()
 
     override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
-
-        val xmlDeserializer = XmlMapper(JacksonXmlModule().apply {
-            setDefaultUseWrapper(false)
-            setXMLTextElementName("innerText")
-        }).registerKotlinModule()
+        val xmlDeserializer = XmlMapper(
+            JacksonXmlModule().apply {
+                setDefaultUseWrapper(false)
+                setXMLTextElementName("innerText")
+            },
+        ).registerKotlinModule()
             .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
         val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps)
@@ -96,7 +97,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
         val profileOutput = handleByProfile(isoData, catalogProfileId)
         if (profileOutput != null) return profileOutput
 
-        val model : GeneralMapper
+        val model: GeneralMapper
 
         when (val hierarchyLevel = isoData.data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "service" -> {
@@ -126,7 +127,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
 
         return IsoConverterOutput(
             output.toString(),
-            references
+            references,
         )
     }
 
@@ -134,7 +135,6 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
         val outputReferences: TemplateOutput = JsonStringOutput()
         templateEngine.render("imports/ingrid/address.jte", mapOf("model" to model), outputReferences)
         return jacksonObjectMapper().readValue(outputReferences.toString(), ArrayNode::class.java)
-
     }
 
     private fun handleByProfile(isoData: IsoImportData, profile: String): IsoConverterOutput? {
@@ -145,7 +145,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
 
                 IsoConverterOutput(
                     output.toString(),
-                    handleAddressReferences(it.mapper)
+                    handleAddressReferences(it.mapper),
                 )
             }
         }
@@ -159,7 +159,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
         override fun writeUserContent(value: String?) {
             if (value == null) return
             super.writeUserContent(
-                JsonEscape.escapeJson(value)
+                JsonEscape.escapeJson(value),
             )
         }
     }
@@ -169,6 +169,6 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
             "iso",
             "ISO",
             "ISO Dokumente",
-            emptyList()
+            emptyList(),
         )
 }

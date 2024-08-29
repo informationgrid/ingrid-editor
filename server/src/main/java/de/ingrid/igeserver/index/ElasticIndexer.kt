@@ -32,7 +32,7 @@ import java.io.IOException
 
 data class ElasticClient(
     val client: SearchClient,
-    val bulkProcessor: BulkSession
+    val bulkProcessor: BulkSession,
 )
 
 private const val metaIndex = "ingrid_meta"
@@ -41,7 +41,7 @@ private const val metaIndex = "ingrid_meta"
  * Utility class to manage elasticsearch indices and documents.
  * @author Andre
  */
-class ElasticIndexer(override val name: String, private val elastic: ElasticClient): IIndexManager {
+class ElasticIndexer(override val name: String, private val elastic: ElasticClient) : IIndexManager {
     private val log = logger()
 
     private val defaultMapping: String = ElasticIndexer::class.java.getResource("/ingrid-meta-mapping.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-mapping.json' for creating index 'ingrid_meta'")
@@ -49,22 +49,29 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
 
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? {
         return runBlocking {
-            val aliases = try { elastic.client.getAliases(indexAlias) } catch (_: RestException) { null }
+            val aliases = try {
+                elastic.client.getAliases(indexAlias)
+            } catch (_: RestException) {
+                null
+            }
             aliases?.keys?.find { partialName == null || it.contains(partialName) }
         }
     }
 
     override fun createIndex(name: String, type: String, esMapping: String, esSettings: String): Boolean {
         return runBlocking {
-            val response = elastic.client.createIndex(name, """
+            val response = elastic.client.createIndex(
+                name,
+                """
                 { "mappings": $esMapping, "settings": $esSettings }
-            """.trimIndent())
+                """.trimIndent(),
+            )
             response.acknowledged
         }
     }
 
     override fun switchAlias(aliasName: String, oldIndex: String?, newIndex: String) {
-        runBlocking { 
+        runBlocking {
             elastic.client.updateAliases {
                 if (oldIndex != null) {
                     remove {
@@ -72,11 +79,11 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
                         index = oldIndex
                     }
                 }
-                add { 
+                add {
                     alias = aliasName
                     index = newIndex
                 }
-            } 
+            }
         }
     }
 
@@ -97,14 +104,14 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
     }
 
     override fun updateIPlugInformation(id: String, info: String) {
-        runBlocking { 
+        runBlocking {
             val response = elastic.client.search(metaIndex) {
                 query = term("indexId", id)
-                sort { 
+                sort {
                     add("lastIndexed")
                 }
             }
-            
+
             when (response.hits?.total?.value) {
                 1L -> {
                     val docId = response.hits?.hits?.get(0)?.id
@@ -133,25 +140,25 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
     }
 
     override fun flush() {
-        runBlocking { 
+        runBlocking {
             elastic.bulkProcessor.flush()
         }
     }
 
     override fun deleteIndex(index: String) {
-        runBlocking { 
+        runBlocking {
             elastic.client.deleteIndex(index)
         }
     }
 
     override fun getIndices(filter: String): List<String> {
         return runBlocking {
-            elastic.client.getAliases().keys.filter { it.startsWith(filter)}
+            elastic.client.getAliases().keys.filter { it.startsWith(filter) }
         }
     }
 
     override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
-        runBlocking { 
+        runBlocking {
             elastic.bulkProcessor.delete(id, indexinfo.getRealIndexName())
 
             if (updateOldIndex) {
@@ -168,5 +175,4 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
     override fun indexExists(indexName: String): Boolean {
         return runBlocking { elastic.client.exists(indexName) }
     }
-
-} 
+}

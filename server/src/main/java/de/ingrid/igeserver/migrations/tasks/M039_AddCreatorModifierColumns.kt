@@ -48,5 +48,4 @@ class M039_AddCreatorModifierColumns : MigrationBase("0.39") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

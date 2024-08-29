@@ -44,10 +44,12 @@ interface DatasetsApi {
     @PostMapping(value = ["/datasets"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Create a complete dataset")
     @ApiResponses(
-        value = [ApiResponse(
-            responseCode = "200",
-            description = "The stored dataset, which might contain additional storage information."
-        ), ApiResponse(responseCode = "500", description = "Unexpected error")]
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "The stored dataset, which might contain additional storage information.",
+            ), ApiResponse(responseCode = "500", description = "Unexpected error"),
+        ],
     )
     fun createDataset(
         principal: Principal,
@@ -58,17 +60,19 @@ interface DatasetsApi {
         @Parameter(description = "Is this an address document") @RequestParam(required = false) address: @Valid Boolean,
         @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(
             value = "publish",
-            required = false
-        ) publish: Boolean
+            required = false,
+        ) publish: Boolean,
     ): ResponseEntity<DocumentWithMetadata>
 
     @PutMapping(value = ["/datasets/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(summary = "Update a complete dataset")
     @ApiResponses(
-        value = [ApiResponse(
-            responseCode = "200",
-            description = "The stored dataset, which might contain additional storage information."
-        ), ApiResponse(responseCode = "200", description = "Unexpected error")]
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "The stored dataset, which might contain additional storage information.",
+            ), ApiResponse(responseCode = "200", description = "Unexpected error"),
+        ],
     )
     fun updateDataset(
         principal: Principal,
@@ -76,28 +80,28 @@ interface DatasetsApi {
         @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: @Valid JsonNode,
         @Parameter(description = "If we want to delay the publication set this date.") @RequestParam(
             value = "publishDate",
-            required = false
+            required = false,
         ) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) publishDate: Date?,
         @Parameter(description = "If we want to store the published version then this parameter has to be set to true.") @RequestParam(
             value = "publish",
-            required = false
+            required = false,
         ) publish: Boolean,
         @Parameter(description = "If we want to unpublish a document then this parameter has to be set to true.") @RequestParam(
             value = "unpublish",
-            required = false
+            required = false,
         ) unpublish: Boolean,
         @Parameter(description = "If we want to cancel the delayed publishing of a document then this parameter has to be set to true.") @RequestParam(
             value = "cancelPendingPublishing",
-            required = false
+            required = false,
         ) cancelPendingPublishing: Boolean,
         @Parameter(description = "Delete the draft version and make the published version the current one.") @RequestParam(
             value = "revert",
-            required = false
+            required = false,
         ) revert: Boolean,
         @Parameter(description = "Document version") @RequestParam(
             value = "version",
-            required = false
-        ) version: Int?
+            required = false,
+        ) version: Int?,
     ): ResponseEntity<DocumentWithMetadata>
 
     @Operation(description = "Copy a dataset or tree under another dataset")
@@ -105,29 +109,31 @@ interface DatasetsApi {
     @RequestMapping(
         value = ["/datasets/{ids}/copy"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.POST]
+        method = [RequestMethod.POST],
     )
     fun copyDatasets(
         principal: Principal,
         @Parameter(description = "IDs of the copied datasets", required = true) @PathVariable("ids") ids: List<Int>,
-        @Parameter(description = "...", required = true) @RequestBody options: @Valid CopyOptions
+        @Parameter(description = "...", required = true) @RequestBody options: @Valid CopyOptions,
     ): ResponseEntity<List<DocumentWithMetadata>>
 
     @Operation(description = "Deletes a dataset")
     @ApiResponses(
-        value = [ApiResponse(responseCode = "204"), ApiResponse(
-            responseCode = "500",
-            description = "Unexpected error"
-        )]
+        value = [
+            ApiResponse(responseCode = "204"), ApiResponse(
+                responseCode = "500",
+                description = "Unexpected error",
+            ),
+        ],
     )
     @RequestMapping(
         value = ["/datasets/{id}"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.DELETE]
+        method = [RequestMethod.DELETE],
     )
     fun deleteById(
         principal: Principal,
-        @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") ids: List<Int>
+        @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") ids: List<Int>,
     ): ResponseEntity<Unit>
 
     @Operation(description = "Get child datasets of a given parent document/folder")
@@ -135,31 +141,33 @@ interface DatasetsApi {
     @RequestMapping(
         value = ["/tree/children"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
     fun getChildren(
         principal: Principal,
         @Parameter(description = "The ID of the parent dataset to get the children from. If empty then the root datasets are returned.") @RequestParam(
             value = "parentId",
-            required = false
+            required = false,
         ) parentId: String?,
         @Parameter(description = "Define if we want to have addresses or documents.") @RequestParam(
             value = "address",
-            required = false
-        ) isAddress: Boolean
+            required = false,
+        ) isAddress: Boolean,
     ): ResponseEntity<List<DocumentInfo>>
 
     @Operation(description = "Retrieve a dataset by a given ID.")
     @ApiResponses(
-        value = [ApiResponse(
-            responseCode = "200",
-            description = "The dataset with the given ID."
-        ), ApiResponse(responseCode = "500", description = "Unexpected error")]
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "The dataset with the given ID.",
+            ), ApiResponse(responseCode = "500", description = "Unexpected error"),
+        ],
     )
     @RequestMapping(
         value = ["/datasets/{id}"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
     fun getByID(
         principal: Principal,
@@ -172,23 +180,25 @@ interface DatasetsApi {
 
     @Operation(description = "Retrieve a dataset by a given UUID.")
     @ApiResponses(
-        value = [ApiResponse(
-            responseCode = "200",
-            description = "The dataset with the given ID."
-        ), ApiResponse(responseCode = "500", description = "Unexpected error")]
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "The dataset with the given ID.",
+            ), ApiResponse(responseCode = "500", description = "Unexpected error"),
+        ],
     )
     @RequestMapping(
         value = ["/datasetsByUuid/{uuid}"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
     fun getByUUID(
         principal: Principal,
         @Parameter(description = "The UUID of the dataset.", required = true) @PathVariable("uuid") uuid: String,
         @Parameter(description = "If we want to get the published version then this parameter has to be set to true.") @RequestParam(
             value = "publish",
-            required = false
-        ) publish: Boolean?
+            required = false,
+        ) publish: Boolean?,
     ): ResponseEntity<DocumentWithMetadata>
 
     @Operation(description = "Get the hierarchical path of a document. Retrieve an array of ID of all parents leading to the given dataset ID.")
@@ -196,11 +206,11 @@ interface DatasetsApi {
     @RequestMapping(
         value = ["/datasets/{id}/path"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.GET]
+        method = [RequestMethod.GET],
     )
     fun getPath(
         principal: Principal,
-        @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: Int
+        @Parameter(description = "The ID of the dataset.", required = true) @PathVariable("id") id: Int,
     ): ResponseEntity<List<DatasetsApiController.PathResponse>>
 
     @Operation(description = "Move a dataset or tree under another dataset")
@@ -208,12 +218,12 @@ interface DatasetsApi {
     @RequestMapping(
         value = ["/datasets/{ids}/move"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
-        method = [RequestMethod.POST]
+        method = [RequestMethod.POST],
     )
     fun moveDatasets(
         principal: Principal,
         @Parameter(description = "IDs of the copied datasets", required = true) @PathVariable("ids") ids: List<Int>,
-        @Parameter(description = "...", required = true) @RequestBody options: @Valid CopyOptions
+        @Parameter(description = "...", required = true) @RequestBody options: @Valid CopyOptions,
     ): ResponseEntity<Void>
 
     @Operation(description = "Replace address references from all documents")
@@ -221,7 +231,7 @@ interface DatasetsApi {
     fun replaceAddress(
         principal: Principal,
         @PathVariable source: String,
-        @PathVariable target: String
+        @PathVariable target: String,
     ): ResponseEntity<Unit>
 
     @Operation(description = "Get all users with access to the document")
@@ -230,8 +240,6 @@ interface DatasetsApi {
         principal: Principal,
         @PathVariable id: Int,
     ): ResponseEntity<DatasetsApiController.UserAccessResponse>
-
-
 
     @Operation(description = "Set the responsible user for a dataset")
     @PostMapping(value = ["/datasets/{datasetId}/responsibleUser/{userId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -246,7 +254,7 @@ interface DatasetsApi {
     fun setTags(
         principal: Principal,
         @PathVariable id: Int,
-        @RequestBody tags: TagRequest
+        @RequestBody tags: TagRequest,
     ): ResponseEntity<List<String>>
 
     @Operation

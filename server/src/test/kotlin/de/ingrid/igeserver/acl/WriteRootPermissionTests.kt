@@ -80,5 +80,4 @@ class WriteRootPermissionTests : IntegrationTest() {
         docWrapperRepo.deleteById(doc.id!!)
         docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
     }
-
 }

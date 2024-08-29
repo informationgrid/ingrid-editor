@@ -34,7 +34,7 @@ class BastFields : GeodatasetBase() {
     private val docSamples = mapOf(
         "GeoDataset" to "/export/ingrid/geo-dataset.minimal.sample.json",
         "GeoService" to "/export/ingrid/geo-service.minimal.sample.json",
-        "DataCollection" to "/export/ingrid/data-collection.sample.maximal.json"
+        "DataCollection" to "/export/ingrid/data-collection.sample.maximal.json",
     )
 
     override suspend fun beforeSpec(spec: Spec) {
@@ -44,10 +44,10 @@ class BastFields : GeodatasetBase() {
                 this.codelistHandler,
                 this.config,
                 this.catalogService,
-                this.documentService
+                this.documentService,
             )
         every { catalogService.getProfileFromCatalog(any()) } returns
-                DummyCatalog("ingrid-bast")
+            DummyCatalog("ingrid-bast")
     }
 
     init {
@@ -59,13 +59,13 @@ class BastFields : GeodatasetBase() {
                             """{
                             "projectTitle": "BASt project title",
                             "projectNumber": "BASt project number"
-                            }""".trimIndent()
+                            }
+                            """.trimIndent(),
                         ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
                 result shouldContain projectTitleAndNumberInKeywords
             }
-
 
             should("export digitalTransferOptions with correct unit for: $docType") {
                 val context =
@@ -86,7 +86,8 @@ class BastFields : GeodatasetBase() {
                                   "mediumNote": "Dachboden"
                                 }
                               ]
-                            }""".trimIndent()
+                            }
+                            """.trimIndent(),
                         ) as ObjectNode
 
                 val result =
@@ -101,7 +102,8 @@ class BastFields : GeodatasetBase() {
                         .readTree(
                             """{
                             "supplementalInformation": "Bemerkung zur BASt"
-                            }""".trimIndent()
+                            }
+                            """.trimIndent(),
                         ) as ObjectNode
 
                 val result =
@@ -118,7 +120,8 @@ class BastFields : GeodatasetBase() {
                             "resource": {
                                 "useConstraintsComments": "BASt Nutzungshinweise"
                             }
-                        }""".trimIndent()
+                        }
+                            """.trimIndent(),
                         ) as ObjectNode
 
                 val result =

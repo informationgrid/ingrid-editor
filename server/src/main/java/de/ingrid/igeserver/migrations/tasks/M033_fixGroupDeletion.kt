@@ -47,13 +47,9 @@ class M033_fixGroupDeletion : MigrationBase("0.33") {
         			on delete cascade;
     """.trimIndent()
 
-
     override fun exec() {
         ClosableTransaction(transactionManager).use {
-
             entityManager.createNativeQuery(modifyUserGroupTable).executeUpdate()
-            
         }
     }
-
 }

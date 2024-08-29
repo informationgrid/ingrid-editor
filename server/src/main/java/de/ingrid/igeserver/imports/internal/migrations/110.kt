@@ -26,7 +26,7 @@ import de.ingrid.igeserver.utils.getString
 
 data class Migrate110Response(
     val documents: JsonNode,
-    val references: List<JsonNode>
+    val references: List<JsonNode>,
 )
 
 class Migrate110 {
@@ -49,7 +49,6 @@ class Migrate110 {
                         ?.map { removeMetadata(it) }
                         ?.distinctBy { it.getString("_uuid") }
                         ?.let { addressRefs.addAll(it) }
-
                 }
             }
             return Migrate110Response(documents, addressRefs)

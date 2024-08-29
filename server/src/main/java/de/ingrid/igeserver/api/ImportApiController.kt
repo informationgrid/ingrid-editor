@@ -23,7 +23,6 @@ import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.services.CatalogService
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -34,7 +33,7 @@ import java.security.Principal
 @RequestMapping(path = ["/api"])
 class ImportApiController(
     private val importService: ImportService,
-    private val catalogService: CatalogService
+    private val catalogService: CatalogService,
 ) : ImportApi {
 
     private val log = logger()
@@ -48,13 +47,13 @@ class ImportApiController(
 //        val response = importService.analyzeFile(catalogId, file)
         return ResponseEntity.ok().build()
     }
-
 }
 
 data class ImportOptions(
     val parentDocument: Int? = null,
-    val parentAddress: Int? = null, 
-    val publish: Boolean = false, 
-    val overwriteAddresses: Boolean = false, 
+    val parentAddress: Int? = null,
+    val publish: Boolean = false,
+    val overwriteAddresses: Boolean = false,
     // so far we always want to overwrite datasets
-    val overwriteDatasets: Boolean = true)
+    val overwriteDatasets: Boolean = true,
+)

@@ -27,7 +27,6 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 import org.w3c.dom.Document
 
-
 @Service
 class GetCapabilitiesParserFactory(val codelistHandler: CodelistHandler, val researchService: ResearchService) {
 
@@ -51,7 +50,16 @@ class GetCapabilitiesParserFactory(val codelistHandler: CodelistHandler, val res
     }
 
     private enum class ServiceType {
-        WMS130, WMS111, WFS110, WFS200, WCS, WCS11, WCS201, CSW, WCTS, WMTS
+        WMS130,
+        WMS111,
+        WFS110,
+        WFS200,
+        WCS,
+        WCS11,
+        WCS201,
+        CSW,
+        WCTS,
+        WMTS,
     }
 
     // identifier for each service type
@@ -78,7 +86,6 @@ class GetCapabilitiesParserFactory(val codelistHandler: CodelistHandler, val res
     }
 
     private fun getServiceType(doc: Document): ServiceType {
-
         return when {
             // WMS Version 1.3.0
             isServiceType(doc, ServiceType.WMS130) -> ServiceType.WMS130
@@ -117,37 +124,36 @@ class GetCapabilitiesParserFactory(val codelistHandler: CodelistHandler, val res
             ServiceType.WMS111 -> xPathUtils.getString(doc, "/WMT_MS_Capabilities/Service/Name[1]") != null
             ServiceType.WFS110 -> xPathUtils.getString(
                 doc,
-                "/wfs:WFS_Capabilities/ows:ServiceIdentification/ows:ServiceType[1]"
+                "/wfs:WFS_Capabilities/ows:ServiceIdentification/ows:ServiceType[1]",
             ) != null
 
             ServiceType.WFS200 -> xPathUtils.getString(
                 doc,
-                "/wfs20:WFS_Capabilities/ows11:ServiceIdentification/ows11:ServiceType[1]"
+                "/wfs20:WFS_Capabilities/ows11:ServiceIdentification/ows11:ServiceType[1]",
             ) != null
 
             ServiceType.WCS -> xPathUtils.getString(doc, "/wcs:WCS_Capabilities") != null
             ServiceType.WCS11 -> xPathUtils.getString(
                 doc,
-                "/wcs11:Capabilities/ows11:ServiceIdentification/ows11:ServiceType[1]"
+                "/wcs11:Capabilities/ows11:ServiceIdentification/ows11:ServiceType[1]",
             )?.uppercase()?.contains(SERVICE_TYPE_WCS) ?: false
 
             ServiceType.WCS201 -> xPathUtils.getString(
                 doc,
-                "/wcs201:Capabilities/ows20:ServiceIdentification/ows20:ServiceType[1]"
+                "/wcs201:Capabilities/ows20:ServiceIdentification/ows20:ServiceType[1]",
             )?.uppercase()?.contains(SERVICE_TYPE_WCS) ?: false
 
             ServiceType.WCTS -> xPathUtils.getString(
                 doc,
-                "/wcts:Capabilities/owsgeo:ServiceIdentification/owsgeo:ServiceType[1]"
+                "/wcts:Capabilities/owsgeo:ServiceIdentification/owsgeo:ServiceType[1]",
             )?.uppercase()?.contains(SERVICE_TYPE_WCTS) ?: false
 
             ServiceType.WMTS -> xPathUtils.getString(
                 doc,
-                "/wmts:Capabilities/ows11:ServiceIdentification/ows11:ServiceType"
+                "/wmts:Capabilities/ows11:ServiceIdentification/ows11:ServiceType",
             ) != null
 
             else -> false
         }
     }
-
 }

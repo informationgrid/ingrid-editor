@@ -52,7 +52,7 @@ class IngridExporterKrzn(
             "json",
             listOf("ingrid-krzn"),
             isPublic = true,
-            useForPublish = true
+            useForPublish = true,
         )
 }
 
@@ -61,7 +61,7 @@ class IngridIdfExporterKrzn(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
+    @Lazy documentService: DocumentService,
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getKrznTransformer(docType) ?: super.getModelTransformerClass(docType)
@@ -72,7 +72,7 @@ class IngridLuceneExporterKrzn(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
+    @Lazy documentService: DocumentService,
 ) :
     IngridLuceneExporter(
         codelistHandler,
@@ -97,8 +97,8 @@ class IngridLuceneExporterKrzn(
                             TransformerCache(),
                             data.doc,
                             documentService,
-                            data.tags
-                        )
+                            data.tags,
+                        ),
                     ) ?: super.getTransformer(data)
             }
 
@@ -111,7 +111,7 @@ class IngridLuceneExporterKrzn(
 class IngridISOExporterKrzn(
     idfExporter: IngridIdfExporterKrzn,
     luceneExporter: IngridLuceneExporterKrzn,
-    documentWrapperRepository: DocumentWrapperRepository
+    documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridExporterKrzn(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
@@ -121,12 +121,11 @@ class IngridISOExporterKrzn(
         "Export von KRZN Dokumenten in ISO für die Vorschau im Editor.",
         "text/xml",
         "xml",
-        listOf("ingrid-krzn")
+        listOf("ingrid-krzn"),
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val indexString = super.run(doc, catalogId, options) as String
         return getISOFromElasticDocumentString(indexString)
     }
-
 }

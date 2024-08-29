@@ -40,7 +40,7 @@ class UpdateExternalCoupledResourcesTask(
     val entityManager: EntityManager,
     val transactionManager: PlatformTransactionManager,
     val documentService: DocumentService,
-    val capabilitiesService: CapabilitiesService
+    val capabilitiesService: CapabilitiesService,
 ) {
 
     val log = logger()
@@ -71,7 +71,7 @@ class UpdateExternalCoupledResourcesTask(
     private fun updateResource(
         resource: CoupledResourceResult,
         urlCache: MutableMap<String, GetRecordUrlAnalysis>,
-        summaries: MutableMap<Int, Summary>
+        summaries: MutableMap<Int, Summary>,
     ) {
         val summary = summaries.getOrPut(resource.catalogId) { Summary(0, 0, 0) }
 
@@ -126,7 +126,7 @@ class UpdateExternalCoupledResourcesTask(
       AND EXISTS(SELECT
                  FROM jsonb_array_elements(data -> 'service' -> 'coupledResources') as cr
           WHERE (cr -> 'isExternalRef')\:\:bool = true);
-          """.trimIndent()
+                """.trimIndent(),
             )
                 .resultList
                 .map { mapToCoupledResourceResult(it as Array<Any>) }
@@ -139,7 +139,7 @@ class UpdateExternalCoupledResourcesTask(
             result[1].toString(),
             mapper.readValue(result[2] as String, object : TypeReference<List<CoupledResource>>() {})
                 .filter { it.isExternalRef },
-            result[3] as Int
+            result[3] as Int,
         )
     }
 
@@ -149,7 +149,7 @@ class UpdateExternalCoupledResourcesTask(
         val id: Int,
         val uuid: String,
         val links: List<CoupledResource>,
-        val catalogId: Int
+        val catalogId: Int,
     )
 
     private data class CoupledResource(
@@ -157,7 +157,6 @@ class UpdateExternalCoupledResourcesTask(
         var identifier: String?,
         val url: String?,
         val title: String?,
-        val isExternalRef: Boolean
+        val isExternalRef: Boolean,
     )
 }
-

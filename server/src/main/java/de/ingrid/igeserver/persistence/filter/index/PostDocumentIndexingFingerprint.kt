@@ -37,7 +37,7 @@ import java.time.OffsetDateTime
 @Component
 class PostDocumentIndexingFingerprint(
     val documentWrapperRepository: DocumentWrapperRepository,
-    val exporterFactory: ExporterFactory
+    val exporterFactory: ExporterFactory,
 ) : Filter<PostIndexPayload> {
 
     private val log = logger()
@@ -57,7 +57,7 @@ class PostDocumentIndexingFingerprint(
     private fun updateFingerprintIfChanged(
         context: Context,
         exporterType: String,
-        isoFingerprint: String
+        isoFingerprint: String,
     ) {
         val catalogIdentifier = context.catalogId
         val uuid = (context as SimpleContext).uuid
@@ -72,7 +72,7 @@ class PostDocumentIndexingFingerprint(
             wrapper.fingerprint = (fingerprintList.filter { it.exportType != exporterType }) + FingerprintInfo(
                 exporterType,
                 isoFingerprint,
-                publishDate
+                publishDate,
             )
             documentWrapperRepository.save(wrapper)
         }

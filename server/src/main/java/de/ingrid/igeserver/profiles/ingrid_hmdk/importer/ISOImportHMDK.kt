@@ -34,23 +34,22 @@ class ISOImportHMDK(val codelistHandler: CodelistHandler, @Lazy val documentServ
     override fun handle(
         catalogId: String,
         data: Metadata,
-        addressMaps: MutableMap<String, String>
+        addressMaps: MutableMap<String, String>,
     ): ImportProfileData? {
-
         val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps)
 
         return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset", "series" -> {
                 ImportProfileData(
                     "imports/ingrid-hmdk/geodataset.jte",
-                    GeodatasetMapperHMDK(isoData)
+                    GeodatasetMapperHMDK(isoData),
                 )
             }
 
             "service" -> {
                 ImportProfileData(
                     "imports/ingrid-hmdk/geoservice.jte",
-                    GeoserviceMapperHMDK(isoData)
+                    GeoserviceMapperHMDK(isoData),
                 )
             }
 

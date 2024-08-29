@@ -39,6 +39,8 @@ interface BehavioursApi {
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Behaviours have been set.")])
     @PostMapping(value = ["/behaviours"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun setBehaviours(principal: Principal,
-                      @Parameter(required = true) @RequestBody behaviours: List<Behaviour>): ResponseEntity<Void>
+    fun setBehaviours(
+        principal: Principal,
+        @Parameter(required = true) @RequestBody behaviours: List<Behaviour>,
+    ): ResponseEntity<Void>
 }

@@ -50,7 +50,7 @@ interface ResearchApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun save(
         principal: Principal,
-        @Parameter(description = "The dataset to be stored.", required = true) @RequestBody query: Query
+        @Parameter(description = "The dataset to be stored.", required = true) @RequestBody query: Query,
     ): ResponseEntity<Query>
 
     @Operation
@@ -58,7 +58,7 @@ interface ResearchApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun delete(
         principal: Principal,
-        @Parameter(description = "The id of the query to be deleted") @PathVariable id: Int
+        @Parameter(description = "The id of the query to be deleted") @PathVariable id: Int,
     ): ResponseEntity<Void>
 
     @Operation
@@ -66,7 +66,7 @@ interface ResearchApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun search(
         principal: Principal,
-        @Parameter(description = "the query with filter definitions") @RequestBody query: ResearchQuery
+        @Parameter(description = "the query with filter definitions") @RequestBody query: ResearchQuery,
     ): ResponseEntity<ResearchResponse>
 
     @Operation
@@ -98,5 +98,4 @@ interface ResearchApi {
     @PostMapping(value = ["/ai"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun aiSearch(principal: Principal, @RequestBody query: String): ResponseEntity<String>
-    
 }

@@ -35,7 +35,7 @@ class GeodatasetTransformerHmdk(transformerConfig: TransformerConfig) : Geodatas
         uuid: String,
         type: KeyValue?,
         direction: String,
-        ignoreNotFound: Boolean
+        ignoreNotFound: Boolean,
     ): CrossReference? =
         super.getCrossReference(uuid, type, direction, ignoreNotFound)?.apply {
             mapUrl = getMapUrl(getLastPublishedDocument(uuid), tags)
@@ -49,7 +49,7 @@ class GeodatasetTransformerHmdkMetaver(transformerConfig: TransformerConfig) : G
         uuid: String,
         type: KeyValue?,
         direction: String,
-        ignoreNotFound: Boolean
+        ignoreNotFound: Boolean,
     ): CrossReference? =
         super.getCrossReference(uuid, type, direction, ignoreNotFound)?.apply {
             mapUrl = getMapUrl(getLastPublishedDocument(uuid), tags)

@@ -58,5 +58,4 @@ class M019_CreatePermissionGroupTable : MigrationBase("0.19") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

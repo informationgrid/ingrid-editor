@@ -19,11 +19,10 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.export_catalog.html
 
-
 import com.fasterxml.jackson.databind.node.ObjectNode
-import de.ingrid.igeserver.features.ogc_api_records.services.OgcHtmlConverterService
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.CatalogExportTypeInfo
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporter
+import de.ingrid.igeserver.features.ogc_api_records.services.OgcHtmlConverterService
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentCategory
@@ -33,28 +32,26 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
-
 @Service
 class HtmlCatalogExporter(
-        @Lazy val documentService: DocumentService,
-        val catalogService: CatalogService,
-        val ogcHtmlConverterService: OgcHtmlConverterService
+    @Lazy val documentService: DocumentService,
+    val catalogService: CatalogService,
+    val ogcHtmlConverterService: OgcHtmlConverterService,
 ) : OgcCatalogExporter {
 
     override val typeInfo: CatalogExportTypeInfo
         get() = CatalogExportTypeInfo(
-                DocumentCategory.DATA,
-                "html",
-                "IGE Catalog in HTML",
-                "HTML Representation des IGE Catalog",
-                MediaType.TEXT_HTML_VALUE,
-                "html",
-                listOf()
+            DocumentCategory.DATA,
+            "html",
+            "IGE Catalog in HTML",
+            "HTML Representation des IGE Catalog",
+            MediaType.TEXT_HTML_VALUE,
+            "html",
+            listOf(),
         )
 
     override fun run(catalog: Catalog): Any {
         val objectNode: ObjectNode = mapper.valueToTree(catalog)
-        return ogcHtmlConverterService.convertObjectNode2Html(objectNode, "Collection" )
+        return ogcHtmlConverterService.convertObjectNode2Html(objectNode, "Collection")
     }
-
 }

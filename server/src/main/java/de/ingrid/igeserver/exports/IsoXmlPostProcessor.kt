@@ -38,7 +38,7 @@ import javax.script.SimpleScriptContext
 // @Service
 class IsoXmlPostProcessor : ExportPostProcessors {
     override fun process(exportedDoc: Any?, jsonData: JsonNode): Any? {
-//		PebbleEngine engine = new PebbleEngine.Builder().build();
+// 		PebbleEngine engine = new PebbleEngine.Builder().build();
         val engine = ScriptEngineManager().getEngineByName("nashorn")
 
         // define a different script context
@@ -86,7 +86,7 @@ class IsoXmlPostProcessor : ExportPostProcessors {
 
     companion object {
         private val log = LogManager.getLogger(
-            IsoXmlPostProcessor::class.java
+            IsoXmlPostProcessor::class.java,
         )
     }
 }

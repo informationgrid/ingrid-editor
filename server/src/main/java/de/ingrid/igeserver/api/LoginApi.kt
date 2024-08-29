@@ -37,8 +37,10 @@ interface LoginApi {
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Return the JWT"), ApiResponse(responseCode = "403", description = "Error when user is not accepted.")])
     @RequestMapping(value = ["/login"], produces = [MediaType.APPLICATION_JSON_VALUE], consumes = ["application/x-www-form-urlencoded"], method = [RequestMethod.POST])
-    fun login(@Parameter @RequestPart(value = "username", required = false) username: String?,
-              @Parameter @RequestPart(value = "password", required = false) password: String?): ResponseEntity<Void> //    @ApiOperation(value = "", notes = ""})
+    fun login(
+        @Parameter @RequestPart(value = "username", required = false) username: String?,
+        @Parameter @RequestPart(value = "password", required = false) password: String?,
+    ): ResponseEntity<Void> //    @ApiOperation(value = "", notes = ""})
     //    @ApiResponses(value = {
     //            @ApiResponse(code = 200, message = "Return the JWT", response = Void.class),
     //            @ApiResponse(code = 403, message = "Error when user is not accepted.", response = Void.class) })

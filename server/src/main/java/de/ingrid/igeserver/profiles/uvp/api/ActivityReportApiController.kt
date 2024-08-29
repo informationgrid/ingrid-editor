@@ -38,7 +38,7 @@ class ActivityReportApiController(
 ) : ActivityReportApi {
     override fun getReport(
         principal: Principal,
-        activityQueryOptions: ActivityQueryOptions
+        activityQueryOptions: ActivityQueryOptions,
     ): ResponseEntity<List<ActivityReportItem>> {
         val catalogIdentifier = catalogService.getCurrentCatalogForPrincipal(principal)
         val catalogId = catalogService.getCatalogById(catalogIdentifier).id
@@ -46,19 +46,20 @@ class ActivityReportApiController(
         val nativeQuery = entityManager.createNativeQuery(getActivitySql(catalogIdentifier, activityQueryOptions, catalogId))
         val resultList = nativeQuery.resultList as List<Array<out Any?>>
 
-
-        return ResponseEntity.ok(resultList.map {
-            ActivityReportItem(
-                time = it[0] as Instant,
-                dataset_uuid = it[1] as String,
-                title = it[2] as String,
-                document_type = it[3] as String,
-                contact_uuid = it[4] as String?,
-                contact_name = it[5] as String?,
-                actor = it[6] as String,
-                action = it[7] as String
-            )
-        })
+        return ResponseEntity.ok(
+            resultList.map {
+                ActivityReportItem(
+                    time = it[0] as Instant,
+                    dataset_uuid = it[1] as String,
+                    title = it[2] as String,
+                    document_type = it[3] as String,
+                    contact_uuid = it[4] as String?,
+                    contact_name = it[5] as String?,
+                    actor = it[6] as String,
+                    action = it[7] as String,
+                )
+            },
+        )
     }
 
     @Language("PostgreSQL")
@@ -81,7 +82,4 @@ class ActivityReportApiController(
           ${(activityQueryOptions.actions?.let { if (it.isNotEmpty()) "AND message->>'action' IN (${it.joinToString(",") { "'$it'" }})" else "" }) ?: ""}
         ORDER BY audit_log.id DESC;
     """.trimIndent()
-
-
 }
-

@@ -52,5 +52,4 @@ class Behaviour {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "data", columnDefinition = "jsonb")
     var data: Map<String, *>? = null
-
 }

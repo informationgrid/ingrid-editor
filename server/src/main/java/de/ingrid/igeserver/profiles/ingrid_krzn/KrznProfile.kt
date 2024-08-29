@@ -55,7 +55,7 @@ class KrznProfile(
     override val parentProfile = "ingrid"
 
     override val indexExportFormatID = "indexInGridIDFKrzn"
-    
+
     init {
         isoImport.profileMapper[id] = isoImportKRZN
     }
@@ -71,9 +71,8 @@ class KrznProfile(
             }
             null -> codelistHandler.removeAndAddCodelist(catalogId, codelist10500)
         }
-        
-        super.initCatalogCodelists(catalogId, codelistId)
 
+        super.initCatalogCodelists(catalogId, codelistId)
     }
 
     private fun createCodelist10500(catalogRef: Catalog): Codelist {

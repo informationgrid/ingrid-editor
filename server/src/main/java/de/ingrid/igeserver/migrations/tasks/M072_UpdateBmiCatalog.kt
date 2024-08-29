@@ -73,42 +73,41 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
         ClosableTransaction(transactionManager).use {
             val docs = entityManager.createQuery("SELECT doc FROM Document doc").resultList
             val docTypesToMigrate = listOf(
-                    "BmiDoc"
+                "BmiDoc",
             )
             setAdminAuthentication("Migration", "Task")
 
             docs
-                    .map { it as Document }
-                    .filter { docTypesToMigrate.contains(it.type) }
-                    .forEach {
-                        try {
-                            if (migrateDocument(it)) {
-                                log.info("Migrated doc with dbID ${it.id}")
-                                docRepo.save(it)
-                            }
-                        } catch (ex: Exception) {
-                            log.error("Error migrating document with dbID ${it.id}", ex)
+                .map { it as Document }
+                .filter { docTypesToMigrate.contains(it.type) }
+                .forEach {
+                    try {
+                        if (migrateDocument(it)) {
+                            log.info("Migrated doc with dbID ${it.id}")
+                            docRepo.save(it)
                         }
+                    } catch (ex: Exception) {
+                        log.error("Error migrating document with dbID ${it.id}", ex)
                     }
+                }
         }
     }
 
     private fun migrateDocument(doc: Document): Boolean {
         var migrated = false
-        if(migrateGeoName(doc)) migrated = true
-        if(migrateDcatTheme(doc)) migrated = true
-        if(migrateAddressTypes(doc)) migrated = true
-        if(migrateLicense(doc)) migrated = true
-        if(migrateOrigin(doc)) migrated = true
+        if (migrateGeoName(doc)) migrated = true
+        if (migrateDcatTheme(doc)) migrated = true
+        if (migrateAddressTypes(doc)) migrated = true
+        if (migrateLicense(doc)) migrated = true
+        if (migrateOrigin(doc)) migrated = true
 
         return migrated
     }
 
-
     private fun migrateGeoName(doc: Document): Boolean {
         val geoNameSpatials =
-                (doc.data.get("spatial") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
-                        .filter { it.get("type")?.asText() == "geo-name" }
+            (doc.data.get("spatial") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
+                .filter { it.get("type")?.asText() == "geo-name" }
 
         if (geoNameSpatials.isEmpty()) return false
 
@@ -121,15 +120,17 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
 
     private fun migrateDcatTheme(doc: Document): Boolean {
         val simpleThemes: ArrayNode =
-                doc.data.get("DCATThemes") as ArrayNode? ?: jacksonObjectMapper().createArrayNode()
+            doc.data.get("DCATThemes") as ArrayNode? ?: jacksonObjectMapper().createArrayNode()
 
         if (simpleThemes.isEmpty()) return false
 
         val keyThemes = jacksonObjectMapper().createArrayNode().apply {
             simpleThemes.forEach {
-                add(jacksonObjectMapper().createObjectNode().apply {
-                    put("key", it.asText())
-                })
+                add(
+                    jacksonObjectMapper().createObjectNode().apply {
+                        put("key", it.asText())
+                    },
+                )
             }
         }
 
@@ -139,12 +140,11 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
 
     private fun migrateAddressTypes(doc: Document): Boolean {
         val adresses =
-                (doc.data.get("addresses") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
+            (doc.data.get("addresses") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
 
         if (adresses.isEmpty()) return false
 
         adresses.forEach {
-
             val oldAddressType = (it as ObjectNode).get("type")?.get("key")?.textValue()
             val newAddressType = mapAddressType(oldAddressType)
             ((it as ObjectNode).get("type") as ObjectNode).put("key", newAddressType)
@@ -153,8 +153,8 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
         return true
     }
 
-    private fun mapAddressType(oldKey: String?) : String? {
-        when(oldKey){
+    private fun mapAddressType(oldKey: String?): String? {
+        when (oldKey) {
             "10" -> return "publisher"
             "11" -> return "creator"
             "9" -> return "creator"
@@ -166,14 +166,12 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
 
     private fun migrateLicense(doc: Document): Boolean {
         val license =
-                (doc.data.get("license") as ObjectNode? ?: jacksonObjectMapper().createObjectNode())
+            (doc.data.get("license") as ObjectNode? ?: jacksonObjectMapper().createObjectNode())
 
         val distributions =
-                (doc.data.get("distributions") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
+            (doc.data.get("distributions") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
 
-
-
-        if (distributions.isEmpty() && license == null ) return false
+        if (distributions.isEmpty() && license == null) return false
 
         distributions.forEach {
             (it as ObjectNode).set<ObjectNode>("license", license)
@@ -188,9 +186,7 @@ class M072_UpdateBmiCatalog : MigrationBase("0.72") {
         val origin = doc.data.get("origin") as TextNode?
 
         val distributions =
-                (doc.data.get("distributions") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
-
-
+            (doc.data.get("distributions") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
 
         if (distributions.isEmpty() && origin == null && origin?.asText()?.isEmpty() == true) return false
 

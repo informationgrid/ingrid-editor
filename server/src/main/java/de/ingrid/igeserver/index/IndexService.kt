@@ -49,14 +49,14 @@ import java.util.*
 data class DocumentIndexInfo(
     val document: Document,
     val tags: List<String>,
-    var exporterType: String? = null
+    var exporterType: String? = null,
 )
 
 data class QueryInfo(
     val catalogId: String,
     val category: String,
     val types: List<String>,
-    val exporterConditions: String
+    val exporterConditions: String,
 )
 
 @Service
@@ -66,7 +66,7 @@ class IndexService(
     @Lazy private val documentService: DocumentService,
     private val entityManager: EntityManager,
     private val generalProperties: GeneralProperties,
-    private val schedulerService: SchedulerService
+    private val schedulerService: SchedulerService,
 ) {
 
     private val log = logger()
@@ -107,7 +107,6 @@ class IndexService(
     private fun getConfigFromDatabase(catalog: Catalog): IndexConfig? =
         catalog.settings.indexCronPattern?.let { IndexConfig(catalog.identifier, "IGNORE", it.trim()) }
 
-
     fun getSinglePublishedDocument(
         queryInfo: QueryInfo,
         uuid: String,
@@ -121,7 +120,7 @@ class IndexService(
             requestPublishableDocuments(
                 queryInfo,
                 null,
-                ResearchPaging(currentPage + 1, generalProperties.indexPageSize)
+                ResearchPaging(currentPage + 1, generalProperties.indexPageSize),
             )
         val pagedDocs =
             PageImpl(docs, Pageable.ofSize(generalProperties.indexPageSize), docs.size.toLong())
@@ -175,7 +174,7 @@ class IndexService(
     fun requestPublishableDocuments(
         queryInfo: QueryInfo,
         uuid: String?,
-        paging: ResearchPaging = ResearchPaging(pageSize = generalProperties.indexPageSize)
+        paging: ResearchPaging = ResearchPaging(pageSize = generalProperties.indexPageSize),
     ): List<DocumentIndexInfo> {
         val sql = createSqlForPublishedDocuments(queryInfo, uuid)
         val orderBy =
@@ -219,14 +218,14 @@ class IndexService(
                             data.put(FIELD_PARENT, parentWrapper.uuid)
                         }
                     },
-                    it.tags.toList()
+                    it.tags.toList(),
                 )
             }
     }
 
     private fun createSqlForPublishedDocuments(
         queryInfo: QueryInfo,
-        uuid: String?
+        uuid: String?,
     ): String {
         val iBusConditions = getSystemSpecificConditions(queryInfo.types)
         var sql =
@@ -245,7 +244,7 @@ class IndexService(
         val sql =
             createSqlForPublishedDocuments(
                 queryInfo,
-                null
+                null,
             )
         val regex = Regex("(.|\\n)*?\\bFROM\\b")
         val countSql = sql.replaceFirst(regex, "SELECT COUNT(DISTINCT(document_wrapper.uuid, document_wrapper.id)) FROM")

@@ -33,5 +33,4 @@ class SchemaUtils {
 
         fun getJsonFileContent(file: String) = this::class.java.getResource(file)!!.readText(Charsets.UTF_8).replace("\r\n", "\n")
     }
-
 }

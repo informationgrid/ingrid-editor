@@ -42,10 +42,10 @@ interface Extension {
      * @param profileId Name of the profile (null, if unspecified)
      */
     fun usedInProfile(profileId: String?): Boolean {
-        return profiles != null // not deactivated
-                && (
-                    // no profiles specified for extension -> match all given profiles
-                    profiles!!.isEmpty() ||
+        return profiles != null && // not deactivated
+            (
+                // no profiles specified for extension -> match all given profiles
+                profiles!!.isEmpty() ||
                     // profiles specified for extension -> match only specific profile
                     profiles!!.isNotEmpty() && profileId in profiles!!
                 )

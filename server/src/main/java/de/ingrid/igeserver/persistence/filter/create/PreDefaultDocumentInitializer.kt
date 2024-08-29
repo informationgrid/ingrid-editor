@@ -43,7 +43,7 @@ class PreDefaultDocumentInitializer(
     val docWrapperRepo: DocumentWrapperRepository,
     val catalogRepo: CatalogRepository,
     val catalogService: CatalogService,
-    var authUtils: AuthUtils
+    var authUtils: AuthUtils,
 ) : Filter<PreCreatePayload> {
 
     override val profiles = arrayOf<String>()

@@ -38,7 +38,6 @@ class PostDefaultDocumentRemover(val indexTask: IndexingTask) : Filter<PostDelet
     override val profiles = arrayOf<String>()
 
     override fun invoke(payload: PostDeletePayload, context: Context): PostDeletePayload {
-
         // remove from index
         try {
             this.indexTask.removeFromIndex(context.catalogId, payload.wrapper.uuid, payload.wrapper.category!!)
@@ -49,5 +48,4 @@ class PostDefaultDocumentRemover(val indexTask: IndexingTask) : Filter<PostDelet
 
         return payload
     }
-
 }

@@ -88,5 +88,4 @@ class M029_ACLTables : MigrationBase("0.29") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

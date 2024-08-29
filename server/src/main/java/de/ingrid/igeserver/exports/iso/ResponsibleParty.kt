@@ -27,5 +27,5 @@ data class ResponsibleParty(
     val organisationName: CharacterString? = null,
     val positionName: CharacterString? = null,
     var contactInfo: ContactInfo? = null,
-    var role: RoleCode
+    var role: RoleCode,
 )

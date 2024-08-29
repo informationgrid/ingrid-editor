@@ -52,5 +52,4 @@ class M044_AddPendingColumn : MigrationBase("0.44") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }

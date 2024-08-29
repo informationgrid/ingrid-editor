@@ -31,13 +31,13 @@ import java.text.MessageFormat
 class EmailServiceImpl(
     val email: JavaMailSender,
     val mailProps: MailProperties,
-    val appSettings: GeneralProperties
+    val appSettings: GeneralProperties,
 ) {
-    
+
     @Value("\${server.servlet.context-path}")
     private lateinit var contextPath: String
-    
-    private val appUrl: String  get() {
+
+    private val appUrl: String get() {
         return appSettings.host + contextPath
     }
 
@@ -45,7 +45,7 @@ class EmailServiceImpl(
         sendEmail(
             to,
             mailProps.subject,
-            MessageFormat.format(mailProps.body, firstName, lastName, appUrl)
+            MessageFormat.format(mailProps.body, firstName, lastName, appUrl),
         )
     }
 
@@ -53,16 +53,15 @@ class EmailServiceImpl(
         sendEmail(
             to,
             mailProps.subject,
-            MessageFormat.format(mailProps.bodyWithPassword, firstName, lastName, appUrl, password, login)
+            MessageFormat.format(mailProps.bodyWithPassword, firstName, lastName, appUrl, password, login),
         )
     }
-
 
     fun sendDeletionEmail(to: String, firstName: String, lastName: String, login: String) {
         sendEmail(
             to,
             mailProps.subjectDeleteUser,
-            MessageFormat.format(mailProps.bodyDeleteUser, firstName, lastName, appUrl, login)
+            MessageFormat.format(mailProps.bodyDeleteUser, firstName, lastName, appUrl, login),
         )
     }
 
@@ -70,7 +69,7 @@ class EmailServiceImpl(
         sendEmail(
             to,
             mailProps.subjectResetPassword,
-            MessageFormat.format(mailProps.bodyResetPassword, firstName, lastName, appUrl, password, login)
+            MessageFormat.format(mailProps.bodyResetPassword, firstName, lastName, appUrl, password, login),
         )
     }
 
@@ -83,5 +82,4 @@ class EmailServiceImpl(
         }
         email.send(message)
     }
-
 }

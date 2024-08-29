@@ -48,5 +48,4 @@ class CodelistTask(val codeListService: CodeListService) {
         codeLists.isNotEmpty() -> log.info("Finished Codelist - Task with ${codeLists.size} new codelists")
         else -> log.debug("Finished Codelist")
     }
-
 }

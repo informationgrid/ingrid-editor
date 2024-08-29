@@ -39,7 +39,6 @@ interface KeywordsApi {
     fun search(
         @Parameter(required = true) @PathVariable("thesaurusId") thesaurusId: String,
         @RequestParam(value = "q", required = true) term: String,
-        @RequestParam(value = "type", required = false) type: ThesaurusSearchType? = ThesaurusSearchType.CONTAINS
+        @RequestParam(value = "type", required = false) type: ThesaurusSearchType? = ThesaurusSearchType.CONTAINS,
     ): ResponseEntity<List<Keyword>>
-
 }

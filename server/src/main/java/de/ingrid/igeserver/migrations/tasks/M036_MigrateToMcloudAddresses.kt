@@ -55,5 +55,4 @@ class M036_MigrateToMcloudAddresses : MigrationBase("0.36") {
             entityManager.createNativeQuery(sql).executeUpdate()
         }
     }
-
 }
