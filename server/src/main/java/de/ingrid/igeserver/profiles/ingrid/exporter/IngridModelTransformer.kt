@@ -215,7 +215,7 @@ open class IngridModelTransformer(
     private val arsSpatial = spatialReferences.find { !it.ars.isNullOrEmpty() }
     val regionKey = if (arsSpatial == null) null else KeyValue(
         arsSpatial.ars,
-        padARS(arsSpatial.ars!!).padEnd(12, '0')
+        padARS(arsSpatial.ars!!)
     )
 
     fun padARS(ars: String): String = ars.padEnd(12, '0')

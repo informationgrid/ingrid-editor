@@ -215,7 +215,7 @@ class DatasetsApiController(
         options: CopyOptions
     ): DocumentWithMetadata {
 
-        val wrapper = documentService.getWrapperByDocumentIdAndCatalog(id)
+        val wrapper = documentService.getWrapperByDocumentId(id)
 
         val doc = documentService.getDocumentByWrapperId(catalogId, id)
 

@@ -166,9 +166,8 @@ export class TableTypeComponent
         data: {
           fields: this.props.columns.filter((column) => !column.hidden),
           model: newEntry
-            ? {}
+            ? null
             : JSON.parse(JSON.stringify(this.dataSource.data[index])),
-          newEntry: newEntry,
         } as FormDialogData,
       })
       .afterClosed()
@@ -348,8 +347,6 @@ export class TableTypeComponent
         hasBackdrop: true,
         data: {
           fields: this.props.columns,
-          model: {},
-          newEntry: true,
         } as FormDialogData,
       })
       .afterClosed()
