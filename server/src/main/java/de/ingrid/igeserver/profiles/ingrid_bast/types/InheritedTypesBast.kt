@@ -35,6 +35,7 @@ class InGridGeoDatasetTypeBast(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetTyp
 @Component
 class InGridDataCollectionTypeBast(jdbcTemplate: JdbcTemplate) : InGridDataCollectionType(jdbcTemplate) {
     override val profiles = arrayOf(BastProfile.id)
+    override val jsonSchema = "/ingrid/schemes/bast/data-collection_bast.schema.json"
 }
 
 @Component
