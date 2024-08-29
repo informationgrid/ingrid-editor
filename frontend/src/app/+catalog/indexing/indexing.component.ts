@@ -47,6 +47,7 @@ import { LogResultComponent } from "./log-result/log-result.component";
 import { IndexingFields } from "./indexing-fields";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { JobHandlerHeaderComponent } from "../../shared/job-handler-header/job-handler-header.component";
+import { IgeFormlyModule } from "../../formly/ige-formly.module";
 
 @UntilDestroy()
 @Component({
@@ -66,6 +67,7 @@ import { JobHandlerHeaderComponent } from "../../shared/job-handler-header/job-h
     LogResultComponent,
     PageTemplateComponent,
     JobHandlerHeaderComponent,
+    IgeFormlyModule,
   ],
 })
 export class IndexingComponent implements OnInit {

@@ -93,6 +93,7 @@ import { AsyncPipe } from "@angular/common";
     MatProgressSpinner,
     AsyncPipe,
   ],
+  providers: [UserManagementService],
 })
 export class GroupComponent implements OnInit, AfterViewInit {
   groups = this.groupQuery

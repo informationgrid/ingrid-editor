@@ -95,7 +95,10 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { MatPaginatorModule } from "@angular/material/paginator";
+import {
+  MatPaginatorIntl,
+  MatPaginatorModule,
+} from "@angular/material/paginator";
 import { FormsModule } from "@angular/forms";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatMenuModule } from "@angular/material/menu";
@@ -103,6 +106,7 @@ import { TranslocoRootModule } from "./app/transloco-root.module";
 import { ClipboardModule } from "@angular/cdk/clipboard";
 import { AppComponent } from "./app/app.component";
 import Flow from "@flowjs/flow.js";
+import { IgePagingIntl } from "./app/shared/IgePagingIntl";
 
 if (environment.production) {
   enableProdMode();
@@ -281,6 +285,11 @@ bootstrapApplication(AppComponent, {
       multi: true,
       useFactory: registerTranslateExtension,
       deps: [TranslocoService],
+    },
+    // Pagination
+    {
+      provide: MatPaginatorIntl,
+      useValue: new IgePagingIntl(),
     },
     // PLUGINS
     pluginProvider,
