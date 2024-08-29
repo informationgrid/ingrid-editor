@@ -34,16 +34,12 @@ export const CHECKBOX_CONTROL_VALUE_ACCESSOR = {
 };
 
 @Component({
-    selector: "ige-checkbox",
-    templateUrl: "./checkbox.component.html",
-    styleUrls: ["./checkbox.component.css"],
-    providers: [CHECKBOX_CONTROL_VALUE_ACCESSOR],
-    standalone: true,
-    imports: [
-        MatCheckbox,
-        ReactiveFormsModule,
-        FormsModule,
-    ],
+  selector: "ige-checkbox",
+  templateUrl: "./checkbox.component.html",
+  styleUrls: ["./checkbox.component.css"],
+  providers: [CHECKBOX_CONTROL_VALUE_ACCESSOR],
+  standalone: true,
+  imports: [MatCheckbox, ReactiveFormsModule, FormsModule],
 })
 export class CheckboxComponent implements ControlValueAccessor, OnInit {
   @Input() label;

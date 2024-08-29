@@ -34,19 +34,19 @@ export const DATEBOX_CONTROL_VALUE_ACCESSOR = {
 };
 
 @Component({
-    selector: "ige-datebox",
-    templateUrl: "./datebox.component.html",
-    styleUrls: ["./datebox.component.css"],
-    providers: [DATEBOX_CONTROL_VALUE_ACCESSOR],
-    standalone: true,
-    imports: [
-        MatFormField,
-        MatInput,
-        MatDatepickerInput,
-        MatDatepickerToggle,
-        MatSuffix,
-        MatDatepicker,
-    ],
+  selector: "ige-datebox",
+  templateUrl: "./datebox.component.html",
+  styleUrls: ["./datebox.component.css"],
+  providers: [DATEBOX_CONTROL_VALUE_ACCESSOR],
+  standalone: true,
+  imports: [
+    MatFormField,
+    MatInput,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatSuffix,
+    MatDatepicker,
+  ],
 })
 export class DateboxComponent implements ControlValueAccessor, OnInit {
   // The internal data model

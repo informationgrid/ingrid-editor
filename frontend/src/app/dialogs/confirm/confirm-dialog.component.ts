@@ -56,30 +56,30 @@ export interface ConfirmDialogButton {
 }
 
 @Component({
-    templateUrl: "confirm-dialog.component.html",
-    styles: [
-        `
+  templateUrl: "confirm-dialog.component.html",
+  styles: [
+    `
       .mat-mdc-dialog-content p {
         white-space: normal;
       }
     `,
-    ],
-    standalone: true,
-    imports: [
-        MatIconButton,
-        MatDialogClose,
-        MatIcon,
-        MatDialogTitle,
-        CdkScrollable,
-        MatDialogContent,
-        MatFormField,
-        MatInput,
-        ReactiveFormsModule,
-        FormsModule,
-        MatDialogActions,
-        MatCheckbox,
-        MatButton,
-    ],
+  ],
+  standalone: true,
+  imports: [
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    MatFormField,
+    MatInput,
+    ReactiveFormsModule,
+    FormsModule,
+    MatDialogActions,
+    MatCheckbox,
+    MatButton,
+  ],
 })
 export class ConfirmDialogComponent {
   textConfirmed: string;

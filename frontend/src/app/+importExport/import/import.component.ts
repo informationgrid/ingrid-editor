@@ -18,7 +18,15 @@
  * limitations under the Licence.
  */
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators, ReactiveFormsModule } from "@angular/forms";
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from "@angular/forms";
 import {
   DatasetInfo,
   ExchangeService,
@@ -26,7 +34,13 @@ import {
   ImportTypeInfo,
 } from "../exchange.service";
 import { ConfigService } from "../../services/config/config.service";
-import { MatStepper, MatStep, MatStepLabel, MatStepperNext, MatStepperPrevious } from "@angular/material/stepper";
+import {
+  MatStep,
+  MatStepLabel,
+  MatStepper,
+  MatStepperNext,
+  MatStepperPrevious,
+} from "@angular/material/stepper";
 import { filter, map, take, tap } from "rxjs/operators";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../services/document/document.service";
@@ -44,7 +58,7 @@ import {
 import { IgeError } from "../../models/ige-error";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { JobHandlerHeaderComponent } from "../../shared/job-handler-header/job-handler-header.component";
-import { NgTemplateOutlet, DatePipe } from "@angular/common";
+import { DatePipe, NgTemplateOutlet } from "@angular/common";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatButton } from "@angular/material/button";
 import { MatCheckbox } from "@angular/material/checkbox";
@@ -54,29 +68,29 @@ import { ImportReportComponent } from "./import-report/import-report.component";
 
 @UntilDestroy()
 @Component({
-    selector: "ige-import",
-    templateUrl: "./import.component.html",
-    styleUrls: ["./import.component.scss"],
-    standalone: true,
-    imports: [
-        PageTemplateComponent,
-        JobHandlerHeaderComponent,
-        NgTemplateOutlet,
-        MatStepper,
-        MatStep,
-        MatStepLabel,
-        UploadComponent,
-        MatProgressSpinner,
-        MatButton,
-        MatStepperNext,
-        ReactiveFormsModule,
-        MatCheckbox,
-        BreadcrumbComponent,
-        MatStepperPrevious,
-        MatIcon,
-        ImportReportComponent,
-        DatePipe,
-    ],
+  selector: "ige-import",
+  templateUrl: "./import.component.html",
+  styleUrls: ["./import.component.scss"],
+  standalone: true,
+  imports: [
+    PageTemplateComponent,
+    JobHandlerHeaderComponent,
+    NgTemplateOutlet,
+    MatStepper,
+    MatStep,
+    MatStepLabel,
+    UploadComponent,
+    MatProgressSpinner,
+    MatButton,
+    MatStepperNext,
+    ReactiveFormsModule,
+    MatCheckbox,
+    BreadcrumbComponent,
+    MatStepperPrevious,
+    MatIcon,
+    ImportReportComponent,
+    DatePipe,
+  ],
 })
 export class ImportComponent implements OnInit {
   @ViewChild("stepper") stepper: MatStepper;

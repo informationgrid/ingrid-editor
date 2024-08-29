@@ -37,17 +37,17 @@ import { MatIcon } from "@angular/material/icon";
 import { FieldToAriaLabelPipe } from "../../../directives/fieldToAiraLabel.pipe";
 
 @Component({
-    selector: "ige-inline-help-wrapper",
-    templateUrl: "./inline-help-wrapper.component.html",
-    styleUrls: ["./inline-help-wrapper.component.scss"],
-    standalone: true,
-    imports: [
-        NgTemplateOutlet,
-        MatIconButton,
-        MatTooltip,
-        MatIcon,
-        FieldToAriaLabelPipe,
-    ],
+  selector: "ige-inline-help-wrapper",
+  templateUrl: "./inline-help-wrapper.component.html",
+  styleUrls: ["./inline-help-wrapper.component.scss"],
+  standalone: true,
+  imports: [
+    NgTemplateOutlet,
+    MatIconButton,
+    MatTooltip,
+    MatIcon,
+    FieldToAriaLabelPipe,
+  ],
 })
 export class InlineHelpWrapperComponent
   extends FieldWrapper

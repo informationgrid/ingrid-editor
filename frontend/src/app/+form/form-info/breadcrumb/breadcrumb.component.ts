@@ -100,8 +100,8 @@ export class BreadcrumbComponent implements OnInit {
 }
 
 @Pipe({
-    name: "breadCrumbTooltip",
-    standalone: true,
+  name: "breadCrumbTooltip",
+  standalone: true,
 })
 export class BreadCrumbTooltipPipe implements PipeTransform {
   transform(value: ShortTreeNode, args?: any): any {

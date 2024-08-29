@@ -24,17 +24,11 @@ import { MatIcon } from "@angular/material/icon";
 import { MatIconButton } from "@angular/material/button";
 
 @Component({
-    selector: "ige-search-field",
-    templateUrl: "./ige-search-field.component.html",
-    styleUrls: ["./ige-search-field.component.scss"],
-    standalone: true,
-    imports: [
-        MatFormField,
-        MatIcon,
-        MatSuffix,
-        MatInput,
-        MatIconButton,
-    ],
+  selector: "ige-search-field",
+  templateUrl: "./ige-search-field.component.html",
+  styleUrls: ["./ige-search-field.component.scss"],
+  standalone: true,
+  imports: [MatFormField, MatIcon, MatSuffix, MatInput, MatIconButton],
 })
 export class IgeSearchField {
   @Output() queryUpdate = new EventEmitter<string>();

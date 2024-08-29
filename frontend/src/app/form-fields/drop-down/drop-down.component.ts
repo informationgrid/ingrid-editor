@@ -31,16 +31,12 @@ export const DROPDOWN_CONTROL_VALUE_ACCESSOR = {
 };
 
 @Component({
-    selector: "ige-drop-down",
-    templateUrl: "./drop-down.component.html",
-    styleUrls: ["./drop-down.component.css"],
-    providers: [DROPDOWN_CONTROL_VALUE_ACCESSOR],
-    standalone: true,
-    imports: [
-        MatFormField,
-        MatSelect,
-        MatOption,
-    ],
+  selector: "ige-drop-down",
+  templateUrl: "./drop-down.component.html",
+  styleUrls: ["./drop-down.component.css"],
+  providers: [DROPDOWN_CONTROL_VALUE_ACCESSOR],
+  standalone: true,
+  imports: [MatFormField, MatSelect, MatOption],
 })
 export class DropDownComponent implements ControlValueAccessor, OnInit {
   @Input() options: CodelistEntry[];

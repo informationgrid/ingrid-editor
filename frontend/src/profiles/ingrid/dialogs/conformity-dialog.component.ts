@@ -66,26 +66,26 @@ export interface FormType {
 
 @UntilDestroy()
 @Component({
-    selector: "ige-conformity-dialog",
-    templateUrl: "./conformity-dialog.component.html",
-    standalone: true,
-    imports: [
-        DialogTemplateComponent,
-        ReactiveFormsModule,
-        MatCheckbox,
-        MatFormField,
-        MatLabel,
-        MatSelect,
-        MatOption,
-        MatInput,
-        MatAutocompleteTrigger,
-        MatAutocomplete,
-        MatDatepickerInput,
-        MatDatepickerToggle,
-        MatSuffix,
-        MatDatepicker,
-        AsyncPipe,
-    ],
+  selector: "ige-conformity-dialog",
+  templateUrl: "./conformity-dialog.component.html",
+  standalone: true,
+  imports: [
+    DialogTemplateComponent,
+    ReactiveFormsModule,
+    MatCheckbox,
+    MatFormField,
+    MatLabel,
+    MatSelect,
+    MatOption,
+    MatInput,
+    MatAutocompleteTrigger,
+    MatAutocomplete,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatSuffix,
+    MatDatepicker,
+    AsyncPipe,
+  ],
 })
 export class ConformityDialogComponent implements OnInit {
   specifications = this.codelistService.observe("6005");

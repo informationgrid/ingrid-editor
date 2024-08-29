@@ -70,22 +70,22 @@ export const docReferenceTemplate: Partial<DocumentReference> = {
 
 @UntilDestroy()
 @Component({
-    selector: "ige-document-reference-type",
-    templateUrl: "./document-reference-type.component.html",
-    styleUrls: ["./document-reference-type.component.scss"],
-    standalone: true,
-    imports: [
-        FormErrorComponent,
-        FormlyModule,
-        MatIcon,
-        DocumentIconComponent,
-        MatIconButton,
-        MatMenuTrigger,
-        MatMenu,
-        MatMenuItem,
-        MatProgressSpinner,
-        AddButtonComponent,
-    ],
+  selector: "ige-document-reference-type",
+  templateUrl: "./document-reference-type.component.html",
+  styleUrls: ["./document-reference-type.component.scss"],
+  standalone: true,
+  imports: [
+    FormErrorComponent,
+    FormlyModule,
+    MatIcon,
+    DocumentIconComponent,
+    MatIconButton,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    MatProgressSpinner,
+    AddButtonComponent,
+  ],
 })
 export class DocumentReferenceTypeComponent
   extends FieldArrayType

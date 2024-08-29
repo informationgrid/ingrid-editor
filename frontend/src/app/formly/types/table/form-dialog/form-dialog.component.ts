@@ -35,11 +35,11 @@ export interface FormDialogData {
 
 @UntilDestroy()
 @Component({
-    selector: "ige-form-dialog",
-    templateUrl: "./form-dialog.component.html",
-    styleUrls: ["./form-dialog.component.scss"],
-    standalone: true,
-    imports: [DialogTemplateComponent, FormlyModule],
+  selector: "ige-form-dialog",
+  templateUrl: "./form-dialog.component.html",
+  styleUrls: ["./form-dialog.component.scss"],
+  standalone: true,
+  imports: [DialogTemplateComponent, FormlyModule],
 })
 export class FormDialogComponent implements OnInit, OnDestroy {
   form = new UntypedFormGroup({});

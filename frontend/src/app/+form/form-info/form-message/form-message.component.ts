@@ -33,27 +33,23 @@ export interface FormMessageType {
 
 @UntilDestroy()
 @Component({
-    selector: "ige-form-message",
-    templateUrl: "./form-message.component.html",
-    styleUrls: ["./form-message.component.scss"],
-    animations: [
-        trigger("slideDown", [
-            transition(":enter", [
-                style({ height: 0, opacity: 0 }),
-                animate("300ms ease-in", style({ height: 48, opacity: 1 })),
-            ]),
-            transition(":leave", [
-                style({ height: 48, opacity: 1 }),
-                animate("300ms ease-out", style({ height: 0, opacity: 0 })),
-            ]),
-        ]),
-    ],
-    standalone: true,
-    imports: [
-        NgClass,
-        MatIcon,
-        MatIconButton,
-    ],
+  selector: "ige-form-message",
+  templateUrl: "./form-message.component.html",
+  styleUrls: ["./form-message.component.scss"],
+  animations: [
+    trigger("slideDown", [
+      transition(":enter", [
+        style({ height: 0, opacity: 0 }),
+        animate("300ms ease-in", style({ height: 48, opacity: 1 })),
+      ]),
+      transition(":leave", [
+        style({ height: 48, opacity: 1 }),
+        animate("300ms ease-out", style({ height: 0, opacity: 0 })),
+      ]),
+    ]),
+  ],
+  standalone: true,
+  imports: [NgClass, MatIcon, MatIconButton],
 })
 export class FormMessageComponent implements OnInit {
   types: FormMessageType[] = [];
