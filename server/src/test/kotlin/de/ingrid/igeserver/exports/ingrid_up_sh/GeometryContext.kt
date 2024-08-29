@@ -38,7 +38,7 @@ class GeometryContext : GeodatasetBase() {
                 this.codelistHandler,
                 this.config,
                 this.catalogService,
-                this.documentService
+                this.documentService,
             )
         every { catalogService.getProfileFromCatalog(any()) } returns
             DummyCatalog("ingrid-up-sh")
@@ -73,7 +73,7 @@ class GeometryContext : GeodatasetBase() {
                         ]
                       }]
                     }"""
-                            .trimIndent()
+                            .trimIndent(),
                     ) as ObjectNode
 
             val result =
@@ -110,7 +110,7 @@ class GeometryContext : GeodatasetBase() {
                         ]
                       }]
                     }"""
-                            .trimIndent()
+                            .trimIndent(),
                     ) as ObjectNode
 
             val result =

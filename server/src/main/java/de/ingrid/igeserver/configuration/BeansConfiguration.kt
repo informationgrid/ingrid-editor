@@ -32,9 +32,8 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomi
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-
+// @ComponentScan(basePackages = ["de.ingrid.igeserver"])
 @Configuration
-//@ComponentScan(basePackages = ["de.ingrid.igeserver"])
 class BeansConfiguration {
     @Value("\${codelist.url:http://localhost:9000}")
     private val codelistUrl: String? = null
@@ -67,7 +66,7 @@ class BeansConfiguration {
     @Bean
     fun codeListService(
         communication: ICodeListCommunication?,
-        persistencies: List<ICodeListPersistency?>?
+        persistencies: List<ICodeListPersistency?>?,
     ): CodeListService {
         val service = CodeListService()
         service.setPersistencies(persistencies)

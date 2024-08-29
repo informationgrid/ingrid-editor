@@ -45,7 +45,7 @@ class BmiExporter : IgeExporter {
                 MediaType.APPLICATION_JSON_VALUE,
                 "json",
                 listOf("bmi"),
-                useForPublish = true
+                useForPublish = true,
             )
         }
 
@@ -54,7 +54,7 @@ class BmiExporter : IgeExporter {
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val engine = PebbleEngine.Builder()
             .defaultEscapingStrategy("json")
-            //.newLineTrimming(false)
+            // .newLineTrimming(false)
             .build()
 
         // TODO: should we handle export of addresses here too, instead of having another class
@@ -72,11 +72,9 @@ class BmiExporter : IgeExporter {
     }
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
-
         return mapOf(
             "model" to jacksonObjectMapper().convertValue(json, BmiModel::class.java),
-            "catalogId" to catalogId
+            "catalogId" to catalogId,
         )
-
     }
 }

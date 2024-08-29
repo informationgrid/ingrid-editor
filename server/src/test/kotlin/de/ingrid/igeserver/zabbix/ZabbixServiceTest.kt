@@ -61,9 +61,13 @@ class ZabbixServiceTest : ShouldSpec() {
                 httpClientMock.send(any(), bodyHandler)
             } answers {
                 val requestAsString = getRequestParameter(firstArg())
-                if (requestAsString.contains("hostgroup.get")) responseGetHostGroup
-                else if (requestAsString.contains("host.create")) responseCreateHost
-                else response
+                if (requestAsString.contains("hostgroup.get")) {
+                    responseGetHostGroup
+                } else if (requestAsString.contains("host.create")) {
+                    responseCreateHost
+                } else {
+                    response
+                }
             }
 
             val data = prepareZabbixData(emptyList())
@@ -76,7 +80,7 @@ class ZabbixServiceTest : ShouldSpec() {
             every { HttpClient.newBuilder().build() } returns httpClientMock
             every { responseGetHostGroup.body() } returns """{ "result": [{ "groupid": "1"}] }"""
             every { response.body() } returns
-                    """
+                """
                         {
                         "jsonrpc": "2.0",
                         "result": [
@@ -118,9 +122,13 @@ class ZabbixServiceTest : ShouldSpec() {
                 httpClientMock.send(any(), bodyHandler)
             } answers {
                 val requestAsString = getRequestParameter(firstArg())
-                if (requestAsString.contains("hostgroup.get")) responseGetHostGroup
-                else if (requestAsString.contains("host.create")) responseCreateHost
-                else response
+                if (requestAsString.contains("hostgroup.get")) {
+                    responseGetHostGroup
+                } else if (requestAsString.contains("host.create")) {
+                    responseCreateHost
+                } else {
+                    response
+                }
             }
             val problems = service.getProblems("test_catalog")
             problems.size shouldBe 2
@@ -133,7 +141,6 @@ class ZabbixServiceTest : ShouldSpec() {
             problems[0].docUuid shouldBe "doc_uuid"
             problems[0].url shouldBe "dataset.url"
         }
-
     }
 
     private fun prepareZabbixData(uploads: List<ZabbixModel.Upload>): ZabbixModel.ZabbixData {
@@ -170,5 +177,4 @@ class Sub : Flow.Subscriber<ByteBuffer> {
     override fun onComplete() {
         print("Finished")
     }
-
 }

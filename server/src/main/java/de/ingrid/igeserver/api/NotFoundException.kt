@@ -19,13 +19,13 @@
  */
 package de.ingrid.igeserver.api
 
-import org.springframework.http.HttpStatus
 import de.ingrid.igeserver.ClientException
+import org.springframework.http.HttpStatus
 
-open class NotFoundException: ClientException {
+open class NotFoundException : ClientException {
 
     protected constructor(statusCode: HttpStatus, errorCode: String, errorText: String, data: Map<String, Any?>? = null, cause: Throwable? = null) :
-            super(statusCode, errorCode, errorText, data, cause)
+        super(statusCode, errorCode, errorText, data, cause)
 
     companion object {
         val STATUS_CODE = HttpStatus.NOT_FOUND
@@ -46,41 +46,66 @@ open class NotFoundException: ClientException {
         /**
          * Factory method for missing resource
          */
-        fun withMissingResource(resourceId: String, resourceType: String?, cause: Throwable? = null) : NotFoundException {
-            return NotFoundException(STATUS_CODE, ERROR_CODE_MISSING_RESOURCE, ERROR_TEXT_MISSING_RESOURCE,
-                    mapOf("resourceId" to resourceId, "resourceType" to resourceType), cause)
+        fun withMissingResource(resourceId: String, resourceType: String?, cause: Throwable? = null): NotFoundException {
+            return NotFoundException(
+                STATUS_CODE,
+                ERROR_CODE_MISSING_RESOURCE,
+                ERROR_TEXT_MISSING_RESOURCE,
+                mapOf("resourceId" to resourceId, "resourceType" to resourceType),
+                cause,
+            )
         }
 
         /**
          * Factory method for missing hash
          */
-        fun withMissingHash(hash: String, cause: Throwable? = null) : NotFoundException {
-            return NotFoundException(STATUS_CODE, ERROR_CODE_MISSING_RESOURCE, ERROR_TEXT_MISSING_HASH,
-                mapOf("hash" to hash), cause)
+        fun withMissingHash(hash: String, cause: Throwable? = null): NotFoundException {
+            return NotFoundException(
+                STATUS_CODE,
+                ERROR_CODE_MISSING_RESOURCE,
+                ERROR_TEXT_MISSING_HASH,
+                mapOf("hash" to hash),
+                cause,
+            )
         }
 
         /**
          * Factory method for missing catalog for user
          */
-        fun withMissingUserCatalog(user: String, cause: Throwable? = null) : NotFoundException {
-            return NotFoundException(STATUS_CODE, ERROR_CODE_MISSING_USER_CATALOG, ERROR_TEXT_MISSING_USER_CATALOG,
-                    mapOf("user" to user), cause)
+        fun withMissingUserCatalog(user: String, cause: Throwable? = null): NotFoundException {
+            return NotFoundException(
+                STATUS_CODE,
+                ERROR_CODE_MISSING_USER_CATALOG,
+                ERROR_TEXT_MISSING_USER_CATALOG,
+                mapOf("user" to user),
+                cause,
+            )
         }
 
         /**
          * Factory method for missing published version of a document
          */
-        fun withMissingPublishedVersion(resourceId: String, cause: Throwable? = null) : NotFoundException {
-            return NotFoundException(STATUS_CODE, ERROR_CODE_MISSING_PUBLISHED_VERSION, ERROR_TEXT_MISSING_PUBLISHED_VERSION,
-                    mapOf("resourceId" to resourceId), cause)
+        fun withMissingPublishedVersion(resourceId: String, cause: Throwable? = null): NotFoundException {
+            return NotFoundException(
+                STATUS_CODE,
+                ERROR_CODE_MISSING_PUBLISHED_VERSION,
+                ERROR_TEXT_MISSING_PUBLISHED_VERSION,
+                mapOf("resourceId" to resourceId),
+                cause,
+            )
         }
 
         /**
          * Factory method for missing published version of a document
          */
-        fun withMissingProfile(profileId: String, cause: Throwable? = null) : NotFoundException {
-            return NotFoundException(STATUS_CODE, ERROR_CODE_MISSING_PROFILE, ERROR_TEXT_MISSING_PROFILE,
-                    mapOf("id" to profileId), cause)
+        fun withMissingProfile(profileId: String, cause: Throwable? = null): NotFoundException {
+            return NotFoundException(
+                STATUS_CODE,
+                ERROR_CODE_MISSING_PROFILE,
+                ERROR_TEXT_MISSING_PROFILE,
+                mapOf("id" to profileId),
+                cause,
+            )
         }
     }
 }

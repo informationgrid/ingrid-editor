@@ -38,7 +38,7 @@ import java.time.OffsetDateTime
 @Service
 class InternalExporter(
     @Lazy val documentService: DocumentService,
-    val catalogService: CatalogService
+    val catalogService: CatalogService,
 ) : IgeExporter {
 
     override val typeInfo: ExportTypeInfo
@@ -49,7 +49,7 @@ class InternalExporter(
             "Interne Datenstruktur des IGE",
             MediaType.APPLICATION_JSON_VALUE,
             "json",
-            listOf()
+            listOf(),
         )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
@@ -74,19 +74,20 @@ class InternalExporter(
     }
 
     fun addExportWrapper(catalogId: String, publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode {
-
         val profile = catalogService.getProfileFromCatalog(catalogId).identifier
 
         return jacksonObjectMapper().createObjectNode().apply {
             put("_export_date", OffsetDateTime.now().toString())
-            put("_version", "1.0.0")
+            put("_version", "1.1.0")
             put("_profile", profile)
-            set<ObjectNode>("resources", jacksonObjectMapper().createObjectNode().apply {
-                publishedVersion?.let { set<JsonNode>("published", publishedVersion) }
-                draftVersion?.let { set<JsonNode>("draft", draftVersion) }
-            })
+            set<ObjectNode>(
+                "resources",
+                jacksonObjectMapper().createObjectNode().apply {
+                    publishedVersion?.let { set<JsonNode>("published", publishedVersion) }
+                    draftVersion?.let { set<JsonNode>("draft", draftVersion) }
+                },
+            )
         }
-
     }
 
     override fun toString(exportedObject: Any): String {

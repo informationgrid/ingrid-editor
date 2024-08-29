@@ -32,8 +32,8 @@ import org.springframework.beans.factory.annotation.Value
  * NOTE Filters are injected using the @Autowired annotation. This means that
  * two Pipe instances with the same Payload type will receive the same filter set.
  */
-open class Pipe<T: Payload>(@Value("AnonymousPipe") override val id: String) : ExtensionPoint<Filter<T>> {
-    
+open class Pipe<T : Payload>(@Value("AnonymousPipe") override val id: String) : ExtensionPoint<Filter<T>> {
+
     private val log = logger()
 
     /**
@@ -72,8 +72,7 @@ open class Pipe<T: Payload>(@Value("AnonymousPipe") override val id: String) : E
         val sortedFilters = extensions.sortedBy {
             if (filterSequence != null && filterSequence.contains(it.id)) {
                 filterSequence.indexOf(it.id)
-            }
-            else  {
+            } else {
                 // put unknown filters at the end
                 Int.MAX_VALUE
             }
@@ -120,17 +119,16 @@ open class Pipe<T: Payload>(@Value("AnonymousPipe") override val id: String) : E
                     log.error("Filter '${filter.id}' could not be executed, due to an error", e)
                     filterException = e
                 }
-            }
-            else {
+            } else {
                 context.addMessage(Message(this, "Skipped filter '${filter.id}' because it does not apply to profile '$profile'"))
             }
         }
-        
+
         // throw an exception if one of the executed filter lead to an exception
         if (filterException != null) {
             throw filterException
         }
-        
+
         return result
     }
 }

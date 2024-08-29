@@ -31,5 +31,4 @@ class MarkdownContextHelpItem(val markDownFilename: Path) {
     override fun toString(): String {
         return "MarkdownContextHelpItem: {markDownFilename: $markDownFilename; title: $title}"
     }
-
 }

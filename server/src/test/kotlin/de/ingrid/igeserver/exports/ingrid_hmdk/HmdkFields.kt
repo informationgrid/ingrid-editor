@@ -40,7 +40,6 @@ class HmdkFields : GeodatasetBase() {
         "InGridProject" to "/export/ingrid/project.sample.maximal.json",
     )
 
-
     override suspend fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
         this.exporter =
@@ -48,10 +47,10 @@ class HmdkFields : GeodatasetBase() {
                 this.codelistHandler,
                 this.config,
                 this.catalogService,
-                this.documentService
+                this.documentService,
             )
         every { catalogService.getProfileFromCatalog(any()) } returns
-                DummyCatalog("ingrid-hmdk")
+            DummyCatalog("ingrid-hmdk")
     }
 
     init {
@@ -62,13 +61,13 @@ class HmdkFields : GeodatasetBase() {
                         .readTree(
                             """{
                             "publicationHmbTG": true
-                            }""".trimIndent()
+                            }
+                            """.trimIndent(),
                         ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
                 result shouldContain hmbtgKeyword
             }
-
 
             should("export informationsgegenstand to: $docType") {
                 val context =
@@ -80,13 +79,13 @@ class HmdkFields : GeodatasetBase() {
                                   "key": "hmbtg_02_mitteilung_buergerschaft"
                                 }
                               ]
-                            }""".trimIndent()
+                            }
+                            """.trimIndent(),
                         ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
                 result shouldContain informationsgegenstandISO
             }
-
         }
     }
 }

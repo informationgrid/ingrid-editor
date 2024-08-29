@@ -42,14 +42,13 @@ import org.unbescape.json.JsonEscape
 class DCATAPDEOpenDataImporter(
     @Lazy val catalogService: CatalogService,
     @Lazy val documentService: DocumentService,
-    val rdfDeserializer: RdfDeserializer
+    val rdfDeserializer: RdfDeserializer,
 ) : IgeImporter {
     private val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
     override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
-
         val deserializeRecord = rdfDeserializer.deserializeRecord(data as String)
             ?: throw ServerException.withReason("DCAT-AP.DE record could not be deserialized")
 
@@ -59,7 +58,7 @@ class DCATAPDEOpenDataImporter(
             throw ServerException.withReason("${ex.message} -> ${ex.cause?.toString()}")
         }
 
-         log.debug("Created JSON from imported file: $output")
+        log.debug("Created JSON from imported file: $output")
 
         return jacksonObjectMapper().readValue(output, JsonNode::class.java)
     }
@@ -67,9 +66,13 @@ class DCATAPDEOpenDataImporter(
     fun convertDcatRecordToJson(catalogId: String, record: RecordPLUProperties): String {
         val output: TemplateOutput = JsonStringOutput()
 
-        templateEngine.render("imports/opendata/dcatap/dcat-ap-de-1_0.jte", mapOf(
-            "model" to DcatApDeMapper(catalogId, record, documentService)
-        ), output)
+        templateEngine.render(
+            "imports/opendata/dcatap/dcat-ap-de-1_0.jte",
+            mapOf(
+                "model" to DcatApDeMapper(catalogId, record, documentService),
+            ),
+            output,
+        )
         return output.toString()
     }
 
@@ -81,7 +84,7 @@ class DCATAPDEOpenDataImporter(
         override fun writeUserContent(value: String?) {
             if (value == null) return
             super.writeUserContent(
-                JsonEscape.escapeJson(value)
+                JsonEscape.escapeJson(value),
             )
         }
     }
@@ -91,6 +94,6 @@ class DCATAPDEOpenDataImporter(
             "dcat-ap-de-1.0",
             "DCAT-AP.DE 1.0",
             "",
-            listOf("opendata")
+            listOf("opendata"),
         )
 }

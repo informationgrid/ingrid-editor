@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.DOCUMENT_STATE
+import de.ingrid.igeserver.services.DocumentState
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-
 
 @Transactional
 class JpaTest : IntegrationTest() {
@@ -65,7 +64,7 @@ class JpaTest : IntegrationTest() {
             catalog = cat
             created = OffsetDateTime.now()
             contentmodified = OffsetDateTime.now()
-            state = DOCUMENT_STATE.DRAFT
+            state = DocumentState.DRAFT
         }
         em.persist(doc)
 
@@ -73,9 +72,9 @@ class JpaTest : IntegrationTest() {
         em.clear()
 
         // uncomment to commit changes to the database
-        //TestTransaction.flagForCommit()
-        //TestTransaction.end()
-        //return
+        // TestTransaction.flagForCommit()
+        // TestTransaction.end()
+        // return
 
         // test read
         val loadedCat = em.find(Catalog::class.java, cat.id)
@@ -119,7 +118,7 @@ class JpaTest : IntegrationTest() {
             catalog = cat
             created = OffsetDateTime.now()
             contentmodified = OffsetDateTime.now()
-            state = DOCUMENT_STATE.DRAFT
+            state = DocumentState.DRAFT
         }
         em.persist(doc)
 
@@ -127,9 +126,9 @@ class JpaTest : IntegrationTest() {
         em.clear()
 
         // uncomment to commit changes to the database
-        //TestTransaction.flagForCommit()
-        //TestTransaction.end()
-        //return
+        // TestTransaction.flagForCommit()
+        // TestTransaction.end()
+        // return
 
         // test read
         val loadedCat = em.find(Catalog::class.java, cat.id)
@@ -175,7 +174,7 @@ class JpaTest : IntegrationTest() {
             catalog = cat
             created = OffsetDateTime.now()
             contentmodified = OffsetDateTime.now()
-            state = DOCUMENT_STATE.DRAFT
+            state = DocumentState.DRAFT
         }
         em.persist(doc)
 
@@ -185,7 +184,7 @@ class JpaTest : IntegrationTest() {
         // test query
         val q = em.createNativeQuery(
             "SELECT * FROM document WHERE id = :id AND data @> jsonb_build_object('lastName', :lastName)",
-            Document::class.java
+            Document::class.java,
         )
             .setParameter("id", doc.id)
             .setParameter("lastName", "Mustermann")
@@ -212,13 +211,11 @@ class JpaTest : IntegrationTest() {
             em.createNativeQuery("SELECT d.* FROM document d JOIN catalog c ON d.catalog_id = c.id WHERE c.type = :type")
                 .unwrap(NativeQuery::class.java)
                 .addEntity("doc", Document::class.java)
-                //.addJoin("c", "doc.catalog")
+                // .addJoin("c", "doc.catalog")
                 .setParameter("type", "uvp")
         val result2 = q2.resultList
         result2.size shouldBeExactly 7
     }
 
-    private fun convertDate(date: OffsetDateTime?): String? {
-        return date?.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
-    }
+    private fun convertDate(date: OffsetDateTime?): String? = date?.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
 }

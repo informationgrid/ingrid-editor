@@ -27,8 +27,8 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Component
@@ -43,7 +43,7 @@ class PreDefaultDocumentInitializer(
     val docWrapperRepo: DocumentWrapperRepository,
     val catalogRepo: CatalogRepository,
     val catalogService: CatalogService,
-    var authUtils: AuthUtils
+    var authUtils: AuthUtils,
 ) : Filter<PreCreatePayload> {
 
     override val profiles = arrayOf<String>()
@@ -82,7 +82,7 @@ class PreDefaultDocumentInitializer(
             modifiedby = fullName
             contentmodifiedby = if (actualUser != null) fullName else null
             contentModifiedByUser = catalogService.getDbUserFromPrincipal(context.principal!!)
-            state = DOCUMENT_STATE.DRAFT
+            state = DocumentState.DRAFT
             isLatest = true
         }
     }

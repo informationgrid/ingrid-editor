@@ -25,8 +25,7 @@ import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 
 class GeodatasetMapperLUBW(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
-    override fun getKeywords(): List<String>  = super.getKeywords().filterNot { it.startsWith("oac: ")}
-
+    override fun getKeywords(): List<String> = super.getKeywords().filterNot { it.startsWith("oac: ") }
 
     fun getOAC(): String? {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
@@ -35,8 +34,5 @@ class GeodatasetMapperLUBW(isoData: IsoImportData) : GeodatasetMapper(isoData) {
             ?.removePrefix("oac: ")
     }
 
-
     fun getEnvironmentDescription(): String? = (metadata.identificationInfo[0].identificationInfo as MDDataIdentification).environmentDescription?.value
-
-
 }

@@ -220,7 +220,6 @@ export function ConfigLoader(
   declarations: [
     AppComponent,
     HelpComponent,
-    ErrorDialogComponent,
     ConfirmDialogComponent,
     ReplaceAddressDialogComponent,
     OneColumnWrapperComponent,
@@ -300,6 +299,7 @@ export function ConfigLoader(
     SessionTimeoutInfoComponent,
     FieldToAriaLabelPipe,
     SectionWrapper,
+    ErrorDialogComponent,
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),

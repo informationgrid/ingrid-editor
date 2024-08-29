@@ -39,30 +39,34 @@ import java.security.Principal
 @Tag(name = "Export", description = "the export API")
 interface ExportApi {
     @ApiResponses(
-        value = [ApiResponse(
-            responseCode = "200",
-            description = "The stored dataset, which might contain additional storage information."
-        ), ApiResponse(responseCode = "500", description = "Unexpected error")]
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "The stored dataset, which might contain additional storage information.",
+            ), ApiResponse(responseCode = "500", description = "Unexpected error"),
+        ],
     )
     @PostMapping(value = ["/export"], produces = ["application/zip"])
     fun export(
         principal: Principal,
         @Parameter(
             description = "The dataset to be exported.",
-            required = true
-        ) @RequestBody options: @Valid ExportRequestParameter
+            required = true,
+        ) @RequestBody options: @Valid ExportRequestParameter,
     ): ResponseEntity<ByteArray?>
 
     @ApiResponses(
-        value = [ApiResponse(
-            responseCode = "200",
-            description = "The supported types for export."
-        ), ApiResponse(responseCode = "500", description = "Unexpected error")]
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "The supported types for export.",
+            ), ApiResponse(responseCode = "500", description = "Unexpected error"),
+        ],
     )
     @GetMapping(value = ["/export"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun exportTypes(
         principal: Principal,
         @Parameter(description = "The catalog profile to get the supported export types from.") @RequestParam(value = "profile") profile: String,
-        @Parameter(description = "Limit the export types to only public ones") @RequestParam(value = "onlyPublic", defaultValue = "true") onlyPublic: Boolean
+        @Parameter(description = "Limit the export types to only public ones") @RequestParam(value = "onlyPublic", defaultValue = "true") onlyPublic: Boolean,
     ): ResponseEntity<List<ExportTypeInfo>>
 }

@@ -51,7 +51,7 @@ abstract class IgeJob : InterruptableJob {
      */
     protected fun finishJob(
         context: JobExecutionContext,
-        jobInfo: Message
+        jobInfo: Message,
     ): JobDataMap {
         currentThread = null
 

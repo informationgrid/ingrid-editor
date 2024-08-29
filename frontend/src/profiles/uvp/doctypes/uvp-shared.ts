@@ -75,10 +75,10 @@ export class UvpShared extends BaseDoctype {
         },
         formatter: (link: any) => {
           if (link.asLink) {
-            return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
+            return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table longtext-no-wrap">
                          <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri}  </a> `;
           } else {
-            return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
+            return `<span class="clickable-text icon-in-table longtext-no-wrap">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
           }
         },
       },
@@ -103,7 +103,7 @@ export class UvpShared extends BaseDoctype {
       key: "validUntil",
       type: "datepicker",
       label: "Gültig bis",
-      width: "100px",
+      width: "120px",
       props: {
         label: "Gültig bis",
         appearance: "outline",
@@ -250,13 +250,6 @@ export class UvpShared extends BaseDoctype {
                 ? ctrl.value.some((row) => row.type.key === "7")
                 : false,
             message: "Es muss ein Ansprechpartner als Adresse angegeben sein",
-          },
-          publisherPublished: {
-            expression: (ctrl) =>
-              ctrl.value
-                ? ctrl.value.every((row) => row.ref._state === "P")
-                : false,
-            message: "Alle Adressen müssen veröffentlicht sein",
           },
           maxPublisher: {
             expression: (ctrl) => ctrl.value?.length === 1,

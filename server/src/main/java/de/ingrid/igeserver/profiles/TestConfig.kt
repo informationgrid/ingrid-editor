@@ -23,8 +23,7 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 
-
-@Profile("dev")
+@Profile("dev | test")
 @Configuration
 @ComponentScan(basePackages = ["de.ingrid.igeserver.profiles.test"])
 class TestConfig

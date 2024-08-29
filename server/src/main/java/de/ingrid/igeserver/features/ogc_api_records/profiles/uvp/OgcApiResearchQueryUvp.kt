@@ -19,16 +19,16 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.profiles.uvp
 
-import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcApiResearchQuery
 import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcFilterParameter
+import de.ingrid.igeserver.model.BoolFilter
 import org.intellij.lang.annotations.Language
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Profile("uvp")
 @Component
-class OgcApiResearchQueryUvp: OgcApiResearchQuery() {
+class OgcApiResearchQueryUvp : OgcApiResearchQuery() {
     override val profiles = listOf("uvp")
 
     override lateinit var ogcParameter: OgcFilterParameter

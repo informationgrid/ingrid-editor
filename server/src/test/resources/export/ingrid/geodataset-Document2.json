@@ -35,44 +35,7 @@
         "type": {
           "key": "12"
         },
-        "ref": {
-          "title": "Wemove Test",
-          "hasWritePermission": true,
-          "hasOnlySubtreeWritePermission": false,
-          "_uuid": "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
-          "_type": "InGridOrganisationDoc",
-          "_version": 2,
-          "_created": "2023-02-15T10:48:26.838301+01:00",
-          "_modified": "2023-02-15T10:48:44.484899+01:00",
-          "_contentModified": "2023-02-15T10:48:44.484899+01:00",
-          "_createdBy": "Max Muster",
-          "_contentModifiedBy": "Max Muster",
-          "_state": "P",
-          "_id": "1",
-          "address": {
-            "street": "Hanauer Landstr. 52",
-            "zip-code": "60",
-            "city": "Frankfurt",
-            "zip-po-box": "P123 Frankfurt",
-            "po-box": "Postbox 123",
-            "administrativeArea": {
-              "key": "8"
-            },
-            "country": {
-              "key": "276"
-            }
-          },
-          "positionName": "Positionsname",
-          "contact": [
-            {
-              "type": {
-                "key": "3"
-              },
-              "connection": "test@wemove.com"
-            }
-          ],
-          "organization": "Wemove Test"
-        }
+        "ref": "25d56d6c-ed8d-4589-8c14-f8cfcb669115"
       }
     ],
     "advProductGroups": [

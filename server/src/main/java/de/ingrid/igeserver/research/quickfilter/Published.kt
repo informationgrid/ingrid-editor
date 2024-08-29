@@ -28,4 +28,3 @@ class Published : QuickFilter() {
     override val label = "Nur veröffentlichte"
     override val filter = "document1.state = 'PUBLISHED' OR document1.state = 'DRAFT_AND_PUBLISHED'"
 }
-

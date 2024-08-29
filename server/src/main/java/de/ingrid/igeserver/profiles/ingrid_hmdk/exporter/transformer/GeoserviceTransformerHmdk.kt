@@ -32,17 +32,31 @@ class GeoserviceTransformerHmdk(transformerConfig: TransformerConfig) :
     override fun getDescriptiveKeywords(): List<Thesaurus> =
         amendHMDKDescriptiveKeywords(doc.data, codelists, super.getDescriptiveKeywords())
 
-
     override fun getCrossReference(
         uuid: String,
         type: KeyValue?,
         direction: String,
-        ignoreNotFound: Boolean
+        ignoreNotFound: Boolean,
     ): CrossReference? =
         super.getCrossReference(uuid, type, direction, ignoreNotFound)?.apply {
             mapUrl = getMapUrl(getLastPublishedDocument(uuid), tags)
         }
 
+    override val mapLinkUrl = getMapUrl(doc, tags)
+}
+
+class GeoserviceTransformerHmdkMetaver(transformerConfig: TransformerConfig) :
+    GeodataserviceModelTransformer(transformerConfig) {
+
+    override fun getCrossReference(
+        uuid: String,
+        type: KeyValue?,
+        direction: String,
+        ignoreNotFound: Boolean,
+    ): CrossReference? =
+        super.getCrossReference(uuid, type, direction, ignoreNotFound)?.apply {
+            mapUrl = getMapUrl(getLastPublishedDocument(uuid), tags)
+        }
 
     override val mapLinkUrl = getMapUrl(doc, tags)
 }

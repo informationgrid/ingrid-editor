@@ -29,7 +29,7 @@ import java.nio.file.Paths
 @Component
 class UploadCleanupTask(
     val fileSystemStorage: FileSystemStorage,
-    val entityManager: EntityManager
+    val entityManager: EntityManager,
 ) {
     val log = logger()
 
@@ -53,5 +53,4 @@ class UploadCleanupTask(
         fileSystemStorage.deleteEmptyDirs(trashPath, archivePath, unsavedPath, unpublishedPath)
         log.debug("Task finished: Upload-Cleanup")
     }
-
 }

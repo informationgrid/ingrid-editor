@@ -59,16 +59,17 @@ export class ErrorPanelComponent implements OnInit {
   @HostListener("window: keydown", ["$event"])
   hotKeys(event: KeyboardEvent) {
     if (!event.ctrlKey || !event.altKey) return;
-    console.log(event.key);
 
     // CTRL + ALT + R (to previous error)
-    if (event.key == "r") {
+    if (event.code === "KeyR") {
       this.jumpToPreviousError();
+      event.preventDefault();
     }
 
     // CTRL + ALT + W (to next error)
-    if (event.key == "w") {
+    if (event.code === "KeyW") {
       this.jumpToNextError();
+      event.preventDefault();
     }
   }
 

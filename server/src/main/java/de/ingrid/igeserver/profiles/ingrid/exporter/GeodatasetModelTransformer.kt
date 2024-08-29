@@ -22,7 +22,6 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
-import org.jetbrains.kotlin.util.suffixIfNot
 
 open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
     IngridModelTransformer(transformerConfig) {
@@ -31,18 +30,6 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
 
     override val hierarchyLevel = if (isSeries) "series" else "dataset"
     override val hierarchyLevelName: String? = if (isSeries) "series" else null
-
-
-    init {
-        if (model.data.identifier != null) {
-            val namespace = catalog.settings.config.namespace ?: "https://registry.gdi-de.org/id/$catalogIdentifier"
-            this.citationURL = if (model.data.identifier.indexOf("/", 1) == -1) {
-                namespace.suffixIfNot("/") + model.data.identifier
-            } else {
-                model.data.identifier
-            }
-        }
-    }
 
     val featureCatalogueDescription = model.data.featureCatalogueDescription
     val isAdVCompatible = model.data.isAdVCompatible ?: false
@@ -54,7 +41,6 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
     val verticalPositionalAccuracy = model.data.absoluteExternalPositionalAccuracy?.vertical
     val horizontalPositionalAccuracy = model.data.absoluteExternalPositionalAccuracy?.horizontal
     val griddedDataPositionalAccuracy = model.data.absoluteExternalPositionalAccuracy?.griddedDataPositionalAccuracy
-
 
     val conformanceResult = model.data.conformanceResult ?: emptyList()
 
@@ -92,7 +78,6 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
         "quantitativeAttributeAccuracy" to "DQ_QuantitativeAttributeAccuracy",
         "relativeInternalPositionalAccuracy" to "DQ_RelativeInternalPositionalAccuracy",
     )
-
 
     private fun getMeasureIdentification(type: String, measureKey: String?): String? {
         return when (type) {
@@ -248,7 +233,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
     fun getDisplayableQuality(quality: Quality): DisplayableQuality {
         return DisplayableQuality(
             nameOfMeasure = codelists.getValue(
-                qualitytypeCodelistMap.getOrDefault(quality._type, ""), quality.measureType
+                qualitytypeCodelistMap.getOrDefault(quality._type, ""), quality.measureType,
             ) ?: "",
             tagName = qualitytypeTagnameMap.getOrDefault(quality._type, ""),
             measureIdentification = getMeasureIdentification(quality._type, quality.measureType?.key),
@@ -260,7 +245,6 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
 
     val qualities = model.data.qualities?.map { getDisplayableQuality(it) } ?: emptyList()
 
-
     val lineageStatement = model.data.lineage?.statement
     val lineageProcessStepDescriptions =
         data.dataQualityInfo?.lineage?.source?.processStep?.description?.map { codelists.getValue("", it) }
@@ -271,6 +255,4 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
         !lineageStatement.isNullOrEmpty() || lineageProcessStepDescriptions.isNotEmpty() || lineageSourceDescriptions.isNotEmpty()
 
     val portrayalCatalogueCitations = model.data.portrayalCatalogueInfo?.citation ?: emptyList()
-
 }
-

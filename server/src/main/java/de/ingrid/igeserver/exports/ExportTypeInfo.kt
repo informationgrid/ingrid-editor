@@ -41,5 +41,5 @@ data class ExportTypeInfo(
     val fileExtension: String,
     val profiles: List<String>,
     val isPublic: Boolean = true,
-    val useForPublish: Boolean = false
+    val useForPublish: Boolean = false,
 )

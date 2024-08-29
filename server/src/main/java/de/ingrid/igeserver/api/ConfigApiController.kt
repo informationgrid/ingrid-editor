@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(path = ["/api"])
 class ConfigApiController(
     val settingsService: SettingsService,
-    val connectionService: ConnectionService
+    val connectionService: ConnectionService,
 ) : ConfigApi {
 
     @Value("\${keycloak.auth-server-url-frontend}")
@@ -51,7 +51,6 @@ class ConfigApiController(
     @Value("\${frontend.keycloak.enable}")
     var keycloakEnabled: Boolean = true
 
-
     override fun get(): ResponseEntity<FrontendConfiguration> {
         return ResponseEntity.ok().body(
             FrontendConfiguration(
@@ -59,8 +58,8 @@ class ConfigApiController(
                 keycloakRealm = keycloakRealm,
                 keycloakClientId = keycloakClientId,
                 keycloakEnabled = keycloakEnabled,
-                supportEmail = supportEmail
-            )
+                supportEmail = supportEmail,
+            ),
         )
     }
 
@@ -69,7 +68,7 @@ class ConfigApiController(
             ConnectionConfig(
                 settingsService.getIBusConfig(),
                 settingsService.getElasticConfig(),
-            )
+            ),
         )
     }
 
@@ -97,5 +96,4 @@ class ConfigApiController(
         this.settingsService.updateItem("cms", pages)
         return ResponseEntity.ok().build()
     }
-
 }

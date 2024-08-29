@@ -27,7 +27,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import java.security.Principal
 
 @Hidden
@@ -39,6 +41,8 @@ interface BehavioursApi {
 
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Behaviours have been set.")])
     @PostMapping(value = ["/behaviours"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun setBehaviours(principal: Principal,
-                      @Parameter(required = true) @RequestBody behaviours: List<Behaviour>): ResponseEntity<Void>
+    fun setBehaviours(
+        principal: Principal,
+        @Parameter(required = true) @RequestBody behaviours: List<Behaviour>,
+    ): ResponseEntity<Void>
 }

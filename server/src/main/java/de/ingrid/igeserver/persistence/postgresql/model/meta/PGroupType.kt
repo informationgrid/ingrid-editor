@@ -28,9 +28,10 @@ import org.springframework.stereotype.Component
 data class PermissionsData(
     val rootPermission: RootPermissionType? = null,
     var documents: List<JsonNode>? = null,
-    var addresses: List<JsonNode>? = null
+    var addresses: List<JsonNode>? = null,
 )
 
 enum class RootPermissionType {
-    READ, WRITE
+    READ,
+    WRITE,
 }

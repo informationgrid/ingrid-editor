@@ -33,10 +33,11 @@ enum class ProcessStepTypeEnum(val value: String) {
     PUBLIC_DISCLOSURE("publicDisclosure"),
     INTERNAL("internal"),
     COMPLETED("completed"),
-    UNKNOWN("unknown");
+    UNKNOWN("unknown"),
+    ;
 
     class Converter : EnumConverter<ProcessStepTypeEnum>(
-        ProcessStepTypeEnum::class.java
+        ProcessStepTypeEnum::class.java,
     )
 
     @JsonValue
@@ -46,6 +47,7 @@ enum class ProcessStepTypeEnum(val value: String) {
 
     companion object {
         private const val uriPrefix = "https://specs.diplanung.de/resource/processStepType#"
+
         @JsonCreator
         fun fromValue(text: String?): ProcessStepTypeEnum? {
             if (text == null) {
@@ -59,7 +61,8 @@ enum class ProcessStepTypeEnum(val value: String) {
             val enumValues = java.lang.String.join(
                 ", ",
                 Stream.of(*entries.toTypedArray()).map { anEnum: ProcessStepTypeEnum -> uriPrefix + anEnum.toString() }
-                    .toList())
+                    .toList(),
+            )
             throw IllegalArgumentException("ProcessStepTypeEnum value has to be one of [$enumValues], was $text")
         }
 

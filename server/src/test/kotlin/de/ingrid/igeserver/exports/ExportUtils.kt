@@ -34,7 +34,6 @@ import javax.xml.transform.stream.StreamSource
 
 val GENERATED_UUID_REGEX = Regex("ID_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 
-
 // TODO: use/replace other function from document service, but as here or as a companion object
 //       to use function without instantiation of the class
 fun convertToDocument(json: String) = jacksonObjectMapper().readValue<Document>(json)

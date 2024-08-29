@@ -33,30 +33,30 @@ import org.springframework.stereotype.Component
 @Retention(AnnotationRetention.RUNTIME)
 @Repeatable
 annotation class AuditLog(
-        /**
-         * Log category (e.g. persistence)
-         */
-        val category: String = "",
+    /**
+     * Log category (e.g. persistence)
+     */
+    val category: String = "",
 
-        /**
-         * Executed action (e.g. update)
-         */
-        val action: String = "",
+    /**
+     * Executed action (e.g. update)
+     */
+    val action: String = "",
 
-        /**
-         * Action target (e.g. id of the document)
-         */
-        val target: String = "",
+    /**
+     * Action target (e.g. id of the document)
+     */
+    val target: String = "",
 
-        /**
-         * Action data (e.g. content of the document)
-         */
-        val data: String = "",
+    /**
+     * Action data (e.g. content of the document)
+     */
+    val data: String = "",
 
-        /**
-         * Log4j logger name to be used for logging (defaults to 'audit')
-         */
-        val logger: String = ""
+    /**
+     * Log4j logger name to be used for logging (defaults to 'audit')
+     */
+    val logger: String = "",
 )
 
 @Aspect
@@ -92,14 +92,16 @@ class AuditLogAspect {
                 result.put(parameterNames[i], joinPoint.args[i]?.toString())
             }
             result
-        }
-        else {
+        } else {
             toJsonNode(getParameter(annotation.data, parameterNames, joinPoint))
         }
 
         // determine action, target, data
-        val action = if (annotation.action.isNotBlank()) annotation.action else
+        val action = if (annotation.action.isNotBlank()) {
+            annotation.action
+        } else {
             joinPoint.signature.declaringTypeName + "." + joinPoint.signature.name
+        }
         val target = if (annotation.target.isNotBlank()) getParameter(annotation.target, parameterNames, joinPoint)?.toString() else ""
 
         auditLogger.log(annotation.category, action, target, parameters, annotation.logger)
@@ -124,8 +126,7 @@ class AuditLogAspect {
         val strValue = value.toString()
         return try {
             jacksonObjectMapper().readTree(strValue)
-        }
-        catch (ex: Exception) {
+        } catch (ex: Exception) {
             jacksonObjectMapper().createObjectNode().apply {
                 put("text", strValue)
             }

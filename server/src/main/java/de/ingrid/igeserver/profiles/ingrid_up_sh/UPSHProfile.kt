@@ -46,7 +46,7 @@ class UPSHProfile(
     companion object {
         const val id = "ingrid-up-sh"
     }
-    
+
     override val identifier = id
     override val title = "InGrid Katalog (UP-SH)"
     override val parentProfile = "ingrid"

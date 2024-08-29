@@ -41,9 +41,8 @@ class DcatApExporter : IgeExporter {
         "Export von mCLOUD Datensätzen ins DCAT-AP.de Format.",
         "text/xml",
         "xml",
-        listOf("mcloud")
+        listOf("mcloud"),
     )
-
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val engine = PebbleEngine.Builder()
@@ -59,8 +58,6 @@ class DcatApExporter : IgeExporter {
     }
 
     private fun getMapFromObject(json: Document): Map<String, Any> {
-
         return mapOf("model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java))
-
     }
 }

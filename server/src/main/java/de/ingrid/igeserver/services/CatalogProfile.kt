@@ -66,10 +66,9 @@ interface CatalogProfile {
 
     @JsonIgnore
     fun additionalImportAnalysis(catalogId: String, report: OptimizedImportAnalysis, message: Message) {}
-
 }
 
 data class IndexIdFieldConfig(
     val document: String,
-    val address: String
+    val address: String,
 )

@@ -24,7 +24,6 @@ import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.profiles.uvp.tasks.UploadExpiredTask
 import de.ingrid.mdek.upload.storage.Storage
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 /**
@@ -46,5 +45,4 @@ class PostUploadPublisher(val storage: Storage, val uploadExpiredTask: UploadExp
 
         return payload
     }
-
 }

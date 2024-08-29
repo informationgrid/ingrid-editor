@@ -21,72 +21,7 @@
     "graphicOverviews": [],
     "pointOfContact": [
       {
-        "ref": {
-          "title": "Mustermann, Max",
-          "hasWritePermission": true,
-          "hasOnlySubtreeWritePermission": false,
-          "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
-          "_type": "InGridPersonDoc",
-          "_version": 15,
-          "_created": "2023-07-03T15:35:47.866462Z",
-          "_modified": "2023-07-07T14:07:27.952322Z",
-          "_contentModified": "2023-07-07T14:07:27.95296Z",
-          "_createdBy": "Super User",
-          "_modifiedBy": "Super User",
-          "_contentModifiedBy": "Super User",
-          "_id": 1634,
-          "address": {
-            "city": "Frankfurt am Main",
-            "po-box": "30151",
-            "street": "Mustermann Str.",
-            "country": {
-              "key": "276"
-            },
-            "zip-code": "60314",
-            "zip-po-box": "60314",
-            "administrativeArea": {
-              "key": "8"
-            }
-          },
-          "contact": [
-            {
-              "type": {
-                "key": "3"
-              },
-              "connection": "mustermann@wemove.com"
-            },
-            {
-              "type": {
-                "key": "1"
-              },
-              "connection": "123456789"
-            },
-            {
-              "type": {
-                "key": "2"
-              },
-              "connection": "123456789"
-            },
-            {
-              "type": {
-                "key": "4"
-              },
-              "connection": "https://mustermann.com"
-            }
-          ],
-          "lastName": "Mustermann",
-          "firstName": "Max",
-          "salutation": {
-            "key": "2"
-          },
-          "hideAddress": true,
-          "positionName": "Position/nachgeordnete Abteilung",
-          "academic-title": {
-            "key": "1"
-          },
-          "hoursOfService": "Servicezeiten",
-          "_tags": ""
-        },
+        "ref": "14a37ded-4ca5-4677-bfed-3607bed3071d",
         "type": {
           "key": "12"
         }
@@ -189,9 +124,7 @@
       "characterSet": null
     },
     "dataset": {
-      "languages": [
-        "150"
-      ]
+      "languages": ["150"]
     },
     "extraInfo": {
       "legalBasicsDescriptions": []

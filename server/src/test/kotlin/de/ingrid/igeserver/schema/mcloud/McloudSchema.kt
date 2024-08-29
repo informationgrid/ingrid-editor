@@ -38,9 +38,8 @@ class McloudSchema : AnnotationSpec() {
         "mCloudCategories",
         "DCATThemes",
         "distributions",
-        "license"
+        "license",
     )
-
 
     @Test
     fun minimal() {
@@ -75,5 +74,4 @@ class McloudSchema : AnnotationSpec() {
             requiredErrors shouldBe requiredFields
         }
     }
-
 }

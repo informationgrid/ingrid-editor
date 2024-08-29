@@ -7,8 +7,8 @@ import static org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 
 buildscript {
     ext.kotlin_version = '1.9.23'
-    ext.spring_boot_version = '3.3.0'
-    ext.kotest_version = '5.9.0'
+    ext.spring_boot_version = '3.3.2'
+    ext.kotest_version = '5.9.1'
     ext.jte_version = '3.1.12'
     ext.geotools_version = '28.2'
     ext['log4j2.version'] = '2.23.1'
@@ -22,7 +22,7 @@ plugins {
     id "org.jetbrains.kotlin.plugin.noarg" version "$kotlin_version"
     id "org.jetbrains.kotlin.plugin.allopen" version "$kotlin_version"
     id "org.springframework.boot" version "$spring_boot_version"
-    id "io.spring.dependency-management" version "1.1.5"
+    id "io.spring.dependency-management" version "1.1.6"
     id 'idea'
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.4.3'
@@ -31,6 +31,7 @@ plugins {
     id "com.github.ben-manes.versions" version "0.51.0"
     id "gg.jte.gradle" version "$jte_version"
     id "org.hibernate.orm" version "6.5.2.Final"
+    id "org.jlleitschuh.gradle.ktlint" version "12.1.1"
 }
 
 repositories {
@@ -147,7 +148,7 @@ dependencies {
     implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.22.0"
     implementation "org.commonmark:commonmark-ext-gfm-tables:0.22.0"
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 
     // PostgreSQL
     implementation 'org.postgresql:postgresql:42.7.3'
@@ -156,7 +157,7 @@ dependencies {
 
     implementation 'de.ingrid:ingrid-codelist-service:7.1.0'
     implementation 'javax.validation:validation-api:2.0.1.Final'
-    implementation 'org.apache.commons:commons-lang3:3.14.0'
+    implementation 'org.apache.commons:commons-lang3:3.15.0'
     implementation 'org.apache.commons:commons-text:1.12.0'
 
     // GeoTools
@@ -188,8 +189,8 @@ dependencies {
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version" // for kotest framework
     testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version" // for kotest core jvm assertions
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
-    testImplementation 'io.kotest.extensions:kotest-extensions-spring:1.1.3' // to wire dependencies using Spring
-    testImplementation 'io.mockk:mockk:1.13.11'
+    testImplementation 'io.kotest.extensions:kotest-extensions-spring:1.3.0' // to wire dependencies using Spring
+    testImplementation 'io.mockk:mockk:1.13.12'
     testImplementation "com.ninja-squad:springmockk:4.0.2"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.mockito"
@@ -224,7 +225,7 @@ dependencyManagement {
 
     }
     imports {
-        mavenBom 'com.fasterxml.jackson:jackson-bom:2.17.0' // allow Nulls.SKIP function, which works from 2.16.0 in kotlin data classes
+        mavenBom 'com.fasterxml.jackson:jackson-bom:2.17.2' // allow Nulls.SKIP function, which works from 2.16.0 in kotlin data classes
     }
 }
 
@@ -261,6 +262,12 @@ tasks.withType(KotlinCompile).configureEach {
     }
 }
 
+tasks.register('updateGitHooks', Copy) {
+    mustRunAfter("generateGitProperties")
+    from '../scripts/pre-commit'
+    into '../.git/hooks'
+}
+
 jte {
     sourceDirectory = Paths.get(project.projectDir.absolutePath, "src", "main", "resources", "templates")
     contentType = ContentType.Plain
@@ -270,7 +277,11 @@ jte {
 }
 
 
+tasks.named('generateJte') {
+    mustRunAfter(tasks.runKtlintCheckOverMainSourceSet)
+}
 tasks.named('compileKotlin') {
+    dependsOn(tasks.updateGitHooks)
     dependsOn(tasks.generateJte)
 }
 
@@ -318,9 +329,9 @@ jib {
     }
     extraDirectories {
         permissions = [
-            '/*.sh': '755',
-            '/logs': '777',
-            '/codelists': '777'
+                '/*.sh': '755',
+                '/logs': '777',
+                '/codelists': '777'
         ]
         paths {
             path {
@@ -371,6 +382,7 @@ spotless {
 
     kotlin {
         licenseHeaderFile(file('../LICENSE')).updateYearWithLatest(true)
+        ktlint()
     }
     java {
         target 'src/*/java/**/*.java'

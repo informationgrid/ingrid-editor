@@ -36,10 +36,11 @@ enum class PlanTypeEnum(val value: String) {
     SPATIAL_PLANNING_PROCEDURE("spatialPlanningProcedure"),
     PLAN_APPROVAL_PROCEDURE("planApprovalProcedure"),
     OTHER("other"),
-    UNKNOWN("unknown");
+    UNKNOWN("unknown"),
+    ;
 
     class Converter : EnumConverter<PlanTypeEnum>(
-        PlanTypeEnum::class.java
+        PlanTypeEnum::class.java,
     )
 
     @JsonValue
@@ -49,6 +50,7 @@ enum class PlanTypeEnum(val value: String) {
 
     companion object {
         private const val uriPrefix = "https://specs.diplanung.de/resource/planType#"
+
         @JsonCreator
         fun fromValue(text: String?): PlanTypeEnum? {
             if (text == null) {
@@ -62,7 +64,8 @@ enum class PlanTypeEnum(val value: String) {
             val enumValues = java.lang.String.join(
                 ", ",
                 Stream.of(*entries.toTypedArray()).map { anEnum: PlanTypeEnum -> uriPrefix + anEnum.toString() }
-                    .toList())
+                    .toList(),
+            )
             throw IllegalArgumentException("PlanTypeEnum value has to be one of [$enumValues], was $text")
         }
 

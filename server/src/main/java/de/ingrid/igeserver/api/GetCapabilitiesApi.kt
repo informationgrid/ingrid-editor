@@ -37,19 +37,18 @@ interface GetCapabilitiesApi {
     @Operation(description = "")
     @PostMapping(
         value = ["/analyzeGetRecordUrl"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
+        produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun analyzeGetRecordUrl(
-        @Parameter(required = true) @RequestBody url: String
+        @Parameter(required = true) @RequestBody url: String,
     ): ResponseEntity<GetRecordUrlAnalysis>
 
     @Operation
     @PostMapping(value = ["/analyzeGetCapabilities"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun analyzeGetCapabilties(
         principal: Principal,
-        @Parameter(required = true) @RequestBody url: String
+        @Parameter(required = true) @RequestBody url: String,
     ): ResponseEntity<CapabilitiesBean>
-
 }
 
 data class GetCapabilitiesAnalysis(

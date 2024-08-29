@@ -22,11 +22,13 @@ package de.ingrid.igeserver.persistence.filter.publish
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.profiles.mcloud.types.TestType
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.profiles.test.types.TestType
+import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.DocumentData
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.utils.SpringContext
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
@@ -35,97 +37,93 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 
+class PreDefaultDocumentPublisherTest :
+    FunSpec({
 
-class PreDefaultDocumentPublisherTest : FunSpec({
+        val docService = mockk<DocumentService>()
+        val publisher = PreDefaultDocumentPublisher(docService)
 
-    val docService = mockk<DocumentService>()
-    val behaviourService = mockk<BehaviourService>()
-    val publisher = PreDefaultDocumentPublisher(docService, behaviourService)
-
-    beforeAny {
-        every { behaviourService.get(any(), "plugin.indexing-tags") } returns Behaviour().apply { active = true }
-        every { docService.getReferencedWrapperIds(any(), any()) } returns setOf(1)
-        mockkObject(SpringContext.Companion)
-        every { SpringContext.getBean(DateService::class.java) } answers {
-            DateService()
+        beforeAny {
+            every { docService.getReferencedWrapperIds(any(), any()) } returns setOf(1)
+            mockkObject(SpringContext.Companion)
+            every { SpringContext.getBean(DateService::class.java) } answers {
+                DateService()
+            }
         }
-    }
 
-    fun mockRefWithTag(tags: List<String>) {
-        every { docService.getDocumentFromCatalog(any(), any()) } returns DocumentData(
-            DocumentWrapper().apply { this.tags = tags },
-            Document().apply { state = DOCUMENT_STATE.PUBLISHED }
-        )
-    }
-
-    test("internet should accept internet references") {
-        mockRefWithTag(emptyList())
-
-        val payload = PrePublishPayload(TestType(), "", Document(), DocumentWrapper())
-        publisher.invoke(payload, DefaultContext("", "", null, null))
-    }
-
-    test("internet should not accept intranet references") {
-        mockRefWithTag(listOf("intranet"))
-        val payload = PrePublishPayload(TestType(), "", Document(), DocumentWrapper())
-        shouldThrow<ValidationException> {
-            publisher.invoke(payload, DefaultContext("", "", null, null))
-        }.also {
-            it.data?.get("error").toString() shouldContain "Reference has wrong publication type condition"
+        fun mockRefWithTag(tags: List<String>) {
+            every { docService.getDocumentFromCatalog(any(), any()) } returns DocumentData(
+                DocumentWrapper().apply { this.tags = tags },
+                Document().apply { state = DocumentState.PUBLISHED },
+            )
         }
-    }
 
-    test("internet should not accept amtsintern references") {
-        mockRefWithTag(listOf("amtsintern"))
-        val payload = PrePublishPayload(TestType(), "", Document(), DocumentWrapper())
-        shouldThrow<ValidationException> {
+        test("internet should accept internet references") {
+            mockRefWithTag(emptyList())
+
+            val payload = PrePublishPayload(TestType(), "", Document(), DocumentWrapper())
             publisher.invoke(payload, DefaultContext("", "", null, null))
         }
-    }
 
-    test("intranet should accept internet references") {
-        mockRefWithTag(emptyList())
-        val payload =
-            PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("intranet") })
-        publisher.invoke(payload, DefaultContext("", "", null, null))
-    }
+        test("internet should not accept intranet references") {
+            mockRefWithTag(listOf("intranet"))
+            val payload = PrePublishPayload(TestType(), "", Document(), DocumentWrapper())
+            shouldThrow<ValidationException> {
+                publisher.invoke(payload, DefaultContext("", "", null, null))
+            }.also {
+                it.data?.get("error").toString() shouldContain "Reference has wrong publication type condition"
+            }
+        }
 
-    test("intranet should accept intranet references") {
-        mockRefWithTag(listOf("intranet"))
-        val payload =
-            PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("intranet") })
-        publisher.invoke(payload, DefaultContext("", "", null, null))
-    }
+        test("internet should not accept amtsintern references") {
+            mockRefWithTag(listOf("amtsintern"))
+            val payload = PrePublishPayload(TestType(), "", Document(), DocumentWrapper())
+            shouldThrow<ValidationException> {
+                publisher.invoke(payload, DefaultContext("", "", null, null))
+            }
+        }
 
-    test("intranet should not accept amtsintern references") {
-        mockRefWithTag(listOf("amtsintern"))
-        val payload =
-            PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("intranet") })
-        shouldThrow<ValidationException> {
+        test("intranet should accept internet references") {
+            mockRefWithTag(emptyList())
+            val payload =
+                PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("intranet") })
             publisher.invoke(payload, DefaultContext("", "", null, null))
         }
-    }
 
-    test("amtsintern should accept internet references") {
-        mockRefWithTag(emptyList())
-        val payload =
-            PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("amtsintern") })
-        publisher.invoke(payload, DefaultContext("", "", null, null))
-    }
+        test("intranet should accept intranet references") {
+            mockRefWithTag(listOf("intranet"))
+            val payload =
+                PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("intranet") })
+            publisher.invoke(payload, DefaultContext("", "", null, null))
+        }
 
-    test("amtsintern should accept intranet references") {
-        mockRefWithTag(listOf("intranet"))
-        val payload =
-            PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("amtsintern") })
-        publisher.invoke(payload, DefaultContext("", "", null, null))
-    }
+        test("intranet should not accept amtsintern references") {
+            mockRefWithTag(listOf("amtsintern"))
+            val payload =
+                PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("intranet") })
+            shouldThrow<ValidationException> {
+                publisher.invoke(payload, DefaultContext("", "", null, null))
+            }
+        }
 
-    test("amtsintern should accept amtsintern references") {
-        mockRefWithTag(listOf("amtsintern"))
-        val payload =
-            PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("amtsintern") })
-        publisher.invoke(payload, DefaultContext("", "", null, null))
-    }
+        test("amtsintern should accept internet references") {
+            mockRefWithTag(emptyList())
+            val payload =
+                PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("amtsintern") })
+            publisher.invoke(payload, DefaultContext("", "", null, null))
+        }
 
+        test("amtsintern should accept intranet references") {
+            mockRefWithTag(listOf("intranet"))
+            val payload =
+                PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("amtsintern") })
+            publisher.invoke(payload, DefaultContext("", "", null, null))
+        }
 
-})
+        test("amtsintern should accept amtsintern references") {
+            mockRefWithTag(listOf("amtsintern"))
+            val payload =
+                PrePublishPayload(TestType(), "", Document(), DocumentWrapper().apply { tags = listOf("amtsintern") })
+            publisher.invoke(payload, DefaultContext("", "", null, null))
+        }
+    })

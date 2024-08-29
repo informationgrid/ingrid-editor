@@ -44,8 +44,10 @@ class ValidationUtils(@Autowired validatorFactory: ValidatorFactory) {
         RDFDataMgr.loadGraph(javaClass.classLoader.getResource("ingrid/dcat-ap-plu_shacl-shapes.ttl").toString())
 
     private val patterns: Map<String, Pattern> = java.util.Map.of(
-        "mandatory", Pattern.compile("minCount\\[1\\].*"),
-        "classConstraint", Pattern.compile("ClassConstraint\\[(<.+>)\\]: Expected class :\\1 for .*")
+        "mandatory",
+        Pattern.compile("minCount\\[1\\].*"),
+        "classConstraint",
+        Pattern.compile("ClassConstraint\\[(<.+>)\\]: Expected class :\\1 for .*"),
     )
 
     @Throws(ServerException::class)

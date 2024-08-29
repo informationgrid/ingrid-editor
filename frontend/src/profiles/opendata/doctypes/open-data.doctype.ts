@@ -74,13 +74,6 @@ export class OpenDataDoctype extends BaseDoctype {
               message:
                 "Fehler: Es darf nur eine Adresse als veröffentlichende Stelle angegeben werden",
             },
-            publisherPublished: {
-              expression: (ctrl) =>
-                ctrl.value
-                  ? ctrl.value.every((row) => row.ref._state === "P")
-                  : false,
-              message: "Fehler: Alle Adressen müssen veröffentlicht sein",
-            },
           },
         }),
         this.addRepeatList("keywords", "Schlagworte", {

@@ -21,12 +21,15 @@ package de.ingrid.igeserver.imports.internal
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.imports.internal.migrations.Migrate001
 import de.ingrid.igeserver.imports.internal.migrations.Migrate002
+import de.ingrid.igeserver.imports.internal.migrations.Migrate110
 import de.ingrid.igeserver.services.MapperService
+import de.ingrid.igeserver.utils.getString
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
@@ -37,23 +40,34 @@ class InternalImporter : IgeImporter {
 
     override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
         val json = mapperService.getJsonNode((data as String))
-        val version = json.get("_version").asText()
+        var additionalReferences = emptyList<JsonNode>()
+        var version = json.getString("_version")
 
         var documents = json.get("resources")
         if (version == "0.0.1") {
             documents = Migrate001.migrate(documents as ArrayNode)
-        } else if (version == "0.0.2") {
-            documents = Migrate002.migrate(documents as ArrayNode)
+            version = "0.0.2"
         }
-        val published = documents.get("published")
-        val draft = documents.get("draft")
-        return if (draft == null) {
-            published
-        } else {
-            jacksonObjectMapper().createArrayNode().apply {
-                add(published)
-                add(draft)
-            }
+        if (version == "0.0.2") {
+            documents = Migrate002.migrate(documents as ArrayNode)
+            version = "1.0.0"
+            (json as ObjectNode).put("_profile", "mcloud")
+        }
+        val profile = json.getString("_profile")!!
+        if (version == "1.0.0") {
+            val response = Migrate110.migrate(documents, profile)
+            documents = response.documents
+            additionalReferences = response.references
+        }
+
+        return jacksonObjectMapper().createArrayNode().apply {
+            add(
+                jacksonObjectMapper().createArrayNode().apply {
+                    add(documents.get("published"))
+                    add(documents.get("draft"))
+                },
+            )
+            if (additionalReferences.isNotEmpty()) addAll(additionalReferences)
         }
     }
 
@@ -69,7 +83,6 @@ class InternalImporter : IgeImporter {
             "internal",
             "Internes Format",
             "Datenformat, welches für die interne Verarbeitung verwendet wird",
-            emptyList()
+            emptyList(),
         )
-
 }

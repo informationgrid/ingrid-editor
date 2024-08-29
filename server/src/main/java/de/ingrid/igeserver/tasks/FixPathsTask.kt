@@ -49,7 +49,7 @@ class FixPathsTask(
         val catalogs = getCatalogsForPostMigration()
         if (catalogs.isEmpty()) return
 
-        setAdminAuthentication("FixPaths","Task")
+        setAdminAuthentication("FixPaths", "Task")
 
         catalogs.forEach { catalog ->
             log.info("Execute FixPathsTask for catalog: $catalog")
@@ -59,9 +59,7 @@ class FixPathsTask(
                 log.info("Finished FixPathsTask for catalog: $catalog")
             }
         }
-
     }
-
 
     fun migratePaths(catalogIdentifier: String) {
         val docWrappersRoot = entityManager.createQuery(sqlRootDocumentWrapper)
@@ -74,7 +72,6 @@ class FixPathsTask(
     }
 
     private fun addChildren(id: Int, previousUuids: MutableList<Int>) {
-
         previousUuids.add(id)
         val childrenIds = entityManager
             .createQuery("SELECT dw.id FROM DocumentWrapper dw where dw.parent is not null and dw.parent.id = $id")
@@ -91,13 +88,12 @@ class FixPathsTask(
         }
     }
 
-
     private fun getCatalogsForPostMigration(): List<String> {
         return try {
             entityManager
                 .createQuery(
                     "SELECT version FROM VersionInfo version WHERE version.key = 'doFixPaths'",
-                    VersionInfo::class.java
+                    VersionInfo::class.java,
                 )
                 .resultList
                 .map { it.value!! }
@@ -110,9 +106,8 @@ class FixPathsTask(
     private fun removePostMigrationInfo(catalogIdentifier: String) {
         entityManager
             .createQuery(
-                "DELETE FROM VersionInfo version WHERE version.key = 'doFixPaths' AND version.value = '${catalogIdentifier}'"
+                "DELETE FROM VersionInfo version WHERE version.key = 'doFixPaths' AND version.value = '$catalogIdentifier'",
             )
             .executeUpdate()
     }
-
 }

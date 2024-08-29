@@ -24,7 +24,7 @@ import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 
 class GeodatasetMapperLfUBayern(isoData: IsoImportData) : GeodatasetMapper(isoData) {
-    
+
     init {
         fieldToCodelist.referenceFileFormat = "20002"
     }
@@ -47,7 +47,7 @@ class GeodatasetMapperLfUBayern(isoData: IsoImportData) : GeodatasetMapper(isoDa
                 if (entryId == null) KeyValue(null, it) else KeyValue(entryId)
             } ?: emptyList()
     }
-    
+
     fun getInternalKeywords(): List<KeyValue> {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "LfU Bayern Internal Keywords" }

@@ -24,7 +24,7 @@ import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.GeoserviceT
 import kotlin.reflect.KClass
 
 fun getKrznTransformer(docType: String): KClass<out Any>? {
-    return when(docType) {
+    return when (docType) {
         "InGridGeoDataset" -> GeodatasetTransformerKrzn::class
         "InGridGeoService" -> GeoserviceTransformerKrzn::class
         else -> null

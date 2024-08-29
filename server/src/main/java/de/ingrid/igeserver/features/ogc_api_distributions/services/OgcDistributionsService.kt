@@ -40,8 +40,8 @@ class OgcDistributionsService(
     private val catalogService: CatalogService,
     private val documentService: DocumentService,
     private val apiValidationService: ApiValidationService,
-    private val ogcDistributionHelperFactory: OgcDistributionHelperFactory
-    ) {
+    private val ogcDistributionHelperFactory: OgcDistributionHelperFactory,
+) {
 
     @Transactional
     fun handleUploadDistribution(principal: Authentication, userID: String, collectionId: String, recordId: String, files: List<MultipartFile>) {
@@ -95,7 +95,6 @@ class OgcDistributionsService(
         }
     }
 
-
     private fun getDocWrapper(collectionId: String, recordId: String): DocumentWrapper {
         try {
             return documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId, false)
@@ -106,10 +105,9 @@ class OgcDistributionsService(
 
     private fun getDocument(collectionId: String, recordId: String): Document {
         try {
-            return documentService.getLastPublishedDocument(collectionId, recordId, false, true)
+            return documentService.getLastPublishedDocument(collectionId, recordId, false)
         } catch (error: Exception) {
             throw NotFoundException.withMissingResource(recordId, "Record")
         }
     }
-
 }

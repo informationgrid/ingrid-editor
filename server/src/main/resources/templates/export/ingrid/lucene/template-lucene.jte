@@ -1,6 +1,6 @@
 @import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
-@import de.ingrid.igeserver.profiles.ingrid.exporter.COORD_TYPE
+@import de.ingrid.igeserver.profiles.ingrid.exporter.CoordinateType
 @import gg.jte.support.ForSupport
 @import java.util.List
 @import java.util.Map
@@ -19,10 +19,10 @@
     "dataSourceName": "iPlug IGE-NG (${catalog.getIdentifier()})",
     "title": "${page.getModel().getTitle()}",
     "summary": "${page.getData().getDescription()}",
-    "x1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon1)},
-    "x2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon2)},
-    "y1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat1)},
-    "y2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat2)},
+    "x1": ${page.getSpatialReferenceComponents(CoordinateType.Lon1)},
+    "x2": ${page.getSpatialReferenceComponents(CoordinateType.Lon2)},
+    "y1": ${page.getSpatialReferenceComponents(CoordinateType.Lat1)},
+    "y2": ${page.getSpatialReferenceComponents(CoordinateType.Lat2)},
     "location":  $unsafe{page.getSpatialReferenceLocationNames()},
     "created": "${page.formatDate(page.getFormatterISO(), page.getModel().get_created())}",
     "modified": "${page.formatDate(page.getFormatterISO(), page.getModel().get_contentModified())}",
@@ -322,10 +322,10 @@
         "${entry.get()}"@if (!entry.isLast()),@endif
     @endfor
     ],
-    "spatial_ref_value.x1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon1)},
-    "spatial_ref_value.y1": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat1)},
-    "spatial_ref_value.x2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lon2)},
-    "spatial_ref_value.y2": ${page.getSpatialReferenceComponents(COORD_TYPE.Lat2)},
+    "spatial_ref_value.x1": ${page.getSpatialReferenceComponents(CoordinateType.Lon1)},
+    "spatial_ref_value.y1": ${page.getSpatialReferenceComponents(CoordinateType.Lat1)},
+    "spatial_ref_value.x2": ${page.getSpatialReferenceComponents(CoordinateType.Lon2)},
+    "spatial_ref_value.y2": ${page.getSpatialReferenceComponents(CoordinateType.Lat2)},
 
     "t03_catalogue.create_time": "",
     "t01_object.is_adv_compatible": "",

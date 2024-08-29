@@ -65,7 +65,6 @@ class IndexTargetWorker(
     private val categoryAlias = plugInfo.alias
 
     fun indexAll() {
-
         log.info("Indexing to target '${config.target}' in category: " + config.category.value)
 
         // pre phase
@@ -107,7 +106,7 @@ class IndexTargetWorker(
     private fun checkIfAllIndexed(
         page: Int,
         docsToPublish: Page<DocumentIndexInfo>,
-        totalHits: Long
+        totalHits: Long,
     ): Boolean {
         val numExported = page * generalProperties.indexPageSize + docsToPublish.numberOfElements
         if (numExported.toLong() > totalHits) log.warn("Here seems to be a calculation error, since exported documents are higher than totalHits: $numExported > $totalHits")
@@ -124,7 +123,7 @@ class IndexTargetWorker(
                 newIndex,
                 if (config.category == DocumentCategory.ADDRESS) "address" else "base",
                 catalogProfile.getElasticsearchMapping(""),
-                catalogProfile.getElasticsearchSetting("")
+                catalogProfile.getElasticsearchSetting(""),
             )
             Pair(oldIndex, newIndex)
         } catch (ex: Exception) {
@@ -177,7 +176,7 @@ class IndexTargetWorker(
 
         postIndexPipe.runFilters(
             PostIndexPayload(elasticDocument, config.category.name, exporterType),
-            simpleContext
+            simpleContext,
         )
     }
 
@@ -210,13 +209,12 @@ class IndexTargetWorker(
         val plugIdInfo = "ige-ng:${info.alias}:${info.category}"
         config.target.updateIPlugInformation(
             plugIdInfo,
-            getIPlugInfo(plugIdInfo, info, info.category == "address")
+            getIPlugInfo(plugIdInfo, info, info.category == "address"),
         )
     }
 
     @Throws(IOException::class)
     private fun getIPlugInfo(infoId: String, info: IPlugInfo, forAddress: Boolean): String {
-
         val plugId = "ige-ng_${plugInfo.catalog.identifier}"
         val currentDate = OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
 
@@ -240,10 +238,10 @@ class IndexTargetWorker(
                                 info.provider,
                                 plugId,
                                 forAddress,
-                                plugInfo.catalog.name
+                                plugInfo.catalog.name,
                             ),
-                            JsonNode::class.java
-                        )
+                            JsonNode::class.java,
+                        ),
                 )
                 set<JsonNode>(
                     "indexingState",
@@ -251,7 +249,7 @@ class IndexTargetWorker(
                         put("numProcessed", 0)
                         put("totalDocs", 0)
                         put("running", false)
-                    }
+                    },
                 )
             }
             .toString()
@@ -296,8 +294,11 @@ class IndexTargetWorker(
 
     private fun increaseProgressInTargetMessage(message: TargetMessage) {
         message.apply {
-            if (config.category == DocumentCategory.DATA) this.progressDocuments += 1
-            else this.progressAddresses += 1
+            if (config.category == DocumentCategory.DATA) {
+                this.progressDocuments += 1
+            } else {
+                this.progressAddresses += 1
+            }
         }
         this.message.increaseProgress()
     }

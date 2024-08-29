@@ -29,7 +29,7 @@ import org.springframework.http.MediaType
 /**
  * ATTENTION: Addresses are not exported. This class can be removed
  */
-//@Service
+// @Service
 class BmiExporterAddress : IgeExporter {
 
     override val typeInfo: ExportTypeInfo
@@ -41,12 +41,12 @@ class BmiExporterAddress : IgeExporter {
                 "Export der Daten für die weitere Verwendung im Liferay Portal und Exporter.",
                 MediaType.APPLICATION_JSON_VALUE,
                 "json",
-                listOf("index")
+                listOf("index"),
             )
         }
 
     override fun exportSql(catalogId: String) = """document.state = 'PUBLISHED'"""
-    
+
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         // do not export addresses
         return "{}"
@@ -55,5 +55,4 @@ class BmiExporterAddress : IgeExporter {
     override fun toString(exportedObject: Any): String {
         return exportedObject.toString()
     }
-
 }

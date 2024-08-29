@@ -20,13 +20,19 @@
 import { AddressCardComponent } from "./address-card.component";
 import { createComponentFactory, Spectator } from "@ngneat/spectator";
 import { MatCardModule } from "@angular/material/card";
-import { CodelistPipe } from "../../../../directives/codelist.pipe";
 import { CodelistService } from "../../../../services/codelist/codelist.service";
 import { MatDialogModule } from "@angular/material/dialog";
 import { ProfileService } from "../../../../services/profile.service";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { DocumentIconModule } from "../../../../shared/document-icon/document-icon.module";
 import { getTranslocoModule } from "../../../../transloco-testing.module";
+import { DocumentWithMetadata } from "../../../../models/ige-document";
+import { DocumentService } from "../../../../services/document/document.service";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 describe("AddressCardComponent", () => {
   let spectator: Spectator<AddressCardComponent>;
@@ -39,7 +45,12 @@ describe("AddressCardComponent", () => {
       DocumentIconModule,
       getTranslocoModule(),
     ],
-    declarations: [CodelistPipe],
+    // declarations: [CodelistPipe],
+    providers: [
+      DocumentService,
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
+    ],
     componentMocks: [CodelistService, ProfileService],
     detectChanges: false,
   });
@@ -49,9 +60,15 @@ describe("AddressCardComponent", () => {
   });
 
   it("should show tooltip when address is in draft state", () => {
-    spectator.setInput("address", {
+    const doc = new DocumentWithMetadata();
+    // @ts-ignore
+    doc.document = { organization: "Test-Address1", _state: "W" };
+    // @ts-ignore
+    doc.metadata = { state: "W", docType: "" };
+    // spectator.component
+    spectator.fixture.componentRef.setInput("address", {
       type: { key: "1" },
-      ref: { organization: "Test-Address1", _state: "W" },
+      address: doc,
     });
     spectator.detectChanges();
 
@@ -61,9 +78,14 @@ describe("AddressCardComponent", () => {
   });
 
   it("should show tooltip when address is in draftAndPublished state", () => {
-    spectator.setInput("address", {
+    const doc = new DocumentWithMetadata();
+    // @ts-ignore
+    doc.document = { organization: "Test-Address", _state: "PW" };
+    // @ts-ignore
+    doc.metadata = { state: "PW", docType: "" };
+    spectator.fixture.componentRef.setInput("address", {
       type: { key: "1" },
-      ref: { organization: "Test-Address", _state: "PW" },
+      address: doc,
     });
     spectator.detectChanges();
 
@@ -73,9 +95,14 @@ describe("AddressCardComponent", () => {
   });
 
   it("should not show tooltip when address is in published state", () => {
-    spectator.setInput("address", {
+    const doc = new DocumentWithMetadata();
+    // @ts-ignore
+    doc.document = { organization: "Test-Address", _state: "P" };
+    // @ts-ignore
+    doc.metadata = { state: "P", docType: "" };
+    spectator.fixture.componentRef.setInput("address", {
       type: { key: "1" },
-      ref: { organization: "Test-Address", _state: "P" },
+      address: doc,
     });
     spectator.detectChanges();
 

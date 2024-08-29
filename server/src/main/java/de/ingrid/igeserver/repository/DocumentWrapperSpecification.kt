@@ -26,16 +26,13 @@ import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
 
-class DocumentWrapperSpecification(val filter: DocumentWrapper): Specification<DocumentWrapper> {
-    
-    
-    
+class DocumentWrapperSpecification(val filter: DocumentWrapper) : Specification<DocumentWrapper> {
+
     override fun toPredicate(
         root: Root<DocumentWrapper>,
         query: CriteriaQuery<*>,
-        cb: CriteriaBuilder
+        cb: CriteriaBuilder,
     ): Predicate? {
-
         val p: Predicate = cb.disjunction()
 
         /*if (filter.category != null) {
@@ -44,6 +41,5 @@ class DocumentWrapperSpecification(val filter: DocumentWrapper): Specification<D
         }*/
 
         return p
-        
     }
 }

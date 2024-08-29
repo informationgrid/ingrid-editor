@@ -27,7 +27,15 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import de.ingrid.igeserver.annotations.NoArgs
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
@@ -55,9 +63,11 @@ class Query {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var user: UserInfo? = null
-    
+
     val userId: String?
-        get() { return user?.userId }
+        get() {
+            return user?.userId
+        }
 
     @Column(nullable = false)
     var name: String? = null
@@ -81,5 +91,4 @@ class Query {
 
     @Column
     var global: Boolean = false
-
 }

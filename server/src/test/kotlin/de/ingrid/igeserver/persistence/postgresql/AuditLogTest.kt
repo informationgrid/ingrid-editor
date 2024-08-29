@@ -37,7 +37,6 @@ class AuditLogTest : IntegrationTest() {
 
     @Test
     fun `logging a message`() {
-
         val oldCount = auditRepo.count()
 
         auditLog.log("category", "action", "target", null, "audit.data-history")

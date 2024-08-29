@@ -26,9 +26,9 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.SpatialModel
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
@@ -91,22 +91,22 @@ data class UVPModel(
     }
 
     private fun determinePointOfContact(): AddressModelTransformer? {
-
         val ref = data.pointOfContact
             ?.firstOrNull()
             ?.ref ?: return null
 
-        val address = documentService?.getLastPublishedDocument(catalogId, ref.uuid, resolveLinks = false)!!
+        val address = documentService?.getLastPublishedDocument(catalogId, ref)!!
         val codelistTransformer = CodelistTransformer(codelistHandler!!, catalogId)
         val addressTransformer =
-            AddressModelTransformer(catalogId, codelistTransformer, null, address, documentService!!)
+            AddressModelTransformer(catalogId, codelistTransformer, null, address, documentService!!, null)
         nonHiddenAncestorAddresses = addressTransformer.getAncestorAddressesIncludingSelf(address.wrapperId)
 
         return if (nonHiddenAncestorAddresses!!.size > 0) {
             val result = nonHiddenAncestorAddresses!!.last().document
-            AddressModelTransformer(catalogId, codelistTransformer, null, result, documentService!!)
-        } else null
-
+            AddressModelTransformer(catalogId, codelistTransformer, null, result, documentService!!, null)
+        } else {
+            null
+        }
     }
 
     fun getSpatial(): String? {
@@ -147,7 +147,7 @@ data class UVPModel(
         val coordinates =
             "${spatial.value?.lon1}, ${spatial.value?.lat1}, ${spatial.value?.lon2}, ${spatial.value?.lat2}"
         val title = spatial.title ?: ""
-        return "${title}: $coordinates"
+        return "$title: $coordinates"
     }
 
     val steps = data.steps
@@ -165,7 +165,6 @@ data class UVPModel(
     }
 
     fun getDecisionDate(): List<String> {
-
         val decisionDates =
             data.steps.filterIsInstance<StepDecisionOfAdmission>().map { it.decisionDate }.toMutableList()
         if (data.decisionDate != null) decisionDates += data.decisionDate
@@ -182,7 +181,6 @@ data class UVPModel(
 
         val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
     }
-
 
     fun getCodelistValue(codelistId: String, entry: KeyValue?): String {
         if (entry == null) return ""
@@ -228,17 +226,16 @@ data class UVPModel(
         return listOfNotNull(
             getCodelistValue(
                 "4300",
-                address.data.get("salutation")?.mapToKeyValue()
+                address.data.get("salutation")?.mapToKeyValue(),
             ),
             getCodelistValue(
                 "4305",
-                address.data.get("academic-title")?.mapToKeyValue()
+                address.data.get("academic-title")?.mapToKeyValue(),
             ),
             address.data.getString("firstName"),
-            address.data.getString("lastName")
+            address.data.getString("lastName"),
         ).filter { it.isNotEmpty() }.joinToString(" ")
     }
-
 }
 
 data class AddressShort(val uuid: String, val title: String)

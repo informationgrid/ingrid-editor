@@ -29,7 +29,4 @@ open class DataCollectionModelTransformer(transformerConfig: TransformerConfig) 
     val categoryCatalog = data.categoryCatalog ?: emptyList()
     val methodText = data.methodText
     fun hasContentInfo() = databaseContent.isNotEmpty() || categoryCatalog.isNotEmpty()
-
-
 }
-

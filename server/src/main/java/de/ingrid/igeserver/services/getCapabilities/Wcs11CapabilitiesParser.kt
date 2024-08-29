@@ -25,9 +25,11 @@ import de.ingrid.utils.xml.Wcs11NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class Wcs11CapabilitiesParser(codelistHandler: CodelistHandler,
-                              private val researchService: ResearchService,
-                              catalogId: String) :
+class Wcs11CapabilitiesParser(
+    codelistHandler: CodelistHandler,
+    private val researchService: ResearchService,
+    catalogId: String,
+) :
     GeneralCapabilitiesParser(XPathUtils(Wcs11NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
@@ -58,15 +60,17 @@ class Wcs11CapabilitiesParser(codelistHandler: CodelistHandler,
 
         // Operation - GetCapabilities
         val getCapabilitiesOp = mapToOperationBean(
-            doc, arrayOf(
+            doc,
+            arrayOf(
                 XPATH_EXP_WCS_OP_GET_CAPABILITIES_GET_HREF,
-                XPATH_EXP_WCS_OP_GET_CAPABILITIES_POST_HREF
-            ), arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST)
+                XPATH_EXP_WCS_OP_GET_CAPABILITIES_POST_HREF,
+            ),
+            arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST),
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
-                "GetCapabilities"
+                "GetCapabilities",
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
 
@@ -75,15 +79,17 @@ class Wcs11CapabilitiesParser(codelistHandler: CodelistHandler,
 
         // Operation - DescribeCoverage
         val describeCoverageOp = mapToOperationBean(
-            doc, arrayOf(
+            doc,
+            arrayOf(
                 XPATH_EXP_WCS_OP_DESCRIBE_COVERAGE_GET_HREF,
-                XPATH_EXP_WCS_OP_DESCRIBE_COVERAGE_POST_HREF
-            ), arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST)
+                XPATH_EXP_WCS_OP_DESCRIBE_COVERAGE_POST_HREF,
+            ),
+            arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST),
         )
         if (describeCoverageOp.addressList!!.isNotEmpty()) {
             describeCoverageOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "DescribeCoverage", "de"),
-                "DescribeCoverage"
+                "DescribeCoverage",
             )
             describeCoverageOp.methodCall = "DescribeCoverage"
 
@@ -92,15 +98,17 @@ class Wcs11CapabilitiesParser(codelistHandler: CodelistHandler,
 
         // Operation - GetCoverage
         val getCoverageOp = mapToOperationBean(
-            doc, arrayOf(
+            doc,
+            arrayOf(
                 XPATH_EXP_WCS_OP_GET_COVERAGE_GET_HREF,
-                XPATH_EXP_WCS_OP_GET_COVERAGE_POST_HREF
-            ), arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST)
+                XPATH_EXP_WCS_OP_GET_COVERAGE_POST_HREF,
+            ),
+            arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST),
         )
         if (getCoverageOp.addressList!!.isNotEmpty()) {
             getCoverageOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "GetCoverage", "de"),
-                "GetCoverage"
+                "GetCoverage",
             )
             getCoverageOp.methodCall = "GetCoverage"
 
@@ -119,40 +127,47 @@ class Wcs11CapabilitiesParser(codelistHandler: CodelistHandler,
             address,
             xPathUtils.getString(
                 doc,
-                "$XPATH_EXT_WCS_SERVICECONTACT/ows11:IndividualName"
-            )
+                "$XPATH_EXT_WCS_SERVICECONTACT/ows11:IndividualName",
+            ),
         )
         address.email = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:ElectronicMailAddress"
+            "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:ElectronicMailAddress",
         )
 
         // try to find address in database and set the uuid if found
         searchForAddress(researchService, catalogId, address)
-        
+
         address.street = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:DeliveryPoint"
+            "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:DeliveryPoint",
         )
         address.city = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:City"
+            "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:City",
         )
         address.postcode = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:PostalCode"
+            "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:PostalCode",
         )
-        address.country = getKeyValue("6200", xPathUtils.getString(
-            doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:Country"
-        ))
-        address.state = getKeyValue("6250", xPathUtils.getString(
-            doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:AdministrativeArea"
-        ), "name")
+        address.country = getKeyValue(
+            "6200",
+            xPathUtils.getString(
+                doc,
+                "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:Country",
+            ),
+        )
+        address.state = getKeyValue(
+            "6250",
+            xPathUtils.getString(
+                doc,
+                "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:AdministrativeArea",
+            ),
+            "name",
+        )
         address.phone = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Phone/ows11:Voice"
+            "$XPATH_EXT_WCS_SERVICECONTACT/ows11:ContactInfo/ows11:Phone/ows11:Voice",
         )
         return address
     }

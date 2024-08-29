@@ -25,5 +25,4 @@ interface OgcCatalogExporter {
     val typeInfo: CatalogExportTypeInfo
 
     fun run(catalog: Catalog): Any
-
 }

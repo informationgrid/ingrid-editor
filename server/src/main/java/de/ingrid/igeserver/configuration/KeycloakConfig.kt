@@ -62,11 +62,10 @@ import java.net.Proxy
 import java.net.URL
 import java.util.*
 
-
 @Profile("!dev")
 @Configuration
 @EnableWebSecurity
-//@EnableMethodSecurity(jsr250Enabled = true, prePostEnabled = true)
+// @EnableMethodSecurity(jsr250Enabled = true, prePostEnabled = true)
 internal class KeycloakConfig {
     val log = logger()
 
@@ -87,7 +86,6 @@ internal class KeycloakConfig {
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-
         http {
             headers {
                 frameOptions {
@@ -100,14 +98,12 @@ internal class KeycloakConfig {
                 authorize("/api/upload/download/**", permitAll)
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
                 authorize(anyRequest, permitAll)
-
             }
             oauth2Login {}
             oauth2ResourceServer {
                 jwt {
                     jwtAuthenticationConverter = jwtAuthenticationConverter()
                 }
-
             }
             if (generalProperties.enableCsrf) {
                 csrf { csrfTokenRepository to CookieCsrfTokenRepository.withHttpOnlyFalse() }
@@ -125,9 +121,8 @@ internal class KeycloakConfig {
             }
         }
 
-        return http.build();
+        return http.build()
     }
-
 
     @Bean
     fun jwtDecoder(): JwtDecoder {
@@ -140,14 +135,12 @@ internal class KeycloakConfig {
                     .withJwkSetUri(jwkSetUri)
                     .restOperations(RestTemplate(requestFactory)).build()
             }
-
         } else {
             return NimbusJwtDecoder
                 .withJwkSetUri(jwkSetUri)
                 .build()
         }
     }
-
 
     private fun jwtAuthenticationConverter(): Converter<Jwt, out AbstractAuthenticationToken> {
         val jwtConverter = JwtAuthenticationConverter()
@@ -159,7 +152,7 @@ internal class KeycloakConfig {
         override fun doFilter(
             request: ServletRequest,
             response: ServletResponse,
-            chain: FilterChain
+            chain: FilterChain,
         ) {
             request as HttpServletRequest
             response as HttpServletResponse
@@ -206,13 +199,11 @@ internal class KeycloakConfig {
 //    override fun httpSessionManager(): HttpSessionManager {
 //        return HttpSessionManager()
 //    }
-
 }
-
 
 class KeycloakRealmRoleConverter(
     private val userRepository: UserRepository,
-    private val roleRepository: RoleRepository
+    private val roleRepository: RoleRepository,
 ) : Converter<Jwt, Collection<GrantedAuthority>> {
     override fun convert(jwt: Jwt): Collection<GrantedAuthority> {
         val realmAccess = jwt.claims["realm_access"] as Map<*, *>
@@ -258,8 +249,8 @@ class KeycloakRealmRoleConverter(
             grantedAuthorities.addAll(
                 listOf(
                     SimpleGrantedAuthority("ROLE_$it"),
-                    SimpleGrantedAuthority("ROLE_ACL_ACCESS")
-                )
+                    SimpleGrantedAuthority("ROLE_ACL_ACCESS"),
+                ),
             )
         }
 
@@ -269,7 +260,7 @@ class KeycloakRealmRoleConverter(
     private fun checkAndCreateSuperUser(
         userDb: UserInfo?,
         isSuperAdmin: Boolean,
-        username: String
+        username: String,
     ): UserInfo? {
         if (userDb == null && isSuperAdmin) {
             // create user for super admin in db
@@ -285,5 +276,4 @@ class KeycloakRealmRoleConverter(
         }
         return userDb
     }
-
 }

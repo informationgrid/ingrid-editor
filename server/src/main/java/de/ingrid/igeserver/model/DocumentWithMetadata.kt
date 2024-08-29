@@ -24,7 +24,7 @@ import java.time.OffsetDateTime
 
 data class DocumentWithMetadata(
     val document: ObjectNode,
-    val metadata: DocMetadata
+    val metadata: DocMetadata,
 )
 
 data class DocMetadata(
@@ -50,6 +50,6 @@ data class DocMetadata(
     val state: String,
     val docType: String,
     val version: Int,
-    val uuid: String
+    val uuid: String,
 
 )

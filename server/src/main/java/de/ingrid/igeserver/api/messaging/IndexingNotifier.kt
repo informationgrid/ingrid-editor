@@ -27,19 +27,19 @@ import org.springframework.stereotype.Service
 data class IndexMessage(
     val catalogId: String,
     var totalDatasets: Long = 0,
-    val targets: MutableList<TargetMessage> = mutableListOf()
+    val targets: MutableList<TargetMessage> = mutableListOf(),
 ) : Message() {
-    
+
     private var indexDatasets: Int = 0
-    
+
     fun getTargetByName(name: String): TargetMessage {
         val result = targets.find { it.name == name }
         return result ?: TargetMessage(name).also { targets.push(it) }
     }
-    
+
     fun increaseProgress() {
         indexDatasets++
-        progress = ((indexDatasets.toFloat() / totalDatasets)*100).toInt()
+        progress = ((indexDatasets.toFloat() / totalDatasets) * 100).toInt()
     }
 }
 

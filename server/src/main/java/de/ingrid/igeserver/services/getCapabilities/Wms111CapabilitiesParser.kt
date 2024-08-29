@@ -26,14 +26,13 @@ import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 
-
 /**
  * @author André Wallat
  */
 class Wms111CapabilitiesParser(
     codelistHandler: CodelistHandler,
     private val researchService: ResearchService,
-    catalogId: String
+    catalogId: String,
 ) :
     GeneralCapabilitiesParser(XPathUtils(Wms130NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
@@ -41,7 +40,6 @@ class Wms111CapabilitiesParser(
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
         return CapabilitiesBean().apply {
-
             // General settings
             serviceType = "WMS"
             dataServiceType = "2" // view
@@ -85,7 +83,7 @@ class Wms111CapabilitiesParser(
     private fun getCoupledResources(
         doc: Document,
         unionOfBoundingBoxes: LocationBean?,
-        commonKeywords: List<String>
+        commonKeywords: List<String>,
     ): List<GeoDataset> {
         val identifierNodes = xPathUtils.getNodeList(doc, "/WMT_MS_Capabilities/Capability/Layer//Identifier")
         val coupledResourcesList = mutableListOf<GeoDataset>()
@@ -104,10 +102,13 @@ class Wms111CapabilitiesParser(
                     keywords = getKeywords(layerNode, "KeywordList/Keyword") + commonKeywords
                     val boxes: MutableList<LocationBean> = ArrayList()
                     val box = getBoundingBoxFromLayer(layerNode)
-                    if (box != null) boxes.add(box)
-                    else if (unionOfBoundingBoxes != null) boxes.add(
-                        unionOfBoundingBoxes
-                    )
+                    if (box != null) {
+                        boxes.add(box)
+                    } else if (unionOfBoundingBoxes != null) {
+                        boxes.add(
+                            unionOfBoundingBoxes,
+                        )
+                    }
                     spatialReferences = boxes
                     // TODO: extract SRS from WMS 111 doc (https://www.geoportal.rlp.de/mapbender/php/wms.php?layer_id=36695&REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS&withChilds=1)
                     // val layerCRSs = getSpatialReferenceSystems(layerNode, "wms:CRS")
@@ -123,7 +124,6 @@ class Wms111CapabilitiesParser(
     }
 
     private fun getOperations(doc: Document): List<OperationBean> {
-
         // Operation List
         val operations: MutableList<OperationBean> = ArrayList()
 
@@ -131,7 +131,7 @@ class Wms111CapabilitiesParser(
         val getCapabilitiesOp = OperationBean()
         getCapabilitiesOp.name = KeyValue(
             codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"),
-            "GetCapabilities"
+            "GetCapabilities",
         )
         getCapabilitiesOp.methodCall = "GetCapabilities"
         val getCapabilitiesOpPlatform: MutableList<Int> = ArrayList()
@@ -149,7 +149,7 @@ class Wms111CapabilitiesParser(
         val getMapOp = OperationBean()
         getMapOp.name = KeyValue(
             codelistHandler.getCodeListEntryId("5110", "GetMap", "de"),
-            "GetMap"
+            "GetMap",
         )
         getMapOp.methodCall = "GetMap"
         val getMapOpPlatform: MutableList<Int> = ArrayList()
@@ -159,8 +159,8 @@ class Wms111CapabilitiesParser(
         getMapOpAddressList.add(
             xPathUtils.getString(
                 doc,
-                XPATH_EXP_WMS_1_1_1_OP_GET_MAP_HREF
-            )
+                XPATH_EXP_WMS_1_1_1_OP_GET_MAP_HREF,
+            ),
         )
         getMapOp.addressList = getMapOpAddressList
 
@@ -173,7 +173,7 @@ class Wms111CapabilitiesParser(
             val getFeatureInfoOp = OperationBean()
             getFeatureInfoOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5110", "GetFeatureInfo", "de"),
-                "GetFeatureInfo"
+                "GetFeatureInfo",
             )
             getFeatureInfoOp.methodCall = "GetFeatureInfo"
             val getFeatureInfoOpPlatform: MutableList<Int> = ArrayList()
@@ -194,17 +194,17 @@ class Wms111CapabilitiesParser(
             address,
             xPathUtils.getString(
                 doc,
-                XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactPersonPrimary/ContactPerson"
-            )
+                XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactPersonPrimary/ContactPerson",
+            ),
         )
         address.organization = xPathUtils.getString(
             doc,
-            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactPersonPrimary/ContactOrganization"
+            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactPersonPrimary/ContactOrganization",
         )
 
         address.email = xPathUtils.getString(
             doc,
-            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactElectronicMailAddress"
+            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactElectronicMailAddress",
         )
 
         // try to find address in database and set the uuid if found
@@ -212,31 +212,34 @@ class Wms111CapabilitiesParser(
 
         address.street = xPathUtils.getString(
             doc,
-            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/Address"
+            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/Address",
         )
         address.city = xPathUtils.getString(
             doc,
-            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/City"
+            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/City",
         )
         address.postcode = xPathUtils.getString(
             doc,
-            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/PostCode"
+            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/PostCode",
         )
         address.country = getKeyValue(
-            "6200", xPathUtils.getString(
+            "6200",
+            xPathUtils.getString(
                 doc,
-                XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/Country"
-            )
+                XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/Country",
+            ),
         )
         address.state = getKeyValue(
-            "6250", xPathUtils.getString(
+            "6250",
+            xPathUtils.getString(
                 doc,
-                XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/StateOrProvince"
-            ), "name"
+                XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactAddress/StateOrProvince",
+            ),
+            "name",
         )
         address.phone = xPathUtils.getString(
             doc,
-            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactVoiceTelephone"
+            XPATH_EXT_WMS_CONTACTINFORMATION + "/ContactVoiceTelephone",
         )
         return address
     }
@@ -268,7 +271,7 @@ class Wms111CapabilitiesParser(
                     coordinates[1],
                     coordinates[0],
                     coordinates[3],
-                    coordinates[2]
+                    coordinates[2],
                 )
 
                 // add a fallback for the name, since it's mandatory
@@ -289,7 +292,7 @@ class Wms111CapabilitiesParser(
 
     private fun getBoundingBoxCoordinates(
         bboxNode: Node,
-        coordType: CoordType
+        coordType: CoordType,
     ): DoubleArray? {
         var coordsTrans: DoubleArray? = DoubleArray(4)
         val coords = getBoundingBoxCoordinates(bboxNode)
@@ -325,7 +328,6 @@ class Wms111CapabilitiesParser(
         val code = crs.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
         return getCoordTypeByEPSGCode(code)
     }
-
 
     private fun getBoundingBoxFromLayer(layerNode: Node): LocationBean? {
         var box: LocationBean? = null

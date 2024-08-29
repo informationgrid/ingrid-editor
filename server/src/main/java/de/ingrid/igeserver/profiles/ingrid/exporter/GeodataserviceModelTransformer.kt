@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
-import org.jetbrains.kotlin.util.suffixIfNot
-
 open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) :
     IngridModelTransformer(transformerConfig) {
 
@@ -46,7 +44,6 @@ open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) 
             if (model.data.service.systemEnvironment.isNullOrEmpty().not()) description += " Systemumgebung: ${model.data.service.systemEnvironment};"
             if (model.data.service.explanation.isNullOrEmpty().not()) description += " Erläuterung zum Fachbezug: ${model.data.service.explanation};"
 
-
             return description.removeSuffix(";")
         }
 
@@ -54,17 +51,4 @@ open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) 
     val history = data.service.implementationHistory
     val conformanceResult = model.data.conformanceResult ?: emptyList()
     val hasAccessConstraint = model.data.service.hasAccessConstraints ?: false
-
-
-    init {
-        if (model.data.identifier != null) {
-            this.citationURL =
-                (if (catalog.settings.config.namespace.isNullOrEmpty()) "https://registry.gdi-de.org/id/$catalogIdentifier" else catalog.settings.config.namespace!!).suffixIfNot(
-                    "/"
-                ) + model.data.identifier
-        }
-    }
-
-
 }
-

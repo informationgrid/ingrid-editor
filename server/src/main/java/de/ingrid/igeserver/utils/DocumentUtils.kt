@@ -24,33 +24,28 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.model.DocMetadata
 import de.ingrid.igeserver.model.DocumentWithMetadata
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DocumentData
+import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
 import de.ingrid.igeserver.services.FIELD_UUID
 import java.time.format.DateTimeFormatter
 
 fun documentInPublishedState(document: Document) =
-    document.state == DOCUMENT_STATE.PUBLISHED || document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED || document.state == DOCUMENT_STATE.PENDING
+    document.state == DocumentState.PUBLISHED || document.state == DocumentState.DRAFT_AND_PUBLISHED || document.state == DocumentState.PENDING
 
-fun convertToDocument(docJson: JsonNode, docType: String? = null, docVersion: Int? = null, docUuid: String? = null): Document {
+fun convertToDocument(docJson: JsonNode, docType: String? = null, docVersion: Int? = null, docUuid: String? = null): Document = Document().apply {
+    title = docJson.getStringOrEmpty("title")
+    if (docType != null) type = docType
+    if (docVersion != null) version = docVersion
+    if (docUuid != null) uuid = docUuid
 
-    return Document().apply {
-        title = docJson.getStringOrEmpty("title")
-        if (docType != null) type = docType
-        if (docVersion != null) version = docVersion
-        if (docUuid != null) uuid = docUuid
-
-        // all document-data except title go into the data field
-        data = (docJson as ObjectNode).apply { remove("title") }
-    }
-
+    // all document-data except title go into the data field
+    data = (docJson as ObjectNode).apply { remove("title") }
 }
 
 fun prepareDocumentWithMetadata(
-    docData: DocumentData
+    docData: DocumentData,
 ): DocumentWithMetadata {
-
     val metadata = DocMetadata(
         docData.wrapper.countChildren > 0,
         docData.wrapper.parent?.id,
@@ -60,7 +55,7 @@ fun prepareDocumentWithMetadata(
         docData.wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME),
         docData.wrapper.tags.joinToString(","),
         docData.wrapper.responsibleUser?.id,
-        docData.wrapper.fingerprint?.let {it[0].date.toString()},
+        docData.wrapper.fingerprint?.let { it[0].date.toString() },
         docData.wrapper.hasWritePermission,
         docData.wrapper.hasOnlySubtreeWritePermission,
         docData.wrapper.id!!,
@@ -79,12 +74,10 @@ fun prepareDocumentWithMetadata(
     return DocumentWithMetadata(data, metadata)
 }
 
-fun getRawJsonFromDocument(document: Document, includeMetadataForExport: Boolean = false): ObjectNode {
-    return document.data.deepCopy().apply {
-        put("title", document.title)
-        if (includeMetadataForExport) {
-            put(FIELD_UUID, document.uuid)
-            put(FIELD_DOCUMENT_TYPE, document.type)
-        }
+fun getRawJsonFromDocument(document: Document, includeMetadataForExport: Boolean = false): ObjectNode = document.data.deepCopy().apply {
+    put("title", document.title)
+    if (includeMetadataForExport) {
+        put(FIELD_UUID, document.uuid)
+        put(FIELD_DOCUMENT_TYPE, document.type)
     }
 }

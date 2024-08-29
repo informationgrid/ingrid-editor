@@ -36,5 +36,5 @@ data class DataModel(
     val politicalGeocodingLevel: KeyValue?,
     val temporal: TimeSpanModel?,
     val periodicity: KeyValue?,
-    val keywords: List<String>?
+    val keywords: List<String>?,
 )

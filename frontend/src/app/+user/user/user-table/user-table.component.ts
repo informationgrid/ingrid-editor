@@ -20,10 +20,11 @@
 import {
   AfterViewInit,
   Component,
-  EventEmitter,
+  effect,
+  input,
   Input,
   OnInit,
-  Output,
+  output,
   ViewChild,
 } from "@angular/core";
 import {
@@ -36,9 +37,8 @@ import { MatSort, MatSortModule } from "@angular/material/sort";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
-import { firstValueFrom, Subject } from "rxjs";
+import { firstValueFrom } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
-import { filter } from "rxjs/operators";
 import { GeneralTable } from "../../general.table";
 import {
   ConfirmDialogComponent,
@@ -81,28 +81,13 @@ export class UserTableComponent
 {
   @Input() tableType: "default" | "simple" | "permission" = "default";
 
-  @Input()
-  set users(val: User[]) {
-    if (val) this.isLoading = false;
-    this.dataSource.data = val ?? [];
+  users = input<User[]>(null);
+  query = input<string>("");
+  canExport = input<boolean>(true);
+  defaultSort = input<string>();
+  selectedUserLogin = input<string>(null);
 
-    // select previously selected group
-    const selectedUser = this.selection.selected[0];
-    if (selectedUser) this.setSelectionToItem(selectedUser?.login, "login");
-  }
-
-  @Input()
-  set query(filter: string) {
-    this.dataSource.filter = filter;
-  }
-
-  // if the table data can be exported
-  @Input() canExport = true;
-
-  @Input() defaultSort: string;
-  @Input() selectedUser: Subject<User>;
-
-  @Output() onUserSelect = new EventEmitter<User>();
+  onUserSelect = output<User>({});
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -148,11 +133,45 @@ export class UserTableComponent
       const combined = searchInValues.join(" ").trim().toLowerCase();
       return combined.includes(filterValue.trim().toLowerCase());
     };
+
+    effect(
+      () => {
+        this.handleSelectedUserChange();
+      },
+      { allowSignalWrites: true },
+    );
+
+    effect(
+      () => {
+        if (this.users() === null) return;
+        this.selection.clear();
+        this.dataSource.data = this.users();
+        this.isLoading.set(false);
+        this.handleSelectedUserChange();
+      },
+      { allowSignalWrites: true },
+    );
+
+    effect(() => {
+      this.dataSource.filter = this.query();
+      const userLogin = this.selection.selected[0]?.login;
+      if (userLogin) this.updatePaginator(userLogin, "login");
+    });
+  }
+
+  private handleSelectedUserChange() {
+    const userLogin = this.selectedUserLogin() ?? null;
+    const currentSelectionLogin = this.selection.selected[0]?.login ?? null;
+    if (currentSelectionLogin !== userLogin) {
+      this.setSelectionToItem(userLogin, "login");
+      this.updatePaginator(userLogin, "login");
+
+      this.select(this.selection.selected[0]);
+    }
   }
 
   ngOnInit() {
     this.displayedColumns = this.getColumnsByViewType();
-    this.updateUserOnSelectionBehaviour();
   }
 
   private getColumnsByViewType(): string[] {
@@ -164,17 +183,6 @@ export class UserTableComponent
       default:
         return ["role-icon", "login", "firstName", "organisation"];
     }
-  }
-
-  private updateUserOnSelectionBehaviour() {
-    if (!this.selectedUser) return;
-
-    this.selectedUser
-      .pipe(filter((user) => this.selection.selected[0]?.login !== user?.login))
-      .subscribe((user) => {
-        this.setSelectionToItem(user?.login, "login");
-        this.updatePaginator(user?.login, "login");
-      });
   }
 
   ngAfterViewInit() {

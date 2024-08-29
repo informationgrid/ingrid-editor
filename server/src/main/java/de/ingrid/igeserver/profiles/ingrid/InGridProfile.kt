@@ -42,7 +42,12 @@ import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogProfile
+import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.IndexIdFieldConfig
+import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.services.CodelistHandler.Companion.toCodelistEntry
 import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
@@ -57,13 +62,13 @@ class InGridProfile(
     @JsonIgnore @Lazy val documentService: DocumentService,
     @JsonIgnore val query: QueryRepository,
     @JsonIgnore val dateService: DateService,
-    @JsonIgnore val openDataCategory: OpenDataCategory
+    @JsonIgnore val openDataCategory: OpenDataCategory,
 ) : CatalogProfile {
 
     @Autowired
     @JsonIgnore
     lateinit var entityManager: EntityManager
-    
+
     @Autowired
     @JsonIgnore
     private lateinit var transactionManager: PlatformTransactionManager
@@ -78,55 +83,63 @@ class InGridProfile(
     override val indexExportFormatID = "indexInGridIDF"
     override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
 
-    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state", "Allgemein", arrayOf(
-                    Published(),
-                    ExceptFolders(),
-                    TitleSearch()
-                ),
-                viewComponent = ViewComponent.CHECKBOX,
-                combine = Operator.AND
+    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Allgemein",
+            arrayOf(
+                Published(),
+                ExceptFolders(),
+                TitleSearch(),
             ),
-            FacetGroup(
-                "spatial", "Raumbezug", arrayOf(
-                    SpatialInGrid()
-                ),
-                viewComponent = ViewComponent.SPATIAL
+            viewComponent = ViewComponent.CHECKBOX,
+            combine = Operator.AND,
+        ),
+        FacetGroup(
+            "spatial",
+            "Raumbezug",
+            arrayOf(
+                SpatialInGrid(),
             ),
-            FacetGroup(
-                "timeRef", "Zeitbezug", arrayOf(
-                    TimeSpan()
-                ),
-                viewComponent = ViewComponent.TIMESPAN
+            viewComponent = ViewComponent.SPATIAL,
+        ),
+        FacetGroup(
+            "timeRef",
+            "Zeitbezug",
+            arrayOf(
+                TimeSpan(),
             ),
-            FacetGroup(
-                "docType", "Datensatztyp", arrayOf(
-                    DocumentTypes()
-                ),
-                viewComponent = ViewComponent.SELECT
+            viewComponent = ViewComponent.TIMESPAN,
+        ),
+        FacetGroup(
+            "docType",
+            "Datensatztyp",
+            arrayOf(
+                DocumentTypes(),
             ),
-            FacetGroup(
-                "openDataCategory", "OpenData Kategorie", arrayOf(
-                    openDataCategory
-                ),
-                viewComponent = ViewComponent.SELECT
+            viewComponent = ViewComponent.SELECT,
+        ),
+        FacetGroup(
+            "openDataCategory",
+            "OpenData Kategorie",
+            arrayOf(
+                openDataCategory,
             ),
-        )
-    }
+            viewComponent = ViewComponent.SELECT,
+        ),
+    )
 
-    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state", "Allgemein", arrayOf(
-                    Published(),
-                    ExceptFolders()
-                ),
-                viewComponent = ViewComponent.CHECKBOX
-            )
-        )
-    }
+    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Allgemein",
+            arrayOf(
+                Published(),
+                ExceptFolders(),
+            ),
+            viewComponent = ViewComponent.CHECKBOX,
+        ),
+    )
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
@@ -156,68 +169,60 @@ class InGridProfile(
         }
     }
 
-    private fun createCodelist6006(catalogRef: Catalog): Codelist {
-        return Codelist().apply {
-            identifier = "6006"
-            catalog = catalogRef
-            name = "Freie Konformitäten"
-            description = ""
-            data = jacksonObjectMapper().createArrayNode().apply {
-                add(CodelistHandler.toCodelistEntry("1", "Konformität - Freier Eintrag", "2018-02-22"))
-            }
+    private fun createCodelist6006(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "6006"
+        catalog = catalogRef
+        name = "Freie Konformitäten"
+        description = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Konformität - Freier Eintrag", "2018-02-22"))
         }
     }
 
-    private fun createCodelist6250(catalogRef: Catalog): Codelist {
-        return Codelist().apply {
-            identifier = "6250"
-            catalog = catalogRef
-            name = "Verwaltungsgebiet"
-            description = ""
-            defaultEntry = "0"
-            data = jacksonObjectMapper().createArrayNode().apply {
-                add(CodelistHandler.toCodelistEntry("0", "Bundesrepublik Deutschland", null, "Federal Republic of Germany"))
-                add(CodelistHandler.toCodelistEntry("1", "Baden-Württemberg", null, "Baden Wurttemberg"))
-                add(CodelistHandler.toCodelistEntry("2", "Bayern", null, "Bavaria"))
-                add(CodelistHandler.toCodelistEntry("3", "Berlin", null, "Berlin"))
-                add(CodelistHandler.toCodelistEntry("4", "Brandenburg", null, "Brandenburg"))
-                add(CodelistHandler.toCodelistEntry("5", "Bremen", null, "Bremen"))
-                add(CodelistHandler.toCodelistEntry("6", "Hamburg", null, "Hamburg"))
-                add(CodelistHandler.toCodelistEntry("7", "Hessen", null, "Hessen"))
-                add(CodelistHandler.toCodelistEntry("8", "Mecklenburg-Vorpommern", null, "Mecklenburg-West Pomerania"))
-                add(CodelistHandler.toCodelistEntry("9", "Niedersachsen", null, "Lower Saxony"))
-                add(CodelistHandler.toCodelistEntry("10", "Nordrhein-Westfalen", null, "North Rhine Westphalia"))
-                add(CodelistHandler.toCodelistEntry("11", "Rheinland-Pfalz", null, "Rhineland Palatinate"))
-                add(CodelistHandler.toCodelistEntry("12", "Saarland", null, "Saarland"))
-                add(CodelistHandler.toCodelistEntry("13", "Sachsen", null, "Saxony "))
-                add(CodelistHandler.toCodelistEntry("14", "Sachsen-Anhalt", null, "Saxony Anhalt"))
-                add(CodelistHandler.toCodelistEntry("15", "Schleswig-Holstein", null, "Schleswig-Holstein"))
-                add(CodelistHandler.toCodelistEntry("16", "Thüringen", null, "Thuringia"))
-            }
+    private fun createCodelist6250(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "6250"
+        catalog = catalogRef
+        name = "Verwaltungsgebiet"
+        description = ""
+        defaultEntry = "0"
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("0", "Bundesrepublik Deutschland", null, "Federal Republic of Germany"))
+            add(CodelistHandler.toCodelistEntry("1", "Baden-Württemberg", null, "Baden Wurttemberg"))
+            add(CodelistHandler.toCodelistEntry("2", "Bayern", null, "Bavaria"))
+            add(CodelistHandler.toCodelistEntry("3", "Berlin", null, "Berlin"))
+            add(CodelistHandler.toCodelistEntry("4", "Brandenburg", null, "Brandenburg"))
+            add(CodelistHandler.toCodelistEntry("5", "Bremen", null, "Bremen"))
+            add(CodelistHandler.toCodelistEntry("6", "Hamburg", null, "Hamburg"))
+            add(CodelistHandler.toCodelistEntry("7", "Hessen", null, "Hessen"))
+            add(CodelistHandler.toCodelistEntry("8", "Mecklenburg-Vorpommern", null, "Mecklenburg-West Pomerania"))
+            add(CodelistHandler.toCodelistEntry("9", "Niedersachsen", null, "Lower Saxony"))
+            add(CodelistHandler.toCodelistEntry("10", "Nordrhein-Westfalen", null, "North Rhine Westphalia"))
+            add(CodelistHandler.toCodelistEntry("11", "Rheinland-Pfalz", null, "Rhineland Palatinate"))
+            add(CodelistHandler.toCodelistEntry("12", "Saarland", null, "Saarland"))
+            add(CodelistHandler.toCodelistEntry("13", "Sachsen", null, "Saxony "))
+            add(CodelistHandler.toCodelistEntry("14", "Sachsen-Anhalt", null, "Saxony Anhalt"))
+            add(CodelistHandler.toCodelistEntry("15", "Schleswig-Holstein", null, "Schleswig-Holstein"))
+            add(CodelistHandler.toCodelistEntry("16", "Thüringen", null, "Thuringia"))
         }
     }
 
-    private fun createCodelist3555(catalogRef: Catalog): Codelist {
-        return Codelist().apply {
-            identifier = "3555"
-            catalog = catalogRef
-            name = "Symbolkatalog"
-            description = ""
-            data = jacksonObjectMapper().createArrayNode().apply {
-                add(CodelistHandler.toCodelistEntry("1", "Ganzflächige Biotopkartierung 94"))
-            }
+    private fun createCodelist3555(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "3555"
+        catalog = catalogRef
+        name = "Symbolkatalog"
+        description = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Ganzflächige Biotopkartierung 94"))
         }
     }
 
-    private fun createCodelist3535(catalogRef: Catalog): Codelist {
-        return Codelist().apply {
-            identifier = "3535"
-            catalog = catalogRef
-            name = "Schlüsselkatalog"
-            description = ""
-            data = jacksonObjectMapper().createArrayNode().apply {
-                add(CodelistHandler.toCodelistEntry("1", "von Drachenfels 94"))
-            }
+    private fun createCodelist3535(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "3535"
+        catalog = catalogRef
+        name = "Schlüsselkatalog"
+        description = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "von Drachenfels 94"))
         }
     }
 
@@ -497,13 +502,14 @@ class InGridProfile(
             description = "Zeigt alle Dokumente an, die keine Adresse angegeben haben"
             data = jacksonObjectMapper().createObjectNode().apply {
                 put(
-                    "sql", """
+                    "sql",
+                    """
                 SELECT document1.*, document_wrapper.category
                 FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid
                 WHERE document1.is_latest = true AND document_wrapper.category = 'data'
                   AND document_wrapper.type <> 'FOLDER'
                   AND (data ->> 'pointOfContact' IS NULL OR data -> 'pointOfContact' = '[]'\:\:jsonb)
-            """.trimIndent()
+                    """.trimIndent(),
                 )
             }
             global = true
@@ -520,19 +526,15 @@ class InGridProfile(
                     CREATE INDEX IF NOT EXISTS parentIdentGin  ON document USING gin((data -> 'parentIdentifier'));
                     CREATE INDEX IF NOT EXISTS coupledResourcesGin ON document USING gin((data->'service'->'coupledResources'));
                     CREATE INDEX IF NOT EXISTS referencesGin ON document USING gin((data->'references'));
-                """.trimIndent()
+                    """.trimIndent(),
                 )
                 .executeUpdate()
         }
     }
 
-    override fun getElasticsearchMapping(format: String): String {
-        return {}.javaClass.getResource("/ingrid/mappings/default-mapping.json")?.readText() ?: ""
-    }
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/default-mapping.json")?.readText() ?: ""
 
-    override fun getElasticsearchSetting(format: String): String {
-        return {}.javaClass.getResource("/ingrid/default-settings.json")?.readText() ?: ""
-    }
+    override fun getElasticsearchSetting(format: String): String = {}.javaClass.getResource("/ingrid/default-settings.json")?.readText() ?: ""
 
     override fun additionalImportAnalysis(catalogId: String, report: OptimizedImportAnalysis, message: Message) {
         val notExistingCoupledResources = mutableListOf<String>()
@@ -559,8 +561,8 @@ class InGridProfile(
     private fun removeReferencesFromDatasets(refs: List<DocumentAnalysis>, uuids: MutableList<String>) {
         refs.forEach { ref ->
             ref.document.data.get("service")?.let {
-                val coupledResources = it.get("coupledResources") as ArrayNode
-                coupledResources.removeAll { node -> node.get("uuid")?.asText() in uuids }
+                (it.get("coupledResources") as ArrayNode?)
+                    ?.removeAll { node -> node.getString("uuid") in uuids }
             }
         }
     }

@@ -139,8 +139,6 @@ export class UploadComponent implements OnInit {
 
     this.flow.events$.pipe(untilDestroyed(this)).subscribe(async (event) => {
       try {
-        // TODO: remove when test bug was found (should upload a large file 10 MB (#4448))
-        console.log("UploadEvent:", event);
         if (this.autoupload && event.type === "filesSubmitted") {
           const flowFiles = <flowjs.FlowFile[]>event.event[0];
           await this.uploadService.updateAuthenticationToken(flowFiles);

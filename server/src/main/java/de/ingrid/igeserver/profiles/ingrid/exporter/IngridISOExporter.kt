@@ -32,22 +32,21 @@ import org.springframework.stereotype.Service
 class IngridISOExporter(
     @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
     @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
-    documentWrapperRepository: DocumentWrapperRepository
+    documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
-            DocumentCategory.DATA,
-            "ingridISO",
-            "ISO 19139",
-            "Export von Ingrid Dokumenten ISO Format für die Anzeige im Portal.",
-            "text/xml",
-            "xml",
-            listOf("ingrid")
+        DocumentCategory.DATA,
+        "ingridISO",
+        "ISO 19139",
+        "Export von Ingrid Dokumenten ISO Format für die Anzeige im Portal.",
+        "text/xml",
+        "xml",
+        listOf("ingrid"),
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val indexString = super.run(doc, catalogId, options) as String
         return getISOFromElasticDocumentString(indexString)
     }
-
 }

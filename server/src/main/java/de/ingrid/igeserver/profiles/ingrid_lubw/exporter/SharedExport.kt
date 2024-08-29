@@ -26,7 +26,6 @@ import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.tranformer.GeodatasetTr
 import de.ingrid.igeserver.utils.getString
 import kotlin.reflect.KClass
 
-
 fun getLubwModelTransformerClass(docType: String): KClass<out Any>? {
     return when (docType) {
         "InGridGeoDataset" -> GeodatasetTransformerLubw::class
@@ -36,7 +35,7 @@ fun getLubwModelTransformerClass(docType: String): KClass<out Any>? {
 
 fun amendLubwDescriptiveKeywords(
     docData: JsonNode,
-    previousKeywords: List<Thesaurus>
+    previousKeywords: List<Thesaurus>,
 ): List<Thesaurus> {
     val oac = docData.getString("oac")
 
@@ -44,11 +43,12 @@ fun amendLubwDescriptiveKeywords(
 
     if (oac.isNullOrEmpty().not()) {
         keywords += Thesaurus(
-            keywords = listOf( KeywordIso(
-                name = "oac: $oac",
-            )),
+            keywords = listOf(
+                KeywordIso(
+                    name = "oac: $oac",
+                ),
+            ),
         )
     }
     return keywords
 }
-

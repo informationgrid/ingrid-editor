@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component
 class MCloudPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,
-    val indexingTask: IndexingTask
+    val indexingTask: IndexingTask,
 ) : Filter<PostPublishPayload> {
 
     val log = logger()
@@ -44,7 +44,6 @@ class MCloudPublishExport(
     override val profiles = arrayOf("mcloud")
 
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
-
         val docId = payload.document.uuid
         val docType = payload.document.type
 
@@ -59,7 +58,6 @@ class MCloudPublishExport(
         }
 
         return payload
-
     }
 
     private fun indexReferencesMCloudDocs(context: Context, docId: String) {
@@ -75,17 +73,14 @@ class MCloudPublishExport(
                 AND d.state = 'PUBLISHED'
                 AND dw.deleted = 0
                 AND data->'addresses' @> '[{"ref": "$docId"}]');
-            """.trimIndent()
+            """.trimIndent(),
         )
 
         docsWithReferences.forEach { indexMCloudDoc(context, it) }
-
     }
 
     private fun indexMCloudDoc(context: Context, docId: String) {
-
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
         indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA, docId)
-
     }
 }

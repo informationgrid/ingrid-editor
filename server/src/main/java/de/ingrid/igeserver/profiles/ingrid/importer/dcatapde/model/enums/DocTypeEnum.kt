@@ -61,10 +61,11 @@ enum class DocTypeEnum(val value: String) {
     PROCEDURE_URL("procedureURL"),
     XPLAN_ARCHIVE("xplanArchive"),
     XPLAN_GML("xplanGML"),
-    UNKNOWN("unknown");
+    UNKNOWN("unknown"),
+    ;
 
     class Converter : EnumConverter<DocTypeEnum>(
-        DocTypeEnum::class.java
+        DocTypeEnum::class.java,
     )
 
     @JsonValue
@@ -74,6 +75,7 @@ enum class DocTypeEnum(val value: String) {
 
     companion object {
         private const val uriPrefix = "https://specs.diplanung.de/resource/docType#"
+
         @JsonCreator
         fun fromValue(text: String?): DocTypeEnum? {
             if (text == null) {
@@ -87,7 +89,8 @@ enum class DocTypeEnum(val value: String) {
             val enumValues = java.lang.String.join(
                 ", ",
                 Stream.of(*entries.toTypedArray()).map { anEnum: DocTypeEnum -> uriPrefix + anEnum.toString() }
-                    .toList())
+                    .toList(),
+            )
             throw IllegalArgumentException("DocTypeEnum value has to be one of [$enumValues], was $text")
         }
 

@@ -25,10 +25,9 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
-import de.ingrid.igeserver.services.BehaviourService
-import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.DocumentState
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
 
@@ -36,7 +35,7 @@ import org.springframework.stereotype.Component
  * Filter for processing document data send from the client before publish
  */
 @Component
-class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService, val behaviourService: BehaviourService): Filter<PrePublishPayload> {
+class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService) : Filter<PrePublishPayload> {
 
     override val profiles = arrayOf<String>()
 
@@ -45,24 +44,12 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService, va
 
         context.addMessage(Message(this, "Process document data '$docId' before publish"))
 
-        if (isPublicationTypeBehaviourActive(context.catalogId)) {
-            checkAllPublishedWithPublicationType(context.catalogId, payload)
-        }
+        checkAllPublishedWithPublicationType(context.catalogId, payload)
 
         // call entity type specific hook
         payload.type.onPublish(payload.document)
 
         return payload
-    }
-
-    private fun isPublicationTypeBehaviourActive(catalogId: String): Boolean {
-        behaviourService.get(catalogId, "plugin.indexing-tags")?.let {
-            val publicationTypesActive = it.active != null && it.active == true
-            if (publicationTypesActive) {
-                return true
-            }
-        }
-        return false
     }
 
     private fun checkAllPublishedWithPublicationType(catalogId: String, payload: PrePublishPayload) {
@@ -77,13 +64,14 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService, va
 
     private fun checkPublicationCondition(
         refData: DocumentData,
-        publicationDocTags: List<String>
+        publicationDocTags: List<String>,
     ) {
         val refPublicationDocTags =
             refData.wrapper.tags.filter { it == "intranet" || it == "amtsintern" }
 
         val docIsAmtsintern = publicationDocTags.contains("amtsintern")
-        val intranetAndRefsNotAmtsintern = publicationDocTags.contains("intranet") && !refPublicationDocTags.contains("amtsintern")
+        val intranetAndRefsNotAmtsintern =
+            publicationDocTags.contains("intranet") && !refPublicationDocTags.contains("amtsintern")
         val allAreInternet = publicationDocTags.isEmpty() && refPublicationDocTags.isEmpty()
 
         if (!(docIsAmtsintern || intranetAndRefsNotAmtsintern || allAreInternet)) {
@@ -91,16 +79,18 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService, va
             throw ValidationException.withReason(
                 "Reference has wrong publication type condition: ${
                     publicationDocTags.joinToString(
-                        ","
-                    )
-                } => $tags"
+                        ",",
+                    ).ifEmpty { "internet" }
+                } => $tags",
             )
         }
     }
 
     private fun checkPublishState(refData: DocumentData) {
-        if (refData.document.state != DOCUMENT_STATE.PUBLISHED) {
+        if (refData.document.state != DocumentState.PUBLISHED) {
             throw ServerException.withReason("Latest referenced dataset not published: ${refData.document.uuid}")
+            // TODO AW: get field-key to show error in form
+//            throw ValidationException.withInvalidFields(InvalidField("pointOfContact", "Nicht veröffentlicht", mapOf("error" to "Latest referenced dataset not published: ${refData.document.uuid}")))
         }
     }
 }

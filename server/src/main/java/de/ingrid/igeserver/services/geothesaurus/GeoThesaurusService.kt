@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 data class GeoThesaurusSearchOptions(
-    val searchType: ThesaurusSearchType
+    val searchType: ThesaurusSearchType,
 )
 
 data class SpatialResponse(
@@ -40,7 +40,7 @@ data class SpatialResponse(
     val name: String?,
     val bbox: BoundingBox,
     val ars: String?,
-    val hasMoreResults: Boolean
+    val hasMoreResults: Boolean,
 )
 
 data class BoundingBox(

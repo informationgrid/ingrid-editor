@@ -112,23 +112,18 @@ export abstract class SaveBase extends Plugin {
 
     console.error("JSON schema error:", error.error.data);
     const isJsonSchemaError = error?.error?.data?.error instanceof Array;
+    if (!isJsonSchemaError) throw error;
 
     const igeError = new IgeError(
-      isJsonSchemaError
-        ? "Es trat ein Fehler bei der JSON-Schema Validierung auf."
-        : "Es trat ein Fehler bei der Validierung auf.",
+      "Es trat ein Fehler bei der JSON-Schema Validierung auf.",
     );
 
-    if (isJsonSchemaError) {
-      igeError.detail = error?.error?.data?.error
-        ?.filter((item) => item.error.indexOf("A subschema had errors") === -1)
-        ?.map((item) => `${item.instanceLocation}: ${item.error}`)
-        ?.join("\n");
+    igeError.detail = error?.error?.data?.error
+      ?.filter((item) => item.error.indexOf("A subschema had errors") === -1)
+      ?.map((item) => `${item.instanceLocation}: ${item.error}`)
+      ?.join("\n");
 
-      this.handleJsonSchemaErrors(error);
-    } else {
-      igeError.detail = error?.error?.data?.error;
-    }
+    this.handleJsonSchemaErrors(error);
     igeError.unhandledException = true;
     return igeError;
   }

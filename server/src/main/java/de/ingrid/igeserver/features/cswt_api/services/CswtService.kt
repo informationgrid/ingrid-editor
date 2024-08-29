@@ -20,18 +20,18 @@
 package de.ingrid.igeserver.features.cswt_api.services
 
 import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.IgeException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.imports.ImportService
+import de.ingrid.igeserver.persistence.filter.publish.JsonErrorEntry
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.utils.xml.Csw202NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatusCode
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -44,7 +44,8 @@ import java.io.StringReader
 import java.io.StringWriter
 import java.util.regex.Pattern
 import javax.xml.parsers.DocumentBuilderFactory
-import javax.xml.transform.*
+import javax.xml.transform.Transformer
+import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
@@ -63,7 +64,7 @@ data class CSWTransactionResult(
 class CswtService(
     private val documentService: DocumentService,
     private val importService: ImportService,
-    private val catalogService: CatalogService
+    private val catalogService: CatalogService,
 ) {
 
     val log = logger()
@@ -75,109 +76,96 @@ class CswtService(
     private val namespaceCSW: String = "http://www.opengis.net/cat/csw/2.0.2"
 
     @Transactional
-    fun cswTransaction(xml: String?, collectionId: String, principal: Authentication, options: ImportOptions ): CSWTransactionResult {
-        val transactionResult = CSWTransactionResult()
-
+    fun cswTransaction(xml: String?, collectionId: String, principal: Authentication, options: ImportOptions): CSWTransactionResult {
         val factory: DocumentBuilderFactory
         val resultInsert: MutableList<String> = mutableListOf()
         val profile = catalogService.getProfileFromCatalog(collectionId)
 
-        try {
-            factory = DocumentBuilderFactory.newInstance()
-            factory.isNamespaceAware = true
-            val builder = factory.newDocumentBuilder()
-            val xmlDoc = builder.parse(InputSource(StringReader(xml)))
-            val insertDocs = xmlDoc.getElementsByTagName("csw:Insert")
-            val updateDocs = xmlDoc.getElementsByTagName("csw:Update")
-            val deleteDocs = xmlDoc.getElementsByTagName("csw:Delete")
+        factory = DocumentBuilderFactory.newInstance()
+        factory.isNamespaceAware = true
+        val builder = factory.newDocumentBuilder()
+        val xmlDoc = builder.parse(InputSource(StringReader(xml)))
+        val insertDocs = xmlDoc.getElementsByTagName("csw:Insert")
+        val updateDocs = xmlDoc.getElementsByTagName("csw:Update")
+        val deleteDocs = xmlDoc.getElementsByTagName("csw:Delete")
 
-            /**
-             * INSERT DOCS
-             */
-            for (i in 0 until insertDocs.length) {
-                val item: Element = insertDocs.item(i) as Element
-                // separate importAnalyse and import
-                val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","MD_Metadata").item(0)
-                resultInsert.add(utils.getString(metadataDoc, "./gmd:fileIdentifier/gco:CharacterString"))
-                val docData = xmlNodeToString(metadataDoc) // convert Node to String
-                importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = false, null, profile)
-
-            }
-            /**
-             * UPDATE DOCS
-             */
-            for (i in 0 until updateDocs.length) {
-                val item = updateDocs.item(i) as Element
-                val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
-                val propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
-                if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
-                    val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","MD_Metadata").item(0)
-                    val docData = xmlNodeToString(metadataDoc) // convert Node to String
-                    importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = true, propValue, profile )
-                } else {
-                    log.error("Constraint not supported with PropertyName: $propName and Literal: $propValue")
-                    throw Exception("Constraint not supported with PropertyName: $propName and Literal: $propValue")
-                }
-            }
-            /**
-             * DELETE DOCS
-             */
-            for (i in 0 until deleteDocs.length) {
-                val item = deleteDocs.item(i)
-                val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
-                        ?: throw Exception("Missing or empty Constraint \".//ogc:PropertyIsEqualTo/ogc:PropertyName\".")
-                var propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
-                        ?: throw Exception("Missing or empty Constraint \".//ogc:PropertyIsEqualTo/ogc:Literal\".")
-                propValue = propValue.replace("\\s".toRegex(), "")
-
-                // the property "uuid" is still supported for compatibility reasons, see https://dev.informationgrid.eu/redmine/issues/524
-                if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
-                    val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, propValue)
-                    wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
-                }
-            }
-
-            transactionResult.apply {
-                successful = true
-                inserts = insertDocs.length
-                updates = updateDocs.length
-                deletes = deleteDocs.length
-                insertResults = resultInsert
-            }
-
-        } catch (e: IgeException) {
-            transactionResult.apply {
-                successful = false
-                statusCode = e.statusCode as HttpStatusCode
-                errorMessage = prepareException(e)
-            }
-            log.error("Error in CSW transaction", e)
+        /**
+         * INSERT DOCS
+         */
+        for (i in 0 until insertDocs.length) {
+            val item: Element = insertDocs.item(i) as Element
+            // separate importAnalyse and import
+            val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd", "MD_Metadata").item(0)
+            resultInsert.add(utils.getString(metadataDoc, "./gmd:fileIdentifier/gco:CharacterString"))
+            val docData = xmlNodeToString(metadataDoc) // convert Node to String
+            importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = false, null, profile)
         }
+        /**
+         * UPDATE DOCS
+         */
+        for (i in 0 until updateDocs.length) {
+            val item = updateDocs.item(i) as Element
+            val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
+            val propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
+            if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
+                val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd", "MD_Metadata").item(0)
+                val docData = xmlNodeToString(metadataDoc) // convert Node to String
+                importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = true, propValue, profile)
+            } else {
+                log.error("Constraint not supported with PropertyName: $propName and Literal: $propValue")
+                throw Exception("Constraint not supported with PropertyName: $propName and Literal: $propValue")
+            }
+        }
+        /**
+         * DELETE DOCS
+         */
+        for (i in 0 until deleteDocs.length) {
+            val item = deleteDocs.item(i)
+            val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
+                ?: throw Exception("Missing or empty Constraint \".//ogc:PropertyIsEqualTo/ogc:PropertyName\".")
+            var propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
+                ?: throw Exception("Missing or empty Constraint \".//ogc:PropertyIsEqualTo/ogc:Literal\".")
+            propValue = propValue.replace("\\s".toRegex(), "")
+
+            // the property "uuid" is still supported for compatibility reasons, see https://dev.informationgrid.eu/redmine/issues/524
+            if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
+                val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, propValue)
+                wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
+            }
+        }
+
+        val transactionResult = CSWTransactionResult(
+            successful = true,
+            inserts = insertDocs.length,
+            updates = updateDocs.length,
+            deletes = deleteDocs.length,
+            insertResults = resultInsert,
+        )
         return transactionResult
     }
 
-    private fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?, profile: CatalogProfile){
-            val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, data)
-            if(optimizedImportAnalysis.existingDatasets.isNotEmpty()){
-                val id = optimizedImportAnalysis.existingDatasets[0].uuid
-                if(!recordMustExist) {
-                    throw ClientException.withReason("Import Failed: Record with ID '$id' already exists.")
-                } else {
-                    if(recordId != id) throw ClientException.withReason("Update Failed: Target ID '$recordId' does not match dataset ID '$id'.")
-                }
+    private fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?, profile: CatalogProfile) {
+        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, data)
+        if (optimizedImportAnalysis.existingDatasets.isNotEmpty()) {
+            val id = optimizedImportAnalysis.existingDatasets[0].uuid
+            if (!recordMustExist) {
+                throw ClientException.withReason("Import Failed: Record with ID '$id' already exists.")
             } else {
-                if(recordMustExist) {
-                    throw NotFoundException.withMissingResource(recordId!!, "Record")
-                }
+                if (recordId != id) throw ClientException.withReason("Update Failed: Target ID '$recordId' does not match dataset ID '$id'.")
             }
-            importService.importAnalyzedDatasets(
-                principal = principal,
-                catalogId = collectionId,
-                analysis = optimizedImportAnalysis,
-                options = options,
-                message = Message()
-            )
+        } else {
+            if (recordMustExist) {
+                throw NotFoundException.withMissingResource(recordId!!, "Record")
+            }
         }
+        importService.importAnalyzedDatasets(
+            principal = principal,
+            catalogId = collectionId,
+            analysis = optimizedImportAnalysis,
+            options = options,
+            message = Message(),
+        )
+    }
 
     @Throws(java.lang.Exception::class)
     fun xmlNodeToString(newDoc: Node): String {
@@ -190,12 +178,12 @@ class CswtService(
     }
 
     fun prepareException(exception: Exception): String {
-        var errorMsg = exception.toString()
-        var cause = exception.cause
-        if (cause == null) {
-            cause = exception
-        } else {
-            errorMsg = cause.toString()
+        var errorMsg = exception.cause?.toString() ?: exception.toString()
+        if (exception is ValidationException) {
+            val lastError: JsonErrorEntry? = (exception.data?.get("error") as List<JsonErrorEntry>)?.last()
+            if (lastError != null) {
+                errorMsg += " (${lastError.error}, location: ${lastError.instanceLocation})"
+            }
         }
         return errorMsg
     }
@@ -208,14 +196,13 @@ class CswtService(
         }
 
         val tf = TransformerFactory.newInstance()
-        val transformer = tf.newTransformer();
+        val transformer = tf.newTransformer()
         val writer = StringWriter()
 
         transformer.transform(DOMSource(response), StreamResult(writer))
 
         return writer.buffer.toString().toByteArray()
     }
-
 
     fun createErrorResponse(result: CSWTransactionResult): Document {
         val docFactory = DocumentBuilderFactory.newInstance()
@@ -225,25 +212,24 @@ class CswtService(
         val doc = domImpl.createDocument(
             namespaceCSW,
             "ows:ExceptionReport",
-            null
+            null,
         )
 
         // create summary
         val exception = doc.createElementNS(
             namespaceCSW,
-            "ows:Exception"
+            "ows:Exception",
         )
         exception.setAttribute("exceptionCode", "NoApplicableCode")
         doc.documentElement.appendChild(exception)
         exception.appendChild(
             doc.createElementNS(
                 namespaceCSW,
-                "ows:ExceptionText"
-            )
+                "ows:ExceptionText",
+            ),
         ).appendChild(doc.createTextNode("Cannot process transaction: " + result.errorMessage))
         return doc
     }
-
 
     fun createSummaryResponse(result: CSWTransactionResult): Document {
         val docFactory = DocumentBuilderFactory.newInstance()
@@ -253,7 +239,7 @@ class CswtService(
         val doc = domImpl.createDocument(
             namespaceCSW,
             "csw:TransactionResponse",
-            null
+            null,
         )
 
         doc.documentElement.setAttribute("xmlns:gmd", "http://www.isotc211.org/2005/gmd")
@@ -262,7 +248,7 @@ class CswtService(
         // create summary
         val summary = doc.createElementNS(
             namespaceCSW,
-            "csw:TransactionSummary"
+            "csw:TransactionSummary",
         )
         summary.setAttribute("requestId", result.requestId)
         doc.documentElement.appendChild(summary)
@@ -270,44 +256,45 @@ class CswtService(
         val inserts = result.inserts
         summary.appendChild(
             doc.createElement(
-                "csw:totalInserted"
-            )
+                "csw:totalInserted",
+            ),
         ).appendChild(doc.createTextNode(inserts.toString()))
 
         val updates = result.updates
         summary.appendChild(
             doc.createElement(
-                "csw:totalUpdated"
-            )
+                "csw:totalUpdated",
+            ),
         ).appendChild(doc.createTextNode(updates.toString()))
 
         val deletes = result.deletes
         summary.appendChild(
             doc.createElement(
-                "csw:totalDeleted"
-            )
+                "csw:totalDeleted",
+            ),
         ).appendChild(doc.createTextNode(deletes.toString()))
-
 
         // add insert results
         result.insertResults?.forEach {
             val uuid: String = it
 
             val insertResultSummary = doc.createElement(
-                "csw:InsertResult"
+                "csw:InsertResult",
             )
 
-            insertResultSummary.appendChild(doc.createElement(
-                "gmd:fileIdentifier"
-            )).appendChild(doc.createElement(
-                "gco:CharacterString"
-            )).appendChild(doc.createTextNode(uuid))
+            insertResultSummary.appendChild(
+                doc.createElement(
+                    "gmd:fileIdentifier",
+                ),
+            ).appendChild(
+                doc.createElement(
+                    "gco:CharacterString",
+                ),
+            ).appendChild(doc.createTextNode(uuid))
 
             doc.documentElement.appendChild(insertResultSummary)
         }
 
-
         return doc
     }
-
 }

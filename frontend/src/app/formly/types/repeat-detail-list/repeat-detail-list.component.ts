@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import {
   FieldTypeConfig,
   FormlyFieldConfig,
@@ -80,7 +80,10 @@ export class RepeatDetailListComponent
   extends FieldType<FieldTypeConfig<RepeatDetailListProps>>
   implements OnInit
 {
-  constructor(private dialog: MatDialog) {
+  constructor(
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef,
+  ) {
     super();
   }
 
@@ -95,18 +98,17 @@ export class RepeatDetailListComponent
   }
 
   private openDialog(index?: number) {
+    const existingModel =
+      index == null
+        ? null
+        : JSON.parse(JSON.stringify(this.model[this.field.key + ""][index]));
     this.dialog
       .open(FormDialogComponent, {
         width: "90vw",
         maxWidth: "950px",
         data: <FormDialogData>{
           fields: this.props.fields,
-          model:
-            index === null
-              ? {}
-              : JSON.parse(
-                  JSON.stringify(this.model[this.field.key + ""][index]),
-                ),
+          model: existingModel,
         },
       })
       .afterClosed()
@@ -114,6 +116,7 @@ export class RepeatDetailListComponent
         if (response) {
           this.replaceItem(index, response);
         }
+        this.cdr.detectChanges();
       });
   }
 

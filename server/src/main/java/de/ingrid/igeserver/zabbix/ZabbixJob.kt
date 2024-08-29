@@ -26,7 +26,6 @@ import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
@@ -34,7 +33,7 @@ import org.springframework.stereotype.Component
 @PersistJobDataAfterExecution
 @Profile("zabbix")
 class ZabbixJob(
-    val zabbixService: ZabbixService
+    val zabbixService: ZabbixService,
 ) : IgeJob() {
 
     companion object {
@@ -63,4 +62,3 @@ class ZabbixJob(
 
     private data class JobInfo(val profile: String, val catalogId: String, val data: ZabbixModel.ZabbixData)
 }
-

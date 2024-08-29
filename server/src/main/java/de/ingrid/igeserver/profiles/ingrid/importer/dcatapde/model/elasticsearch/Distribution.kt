@@ -54,7 +54,7 @@ class Distribution : Serializable {
         }
         val that = o as Distribution
         return accessURL == that.accessURL && downloadURL == that.downloadURL && description == that.description && docType == that.docType && format.contentEquals(
-            that.format
+            that.format,
         ) && issued == that.issued && mapLayerNames.contentEquals(that.mapLayerNames) && modified == that.modified && title == that.title && temporal == that.temporal
     }
 
@@ -67,16 +67,16 @@ class Distribution : Serializable {
 
     override fun toString(): String {
         return "Distribution{" +
-                "accessURL='" + accessURL + '\'' +
-                ", downloadURL='" + downloadURL + '\'' +
-                ", description='" + description + '\'' +
-                ", docType=" + docType +
-                ", format=" + format.contentToString() +
-                ", issued=" + issued +
-                ", mapLayerNames=" + mapLayerNames.contentToString() +
-                ", modified=" + modified +
-                ", title='" + title + '\'' +
-                ", temporal=" + temporal +
-                '}'
+            "accessURL='" + accessURL + '\'' +
+            ", downloadURL='" + downloadURL + '\'' +
+            ", description='" + description + '\'' +
+            ", docType=" + docType +
+            ", format=" + format.contentToString() +
+            ", issued=" + issued +
+            ", mapLayerNames=" + mapLayerNames.contentToString() +
+            ", modified=" + modified +
+            ", title='" + title + '\'' +
+            ", temporal=" + temporal +
+            '}'
     }
 }

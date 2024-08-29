@@ -40,7 +40,7 @@ class LubwProfile(
     dateService: DateService,
     isoImport: ISOImport,
     isoImportLUBW: ISOImportLUBW,
-    openDataCategory: OpenDataCategory
+    openDataCategory: OpenDataCategory,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -60,5 +60,4 @@ class LubwProfile(
     init {
         isoImport.profileMapper[id] = isoImportLUBW
     }
-
 }

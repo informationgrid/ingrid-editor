@@ -40,7 +40,6 @@ class ExportApiController : ExportApi {
     private lateinit var catalogService: CatalogService
 
     override fun export(principal: Principal, options: ExportRequestParameter): ResponseEntity<ByteArray?> {
-
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val exportResult = exportService.export(catalogId, options)
 
@@ -54,5 +53,4 @@ class ExportApiController : ExportApi {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         return ResponseEntity.ok(exportService.getExportTypes(catalogId, profile, onlyPublic))
     }
-
 }

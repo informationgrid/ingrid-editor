@@ -28,8 +28,11 @@ class GeodatasetTransformerKrzn(transformerConfig: TransformerConfig) : Geodatas
 
     private val docData = doc.data
     override val systemEnvironment =
-        if (!super.systemEnvironment.isNullOrEmpty()) super.systemEnvironment
-        else docData.getString("environmentDescription")
+        if (!super.systemEnvironment.isNullOrEmpty()) {
+            super.systemEnvironment
+        } else {
+            docData.getString("environmentDescription")
+        }
 
     override val mapLinkUrl = docData.getString("mapLink.key")?.let {
         // do not map specific entry where we do not want to show mapUrl

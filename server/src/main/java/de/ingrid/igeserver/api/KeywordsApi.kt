@@ -28,7 +28,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestParam
 import java.util.*
 
 @Hidden
@@ -39,7 +41,6 @@ interface KeywordsApi {
     fun search(
         @Parameter(required = true) @PathVariable("thesaurusId") thesaurusId: String,
         @RequestParam(value = "q", required = true) term: String,
-        @RequestParam(value = "type", required = false) type: ThesaurusSearchType? = ThesaurusSearchType.CONTAINS
+        @RequestParam(value = "type", required = false) type: ThesaurusSearchType? = ThesaurusSearchType.CONTAINS,
     ): ResponseEntity<List<Keyword>>
-
 }

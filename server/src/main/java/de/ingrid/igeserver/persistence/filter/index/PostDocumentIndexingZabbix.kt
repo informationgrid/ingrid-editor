@@ -32,7 +32,6 @@ import de.ingrid.utils.xpath.XPathUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
 import org.quartz.JobKey
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import org.w3c.dom.Document
@@ -45,7 +44,7 @@ import javax.xml.parsers.DocumentBuilderFactory
  */
 @Component
 @Profile("zabbix")
-class PostDocumentIndexing(val zabbixService: ZabbixService, val scheduler: SchedulerService) : Filter<PostIndexPayload> {
+class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler: SchedulerService) : Filter<PostIndexPayload> {
 
     private val log = logger()
 
@@ -70,7 +69,6 @@ class PostDocumentIndexing(val zabbixService: ZabbixService, val scheduler: Sche
                     put("data", jacksonObjectMapper().writeValueAsString(data))
                 }
                 scheduler.handleJobWithCommand(JobCommand.start, ZabbixJob::class.java, jobKey, jobDataMap, 1, false)
-
             } catch (ex: Exception) {
                 throw ex
             }
@@ -81,7 +79,7 @@ class PostDocumentIndexing(val zabbixService: ZabbixService, val scheduler: Sche
 
     private fun getZabbixData(
         payload: PostIndexPayload,
-        catalogIdentifier: String
+        catalogIdentifier: String,
     ): ZabbixModel.ZabbixData {
         val xmlDocument = convertToDocument(payload)
 
@@ -105,9 +103,8 @@ class PostDocumentIndexing(val zabbixService: ZabbixService, val scheduler: Sche
 
     private fun getUploadsToAdd(
         xmlDocument: Document,
-        uploadUrl: String
+        uploadUrl: String,
     ): MutableList<ZabbixModel.Upload> {
-
         val uploads = if (xpath.getString(xmlDocument, "//steps").isNotBlank()) {
             // Get uvp docs
             xpath.getNodeList(xmlDocument, "//steps/step/docs/doc")
@@ -129,5 +126,4 @@ class PostDocumentIndexing(val zabbixService: ZabbixService, val scheduler: Sche
         }
         return uploadsToAdd
     }
-
 }

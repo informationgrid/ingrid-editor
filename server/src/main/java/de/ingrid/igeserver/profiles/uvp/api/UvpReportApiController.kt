@@ -21,7 +21,6 @@ package de.ingrid.igeserver.profiles.uvp.api
 
 import de.ingrid.igeserver.services.CatalogService
 import jakarta.persistence.EntityManager
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.RequestMapping
@@ -41,7 +40,7 @@ class UvpReportApiController(
     override fun getUvpReport(
         principal: Principal,
         from: String?,
-        to: String?
+        to: String?,
     ): ResponseEntity<UvpReport> {
         checkPermission(principal)
         val catalogID = catalogService.getCatalogById(catalogService.getCurrentCatalogForPrincipal(principal)).id!!
@@ -50,7 +49,7 @@ class UvpReportApiController(
             procedureCount = this.getProcedureCount(catalogID, from, to),
             negativePreliminaryAssessments = this.getNegativePrelimCount(catalogID, from, to),
             positivePreliminaryAssessments = this.getSuccessfulPrelimCount(catalogID, from, to),
-            averageProcedureDuration = this.getAverageProcedureDuration(catalogID, from, to)
+            averageProcedureDuration = this.getAverageProcedureDuration(catalogID, from, to),
         )
         return ResponseEntity.ok(report)
     }
@@ -58,7 +57,7 @@ class UvpReportApiController(
     fun getEiaNumberStatistics(
         catalogID: Int,
         from: String?,
-        to: String?
+        to: String?,
     ): MutableList<Any?> = entityManager.createNativeQuery(getEiaStatisiticSQL(catalogID, from, to)).resultList
 
     fun getSuccessfulPrelimCount(catalogID: Int, from: String?, to: String?): Number {
@@ -69,7 +68,7 @@ class UvpReportApiController(
     fun getProcedureCount(
         catalogID: Int,
         from: String?,
-        to: String?
+        to: String?,
     ): Number {
         val nativeQuery = entityManager.createNativeQuery(getProcedureCountSQL(catalogID, from, to))
         return (nativeQuery.singleResult as Number).toInt()
@@ -83,7 +82,8 @@ class UvpReportApiController(
     fun getAverageProcedureDuration(catalogID: Int, from: String?, to: String?): Number {
         val nativeQuery = entityManager.createNativeQuery(getReceiptAndLatestDecisionDatesSQL(catalogID, from, to))
 
-        @Suppress("UNCHECKED_CAST") val queryResults = nativeQuery.resultList as List<Array<out Any?>>
+        @Suppress("UNCHECKED_CAST")
+        val queryResults = nativeQuery.resultList as List<Array<out Any?>>
         var totalDuration: Long = 0
         queryResults.forEach {
             val receiptDate = LocalDateTime.parse((it[0] ?: it[1]) as String, DateTimeFormatter.ISO_DATE_TIME)
@@ -93,12 +93,9 @@ class UvpReportApiController(
         return if (queryResults.isEmpty()) 0 else totalDuration / queryResults.size
     }
 
-
     fun checkPermission(principal: Principal) {
         catalogService.getPermissions(principal as Authentication).let {
             if (!it.contains("can_create_uvp_report")) throw Exception("User has no permission to create uvp report")
         }
     }
-
 }
-

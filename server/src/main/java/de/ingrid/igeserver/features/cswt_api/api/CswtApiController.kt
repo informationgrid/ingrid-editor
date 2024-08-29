@@ -32,17 +32,21 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping(path = ["/api"])
-class CswtApiController (
+class CswtApiController(
     private val apiValidationService: ApiValidationService,
     private val ogcCswtService: CswtService,
     private val documentService: DocumentService,
@@ -51,58 +55,59 @@ class CswtApiController (
 
     val log = logger()
 
-
     @PostMapping(value = ["/cswt"], consumes = [MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_XML_VALUE])
-    @Operation(tags=["CSW-T"], summary = "Insert, Update, Delete Records via CSW-t", hidden = false)
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Successful operation."),
-        ApiResponse(responseCode = "400", description = "Invalid input"),
-        ApiResponse(responseCode = "404", description = "Not found"),
-    ])
+    @Operation(tags = ["CSW-T"], summary = "Insert, Update, Delete Records via CSW-t", hidden = false)
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Successful operation."),
+            ApiResponse(responseCode = "400", description = "Invalid input"),
+            ApiResponse(responseCode = "404", description = "Not found"),
+        ],
+    )
     fun handleCSWT(
         @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
         @RequestHeader allHeaders: Map<String, String>,
         principal: Authentication,
-        @Parameter(description = "Value must be 'CSW'" , required = true) @RequestParam("SERVICE", defaultValue = "CSW") service: String = "CSW",
-        @Parameter(description = "Value must be 'Transaction'" , required = true ) @RequestParam("REQUEST", defaultValue = "Transaction") request: String,
-        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier)." , required = true) @RequestParam("catalog") catalog: String,
+        @Parameter(description = "Value must be 'CSW'", required = true) @RequestParam("SERVICE", defaultValue = "CSW") service: String = "CSW",
+        @Parameter(description = "Value must be 'Transaction'", required = true) @RequestParam("REQUEST", defaultValue = "Transaction") request: String,
+        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @RequestParam("catalog") catalog: String,
         @Parameter(description = "The datasets to be inserted, delete or updated.", required = true) @RequestBody data: String,
         @Parameter(description = "## Dataset Folder ID \n **Custom Parameter** \n\n Add Dataset to Folder with UUID") @RequestParam(value = "datasetFolderId", required = false) datasetFolderId: String?,
         @Parameter(description = "## Address Folder ID \n **Custom Parameter** \n\n Add Address to Folder with UUID") @RequestParam(value = "addressFolderId", required = false) addressFolderId: String?,
     ): ResponseEntity<ByteArray> {
-        var statusCode: HttpStatusCode? = null
-        var xmlResponse: ByteArray? = null
+        var transactionResult: CSWTransactionResult
 
         try {
-            if(service != "CSW" ) throw ClientException.withReason("Request parameter 'SERVICE' must be 'CSW'. Value '$service' not supported.")
-            if(request != "Transaction") throw ClientException.withReason("Request parameter 'REQUEST' only accepts value 'Transaction'. Value '$request' not supported.")
-            apiValidationService.validateRequestParams(allRequestParams, listOf("catalog", "SERVICE", "REQUEST" , "datasetFolderId", "addressFolderId"))
+            if (service != "CSW") throw ClientException.withReason("Request parameter 'SERVICE' must be 'CSW'. Value '$service' not supported.")
+            if (request != "Transaction") throw ClientException.withReason("Request parameter 'REQUEST' only accepts value 'Transaction'. Value '$request' not supported.")
+            apiValidationService.validateRequestParams(allRequestParams, listOf("catalog", "SERVICE", "REQUEST", "datasetFolderId", "addressFolderId"))
             apiValidationService.validateCollection(catalog)
-        } catch (e: IgeException) {
-            log.error("Error in CSW transaction", e)
-            val paramErrorResult = CSWTransactionResult(
-                successful = false,
-                statusCode = e.statusCode as HttpStatusCode,
-                errorMessage = ogcCswtService.prepareException(e)
-            )
-
-            xmlResponse = ogcCswtService.prepareXmlResponse(paramErrorResult)
-            statusCode = e.statusCode
-        }
-
-        if(xmlResponse == null){
             val options = ImportOptions(
                 publish = true,
-                parentDocument = if(!datasetFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(catalog, datasetFolderId)).id } else null,
-                parentAddress = if(!addressFolderId.isNullOrBlank()) { (documentService.getWrapperByCatalogAndDocumentUuid(catalog, addressFolderId)).id } else null,
+                parentDocument = if (!datasetFolderId.isNullOrBlank()) {
+                    (documentService.getWrapperByCatalogAndDocumentUuid(catalog, datasetFolderId)).id
+                } else {
+                    null
+                },
+                parentAddress = if (!addressFolderId.isNullOrBlank()) {
+                    (documentService.getWrapperByCatalogAndDocumentUuid(catalog, addressFolderId)).id
+                } else {
+                    null
+                },
                 overwriteAddresses = true,
-                overwriteDatasets = true
+                overwriteDatasets = true,
             )
-            val transactionResult: CSWTransactionResult = ogcCswtService.cswTransaction(data, catalog, principal, options)
-            xmlResponse = ogcCswtService.prepareXmlResponse(transactionResult)
-            statusCode = if(transactionResult.statusCode == null) HttpStatus.OK else transactionResult.statusCode as HttpStatusCode
+            transactionResult = ogcCswtService.cswTransaction(data, catalog, principal, options)
+        } catch (e: IgeException) {
+            transactionResult = CSWTransactionResult(
+                successful = false,
+                statusCode = e.statusCode as HttpStatusCode,
+                errorMessage = ogcCswtService.prepareException(e),
+            )
+            log.error("Error in CSW transaction", e)
         }
-
+        val xmlResponse = ogcCswtService.prepareXmlResponse(transactionResult)
+        val statusCode = if (transactionResult.statusCode == null) HttpStatus.OK else transactionResult.statusCode as HttpStatusCode
         return ResponseEntity.status(statusCode!!).body(xmlResponse)
     }
 }

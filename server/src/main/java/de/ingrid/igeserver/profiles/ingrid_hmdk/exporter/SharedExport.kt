@@ -25,7 +25,15 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
-import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.*
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.DataCollectionModelTransformerHmdk
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.GeodatasetTransformerHmdk
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.GeodatasetTransformerHmdkMetaver
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.GeoserviceTransformerHmdk
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.GeoserviceTransformerHmdkMetaver
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.InformationSystemModelTransformerHmdk
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.IngridModelTransformerHmdk
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.ProjectModelTransformerHmdk
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.PublicationModelTransformerHmdk
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
@@ -34,7 +42,7 @@ import kotlin.reflect.KClass
 fun amendHMDKDescriptiveKeywords(
     docData: JsonNode,
     codelists: CodelistTransformer,
-    previousKeywords: List<Thesaurus>
+    previousKeywords: List<Thesaurus>,
 ): List<Thesaurus> {
     val publicationHmbTG = docData.getBoolean("publicationHmbTG") ?: false
     val informationHmbTG = docData.get("informationHmbTG")
@@ -49,39 +57,41 @@ fun amendHMDKDescriptiveKeywords(
             keywords = informationHmbTG.map { KeywordIso(it.key) },
             date = "2013-08-02",
             name = "HmbTG-Informationsgegenstand",
-            showType = true
+            showType = true,
         )
         keywords += Thesaurus(keywords = informationHmbTG.map { KeywordIso(it.value) })
     }
 
-    if (publicationHmbTG)
+    if (publicationHmbTG) {
         keywords += Thesaurus(keywords = listOf(KeywordIso(name = "hmbtg", link = null)))
+    }
 
     return keywords
 }
-
 
 fun getMapUrl(doc: Document?, tags: List<String>): String {
     // if the service has access constraints, we do not want to show the mapUrl
     if (doc == null || (doc.data.get("service")?.getBoolean("hasAccessConstraints") == true)) return ""
 
     return generateMapUrl(
-        if (doc.type == "InGridGeoService")
-        // all coupled resources uuids for services
+        if (doc.type == "InGridGeoService") {
+            // all coupled resources uuids for services
             getMapLinkUuidsFromService(doc)
-        else
-        // only use the uuid of the geodataset
+        } else {
+            // only use the uuid of the geodataset
             listOf(doc.uuid)
-        , tags
+        },
+        tags,
     )
 }
 
 private fun generateMapUrl(uuids: List<String>, tags: List<String>): String {
     val baseUrl =
-        if (tags.contains("intranet") || tags.contains("amtsintern"))
+        if (tags.contains("intranet") || tags.contains("amtsintern")) {
             "https://geofos.fhhnet.stadt.hamburg.de/fhh-atlas/?mdid="
-        else
+        } else {
             "https://geoportal-hamburg.de/geo-online/?mdid="
+        }
 
     return baseUrl + uuids.joinToString(",")
 }
@@ -91,15 +101,18 @@ private fun getMapLinkUuidsFromService(doc: Document) = doc.data.get("service")?
     ?.mapNotNull { it.getString("uuid") }
     ?: emptyList()
 
-fun getHmdkModelTransformerClass(docType: String): KClass<out Any>? {
-    return when (docType) {
-        "InGridSpecialisedTask" -> IngridModelTransformerHmdk::class
-        "InGridGeoDataset" -> GeodatasetTransformerHmdk::class
-        "InGridGeoService" -> GeoserviceTransformerHmdk::class
-        "InGridPublication" -> PublicationModelTransformerHmdk::class
-        "InGridProject" -> ProjectModelTransformerHmdk::class
-        "InGridDataCollection" -> DataCollectionModelTransformerHmdk::class
-        "InGridInformationSystem" -> InformationSystemModelTransformerHmdk::class
-        else -> null
-    }
+fun getHmdkModelMetaverTransformerClass(docType: String): KClass<out Any>? = when (docType) {
+    "InGridGeoDataset" -> GeodatasetTransformerHmdkMetaver::class
+    "InGridGeoService" -> GeoserviceTransformerHmdkMetaver::class
+    else -> null
+}
+fun getHmdkModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
+    "InGridSpecialisedTask" -> IngridModelTransformerHmdk::class
+    "InGridGeoDataset" -> GeodatasetTransformerHmdk::class
+    "InGridGeoService" -> GeoserviceTransformerHmdk::class
+    "InGridPublication" -> PublicationModelTransformerHmdk::class
+    "InGridProject" -> ProjectModelTransformerHmdk::class
+    "InGridDataCollection" -> DataCollectionModelTransformerHmdk::class
+    "InGridInformationSystem" -> InformationSystemModelTransformerHmdk::class
+    else -> null
 }

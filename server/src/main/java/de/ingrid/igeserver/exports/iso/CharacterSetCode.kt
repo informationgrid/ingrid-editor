@@ -25,5 +25,5 @@ import jakarta.xml.bind.annotation.XmlElement
 
 @XmlAccessorType(XmlAccessType.FIELD)
 data class CharacterSetCode(
-    @XmlElement(name = "MD_CharacterSetCode") var characterSetCode: CodelistAttributes? = null
+    @XmlElement(name = "MD_CharacterSetCode") var characterSetCode: CodelistAttributes? = null,
 )

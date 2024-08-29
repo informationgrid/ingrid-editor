@@ -28,4 +28,3 @@ class DocFolder : QuickFilter() {
     override val label = "Ordner"
     override val filter = "document1.type = 'FOLDER'"
 }
-

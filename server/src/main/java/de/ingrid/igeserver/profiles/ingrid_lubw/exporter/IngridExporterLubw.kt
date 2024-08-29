@@ -23,7 +23,12 @@ import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.*
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
 import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.tranformer.IngridModelTransformerLubw
@@ -36,7 +41,6 @@ import de.ingrid.mdek.upload.Config
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
-
 
 @Service
 class IngridExporterLubw(
@@ -55,7 +59,7 @@ class IngridExporterLubw(
             "json",
             listOf("ingrid-lubw"),
             isPublic = true,
-            useForPublish = true
+            useForPublish = true,
         )
 }
 
@@ -64,7 +68,7 @@ class IngridIdfExporterLubw(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
+    @Lazy documentService: DocumentService,
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
     override fun getModelTransformerClass(docType: String): KClass<out Any>? =
         getLubwModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
@@ -75,53 +79,48 @@ class IngridLuceneExporterLubw(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
-) :
-    IngridLuceneExporter(
-        codelistHandler,
-        config,
-        catalogService,
-        documentService,
-    ) {
+    @Lazy documentService: DocumentService,
+) : IngridLuceneExporter(
+    codelistHandler,
+    config,
+    catalogService,
+    documentService,
+) {
 
-    override fun getTemplateForDoctype(doc: Document, catalog: Catalog, options: ExportOptions): Pair<String, Map<String, Any>> {
-        return when (doc.type) {
-            "InGridSpecialisedTask",
-            "InGridGeoDataset",
-            "InGridPublication",
-            "InGridGeoService",
-            "InGridProject",
-            "InGridDataCollection",
-            "InGridInformationSystem"
-            -> Pair(
-                    "export/ingrid-lubw/lucene/template-lucene-lubw.jte",
-                    getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
-                )
+    override fun getTemplateForDoctype(doc: Document, catalog: Catalog, options: ExportOptions): Pair<String, Map<String, Any>> = when (doc.type) {
+        "InGridSpecialisedTask",
+        "InGridGeoDataset",
+        "InGridPublication",
+        "InGridGeoService",
+        "InGridProject",
+        "InGridDataCollection",
+        "InGridInformationSystem",
+        -> Pair(
+            "export/ingrid-lubw/lucene/template-lucene-lubw.jte",
+            getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
+        )
 
-            else -> super.getTemplateForDoctype(doc, catalog, options)
-        }
+        else -> super.getTemplateForDoctype(doc, catalog, options)
     }
 
-    override fun getTransformer(data: TransformerData): Any {
-        return when (data.type) {
-            IngridDocType.DOCUMENT -> {
-                IngridModelTransformerLubw(
-                    TransformerConfig(
-                        data.mapper.convertValue(data.doc, IngridModel::class.java),
-                        data.catalogIdentifier,
-                        data.codelistTransformer,
-                        config,
-                        catalogService,
-                        TransformerCache(),
-                        data.doc,
-                        documentService,
-                        data.tags
-                    )
-                )
-            }
-
-            else -> super.getTransformer(data)
+    override fun getTransformer(data: TransformerData): Any = when (data.type) {
+        IngridDocType.DOCUMENT -> {
+            IngridModelTransformerLubw(
+                TransformerConfig(
+                    data.mapper.convertValue(data.doc, IngridModel::class.java),
+                    data.catalogIdentifier,
+                    data.codelistTransformer,
+                    config,
+                    catalogService,
+                    TransformerCache(),
+                    data.doc,
+                    documentService,
+                    data.tags,
+                ),
+            )
         }
+
+        else -> super.getTransformer(data)
     }
 }
 
@@ -129,7 +128,7 @@ class IngridLuceneExporterLubw(
 class IngridISOExporterLubw(
     idfExporter: IngridIdfExporterLubw,
     luceneExporter: IngridLuceneExporterLubw,
-    documentWrapperRepository: DocumentWrapperRepository
+    documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridExporterLubw(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
@@ -139,12 +138,11 @@ class IngridISOExporterLubw(
         "Export von LUBW Dokumenten in ISO für die Vorschau im Editor.",
         "text/xml",
         "xml",
-        listOf("ingrid-lubw")
+        listOf("ingrid-lubw"),
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val indexString = super.run(doc, catalogId, options) as String
         return getISOFromElasticDocumentString(indexString)
     }
-
 }

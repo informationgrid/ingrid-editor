@@ -26,38 +26,39 @@ import de.ingrid.igeserver.model.KeyValue
 import org.json.simple.parser.JSONParser
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class DownloadModel(val title: String?,
-                         override val link: LinkTypeModel?,
-                         val type: KeyValue?,
-                         val format: KeyValue?,
-                         val description: String?,
-                         val license: KeyValue?,
-                         val byClause: String?,
-                         val modified: String?,
-                         val availability: KeyValue?,
-                         val languages: List<KeyValue>?
-    ): Download
-    {
+data class DownloadModel(
+    val title: String?,
+    override val link: LinkTypeModel?,
+    val type: KeyValue?,
+    val format: KeyValue?,
+    val description: String?,
+    val license: KeyValue?,
+    val byClause: String?,
+    val modified: String?,
+    val availability: KeyValue?,
+    val languages: List<KeyValue>?,
+) : Download {
     val languageKeys: List<String>?
         get() = languages?.map { it.key }?.filterNotNull()
 
     fun getLicenseData(): Any? {
-        if(license != null) {
-            var jsonString = "{\"id\":\""+license.key+"\",\"name\":\""+license.value+"\"}";
+        if (license != null) {
+            var jsonString = "{\"id\":\"" + license.key + "\",\"name\":\"" + license.value + "\"}"
             // either use key or if no key search for value
             val entryID = license.key ?: BmiModel.codeListService?.getCodeListEntryId("6500", license.value, "de")
-            if(entryID != null) {
+            if (entryID != null) {
                 val codeListEntry = BmiModel.codeListService?.getCodeListEntry("6500", entryID)
-                if(!codeListEntry?.data.isNullOrEmpty()) {
-                    jsonString = codeListEntry?.data.toString();
-                } else if(codeListEntry?.getField("de") != null) {
-                    jsonString = "{\"id\":\""+license.key+"\",\"name\":\""+codeListEntry.getField("de")+"\"}";
+                if (!codeListEntry?.data.isNullOrEmpty()) {
+                    jsonString = codeListEntry?.data.toString()
+                } else if (codeListEntry?.getField("de") != null) {
+                    jsonString = "{\"id\":\"" + license.key + "\",\"name\":\"" + codeListEntry.getField("de") + "\"}"
                 }
             }
             return if (jsonString.isEmpty()) null else JSONParser().parse(jsonString)
         }
         return null
     }
-    }
+}
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class LinkTypeModel(override val asLink: Boolean?, override val value: String?): LinkType
+data class LinkTypeModel(override val asLink: Boolean?, override val value: String?) : LinkType

@@ -31,10 +31,12 @@ import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { FormFieldHelper } from "./form-field-helper";
 import { clone } from "../app/shared/utils";
 import { inject } from "@angular/core";
+import { FormStateService } from "../app/+form/form-state.service";
 
 export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   protected codelistService = inject(CodelistService);
   protected codelistQuery = inject(CodelistQuery);
+  protected formStateService = inject(FormStateService);
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     return fieldConfig;

@@ -58,22 +58,15 @@ export class DefaultUserBehaviour extends Plugin {
   register() {
     super.register();
 
-    let selectedUser: User;
-    this.subscriptions.push(
-      this.userService.selectedUser$.subscribe((user) => {
-        selectedUser = user;
-      }),
-    );
-
     this.formMenuService.addMenuItem("user", {
       title: "Passwort zurücksetzen",
       name: "reset-password",
-      action: () => this.resetPassword(selectedUser.login),
+      action: () => this.resetPassword(this.userService.selectedUser$().login),
     });
     this.formMenuService.addMenuItem("user", {
       title: "Löschen",
       name: "delete-user",
-      action: () => this.deleteUser(selectedUser),
+      action: () => this.deleteUser(this.userService.selectedUser$()),
     });
   }
 
@@ -138,8 +131,8 @@ export class DefaultUserBehaviour extends Plugin {
         switchMap(() => this.userService.deleteUser(user.id)),
       )
       .subscribe(() => {
-        this.userService.selectedUser$.next(null);
-        this.userService.fetchUsers();
+        this.userService.selectedUser$.set(null);
+        this.userService.getUsers().subscribe();
       });
   }
 }

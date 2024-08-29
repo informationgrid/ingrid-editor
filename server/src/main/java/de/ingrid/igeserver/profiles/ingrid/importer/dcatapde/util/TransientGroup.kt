@@ -22,4 +22,4 @@ package de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.util
 /**
  * Marker interface for transient ES fields.
  */
-interface TransientGroup 
+interface TransientGroup

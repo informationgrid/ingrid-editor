@@ -62,7 +62,7 @@ class CodelistApiController : CodelistApi {
     override fun updateCatalogCodelist(
         principal: Principal,
         id: String,
-        codelist: Codelist
+        codelist: Codelist,
     ): ResponseEntity<Codelist> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val response = handler.updateCodelist(catalogId, id, codelist)
@@ -71,29 +71,27 @@ class CodelistApiController : CodelistApi {
 
     @Transactional
     override fun resetCatalogCodelist(principal: Principal, id: String?): ResponseEntity<List<CodeList>> {
-
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val catalog = catalogService.getCatalogById(catalogId)
-        
+
         val ident = if (id == "null") null else id
         catalogService.initializeCodelists(catalogId, catalog.type, ident)
-        
+
         val response = if (ident == null) {
             handler.getCatalogCodelists(catalogId)
         } else {
             listOfNotNull(
-                handler.getCatalogCodelists(catalogId).find { it.id == id }
+                handler.getCatalogCodelists(catalogId).find { it.id == id },
             )
         }
-        
+
         return ResponseEntity.ok(response)
-        
     }
 
     override fun updateFavorites(principal: Principal, id: String, favorites: List<String>?): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val catalog = catalogService.getCatalogById(catalogId)
-        
+
         val currentFavorites = catalog.settings.config.codelistFavorites
             ?: mutableMapOf<String, List<String>>().also { catalog.settings.config.codelistFavorites = it }
 

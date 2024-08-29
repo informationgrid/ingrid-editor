@@ -40,10 +40,9 @@ interface ToolsApi {
     fun validWkt(
         @Parameter(
             description = "The wkt string to check",
-            required = true
-        ) @RequestBody wkt: String
+            required = true,
+        ) @RequestBody wkt: String,
     ): ResponseEntity<WktValidateResponse>
-
 }
 
 data class WktValidateResponse(val isValid: Boolean, val message: String? = null)

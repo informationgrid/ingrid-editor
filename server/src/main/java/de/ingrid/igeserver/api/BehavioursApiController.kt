@@ -48,9 +48,8 @@ class BehavioursApiController : BehavioursApi, Logging {
 
     override fun setBehaviours(
         principal: Principal,
-        behaviours: List<Behaviour>
+        behaviours: List<Behaviour>,
     ): ResponseEntity<Void> {
-
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         behaviourService.save(catalogId, behaviours)

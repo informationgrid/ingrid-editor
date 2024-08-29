@@ -25,11 +25,12 @@ import de.ingrid.utils.xml.WctsNamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
-                             private val researchService: ResearchService,
-                             catalogId: String) :
+class WctsCapabilitiesParser(
+    codelistHandler: CodelistHandler,
+    private val researchService: ResearchService,
+    catalogId: String,
+) :
     GeneralCapabilitiesParser(XPathUtils(WctsNamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
-
 
     private val versionSyslistMap = mapOf("1.0" to "1")
 
@@ -55,7 +56,6 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
     }
 
     private fun getOperations(doc: Document): List<OperationBean> {
-
         // Operation List
         val operations: MutableList<OperationBean> = ArrayList()
 
@@ -64,16 +64,17 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             arrayOf(
                 XPATH_EXP_WCTS_OP_GET_CAPABILITIES_GET_HREF,
-                XPATH_EXP_WCTS_OP_GET_CAPABILITIES_POST_HREF
+                XPATH_EXP_WCTS_OP_GET_CAPABILITIES_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "GetCapabilities", "de"), 
-                "GetCapabilities"
+                codelistHandler.getCodeListEntryId("5130", "GetCapabilities", "de"),
+                "GetCapabilities",
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
 
@@ -85,38 +86,39 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             arrayOf(
                 XPATH_EXP_WCTS_OP_TRANSFORM_GET_HREF,
-                XPATH_EXP_WCTS_OP_TRANSFORM_POST_HREF
+                XPATH_EXP_WCTS_OP_TRANSFORM_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (transformOp.addressList!!.isNotEmpty()) {
             transformOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "Transform", "de"), 
-                "Transform"
+                codelistHandler.getCodeListEntryId("5130", "Transform", "de"),
+                "Transform",
             )
             transformOp.methodCall = "Transform"
 
             operations.add(transformOp)
         }
 
-
         // Operation - IsTransformable
         val isTransformableOp = mapToOperationBean(
             doc,
             arrayOf(
                 XPATH_EXP_WCTS_OP_IS_TRANSFORMABLE_GET_HREF,
-                XPATH_EXP_WCTS_OP_IS_TRANSFORMABLE_POST_HREF
+                XPATH_EXP_WCTS_OP_IS_TRANSFORMABLE_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (isTransformableOp.addressList!!.isNotEmpty()) {
             isTransformableOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "IsTransformable", "de"), 
-                "IsTransformable"
+                codelistHandler.getCodeListEntryId("5130", "IsTransformable", "de"),
+                "IsTransformable",
             )
             isTransformableOp.methodCall = "IsTransformable"
 
@@ -128,16 +130,17 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             arrayOf(
                 XPATH_EXP_WCTS_OP_GET_TRANSFORMATION_GET_HREF,
-                XPATH_EXP_WCTS_OP_GET_TRANSFORMATION_POST_HREF
+                XPATH_EXP_WCTS_OP_GET_TRANSFORMATION_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (getTransformationOp.addressList!!.isNotEmpty()) {
             getTransformationOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "GetTransformation", "de"), 
-                "GetTransformation"
+                codelistHandler.getCodeListEntryId("5130", "GetTransformation", "de"),
+                "GetTransformation",
             )
             getTransformationOp.methodCall = "GetTransformation"
 
@@ -150,16 +153,17 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             arrayOf(
                 XPATH_EXP_WCTS_OP_DESCRIBE_TRANSFORMATION_GET_HREF,
-                XPATH_EXP_WCTS_OP_DESCRIBE_TRANSFORMATION_POST_HREF
+                XPATH_EXP_WCTS_OP_DESCRIBE_TRANSFORMATION_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (describeTransformationOp.addressList!!.isNotEmpty()) {
             describeTransformationOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "DescribeTransformation", "de"), 
-                "DescribeTransformation"
+                codelistHandler.getCodeListEntryId("5130", "DescribeTransformation", "de"),
+                "DescribeTransformation",
             )
             describeTransformationOp.methodCall = "DescribeTransformation"
 
@@ -171,16 +175,17 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             arrayOf(
                 XPATH_EXP_WCTS_OP_GET_RESOURCE_BY_ID_GET_HREF,
-                XPATH_EXP_WCTS_OP_GET_RESOURCE_BY_ID_POST_HREF
+                XPATH_EXP_WCTS_OP_GET_RESOURCE_BY_ID_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (getResourceByIdOp.addressList!!.isNotEmpty()) {
             getResourceByIdOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "GetResourceById", "de"), 
-                "GetResourceById"
+                codelistHandler.getCodeListEntryId("5130", "GetResourceById", "de"),
+                "GetResourceById",
             )
             getResourceByIdOp.methodCall = "GetResourceByID"
 
@@ -192,16 +197,17 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             arrayOf(
                 XPATH_EXP_WCTS_OP_DESCRIBE_CRS_GET_HREF,
-                XPATH_EXP_WCTS_OP_DESCRIBE_CRS_POST_HREF
+                XPATH_EXP_WCTS_OP_DESCRIBE_CRS_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (describeCRSOp.addressList!!.isNotEmpty()) {
             describeCRSOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "DescribeCRS", "de"), 
-                "DescribeCRS"
+                codelistHandler.getCodeListEntryId("5130", "DescribeCRS", "de"),
+                "DescribeCRS",
             )
             describeCRSOp.methodCall = "DescribeCRS"
 
@@ -213,16 +219,17 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             doc,
             arrayOf(
                 XPATH_EXP_WCTS_OP_DESCRIBE_METHOD_GET_HREF,
-                XPATH_EXP_WCTS_OP_DESCRIBE_METHOD_POST_HREF
+                XPATH_EXP_WCTS_OP_DESCRIBE_METHOD_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (describeMethodOp.addressList!!.isNotEmpty()) {
             describeMethodOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "DescribeMethod", "de"), 
-                "DescribeMethod"
+                codelistHandler.getCodeListEntryId("5130", "DescribeMethod", "de"),
+                "DescribeMethod",
             )
             describeMethodOp.methodCall = "DescribeMethod"
 
@@ -241,40 +248,47 @@ class WctsCapabilitiesParser(codelistHandler: CodelistHandler,
             address,
             xPathUtils.getString(
                 doc,
-                "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:IndividualName"
-            )
+                "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:IndividualName",
+            ),
         )
         address.email = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:ElectronicMailAddress"
+            "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:ElectronicMailAddress",
         )
 
         // try to find address in database and set the uuid if found
         searchForAddress(researchService, catalogId, address)
-        
+
         address.street = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:DeliveryPoint"
+            "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:DeliveryPoint",
         )
         address.city = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:City"
+            "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:City",
         )
         address.postcode = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:PostalCode"
+            "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:PostalCode",
         )
-        address.country = getKeyValue("6200", xPathUtils.getString(
-            doc,
-            "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:Country"
-        ))
-        address.state = getKeyValue("6250", xPathUtils.getString(
-            doc,
-            "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:AdministrativeArea"
-        ), "name")
+        address.country = getKeyValue(
+            "6200",
+            xPathUtils.getString(
+                doc,
+                "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:Country",
+            ),
+        )
+        address.state = getKeyValue(
+            "6250",
+            xPathUtils.getString(
+                doc,
+                "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Address/owsgeo:AdministrativeArea",
+            ),
+            "name",
+        )
         address.phone = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Phone/owsgeo:Voice"
+            "$XPATH_EXT_WCTS_SERVICECONTACT/owsgeo:ContactInfo/owsgeo:Phone/owsgeo:Voice",
         )
         return address
     }

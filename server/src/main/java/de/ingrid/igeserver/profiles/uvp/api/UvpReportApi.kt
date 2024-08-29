@@ -40,11 +40,11 @@ interface UvpReportApi {
         principal: Principal,
         @Parameter(
             description = "'From' Date as ISO Datestring",
-            required = false
+            required = false,
         ) @RequestParam(value = "from") from: String?,
         @Parameter(
             description = "'To' Date as ISO Datestring",
-            required = false
+            required = false,
         ) @RequestParam(value = "to") to: String?,
     ): ResponseEntity<UvpReport>
 }

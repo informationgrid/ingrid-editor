@@ -47,6 +47,6 @@ interface StatisticApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun searchStatistic(
         principal: Principal,
-        @Parameter(description = "the query with filter definitions") @RequestBody query: ResearchQuery
+        @Parameter(description = "the query with filter definitions") @RequestBody query: ResearchQuery,
     ): ResponseEntity<StatisticResponse>
 }

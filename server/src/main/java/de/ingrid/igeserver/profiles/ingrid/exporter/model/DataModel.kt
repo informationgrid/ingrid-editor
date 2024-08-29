@@ -39,7 +39,7 @@ data class DataModel(
     @JsonDeserialize(using = DateDeserializer::class)
     val modifiedMetadata: OffsetDateTime?,
     val pointOfContact: List<AddressRefModel>?,
-    val spatial: IngridSpatial = IngridSpatial(null ,null, null, null),
+    val spatial: IngridSpatial = IngridSpatial(null, null, null, null),
     val vectorSpatialRepresentation: List<VectorSpatialRepresentation>?,
     val explanation: String?,
     val publication: Publication?,
@@ -94,7 +94,6 @@ data class DataModel(
     val subType: KeyValue?,
 )
 
-
 data class VectorSpatialRepresentation(
     val topologyLevel: KeyValue?,
     val geometricObjectType: KeyValue?,
@@ -122,10 +121,7 @@ data class Publication(
         volume,
         pages,
     ).any { it.isNotEmpty() }
-
-
 }
-
 
 data class DatabaseContent(
     val parameter: String?,
@@ -136,7 +132,7 @@ data class CategoryCatalog(
     val title: KeyValue?,
     @JsonDeserialize(using = DateDeserializer::class)
     val date: OffsetDateTime?,
-    val edition: String?
+    val edition: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -152,11 +148,9 @@ data class Service(
     val coupledResources: List<CoupledResource>? = null,
     val couplingType: KeyValue? = null,
     val hasAccessConstraints: Boolean? = false,
-    val isAtomDownload: Boolean? = null
+    val isAtomDownload: Boolean? = null,
 ) {
-    fun hasAccessConstraintsOrFalse() : Boolean {
-        return hasAccessConstraints ?: false
-    }
+    fun hasAccessConstraintsOrFalse(): Boolean = hasAccessConstraints ?: false
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -169,7 +163,7 @@ data class Reference(
     val urlDataType: KeyValue?,
     var uuidRefClass: String? = null,
     var uuidRefVersion: String? = null,
-    var uuidRefServiceType: KeyValue? = null
+    var uuidRefServiceType: KeyValue? = null,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -193,7 +187,7 @@ data class CoupledResource(
     val identifier: String?,
     val uuid: String?,
     val layerNames: List<String>?,
-    val isExternalRef: Boolean
+    val isExternalRef: Boolean,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -204,13 +198,13 @@ data class ServiceUrl(
     var attachedToField: AttachedField? = null,
     var applicationProfile: String? = null,
     var functionValue: String? = null,
-    val isIdfResource: Boolean = true
+    val isIdfResource: Boolean = true,
 )
 
 data class AttachedField(
     val listId: String,
     val entryId: String,
-    val text: String
+    val text: String,
 )
 
 data class Operation(
@@ -228,7 +222,6 @@ data class PortrayalCatalogueInfo(
     val citation: List<Citation>?,
 )
 
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataQualityInfo(
     val lineage: DataQualityLineage?,
@@ -242,7 +235,7 @@ data class DataQualityLineage(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataQualityLineageSource(
     val descriptions: List<KeyValue>?,
-    val processStep: ProcessStep?
+    val processStep: ProcessStep?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -270,16 +263,17 @@ data class ConformanceResult(
                     Date.from(OffsetDateTime.parse(field).toInstant())
                 }
                 SimpleDateFormat("yyyy-MM-dd").format(isoDate)
-            } else field
+            } else {
+                field
+            }
         }
 }
-
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AbsoluteExternalPositionalAccuracy(
     val vertical: Number?,
     val horizontal: Number?,
-    val griddedDataPositionalAccuracy: Number?
+    val griddedDataPositionalAccuracy: Number?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -362,7 +356,7 @@ data class Georectified(
     val checkPointAvailability: Boolean? = false,
     val checkPointDescription: String?,
     val cornerPoints: String?,
-    val pointInPixel: KeyValue?,//2100
+    val pointInPixel: KeyValue?,
 )
 
 data class Georeferenceable(
@@ -370,9 +364,6 @@ data class Georeferenceable(
     val controlPointAvaliability: Boolean? = false,
     val parameters: String?,
 )
-
-
-
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AxisDimensionProperties(
@@ -383,7 +374,7 @@ data class AxisDimensionProperties(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Dataset(
-    val languages: List<String>?
+    val languages: List<String>?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -406,11 +397,10 @@ data class ExtraInfo(
     val legalBasicsDescriptions: List<KeyValue>?,
 )
 
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class IngridMetadata(
     val language: KeyValue,
-    val characterSet: KeyValue?
+    val characterSet: KeyValue?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -444,21 +434,20 @@ data class MaintenanceInformation(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class UserDefinedMaintenanceFrequency(
     val number: Int?,
-    val unit: KeyValue?
+    val unit: KeyValue?,
 )
 
 data class DateEvent(
     @JsonDeserialize(using = DateDeserializer::class)
     val referenceDate: OffsetDateTime,
-    val referenceDateType: KeyValue
+    val referenceDateType: KeyValue,
 )
-
 
 data class TimeRange(
     @JsonDeserialize(using = DateDeserializer::class)
     val start: OffsetDateTime?,
     @JsonDeserialize(using = DateDeserializer::class)
-    val end: OffsetDateTime?
+    val end: OffsetDateTime?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -479,5 +468,5 @@ data class Keywords(
 data class Keyword(
     val id: String?,
     val label: String,
-    val alternativeLabel: String?
+    val alternativeLabel: String?,
 )

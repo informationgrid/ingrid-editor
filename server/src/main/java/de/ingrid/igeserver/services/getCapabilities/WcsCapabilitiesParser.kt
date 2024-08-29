@@ -25,11 +25,12 @@ import de.ingrid.utils.xml.WcsNamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
-                            private val researchService: ResearchService,
-                            catalogId: String) :
+class WcsCapabilitiesParser(
+    codelistHandler: CodelistHandler,
+    private val researchService: ResearchService,
+    catalogId: String,
+) :
     GeneralCapabilitiesParser(XPathUtils(WcsNamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
-
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
         return CapabilitiesBean().apply {
@@ -57,18 +58,19 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
         // Operation List
         val operations: MutableList<OperationBean> = ArrayList()
 
-
         // Operation - GetCapabilities
         val getCapabilitiesOp = mapToOperationBean(
-            doc, arrayOf(
+            doc,
+            arrayOf(
                 XPATH_EXP_WCS_OP_GET_CAPABILITIES_GET_HREF,
-                XPATH_EXP_WCS_OP_GET_CAPABILITIES_POST_HREF
-            ), arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST)
+                XPATH_EXP_WCS_OP_GET_CAPABILITIES_POST_HREF,
+            ),
+            arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST),
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
-                "GetCapabilities"
+                "GetCapabilities",
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
 
@@ -77,15 +79,17 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
 
         // Operation - DescribeCoverage
         val describeCoverageOp = mapToOperationBean(
-            doc, arrayOf(
+            doc,
+            arrayOf(
                 XPATH_EXP_WCS_OP_DESCRIBE_COVERAGE_GET_HREF,
-                XPATH_EXP_WCS_OP_DESCRIBE_COVERAGE_POST_HREF
-            ), arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST)
+                XPATH_EXP_WCS_OP_DESCRIBE_COVERAGE_POST_HREF,
+            ),
+            arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST),
         )
         if (describeCoverageOp.addressList!!.isNotEmpty()) {
             describeCoverageOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "DescribeCoverage", "de"),
-                "DescribeCoverage"
+                "DescribeCoverage",
             )
             describeCoverageOp.methodCall = "DescribeCoverage"
 
@@ -94,15 +98,17 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
 
         // Operation - GetCoverage
         val getCoverageOp = mapToOperationBean(
-            doc, arrayOf(
+            doc,
+            arrayOf(
                 XPATH_EXP_WCS_OP_GET_COVERAGE_GET_HREF,
-                XPATH_EXP_WCS_OP_GET_COVERAGE_POST_HREF
-            ), arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST)
+                XPATH_EXP_WCS_OP_GET_COVERAGE_POST_HREF,
+            ),
+            arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST),
         )
         if (getCoverageOp.addressList!!.isNotEmpty()) {
             getCoverageOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "GetCoverage", "de"),
-                "GetCoverage"
+                "GetCoverage",
             )
             getCoverageOp.methodCall = "GetCoverage"
 
@@ -121,44 +127,51 @@ class WcsCapabilitiesParser(codelistHandler: CodelistHandler,
             address,
             xPathUtils.getString(
                 doc,
-                "$XPATH_EXT_WCS_SERVICECONTACT/wcs:individualName"
-            )
+                "$XPATH_EXT_WCS_SERVICECONTACT/wcs:individualName",
+            ),
         )
         address.email = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:electronicMailAddress"
+            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:electronicMailAddress",
         )
         address.organization = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:organisationName"
+            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:organisationName",
         )
 
         // try to find address in database and set the uuid if found
         searchForAddress(researchService, catalogId, address)
-        
+
         address.street = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:deliveryPoint"
+            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:deliveryPoint",
         )
         address.city = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:city"
+            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:city",
         )
         address.postcode = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:postalCode"
+            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:postalCode",
         )
-        address.country = getKeyValue("6200", xPathUtils.getString(
-            doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:country"
-        ))
-        address.state = getKeyValue("6250", xPathUtils.getString(
-            doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:administrativeArea"
-        ), "name")
+        address.country = getKeyValue(
+            "6200",
+            xPathUtils.getString(
+                doc,
+                "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:country",
+            ),
+        )
+        address.state = getKeyValue(
+            "6250",
+            xPathUtils.getString(
+                doc,
+                "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:address/wcs:administrativeArea",
+            ),
+            "name",
+        )
         address.phone = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:phone/wcs:voice"
+            "$XPATH_EXT_WCS_SERVICECONTACT/wcs:contactInfo/wcs:phone/wcs:voice",
         )
         return address
     }

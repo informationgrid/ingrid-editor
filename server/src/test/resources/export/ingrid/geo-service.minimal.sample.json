@@ -21,71 +21,7 @@
         "type": {
           "key": "12"
         },
-        "ref": {
-          "title": "Mustermann, Max",
-          "hasWritePermission": true,
-          "hasOnlySubtreeWritePermission": false,
-          "_uuid": "14a37ded-4ca5-4677-bfed-3607bed3071d",
-          "_type": "InGridPersonDoc",
-          "_version": 2,
-          "_created": "2023-07-12T12:02:25.127758Z",
-          "_modified": "2023-07-12T12:02:30.778165Z",
-          "_contentModified": "2023-07-12T12:02:30.778664Z",
-          "_createdBy": "Super User",
-          "_modifiedBy": "Super User",
-          "_contentModifiedBy": "Super User",
-          "_id": 1634,
-          "address": {
-            "city": "Frankfurt am Main",
-            "po-box": "30151",
-            "street": "Mustermann Str.",
-            "country": {
-              "key": "276"
-            },
-            "zip-code": "60314",
-            "zip-po-box": "60314",
-            "administrativeArea": {
-              "key": "8"
-            }
-          },
-          "contact": [
-            {
-              "type": {
-                "key": "3"
-              },
-              "connection": "mustermann@wemove.com"
-            },
-            {
-              "type": {
-                "key": "1"
-              },
-              "connection": "123456789"
-            },
-            {
-              "type": {
-                "key": "2"
-              },
-              "connection": "123456789"
-            },
-            {
-              "type": {
-                "key": "4"
-              },
-              "connection": "https://mustermann.com"
-            }
-          ],
-          "lastName": "Mustermann",
-          "firstName": "Max",
-          "salutation": {
-            "key": "2"
-          },
-          "positionName": "Position/nachgeordnete Abteilung",
-          "academic-title": {
-            "key": "1"
-          },
-          "hoursOfService": "Servicezeiten",
-          "_tags": ""
-        }
+        "ref": "14a37ded-4ca5-4677-bfed-3607bed3071d"
       }
     ],
     "advProductGroups": [],

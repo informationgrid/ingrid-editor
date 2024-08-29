@@ -84,8 +84,8 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
                 AND d.catalog_id = ${doc.catalog?.id}
                 AND dw.catalog_id = ${doc.catalog?.id}
                 AND (d.state = 'DRAFT' OR d.state = 'DRAFT_AND_PUBLISHED' OR d.state = 'PENDING' OR d.state = 'PUBLISHED')
-                AND data->'${referenceFieldInDocuments}' @> '[{"ref": "${doc.uuid}"}]');
-            """.trimIndent()
+                AND data->'$referenceFieldInDocuments' @> '[{"ref": "${doc.uuid}"}]');
+        """.trimIndent()
         val result = jdbcTemplate.queryForList(sqlQuery)
 
         if (result.size > 0) {
@@ -103,8 +103,8 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
                 AND dw.catalog_id = ${doc.catalog!!.id}
                 AND dw.uuid = d.uuid
                 AND (d.state = 'PENDING' OR d.state = 'PUBLISHED')
-                AND data->'${referenceFieldInDocuments}' @> '[{"ref": "${doc.uuid}"}]');
-            """.trimIndent()
+                AND data->'$referenceFieldInDocuments' @> '[{"ref": "${doc.uuid}"}]');
+        """.trimIndent()
         val result = jdbcTemplate.queryForList(sqlQuery)
 
         if (result.size > 0) {
@@ -122,8 +122,8 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
                 AND dw.catalog_id = ${doc.catalog!!.id}
                 AND dw.uuid = d.uuid
                 AND d.state = 'PUBLISHED'
-                AND data->'${referenceFieldInDocuments}' @> '[{"ref": "${doc.uuid}"}]');
-            """.trimIndent()
+                AND data->'$referenceFieldInDocuments' @> '[{"ref": "${doc.uuid}"}]');
+        """.trimIndent()
         val result = jdbcTemplate.queryForList(sqlQuery)
 
         return result.map { it["uuid"] as String }

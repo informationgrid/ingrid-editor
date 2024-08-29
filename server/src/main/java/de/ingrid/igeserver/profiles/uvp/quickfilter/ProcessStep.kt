@@ -37,6 +37,8 @@ class ProcessStep : QuickFilter() {
                     )
     """.trimIndent()
     override val parameters = listOf(
-        "publicDisclosure", "publicHearing", "decisionOfAdmission"
+        "publicDisclosure",
+        "publicHearing",
+        "decisionOfAdmission",
     )
 }

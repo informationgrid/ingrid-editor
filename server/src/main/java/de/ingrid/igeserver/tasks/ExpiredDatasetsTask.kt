@@ -56,7 +56,6 @@ class ExpiredDatasetsTask(
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
-
     val log = logger()
 
     // this ensures that the task is executed after the initial db migrations
@@ -86,7 +85,6 @@ class ExpiredDatasetsTask(
             return
         }
 
-
         val expireDate = OffsetDateTime.now().minusDays(expiryDuration.toLong())
 
         // only fill if notify days before expiry is set
@@ -107,9 +105,13 @@ class ExpiredDatasetsTask(
             this.mapToDataset(it)
         }
         val repeatExpiredDatasets =
-            if (repeatExpiryCheck) this.getDatasetsEditedBefore(catalog, expireDate, ExpiryState.EXPIRED).map {
-                this.mapToDataset(it)
-            } else emptyList()
+            if (repeatExpiryCheck) {
+                this.getDatasetsEditedBefore(catalog, expireDate, ExpiryState.EXPIRED).map {
+                    this.mapToDataset(it)
+                }
+            } else {
+                emptyList()
+            }
 
         if (repeatExpiredDatasets.isNotEmpty() || expiredDatasets.isNotEmpty()) {
             log.info("Found ${repeatExpiredDatasets.size} again expired datasets for catalog ${catalog.name}")
@@ -123,7 +125,6 @@ class ExpiredDatasetsTask(
         val linkstub = "${appSettings.host}/${catalog.identifier}"
         val catalogType = catalog.type
 
-
         try {
             this.sendExpiryNotificationMails(expiredDatasets, ExpiryState.EXPIRED, linkstub, catalogType)
             this.sendExpiryNotificationMails(aboutToExpireDatasets, ExpiryState.TO_BE_EXPIRED, linkstub, catalogType)
@@ -133,7 +134,7 @@ class ExpiredDatasetsTask(
         } catch (e: Exception) {
             log.error(
                 "Error sending expiry notification mails for catalog ${catalog.name}. Expiry states not updated.",
-                e
+                e,
             )
         }
     }
@@ -153,7 +154,7 @@ class ExpiredDatasetsTask(
         catalog: Catalog,
         date: OffsetDateTime,
         expiryState: ExpiryState = ExpiryState.INITIAL,
-        limitDate: OffsetDateTime? = null
+        limitDate: OffsetDateTime? = null,
     ): List<Array<Any?>> {
         val beginDate = limitDate ?: OffsetDateTime.now()
 
@@ -162,13 +163,13 @@ class ExpiredDatasetsTask(
         // if expiry mail already sent, we use date when email was sent to determine whether again expired !
         // Also check if date not set, then send email (state after date was introduced)
         val expiryFilter =
-            if (expiryState == ExpiryState.EXPIRED)
+            if (expiryState == ExpiryState.EXPIRED) {
                 "AND dw.expiry_state = :expiryState AND (dw.last_expiry_time IS NULL OR dw.last_expiry_time < :date)"
-            else
+            } else {
                 "AND dw.expiry_state <= :expiryState"
+            }
 
         val limitDateFilter = if (limitDate != null) "AND d.modified >= :beginDate" else ""
-
 
         val query = entityManager.createQuery(
             """
@@ -177,7 +178,7 @@ class ExpiredDatasetsTask(
                     WHERE dw.uuid = d.uuid AND dw.catalog = :catalog AND dw.type != 'FOLDER' AND dw.deleted != 1 AND d.state = 'PUBLISHED' AND d.modified < :date 
                     $limitDateFilter
                     $expiryFilter
-                    """
+                    """,
         )
         query.setParameter("catalog", catalog)
         query.setParameter("date", date)
@@ -190,50 +191,47 @@ class ExpiredDatasetsTask(
         expiredDatasetList: List<ExpiredDataset>,
         expiryState: ExpiryState = ExpiryState.EXPIRED,
         linkstub: String,
-        catalogType: String
+        catalogType: String,
     ) {
         val emailDatasetMap = this.createMailDatasetMap(expiredDatasetList)
         val it: Iterator<Map.Entry<String, List<ExpiredDataset>>> = emailDatasetMap.entries.iterator()
-        keycloakService.initAdminClient().use { client ->
 
-            while (it.hasNext()) {
-                val (login, expDatasets) = it.next()
+        while (it.hasNext()) {
+            val (login, expDatasets) = it.next()
 
-                val recipient = keycloakService.getUser(client, login).email
+            val recipient = keycloakService.getUser(login).email
 
-                val subject =
-                    if (ExpiryState.EXPIRED == expiryState) mailProps.subjectDatasetIsExpired else mailProps.subjectDatasetWillExpire
+            val subject =
+                if (ExpiryState.EXPIRED == expiryState) mailProps.subjectDatasetIsExpired else mailProps.subjectDatasetWillExpire
 
-                val output = StringOutput()
+            val output = StringOutput()
 
-                val baseTemplate =
-                    if (ExpiryState.EXPIRED == expiryState) "export/expired-template.jte" else "export/will-expire-template.jte"
+            val baseTemplate =
+                if (ExpiryState.EXPIRED == expiryState) "export/expired-template.jte" else "export/will-expire-template.jte"
 
-                // check if profile specific template exists, otherwise use default
-                val template =
-                    if (templateEngine.hasTemplate("${catalogType}/${baseTemplate}")) "${catalogType}/${baseTemplate}" else baseTemplate
-                templateEngine.render(
-                    template,
-                    mapOf(
-                        "map" to mapOf(
-                            "datasets" to expDatasets,
-                            "linkstub" to linkstub,
-                        ),
+            // check if profile specific template exists, otherwise use default
+            val template =
+                if (templateEngine.hasTemplate("$catalogType/$baseTemplate")) "$catalogType/$baseTemplate" else baseTemplate
+            templateEngine.render(
+                template,
+                mapOf(
+                    "map" to mapOf(
+                        "datasets" to expDatasets,
+                        "linkstub" to linkstub,
                     ),
-                    output
-                )
+                ),
+                output,
+            )
 
-                val text = output.toString()
-                log.debug("Sending expired datasets mail to $recipient")
-                emailService.sendEmail(
-                    recipient,
-                    subject,
-                    text
-                )
-            }
+            val text = output.toString()
+            log.debug("Sending expired datasets mail to $recipient")
+            emailService.sendEmail(
+                recipient,
+                subject,
+                text,
+            )
         }
     }
-
 
     private fun createMailDatasetMap(expiredDatasetList: List<ExpiredDataset>): Map<String, MutableList<ExpiredDataset>> {
         val mailDatasetMap: MutableMap<String, MutableList<ExpiredDataset>> = HashMap()
@@ -258,12 +256,13 @@ class ExpiredDatasetsTask(
                     UPDATE document_wrapper
                         SET expiry_state = :state, last_expiry_time = :expiryTime
                         WHERE uuid = :uuid
-                    """
+                    """,
                 )
                     .setParameter("state", state.value)
                     .setParameter("expiryTime", expiryTime)
                     .setParameter(
-                        "uuid", expiredDataset.uuid
+                        "uuid",
+                        expiredDataset.uuid,
                     ).executeUpdate()
             }
         }
@@ -280,5 +279,7 @@ data class ExpiredDataset(
 )
 
 enum class ExpiryState(val value: Int) {
-    INITIAL(0), TO_BE_EXPIRED(10), EXPIRED(20)
+    INITIAL(0),
+    TO_BE_EXPIRED(10),
+    EXPIRED(20),
 }

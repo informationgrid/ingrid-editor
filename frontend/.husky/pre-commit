@@ -1,3 +1,0 @@
-#!/bin/sh
-cd frontend
-yarn lint-staged || { echo 'lint failed' ; exit 1; }

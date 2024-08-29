@@ -35,7 +35,7 @@ import java.time.ZoneId
 class UploadExpiredTask(
     val fileSystemStorage: FileSystemStorage,
     val entityManager: EntityManager,
-    val referenceHandler: UvpReferenceHandler
+    val referenceHandler: UvpReferenceHandler,
 ) {
     val log = logger()
 
@@ -89,7 +89,7 @@ class UploadExpiredTask(
 
     private fun archiveFile(
         uploadInfo: UploadInfo,
-        uploads: DocumentLinks
+        uploads: DocumentLinks,
     ): Boolean {
         return try {
             log.info("Archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
@@ -100,10 +100,10 @@ class UploadExpiredTask(
             false
         }
     }
-    
+
     private fun restoreFile(
         uploadInfo: UploadInfo,
-        uploads: DocumentLinks
+        uploads: DocumentLinks,
     ): Boolean {
         return try {
             log.info("Restore file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
@@ -117,6 +117,6 @@ class UploadExpiredTask(
 
     private fun isExpired(upload: UploadInfo, today: LocalDate) =
         upload.validUntil != null && today.isAfter(
-            OffsetDateTime.parse(upload.validUntil).atZoneSameInstant(ZoneId.systemDefault()).toLocalDate()
+            OffsetDateTime.parse(upload.validUntil).atZoneSameInstant(ZoneId.systemDefault()).toLocalDate(),
         )
 }

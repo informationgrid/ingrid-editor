@@ -29,9 +29,4 @@ open class InformationSystemModelTransformer(transformerConfig: TransformerConfi
     val implementationHistory = data.implementationHistory
 
     fun hasDataQualityInfo() = (baseDataText.isNullOrEmpty() && implementationHistory.isNullOrEmpty()).not()
-
 }
-
-
-
-

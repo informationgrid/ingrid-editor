@@ -5,6 +5,7 @@
     [formlyAttributes]="field"
     [placeholder]="props.placeholder"
     [errorStateMatcher]="errorStateMatcher"
+    [required]="props.required"
 />
 @if (
     formControl.value != null && !props.hideDeleteButton && formControl.enabled

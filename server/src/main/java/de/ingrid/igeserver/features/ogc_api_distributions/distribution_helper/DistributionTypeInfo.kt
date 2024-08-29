@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper
 
-
 /**
  * @param id the ID of the distribution helper
  * @param name the display name of the distribution helper

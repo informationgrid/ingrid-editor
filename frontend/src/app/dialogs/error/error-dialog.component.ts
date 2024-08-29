@@ -17,15 +17,42 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from "@angular/material/dialog";
 import { Component, Inject } from "@angular/core";
 import { IgeError } from "../../models/ige-error";
 import { ConfigService } from "../../services/config/config.service";
+import { MatIcon } from "@angular/material/icon";
+import { NgTemplateOutlet } from "@angular/common";
+import { MatCard, MatCardContent } from "@angular/material/card";
+import { CdkCopyToClipboard } from "@angular/cdk/clipboard";
+import { MatAnchor, MatButton, MatIconButton } from "@angular/material/button";
 
 @Component({
   selector: "error-dialog",
   templateUrl: "error-dialog.component.html",
   styleUrls: ["error-dialog.component.scss"],
+  standalone: true,
+  imports: [
+    MatIcon,
+    MatDialogContent,
+    NgTemplateOutlet,
+    MatDialogActions,
+    MatCard,
+    MatCardContent,
+    CdkCopyToClipboard,
+    MatButton,
+    MatIconButton,
+    MatAnchor,
+    MatDialogClose,
+    MatDialogTitle,
+  ],
 })
 export class ErrorDialogComponent {
   errors: IgeError[];

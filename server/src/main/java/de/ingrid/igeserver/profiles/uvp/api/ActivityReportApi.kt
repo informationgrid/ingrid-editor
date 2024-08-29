@@ -37,24 +37,24 @@ import java.time.Instant
 @Profile("uvp")
 interface ActivityReportApi {
 
-
     @Operation
     @ApiResponses(
-        value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(
-            responseCode = "500",
-            description = "Unexpected error"
-        )]
+        value = [
+            ApiResponse(responseCode = "200", description = ""), ApiResponse(
+                responseCode = "500",
+                description = "Unexpected error",
+            ),
+        ],
     )
     @PostMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getReport(
         principal: Principal,
         @Parameter(
             description = "The catalog ID and the cron pattern for which the configuration is saved",
-            required = true
+            required = true,
         )
-        @RequestBody activityQueryOptions: @Valid ActivityQueryOptions
+        @RequestBody activityQueryOptions: @Valid ActivityQueryOptions,
     ): ResponseEntity<List<ActivityReportItem>>
-
 }
 
 data class ActivityQueryOptions(

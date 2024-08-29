@@ -37,7 +37,7 @@ class UvpSpatialAndLineSchema : AnnotationSpec() {
         "pointOfContact",
         "spatial",
         "receiptDate",
-        "eiaNumbers"
+        "eiaNumbers",
     )
 
     @Test
@@ -53,7 +53,7 @@ class UvpSpatialAndLineSchema : AnnotationSpec() {
         val result = SchemaUtils.validate(json, schema)
         result.valid shouldBe true
     }
-    
+
     @Test
     fun fail() {
         val json = "{}"
@@ -66,5 +66,4 @@ class UvpSpatialAndLineSchema : AnnotationSpec() {
             requiredErrors shouldBe requiredFields
         }
     }
-
 }

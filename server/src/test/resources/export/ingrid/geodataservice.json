@@ -29,40 +29,7 @@
     "description": "Testgeodatendienst Beschreibung",
     "pointOfContact": [
       {
-        "ref": {
-          "title": "Wemove",
-          "hasWritePermission": true,
-          "hasOnlySubtreeWritePermission": false,
-          "_uuid": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
-          "_type": "InGridOrganisationDoc",
-          "_version": 4,
-          "_created": "2023-03-21T14:50:32.112956+01:00",
-          "_modified": "2023-03-21T14:51:11.38827+01:00",
-          "_contentModified": "2023-03-21T14:51:11.38827+01:00",
-          "_createdBy": "Max Muster",
-          "_contentModifiedBy": "Max Muster",
-          "_state": "P",
-          "_id": 2,
-          "address": {
-            "administrativeArea": {
-              "key": "8"
-            }
-          },
-          "contact": [
-            {
-              "type": {
-                "key": "3"
-              },
-              "connection": "test@wemove.com"
-            }
-          ],
-          "publishArea": {
-            "key": "1"
-          },
-          "organization": "Wemove",
-          "positionName": "Positionsname",
-          "_parent": null
-        },
+        "ref": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
         "type": {
           "key": "7"
         }

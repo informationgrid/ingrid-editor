@@ -24,7 +24,6 @@ import { map } from "rxjs/operators";
 import { UntypedFormGroup } from "@angular/forms";
 import { UploadService } from "../../app/shared/upload/upload.service";
 import { ConfigService } from "../../app/services/config/config.service";
-import { FormStateService } from "../../app/+form/form-state.service";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -39,7 +38,6 @@ export class McloudDoctype extends BaseDoctype {
 
   private uploadService = inject(UploadService);
   private configService = inject(ConfigService);
-  private formStateService = inject(FormStateService);
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -57,13 +55,6 @@ export class McloudDoctype extends BaseDoctype {
                   ? ctrl.value.some((row) => row.type.key === "10")
                   : false,
               message: "Es muss ein Herausgeber als Adresse angegeben sein",
-            },
-            publisherPublished: {
-              expression: (ctrl) =>
-                ctrl.value
-                  ? ctrl.value.every((row) => row.ref._state === "P")
-                  : false,
-              message: "Alle Adressen müssen veröffentlicht sein",
             },
           },
         }),

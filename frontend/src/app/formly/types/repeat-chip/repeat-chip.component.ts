@@ -40,6 +40,7 @@ import {
   SelectOption,
   SelectOptionUi,
 } from "../../../services/codelist/codelist.service";
+import { CdkDragDrop } from "@angular/cdk/drag-drop";
 
 @UntilDestroy()
 @Component({
@@ -114,6 +115,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
         if (response) {
           this.addValuesFromResponse(response);
           this.removeDeselectedValues(response);
+          this.cdr.detectChanges();
         }
       });
   }
@@ -210,7 +212,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     return formatedDuplicates;
   }
 
-  drop(event: { previousIndex: number; currentIndex: number }) {
+  drop(event: CdkDragDrop<any[]>) {
     const item = this.model[event.previousIndex];
     this.remove(event.previousIndex);
     this.add(event.currentIndex, item);

@@ -42,13 +42,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * This class handles all REST errors globally. There's no need to handle each error individually in each controller.
  */
 @ControllerAdvice
-class RestResponseEntityExceptionHandler: ResponseEntityExceptionHandler() {
+class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
 
     val log = logger()
 
     private val mapper: ObjectMapper by lazy {
         val mapper = ObjectMapper()
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
         mapper
     }
 
@@ -58,25 +58,24 @@ class RestResponseEntityExceptionHandler: ResponseEntityExceptionHandler() {
     @ExceptionHandler(value = [IgeException::class])
     protected fun handleIgeException(ex: IgeException, request: WebRequest): ResponseEntity<Any> {
         val stacktraceOutput = if (ex is UnhandledException) ExceptionUtils.getRootCauseStackTrace(ex.cause) else null
-        val data = mapper.writeValueAsString(mapOf(
+        val data = mapper.writeValueAsString(
+            mapOf(
                 "errorId" to ex.errorId,
                 "errorCode" to ex.errorCode,
                 "errorText" to ex.errorText,
                 "data" to ex.data,
-                "stacktrace" to stacktraceOutput
-        ))
+                "stacktrace" to stacktraceOutput,
+            ),
+        )
         val servletRequest = (request as ServletWebRequest).request
         val logMessage = "Exception $data was thrown while processing the request '${servletRequest.method} ${servletRequest.requestURI}'"
         if (ex is ServerException) {
             log.error(logMessage, ex)
-        }
-        else {
+        } else {
             log.debug(logMessage, ex)
         }
         return handleExceptionInternal(ex, data, HttpHeaders(), ex.statusCode, request)
     }
-
-
 
     /**
      * Handler for authorization exceptions
@@ -102,7 +101,11 @@ class RestResponseEntityExceptionHandler: ResponseEntityExceptionHandler() {
      * Overrides for exceptions that can be converted to application specific exceptions
      */
     override fun handleMissingServletRequestParameter(
-        ex: MissingServletRequestParameterException, headers: HttpHeaders, status: HttpStatusCode, request: WebRequest): ResponseEntity<Any>? {
+        ex: MissingServletRequestParameterException,
+        headers: HttpHeaders,
+        status: HttpStatusCode,
+        request: WebRequest,
+    ): ResponseEntity<Any>? {
         val igeException = InvalidParameterException.withInvalidParameters(ex.parameterName)
         return handleIgeException(igeException, request)
     }
@@ -111,14 +114,18 @@ class RestResponseEntityExceptionHandler: ResponseEntityExceptionHandler() {
      * Override of parent handler for adding error body content
      */
     override fun handleExceptionInternal(
-            ex: java.lang.Exception, @Nullable body: Any?, headers: HttpHeaders, status: HttpStatusCode, request: WebRequest): ResponseEntity<Any> {
+        ex: java.lang.Exception,
+        @Nullable body: Any?,
+        headers: HttpHeaders,
+        status: HttpStatusCode,
+        request: WebRequest,
+    ): ResponseEntity<Any> {
         return if (ex !is IgeException) {
             // wrap into server exception
             val httpStatus = HttpStatus.valueOf(status.value())
             val igeException = IgeException(httpStatus, httpStatus.name, httpStatus.reasonPhrase, null, ex)
             handleIgeException(igeException, request)
-        }
-        else {
+        } else {
             ResponseEntity(body, headers, status)
         }
     }

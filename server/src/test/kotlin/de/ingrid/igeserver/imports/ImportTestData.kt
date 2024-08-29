@@ -56,7 +56,8 @@ val expectedParentOrganisation = """
   "contact": [],
   "positionName": "",
   "hoursOfService": ""
-}""".trimIndent()
+}
+""".trimIndent()
 
 val expectedOrganisationWithPositionName = """
 {
@@ -67,39 +68,20 @@ val expectedOrganisationWithPositionName = """
   "contact": [],
   "positionName": "Something",
   "hoursOfService": ""
-}""".trimIndent()
+}
+""".trimIndent()
 
 val expectedOrganisationAsPointOfContact = """
 { 
-  "ref": {
-    "_uuid": "e3db6665-5670-4543-85a6-f55ea6a4e7a6",
-    "_type": "InGridOrganisationDoc",
-    "title": "Objektbesitzer Institut",
-    "organization": "Objektbesitzer Institut",
-    "contact": [],
-    "positionName": "",
-    "hoursOfService": ""
-  },
-  "type": {
-    "key": "7"
-  }    
-}""".trimIndent()
-
-val expectedOrganisationAsPointOfContactMd = """
-{ 
-  "ref": {
-    "_uuid": "e3db6665-5670-4543-85a6-f55ea6a4e7a6",
-    "_type": "InGridOrganisationDoc",
-    "title": "Objektbesitzer Institut",
-    "organization": "Objektbesitzer Institut",
-    "contact": [],
-    "positionName": "",
-    "hoursOfService": ""
-  },
-  "type": {
-    "key": "12"
-  }    
-}""".trimIndent()
+  "_uuid": "e3db6665-5670-4543-85a6-f55ea6a4e7a6",
+  "_type": "InGridOrganisationDoc",
+  "title": "Objektbesitzer Institut",
+  "organization": "Objektbesitzer Institut",
+  "contact": [],
+  "positionName": "",
+  "hoursOfService": ""
+}
+""".trimIndent()
 
 val expectedOrganisationReferat1 = """
 {
@@ -111,7 +93,8 @@ val expectedOrganisationReferat1 = """
   "positionName": "",
   "hoursOfService": "",
   "parentAsUuid": "D"
-}""".trimIndent()
+}
+""".trimIndent()
 
 val expectedOrganisationAbteilung3 = """
 {
@@ -123,7 +106,8 @@ val expectedOrganisationAbteilung3 = """
   "positionName": "",
   "hoursOfService": "",
   "parentAsUuid": "A"
-}""".trimIndent()
+}
+""".trimIndent()
 
 val expectedPersonSingle = """
 {
@@ -138,7 +122,8 @@ val expectedPersonSingle = """
   "contact": [],
   "positionName": "",
   "hoursOfService": ""
-}""".trimIndent()
+}
+""".trimIndent()
 
 val expectedPersonPositionName = """
 {
@@ -153,7 +138,8 @@ val expectedPersonPositionName = """
   "contact": [],
   "positionName": "Liegenschaftsbuch (ALB)",
   "hoursOfService": ""
-}""".trimIndent()
+}
+""".trimIndent()
 
 val expectedPersonUnderOrganisation = """
 {
@@ -169,7 +155,8 @@ val expectedPersonUnderOrganisation = """
   "positionName": "Liegenschaftsbuch (ALB)",
   "hoursOfService": "",
   "parentAsUuid": "D"
-}""".trimIndent()
+}
+""".trimIndent()
 
 val expectedPersonUnderOrganisation2 = """
 {
@@ -185,4 +172,5 @@ val expectedPersonUnderOrganisation2 = """
   "positionName": "Referat 1,Abteilung 3",
   "hoursOfService": "",
   "parentAsUuid": "D"
-}""".trimIndent()
+}
+""".trimIndent()
