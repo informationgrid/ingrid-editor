@@ -30,7 +30,7 @@ import { MatButtonModule } from "@angular/material/button";
 
 import { ExportService } from "../../../../app/services/export.service";
 import { copyToClipboardFn } from "../../../../app/services/utils";
-import { DialogTemplateModule } from "../../../../app/shared/dialog-template/dialog-template.module";
+
 import { catchError, tap } from "rxjs/operators";
 import { combineLatest, Observable, of } from "rxjs";
 import { HttpResponse } from "@angular/common/http";
@@ -44,7 +44,6 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
     MatIconModule,
     MatButtonToggleModule,
     MatButtonModule,
-    DialogTemplateModule,
     MatProgressSpinner,
   ],
   standalone: true,

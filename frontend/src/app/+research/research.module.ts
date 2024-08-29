@@ -39,18 +39,16 @@ import {
   MatPaginatorModule,
 } from "@angular/material/paginator";
 import { IgePagingIntl } from "../shared/IgePagingIntl";
-import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
+
 import { SaveQueryDialogComponent } from "./save-query-dialog/save-query-dialog.component";
-import { FormFieldsModule } from "../form-fields/form-fields.module";
+
 import { MatDialogModule } from "@angular/material/dialog";
 import { TabSqlComponent } from "./+tab-sql/tab-sql.component";
 import { ResultTableComponent } from "./result-table/result-table.component";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { AddButtonModule } from "../shared/add-button/add-button.module";
 import { QueryManagerComponent } from "./+query-manager/query-manager.component";
-import { CardBoxModule } from "../shared/card-box/card-box.module";
-import { SharedPipesModule } from "../directives/shared-pipes.module";
-import { PageTemplateModule } from "../shared/page-template/page-template.module";
+
 import { MatChipsModule } from "@angular/material/chips";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { DateAdapter } from "@angular/material/core";
@@ -81,14 +79,9 @@ import { ResultTableHeaderComponent } from "./result-table/result-table-header/r
     MatIconModule,
     MatListModule,
     MatPaginatorModule,
-    DocumentIconModule,
-    FormFieldsModule,
     MatDialogModule,
     MatButtonToggleModule,
     AddButtonModule,
-    CardBoxModule,
-    SharedPipesModule,
-    PageTemplateModule,
     MatChipsModule,
     MatDatepickerModule,
     SharedModule,

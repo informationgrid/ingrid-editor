@@ -36,44 +36,38 @@ import { MatSelectModule } from "@angular/material/select";
 import { OverviewComponent } from "./overview.component";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { PageTemplateModule } from "../shared/page-template/page-template.module";
+
 import { FormSharedModule } from "../+form/form-shared/form-shared.module";
-import { UploadModule } from "../shared/upload/upload.module";
-import { BreadcrumbModule } from "../+form/form-info/breadcrumb/breadcrumb.module";
+
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ImportReportComponent } from "./import/import-report/import-report.component";
-import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler-header.module";
 
 @NgModule({
-    imports: [
-        CommonModule,
-        routing,
-        FormsModule,
-        MatExpansionModule,
-        MatTabsModule,
-        MatRadioModule,
-        MatButtonModule,
-        MatStepperModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        SharedModule,
-        MatSelectModule,
-        MatProgressBarModule,
-        MatCheckboxModule,
-        PageTemplateModule,
-        FormSharedModule,
-        UploadModule,
-        BreadcrumbModule,
-        TranslocoModule,
-        MatProgressSpinnerModule,
-        JobHandlerHeaderModule,
-        OverviewComponent,
-        ImportComponent,
-        ExportComponent,
-        ImportReportComponent,
-    ],
-    providers: [ExchangeService],
+  imports: [
+    CommonModule,
+    routing,
+    FormsModule,
+    MatExpansionModule,
+    MatTabsModule,
+    MatRadioModule,
+    MatButtonModule,
+    MatStepperModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    SharedModule,
+    MatSelectModule,
+    MatProgressBarModule,
+    MatCheckboxModule,
+    FormSharedModule,
+    TranslocoModule,
+    MatProgressSpinnerModule,
+    OverviewComponent,
+    ImportComponent,
+    ExportComponent,
+    ImportReportComponent,
+  ],
+  providers: [ExchangeService],
 })
 export class ImportExportModule {}

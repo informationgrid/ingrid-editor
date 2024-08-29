@@ -37,7 +37,7 @@ import {
 } from "@angular/cdk/drag-drop";
 import { MatListModule } from "@angular/material/list";
 import { AsyncPipe, JsonPipe, KeyValuePipe, NgForOf } from "@angular/common";
-import { SharedPipesModule } from "../../../directives/shared-pipes.module";
+
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { AddButtonModule } from "../../../shared/add-button/add-button.module";
@@ -66,7 +66,6 @@ interface RepeatDetailListProps extends FormlyFieldProps {
     MatMenuModule,
     AddButtonModule,
     MatButtonModule,
-    SharedPipesModule,
     FormErrorComponent,
     KeyValuePipe,
     FormlyModule,

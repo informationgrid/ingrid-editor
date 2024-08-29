@@ -35,9 +35,9 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { map, tap } from "rxjs/operators";
 import { RxStompService } from "../../rx-stomp.service";
 import { copyToClipboardFn } from "../../services/utils";
-import { PageTemplateModule } from "../../shared/page-template/page-template.module";
+
 import { IndexingExplanationComponent } from "./indexing-explanation/indexing-explanation.component";
-import { JobHandlerHeaderModule } from "../../shared/job-handler-header/job-handler-header.module";
+
 import { AsyncPipe } from "@angular/common";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
@@ -54,9 +54,7 @@ import { IndexingFields } from "./indexing-fields";
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    PageTemplateModule,
     IndexingExplanationComponent,
-    JobHandlerHeaderModule,
     AsyncPipe,
     MatFormFieldModule,
     ReactiveFormsModule,

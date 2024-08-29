@@ -20,10 +20,10 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ReportsComponent } from "./reports/reports.component";
-import { PageTemplateModule } from "../shared/page-template/page-template.module";
+
 import { MatTabsModule } from "@angular/material/tabs";
 import { SharedModule } from "../shared/shared.module";
-import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
+
 import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
@@ -43,7 +43,7 @@ import {
   MatPaginatorModule,
 } from "@angular/material/paginator";
 import { IgePagingIntl } from "../shared/IgePagingIntl";
-import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler-header.module";
+
 import { A11yModule } from "@angular/cdk/a11y";
 import { ResultTableHeaderComponent } from "../+research/result-table/result-table-header/result-table-header.component";
 
@@ -51,10 +51,8 @@ import { ResultTableHeaderComponent } from "../+research/result-table/result-tab
   imports: [
     CommonModule,
     LazyReportsRouting,
-    PageTemplateModule,
     MatTabsModule,
     SharedModule,
-    DocumentIconModule,
     MatTableModule,
     MatSortModule,
     MatButtonToggleModule,
@@ -64,7 +62,6 @@ import { ResultTableHeaderComponent } from "../+research/result-table/result-tab
     MatProgressSpinnerModule,
     MatDialogModule,
     MatPaginatorModule,
-    JobHandlerHeaderModule,
     A11yModule,
     ResultTableHeaderComponent,
     ReportsComponent,

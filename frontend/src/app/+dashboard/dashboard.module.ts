@@ -36,7 +36,7 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatMenuModule } from "@angular/material/menu";
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { ActionButtonModule } from "../shared/action-button/action-button.module";
+
 import { MatCheckbox } from "@angular/material/checkbox";
 
 const routes: Routes = [
@@ -49,27 +49,26 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forChild(routes),
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatButtonModule,
-        MatIconModule,
-        MatInputModule,
-        MatCardModule,
-        MatDividerModule,
-        SharedModule,
-        MatListModule,
-        MatAutocompleteModule,
-        MatMenuModule,
-        TranslocoModule,
-        MatProgressSpinnerModule,
-        ActionButtonModule,
-        MatCheckbox,
-        DashboardComponent,
-        DocumentTileComponent,
-        QuickSearchComponent,
-    ],
+  imports: [
+    RouterModule.forChild(routes),
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatCardModule,
+    MatDividerModule,
+    SharedModule,
+    MatListModule,
+    MatAutocompleteModule,
+    MatMenuModule,
+    TranslocoModule,
+    MatProgressSpinnerModule,
+    MatCheckbox,
+    DashboardComponent,
+    DocumentTileComponent,
+    QuickSearchComponent,
+  ],
 })
 export class DashboardModule {}

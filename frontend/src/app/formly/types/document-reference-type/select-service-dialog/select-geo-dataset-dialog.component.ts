@@ -22,7 +22,7 @@ import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { TreeQuery } from "../../../../store/tree/tree.query";
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
-import { DialogTemplateModule } from "../../../../shared/dialog-template/dialog-template.module";
+
 import { SharedModule } from "../../../../shared/shared.module";
 import { FormGroup } from "@angular/forms";
 import { Subject } from "rxjs";
@@ -44,7 +44,7 @@ export interface SelectServiceResponse {
 @Component({
   templateUrl: "./select-geo-dataset-dialog.component.html",
   styleUrls: ["./select-geo-dataset-dialog.component.scss"],
-  imports: [DialogTemplateModule, SharedModule, FormlyModule],
+  imports: [SharedModule, FormlyModule],
   standalone: true,
 })
 export class SelectGeoDatasetDialog {

@@ -33,7 +33,7 @@ import {
   Connections,
 } from "../../services/config/config.service";
 import { tap } from "rxjs/operators";
-import { PageTemplateModule } from "../../shared/page-template/page-template.module";
+
 import { FormlyModule } from "@ngx-formly/core";
 import { MatButton } from "@angular/material/button";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -49,12 +49,7 @@ import { Subscription } from "rxjs";
   styleUrls: ["./connection-management.component.scss"],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    PageTemplateModule,
-    FormlyModule,
-    MatButton,
-    ConnectionStateComponent,
-  ],
+  imports: [FormlyModule, MatButton, ConnectionStateComponent],
 })
 export class ConnectionManagementComponent implements OnInit {
   form = new FormGroup<any>({});

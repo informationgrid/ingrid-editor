@@ -33,13 +33,13 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { EmptyNavigationComponent } from "../+form/sidebars/tree/empty-navigation/empty-navigation.component";
-import { SharedDocumentItemModule } from "./shared-document-item.module";
+
 import { MatRadioModule } from "@angular/material/radio";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { AddButtonModule } from "./add-button/add-button.module";
 import { AddButtonComponent } from "./add-button/add-button.component";
-import { CardBoxModule } from "./card-box/card-box.module";
+
 import { CardBoxComponent } from "./card-box/card-box.component";
 import { ChartComponent } from "../+dashboard/chart/chart.component";
 import { FacetsComponent } from "../+research/+facets/facets.component";
@@ -51,7 +51,7 @@ import { DndDirective } from "../directives/dnd.directive";
 import { MatSelectModule } from "@angular/material/select";
 import { TranslocoModule } from "@ngneat/transloco";
 import { SearchInputComponent } from "./search-input/search-input.component";
-import { DocumentIconModule } from "./document-icon/document-icon.module";
+
 import { FullNamePipe } from "../directives/full-name.pipe";
 import { A11yModule } from "@angular/cdk/a11y";
 
@@ -68,18 +68,15 @@ import { A11yModule } from "@angular/cdk/a11y";
     MatAutocompleteModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
-    SharedDocumentItemModule,
     MatRadioModule,
     FormsModule,
     DragDropModule,
     MatCheckboxModule,
     AddButtonModule,
-    CardBoxModule,
     MatDatepickerModule,
     MatMenuModule,
     MatSelectModule,
     TranslocoModule,
-    DocumentIconModule,
     SearchInputComponent,
     A11yModule,
     TreeComponent,
@@ -98,7 +95,6 @@ import { A11yModule } from "@angular/cdk/a11y";
     MatInputModule,
     MatButtonModule,
     CardBoxComponent,
-    SharedDocumentItemModule,
     AddButtonComponent,
     ChartComponent,
     FacetsComponent,

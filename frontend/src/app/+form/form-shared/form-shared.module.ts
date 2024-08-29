@@ -55,19 +55,19 @@ import { AngularSplitModule } from "angular-split";
 import { FormComponent } from "../form/form.component";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
-import { SharedPipesModule } from "../../directives/shared-pipes.module";
+
 import { DashboardDocsHeaderComponent } from "../form-dashboard/dashboard-docs-header/dashboard-docs-header.component";
 import { DashboardAddressHeaderComponent } from "../form-dashboard/dashboard-address-header/dashboard-address-header.component";
 import { DelayedPublishDialogComponent } from "../dialogs/save/delayed-publish-dialog/delayed-publish-dialog.component";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { PublishPendingComponent } from "../form-info/publish-pending/publish-pending.component";
 import { CreateNodeModule } from "../dialogs/create/create-node.module";
-import { BreadcrumbModule } from "../form-info/breadcrumb/breadcrumb.module";
+
 import { TranslocoModule } from "@ngneat/transloco";
-import { ActionButtonModule } from "../../shared/action-button/action-button.module";
+
 import { QuickNavbarComponent } from "./form/quick-navbar/quick-navbar.component";
 import { ErrorPanelComponent } from "./form/error-panel/error-panel.component";
-import { DocumentIconModule } from "../../shared/document-icon/document-icon.module";
+
 import { FormLabelComponent } from "../../formly/wrapper/form-label/form-label.component";
 import { LongPressDirective } from "../../directives/longPress.directive";
 
@@ -89,13 +89,9 @@ import { LongPressDirective } from "../../directives/longPress.directive";
     MatTooltipModule,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
-    SharedPipesModule,
     MatDatepickerModule,
     CreateNodeModule,
-    BreadcrumbModule,
     TranslocoModule,
-    ActionButtonModule,
-    DocumentIconModule,
     FormLabelComponent,
     ErrorPanelComponent,
     LongPressDirective,

@@ -31,7 +31,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
 import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
-import { FilterSelectModule } from "../shared/filter-select/filter-select.module";
+
 import { CatalogManagementComponent } from "./catalog-management/catalog-management.component";
 import { CatalogDetailComponent } from "./catalog-management/catalog-detail/catalog-detail.component";
 import { MatIconModule } from "@angular/material/icon";
@@ -40,9 +40,9 @@ import { MatListModule } from "@angular/material/list";
 import { FormsModule } from "@angular/forms";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { AddButtonModule } from "../shared/add-button/add-button.module";
-import { NewCatalogDialogModule } from "./catalog-management/new-catalog/new-catalog-dialog.module";
+
 import { MatMenuModule } from "@angular/material/menu";
-import { PageTemplateModule } from "../shared/page-template/page-template.module";
+
 import { FormlyModule } from "@ngx-formly/core";
 import { IgeFormlyModule } from "../formly/ige-formly.module";
 import { MessagesManagementComponent } from "./messages-management/messages-management.component";
@@ -69,16 +69,13 @@ import { ConnectionManagementComponent } from "./connection-management/connectio
     MatButtonModule,
     MatTableModule,
     MatSortModule,
-    FilterSelectModule,
     MatIconModule,
     MatDialogModule,
     MatListModule,
     FormsModule,
     MatProgressSpinnerModule,
     AddButtonModule,
-    NewCatalogDialogModule,
     MatMenuModule,
-    PageTemplateModule,
     CodelistPresenterComponent,
     FormlyModule,
     IgeFormlyModule,

@@ -44,7 +44,7 @@ import { LeafletTypeComponent } from "./types/map/leaflet-type.component";
 import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
 import { TableTypeComponent } from "./types/table/table-type.component";
 import { CommonModule } from "@angular/common";
-import { FormFieldsModule } from "../form-fields/form-fields.module";
+
 import { SharedModule } from "../shared/shared.module";
 import { AddressTypeComponent } from "./types/address-type/address-type.component";
 import { AddressCardComponent } from "./types/address-type/address-card/address-card.component";
@@ -76,9 +76,7 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { GermanDateAdapter } from "../services/german-date.adapter";
 import { LinkDialogComponent } from "./types/table/link-dialog/link-dialog.component";
 import { UploadFilesDialogComponent } from "./types/table/upload-files-dialog/upload-files-dialog.component";
-import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.module";
-import { UploadModule } from "../shared/upload/upload.module";
-import { SharedPipesModule } from "../directives/shared-pipes.module";
+
 import {
   ElasticsearchAliasValidator,
   EmailValidator,
@@ -109,7 +107,7 @@ import { DocumentReferenceTypeComponent } from "./types/document-reference-type/
 import { SelectGeoDatasetDialog } from "./types/document-reference-type/select-service-dialog/select-geo-dataset-dialog.component";
 import { SelectCswRecordDialog } from "./types/document-reference-type/select-csw-record-dialog/select-csw-record-dialog";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { DocumentIconModule } from "../shared/document-icon/document-icon.module";
+
 import { CoordinatesSpatialComponent } from "./types/map/spatial-dialog/coordinates-spatial/coordinates-spatial.component";
 import { UpdateGetCapabilitiesComponent } from "./types/update-get-capabilities/update-get-capabilities.component";
 import { TranslocoModule } from "@ngneat/transloco";
@@ -128,242 +126,236 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
 }
 
 @NgModule({
-    imports: [
-        CommonModule,
-        MatInputModule,
-        ReactiveFormsModule,
-        FormsModule,
-        MatDialogModule,
-        MatButtonModule,
-        MatAutocompleteModule,
-        MatIconModule,
-        MatSelectModule,
-        MatDividerModule,
-        MatListModule,
-        MatTableModule,
-        MatCardModule,
-        FormlyMaterialModule,
-        FormlyMatDatepickerModule,
-        FormlyMatToggleModule,
-        SharedPipesModule,
-        FormlyModule.forChild({
-            types: [
-                {
-                    name: "autocomplete",
-                    component: AutocompleteTypeComponent,
-                },
-                {
-                    name: "leaflet",
-                    component: LeafletTypeComponent,
-                },
-                {
-                    name: "table",
-                    component: TableTypeComponent,
-                },
-                {
-                    name: "address-card",
-                    component: AddressTypeComponent,
-                },
-                {
-                    name: "repeat",
-                    component: RepeatComponent,
-                },
-                {
-                    name: "repeatList",
-                    component: RepeatListComponent,
-                },
-                {
-                    name: "repeatDetailList",
-                    component: RepeatDetailListComponent,
-                },
-                {
-                    name: "repeatDistributionDetailList",
-                    component: RepeatDistributionDetailListComponent,
-                },
-                {
-                    name: "repeatChip",
-                    component: RepeatChipComponent,
-                },
-                {
-                    name: "date-range",
-                    component: DateRangeTypeComponent,
-                },
-                {
-                    name: "upload",
-                    component: UploadTypeComponent,
-                },
-                {
-                    name: "ige-select",
-                    component: SelectTypeComponent,
-                },
-                {
-                    name: "unit-input",
-                    component: UnitInputComponent,
-                },
-                {
-                    name: "uvpPhases",
-                    component: UvpSectionsComponent,
-                },
-                {
-                    name: "referencedDocuments",
-                    component: ReferencedDocumentsTypeComponent,
-                },
-                {
-                    name: "couplingService",
-                    component: DocumentReferenceTypeComponent,
-                },
-                {
-                    name: "updateGetCapabilities",
-                    component: UpdateGetCapabilitiesComponent,
-                },
-                {
-                    name: "previewImage",
-                    component: PreviewImageComponent,
-                },
-                /* FOR PREVIEW */
-                {
-                    name: "inputPrint",
-                    component: PrintTypeComponent,
-                },
-                {
-                    name: "textareaPrint",
-                    component: PrintTypeComponent,
-                },
-                {
-                    name: "address-cardPrint",
-                    component: PrintTypeComponent,
-                },
-                {
-                    name: "datepickerPrint",
-                    component: PrintTypeComponent,
-                },
-                {
-                    name: "repeatListPrint",
-                    component: PrintTypeComponent,
-                },
-                {
-                    name: "tablePrint",
-                    component: PrintTypeComponent,
-                },
-                {
-                    name: "ige-selectPrint",
-                    component: PrintTypeComponent,
-                },
-                {
-                    name: "autocompletePrint",
-                    component: PrintTypeComponent,
-                },
-                {
-                    name: "previewImagePrint",
-                    component: PrintTypeComponent,
-                },
-                {
-                    name: "unit-inputPrint",
-                    component: PrintTypeComponent,
-                },
-            ],
-            validators: [
-                { name: "ip", validation: IpValidator },
-                { name: "lowercase", validation: LowercaseValidator },
-                { name: "no_space", validation: NoSpaceValidator },
-                { name: "valid_es_alias", validation: ElasticsearchAliasValidator },
-                { name: "email", validation: EmailValidator },
-                { name: "notEmptyArray", validation: NotEmptyArrayValidator },
-                { name: "url", validation: UrlValidator },
-                { name: "positiveNum", validation: PositiveNumValidator },
-            ],
-            /*,
-            wrappers: [
-              { name: 'panel', component: OneColumnWrapperComponent },
-            ]*/
-        }),
-        FormFieldsModule,
-        SharedModule,
-        MatMenuModule,
-        MatCheckboxModule,
-        MatChipsModule,
-        MatDatepickerModule,
-        MatRadioModule,
-        DragDropModule,
-        MatSlideToggleModule,
-        DialogTemplateModule,
-        UploadModule,
-        SharedPipesModule,
-        FormlySelectModule,
-        NgxMatSelectSearchModule,
-        MatPaginatorModule,
-        AngularSplitModule,
-        MatButtonToggleModule,
-        MatProgressSpinnerModule,
-        DocumentIconModule,
-        TranslocoModule,
-        GeothesaurusWfsgndeComponent,
-        FormErrorComponent,
-        PrintViewDialogComponent,
-        MatPseudoCheckboxModule,
-        FieldToAiraLabelledbyPipe,
-        SectionWrapper,
-        UnitInputComponent,
-        SelectGeoDatasetDialog,
-        AddressCardComponent,
-        AddressTypeComponent,
-        PrintTypeComponent,
-        SelectOptionPipe,
-        ContextHelpComponent,
-        AutocompleteTypeComponent,
-        LeafletTypeComponent,
-        TableTypeComponent,
-        ChooseAddressDialogComponent,
-        SpatialDialogComponent,
-        FreeSpatialComponent,
-        WktSpatialComponent,
-        RepeatListComponent,
-        RepeatComponent,
-        FormDialogComponent,
-        RepeatChipComponent,
-        ChipDialogComponent,
-        DateRangeTypeComponent,
-        UploadTypeComponent,
-        LinkDialogComponent,
-        UploadFilesDialogComponent,
-        SelectTypeComponent,
-        UvpSectionsComponent,
-        ReferencedDocumentsTypeComponent,
-        ValidUntilDialogComponent,
-        DocumentReferenceTypeComponent,
-        SelectCswRecordDialog,
-        CoordinatesSpatialComponent,
-        UpdateGetCapabilitiesComponent,
-        HelpContextButtonComponent,
-    ],
-    providers: [
+  imports: [
+    CommonModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatAutocompleteModule,
+    MatIconModule,
+    MatSelectModule,
+    MatDividerModule,
+    MatListModule,
+    MatTableModule,
+    MatCardModule,
+    FormlyMaterialModule,
+    FormlyMatDatepickerModule,
+    FormlyMatToggleModule,
+    FormlyModule.forChild({
+      types: [
         {
-            provide: MAT_DATE_LOCALE,
-            useValue: "de-DE",
+          name: "autocomplete",
+          component: AutocompleteTypeComponent,
         },
         {
-            provide: DateAdapter,
-            useClass: GermanDateAdapter,
+          name: "leaflet",
+          component: LeafletTypeComponent,
         },
         {
-            provide: MatDatepickerIntl,
-            useClass: IgeDatepickerIntl,
+          name: "table",
+          component: TableTypeComponent,
         },
         {
-            provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
-            useFactory: scrollFactory,
-            deps: [Overlay],
+          name: "address-card",
+          component: AddressTypeComponent,
         },
         {
-            provide: MatPaginatorIntl,
-            useValue: new IgePagingIntl(),
+          name: "repeat",
+          component: RepeatComponent,
         },
-    ],
-    exports: [
-        ReactiveFormsModule,
-        FormsModule,
-        FormlyModule,
-        ContextHelpComponent,
-    ],
+        {
+          name: "repeatList",
+          component: RepeatListComponent,
+        },
+        {
+          name: "repeatDetailList",
+          component: RepeatDetailListComponent,
+        },
+        {
+          name: "repeatDistributionDetailList",
+          component: RepeatDistributionDetailListComponent,
+        },
+        {
+          name: "repeatChip",
+          component: RepeatChipComponent,
+        },
+        {
+          name: "date-range",
+          component: DateRangeTypeComponent,
+        },
+        {
+          name: "upload",
+          component: UploadTypeComponent,
+        },
+        {
+          name: "ige-select",
+          component: SelectTypeComponent,
+        },
+        {
+          name: "unit-input",
+          component: UnitInputComponent,
+        },
+        {
+          name: "uvpPhases",
+          component: UvpSectionsComponent,
+        },
+        {
+          name: "referencedDocuments",
+          component: ReferencedDocumentsTypeComponent,
+        },
+        {
+          name: "couplingService",
+          component: DocumentReferenceTypeComponent,
+        },
+        {
+          name: "updateGetCapabilities",
+          component: UpdateGetCapabilitiesComponent,
+        },
+        {
+          name: "previewImage",
+          component: PreviewImageComponent,
+        },
+        /* FOR PREVIEW */
+        {
+          name: "inputPrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "textareaPrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "address-cardPrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "datepickerPrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "repeatListPrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "tablePrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "ige-selectPrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "autocompletePrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "previewImagePrint",
+          component: PrintTypeComponent,
+        },
+        {
+          name: "unit-inputPrint",
+          component: PrintTypeComponent,
+        },
+      ],
+      validators: [
+        { name: "ip", validation: IpValidator },
+        { name: "lowercase", validation: LowercaseValidator },
+        { name: "no_space", validation: NoSpaceValidator },
+        { name: "valid_es_alias", validation: ElasticsearchAliasValidator },
+        { name: "email", validation: EmailValidator },
+        { name: "notEmptyArray", validation: NotEmptyArrayValidator },
+        { name: "url", validation: UrlValidator },
+        { name: "positiveNum", validation: PositiveNumValidator },
+      ],
+      /*,
+        wrappers: [
+          { name: 'panel', component: OneColumnWrapperComponent },
+        ]*/
+    }),
+    SharedModule,
+    MatMenuModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    MatDatepickerModule,
+    MatRadioModule,
+    DragDropModule,
+    MatSlideToggleModule,
+    FormlySelectModule,
+    NgxMatSelectSearchModule,
+    MatPaginatorModule,
+    AngularSplitModule,
+    MatButtonToggleModule,
+    MatProgressSpinnerModule,
+    TranslocoModule,
+    GeothesaurusWfsgndeComponent,
+    FormErrorComponent,
+    PrintViewDialogComponent,
+    MatPseudoCheckboxModule,
+    FieldToAiraLabelledbyPipe,
+    SectionWrapper,
+    UnitInputComponent,
+    SelectGeoDatasetDialog,
+    AddressCardComponent,
+    AddressTypeComponent,
+    PrintTypeComponent,
+    SelectOptionPipe,
+    ContextHelpComponent,
+    AutocompleteTypeComponent,
+    LeafletTypeComponent,
+    TableTypeComponent,
+    ChooseAddressDialogComponent,
+    SpatialDialogComponent,
+    FreeSpatialComponent,
+    WktSpatialComponent,
+    RepeatListComponent,
+    RepeatComponent,
+    FormDialogComponent,
+    RepeatChipComponent,
+    ChipDialogComponent,
+    DateRangeTypeComponent,
+    UploadTypeComponent,
+    LinkDialogComponent,
+    UploadFilesDialogComponent,
+    SelectTypeComponent,
+    UvpSectionsComponent,
+    ReferencedDocumentsTypeComponent,
+    ValidUntilDialogComponent,
+    DocumentReferenceTypeComponent,
+    SelectCswRecordDialog,
+    CoordinatesSpatialComponent,
+    UpdateGetCapabilitiesComponent,
+    HelpContextButtonComponent,
+  ],
+  providers: [
+    {
+      provide: MAT_DATE_LOCALE,
+      useValue: "de-DE",
+    },
+    {
+      provide: DateAdapter,
+      useClass: GermanDateAdapter,
+    },
+    {
+      provide: MatDatepickerIntl,
+      useClass: IgeDatepickerIntl,
+    },
+    {
+      provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+      useFactory: scrollFactory,
+      deps: [Overlay],
+    },
+    {
+      provide: MatPaginatorIntl,
+      useValue: new IgePagingIntl(),
+    },
+  ],
+  exports: [
+    ReactiveFormsModule,
+    FormsModule,
+    FormlyModule,
+    ContextHelpComponent,
+  ],
 })
 export class IgeFormlyModule {}

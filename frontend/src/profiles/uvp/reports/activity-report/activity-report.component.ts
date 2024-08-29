@@ -27,10 +27,10 @@ import { ConfigService } from "../../../../app/services/config/config.service";
 import { Router } from "@angular/router";
 import { FormControl, UntypedFormControl } from "@angular/forms";
 import { debounceTime } from "rxjs/operators";
-import { PageTemplateModule } from "../../../../app/shared/page-template/page-template.module";
+
 import { SearchInputComponent } from "../../../../app/shared/search-input/search-input.component";
 import { SharedModule } from "../../../../app/shared/shared.module";
-import { DocumentIconModule } from "../../../../app/shared/document-icon/document-icon.module";
+
 import { MatMenuModule } from "@angular/material/menu";
 import { DatePipe } from "@angular/common";
 import { FormSharedModule } from "../../../../app/+form/form-shared/form-shared.module";
@@ -44,11 +44,9 @@ import { BackendQuery } from "../../../../app/+research/backend-query.model";
   styleUrls: ["./activity-report.component.scss"],
   standalone: true,
   imports: [
-    PageTemplateModule,
     SearchInputComponent,
     SharedModule,
     MatTableModule,
-    DocumentIconModule,
     MatMenuModule,
     MatPaginatorModule,
     DatePipe,

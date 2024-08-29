@@ -26,9 +26,9 @@ import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { Router } from "@angular/router";
 import { SharedModule } from "../../../../app/shared/shared.module";
-import { PageTemplateModule } from "../../../../app/shared/page-template/page-template.module";
+
 import { DatePipe } from "@angular/common";
-import { SharedPipesModule } from "../../../../app/directives/shared-pipes.module";
+
 import { MatMenuModule } from "@angular/material/menu";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 
@@ -40,9 +40,7 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
   standalone: true,
   imports: [
     SharedModule,
-    PageTemplateModule,
     DatePipe,
-    SharedPipesModule,
     MatMenuModule,
     MatPaginatorModule,
     MatTableModule,

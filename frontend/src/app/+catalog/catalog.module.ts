@@ -37,10 +37,9 @@ import { BehavioursModule } from "./+behaviours/behaviours.module";
 import { SharedModule } from "../shared/shared.module";
 import { IndexingComponent } from "./indexing/indexing.component";
 import { CatalogSettingsComponent } from "./catalog-settings.component";
-import { FilterSelectModule } from "../shared/filter-select/filter-select.module";
+
 import { UpdateCodelistComponent } from "./codelists/update-codelist/update-codelist.component";
-import { FormFieldsModule } from "../form-fields/form-fields.module";
-import { PageTemplateModule } from "../shared/page-template/page-template.module";
+
 import { MatMenuModule } from "@angular/material/menu";
 import { MatChipsModule } from "@angular/material/chips";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -49,8 +48,7 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { ConfigurationComponent } from "./configuration/configuration.component";
 import { FormlyModule } from "@ngx-formly/core";
-import { JobHandlerHeaderModule } from "../shared/job-handler-header/job-handler-header.module";
-import { SharedPipesModule } from "../directives/shared-pipes.module";
+
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 import { CodelistPresenterComponent } from "../shared/codelist-presenter/codelist-presenter.component";
 import { IndexingExplanationComponent } from "./indexing/indexing-explanation/indexing-explanation.component";
@@ -73,17 +71,12 @@ import { IndexingExplanationComponent } from "./indexing/indexing-explanation/in
     MatSelectModule,
     BehavioursModule,
     SharedModule,
-    FilterSelectModule,
-    FormFieldsModule,
     ReactiveFormsModule,
-    PageTemplateModule,
     MatMenuModule,
     MatChipsModule,
     MatProgressBarModule,
     DragDropModule,
     FormlyModule,
-    JobHandlerHeaderModule,
-    SharedPipesModule,
     NgxMatSelectSearchModule,
     CatalogCodelistsComponent,
     IndexingExplanationComponent,

@@ -33,8 +33,7 @@ import { DocumentService } from "../../../../services/document/document.service"
 import { MatCard, MatCardContent } from "@angular/material/card";
 import { MatTooltip } from "@angular/material/tooltip";
 import { AsyncPipe, NgTemplateOutlet } from "@angular/common";
-import { DocumentIconModule } from "../../../../shared/document-icon/document-icon.module";
-import { SharedPipesModule } from "../../../../directives/shared-pipes.module";
+
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatIcon } from "@angular/material/icon";
 import { MatIconButton } from "@angular/material/button";
@@ -60,8 +59,6 @@ export interface ResolvedAddressWithType {
     MatTooltip,
     MatCardContent,
     NgTemplateOutlet,
-    DocumentIconModule,
-    SharedPipesModule,
     AsyncPipe,
     MatMenuTrigger,
     MatIcon,

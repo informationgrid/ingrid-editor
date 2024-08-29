@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { Component, EventEmitter, OnInit } from "@angular/core";
-import { PageTemplateModule } from "../../shared/page-template/page-template.module";
+
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import {
   ResearchResponse,
@@ -55,7 +55,6 @@ import { isExpired } from "../../services/utils";
   styleUrls: ["./tab-expiration.component.scss"],
   standalone: true,
   imports: [
-    PageTemplateModule,
     MatCheckboxModule,
     ExpirationTableComponent,
     MatButtonModule,

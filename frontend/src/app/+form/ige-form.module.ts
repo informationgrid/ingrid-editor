@@ -34,7 +34,7 @@ import { MatListModule } from "@angular/material/list";
 import { MatRadioModule } from "@angular/material/radio";
 import { MatTableModule } from "@angular/material/table";
 import { MatTabsModule } from "@angular/material/tabs";
-import { FormFieldsModule } from "../form-fields/form-fields.module";
+
 import { RouterModule } from "@angular/router";
 import { FormlyModule } from "@ngx-formly/core";
 import { MatMenuModule } from "@angular/material/menu";
@@ -44,7 +44,6 @@ import { PasteDialogComponent } from "./dialogs/copy-cut-paste/paste-dialog.comp
 import { FormSharedModule } from "./form-shared/form-shared.module";
 import { CreateNodeModule } from "./dialogs/create/create-node.module";
 import { AngularSplitModule } from "angular-split";
-import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.module";
 
 @NgModule({
   imports: [
@@ -65,11 +64,9 @@ import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.
     MatExpansionModule,
     MatCardModule,
     FormlyModule,
-    FormFieldsModule,
     FormSharedModule,
     CreateNodeModule,
     AngularSplitModule,
-    DialogTemplateModule,
     PasteDialogComponent,
     ScrollToDirective,
   ],

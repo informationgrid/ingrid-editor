@@ -54,14 +54,13 @@ import { MatInputModule } from "@angular/material/input";
 import { UserManagementService } from "./user-management.service";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { RouterModule } from "@angular/router";
-import { SharedPipesModule } from "../directives/shared-pipes.module";
+
 import { DragDropModule } from "@angular/cdk/drag-drop";
-import { BreadcrumbModule } from "../+form/form-info/breadcrumb/breadcrumb.module";
+
 import { TranslocoModule } from "@ngneat/transloco";
 import { PermissionLegendsComponent } from "./permissions/permission-legends/permission-legends.component";
 import { UserTableComponent } from "./user/user-table/user-table.component";
 import { PermissionsComponent } from "./permissions/permissions.component";
-import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.module";
 
 @NgModule({
   imports: [
@@ -86,14 +85,11 @@ import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.
     MatChipsModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
-    SharedPipesModule,
     DragDropModule,
-    BreadcrumbModule,
     TranslocoModule,
     PermissionLegendsComponent,
     UserTableComponent,
     PermissionsComponent,
-    DialogTemplateModule,
     UserComponent,
     GroupComponent,
     UserManagementComponent,
