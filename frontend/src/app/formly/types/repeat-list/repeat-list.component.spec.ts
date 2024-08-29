@@ -40,6 +40,7 @@ import { MatInputHarness } from "@angular/material/input/testing";
 import { TestKey } from "@angular/cdk/testing";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { getTranslocoModule } from "../../../transloco-testing.module";
+import { IgeFormlyModule } from "../../ige-formly.module";
 
 describe("RepeatListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
@@ -47,9 +48,8 @@ describe("RepeatListComponent", () => {
 
   const createHost = createHostFactory({
     component: FormlyForm,
-    declarations: [AddButtonComponent],
     imports: [
-      // IgeFormlyModule,
+      IgeFormlyModule,
       MatIconTestingModule,
       MatSnackBarModule,
       FormsModule,
@@ -58,6 +58,7 @@ describe("RepeatListComponent", () => {
       ReactiveFormsModule,
       MatIconTestingModule,
       getTranslocoModule(),
+      AddButtonComponent,
     ],
     providers: [
       provideHttpClient(withInterceptorsFromDi()),

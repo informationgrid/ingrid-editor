@@ -24,8 +24,6 @@ import {
   Spectator,
 } from "@ngneat/spectator";
 import { CodelistService } from "../../services/codelist/codelist.service";
-import { FilterSelectModule } from "../../shared/filter-select/filter-select.module";
-import { PageTemplateModule } from "../../shared/page-template/page-template.module";
 import { CodelistPresenterComponent } from "../../shared/codelist-presenter/codelist-presenter.component";
 
 describe("CodelistsComponent", () => {
@@ -33,11 +31,7 @@ describe("CodelistsComponent", () => {
   const createHost = createComponentFactory({
     component: CodelistsComponent,
     providers: [mockProvider(CodelistService)],
-    imports: [
-      CodelistPresenterComponent,
-      FilterSelectModule,
-      PageTemplateModule,
-    ],
+    imports: [CodelistPresenterComponent],
     detectChanges: false,
   });
 

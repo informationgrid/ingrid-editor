@@ -40,7 +40,6 @@ import { of, Subject } from "rxjs";
 import { TreeHeaderComponent } from "./tree-header/tree-header.component";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatFormFieldModule } from "@angular/material/form-field";
-import { FormFieldsModule } from "../../../form-fields/form-fields.module";
 import { fakeAsync, tick } from "@angular/core/testing";
 import { UpdateType } from "../../../models/update-type.enum";
 import {
@@ -66,7 +65,6 @@ import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { TranslocoModule } from "@ngneat/transloco";
 import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
-import { SharedDocumentItemModule } from "../../../shared/shared-document-item.module";
 import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
 import { getTranslocoModule } from "../../../transloco-testing.module";
 import {
@@ -107,16 +105,12 @@ describe("TreeComponent", () => {
       ReactiveFormsModule,
       MatFormFieldModule,
       MatAutocompleteModule,
-      FormFieldsModule,
       MatProgressSpinnerModule,
       MatSelectModule,
       MatSnackBarModule,
       TranslocoModule,
-      SharedDocumentItemModule,
       SearchInputComponent,
       getTranslocoModule(),
-    ],
-    declarations: [
       TreeHeaderComponent,
       EmptyNavigationComponent,
       DocumentIconComponent,

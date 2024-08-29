@@ -21,7 +21,6 @@ import { createComponentFactory, Spectator } from "@ngneat/spectator";
 
 import { VersionConflictDialogComponent } from "./version-conflict-dialog.component";
 import { MatDialogModule } from "@angular/material/dialog";
-import { SharedModule } from "../../../shared/shared.module";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import {
@@ -41,7 +40,7 @@ describe("VersionConflictDialogComponent", () => {
 
   const createComponent = createComponentFactory({
     component: VersionConflictDialogComponent,
-    imports: [MatDialogModule, SharedModule],
+    imports: [MatDialogModule],
     providers: [
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),

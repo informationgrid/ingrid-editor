@@ -40,6 +40,7 @@ import {
 } from "@angular/common/http";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { Observable, of } from "rxjs";
+import { getTranslocoModule } from "../../transloco-testing.module";
 
 describe("CatalogCodelistsComponent", () => {
   let spectator: Spectator<CatalogCodelistsComponent>;
@@ -67,7 +68,11 @@ describe("CatalogCodelistsComponent", () => {
 
   const createHost = createComponentFactory({
     component: CatalogCodelistsComponent,
-    imports: [CodelistPresenterComponent, MatIconTestingModule],
+    imports: [
+      CodelistPresenterComponent,
+      MatIconTestingModule,
+      getTranslocoModule(),
+    ],
     providers: [
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),

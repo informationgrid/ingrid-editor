@@ -37,7 +37,6 @@ import { SessionStore } from "../store/session.store";
 import { DateAgoPipe } from "../directives/date-ago.pipe";
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
-import { DashboardModule } from "./dashboard.module";
 import { MessageService } from "../services/messages/message.service";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { getTranslocoModule } from "../transloco-testing.module";
@@ -59,10 +58,7 @@ describe("DashboardComponent", () => {
       MatListModule,
       TranslocoModule,
       MatIconTestingModule,
-      DashboardModule,
       getTranslocoModule(),
-    ],
-    declarations: [
       ChartComponent,
       DocumentListItemComponent,
       CardBoxComponent,
