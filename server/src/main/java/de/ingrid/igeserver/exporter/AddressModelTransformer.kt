@@ -149,7 +149,8 @@ open class AddressModelTransformer(
     val addressDocType = getAddressDocType(displayAddress.type)
     fun getAddressDocType(docType: String) = if (docType == "InGridPersonDoc") 2 else 0
 
-    val parentAddresses = ancestorAddressesIncludingSelf.dropLast(1)
+    // in ascending order
+    val parentAddresses = ancestorAddressesIncludingSelf.dropLast(1).reversed()
 
     fun getNextParent() = documentService.getParentWrapper(doc.wrapperId!!)?.uuid
 
@@ -195,28 +196,24 @@ open class AddressModelTransformer(
      *  Addresses with the flag hideAddress are ignored.
      *  @return List of children
      */
-    fun getSubordinatedParties(): MutableList<SubordinatedParty> {
-        return getPublishedChildren(doc.wrapperId)
-            .filter { it.document.data.get("hideAddress")?.asBoolean() != true }
-            .map {
-                SubordinatedParty(
-                    it.wrapper.uuid,
-                    getAddressDocType(it.wrapper.type),
-                    getIndividualName(it.document),
-                    it.document.data.getString("organization"),
-                )
-            }.toMutableList()
-    }
+    fun getSubordinatedParties(): MutableList<SubordinatedParty> = getPublishedChildren(doc.wrapperId)
+        .filter { it.document.data.get("hideAddress")?.asBoolean() != true }
+        .map {
+            SubordinatedParty(
+                it.wrapper.uuid,
+                getAddressDocType(it.wrapper.type),
+                getIndividualName(it.document),
+                it.document.data.getString("organization"),
+            )
+        }.toMutableList()
 
     private fun getPublishedChildren(id: Int?): List<DocumentData> =
         documentService.findChildrenDocs(catalogIdentifier, id, true).hits
 
-    fun getLastPublishedDocument(catalogIdentifier: String, uuid: String): Document? {
-        return try {
-            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
-        } catch (e: Exception) {
-            null
-        }
+    fun getLastPublishedDocument(catalogIdentifier: String, uuid: String): Document? = try {
+        documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
+    } catch (e: Exception) {
+        null
     }
 
     fun getAncestorAddressesIncludingSelf(id: Int?): MutableList<DocumentData> {
