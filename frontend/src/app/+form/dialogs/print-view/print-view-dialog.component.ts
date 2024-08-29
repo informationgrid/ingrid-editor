@@ -29,11 +29,6 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { AngularSplitModule } from "angular-split";
 import { MatButtonModule } from "@angular/material/button";
-
-import {
-  MixedCdkDragDropModule,
-  MixedDragDropConfig,
-} from "angular-mixed-cdk-drag-drop";
 import { DialogTemplateModule } from "../../../shared/dialog-template/dialog-template.module";
 
 @Component({
@@ -50,7 +45,6 @@ import { DialogTemplateModule } from "../../../shared/dialog-template/dialog-tem
       }
     `,
   ],
-  providers: [MixedDragDropConfig],
   imports: [
     MatDialogModule,
     MatIconModule,
@@ -58,7 +52,6 @@ import { DialogTemplateModule } from "../../../shared/dialog-template/dialog-tem
     FormlyModule,
     AngularSplitModule,
     MatButtonModule,
-    MixedCdkDragDropModule,
     DialogTemplateModule,
   ],
   standalone: true,

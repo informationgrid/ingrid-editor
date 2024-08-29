@@ -116,7 +116,6 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { PreviewImageComponent } from "./types/preview-image/preview-image.component";
 import { GeothesaurusWfsgndeComponent } from "./types/map/spatial-dialog/geothesaurus-wfsgnde/geothesaurus-wfsgnde.component";
 import { FormErrorComponent } from "../+form/form-shared/ige-form-error/form-error.component";
-import { MixedCdkDragDropModule } from "angular-mixed-cdk-drag-drop";
 import { RepeatDistributionDetailListComponent } from "../../profiles/bmi/formtypes/repeat-distribution-detail-list/repeat-distribution-detail-list.component";
 import { FieldToAiraLabelledbyPipe } from "../directives/fieldToAiraLabelledby.pipe";
 import { HelpContextButtonComponent } from "../help-context-button/help-context-button.component";
@@ -300,7 +299,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     TranslocoModule,
     GeothesaurusWfsgndeComponent,
     FormErrorComponent,
-    MixedCdkDragDropModule,
     PrintViewDialogComponent,
     MatPseudoCheckboxModule,
     FieldToAiraLabelledbyPipe,
