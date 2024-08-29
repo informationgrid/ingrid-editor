@@ -23,9 +23,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { TreeQuery } from "../../../../store/tree/tree.query";
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 
-import { SharedModule } from "../../../../shared/shared.module";
 import { FormGroup } from "@angular/forms";
 import { Subject } from "rxjs";
+import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
+import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 
 export interface SelectGeoDatasetData {
   currentRefs: string[];
@@ -44,7 +45,7 @@ export interface SelectServiceResponse {
 @Component({
   templateUrl: "./select-geo-dataset-dialog.component.html",
   styleUrls: ["./select-geo-dataset-dialog.component.scss"],
-  imports: [SharedModule, FormlyModule],
+  imports: [FormlyModule, DialogTemplateComponent, TreeComponent],
   standalone: true,
 })
 export class SelectGeoDatasetDialog {

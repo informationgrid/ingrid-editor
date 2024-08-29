@@ -30,8 +30,10 @@ import { MatDividerModule } from "@angular/material/divider";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { SharedModule } from "../../../shared/shared.module";
 import { A11yModule } from "@angular/cdk/a11y";
+import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
+import { DateAgoPipe } from "../../../directives/date-ago.pipe";
+import { FullNamePipe } from "../../../directives/full-name.pipe";
 
 @Component({
   selector: "ige-expiration-table",
@@ -47,8 +49,10 @@ import { A11yModule } from "@angular/cdk/a11y";
     AsyncPipe,
     DatePipe,
     MatTooltipModule,
-    SharedModule,
     A11yModule,
+    DocumentIconComponent,
+    DateAgoPipe,
+    FullNamePipe,
   ],
 })
 export class ExpirationTableComponent implements AfterViewInit {

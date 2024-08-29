@@ -29,6 +29,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { AngularSplitModule } from "angular-split";
 import { MatButtonModule } from "@angular/material/button";
+import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-template.component";
 
 @Component({
   templateUrl: "print-view-dialog.component.html",
@@ -51,6 +52,7 @@ import { MatButtonModule } from "@angular/material/button";
     FormlyModule,
     AngularSplitModule,
     MatButtonModule,
+    DialogTemplateComponent,
   ],
   standalone: true,
 })

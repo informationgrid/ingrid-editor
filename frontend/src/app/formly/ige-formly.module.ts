@@ -45,7 +45,6 @@ import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
 import { TableTypeComponent } from "./types/table/table-type.component";
 import { CommonModule } from "@angular/common";
 
-import { SharedModule } from "../shared/shared.module";
 import { AddressTypeComponent } from "./types/address-type/address-type.component";
 import { AddressCardComponent } from "./types/address-type/address-card/address-card.component";
 import { ChooseAddressDialogComponent } from "./types/address-type/choose-address-dialog/choose-address-dialog.component";
@@ -274,7 +273,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
           { name: 'panel', component: OneColumnWrapperComponent },
         ]*/
     }),
-    SharedModule,
     MatMenuModule,
     MatCheckboxModule,
     MatChipsModule,

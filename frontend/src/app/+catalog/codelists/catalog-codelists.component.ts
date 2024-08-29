@@ -50,6 +50,7 @@ import {
 import { CodelistPresenterComponent } from "../../shared/codelist-presenter/codelist-presenter.component";
 import { MatIcon } from "@angular/material/icon";
 import { MatDivider } from "@angular/material/divider";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 
 @UntilDestroy()
 @Component({
@@ -71,6 +72,7 @@ import { MatDivider } from "@angular/material/divider";
     MatIcon,
     MatIconButton,
     MatDivider,
+    PageTemplateComponent,
   ],
   standalone: true,
 })

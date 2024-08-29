@@ -35,6 +35,7 @@ import { catchError, tap } from "rxjs/operators";
 import { combineLatest, Observable, of } from "rxjs";
 import { HttpResponse } from "@angular/common/http";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { DialogTemplateComponent } from "../../../../app/shared/dialog-template/dialog-template.component";
 
 @Component({
   templateUrl: "./iso-view.component.html",
@@ -45,6 +46,7 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
     MatButtonToggleModule,
     MatButtonModule,
     MatProgressSpinner,
+    DialogTemplateComponent,
   ],
   standalone: true,
 })

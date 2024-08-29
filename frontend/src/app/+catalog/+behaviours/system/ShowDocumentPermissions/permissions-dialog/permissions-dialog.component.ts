@@ -35,12 +35,12 @@ import { UserTableComponent } from "../../../../../+user/user/user-table/user-ta
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
-import { SharedModule } from "../../../../../shared/shared.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfigService } from "../../../../../services/config/config.service";
 import { ConfirmDialogComponent } from "../../../../../dialogs/confirm/confirm-dialog.component";
+import { SearchInputComponent } from "../../../../../shared/search-input/search-input.component";
 
 export interface PermissionDialogData {
   id: number;
@@ -57,9 +57,9 @@ export interface PermissionDialogData {
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
-    SharedModule,
     MatProgressSpinnerModule,
     CdkDragHandle,
+    SearchInputComponent,
   ],
   standalone: true,
 })

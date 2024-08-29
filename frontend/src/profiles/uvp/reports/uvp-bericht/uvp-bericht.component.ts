@@ -20,14 +20,17 @@
 import { AfterViewInit, Component, ViewChild } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UvpReport, UvpResearchService } from "./uvp-research.service";
-import { UntypedFormControl } from "@angular/forms";
+import { ReactiveFormsModule, UntypedFormControl } from "@angular/forms";
 import { debounceTime, filter } from "rxjs/operators";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { MatSort, MatSortModule } from "@angular/material/sort";
 import { saveAs } from "file-saver-es";
 
-import { SharedModule } from "../../../../app/shared/shared.module";
-import { FormSharedModule } from "../../../../app/+form/form-shared/form-shared.module";
+import { PageTemplateNoHeaderComponent } from "../../../../app/shared/page-template/page-template-no-header.component";
+import { CardBoxComponent } from "../../../../app/shared/card-box/card-box.component";
+import { FacetsComponent } from "../../../../app/+research/+facets/facets.component";
+import { MatIcon } from "@angular/material/icon";
+import { MatButton } from "@angular/material/button";
 
 @UntilDestroy()
 @Component({
@@ -35,7 +38,16 @@ import { FormSharedModule } from "../../../../app/+form/form-shared/form-shared.
   templateUrl: "./uvp-bericht.component.html",
   styleUrls: ["./uvp-bericht.component.scss"],
   standalone: true,
-  imports: [SharedModule, FormSharedModule, MatTableModule, MatSortModule],
+  imports: [
+    MatTableModule,
+    MatSortModule,
+    PageTemplateNoHeaderComponent,
+    CardBoxComponent,
+    ReactiveFormsModule,
+    FacetsComponent,
+    MatIcon,
+    MatButton,
+  ],
 })
 export class UvpBerichtComponent implements AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;

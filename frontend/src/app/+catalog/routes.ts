@@ -17,15 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { RouterModule } from "@angular/router";
 import { AuthGuard } from "../security/auth.guard";
 import { CatalogSettingsComponent } from "./catalog-settings.component";
 import { CatalogCodelistsComponent } from "./codelists/catalog-codelists.component";
 import { IndexingComponent } from "./indexing/indexing.component";
 import { BehavioursComponent } from "./+behaviours/behaviours.component";
 import { ConfigurationComponent } from "./configuration/configuration.component";
+import { Route } from "@angular/router";
 
-export const routing = RouterModule.forChild([
+export default [
   {
     path: "",
     component: CatalogSettingsComponent,
@@ -68,4 +68,4 @@ export const routing = RouterModule.forChild([
       },
     ],
   },
-]);
+] satisfies Route[];

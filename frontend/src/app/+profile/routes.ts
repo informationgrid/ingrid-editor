@@ -17,27 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { NgModule } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { AddressComponent } from "./address/address.component";
-import { routing } from "./address.routing";
-import { AngularSplitModule } from "angular-split";
-import { ReactiveFormsModule } from "@angular/forms";
-import { FormlyModule } from "@ngx-formly/core";
-import { SharedModule } from "../shared/shared.module";
-import { FormSharedModule } from "../+form/form-shared/form-shared.module";
+import { ProfileComponent } from "./profile/profile.component";
+import { Route } from "@angular/router";
+import { AuthGuard } from "../security/auth.guard";
 
-@NgModule({
-  imports: [
-    routing,
-    CommonModule,
-    AngularSplitModule,
-    ReactiveFormsModule,
-    FormlyModule,
-    SharedModule,
-    FormSharedModule,
-    AddressComponent,
-  ],
-  providers: [],
-})
-export class AddressModule {}
+export default [
+  {
+    path: "",
+    component: ProfileComponent,
+    canActivate: [AuthGuard],
+  },
+] satisfies Route[];

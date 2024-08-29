@@ -24,12 +24,18 @@ import { ConfigService } from "../../services/config/config.service";
 
 import { MatButtonModule } from "@angular/material/button";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-template-no-header.component";
 
 @Component({
   selector: "ige-content-management",
   templateUrl: "./content-management.component.html",
   styleUrls: ["./content-management.component.scss"],
-  imports: [MatInputModule, ReactiveFormsModule, MatButtonModule],
+  imports: [
+    MatInputModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    PageTemplateNoHeaderComponent,
+  ],
   standalone: true,
 })
 export class ContentManagementComponent implements OnInit {

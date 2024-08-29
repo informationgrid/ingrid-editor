@@ -45,6 +45,8 @@ import { MatButton } from "@angular/material/button";
 import { MatInput } from "@angular/material/input";
 import { LogResultComponent } from "./log-result/log-result.component";
 import { IndexingFields } from "./indexing-fields";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { JobHandlerHeaderComponent } from "../../shared/job-handler-header/job-handler-header.component";
 
 @UntilDestroy()
 @Component({
@@ -62,6 +64,8 @@ import { IndexingFields } from "./indexing-fields";
     MatButton,
     MatInput,
     LogResultComponent,
+    PageTemplateComponent,
+    JobHandlerHeaderComponent,
   ],
 })
 export class IndexingComponent implements OnInit {

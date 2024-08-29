@@ -47,6 +47,7 @@ import { NavigationEnd, Router } from "@angular/router";
 import { ExpiredData } from "./tab-expiration.model";
 import { FormsModule } from "@angular/forms";
 import { isExpired } from "../../services/utils";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 
 @UntilDestroy()
 @Component({
@@ -64,6 +65,7 @@ import { isExpired } from "../../services/utils";
     AsyncPipe,
     NgTemplateOutlet,
     FormsModule,
+    PageTemplateComponent,
   ],
 })
 export class TabExpirationComponent implements OnInit {

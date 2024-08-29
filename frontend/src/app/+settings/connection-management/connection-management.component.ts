@@ -42,6 +42,7 @@ import {
   ConnectionStateInfo,
 } from "./connection-state/connection-state.component";
 import { Subscription } from "rxjs";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 
 @Component({
   selector: "ige-ibus-management",
@@ -49,7 +50,12 @@ import { Subscription } from "rxjs";
   styleUrls: ["./connection-management.component.scss"],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormlyModule, MatButton, ConnectionStateComponent],
+  imports: [
+    FormlyModule,
+    MatButton,
+    ConnectionStateComponent,
+    PageTemplateComponent,
+  ],
 })
 export class ConnectionManagementComponent implements OnInit {
   form = new FormGroup<any>({});

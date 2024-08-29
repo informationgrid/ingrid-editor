@@ -36,14 +36,30 @@ import { ConfigService } from "./services/config/config.service";
 import { ProfileService } from "./services/profile.service";
 import { PluginToken } from "./tokens/plugin.token";
 import { Plugin } from "./+catalog/+behaviours/plugin";
-import { NavigationEnd, Router } from "@angular/router";
+import { NavigationEnd, Router, RouterOutlet } from "@angular/router";
 import { TranslocoService } from "@ngneat/transloco";
+import {
+  MatDrawer,
+  MatDrawerContainer,
+  MatDrawerContent,
+} from "@angular/material/sidenav";
+import { SideMenuComponent } from "./side-menu/side-menu.component";
+import { MainHeaderComponent } from "./main-header/main-header.component";
 
 @UntilDestroy()
 @Component({
   selector: "ige-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
+  standalone: true,
+  imports: [
+    MatDrawerContainer,
+    SideMenuComponent,
+    MainHeaderComponent,
+    RouterOutlet,
+    MatDrawer,
+    MatDrawerContent,
+  ],
 })
 export class AppComponent implements OnInit {
   sessionRefresher$ = new Subject<void>();

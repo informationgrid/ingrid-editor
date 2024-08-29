@@ -37,6 +37,8 @@ import { AsyncPipe, NgTemplateOutlet } from "@angular/common";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatIcon } from "@angular/material/icon";
 import { MatIconButton } from "@angular/material/button";
+import { DocumentIconComponent } from "../../../../shared/document-icon/document-icon.component";
+import { CodelistPipe } from "../../../../directives/codelist.pipe";
 
 export interface AddressRef {
   type: BackendOption;
@@ -65,6 +67,8 @@ export interface ResolvedAddressWithType {
     MatMenu,
     MatMenuItem,
     MatIconButton,
+    DocumentIconComponent,
+    CodelistPipe,
   ],
   standalone: true,
 })

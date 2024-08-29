@@ -22,7 +22,6 @@ import { CommonModule } from "@angular/common";
 import { ReportsComponent } from "./reports/reports.component";
 
 import { MatTabsModule } from "@angular/material/tabs";
-import { SharedModule } from "../shared/shared.module";
 
 import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
@@ -52,7 +51,6 @@ import { ResultTableHeaderComponent } from "../+research/result-table/result-tab
     CommonModule,
     LazyReportsRouting,
     MatTabsModule,
-    SharedModule,
     MatTableModule,
     MatSortModule,
     MatButtonToggleModule,

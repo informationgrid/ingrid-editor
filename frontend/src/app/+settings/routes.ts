@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { RouterModule, Routes } from "@angular/router";
+import { Route } from "@angular/router";
 import { SettingsComponent } from "./settings.component";
 import { GeneralSettingsComponent } from "./general-settings/general-settings.component";
 import { CodelistsComponent } from "./codelists/codelists.component";
@@ -28,7 +28,7 @@ import { CatalogAssignmentComponent } from "./catalog-assignment/catalog-assignm
 import { ContentManagementComponent } from "./content-management/content-management.component";
 import { ConnectionManagementComponent } from "./connection-management/connection-management.component";
 
-export const settingsRoutes: Routes = [
+export default [
   {
     path: "",
     component: SettingsComponent,
@@ -104,5 +104,4 @@ export const settingsRoutes: Routes = [
       },
     ],
   },
-];
-export const routing = RouterModule.forChild(settingsRoutes);
+] satisfies Route[];

@@ -17,13 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { RouterModule } from "@angular/router";
+import { Route } from "@angular/router";
 import { ResearchComponent } from "./research.component";
 import { TabSqlComponent } from "./+tab-sql/tab-sql.component";
 import { QueryManagerComponent } from "./+query-manager/query-manager.component";
 import { TabSearchComponent } from "./+tab-search/tab-search.component";
 
-export const routing = RouterModule.forChild([
+export default [
   {
     path: "",
     component: ResearchComponent,
@@ -57,4 +57,4 @@ export const routing = RouterModule.forChild([
       },
     ],
   },
-]);
+] satisfies Route[];

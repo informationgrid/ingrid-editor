@@ -17,19 +17,16 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { DynamicFormComponent } from "../form-shared/form/dynamic-form.component";
 import { FormDashboardComponent } from "../form-dashboard/form-dashboard.component";
+import { IgeFormlyModule } from "../../formly/ige-formly.module";
 
 @Component({
   selector: "ige-form",
   templateUrl: "./form.component.html",
   styleUrls: ["./form.component.scss"],
   standalone: true,
-  imports: [DynamicFormComponent, FormDashboardComponent],
+  imports: [DynamicFormComponent, FormDashboardComponent, IgeFormlyModule],
 })
-export class FormComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit(): void {}
-}
+export class FormComponent {}

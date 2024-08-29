@@ -29,12 +29,12 @@ import { UserTableComponent } from "../user-table/user-table.component";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
-import { SharedModule } from "../../../shared/shared.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 import { UserDataService } from "../../../services/user/user-data.service";
 import { catchError } from "rxjs/operators";
 import { IgeError } from "../../../models/ige-error";
+import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
 
 @Component({
   selector: "ige-transfer-responsibility-dialog",
@@ -46,9 +46,9 @@ import { IgeError } from "../../../models/ige-error";
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
-    SharedModule,
     MatProgressSpinnerModule,
     CdkDragHandle,
+    SearchInputComponent,
   ],
   standalone: true,
 })

@@ -17,17 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { RouterModule } from "@angular/router";
+import { DashboardComponent } from "./dashboard.component";
+import { Route } from "@angular/router";
 import { AuthGuard } from "../security/auth.guard";
-import { AddressComponent } from "./address/address.component";
-import { FormChangeDeactivateGuard } from "../security/form-change.guard";
-import { RedirectFormGuard } from "../+form/redirect-form.guard";
 
-export const routing = RouterModule.forChild([
+export default [
   {
     path: "",
-    component: AddressComponent,
-    canActivate: [RedirectFormGuard, AuthGuard],
-    canDeactivate: [FormChangeDeactivateGuard],
+    component: DashboardComponent,
+    canActivate: [AuthGuard /*, NoCatalogAssignedGuard*/],
+    data: { roles: ["admin", "author"] },
   },
-]);
+] satisfies Route[];

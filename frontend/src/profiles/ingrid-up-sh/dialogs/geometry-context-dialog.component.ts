@@ -28,6 +28,7 @@ import { MatSelectModule } from "@angular/material/select";
 
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 import { geometryContextFields } from "./geometry-context.fields";
+import { DialogTemplateComponent } from "../../../app/shared/dialog-template/dialog-template.component";
 
 @UntilDestroy()
 @Component({
@@ -38,6 +39,7 @@ import { geometryContextFields } from "./geometry-context.fields";
     MatSelectModule,
     ReactiveFormsModule,
     FormlyModule,
+    DialogTemplateComponent,
   ],
   standalone: true,
 })

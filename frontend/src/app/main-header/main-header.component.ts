@@ -31,7 +31,7 @@ import { map, tap } from "rxjs/operators";
 import { StorageService } from "../../storage.service";
 import { AuthenticationFactory } from "../security/auth.factory";
 import { CatalogService } from "../+catalog/services/catalog.service";
-import { settingsRoutes } from "../+settings/settings.routing";
+import { default as settingsRoutes } from "../+settings/routes";
 import { FormMenuService, FormularMenuItem } from "../+form/form-menu.service";
 import { TranslocoDirective } from "@ngneat/transloco";
 import { MatToolbar, MatToolbarRow } from "@angular/material/toolbar";

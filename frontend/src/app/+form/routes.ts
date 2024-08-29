@@ -17,29 +17,18 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Input, NgModule } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { AddButtonComponent } from "./add-button.component";
-import { MatIconModule } from "@angular/material/icon";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatButtonModule } from "@angular/material/button";
-import { MatMenuModule } from "@angular/material/menu";
-import { MatTooltipModule } from "@angular/material/tooltip";
-import { TranslocoModule } from "@ngneat/transloco";
+import { Route } from "@angular/router";
+import { AuthGuard } from "../security/auth.guard";
+import { FormChangeDeactivateGuard } from "../security/form-change.guard";
+import { FormComponent } from "./form/form.component";
+import { RedirectFormGuard } from "./redirect-form.guard";
 
-@NgModule({
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatButtonModule,
-    MatMenuModule,
-    MatTooltipModule,
-    TranslocoModule,
-    AddButtonComponent,
-  ],
-  exports: [AddButtonComponent],
-})
-export class AddButtonModule {
-  @Input() showRequiredError = false;
-}
+export default [
+  {
+    path: "",
+    component: FormComponent,
+    canActivate: [RedirectFormGuard, AuthGuard /*, NoCatalogAssignedGuard*/],
+    data: { roles: ["author", "admin"] },
+    canDeactivate: [FormChangeDeactivateGuard],
+  },
+] satisfies Route[];
