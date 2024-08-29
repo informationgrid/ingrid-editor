@@ -37,9 +37,8 @@ class AddressModelTransformer(
     val codelist: CodelistTransformer,
     val relationType: KeyValue?,
     val doc: Document,
-    val documentService: DocumentService
+    val documentService: DocumentService,
 ) {
-
     var displayAddress: Document
 
     // needs to be set in during init phase
@@ -57,8 +56,10 @@ class AddressModelTransformer(
         val salutation = codelist.getValue("4300", address.get("salutation")?.mapToKeyValue())
         val academicTitle = codelist.getValue("4305", address.get("academic-title")?.mapToKeyValue())
         val namePostFix = listOf(salutation, academicTitle).filter { !it.isNullOrBlank() }.joinToString(" ")
-        val individualName = listOf(address.getString("lastName"), address.getString("firstName"), namePostFix)
-            .filter { !it.isNullOrBlank() }.joinToString(", ")
+        val individualName =
+            listOf(address.getString("lastName"), address.getString("firstName"), namePostFix)
+                .filter { !it.isNullOrBlank() }
+                .joinToString(", ")
 
         return individualName.ifBlank { null }
     }
@@ -70,17 +71,23 @@ class AddressModelTransformer(
     fun getOrganization(): String? = displayAddress.data.getString("organization")
 
     fun getPositionName(): String? =
-        if (displayAddress.data.getString("positionName")
+        if (displayAddress.data
+                .getString("positionName")
                 .isNullOrEmpty()
-        ) determinePositionNameFromAncestors() else displayAddress.data.getString("positionName")
-
+        ) {
+            determinePositionNameFromAncestors()
+        } else {
+            displayAddress.data.getString("positionName")
+        }
 
     private fun determineDisplayAddress(): Document {
         val nonHiddenAddress = ancestorAddressesIncludingSelf
 
         return if (nonHiddenAddress.size > 0) {
             nonHiddenAddress.last().document
-        } else doc
+        } else {
+            doc
+        }
     }
 
     fun getHierarchy(): List<AddressModelTransformer> =
@@ -97,8 +104,14 @@ class AddressModelTransformer(
         val ancestorsWithoutEldest = ancestorAddressesIncludingSelf.drop(1)
         return ancestorsWithoutEldest
             .filter {
-                it.document.data.getStringOrEmpty("organization").isNotEmpty()
-            }.joinToString(", ") { it.document.data.get("organization").asText() }
+                it.document.data
+                    .getStringOrEmpty("organization")
+                    .isNotEmpty()
+            }.joinToString(", ") {
+                it.document.data
+                    .get("organization")
+                    .asText()
+            }
     }
 
     val id = displayAddress.id
@@ -107,14 +120,21 @@ class AddressModelTransformer(
 
     //    val isFolder = doc.type == "FOLDER"
     val hoursOfService = displayAddress.data.getString("hoursOfService")
-    val country = displayAddress.data.get("address")?.get("country")?.mapToKeyValue()
+    val country =
+        displayAddress.data
+            .get("address")
+            ?.get("country")
+            ?.mapToKeyValue()
     val countryKey = country?.key ?: ""
-    val countryIso3166 = displayAddress.data.get("address")?.get("country")
-        ?.takeIf { !it.isNull }
-        ?.mapToKeyValue()
-        ?.let {
-            TransformationTools.getISO3166_1_Alpha_3FromNumericLanguageCode(it)
-        }
+    val countryIso3166 =
+        displayAddress.data
+            .get("address")
+            ?.get("country")
+            ?.takeIf { !it.isNull }
+            ?.mapToKeyValue()
+            ?.let {
+                TransformationTools.getISO3166_1_Alpha_3FromNumericLanguageCode(it)
+            }
     val zipCode = displayAddress.data.getString("address.zip-code")
     val zipPoBox = displayAddress.data.getString("address.zip-po-box")
     val poBox = displayAddress.data.getString("address.po-box")
@@ -124,7 +144,8 @@ class AddressModelTransformer(
         listOfNotNull(
             // "Postbox" is a fixed string needed for portal display
             this.poBox?.let { "Postbox $it" },
-            this.zipPoBox?.let { it + this.city?.let { " $it" } }).filter { it.isNotEmpty() }
+            this.zipPoBox?.let { it + this.city?.let { " $it" } },
+        ).filter { it.isNotEmpty() }
             .joinToString(", ")
     val telephone = contactType("1")
     val fax = contactType("2")
@@ -137,17 +158,28 @@ class AddressModelTransformer(
     val academicTitle = displayAddress.data.get("academic-title")?.mapToKeyValue()
 
     val administrativeArea =
-        codelist.getCatalogCodelistValue("6250", displayAddress.data.get("address")?.get("administrativeArea")?.mapToKeyValue())
+        codelist.getCatalogCodelistValue(
+            "6250",
+            displayAddress.data
+                .get("address")
+                ?.get("administrativeArea")
+                ?.mapToKeyValue(),
+        )
     val addressDocType = getAddressDocType(displayAddress.type)
+
     fun getAddressDocType(docType: String) = if (docType == "InGridOrganisationDoc") 0 else 2
 
-    val parentAddresses = ancestorAddressesIncludingSelf.dropLast(1)
+    // in ascending order
+    val parentAddresses = ancestorAddressesIncludingSelf.dropLast(1).reversed()
 
     fun getNextParent() = documentService.getParentWrapper(doc.wrapperId!!)?.uuid
 
     private val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    private fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
-        formatter.format(Date.from(date.toInstant()))
+
+    private fun formatDate(
+        formatter: SimpleDateFormat,
+        date: OffsetDateTime,
+    ): String = formatter.format(Date.from(date.toInstant()))
 
     val lastModified = formatDate(formatterISO, displayAddress.modified!!)
 
@@ -160,51 +192,61 @@ class AddressModelTransformer(
      */
     fun getObjectReferences(): List<ObjectReference> {
         val addressDoc = getLastPublishedDocument(catalogIdentifier, doc.uuid)
-        return documentService.getIncomingReferences(addressDoc, catalogIdentifier).map {
-            val doc = getLastPublishedDocument(catalogIdentifier, it) ?: return@map null
+        return documentService
+            .getIncomingReferences(addressDoc, catalogIdentifier)
+            .map {
+                val doc = getLastPublishedDocument(catalogIdentifier, it) ?: return@map null
 
-            ObjectReference(
-                doc.uuid,
-                doc.title ?: "",
-                doc.type,
-                doc.data.get("description")?.textValue(),
-                if (doc.data.has("graphicOverviews")) {
-                    doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")?.get("uri")?.textValue()
-                } else null
-            )
-        }.filterNotNull()
+                ObjectReference(
+                    doc.uuid,
+                    doc.title ?: "",
+                    doc.type,
+                    doc.data.get("description")?.textValue(),
+                    if (doc.data.has("graphicOverviews")) {
+                        doc.data
+                            .get("graphicOverviews")
+                            .firstOrNull()
+                            ?.get("fileName")
+                            ?.get("uri")
+                            ?.textValue()
+                    } else {
+                        null
+                    },
+                )
+            }.filterNotNull()
     }
-
 
     /**
      *  Get all published children of address including.
      *  Addresses with the flag hideAddress are ignored.
      *  @return List of children
      */
-    fun getSubordinatedParties(): MutableList<SubordinatedParty> {
-        return getPublishedChildren(doc.wrapperId)
-            .filter { it.document.data.get("hideAddress")?.asBoolean() != true }
-            .map {
+    fun getSubordinatedParties(): MutableList<SubordinatedParty> =
+        getPublishedChildren(doc.wrapperId)
+            .filter {
+                it.document.data
+                    .get("hideAddress")
+                    ?.asBoolean() != true
+            }.map {
                 SubordinatedParty(
                     it.wrapper.uuid,
                     getAddressDocType(it.wrapper.type),
                     getIndividualName(it.document),
-                    it.document.data.getString("organization")
+                    it.document.data.getString("organization"),
                 )
             }.toMutableList()
-    }
 
-    private fun getPublishedChildren(id: Int?): List<DocumentData> =
-        documentService.findChildrenDocs(catalogIdentifier, id, true).hits
+    private fun getPublishedChildren(id: Int?): List<DocumentData> = documentService.findChildrenDocs(catalogIdentifier, id, true).hits
 
-    fun getLastPublishedDocument(catalogIdentifier: String, uuid: String): Document? {
-        return try {
+    fun getLastPublishedDocument(
+        catalogIdentifier: String,
+        uuid: String,
+    ): Document? =
+        try {
             documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true, resolveLinks = false)
         } catch (e: Exception) {
             null
         }
-
-    }
 
     fun getAncestorAddressesIncludingSelf(id: Int?): MutableList<DocumentData> {
         if (id == null) return mutableListOf()
@@ -212,18 +254,25 @@ class AddressModelTransformer(
         val wrapper = documentService.getWrapperById(id)
         if (wrapper.type == "FOLDER") return mutableListOf()
 
-        val convertedDoc = try {
-            val publishedDoc = documentService.getLastPublishedDocument(catalogIdentifier, wrapper.uuid, resolveLinks = false)
-            DocumentData(wrapper, publishedDoc)
-        } catch (ex: EmptyResultDataAccessException) {
-            // no published document found
-            null
-        }
+        val convertedDoc =
+            try {
+                val publishedDoc = documentService.getLastPublishedDocument(catalogIdentifier, wrapper.uuid, resolveLinks = false)
+                DocumentData(wrapper, publishedDoc)
+            } catch (ex: EmptyResultDataAccessException) {
+                // no published document found
+                null
+            }
 
         return if (wrapper.parent != null) {
             val ancestors = getAncestorAddressesIncludingSelf(wrapper.parent!!.id!!)
             // ignore hideAddress if address has no ancestors. only add if convertedDoc is not null
-            if (convertedDoc?.document?.data?.get("hideAddress")?.asBoolean() != true || ancestors.isEmpty()) {
+            if (convertedDoc
+                    ?.document
+                    ?.data
+                    ?.get("hideAddress")
+                    ?.asBoolean() != true ||
+                ancestors.isEmpty()
+            ) {
                 convertedDoc?.let { ancestors.add(it) }
             }
             ancestors
@@ -232,10 +281,11 @@ class AddressModelTransformer(
         }
     }
 
-    private fun contactType(type: String): String? = displayAddress.data.get("contact")
-        ?.firstOrNull { it.get("type")?.getString("key") == type }
-        ?.getString("connection")
-
+    private fun contactType(type: String): String? =
+        displayAddress.data
+            .get("contact")
+            ?.firstOrNull { it.get("type")?.getString("key") == type }
+            ?.getString("connection")
 }
 
 data class ObjectReference(
@@ -243,12 +293,12 @@ data class ObjectReference(
     val name: String,
     val type: String,
     val description: String?,
-    val graphicOverview: String?
+    val graphicOverview: String?,
 )
 
 data class SubordinatedParty(
     val uuid: String,
     val type: Int,
     val individualName: String?,
-    val organisationName: String?
+    val organisationName: String?,
 )
