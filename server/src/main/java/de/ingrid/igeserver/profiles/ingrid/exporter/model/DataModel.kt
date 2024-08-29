@@ -149,9 +149,7 @@ data class Service(
     val hasAccessConstraints: Boolean? = false,
     val isAtomDownload: Boolean? = null,
 ) {
-    fun hasAccessConstraintsOrFalse(): Boolean {
-        return hasAccessConstraints ?: false
-    }
+    fun hasAccessConstraintsOrFalse(): Boolean = hasAccessConstraints ?: false
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -342,7 +340,7 @@ data class Georectified(
     val checkPointAvailability: Boolean? = false,
     val checkPointDescription: String?,
     val cornerPoints: String?,
-    val pointInPixel: KeyValue?, // 2100
+    val pointInPixel: KeyValue?,
 )
 
 data class Georeferenceable(

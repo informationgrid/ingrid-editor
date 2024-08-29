@@ -66,11 +66,9 @@ class ResearchService {
     @Autowired
     private lateinit var authUtils: AuthUtils
 
-    fun createFacetDefinitions(catalogType: String): Facets {
-        return profiles
-            .find { it.identifier == catalogType }!!
-            .let { Facets(it.getFacetDefinitionsForAddresses(), it.getFacetDefinitionsForDocuments()) }
-    }
+    fun createFacetDefinitions(catalogType: String): Facets = profiles
+        .find { it.identifier == catalogType }!!
+        .let { Facets(it.getFacetDefinitionsForAddresses(), it.getFacetDefinitionsForDocuments()) }
 
     fun query(catalogId: String, query: ResearchQuery, principal: Principal = SecurityContextHolder.getContext().authentication): ResearchResponse {
         val groups = authUtils.getCurrentUserRoles(catalogId)
@@ -97,17 +95,15 @@ class ResearchService {
         return ResearchResponse(totalHits, map)
     }
 
-    private fun getParameters(query: ResearchQuery): List<Any> {
-        return if (query.term.isNullOrEmpty()) {
-            emptyList()
+    private fun getParameters(query: ResearchQuery): List<Any> = if (query.term.isNullOrEmpty()) {
+        emptyList()
+    } else {
+        val withWildcard = "%" + query.term + "%"
+        // third parameter is for uuid search and so must not contain wildcard
+        if (checkForTitleSearch(query.clauses)) {
+            listOf(withWildcard)
         } else {
-            val withWildcard = "%" + query.term + "%"
-            // third parameter is for uuid search and so must not contain wildcard
-            if (checkForTitleSearch(query.clauses)) {
-                listOf(withWildcard)
-            } else {
-                listOf(withWildcard, withWildcard, query.term)
-            }
+            listOf(withWildcard, withWildcard, query.term)
         }
     }
 
@@ -213,16 +209,12 @@ class ResearchService {
         return filterString.any { it }
     }
 
-    private fun createCatalogFilter(catalogId: String): String {
-        return "document1.catalog_id = catalog.id AND document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
-    }
+    private fun createCatalogFilter(catalogId: String): String = "document1.catalog_id = catalog.id AND document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
 
-    private fun determineJsonSearch(term: String?): String {
-        return if (!term.isNullOrEmpty()) {
-            "LEFT JOIN jsonb_each_text(document1.data) as t(k, val) on true"
-        } else {
-            ""
-        }
+    private fun determineJsonSearch(term: String?): String = if (!term.isNullOrEmpty()) {
+        "LEFT JOIN jsonb_each_text(document1.data) as t(k, val) on true"
+    } else {
+        ""
     }
 
     private fun convertQuery(boolFilter: BoolFilter?): String? {
@@ -294,10 +286,12 @@ class ResearchService {
         principal as Authentication
         return result
             .filter { item ->
-                isAdmin || aclService.getPermissionInfo(
-                    principal,
-                    item[7] as Int, // "id"
-                ).canRead
+                isAdmin ||
+                    aclService.getPermissionInfo(
+                        principal,
+                        // "id"
+                        item[7] as Int,
+                    ).canRead
             }.map { item ->
                 Result(
                     title = item[1] as? String,

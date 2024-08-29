@@ -30,12 +30,10 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
     val log = logger()
     val identificationInfo = metadata.identificationInfo[0].dataIdentificationInfo
 
-    fun getTopicCategories(): List<KeyValue> {
-        return identificationInfo?.topicCategory
-            ?.mapNotNull { it.value }
-            ?.mapNotNull { codeListService.getCodeListEntryId("527", it, "iso") }
-            ?.map { KeyValue(it) } ?: emptyList()
-    }
+    fun getTopicCategories(): List<KeyValue> = identificationInfo?.topicCategory
+        ?.mapNotNull { it.value }
+        ?.mapNotNull { codeListService.getCodeListEntryId("527", it, "iso") }
+        ?.map { KeyValue(it) } ?: emptyList()
 
     fun getCharacterSet(): KeyValue? {
         val value = identificationInfo?.characterSet?.get(0)?.code?.codeListValue
@@ -48,65 +46,51 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         return KeyValue(entryId)
     }
 
-    fun getLanguages(): List<String> {
-        return identificationInfo?.language
-            ?.mapNotNull { it.code?.codeListValue }
-            ?.map {
-                iso639LanguageMapping[it]
-                    ?: throw ServerException.withReason("Could not map document language key: $it")
-            }
-            ?: emptyList()
-    }
+    fun getLanguages(): List<String> = identificationInfo?.language
+        ?.mapNotNull { it.code?.codeListValue }
+        ?.map {
+            iso639LanguageMapping[it]
+                ?: throw ServerException.withReason("Could not map document language key: $it")
+        }
+        ?: emptyList()
 
-    fun getFeatureTypes(): List<KeyValue> {
-        return metadata.contentInfo
-            ?.flatMap {
-                it.mdFeatureCatalogueDescription?.featureTypes
-                    ?.mapNotNull { it.value } ?: emptyList()
-            }
-            ?.map { KeyValue(null, it) } ?: emptyList()
-    }
+    fun getFeatureTypes(): List<KeyValue> = metadata.contentInfo
+        ?.flatMap {
+            it.mdFeatureCatalogueDescription?.featureTypes
+                ?.mapNotNull { it.value } ?: emptyList()
+        }
+        ?.map { KeyValue(null, it) } ?: emptyList()
 
-    fun getSourceDescriptions(): List<KeyValue> {
-        return metadata.dataQualityInfo
-            ?.flatMap { dqi ->
-                dqi.dqDataQuality?.lineage?.liLinage?.source
-                    ?.map { it.liSource?.description?.value } ?: emptyList()
-            }
-            ?.map { KeyValue(null, it) } ?: emptyList()
-    }
+    fun getSourceDescriptions(): List<KeyValue> = metadata.dataQualityInfo
+        ?.flatMap { dqi ->
+            dqi.dqDataQuality?.lineage?.liLinage?.source
+                ?.map { it.liSource?.description?.value } ?: emptyList()
+        }
+        ?.map { KeyValue(null, it) } ?: emptyList()
 
-    fun getProcessStep(): List<KeyValue> {
-        return metadata.dataQualityInfo
-            ?.flatMap { dqi ->
-                dqi.dqDataQuality?.lineage?.liLinage?.processStep
-                    ?.mapNotNull { it.liProcessStep.description.value } ?: emptyList()
-            }
-            ?.map { KeyValue(null, it) } ?: emptyList()
-    }
+    fun getProcessStep(): List<KeyValue> = metadata.dataQualityInfo
+        ?.flatMap { dqi ->
+            dqi.dqDataQuality?.lineage?.liLinage?.processStep
+                ?.mapNotNull { it.liProcessStep.description.value } ?: emptyList()
+        }
+        ?.map { KeyValue(null, it) } ?: emptyList()
 
-    fun getCompletenessOmissionValue(): Number? {
-        return metadata.dataQualityInfo
-            ?.flatMap {
-                it.dqDataQuality?.report
-                    ?.mapNotNull { it.dqCompletenessOmission?.result?.dqQuantitativeResult?.value?.get(0)?.value }
-                    ?: emptyList()
-            }
-            ?.getOrNull(0)
-            ?.toDouble()
-    }
+    fun getCompletenessOmissionValue(): Number? = metadata.dataQualityInfo
+        ?.flatMap {
+            it.dqDataQuality?.report
+                ?.mapNotNull { it.dqCompletenessOmission?.result?.dqQuantitativeResult?.value?.get(0)?.value }
+                ?: emptyList()
+        }
+        ?.getOrNull(0)
+        ?.toDouble()
 
-    fun getQualities(): List<Quality> {
-        return metadata.dataQualityInfo
-            ?.flatMap { it.dqDataQuality?.report ?: emptyList() }
-            ?.mapNotNull { mapQuality(it) } ?: emptyList()
-    }
+    fun getQualities(): List<Quality> = metadata.dataQualityInfo
+        ?.flatMap { it.dqDataQuality?.report ?: emptyList() }
+        ?.mapNotNull { mapQuality(it) } ?: emptyList()
 
-    fun getVectorSpatialRepresentation(): List<VectorSpatialRepresentation> {
-        return metadata.spatialRepresentationInfo
-            ?.mapNotNull { it.mdVectorSpatialRepresentation }
-            ?.map { mapVectorSpatialRepreseantation(it) } ?: emptyList()
-    }
+    fun getVectorSpatialRepresentation(): List<VectorSpatialRepresentation> = metadata.spatialRepresentationInfo
+        ?.mapNotNull { it.mdVectorSpatialRepresentation }
+        ?.map { mapVectorSpatialRepreseantation(it) } ?: emptyList()
 
     private fun mapVectorSpatialRepreseantation(vector: MDVectorSpatialRepresentation): VectorSpatialRepresentation {
         val topologyLevelValue = vector.topologyLevel?.value?.codeListValue
@@ -134,22 +118,20 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         }
     }
 
-    private fun mapGeneralRepresentation(node: MDGridSpatialRepresentation): GridSpatialRepresentation {
-        return GridSpatialRepresentation(
-            KeyValue("basis"),
-            getAxesDimProperties(node.axisDimensionProperties),
-            node.transformationParameterAvailability.boolean?.value ?: false,
-            node.numberOfDimensions.value ?: 0,
-            getCellGeometryId(node.cellGeometry),
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-        )
-    }
+    private fun mapGeneralRepresentation(node: MDGridSpatialRepresentation): GridSpatialRepresentation = GridSpatialRepresentation(
+        KeyValue("basis"),
+        getAxesDimProperties(node.axisDimensionProperties),
+        node.transformationParameterAvailability.boolean?.value ?: false,
+        node.numberOfDimensions.value ?: 0,
+        getCellGeometryId(node.cellGeometry),
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+    )
 
     private fun mapGeoRectifiedRepresentation(node: MDGeorectified): GridSpatialRepresentation {
         val pointValue = node.pointInPixel.mdPixelOrientationCode
@@ -170,22 +152,20 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         )
     }
 
-    private fun mapGeoReferencedRepresentation(node: MDGeoreferenceable): GridSpatialRepresentation {
-        return GridSpatialRepresentation(
-            KeyValue("referenced"),
-            getAxesDimProperties(node.axisDimensionProperties),
-            node.transformationParameterAvailability.boolean?.value ?: false,
-            node.numberOfDimensions.value ?: 0,
-            getCellGeometryId(node.cellGeometry),
-            null,
-            null,
-            null,
-            null,
-            node.controlPointAvailability.boolean?.value ?: false,
-            node.orientationParameterAvailability.boolean?.value ?: false,
-            node.georeferencedParameters.value?.value,
-        )
-    }
+    private fun mapGeoReferencedRepresentation(node: MDGeoreferenceable): GridSpatialRepresentation = GridSpatialRepresentation(
+        KeyValue("referenced"),
+        getAxesDimProperties(node.axisDimensionProperties),
+        node.transformationParameterAvailability.boolean?.value ?: false,
+        node.numberOfDimensions.value ?: 0,
+        getCellGeometryId(node.cellGeometry),
+        null,
+        null,
+        null,
+        null,
+        node.controlPointAvailability.boolean?.value ?: false,
+        node.orientationParameterAvailability.boolean?.value ?: false,
+        node.georeferencedParameters.value?.value,
+    )
 
     private fun getCellGeometryId(cellGeometry: CellGeometry): KeyValue {
         val cellGeometryId =
@@ -193,16 +173,14 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         return KeyValue(cellGeometryId)
     }
 
-    private fun getAxesDimProperties(properties: List<AxisDimensionProperty>): List<AxesDimProperty> {
-        return properties.map {
-            val nameValue = it.mdDimension?.dimensionName?.mdDimensionNameTypeCode?.codeListValue
-            val nameId = codeListService.getCodeListEntryId("514", nameValue, "iso")
-            AxesDimProperty(
-                KeyValue(nameId),
-                it.mdDimension?.dimensionSize?.value ?: 0,
-                it.mdDimension?.resolution?.scale?.value ?: 0f,
-            )
-        }
+    private fun getAxesDimProperties(properties: List<AxisDimensionProperty>): List<AxesDimProperty> = properties.map {
+        val nameValue = it.mdDimension?.dimensionName?.mdDimensionNameTypeCode?.codeListValue
+        val nameId = codeListService.getCodeListEntryId("514", nameValue, "iso")
+        AxesDimProperty(
+            KeyValue(nameId),
+            it.mdDimension?.dimensionSize?.value ?: 0,
+            it.mdDimension?.resolution?.scale?.value ?: 0f,
+        )
     }
 
     data class GridSpatialRepresentation(
@@ -241,8 +219,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     "7120",
                     report.dqTemporalConsistency,
                 )
-            } //            else if (report.dqAccuracyOfATimeMeasurement != null) QualityInfo("", ", (report.)
-            else if (report.dqQuantitativeAttributeAccuracy != null) {
+            } else if (report.dqQuantitativeAttributeAccuracy != null) {
                 QualityInfo(
                     "quantitativeAttributeAccuracy",
                     "7127",
@@ -266,9 +243,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     "7128",
                     report.dqRelativeInternalPositionalAccuracy,
                 )
-            } //            else if (report.dqGriddedDataPositionalAccuracy != null) QualityInfo("", ", (report.)
-//            else if (report.dqAbsoluteExternalPositionalAccuracy != null) QualityInfo("", ", (report.)
-            else if (report.dqTopologicalConsistency != null) {
+            } else if (report.dqTopologicalConsistency != null) {
                 QualityInfo(
                     "topologicalConsistency",
                     "7115",
@@ -292,8 +267,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     "7112",
                     report.dqConceptualConsistency,
                 )
-            } //            else if (report.dqCompletenessOmission != null) QualityInfo("", ", (report.)
-            else if (report.dqCompletenessCommission != null) {
+            } else if (report.dqCompletenessCommission != null) {
                 QualityInfo(
                     "completenessComission",
                     "7109",
@@ -313,24 +287,18 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         return Quality(info.type, nameKeyValue, value, parameter)
     }
 
-    fun getLineageStatement(): String {
-        return metadata.dataQualityInfo
-            ?.map { it.dqDataQuality?.lineage?.liLinage?.statement?.value }
-            ?.getOrNull(0) ?: ""
-    }
+    fun getLineageStatement(): String = metadata.dataQualityInfo
+        ?.map { it.dqDataQuality?.lineage?.liLinage?.statement?.value }
+        ?.getOrNull(0) ?: ""
 
-    fun getMDIdentifier(): String {
-        return identificationInfo?.citation?.citation?.identifier
-            ?.map { it.mdIdentifier?.code?.value }
-            ?.getOrNull(0) ?: ""
-    }
+    fun getMDIdentifier(): String = identificationInfo?.citation?.citation?.identifier
+        ?.map { it.mdIdentifier?.code?.value }
+        ?.getOrNull(0) ?: ""
 
-    fun getSpatialRepresentationTypes(): List<KeyValue> {
-        return identificationInfo?.spatialRepresentationType
-            ?.map { it.code?.codeListValue }
-            ?.map { codeListService.getCodeListEntryId("526", it, "iso") }
-            ?.map { KeyValue(it) } ?: emptyList()
-    }
+    fun getSpatialRepresentationTypes(): List<KeyValue> = identificationInfo?.spatialRepresentationType
+        ?.map { it.code?.codeListValue }
+        ?.map { codeListService.getCodeListEntryId("526", it, "iso") }
+        ?.map { KeyValue(it) } ?: emptyList()
 
     fun getResolutions(): List<Resolution> {
         val scales = identificationInfo?.spatialResolution
@@ -352,129 +320,109 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         }
     }
 
-    fun getPortrayalCatalogueInfo(): List<CatalogInfo> {
-        return metadata.portrayalCatalogueInfo
-            ?.flatMap {
-                it.mdPortrayalCatalogueInfo?.portrayalCatalogueCitation
-                    ?.map {
-                        val titleValue = it.citation?.title?.value
-                        val titleKey = codeListService.getCatalogCodelistKey(catalogId, "3555", titleValue!!)
-                        val title = if (titleKey == null) KeyValue(null, titleValue) else KeyValue(titleKey)
-                        CatalogInfo(
-                            title,
-                            it.citation.date.getOrNull(0)?.date?.date?.dateTime,
-                            it.citation.edition?.value,
-                        )
-                    } ?: emptyList()
-            } ?: emptyList()
-    }
+    fun getPortrayalCatalogueInfo(): List<CatalogInfo> = metadata.portrayalCatalogueInfo
+        ?.flatMap {
+            it.mdPortrayalCatalogueInfo?.portrayalCatalogueCitation
+                ?.map {
+                    val titleValue = it.citation?.title?.value
+                    val titleKey = codeListService.getCatalogCodelistKey(catalogId, "3555", titleValue!!)
+                    val title = if (titleKey == null) KeyValue(null, titleValue) else KeyValue(titleKey)
+                    CatalogInfo(
+                        title,
+                        it.citation.date.getOrNull(0)?.date?.date?.dateTime,
+                        it.citation.edition?.value,
+                    )
+                } ?: emptyList()
+        } ?: emptyList()
 
-    fun getFeatureCatalogueDescription(): List<CatalogInfo> {
-        return metadata.contentInfo
-            ?.flatMap {
-                it.mdFeatureCatalogueDescription?.featureCatalogueCitation
-                    ?.map {
-                        val titleValue = it.citation?.title?.value
-                        val titleKey = codeListService.getCatalogCodelistKey(catalogId, "3535", titleValue!!)
-                        val title = if (titleKey == null) KeyValue(null, titleValue) else KeyValue(titleKey)
-                        CatalogInfo(
-                            title,
-                            it.citation.date.getOrNull(0)?.date?.date?.dateTime,
-                            it.citation.edition?.value,
-                        )
-                    } ?: emptyList()
-            } ?: emptyList()
-    }
+    fun getFeatureCatalogueDescription(): List<CatalogInfo> = metadata.contentInfo
+        ?.flatMap {
+            it.mdFeatureCatalogueDescription?.featureCatalogueCitation
+                ?.map {
+                    val titleValue = it.citation?.title?.value
+                    val titleKey = codeListService.getCatalogCodelistKey(catalogId, "3535", titleValue!!)
+                    val title = if (titleKey == null) KeyValue(null, titleValue) else KeyValue(titleKey)
+                    CatalogInfo(
+                        title,
+                        it.citation.date.getOrNull(0)?.date?.date?.dateTime,
+                        it.citation.edition?.value,
+                    )
+                } ?: emptyList()
+        } ?: emptyList()
 
-    fun getPositionalAccuracy(): PositionalAccuracy {
-        return PositionalAccuracy(
-            getVerticalAbsoluteExternalPositionalAccuracy(),
-            getHorizontalAbsoluteExternalPositionalAccuracy(),
-            getGriddedDataPositionalAccuracy(),
-        )
-    }
+    fun getPositionalAccuracy(): PositionalAccuracy = PositionalAccuracy(
+        getVerticalAbsoluteExternalPositionalAccuracy(),
+        getHorizontalAbsoluteExternalPositionalAccuracy(),
+        getGriddedDataPositionalAccuracy(),
+    )
 
-    fun getGeometryContexts(): List<GeometryContextInternal> {
-        return metadata.spatialRepresentationInfo
-            ?.mapNotNull { it.mdGeometryContext }
-            ?.map {
-                val feature = it.geometricFeature?.nominalFeature ?: it.geometricFeature?.ordinalFeature ?: it.geometricFeature?.scalarFeature ?: it.geometricFeature?.otherFeature
-                GeometryContextInternal(
-                    feature?.featureName?.value,
-                    it.geometryType?.value,
-                    feature?.featureDataType?.value,
-                    feature?.featureDescription?.value,
-                    mapGeometryContextFeatureType(it.geometricFeature),
-                    feature?.minValue?.value?.toDouble(),
-                    feature?.maxValue?.value?.toDouble(),
-                    feature?.units?.value,
-                    mapGeometryContextAttributes(feature?.featureAttributes?.featureAttributes?.attribute),
-                )
-            } ?: emptyList()
-    }
-
-    fun getDatasetURI(): String? {
-        return metadata.dataSetURI?.value
-    }
-
-    private fun mapGeometryContextAttributes(attributes: List<FeatureAttribute>?): List<KeyValue> {
-        return attributes?.map { attribute ->
-            val item = attribute.RegularFeatureAttribute ?: attribute.OtherFeatureAttribute
-            KeyValue(
-                item?.attributeCode?.value ?: item?.attributeContent?.value,
-                item?.attributeDescription?.value,
+    fun getGeometryContexts(): List<GeometryContextInternal> = metadata.spatialRepresentationInfo
+        ?.mapNotNull { it.mdGeometryContext }
+        ?.map {
+            val feature = it.geometricFeature?.nominalFeature ?: it.geometricFeature?.ordinalFeature ?: it.geometricFeature?.scalarFeature ?: it.geometricFeature?.otherFeature
+            GeometryContextInternal(
+                feature?.featureName?.value,
+                it.geometryType?.value,
+                feature?.featureDataType?.value,
+                feature?.featureDescription?.value,
+                mapGeometryContextFeatureType(it.geometricFeature),
+                feature?.minValue?.value?.toDouble(),
+                feature?.maxValue?.value?.toDouble(),
+                feature?.units?.value,
+                mapGeometryContextAttributes(feature?.featureAttributes?.featureAttributes?.attribute),
             )
         } ?: emptyList()
+
+    fun getDatasetURI(): String? = metadata.dataSetURI?.value
+
+    private fun mapGeometryContextAttributes(attributes: List<FeatureAttribute>?): List<KeyValue> = attributes?.map { attribute ->
+        val item = attribute.RegularFeatureAttribute ?: attribute.OtherFeatureAttribute
+        KeyValue(
+            item?.attributeCode?.value ?: item?.attributeContent?.value,
+            item?.attributeDescription?.value,
+        )
+    } ?: emptyList()
+
+    private fun mapGeometryContextFeatureType(feature: GeometricFeature?): KeyValue? = when {
+        feature?.nominalFeature != null -> KeyValue("nominal")
+        feature?.ordinalFeature != null -> KeyValue("ordinal")
+        feature?.scalarFeature != null -> KeyValue("scalar")
+        feature?.otherFeature != null -> KeyValue("other")
+        else -> null
     }
 
-    private fun mapGeometryContextFeatureType(feature: GeometricFeature?): KeyValue? {
-        return when {
-            feature?.nominalFeature != null -> KeyValue("nominal")
-            feature?.ordinalFeature != null -> KeyValue("ordinal")
-            feature?.scalarFeature != null -> KeyValue("scalar")
-            feature?.otherFeature != null -> KeyValue("other")
-            else -> null
+    private fun getVerticalAbsoluteExternalPositionalAccuracy(): Double? = metadata.dataQualityInfo
+        ?.flatMap {
+            it.dqDataQuality?.report
+                ?.filter { it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.valueUnit?.unitDefinition?.quantityType == "absolute external positional accuracy, vertical accuracy" }
+                ?.map {
+                    it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.value
+                        ?.getOrNull(0)?.value
+                } ?: emptyList()
         }
-    }
-
-    private fun getVerticalAbsoluteExternalPositionalAccuracy(): Double? {
-        return metadata.dataQualityInfo
-            ?.flatMap {
-                it.dqDataQuality?.report
-                    ?.filter { it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.valueUnit?.unitDefinition?.quantityType == "absolute external positional accuracy, vertical accuracy" }
-                    ?.map {
-                        it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.value
-                            ?.getOrNull(0)?.value
-                    } ?: emptyList()
-            }
-            ?.getOrNull(0)
-            ?.toDouble()
-    }
-    private fun getHorizontalAbsoluteExternalPositionalAccuracy(): Double? {
-        return metadata.dataQualityInfo
-            ?.flatMap {
-                it.dqDataQuality?.report
-                    ?.filter { it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.valueUnit?.unitDefinition?.quantityType == "absolute external positional accuracy, geographic accuracy" }
-                    ?.map {
-                        it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.value
-                            ?.getOrNull(0)?.value
-                    } ?: emptyList()
-            }
-            ?.getOrNull(0)
-            ?.toDouble()
-    }
-    private fun getGriddedDataPositionalAccuracy(): Double? {
-        return metadata.dataQualityInfo
-            ?.flatMap {
-                it.dqDataQuality?.report
-                    ?.mapNotNull {
-                        it.dqGriddedDataPositionalAccuracy?.result?.dqQuantitativeResult?.value
-                            ?.getOrNull(0)?.value
-                    } ?: emptyList()
-            }
-            ?.getOrNull(0)
-            ?.toDouble()
-    }
+        ?.getOrNull(0)
+        ?.toDouble()
+    private fun getHorizontalAbsoluteExternalPositionalAccuracy(): Double? = metadata.dataQualityInfo
+        ?.flatMap {
+            it.dqDataQuality?.report
+                ?.filter { it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.valueUnit?.unitDefinition?.quantityType == "absolute external positional accuracy, geographic accuracy" }
+                ?.map {
+                    it.dqAbsoluteExternalPositionalAccuracy?.result?.dqQuantitativeResult?.value
+                        ?.getOrNull(0)?.value
+                } ?: emptyList()
+        }
+        ?.getOrNull(0)
+        ?.toDouble()
+    private fun getGriddedDataPositionalAccuracy(): Double? = metadata.dataQualityInfo
+        ?.flatMap {
+            it.dqDataQuality?.report
+                ?.mapNotNull {
+                    it.dqGriddedDataPositionalAccuracy?.result?.dqQuantitativeResult?.value
+                        ?.getOrNull(0)?.value
+                } ?: emptyList()
+        }
+        ?.getOrNull(0)
+        ?.toDouble()
 }
 
 data class QualityInfo(

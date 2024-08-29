@@ -112,14 +112,12 @@ class OpenDataExporter(
         return jacksonObjectMapper().readValue(output.toString(), JsonNode::class.java)
     }
 
-    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
-        return mapOf(
-            "map" to mapOf(
-                "model" to OpenDataModelTransformerAdditional(json, codelistHandler, catalogId, uploadConfig), // jacksonObjectMapper().convertValue(json, OpenDataModel::class.java),
-                "catalogId" to catalogId,
-            ),
-        )
-    }
+    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> = mapOf(
+        "map" to mapOf(
+            "model" to OpenDataModelTransformerAdditional(json, codelistHandler, catalogId, uploadConfig),
+            "catalogId" to catalogId,
+        ),
+    )
 
     private fun appendToIdf(json: ObjectNode?, additionalIdf: String) {
         val updatedIdf = json?.getString("idf")?.replace("</idf:idfMdMetadata>", "$additionalIdf</idf:idfMdMetadata>")

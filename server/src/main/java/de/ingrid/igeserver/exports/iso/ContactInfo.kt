@@ -34,7 +34,7 @@ data class CIContact(
 )
 
 data class AddressWrapper(
-    @JacksonXmlProperty(localName = "CI_Address") var address: Address? = null, //        @XmlElement(name = "CI_Address")
+    @JacksonXmlProperty(localName = "CI_Address") var address: Address? = null,
 )
 
 data class Address(

@@ -413,7 +413,8 @@ data class DQReportElement(
     val evaluationMethodDescription: CharacterString?,
     val evaluationProcedure: CharacterString?,
     val dateTime: List<CharacterString>?,
-    val result: DQResult?, // [1..2]
+    // [1..2]
+    val result: DQResult?,
 )
 
 data class DQResult(

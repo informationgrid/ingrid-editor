@@ -36,7 +36,7 @@ import org.springframework.transaction.PlatformTransactionManager
  * Update all group sids with group id instead of name
  */
 @Service
-class M074_UpdateGroups : MigrationBase("0.74") {
+class M074_UpdateGroupSids : MigrationBase("0.74") {
 
     private var log = logger()
 

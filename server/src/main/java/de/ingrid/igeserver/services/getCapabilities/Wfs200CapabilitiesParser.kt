@@ -32,12 +32,12 @@ class Wfs200CapabilitiesParser(
     codelistHandler: CodelistHandler,
     private val researchService: ResearchService,
     catalogId: String,
-) :
-    GeneralCapabilitiesParser(XPathUtils(Wfs200NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
+) : GeneralCapabilitiesParser(XPathUtils(Wfs200NamespaceContext()), codelistHandler, catalogId),
+    ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.1.0" to "1", "2.0" to "2", "2.0.0" to "2")
 
-    companion object /*: SingletonHolder<Wfs200CapabilitiesParser, CodelistHandler>(::Wfs200CapabilitiesParser)*/ {
+    companion object {
         private const val XPATH_EXP_WFS_KEYWORDS_FEATURE_TYPE =
             "/wfs20:WFS_Capabilities/wfs20:FeatureTypeList/wfs20:FeatureType/ows11:Keywords/ows11:Keyword"
         private const val XPATH_EXP_WFS_TITLE = "/wfs20:WFS_Capabilities/ows11:ServiceIdentification/ows11:Title"
@@ -81,29 +81,27 @@ class Wfs200CapabilitiesParser(
             "/wfs20:WFS_Capabilities/ows11:OperationsMetadata/ows11:ExtendedCapabilities/inspire_dls:ExtendedCapabilities"
     }
 
-    override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        return CapabilitiesBean().apply {
-            serviceType = "WFS"
-            dataServiceType = "3" // download
-            title = xPathUtils.getString(doc, XPATH_EXP_WFS_TITLE)
-            description = xPathUtils.getString(doc, XPATH_EXP_WFS_ABSTRACT)
-            versions =
-                mapVersionsFromCodelist("5153", getNodesContentAsList(doc, XPATH_EXP_WFS_VERSION), versionSyslistMap)
-            fees = getKeyValueForPath(doc, XPATH_EXP_WFS_FEES, "6500")
-            accessConstraints =
-                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WFS_ACCESS_CONSTRAINTS))
-            onlineResources = getOnlineResources(doc, XPATH_EXP_WFS_ONLINE_RESOURCE)
-            addExtendedCapabilities(this, doc, XPATH_EXP_WFS_EXTENDED_CAPABILITIES)
-            keywords.addAll(getMoreKeywords(doc))
-            boundingBoxes = getBoundingBoxesFromLayers(doc)
-            spatialReferenceSystems = getSpatialReferenceSystems(
-                doc,
-                "/wfs20:WFS_Capabilities/wfs20:FeatureTypeList/wfs20:FeatureType/wfs20:DefaultCRS",
-                "/wfs20:WFS_Capabilities/wfs20:FeatureTypeList/wfs20:FeatureType/wfs20:OtherCRS",
-            )
-            address = getAddress(doc)
-            operations = getOperations(doc)
-        }
+    override fun getCapabilitiesData(doc: Document): CapabilitiesBean = CapabilitiesBean().apply {
+        serviceType = "WFS"
+        dataServiceType = "3" // download
+        title = xPathUtils.getString(doc, XPATH_EXP_WFS_TITLE)
+        description = xPathUtils.getString(doc, XPATH_EXP_WFS_ABSTRACT)
+        versions =
+            mapVersionsFromCodelist("5153", getNodesContentAsList(doc, XPATH_EXP_WFS_VERSION), versionSyslistMap)
+        fees = getKeyValueForPath(doc, XPATH_EXP_WFS_FEES, "6500")
+        accessConstraints =
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WFS_ACCESS_CONSTRAINTS))
+        onlineResources = getOnlineResources(doc, XPATH_EXP_WFS_ONLINE_RESOURCE)
+        addExtendedCapabilities(this, doc, XPATH_EXP_WFS_EXTENDED_CAPABILITIES)
+        keywords.addAll(getMoreKeywords(doc))
+        boundingBoxes = getBoundingBoxesFromLayers(doc)
+        spatialReferenceSystems = getSpatialReferenceSystems(
+            doc,
+            "/wfs20:WFS_Capabilities/wfs20:FeatureTypeList/wfs20:FeatureType/wfs20:DefaultCRS",
+            "/wfs20:WFS_Capabilities/wfs20:FeatureTypeList/wfs20:FeatureType/wfs20:OtherCRS",
+        )
+        address = getAddress(doc)
+        operations = getOperations(doc)
     }
 
     private fun getOperations(doc: Document): List<OperationBean> {
@@ -266,48 +264,46 @@ class Wfs200CapabilitiesParser(
         return bboxes
     }
 
-    private fun getAddress(doc: Document): AddressBean {
-        return AddressBean().apply {
-            setNameInAddressBean(
-                this,
-                xPathUtils.getString(doc, "$XPATH_EXT_WFS_SERVICECONTACT/ows11:IndividualName"),
-            )
-            email = xPathUtils.getString(
-                doc,
-                "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:ElectronicMailAddress",
-            )
+    private fun getAddress(doc: Document): AddressBean = AddressBean().apply {
+        setNameInAddressBean(
+            this,
+            xPathUtils.getString(doc, "$XPATH_EXT_WFS_SERVICECONTACT/ows11:IndividualName"),
+        )
+        email = xPathUtils.getString(
+            doc,
+            "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:ElectronicMailAddress",
+        )
 
-            // try to find address in database and set the uuid if found
-            searchForAddress(researchService, catalogId, this)
+        // try to find address in database and set the uuid if found
+        searchForAddress(researchService, catalogId, this)
 
-            street = xPathUtils.getString(
-                doc,
-                "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:DeliveryPoint",
-            )
-            city =
-                xPathUtils.getString(doc, "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:City")
-            postcode = xPathUtils.getString(
-                doc,
-                "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:PostalCode",
-            )
-            country =
-                getKeyValue(
-                    "6200",
-                    xPathUtils.getString(
-                        doc,
-                        "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:Country",
-                    ),
-                )
-            state = getKeyValue(
-                "6250",
+        street = xPathUtils.getString(
+            doc,
+            "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:DeliveryPoint",
+        )
+        city =
+            xPathUtils.getString(doc, "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:City")
+        postcode = xPathUtils.getString(
+            doc,
+            "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:PostalCode",
+        )
+        country =
+            getKeyValue(
+                "6200",
                 xPathUtils.getString(
                     doc,
-                    "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:AdministrativeArea",
+                    "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:Country",
                 ),
-                "name",
             )
-            phone =
-                xPathUtils.getString(doc, "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Phone/ows11:Voice")
-        }
+        state = getKeyValue(
+            "6250",
+            xPathUtils.getString(
+                doc,
+                "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Address/ows11:AdministrativeArea",
+            ),
+            "name",
+        )
+        phone =
+            xPathUtils.getString(doc, "$XPATH_EXT_WFS_SERVICECONTACT/ows11:ContactInfo/ows11:Phone/ows11:Voice")
     }
 }

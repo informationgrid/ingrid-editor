@@ -136,7 +136,7 @@ class UvpProfile(
             Behaviour().apply {
                 name = it
                 active = false
-            } 
+            }
         }
         behaviourService.save(catalogId, behaviours)
     }
