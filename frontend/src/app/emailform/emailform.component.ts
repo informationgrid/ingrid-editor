@@ -26,17 +26,23 @@ import {
   ViewChild,
 } from "@angular/core";
 import {
+  ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormGroup,
   Validators,
 } from "@angular/forms";
 
 import { UserService } from "../services/user/user.service";
+import { MatError, MatFormField } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { MatButton } from "@angular/material/button";
 
 @Component({
   selector: "ige-emailform",
   templateUrl: "./emailform.component.html",
   styleUrls: ["./emailform.component.scss"],
+  standalone: true,
+  imports: [ReactiveFormsModule, MatFormField, MatInput, MatError, MatButton],
 })
 export class EmailformComponent implements OnInit {
   @Input()

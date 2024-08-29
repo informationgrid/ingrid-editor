@@ -23,6 +23,7 @@ import { GeoDatasetDoctypeUPSH } from "./ingrid-up-sh/doctypes/geo-dataset.docty
 
 @Component({
   template: "",
+  standalone: true,
 })
 class InGridUPSHComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeUPSH);
@@ -34,7 +35,7 @@ class InGridUPSHComponent extends InGridComponent {
 }
 
 @NgModule({
-  declarations: [InGridUPSHComponent],
+  imports: [InGridUPSHComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

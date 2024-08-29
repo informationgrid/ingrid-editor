@@ -31,21 +31,34 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatDialog } from "@angular/material/dialog";
 import { SpatialDialogComponent } from "./spatial-dialog/spatial-dialog.component";
 import { LeafletService } from "./leaflet.service";
-import {
-  SpatialLocation,
-  SpatialLocationWithColor,
-} from "./spatial-list/spatial-list.component";
+import { SpatialLocation, SpatialLocationWithColor, SpatialListComponent } from "./spatial-list/spatial-list.component";
 import { debounceTime, distinctUntilChanged, tap } from "rxjs/operators";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService, TranslocoDirective } from "@ngneat/transloco";
+import { MatFabButton, MatButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { NgClass } from "@angular/common";
+import { MatIcon } from "@angular/material/icon";
+import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-formly-leaflet-type",
-  templateUrl: "leaflet-type.component.html",
-  styleUrls: ["leaflet-type.component.scss"],
+    selector: "ige-formly-leaflet-type",
+    templateUrl: "leaflet-type.component.html",
+    styleUrls: ["leaflet-type.component.scss"],
+    standalone: true,
+    imports: [
+        MatFabButton,
+        MatTooltip,
+        NgClass,
+        MatIcon,
+        MatButton,
+        FormErrorComponent,
+        SpatialListComponent,
+        TranslocoDirective,
+    ],
 })
 export class LeafletTypeComponent
   extends FieldType<FieldTypeConfig>

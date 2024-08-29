@@ -26,13 +26,13 @@ import { NgIf } from "@angular/common";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
 
 @NgModule({
-  declarations: [CardBoxComponent],
   imports: [
     MatCardModule,
     MatDividerModule,
     MatButtonModule,
     NgIf,
     MatSlideToggle,
+    CardBoxComponent,
   ],
   exports: [CardBoxComponent],
 })

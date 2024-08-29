@@ -57,16 +57,6 @@ import { CodelistPresenterComponent } from "../shared/codelist-presenter/codelis
 import { ConnectionManagementComponent } from "./connection-management/connection-management.component";
 
 @NgModule({
-  declarations: [
-    SettingsComponent,
-    GeneralSettingsComponent,
-    CodelistsComponent,
-    CatalogManagementComponent,
-    CatalogAssignmentComponent,
-    CatalogDetailComponent,
-    MessagesManagementComponent,
-    NewMessageDialogComponent,
-  ],
   imports: [
     CommonModule,
     MatTabsModule,
@@ -97,6 +87,14 @@ import { ConnectionManagementComponent } from "./connection-management/connectio
     DragDropModule,
     ContentManagementComponent,
     ConnectionManagementComponent,
+    SettingsComponent,
+    GeneralSettingsComponent,
+    CodelistsComponent,
+    CatalogManagementComponent,
+    CatalogAssignmentComponent,
+    CatalogDetailComponent,
+    MessagesManagementComponent,
+    NewMessageDialogComponent,
   ],
 })
 export class SettingsModule {}

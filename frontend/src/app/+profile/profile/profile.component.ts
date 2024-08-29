@@ -28,11 +28,24 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ChangeNameDialogComponent } from "../change-name-dialog/change-name-dialog.component";
 import { filter } from "rxjs/operators";
+import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-template-no-header.component";
+import { MatIcon } from "@angular/material/icon";
+import { MatButton } from "@angular/material/button";
+import { EmailformComponent } from "../../emailform/emailform.component";
+import { AsyncPipe } from "@angular/common";
 
 @Component({
   selector: "ige-profile",
   templateUrl: "./profile.component.html",
   styleUrls: ["./profile.component.scss"],
+  standalone: true,
+  imports: [
+    PageTemplateNoHeaderComponent,
+    MatIcon,
+    MatButton,
+    EmailformComponent,
+    AsyncPipe,
+  ],
 })
 export class ProfileComponent implements OnInit {
   constructor(

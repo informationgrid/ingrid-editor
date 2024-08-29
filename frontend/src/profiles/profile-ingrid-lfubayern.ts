@@ -27,6 +27,7 @@ import { PluginService } from "../app/services/plugin/plugin.service";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class InGridLFUBayernComponent extends InGridComponent {
   codelistQuery = inject(CodelistQuery);
@@ -127,7 +128,7 @@ class InGridLFUBayernComponent extends InGridComponent {
 }
 
 @NgModule({
-  declarations: [InGridLFUBayernComponent],
+  imports: [InGridLFUBayernComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

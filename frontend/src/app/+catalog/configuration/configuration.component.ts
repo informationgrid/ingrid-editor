@@ -22,11 +22,16 @@ import { UntypedFormGroup } from "@angular/forms";
 import { fields } from "./formly-fields";
 import { CodelistService } from "../../services/codelist/codelist.service";
 import { CatalogService } from "../services/catalog.service";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { MatButton } from "@angular/material/button";
+import { FormlyModule } from "@ngx-formly/core";
 
 @Component({
   selector: "ige-configuration",
   templateUrl: "./configuration.component.html",
   styleUrls: ["./configuration.component.scss"],
+  standalone: true,
+  imports: [PageTemplateComponent, MatButton, FormlyModule],
 })
 export class ConfigurationComponent implements OnInit {
   form = new UntypedFormGroup({});

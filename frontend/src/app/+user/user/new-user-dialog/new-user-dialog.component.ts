@@ -21,19 +21,41 @@ import { Component, OnInit } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
 import { BackendUser, FrontendUser } from "../../user";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
 import { catchError, filter, tap } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
-import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
+import {
+  FormlyFieldConfig,
+  FormlyFormOptions,
+  FormlyModule,
+} from "@ngx-formly/core";
 import { ModalService } from "../../../services/modal/modal.service";
 import { IgeError } from "../../../models/ige-error";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-template.component";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { MatButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
 
 @UntilDestroy()
 @Component({
   selector: "ige-new-user-dialog",
   templateUrl: "./new-user-dialog.component.html",
   styleUrls: ["./new-user-dialog.component.scss"],
+  standalone: true,
+  imports: [
+    DialogTemplateComponent,
+    ReactiveFormsModule,
+    MatProgressSpinner,
+    FormlyModule,
+    MatButton,
+    MatIcon,
+  ],
 })
 export class NewUserDialogComponent implements OnInit {
   userSub: Subscription;

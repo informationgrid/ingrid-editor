@@ -67,6 +67,7 @@ export enum InGridDoctype {
 
 @Component({
   template: "",
+  standalone: true,
 })
 export class InGridComponent implements OnInit {
   profileService = inject(ProfileService);
@@ -111,12 +112,6 @@ export class InGridComponent implements OnInit {
 }
 
 @NgModule({
-  declarations: [
-    InGridComponent,
-    ConformityDialogComponent,
-    GetCapabilitiesDialogComponent,
-    ThesaurusReportComponent,
-  ],
   providers: [GetCapabilititesWizardPlugin, IsoViewPlugin, FormToolbarService],
   imports: [
     MatIconModule,
@@ -142,6 +137,10 @@ export class InGridComponent implements OnInit {
     MatSnackBarModule,
     IsoViewComponent,
     BreadcrumbModule,
+    InGridComponent,
+    ConformityDialogComponent,
+    GetCapabilitiesDialogComponent,
+    ThesaurusReportComponent,
   ],
   exports: [InGridComponent],
 })

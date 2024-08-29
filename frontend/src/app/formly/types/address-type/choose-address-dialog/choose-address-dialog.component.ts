@@ -37,7 +37,14 @@ import {
   SelectOptionUi,
 } from "../../../../services/codelist/codelist.service";
 import { map, tap } from "rxjs/operators";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from "@angular/material/dialog";
 import { ResolvedAddressWithType } from "../address-card/address-card.component";
 import { SessionQuery } from "../../../../store/session.query";
 import { DocumentService } from "../../../../services/document/document.service";
@@ -47,6 +54,12 @@ import { IgeError } from "../../../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { BackendOption } from "../../../../store/codelist/codelist.model";
 import { MatSelect } from "@angular/material/select";
+import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
+import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
 
 export interface ChooseAddressDialogData {
   address: ResolvedAddressWithType;
@@ -61,10 +74,25 @@ export interface ChooseAddressResponse {
 
 @UntilDestroy()
 @Component({
-  selector: "ige-choose-address-dialog",
-  templateUrl: "./choose-address-dialog.component.html",
-  styleUrls: ["./choose-address-dialog.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: "ige-choose-address-dialog",
+    templateUrl: "./choose-address-dialog.component.html",
+    styleUrls: ["./choose-address-dialog.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        CdkDrag,
+        CdkDragHandle,
+        MatIconButton,
+        MatDialogClose,
+        MatIcon,
+        MatDialogTitle,
+        CdkScrollable,
+        MatDialogContent,
+        TreeComponent,
+        DocumentListItemComponent,
+        MatDialogActions,
+        MatButton,
+    ],
 })
 export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   @ViewChild(MatSelect) recentAddressSelect: MatSelect;

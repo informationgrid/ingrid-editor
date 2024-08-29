@@ -20,6 +20,7 @@
 import {
   Component,
   EventEmitter,
+  forwardRef,
   Input,
   OnInit,
   Output,
@@ -27,11 +28,15 @@ import {
   PipeTransform,
 } from "@angular/core";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: "ige-breadcrumb",
   templateUrl: "./breadcrumb.component.html",
   styleUrls: ["./breadcrumb.component.scss"],
+  standalone: true,
+  imports: [MatTooltip, MatIcon, forwardRef(() => BreadCrumbTooltipPipe)],
 })
 export class BreadcrumbComponent implements OnInit {
   @Input() set path(path: ShortTreeNode[]) {
@@ -95,7 +100,8 @@ export class BreadcrumbComponent implements OnInit {
 }
 
 @Pipe({
-  name: "breadCrumbTooltip",
+    name: "breadCrumbTooltip",
+    standalone: true,
 })
 export class BreadCrumbTooltipPipe implements PipeTransform {
   transform(value: ShortTreeNode, args?: any): any {

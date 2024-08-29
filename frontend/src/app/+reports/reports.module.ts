@@ -48,12 +48,6 @@ import { A11yModule } from "@angular/cdk/a11y";
 import { ResultTableHeaderComponent } from "../+research/result-table/result-table-header/result-table-header.component";
 
 @NgModule({
-  declarations: [
-    ReportsComponent,
-    GeneralReportComponent,
-    UrlCheckComponent,
-    ListDatasetsDialogComponent,
-  ],
   imports: [
     CommonModule,
     LazyReportsRouting,
@@ -73,6 +67,10 @@ import { ResultTableHeaderComponent } from "../+research/result-table/result-tab
     JobHandlerHeaderModule,
     A11yModule,
     ResultTableHeaderComponent,
+    ReportsComponent,
+    GeneralReportComponent,
+    UrlCheckComponent,
+    ListDatasetsDialogComponent,
   ],
   providers: [
     {

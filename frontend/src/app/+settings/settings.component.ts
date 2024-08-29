@@ -18,13 +18,28 @@
  * limitations under the Licence.
  */
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import {
+  ActivatedRoute,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from "@angular/router";
 import { SessionService, Tab } from "../services/session.service";
+import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 
 @Component({
   selector: "settings",
   templateUrl: "./settings.component.html",
   styleUrls: ["./settings.component.scss"],
+  standalone: true,
+  imports: [
+    MatTabNav,
+    MatTabLink,
+    RouterLinkActive,
+    RouterLink,
+    MatTabNavPanel,
+    RouterOutlet,
+  ],
 })
 export class SettingsComponent implements OnInit {
   tabs: Tab[];

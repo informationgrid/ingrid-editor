@@ -18,11 +18,34 @@
  * limitations under the Licence.
  */
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import {
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogTitle,
+} from "@angular/material/dialog";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
 
 @Component({
   selector: "ige-dialog-template",
   templateUrl: "./dialog-template.component.html",
   styleUrls: ["./dialog-template.component.scss"],
+  standalone: true,
+  imports: [
+    CdkDrag,
+    CdkDragHandle,
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class DialogTemplateComponent implements OnInit {
   @Input() label: string;

@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { FieldArrayType } from "@ngx-formly/core";
+import { FieldArrayType, FormlyModule } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
   SelectGeoDatasetData,
@@ -38,6 +38,13 @@ import { DocumentState, IgeDocument } from "../../../models/ige-document";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { firstValueFrom } from "rxjs";
+import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
+import { MatIcon } from "@angular/material/icon";
+import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
+import { MatIconButton } from "@angular/material/button";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 
 interface Reference {
   layerNames: string[];
@@ -63,9 +70,22 @@ export const docReferenceTemplate: Partial<DocumentReference> = {
 
 @UntilDestroy()
 @Component({
-  selector: "ige-document-reference-type",
-  templateUrl: "./document-reference-type.component.html",
-  styleUrls: ["./document-reference-type.component.scss"],
+    selector: "ige-document-reference-type",
+    templateUrl: "./document-reference-type.component.html",
+    styleUrls: ["./document-reference-type.component.scss"],
+    standalone: true,
+    imports: [
+        FormErrorComponent,
+        FormlyModule,
+        MatIcon,
+        DocumentIconComponent,
+        MatIconButton,
+        MatMenuTrigger,
+        MatMenu,
+        MatMenuItem,
+        MatProgressSpinner,
+        AddButtonComponent,
+    ],
 })
 export class DocumentReferenceTypeComponent
   extends FieldArrayType

@@ -25,7 +25,11 @@ import {
   OnInit,
   Output,
 } from "@angular/core";
-import { FormControl, UntypedFormControl } from "@angular/forms";
+import {
+  FormControl,
+  ReactiveFormsModule,
+  UntypedFormControl,
+} from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime } from "rxjs/operators";
 import { NominatimResult, NominatimService } from "../../nominatim.service";
@@ -35,12 +39,46 @@ import { SpatialBoundingBox } from "../spatial-result.model";
 import { LeafletService } from "../../leaflet.service";
 import { Subscription } from "rxjs";
 import { SpatialLocation } from "../../spatial-list/spatial-list.component";
+import { SearchInputComponent } from "../../../../../shared/search-input/search-input.component";
+import {
+  MatList,
+  MatListItem,
+  MatListItemIcon,
+  MatListItemLine,
+} from "@angular/material/list";
+import { MatRadioButton } from "@angular/material/radio";
+import { MatDivider } from "@angular/material/divider";
+import {
+  MatError,
+  MatFormField,
+  MatLabel,
+  MatSuffix,
+} from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { HelpContextButtonComponent } from "../../../../../help-context-button/help-context-button.component";
 
 @UntilDestroy()
 @Component({
   selector: "ige-free-spatial",
   templateUrl: "./free-spatial.component.html",
   styleUrls: ["./free-spatial.component.scss"],
+  standalone: true,
+  imports: [
+    SearchInputComponent,
+    MatList,
+    ReactiveFormsModule,
+    MatListItem,
+    MatRadioButton,
+    MatListItemIcon,
+    MatListItemLine,
+    MatDivider,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatError,
+    HelpContextButtonComponent,
+    MatSuffix,
+  ],
 })
 export class FreeSpatialComponent implements OnInit, OnDestroy {
   @Input() map: Map;

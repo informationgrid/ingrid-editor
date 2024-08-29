@@ -26,14 +26,14 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatButtonModule } from "@angular/material/button";
 
 @NgModule({
-  declarations: [JobHandlerHeaderComponent],
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatTooltipModule,
-    MatButtonModule,
-  ],
-  exports: [JobHandlerHeaderComponent],
+    imports: [
+        CommonModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        MatTooltipModule,
+        MatButtonModule,
+        JobHandlerHeaderComponent,
+    ],
+    exports: [JobHandlerHeaderComponent],
 })
 export class JobHandlerHeaderModule {}

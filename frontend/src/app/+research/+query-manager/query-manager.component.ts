@@ -31,11 +31,33 @@ import { Observable } from "rxjs";
 import { filter, map } from "rxjs/operators";
 import { logAction } from "@datorama/akita";
 import { Router } from "@angular/router";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { CardBoxComponent } from "../../shared/card-box/card-box.component";
+import { MatIcon } from "@angular/material/icon";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIconButton } from "@angular/material/button";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { AsyncPipe, DatePipe } from "@angular/common";
+import { DateAgoPipe } from "../../directives/date-ago.pipe";
 
 @Component({
   selector: "ige-query-manager",
   templateUrl: "./query-manager.component.html",
   styleUrls: ["./query-manager.component.scss"],
+  standalone: true,
+  imports: [
+    PageTemplateComponent,
+    CardBoxComponent,
+    MatIcon,
+    MatTooltip,
+    MatIconButton,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    AsyncPipe,
+    DatePipe,
+    DateAgoPipe,
+  ],
 })
 export class QueryManagerComponent implements OnInit {
   userQueries: Observable<QueryUI[]> = this.queryQuery.userQueries$.pipe(

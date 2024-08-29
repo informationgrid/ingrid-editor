@@ -23,8 +23,7 @@ import { FocusDirective } from "./focus.directive";
 import { CodelistPipe } from "./codelist.pipe";
 
 @NgModule({
-  declarations: [DateAgoPipe, FocusDirective, CodelistPipe],
-  imports: [],
+  imports: [DateAgoPipe, FocusDirective, CodelistPipe],
   exports: [DateAgoPipe, FocusDirective, CodelistPipe],
 })
 export class SharedPipesModule {}

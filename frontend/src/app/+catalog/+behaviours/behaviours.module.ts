@@ -62,8 +62,6 @@ import { PermissionsDialogComponent } from "../../+user/permissions/permissions-
     /*to get form behaviours*/
     MatSlideToggleModule /*to get form behaviours*/,
     PermissionsDialogComponent,
-  ],
-  declarations: [
     BehavioursComponent,
     BehaviourItemComponent,
     PublicationTypeDialog,

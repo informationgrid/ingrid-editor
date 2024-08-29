@@ -28,7 +28,6 @@ import { SharedModule } from "../shared/shared.module";
 import { FormSharedModule } from "../+form/form-shared/form-shared.module";
 
 @NgModule({
-  declarations: [AddressComponent],
   imports: [
     routing,
     CommonModule,
@@ -37,6 +36,7 @@ import { FormSharedModule } from "../+form/form-shared/form-shared.module";
     FormlyModule,
     SharedModule,
     FormSharedModule,
+    AddressComponent,
   ],
   providers: [],
 })

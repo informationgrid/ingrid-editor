@@ -25,6 +25,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import {
   AbstractControl,
   FormControl,
+  ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormGroup,
   ValidatorFn,
@@ -44,12 +45,54 @@ import { ConfigService } from "../../services/config/config.service";
 import { UserService } from "../../services/user/user.service";
 import { Router } from "@angular/router";
 import { GroupQuery } from "../../store/group/group.query";
+import { MatToolbar, MatToolbarRow } from "@angular/material/toolbar";
+import { SearchInputComponent } from "../../shared/search-input/search-input.component";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIcon } from "@angular/material/icon";
+import { AngularSplitModule } from "angular-split";
+import { GroupsTableComponent } from "./groups-table/groups-table.component";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { GroupHeaderMoreComponent } from "./group-header-more/group-header-more.component";
+import { MatError, MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { PermissionsComponent } from "../permissions/permissions.component";
+import { MatDivider } from "@angular/material/divider";
+import { UserTableComponent } from "../user/user-table/user-table.component";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { AsyncPipe } from "@angular/common";
 
 @UntilDestroy()
 @Component({
   selector: "ige-group-manager",
   templateUrl: "./group.component.html",
   styleUrls: ["../user.styles.scss"],
+  standalone: true,
+  imports: [
+    MatToolbar,
+    MatToolbarRow,
+    SearchInputComponent,
+    MatButton,
+    MatTooltip,
+    MatIcon,
+    AngularSplitModule,
+    GroupsTableComponent,
+    ReactiveFormsModule,
+    MatIconButton,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    GroupHeaderMoreComponent,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatError,
+    PermissionsComponent,
+    MatDivider,
+    UserTableComponent,
+    MatProgressSpinner,
+    AsyncPipe,
+  ],
 })
 export class GroupComponent implements OnInit, AfterViewInit {
   groups = this.groupQuery

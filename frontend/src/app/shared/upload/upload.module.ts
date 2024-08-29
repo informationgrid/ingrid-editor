@@ -38,8 +38,10 @@ import { NgxFlowModule } from "@flowjs/ngx-flow";
     MatProgressSpinnerModule,
     MatButtonModule,
     NgxFlowModule,
+    UploadComponent,
+    UploadItemComponent,
+    SizePipe,
   ],
-  declarations: [UploadComponent, UploadItemComponent, SizePipe],
   exports: [UploadComponent],
 })
 export class UploadModule {}

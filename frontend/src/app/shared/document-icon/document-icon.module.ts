@@ -25,8 +25,13 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { TranslocoModule } from "@ngneat/transloco";
 
 @NgModule({
-  imports: [MatIconModule, CommonModule, MatTooltipModule, TranslocoModule],
-  declarations: [DocumentIconComponent],
+  imports: [
+    MatIconModule,
+    CommonModule,
+    MatTooltipModule,
+    TranslocoModule,
+    DocumentIconComponent,
+  ],
   exports: [DocumentIconComponent],
 })
 export class DocumentIconModule {}

@@ -21,11 +21,14 @@ import { Component, Input, OnInit } from "@angular/core";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Router } from "@angular/router";
 import { ConfigService } from "../../../services/config/config.service";
+import { ActionButtonComponent } from "../../../shared/action-button/action-button.component";
 
 @Component({
   selector: "dashboard-address-header",
   templateUrl: "./dashboard-address-header.component.html",
   styleUrls: ["./dashboard-address-header.component.scss"],
+  standalone: true,
+  imports: [ActionButtonComponent],
 })
 export class DashboardAddressHeaderComponent implements OnInit {
   @Input() canCreateAddress: boolean;

@@ -18,11 +18,15 @@
  * limitations under the Licence.
  */
 import { Component, Input, OnInit } from "@angular/core";
+import { MatButton } from "@angular/material/button";
+import { NgIf } from "@angular/common";
 
 @Component({
   selector: "ige-header-navigation",
   templateUrl: "./header-navigation.component.html",
   styleUrls: ["./header-navigation.component.scss"],
+  standalone: true,
+  imports: [MatButton, NgIf],
 })
 export class HeaderNavigationComponent implements OnInit {
   @Input() sections: string[] = [];

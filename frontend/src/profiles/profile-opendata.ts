@@ -30,6 +30,7 @@ import { arrayUpdate } from "@datorama/akita";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class OpenDataComponent {
   // TODO: bmiChange = (inject(BmiDoctype).codelistIdOpenData = "6400");
@@ -69,7 +70,7 @@ class OpenDataComponent {
 }
 
 @NgModule({
-  declarations: [OpenDataComponent],
+  imports: [OpenDataComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

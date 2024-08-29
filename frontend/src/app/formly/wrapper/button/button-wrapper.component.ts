@@ -19,11 +19,14 @@
  */
 import { Component } from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
+import { MatButton } from "@angular/material/button";
 
 @Component({
   selector: "ige-button",
   templateUrl: "./button-wrapper.component.html",
   styleUrls: ["./button-wrapper.component.scss"],
+  standalone: true,
+  imports: [MatButton],
 })
 export class ButtonWrapperComponent extends FieldWrapper {
   onClick($event: any) {

@@ -32,10 +32,28 @@ import {
   FormDialogData,
 } from "./form-dialog/form-dialog.component";
 import { SelectionModel } from "@angular/cdk/collections";
-import { MatTableDataSource } from "@angular/material/table";
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
+  MatTable,
+  MatTableDataSource,
+} from "@angular/material/table";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { ConfigService } from "../../../services/config/config.service";
-import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragHandle,
+  CdkDropList,
+  moveItemInArray,
+} from "@angular/cdk/drag-drop";
 import { LinkDialogComponent } from "./link-dialog/link-dialog.component";
 import {
   LinkInfo,
@@ -46,15 +64,54 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
-import { FieldTypeConfig } from "@ngx-formly/core";
+import { FieldTypeConfig, FormlyModule } from "@ngx-formly/core";
 import { ValidationErrors } from "@angular/forms";
 import { FormStateService } from "../../../+form/form-state.service";
+import { FormLabelComponent } from "../../wrapper/form-label/form-label.component";
+import { NgIf, NgTemplateOutlet } from "@angular/common";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 
 @UntilDestroy()
 @Component({
   selector: "ige-table-type",
   templateUrl: "table-type.component.html",
   styleUrls: ["table-type.component.scss"],
+  standalone: true,
+  imports: [
+    FormLabelComponent,
+    NgIf,
+    NgTemplateOutlet,
+    MatButton,
+    MatIcon,
+    MatCheckbox,
+    FormErrorComponent,
+    FormlyModule,
+    MatTable,
+    CdkDropList,
+    CdkDrag,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    CdkDragHandle,
+    MatIconButton,
+    MatTooltip,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    AddButtonComponent,
+  ],
 })
 export class TableTypeComponent
   extends FieldType<FieldTypeConfig>

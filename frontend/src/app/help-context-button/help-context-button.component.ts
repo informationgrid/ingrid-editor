@@ -21,6 +21,9 @@ import { Component, Input } from "@angular/core";
 import { of } from "rxjs";
 import { ContextHelpService } from "../services/context-help/context-help.service";
 import { ConfigService } from "../services/config/config.service";
+import { MatIconButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: "ige-help-context-button",
@@ -35,6 +38,8 @@ import { ConfigService } from "../services/config/config.service";
       <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
     </button>
   `,
+  standalone: true,
+  imports: [MatIconButton, MatTooltip, MatIcon],
 })
 export class HelpContextButtonComponent {
   @Input() fieldId: string;

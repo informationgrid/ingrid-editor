@@ -18,7 +18,11 @@
  * limitations under the Licence.
  */
 import { Component, OnInit } from "@angular/core";
-import { FieldArrayType, FormlyFieldConfig } from "@ngx-formly/core";
+import {
+  FieldArrayType,
+  FormlyFieldConfig,
+  FormlyModule,
+} from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
@@ -27,12 +31,27 @@ import {
 import { debounceTime, filter, map, startWith } from "rxjs/operators";
 import { FormularService } from "../../../+form/formular.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { MatIcon } from "@angular/material/icon";
 
 @UntilDestroy()
 @Component({
   selector: "ige-uvp-sections",
   templateUrl: "./uvp-sections.component.html",
   styleUrls: ["./uvp-sections.component.scss"],
+  standalone: true,
+  imports: [
+    FormlyModule,
+    MatIconButton,
+    MatTooltip,
+    MatMenuTrigger,
+    MatIcon,
+    MatMenu,
+    MatMenuItem,
+    MatButton,
+  ],
 })
 export class UvpSectionsComponent extends FieldArrayType implements OnInit {
   markSection = {};

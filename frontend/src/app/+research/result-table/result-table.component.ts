@@ -28,8 +28,20 @@ import {
   ViewChild,
 } from "@angular/core";
 import { ResearchResponse } from "../research.service";
-import { MatTableDataSource } from "@angular/material/table";
-import { MatSort } from "@angular/material/sort";
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
+  MatTable,
+  MatTableDataSource,
+} from "@angular/material/table";
+import { MatSort, MatSortHeader } from "@angular/material/sort";
 import { MatPaginator } from "@angular/material/paginator";
 import {
   SelectOption,
@@ -47,13 +59,62 @@ import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../services/config/config.service";
 import { ExportService } from "../../services/export.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
+import {
+  DatePipe,
+  NgFor,
+  NgIf,
+  NgSwitch,
+  NgSwitchCase,
+  NgSwitchDefault,
+  NgTemplateOutlet,
+} from "@angular/common";
+import { ResultTableHeaderComponent } from "./result-table-header/result-table-header.component";
+import { MatDivider } from "@angular/material/divider";
+import { DocumentIconComponent } from "../../shared/document-icon/document-icon.component";
+import { MatIconButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: "ige-result-table",
   templateUrl: "./result-table.component.html",
   styleUrls: ["./result-table.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgIf,
+    ResultTableHeaderComponent,
+    MatDivider,
+    TranslocoDirective,
+    MatTable,
+    MatSort,
+    NgFor,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatSortHeader,
+    MatCellDef,
+    MatCell,
+    NgSwitch,
+    NgSwitchCase,
+    DocumentIconComponent,
+    NgTemplateOutlet,
+    NgSwitchDefault,
+    MatIconButton,
+    MatTooltip,
+    MatMenuTrigger,
+    MatIcon,
+    MatMenu,
+    MatMenuItem,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    MatPaginator,
+    DatePipe,
+  ],
 })
 export class ResultTableComponent implements OnInit, AfterViewInit {
   @Input() set result(val: ResearchResponse) {

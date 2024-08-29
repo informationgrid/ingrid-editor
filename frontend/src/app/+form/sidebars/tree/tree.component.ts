@@ -45,6 +45,23 @@ import { ConfigService } from "../../../services/config/config.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { TreeHeaderComponent } from "./tree-header/tree-header.component";
+import { MatIcon } from "@angular/material/icon";
+import {
+  MatTree,
+  MatTreeNode,
+  MatTreeNodeDef,
+  MatTreeNodePadding,
+  MatTreeNodeToggle,
+} from "@angular/material/tree";
+import { CdkMonitorFocus } from "@angular/cdk/a11y";
+import { MatIconButton } from "@angular/material/button";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { EmptyNavigationComponent } from "./empty-navigation/empty-navigation.component";
 
 export enum TreeActionType {
   ADD,
@@ -59,6 +76,24 @@ export enum TreeActionType {
   styleUrls: ["./tree.component.scss"],
   providers: [DynamicDatabase],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    TreeHeaderComponent,
+    MatIcon,
+    MatTree,
+    MatTreeNodeDef,
+    MatTreeNode,
+    MatTreeNodePadding,
+    CdkMonitorFocus,
+    MatIconButton,
+    MatTreeNodeToggle,
+    MatCheckbox,
+    DocumentIconComponent,
+    MatTooltip,
+    MatProgressSpinner,
+    EmptyNavigationComponent,
+  ],
 })
 export class TreeComponent implements OnInit {
   @Input() forAddresses: boolean;

@@ -38,12 +38,6 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
 import { TranslocoModule } from "@ngneat/transloco";
 
 @NgModule({
-  declarations: [
-    CreateNodeComponent,
-    DestinationSelectionComponent,
-    AddressTemplateComponent,
-    DocumentTemplateComponent,
-  ],
   imports: [
     MatDialogModule,
     MatTabsModule,
@@ -59,6 +53,10 @@ import { TranslocoModule } from "@ngneat/transloco";
     SharedModule,
     TranslocoModule,
     DragDropModule,
+    CreateNodeComponent,
+    DestinationSelectionComponent,
+    AddressTemplateComponent,
+    DocumentTemplateComponent,
   ],
   exports: [DestinationSelectionComponent],
 })

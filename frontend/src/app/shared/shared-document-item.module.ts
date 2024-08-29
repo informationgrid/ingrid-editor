@@ -40,8 +40,8 @@ import { A11yModule } from "@angular/cdk/a11y";
     DocumentIconModule,
     SharedPipesModule,
     A11yModule,
+    DocumentListItemComponent,
   ],
-  declarations: [DocumentListItemComponent],
   exports: [
     DocumentListItemComponent,
     MatListModule,

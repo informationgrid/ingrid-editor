@@ -26,18 +26,27 @@ import {
   OnInit,
   Output,
 } from "@angular/core";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
 import { Map, Rectangle } from "leaflet";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { LeafletService } from "../../leaflet.service";
 import { debounceTime, filter, tap } from "rxjs/operators";
 import { SpatialBoundingBox } from "../spatial-result.model";
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
 
 @UntilDestroy()
 @Component({
   selector: "ige-coordinates-spatial",
   templateUrl: "./coordinates-spatial.component.html",
   styleUrls: ["./coordinates-spatial.component.scss"],
+  standalone: true,
+  imports: [ReactiveFormsModule, MatFormField, MatLabel, MatInput],
 })
 export class CoordinatesSpatialComponent
   implements OnInit, AfterViewInit, OnDestroy

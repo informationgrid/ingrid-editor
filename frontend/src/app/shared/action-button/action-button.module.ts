@@ -24,8 +24,12 @@ import { MatButtonModule } from "@angular/material/button";
 import { ActionButtonComponent } from "./action-button.component";
 
 @NgModule({
-  imports: [CommonModule, MatIconModule, MatButtonModule],
-  declarations: [ActionButtonComponent],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatButtonModule,
+    ActionButtonComponent,
+  ],
   exports: [ActionButtonComponent],
 })
 export class ActionButtonModule {}

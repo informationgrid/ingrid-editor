@@ -27,7 +27,11 @@ import {
 } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
-import { UntypedFormGroup, Validators } from "@angular/forms";
+import {
+  ReactiveFormsModule,
+  UntypedFormGroup,
+  Validators,
+} from "@angular/forms";
 import { ProfileAbstract } from "../../../../store/profile/profile.model";
 import { filter, map, tap } from "rxjs/operators";
 import { ProfileQuery } from "../../../../store/profile/profile.query";
@@ -35,12 +39,24 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DocBehavioursService } from "../../../../services/event/doc-behaviours.service";
 import { ProfileService } from "../../../../services/profile.service";
 import { TranslocoService } from "@ngneat/transloco";
+import { MatFormField } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { FocusDirective } from "../../../../directives/focus.directive";
+import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
 
 @UntilDestroy()
 @Component({
   selector: "ige-address-template",
   templateUrl: "./address-template.component.html",
   styleUrls: ["./address-template.component.scss"],
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    MatFormField,
+    MatInput,
+    FocusDirective,
+    DocumentListItemComponent,
+  ],
 })
 export class AddressTemplateComponent implements OnInit {
   @Input() form: UntypedFormGroup;

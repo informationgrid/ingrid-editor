@@ -21,15 +21,31 @@ import { Component, HostListener, OnInit } from "@angular/core";
 import { UserComponent } from "../user/user.component";
 import { GroupComponent } from "../group/group.component";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { ActivatedRoute, Router } from "@angular/router";
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from "@angular/router";
 import { SessionService, Tab } from "../../services/session.service";
 import { GroupService } from "../../services/role/group.service";
+import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 
 @UntilDestroy()
 @Component({
   selector: "ige-user-management",
   templateUrl: "./user-management.component.html",
   styleUrls: ["./user-management.component.scss"],
+  standalone: true,
+  imports: [
+    MatTabNav,
+    MatTabLink,
+    RouterLinkActive,
+    RouterLink,
+    MatTabNavPanel,
+    RouterOutlet,
+  ],
 })
 export class UserManagementComponent implements OnInit {
   currentComponent: UserComponent | GroupComponent;

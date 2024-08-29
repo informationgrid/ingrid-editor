@@ -63,14 +63,6 @@ import { TranslocoModule } from "@ngneat/transloco";
 import { ResultTableHeaderComponent } from "./result-table/result-table-header/result-table-header.component";
 
 @NgModule({
-  declarations: [
-    ResearchComponent,
-    QueryManagerComponent,
-    SaveQueryDialogComponent,
-    TabSqlComponent,
-    ResultTableComponent,
-    TabSearchComponent,
-  ],
   imports: [
     CommonModule,
     routing,
@@ -104,6 +96,12 @@ import { ResultTableHeaderComponent } from "./result-table/result-table-header/r
     MatSnackBarModule,
     TranslocoModule,
     ResultTableHeaderComponent,
+    ResearchComponent,
+    QueryManagerComponent,
+    SaveQueryDialogComponent,
+    TabSqlComponent,
+    ResultTableComponent,
+    TabSearchComponent,
   ],
   providers: [
     {

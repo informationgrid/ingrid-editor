@@ -29,8 +29,7 @@ describe("ContextHelpComponent", () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ContextHelpComponent],
-      imports: [MatIconTestingModule],
+      imports: [MatIconTestingModule, ContextHelpComponent],
       providers: [
         // workaround: why I can't inject MatDialogRef in the unit test? https://github.com/angular/components/issues/8419
         { provide: MatDialogRef, useValue: {} },

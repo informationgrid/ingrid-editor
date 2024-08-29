@@ -89,13 +89,11 @@ import { IndexingExplanationComponent } from "./indexing/indexing-explanation/in
     IndexingExplanationComponent,
     IndexingComponent,
     LogResultComponent,
-  ],
-  providers: [CatalogService],
-  declarations: [
     CatalogSettingsComponent,
     UpdateCodelistComponent,
     ConfigurationComponent,
   ],
+  providers: [CatalogService],
   exports: [RouterModule],
 })
 export class CatalogModule {}

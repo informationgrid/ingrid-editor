@@ -27,6 +27,7 @@ import { TestAddressDoctype } from "./test/test-address.doctype";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class TestComponent {
   constructor(
@@ -44,7 +45,7 @@ class TestComponent {
 }
 
 @NgModule({
-  declarations: [TestComponent],
+  imports: [TestComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

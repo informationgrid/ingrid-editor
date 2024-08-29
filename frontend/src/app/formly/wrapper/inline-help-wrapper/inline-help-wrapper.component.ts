@@ -30,11 +30,24 @@ import { FieldWrapper } from "@ngx-formly/core";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { FormStateService } from "../../../+form/form-state.service";
+import { NgTemplateOutlet } from "@angular/common";
+import { MatIconButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIcon } from "@angular/material/icon";
+import { FieldToAriaLabelPipe } from "../../../directives/fieldToAiraLabel.pipe";
 
 @Component({
-  selector: "ige-inline-help-wrapper",
-  templateUrl: "./inline-help-wrapper.component.html",
-  styleUrls: ["./inline-help-wrapper.component.scss"],
+    selector: "ige-inline-help-wrapper",
+    templateUrl: "./inline-help-wrapper.component.html",
+    styleUrls: ["./inline-help-wrapper.component.scss"],
+    standalone: true,
+    imports: [
+        NgTemplateOutlet,
+        MatIconButton,
+        MatTooltip,
+        MatIcon,
+        FieldToAriaLabelPipe,
+    ],
 })
 export class InlineHelpWrapperComponent
   extends FieldWrapper

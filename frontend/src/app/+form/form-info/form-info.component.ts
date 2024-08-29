@@ -35,6 +35,9 @@ import { Router } from "@angular/router";
 import { TranslocoService } from "@ngneat/transloco";
 import { ConfigService } from "../../services/config/config.service";
 import { FormStateService } from "../form-state.service";
+import { BreadcrumbComponent } from "./breadcrumb/breadcrumb.component";
+import { PublishPendingComponent } from "./publish-pending/publish-pending.component";
+import { HeaderTitleRowComponent } from "./header-title-row/header-title-row.component";
 
 @UntilDestroy()
 @Component({
@@ -42,6 +45,12 @@ import { FormStateService } from "../form-state.service";
   templateUrl: "./form-info.component.html",
   styleUrls: ["./form-info.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    BreadcrumbComponent,
+    PublishPendingComponent,
+    HeaderTitleRowComponent,
+  ],
 })
 export class FormInfoComponent implements OnInit {
   @Input() form: UntypedFormGroup;

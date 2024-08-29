@@ -18,8 +18,19 @@
  * limitations under the Licence.
  */
 import { Component, Inject, OnInit } from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from "@angular/material/dialog";
 import { UrlCheckReportDataset } from "../url-check.service";
+import { MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { MatActionList, MatListItem } from "@angular/material/list";
+import { MatDivider } from "@angular/material/divider";
 
 export interface ListDatasetsDialogData {
   datasets: UrlCheckReportDataset[];
@@ -30,6 +41,18 @@ export interface ListDatasetsDialogData {
   selector: "ige-list-datasets-dialog",
   templateUrl: "./list-datasets-dialog.component.html",
   styleUrls: ["./list-datasets-dialog.component.scss"],
+  standalone: true,
+  imports: [
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    MatActionList,
+    MatDivider,
+    MatListItem,
+  ],
 })
 export class ListDatasetsDialogComponent implements OnInit {
   constructor(

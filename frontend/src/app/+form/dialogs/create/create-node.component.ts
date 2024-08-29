@@ -30,12 +30,20 @@ import {
   DocumentService,
   SaveOptions,
 } from "../../../services/document/document.service";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from "@angular/material/dialog";
 import { tap } from "rxjs/operators";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { Router } from "@angular/router";
 import {
+  ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormGroup,
   Validators,
@@ -46,8 +54,18 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
 import { firstValueFrom } from "rxjs";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
 import { TreeNode } from "../../../store/tree/tree-node.model";
+import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { MatTab, MatTabGroup } from "@angular/material/tabs";
+import { DocumentTemplateComponent } from "./document-template/document-template.component";
+import { NgTemplateOutlet } from "@angular/common";
+import { AddressTemplateComponent } from "./address-template/address-template.component";
+import { DestinationSelectionComponent } from "./destination-selection/destination-selection.component";
+import { BreadcrumbComponent } from "../../form-info/breadcrumb/breadcrumb.component";
 
 export interface CreateOptions {
   parent: string;
@@ -57,8 +75,30 @@ export interface CreateOptions {
 
 @UntilDestroy()
 @Component({
-  templateUrl: "./create-node.component.html",
-  styleUrls: ["./create-node.component.scss"],
+    templateUrl: "./create-node.component.html",
+    styleUrls: ["./create-node.component.scss"],
+    standalone: true,
+    imports: [
+        CdkDrag,
+        CdkDragHandle,
+        MatIconButton,
+        MatDialogClose,
+        MatIcon,
+        MatDialogTitle,
+        CdkScrollable,
+        MatDialogContent,
+        MatTabGroup,
+        MatTab,
+        ReactiveFormsModule,
+        DocumentTemplateComponent,
+        NgTemplateOutlet,
+        AddressTemplateComponent,
+        DestinationSelectionComponent,
+        MatDialogActions,
+        MatButton,
+        TranslocoDirective,
+        BreadcrumbComponent,
+    ],
 })
 export class CreateNodeComponent implements OnInit {
   @ViewChild("contextNodeContainer") container: ElementRef;

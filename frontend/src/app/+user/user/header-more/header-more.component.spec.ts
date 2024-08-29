@@ -27,7 +27,7 @@ describe("HeaderMoreComponent", () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [HeaderMoreComponent],
+      imports: [HeaderMoreComponent],
     }).compileComponents();
   }));
 

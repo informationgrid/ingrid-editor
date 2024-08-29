@@ -24,7 +24,7 @@ import {
   ChipDialogComponent,
   ChipDialogData,
 } from "./chip-dialog/chip-dialog.component";
-import { UntypedFormControl } from "@angular/forms";
+import { ReactiveFormsModule, UntypedFormControl } from "@angular/forms";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -40,13 +40,67 @@ import {
   SelectOption,
   SelectOptionUi,
 } from "../../../services/codelist/codelist.service";
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDropList,
+  CdkDropListGroup,
+} from "@angular/cdk/drag-drop";
+import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
+import {
+  MatChipListbox,
+  MatChipOption,
+  MatChipRemove,
+} from "@angular/material/chips";
+import { MatIcon } from "@angular/material/icon";
+import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
+import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
+import { MatAutocomplete } from "@angular/material/autocomplete";
+import { MatOption } from "@angular/material/core";
+import {
+  MatError,
+  MatFormField,
+  MatHint,
+  MatSuffix,
+} from "@angular/material/form-field";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { MatInput } from "@angular/material/input";
+import { MatIconButton } from "@angular/material/button";
+import { MatSelect } from "@angular/material/select";
+import { AsyncPipe } from "@angular/common";
+import { CodelistPipe } from "../../../directives/codelist.pipe";
 
 @UntilDestroy()
 @Component({
   selector: "ige-repeat-chip",
   templateUrl: "./repeat-chip.component.html",
   styleUrls: ["./repeat-chip.component.scss"],
+  standalone: true,
+  imports: [
+    FormErrorComponent,
+    MatChipListbox,
+    CdkDropListGroup,
+    CdkDropList,
+    MatChipOption,
+    CdkDrag,
+    MatIcon,
+    MatChipRemove,
+    AddButtonComponent,
+    SearchInputComponent,
+    MatAutocomplete,
+    MatOption,
+    MatFormField,
+    TranslocoDirective,
+    MatInput,
+    ReactiveFormsModule,
+    MatIconButton,
+    MatSuffix,
+    MatHint,
+    MatError,
+    MatSelect,
+    AsyncPipe,
+    CodelistPipe,
+  ],
 })
 export class RepeatChipComponent extends FieldArrayType implements OnInit {
   inputControl = new UntypedFormControl();

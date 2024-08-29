@@ -28,12 +28,23 @@ import { Codelist } from "../../store/codelist/codelist.model";
 import { CodelistQuery } from "../../store/codelist/codelist.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { toSignal } from "@angular/core/rxjs-interop";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { MatButton } from "@angular/material/button";
+import { FilterSelectComponent } from "../../shared/filter-select/filter-select.component";
+import { CodelistPresenterComponent } from "../../shared/codelist-presenter/codelist-presenter.component";
 
 @UntilDestroy()
 @Component({
   selector: "ige-codelists",
   templateUrl: "./codelists.component.html",
   styleUrls: ["./codelists.component.scss"],
+  standalone: true,
+  imports: [
+    PageTemplateComponent,
+    MatButton,
+    FilterSelectComponent,
+    CodelistPresenterComponent,
+  ],
 })
 export class CodelistsComponent implements OnInit {
   codelists: Signal<SelectOptionUi[]> = toSignal(

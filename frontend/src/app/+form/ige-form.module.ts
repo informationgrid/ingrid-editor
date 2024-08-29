@@ -70,8 +70,9 @@ import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.
     CreateNodeModule,
     AngularSplitModule,
     DialogTemplateModule,
+    PasteDialogComponent,
+    ScrollToDirective,
   ],
-  declarations: [PasteDialogComponent, ScrollToDirective],
   providers: [NominatimService],
   exports: [RouterModule, FormsModule, ScrollToDirective],
 })

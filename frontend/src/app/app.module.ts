@@ -216,189 +216,187 @@ export function ConfigLoader(
 }
 
 @NgModule({
-  // directives, components, and pipes owned by this NgModule
-  declarations: [
-    AppComponent,
-    HelpComponent,
-    ConfirmDialogComponent,
-    ReplaceAddressDialogComponent,
-    OneColumnWrapperComponent,
-    FullWidthWrapperComponent,
-    InlineHelpWrapperComponent,
-    SideMenuComponent,
-    MainHeaderComponent,
-    InitCatalogComponent,
-    AddonsWrapperComponent,
-    ButtonWrapperComponent,
-  ], // additional providers
-  bootstrap: [AppComponent],
-  exports: [SectionWrapper],
-  imports: [
-    environment.production ? [] : AkitaNgDevtools.forRoot({ logTrace: false }),
-    KeycloakAngularModule,
-    AngularSplitModule,
-    DragDropModule,
-    MatTooltipModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    // ReactiveFormsModule,
-    // angular
-    BrowserModule,
-    BrowserAnimationsModule,
-    NgxFlowModule,
-    FormlyModule.forRoot({
-      wrappers: [
-        { name: "inline-help", component: InlineHelpWrapperComponent },
-        { name: "addons", component: AddonsWrapperComponent },
-        { name: "panel", component: OneColumnWrapperComponent },
-        { name: "full-panel", component: FullWidthWrapperComponent },
-        { name: "section", component: SectionWrapper },
-        { name: "button", component: ButtonWrapperComponent },
-        // { name: "animation", component: AnimationWrapperComponent },
-      ],
-      validationMessages: [
-        { name: "maxLength", message: "Max length is required" },
-      ],
-      // TODO: this animation is too slow especially when there are a lot of tables in form
-      //       we need another approach instead of wrapping every field with an animation
-      // extensions: [
-      //   { name: "animation", extension: { onPopulate: animationExtension } },
-      // ],
-      extras: {
-        lazyRender: true,
-      },
-    }),
-    FormlyMaterialModule,
-    // Material
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatSidenavModule,
-    MatRadioModule,
-    MatCheckboxModule,
-    MatListModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatCardModule,
-    MatAutocompleteModule,
-    MatTableModule,
-    MatSortModule,
-    MatProgressSpinnerModule,
-    MatPaginatorModule,
-    // IGE-Modules
-    routing,
-    FormsModule,
-    MatTabsModule,
-    MatMenuModule,
-    SharedDocumentItemModule,
-    FormFieldsModule,
-    TranslocoRootModule,
-    SharedModule,
-    ClipboardModule,
-    SessionTimeoutInfoComponent,
-    FieldToAriaLabelPipe,
-    SectionWrapper,
-    ErrorDialogComponent,
-  ],
-  providers: [
-    provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
-    // make sure we are authenticated by keycloak before bootstrap
-    {
-      provide: APP_INITIALIZER,
-      useFactory: ConfigLoader,
-      deps: [
-        ConfigService,
-        AuthenticationFactory,
-        Router,
-        HttpClient,
-        MatDialog,
-        TranslocoService,
-      ],
-      multi: true,
-    },
-    // set locale for dates
-    {
-      provide: LOCALE_ID,
-      useValue: "de-de",
-    },
-    {
-      provide: MAT_DATE_LOCALE,
-      useValue: "de-DE",
-    },
-    {
-      provide: DateAdapter,
-      useClass: GermanDateAdapter,
-    },
-    // add authorization header to all requests
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true,
-    },
-    // handle session timeouts
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: SessionTimeoutInterceptor,
-      multi: true,
-    },
-    // overwrite global error handler
-    {
-      provide: ErrorHandler,
-      useClass: GlobalErrorHandler,
-    },
-    // cache routes
-    {
-      provide: RouteReuseStrategy,
-      useClass: CustomReuseStrategy,
-      deps: [ConfigService],
-    },
-    // uploader
-    {
-      provide: FlowInjectionToken,
-      useValue: Flow,
-    },
-    {
-      provide: MAT_DIALOG_DEFAULT_OPTIONS,
-      useValue: {
-        panelClass: "mat-dialog-override",
-        hasBackdrop: true,
-        maxWidth: "min(950px, 90vw)",
-        role: "dialog",
-        autoFocus: "dialog",
-        restoreFocus: true,
-      },
-    },
-    {
-      provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
-      useValue: { duration: 2000 },
-    },
-    {
-      provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
-      useValue: {
-        showDelay: 1000,
-        disableTooltipInteractivity: true,
-      },
-    },
-    // WebSocket
-    {
-      provide: RxStompService,
-      useFactory: rxStompServiceFactory,
-      deps: [ConfigService],
-    },
-    // Formly
-    {
-      provide: FORMLY_CONFIG,
-      multi: true,
-      useFactory: registerTranslateExtension,
-      deps: [TranslocoService],
-    },
-    // PLUGINS
-    pluginProvider,
-    /*    {
-      provide: XSRF_TOKEN,
-      useFactory: () => generateXsrfToken()
-    },*/
-  ],
+    // directives, components, and pipes owned by this NgModule
+    declarations: [AppComponent], // additional providers
+    bootstrap: [AppComponent],
+    exports: [SectionWrapper],
+    imports: [
+        environment.production ? [] : AkitaNgDevtools.forRoot({ logTrace: false }),
+        KeycloakAngularModule,
+        AngularSplitModule,
+        DragDropModule,
+        MatTooltipModule,
+        MatDialogModule,
+        MatSnackBarModule,
+        // ReactiveFormsModule,
+        // angular
+        BrowserModule,
+        BrowserAnimationsModule,
+        NgxFlowModule,
+        FormlyModule.forRoot({
+            wrappers: [
+                { name: "inline-help", component: InlineHelpWrapperComponent },
+                { name: "addons", component: AddonsWrapperComponent },
+                { name: "panel", component: OneColumnWrapperComponent },
+                { name: "full-panel", component: FullWidthWrapperComponent },
+                { name: "section", component: SectionWrapper },
+                { name: "button", component: ButtonWrapperComponent },
+                // { name: "animation", component: AnimationWrapperComponent },
+            ],
+            validationMessages: [
+                { name: "maxLength", message: "Max length is required" },
+            ],
+            // TODO: this animation is too slow especially when there are a lot of tables in form
+            //       we need another approach instead of wrapping every field with an animation
+            // extensions: [
+            //   { name: "animation", extension: { onPopulate: animationExtension } },
+            // ],
+            extras: {
+                lazyRender: true,
+            },
+        }),
+        FormlyMaterialModule,
+        // Material
+        MatToolbarModule,
+        MatIconModule,
+        MatButtonModule,
+        MatDialogModule,
+        MatSidenavModule,
+        MatRadioModule,
+        MatCheckboxModule,
+        MatListModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatCardModule,
+        MatAutocompleteModule,
+        MatTableModule,
+        MatSortModule,
+        MatProgressSpinnerModule,
+        MatPaginatorModule,
+        // IGE-Modules
+        routing,
+        FormsModule,
+        MatTabsModule,
+        MatMenuModule,
+        SharedDocumentItemModule,
+        FormFieldsModule,
+        TranslocoRootModule,
+        SharedModule,
+        ClipboardModule,
+        SessionTimeoutInfoComponent,
+        FieldToAriaLabelPipe,
+        SectionWrapper,
+        ErrorDialogComponent,
+        HelpComponent,
+        ConfirmDialogComponent,
+        ReplaceAddressDialogComponent,
+        OneColumnWrapperComponent,
+        FullWidthWrapperComponent,
+        InlineHelpWrapperComponent,
+        SideMenuComponent,
+        MainHeaderComponent,
+        InitCatalogComponent,
+        AddonsWrapperComponent,
+        ButtonWrapperComponent,
+    ],
+    providers: [
+        provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
+        // make sure we are authenticated by keycloak before bootstrap
+        {
+            provide: APP_INITIALIZER,
+            useFactory: ConfigLoader,
+            deps: [
+                ConfigService,
+                AuthenticationFactory,
+                Router,
+                HttpClient,
+                MatDialog,
+                TranslocoService,
+            ],
+            multi: true,
+        },
+        // set locale for dates
+        {
+            provide: LOCALE_ID,
+            useValue: "de-de",
+        },
+        {
+            provide: MAT_DATE_LOCALE,
+            useValue: "de-DE",
+        },
+        {
+            provide: DateAdapter,
+            useClass: GermanDateAdapter,
+        },
+        // add authorization header to all requests
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true,
+        },
+        // handle session timeouts
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: SessionTimeoutInterceptor,
+            multi: true,
+        },
+        // overwrite global error handler
+        {
+            provide: ErrorHandler,
+            useClass: GlobalErrorHandler,
+        },
+        // cache routes
+        {
+            provide: RouteReuseStrategy,
+            useClass: CustomReuseStrategy,
+            deps: [ConfigService],
+        },
+        // uploader
+        {
+            provide: FlowInjectionToken,
+            useValue: Flow,
+        },
+        {
+            provide: MAT_DIALOG_DEFAULT_OPTIONS,
+            useValue: {
+                panelClass: "mat-dialog-override",
+                hasBackdrop: true,
+                maxWidth: "min(950px, 90vw)",
+                role: "dialog",
+                autoFocus: "dialog",
+                restoreFocus: true,
+            },
+        },
+        {
+            provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
+            useValue: { duration: 2000 },
+        },
+        {
+            provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+            useValue: {
+                showDelay: 1000,
+                disableTooltipInteractivity: true,
+            },
+        },
+        // WebSocket
+        {
+            provide: RxStompService,
+            useFactory: rxStompServiceFactory,
+            deps: [ConfigService],
+        },
+        // Formly
+        {
+            provide: FORMLY_CONFIG,
+            multi: true,
+            useFactory: registerTranslateExtension,
+            deps: [TranslocoService],
+        },
+        // PLUGINS
+        pluginProvider,
+        /*    {
+          provide: XSRF_TOKEN,
+          useFactory: () => generateXsrfToken()
+        },*/
+    ],
 })
 export class AppModule {}

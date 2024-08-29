@@ -25,7 +25,11 @@ import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query
 import {
   MAT_DIALOG_DATA,
   MatDialog,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
   MatDialogRef,
+  MatDialogTitle,
 } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
@@ -33,11 +37,30 @@ import {
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { map } from "rxjs/operators";
 import { TreePermission } from "../../user";
+import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { TreeComponent } from "../../../+form/sidebars/tree/tree.component";
 
 @Component({
   selector: "permission-add-dialog",
   templateUrl: "./permission-add-dialog.component.html",
   styleUrls: ["./permission-add-dialog.component.scss"],
+  standalone: true,
+  imports: [
+    CdkDrag,
+    CdkDragHandle,
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    TreeComponent,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class PermissionAddDialogComponent implements OnInit {
   @Input() forAddress = this.data?.forAddress;

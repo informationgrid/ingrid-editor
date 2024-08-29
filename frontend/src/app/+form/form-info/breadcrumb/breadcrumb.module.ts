@@ -28,8 +28,14 @@ import { CommonModule } from "@angular/common";
 import { TranslocoModule } from "@ngneat/transloco";
 
 @NgModule({
-  declarations: [BreadcrumbComponent, BreadCrumbTooltipPipe],
-  imports: [MatTooltipModule, MatIconModule, CommonModule, TranslocoModule],
+  imports: [
+    MatTooltipModule,
+    MatIconModule,
+    CommonModule,
+    TranslocoModule,
+    BreadcrumbComponent,
+    BreadCrumbTooltipPipe,
+  ],
   exports: [BreadcrumbComponent],
 })
 export class BreadcrumbModule {}

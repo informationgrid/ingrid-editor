@@ -26,13 +26,13 @@ import { MatButtonModule } from "@angular/material/button";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 
 @NgModule({
-  declarations: [DialogTemplateComponent],
   imports: [
     CommonModule,
     MatIconModule,
     MatDialogModule,
     MatButtonModule,
     DragDropModule,
+    DialogTemplateComponent,
   ],
   exports: [DialogTemplateComponent],
 })

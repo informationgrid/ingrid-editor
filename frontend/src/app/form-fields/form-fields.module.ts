@@ -50,8 +50,6 @@ import { FormLabelComponent } from "../formly/wrapper/form-label/form-label.comp
     MatIconModule,
     MatSelectModule,
     FormLabelComponent,
-  ],
-  declarations: [
     DropDownComponent,
     DateboxComponent,
     CheckboxComponent,

@@ -19,7 +19,14 @@
  */
 import { Component, Inject, OnInit } from "@angular/core";
 import { DocumentService } from "../../../../../services/document/document.service";
-import { MAT_DIALOG_DATA, MatDialog } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogTitle,
+} from "@angular/material/dialog";
 import { filter, map, switchMap } from "rxjs/operators";
 import { TreeNode } from "../../../../../store/tree/tree-node.model";
 import { Observable } from "rxjs";
@@ -27,6 +34,13 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../../../dialogs/confirm/confirm-dialog.component";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { MatTab, MatTabGroup } from "@angular/material/tabs";
+import { TreeComponent } from "../../../../../+form/sidebars/tree/tree.component";
 
 export interface ReplaceAddressDialogData {
   source: string;
@@ -37,6 +51,23 @@ export interface ReplaceAddressDialogData {
   selector: "ige-replace-address-dialog",
   templateUrl: "./replace-address-dialog.component.html",
   styleUrls: ["./replace-address-dialog.component.scss"],
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    CdkDrag,
+    CdkDragHandle,
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    MatTabGroup,
+    MatTab,
+    TreeComponent,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class ReplaceAddressDialogComponent implements OnInit {
   page = 0;

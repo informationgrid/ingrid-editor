@@ -21,7 +21,11 @@ import { Component, Inject, OnInit } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialog,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
   MatDialogRef,
+  MatDialogTitle,
 } from "@angular/material/dialog";
 import { Catalog } from "../../../+catalog/services/catalog.model";
 import { User } from "../../../+user/user";
@@ -32,6 +36,18 @@ import {
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { NewCatalogDialogComponent } from "../new-catalog/new-catalog-dialog.component";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import {
+  MatList,
+  MatListItem,
+  MatListSubheaderCssMatStyler,
+} from "@angular/material/list";
+import { MatLine } from "@angular/material/core";
 
 export interface CatalogDetailResponse {
   deleted?: boolean;
@@ -40,9 +56,29 @@ export interface CatalogDetailResponse {
 }
 
 @Component({
-  selector: "ige-catalog-detail",
-  templateUrl: "./catalog-detail.component.html",
-  styleUrls: ["./catalog-detail.component.scss"],
+    selector: "ige-catalog-detail",
+    templateUrl: "./catalog-detail.component.html",
+    styleUrls: ["./catalog-detail.component.scss"],
+    standalone: true,
+    imports: [
+        MatIconButton,
+        MatDialogClose,
+        MatIcon,
+        MatDialogTitle,
+        CdkScrollable,
+        MatDialogContent,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        ReactiveFormsModule,
+        FormsModule,
+        MatList,
+        MatListSubheaderCssMatStyler,
+        MatListItem,
+        MatLine,
+        MatDialogActions,
+        MatButton,
+    ],
 })
 export class CatalogDetailComponent implements OnInit {
   catAdmins: User[];

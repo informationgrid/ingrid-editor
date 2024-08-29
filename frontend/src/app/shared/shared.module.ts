@@ -82,8 +82,6 @@ import { A11yModule } from "@angular/cdk/a11y";
     DocumentIconModule,
     SearchInputComponent,
     A11yModule,
-  ],
-  declarations: [
     TreeComponent,
     EmptyNavigationComponent,
     TreeHeaderComponent,

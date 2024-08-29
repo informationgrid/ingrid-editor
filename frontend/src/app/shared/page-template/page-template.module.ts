@@ -23,8 +23,7 @@ import { PageTemplateComponent } from "./page-template.component";
 import { PageTemplateNoHeaderComponent } from "./page-template-no-header.component";
 
 @NgModule({
-  declarations: [PageTemplateComponent, PageTemplateNoHeaderComponent],
-  imports: [CommonModule],
+  imports: [CommonModule, PageTemplateComponent, PageTemplateNoHeaderComponent],
   exports: [PageTemplateComponent, PageTemplateNoHeaderComponent],
 })
 export class PageTemplateModule {}

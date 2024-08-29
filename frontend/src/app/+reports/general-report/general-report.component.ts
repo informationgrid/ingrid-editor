@@ -27,21 +27,72 @@ import {
 } from "@angular/core";
 import { DocumentService } from "../../services/document/document.service";
 import { firstValueFrom } from "rxjs";
-import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
+import { MatSort, MatSortHeader } from "@angular/material/sort";
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
+  MatTable,
+  MatTableDataSource,
+} from "@angular/material/table";
 import { StatisticResponse } from "../../models/statistic.model";
 import { Facets, ResearchService } from "../../+research/research.service";
-import { UntypedFormControl, UntypedFormGroup } from "@angular/forms";
+import {
+  ReactiveFormsModule,
+  UntypedFormControl,
+  UntypedFormGroup,
+} from "@angular/forms";
 import { debounceTime, startWith, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ProfileService } from "../../services/profile.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
+import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-template-no-header.component";
+import {
+  MatButtonToggle,
+  MatButtonToggleGroup,
+} from "@angular/material/button-toggle";
+import { FacetsComponent } from "../../+research/+facets/facets.component";
+import { ChartComponent } from "../../+dashboard/chart/chart.component";
+import { CardBoxComponent } from "../../shared/card-box/card-box.component";
+import { MatIcon } from "@angular/material/icon";
+import { CdkMonitorFocus } from "@angular/cdk/a11y";
 
 @UntilDestroy()
 @Component({
   selector: "ige-general-report",
   templateUrl: "./general-report.component.html",
   styleUrls: ["./general-report.component.scss"],
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    PageTemplateNoHeaderComponent,
+    ReactiveFormsModule,
+    MatButtonToggleGroup,
+    MatButtonToggle,
+    FacetsComponent,
+    ChartComponent,
+    CardBoxComponent,
+    MatTable,
+    MatSort,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatIcon,
+    MatSortHeader,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    CdkMonitorFocus,
+  ],
 })
 export class GeneralReportComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;

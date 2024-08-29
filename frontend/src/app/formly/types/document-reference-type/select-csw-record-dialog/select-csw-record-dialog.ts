@@ -18,7 +18,12 @@
  * limitations under the Licence.
  */
 import { Component, Inject, OnInit } from "@angular/core";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { catchError, debounceTime, filter, tap } from "rxjs/operators";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
@@ -28,7 +33,12 @@ import {
 } from "../document-reference.service";
 import { Observable, of } from "rxjs";
 import { REGEX_URL } from "../../../input.validators";
-import { FormlyFieldConfig } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
+import { MatError, MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { FocusDirective } from "../../../../directives/focus.directive";
+import { FormErrorComponent } from "../../../../+form/form-shared/ige-form-error/form-error.component";
 
 export interface SelectCswRecordResponse {
   title: string;
@@ -50,6 +60,18 @@ export interface SelectCswRecordData {
   selector: "ige-select-csw-record-dialog",
   templateUrl: "./select-csw-record-dialog.html",
   styleUrls: ["./select-csw-record-dialog.scss"],
+  standalone: true,
+  imports: [
+    DialogTemplateComponent,
+    FormlyModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    ReactiveFormsModule,
+    FocusDirective,
+    MatError,
+    FormErrorComponent,
+  ],
 })
 export class SelectCswRecordDialog implements OnInit {
   urlControl = new FormControl<string>("https://", [

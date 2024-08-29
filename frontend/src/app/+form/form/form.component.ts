@@ -18,11 +18,15 @@
  * limitations under the Licence.
  */
 import { Component, OnInit } from "@angular/core";
+import { DynamicFormComponent } from "../form-shared/form/dynamic-form.component";
+import { FormDashboardComponent } from "../form-dashboard/form-dashboard.component";
 
 @Component({
   selector: "ige-form",
   templateUrl: "./form.component.html",
   styleUrls: ["./form.component.scss"],
+  standalone: true,
+  imports: [DynamicFormComponent, FormDashboardComponent],
 })
 export class FormComponent implements OnInit {
   constructor() {}

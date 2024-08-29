@@ -21,7 +21,12 @@ import { Component, Inject, ViewChild } from "@angular/core";
 import { GetCapabilitiesService } from "./get-capabilities.service";
 import { catchError, filter, finalize, tap } from "rxjs/operators";
 import { Observable, of, Subscription } from "rxjs";
-import { MatSelectionList } from "@angular/material/list";
+import {
+  MatListItemLine,
+  MatListItemTitle,
+  MatListOption,
+  MatSelectionList,
+} from "@angular/material/list";
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -36,12 +41,41 @@ import { DocumentService } from "../../../../services/document/document.service"
 import { ShortTreeNode } from "../../../../+form/sidebars/tree/tree.types";
 import { ConfigService } from "../../../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { FocusDirective } from "../../../../directives/focus.directive";
+import { MatButton } from "@angular/material/button";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { BreadcrumbComponent } from "../../../../+form/form-info/breadcrumb/breadcrumb.component";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { AsyncPipe, DatePipe } from "@angular/common";
+import { CodelistPipe } from "../../../../directives/codelist.pipe";
 
 @UntilDestroy()
 @Component({
   selector: "ige-get-capabilities-dialog",
   templateUrl: "./get-capabilities-dialog.component.html",
   styleUrls: ["./get-capabilities-dialog.component.scss"],
+  standalone: true,
+  imports: [
+    DialogTemplateComponent,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    FocusDirective,
+    MatButton,
+    MatProgressSpinner,
+    MatSelectionList,
+    MatListOption,
+    MatListItemTitle,
+    MatListItemLine,
+    BreadcrumbComponent,
+    MatCheckbox,
+    AsyncPipe,
+    CodelistPipe,
+    DatePipe,
+  ],
 })
 export class GetCapabilitiesDialogComponent {
   @ViewChild(MatSelectionList) selection: MatSelectionList;

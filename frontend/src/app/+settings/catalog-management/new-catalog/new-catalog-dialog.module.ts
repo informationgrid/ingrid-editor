@@ -34,7 +34,6 @@ import { SharedPipesModule } from "../../../directives/shared-pipes.module";
 import { DragDropModule } from "@angular/cdk/drag-drop";
 
 @NgModule({
-  declarations: [NewCatalogDialogComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -49,6 +48,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
     FormFieldsModule,
     SharedPipesModule,
     DragDropModule,
+    NewCatalogDialogComponent,
   ],
 })
 export class NewCatalogDialogModule {}

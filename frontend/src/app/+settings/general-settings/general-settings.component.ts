@@ -18,11 +18,24 @@
  * limitations under the Licence.
  */
 import { Component, OnInit } from "@angular/core";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { MatFormField, MatHint, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
 
 @Component({
   selector: "general-settings",
   templateUrl: "./general-settings.component.html",
   styleUrls: ["./general-settings.component.scss"],
+  standalone: true,
+  imports: [
+    PageTemplateComponent,
+    MatCheckbox,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatHint,
+  ],
 })
 export class GeneralSettingsComponent implements OnInit {
   constructor() {}

@@ -21,6 +21,7 @@ import { Directive, ElementRef, Input } from "@angular/core";
 
 @Directive({
   selector: "[igeFocus]",
+  standalone: true,
 })
 export class FocusDirective {
   @Input() igeFocus: boolean;

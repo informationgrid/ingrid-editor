@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormlyFieldConfig } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 
 import {
   AfterViewInit,
@@ -49,12 +49,40 @@ import {
   FormMenuService,
   FormularMenuItem,
 } from "../../+form/form-menu.service";
+import { MatToolbar, MatToolbarRow } from "@angular/material/toolbar";
+import { SearchInputComponent } from "../../shared/search-input/search-input.component";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIcon } from "@angular/material/icon";
+import { AngularSplitModule } from "angular-split";
+import { UserTableComponent } from "./user-table/user-table.component";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { HeaderMoreComponent } from "./header-more/header-more.component";
 
 @UntilDestroy()
 @Component({
   selector: "ige-user-manager",
   templateUrl: "./user.component.html",
   styleUrls: ["../user.styles.scss"],
+  standalone: true,
+  imports: [
+    MatToolbar,
+    MatToolbarRow,
+    SearchInputComponent,
+    MatButton,
+    MatTooltip,
+    MatIcon,
+    AngularSplitModule,
+    UserTableComponent,
+    MatProgressSpinner,
+    MatIconButton,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    HeaderMoreComponent,
+    FormlyModule,
+  ],
 })
 export class UserComponent implements OnInit, AfterViewInit {
   users = this.userService.users$;

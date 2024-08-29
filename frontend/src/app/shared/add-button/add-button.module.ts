@@ -36,8 +36,8 @@ import { TranslocoModule } from "@ngneat/transloco";
     MatMenuModule,
     MatTooltipModule,
     TranslocoModule,
+    AddButtonComponent,
   ],
-  declarations: [AddButtonComponent],
   exports: [AddButtonComponent],
 })
 export class AddButtonModule {

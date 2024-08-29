@@ -22,6 +22,7 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
@@ -34,6 +35,26 @@ import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter } from "rxjs/operators";
 import { BackendOption } from "../../../app/store/codelist/codelist.model";
+import { DialogTemplateComponent } from "../../../app/shared/dialog-template/dialog-template.component";
+import { MatCheckbox } from "@angular/material/checkbox";
+import {
+  MatFormField,
+  MatLabel,
+  MatSuffix,
+} from "@angular/material/form-field";
+import { MatSelect } from "@angular/material/select";
+import { MatOption } from "@angular/material/core";
+import { MatInput } from "@angular/material/input";
+import {
+  MatAutocomplete,
+  MatAutocompleteTrigger,
+} from "@angular/material/autocomplete";
+import {
+  MatDatepicker,
+  MatDatepickerInput,
+  MatDatepickerToggle,
+} from "@angular/material/datepicker";
+import { AsyncPipe } from "@angular/common";
 
 export interface FormType {
   specification: FormControl<SelectOptionUi>;
@@ -45,8 +66,26 @@ export interface FormType {
 
 @UntilDestroy()
 @Component({
-  selector: "ige-conformity-dialog",
-  templateUrl: "./conformity-dialog.component.html",
+    selector: "ige-conformity-dialog",
+    templateUrl: "./conformity-dialog.component.html",
+    standalone: true,
+    imports: [
+        DialogTemplateComponent,
+        ReactiveFormsModule,
+        MatCheckbox,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        MatInput,
+        MatAutocompleteTrigger,
+        MatAutocomplete,
+        MatDatepickerInput,
+        MatDatepickerToggle,
+        MatSuffix,
+        MatDatepicker,
+        AsyncPipe,
+    ],
 })
 export class ConformityDialogComponent implements OnInit {
   specifications = this.codelistService.observe("6005");

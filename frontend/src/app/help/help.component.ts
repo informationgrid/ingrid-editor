@@ -48,6 +48,7 @@ import {
       transition("maximized => expanded", animate("200ms ease-out")),
     ]),
   ],
+  standalone: true,
 })
 export class HelpComponent implements OnInit {
   menuState = "collapsed";

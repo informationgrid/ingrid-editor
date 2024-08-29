@@ -28,8 +28,7 @@ describe("AddButtonComponent", () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [AddButtonComponent],
-      imports: [MatRadioModule],
+      imports: [MatRadioModule, AddButtonComponent],
     }).compileComponents();
   }));
 

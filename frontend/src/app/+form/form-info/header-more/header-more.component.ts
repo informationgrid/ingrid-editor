@@ -29,6 +29,11 @@ import { ProfileQuery } from "../../../store/profile/profile.query";
 import { ConfigService } from "../../../services/config/config.service";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FormStateService } from "../../form-state.service";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { MatTooltip } from "@angular/material/tooltip";
+import { FormLabelComponent } from "../../../formly/wrapper/form-label/form-label.component";
+import { AsyncPipe, DatePipe } from "@angular/common";
+import { FullNamePipe } from "../../../directives/full-name.pipe";
 
 @Component({
   selector: "ige-header-more",
@@ -47,6 +52,15 @@ import { FormStateService } from "../../form-state.service";
     ]),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    MatTooltip,
+    FormLabelComponent,
+    AsyncPipe,
+    DatePipe,
+    FullNamePipe,
+  ],
 })
 export class HeaderMoreComponent implements OnInit {
   @Input() showMore = false;

@@ -27,6 +27,7 @@ import { NgxFlowModule } from "@flowjs/ngx-flow";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class MCloudComponent {
   constructor(
@@ -43,8 +44,7 @@ class MCloudComponent {
 }
 
 @NgModule({
-  declarations: [MCloudComponent],
-  imports: [NgxFlowModule],
+  imports: [NgxFlowModule, MCloudComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

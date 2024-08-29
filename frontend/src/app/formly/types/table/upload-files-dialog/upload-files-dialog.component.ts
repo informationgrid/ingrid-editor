@@ -38,6 +38,9 @@ import {
 } from "../../../../dialogs/confirm/confirm-dialog.component";
 import { ConfigService } from "../../../../services/config/config.service";
 import { AuthenticationFactory } from "../../../../security/auth.factory";
+import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
+import { UploadComponent } from "../../../../shared/upload/upload.component";
+import { MatSlideToggle } from "@angular/material/slide-toggle";
 
 export interface LinkInfo {
   file: string;
@@ -49,6 +52,8 @@ export interface LinkInfo {
   selector: "ige-upload-files-dialog",
   templateUrl: "./upload-files-dialog.component.html",
   styleUrls: ["./upload-files-dialog.component.scss"],
+  standalone: true,
+  imports: [DialogTemplateComponent, UploadComponent, MatSlideToggle],
 })
 export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   chosenFiles: TransfersWithErrorInfo[] = [];

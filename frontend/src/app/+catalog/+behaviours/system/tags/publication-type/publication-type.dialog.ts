@@ -19,6 +19,10 @@
  */
 import { Component, Inject } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { DialogTemplateComponent } from "../../../../../shared/dialog-template/dialog-template.component";
+import { MatRadioButton, MatRadioGroup } from "@angular/material/radio";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { MatIcon } from "@angular/material/icon";
 
 export interface PublicationTypeDialogOptions {
   options: { key: string; value: string }[];
@@ -31,6 +35,15 @@ export interface PublicationTypeDialogOptions {
   selector: "ige-publication-type.dialog",
   templateUrl: "./publication-type.dialog.html",
   styleUrls: ["./publication-type.dialog.scss"],
+  standalone: true,
+  imports: [
+    DialogTemplateComponent,
+    MatRadioGroup,
+    ReactiveFormsModule,
+    FormsModule,
+    MatRadioButton,
+    MatIcon,
+  ],
 })
 export class PublicationTypeDialog {
   options = this.value.options;

@@ -25,13 +25,36 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from "@angular/material/dialog";
 import { Observable } from "rxjs";
+import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
+import { MatIcon } from "@angular/material/icon";
+import { MatIconButton } from "@angular/material/button";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { AsyncPipe } from "@angular/common";
 
 @Component({
   selector: "ige-context-help",
   templateUrl: "./context-help.component.html",
   styleUrls: ["./context-help.component.scss"],
+  standalone: true,
+  imports: [
+    CdkDrag,
+    CdkDragHandle,
+    MatIcon,
+    MatDialogTitle,
+    MatIconButton,
+    MatDialogClose,
+    CdkScrollable,
+    MatDialogContent,
+    AsyncPipe,
+  ],
 })
 export class ContextHelpComponent implements OnInit, OnDestroy {
   @ViewChild("contextHelpContainer") container: ElementRef;

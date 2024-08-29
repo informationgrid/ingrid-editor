@@ -30,11 +30,6 @@ import { ChangeNameDialogComponent } from "./change-name-dialog/change-name-dial
 import { EmailformComponent } from "../emailform/emailform.component";
 
 @NgModule({
-  declarations: [
-    ProfileComponent,
-    ChangeNameDialogComponent,
-    EmailformComponent,
-  ],
   imports: [
     MatSnackBarModule,
     CommonModule,
@@ -43,6 +38,9 @@ import { EmailformComponent } from "../emailform/emailform.component";
     SharedModule,
     MatDialogModule,
     FormSharedModule,
+    ProfileComponent,
+    ChangeNameDialogComponent,
+    EmailformComponent,
   ],
 })
 export class ProfileModule {}

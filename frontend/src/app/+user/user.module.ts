@@ -94,8 +94,6 @@ import { DialogTemplateModule } from "../shared/dialog-template/dialog-template.
     UserTableComponent,
     PermissionsComponent,
     DialogTemplateModule,
-  ],
-  declarations: [
     UserComponent,
     GroupComponent,
     UserManagementComponent,
