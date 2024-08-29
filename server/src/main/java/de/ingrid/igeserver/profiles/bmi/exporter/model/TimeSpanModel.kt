@@ -26,11 +26,12 @@ import de.ingrid.igeserver.model.KeyValue
 data class TimeSpanModel(
     val rangeType: KeyValue?,
     val timeSpanDate: String?,
-    val timeSpanRange: RangeModel?){
+    val timeSpanRange: RangeModel?,
+) {
 
     val start: String?
-        get(){
-            when(rangeType?.key){
+        get() {
+            when (rangeType?.key) {
                 "at" -> return timeSpanDate
                 "since" -> return timeSpanDate
                 "till" -> return null
@@ -39,8 +40,8 @@ data class TimeSpanModel(
             return null
         }
     val end: String?
-        get(){
-            when(rangeType?.key){
+        get() {
+            when (rangeType?.key) {
                 "at" -> return timeSpanDate
                 "since" -> return null
                 "till" -> return timeSpanDate

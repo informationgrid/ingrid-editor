@@ -22,7 +22,7 @@ package de.ingrid.igeserver.extension
 /**
  * Interface for extension points provided by the application
  */
-interface ExtensionPoint<T: Extension> {
+interface ExtensionPoint<T : Extension> {
 
     /**
      * Identifier of the extension point

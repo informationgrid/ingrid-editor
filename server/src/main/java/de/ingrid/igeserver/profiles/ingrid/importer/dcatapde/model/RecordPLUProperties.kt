@@ -19,7 +19,11 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model
 
-import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.*
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.Agent
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.Contact
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.Distribution
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.PeriodOfTime
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.ProcessStep
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.enums.PlanStateEnum
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.enums.PlanTypeEnum
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.enums.ProcedureStateEnum
@@ -50,19 +54,32 @@ class RecordPLUProperties : Serializable {
     //    private CollectionProperties collection;
     var extras: Map<String, Any>? = null
 
-    var contact: @Valid @NotNull(message = "dcat:contactPoint must not be null") Contact? = null
+    var contact:
+        @Valid
+        @NotNull(message = "dcat:contactPoint must not be null")
+        Contact? = null
 
-    var description: @NotNull(message = "dct:description must not be null") String? = null
+    var description:
+        @NotNull(message = "dct:description must not be null")
+        String? = null
 
-    var identifier: @NotNull(message = "dct:identifier must not be null") String? = null
+    var identifier:
+        @NotNull(message = "dct:identifier must not be null")
+        String? = null
 
-    var title: @NotNull(message = "dct:title must not be null") String? = null
+    var title:
+        @NotNull(message = "dct:title must not be null")
+        String? = null
 
     var planName: String? = null
 
-    var planState: @NotNull(message = "plu:planState must not be null") PlanStateEnum? = null
+    var planState:
+        @NotNull(message = "plu:planState must not be null")
+        PlanStateEnum? = null
 
-    var procedureState: @NotNull(message = "plu:procedureState must not be null") ProcedureStateEnum? = null
+    var procedureState:
+        @NotNull(message = "plu:procedureState must not be null")
+        ProcedureStateEnum? = null
 
     @Deprecated("")
     var procedureStartDate: Instant? = null
@@ -110,70 +127,66 @@ class RecordPLUProperties : Serializable {
         return id == that.id && bbox == that.bbox && geometry == that.geometry && centroid == that.centroid && geographicName == that.geographicName && extras == that.extras && contact == that.contact && description == that.description && identifier == that.identifier && title == that.title && planName == that.planName && planState == that.planState && procedureState == that.procedureState && procedureStartDate == that.procedureStartDate && procedurePeriod == that.procedurePeriod && developmentFreezePeriod == that.developmentFreezePeriod && publisher == that.publisher && maintainers == that.maintainers && contributors == that.contributors && distributions == that.distributions && issued == that.issued && modified == that.modified && relation == that.relation && notification == that.notification && admsIdentifier == that.admsIdentifier && planType == that.planType && planTypeFine == that.planTypeFine && procedureType == that.procedureType && processSteps == that.processSteps
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            id,
-            bbox,
-            geometry,
-            centroid,
-            geographicName,  //                collection,
-            extras,
-            contact,
-            description,
-            identifier,
-            title,
-            planName,
-            planState,
-            procedureState,
-            procedureStartDate,
-            procedurePeriod,
-            developmentFreezePeriod,
-            publisher,
-            maintainers,
-            contributors,
-            distributions,
-            issued,
-            modified,
-            relation,
-            notification,
-            admsIdentifier,
-            planType,
-            planTypeFine,
-            procedureType,
-            processSteps
-        )
-    }
+    override fun hashCode(): Int = Objects.hash(
+        id,
+        bbox,
+        geometry,
+        centroid,
+        geographicName,
+        extras,
+        contact,
+        description,
+        identifier,
+        title,
+        planName,
+        planState,
+        procedureState,
+        procedureStartDate,
+        procedurePeriod,
+        developmentFreezePeriod,
+        publisher,
+        maintainers,
+        contributors,
+        distributions,
+        issued,
+        modified,
+        relation,
+        notification,
+        admsIdentifier,
+        planType,
+        planTypeFine,
+        procedureType,
+        processSteps,
+    )
 
-    override fun toString(): String {
-        return "RecordPLUProperties{" +
-                "id='" + id + '\'' +
-                ", bbox=" + bbox +
-                ", geometry=" + geometry +
-                ", centroid=" + centroid +
-                ", geographicName='" + geographicName + '\'' +  //                ", collection=" + collection +
-                ", extras=" + extras +
-                ", contact=" + contact +
-                ", description='" + description + '\'' +
-                ", identifier='" + identifier + '\'' +
-                ", title='" + title + '\'' +
-                ", planName='" + planName + '\'' +
-                ", planState=" + planState +
-                ", procedureState=" + procedureState +
-                ", procedureStartDate=" + procedureStartDate +
-                ", developmentFreezePeriod=" + developmentFreezePeriod +
-                ", publisher=" + publisher +
-                ", maintainers=" + maintainers +
-                ", contributors=" + contributors +
-                ", distributions=" + distributions +
-                ", issued=" + issued +
-                ", modified=" + modified +
-                ", relation='" + relation + '\'' +
-                ", notification='" + notification + '\'' +
-                ", admsIdentifier='" + admsIdentifier + '\'' +
-                ", planType=" + planType +
-                ", planTypeFine='" + planTypeFine + '\'' +
-                ", procedureType=" + procedureType +
-                ", processSteps=" + processSteps +
-                '}'
-    }
+    override fun toString(): String = "RecordPLUProperties{" +
+        "id='" + id + '\'' +
+        ", bbox=" + bbox +
+        ", geometry=" + geometry +
+        ", centroid=" + centroid +
+        ", geographicName='" + geographicName + '\'' + //                ", collection=" + collection +
+        ", extras=" + extras +
+        ", contact=" + contact +
+        ", description='" + description + '\'' +
+        ", identifier='" + identifier + '\'' +
+        ", title='" + title + '\'' +
+        ", planName='" + planName + '\'' +
+        ", planState=" + planState +
+        ", procedureState=" + procedureState +
+        ", procedureStartDate=" + procedureStartDate +
+        ", developmentFreezePeriod=" + developmentFreezePeriod +
+        ", publisher=" + publisher +
+        ", maintainers=" + maintainers +
+        ", contributors=" + contributors +
+        ", distributions=" + distributions +
+        ", issued=" + issued +
+        ", modified=" + modified +
+        ", relation='" + relation + '\'' +
+        ", notification='" + notification + '\'' +
+        ", admsIdentifier='" + admsIdentifier + '\'' +
+        ", planType=" + planType +
+        ", planTypeFine='" + planTypeFine + '\'' +
+        ", procedureType=" + procedureType +
+        ", processSteps=" + processSteps +
+        '}'
 }

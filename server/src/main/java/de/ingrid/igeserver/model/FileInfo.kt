@@ -21,7 +21,6 @@ package de.ingrid.igeserver.model
 
 import java.util.*
 
-
 class FileInfo {
     private val uploadedChunks: MutableSet<Int> = Collections.synchronizedSet(HashSet())
 

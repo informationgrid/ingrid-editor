@@ -34,15 +34,15 @@ import org.springframework.stereotype.Service
 @Profile("ingrid")
 @Service
 class IngridDistributionHelper(
-    private val storage: Storage
-): OgcDistributionHelper {
+    private val storage: Storage,
+) : OgcDistributionHelper {
 
     override val typeInfo: DistributionTypeInfo
         get() = DistributionTypeInfo(
             "ingrid",
             "Ingrid",
             description = "Ingrid distribution Helper",
-            emptyList()
+            emptyList(),
         )
 
     override fun canHandleDistribution(profile: String): Boolean {
@@ -65,7 +65,7 @@ class IngridDistributionHelper(
         collectionId: String,
         userID: String,
         recordId: String,
-        distributionId: String?
+        distributionId: String?,
     ): List<String> {
         val missingFiles: MutableList<String> = mutableListOf()
 
@@ -83,5 +83,4 @@ class IngridDistributionHelper(
 
     private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode =
         jacksonObjectMapper().valueToTree(listOfJsonNodes)
-
 }

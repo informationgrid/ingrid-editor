@@ -35,7 +35,7 @@ class UvpForeignProjectSchema : AnnotationSpec() {
         "title",
         "description",
         "pointOfContact",
-        "spatial"
+        "spatial",
     )
 
     @Test
@@ -51,7 +51,7 @@ class UvpForeignProjectSchema : AnnotationSpec() {
         val result = SchemaUtils.validate(json, schema)
         result.valid shouldBe true
     }
-    
+
     @Test
     fun fail() {
         val json = "{}"
@@ -64,5 +64,4 @@ class UvpForeignProjectSchema : AnnotationSpec() {
             requiredErrors shouldBe requiredFields
         }
     }
-
 }

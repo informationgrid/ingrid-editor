@@ -43,5 +43,4 @@ class ProfileApiController : ProfileApi {
         val catProfiles = catalogService.getAvailableCatalogProfiles()
         return ResponseEntity.ok(catProfiles)
     }
-
 }

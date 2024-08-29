@@ -263,7 +263,7 @@ val codelist20004 = mapOf(
     "http://dcat-ap.de/def/licenses/dl-by-nc-de/1.0" to "Datenlizenz Deutschland Namensnennung nicht-kommerziell 1.0",
     "http://dcat-ap.de/def/licenses/other-closed" to "Andere geschlossene Lizenz",
     "http://dcat-ap.de/def/licenses/other-commercial" to "Andere kommerzielle Lizenz",
-    "http://dcat-ap.de/def/licenses/other-freeware" to "Andere Freeware Lizenz"
+    "http://dcat-ap.de/def/licenses/other-freeware" to "Andere Freeware Lizenz",
 )
 
 val codelist20005 = mapOf(
@@ -271,7 +271,7 @@ val codelist20005 = mapOf(
     "EXPERIMENTAL" to "Daten versuchsweise verfügbar, sind aber noch etwa ein Jahr erreichbar. (EXPERIMENTAL)",
     "AVAILABLE" to "Daten sind für einige Jahre verfügbar, mittelfristige Planung. (AVAILABLE)",
     "STABLE" to "Daten werden langfristig erhältlich bleiben. (STABLE)",
-    "OP_DATPRO" to "Vorläufige Daten. (OP_DATPRO)"
+    "OP_DATPRO" to "Vorläufige Daten. (OP_DATPRO)",
 )
 
 val codelist20006 = mapOf(

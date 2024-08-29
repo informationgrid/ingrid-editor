@@ -39,7 +39,6 @@ class ReadPermissionTests : IntegrationTest() {
     private val childUuidNoParentRead = "5c065bb7-ec46-4cab-bb02-8de2a814230b"
     private val excludedUuid = "c689240d-e7a9-45cc-b761-44eda0cda1f1"
 
-
     @Test
     fun readAllowedToRootDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
@@ -109,5 +108,4 @@ class ReadPermissionTests : IntegrationTest() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
         docWrapperRepo.deleteById(doc.id!!)
     }
-
 }

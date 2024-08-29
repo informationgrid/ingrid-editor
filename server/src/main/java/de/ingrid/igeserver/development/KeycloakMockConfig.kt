@@ -61,7 +61,6 @@ internal class KeycloakMockConfig : KeycloakConfig() {
         }
         return http.build()
     }
-
 }
 
 private class DevelopmentAuthenticationFilter : AbstractAuthenticationProcessingFilter("/login") {
@@ -73,7 +72,6 @@ private class DevelopmentAuthenticationFilter : AbstractAuthenticationProcessing
     }
 
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
-
         val auths = listOf(SimpleGrantedAuthority("admin"))
         val context = securityContextHolderStrategy.createEmptyContext()
         context.authentication = DummyAuthenticationToken(auths)
@@ -84,7 +82,7 @@ private class DevelopmentAuthenticationFilter : AbstractAuthenticationProcessing
 }
 
 private class DummyAuthenticationToken(grantedAuthorities: List<GrantedAuthority>) :
-        AbstractAuthenticationToken(grantedAuthorities) {
+    AbstractAuthenticationToken(grantedAuthorities) {
 
     private val token = "DummyPrincipal"
 
@@ -95,6 +93,4 @@ private class DummyAuthenticationToken(grantedAuthorities: List<GrantedAuthority
     override fun getPrincipal(): Any {
         return token
     }
-
-
 }

@@ -36,11 +36,24 @@ class DcatApDeMapper(val catalogId: String, val model: RecordPLUProperties, val 
     val type = "InGridGeoDataset"
     val description = model.description?.trim()
     fun getPointOfContacts(): List<Contact> {
-        val publisher = model.publisher?.name?.let { Contact().apply { hasOrganizationName = it; type = "10" } }
+        val publisher = model.publisher?.name?.let {
+            Contact().apply {
+                hasOrganizationName = it
+                type = "10"
+            }
+        }
         val contact = model.contact?.apply { type = "7" }
-        val maintainers = model.maintainers?.map { Contact().apply { hasOrganizationName = it.name; type = "1" } }
-        return if (maintainers == null) listOfNotNull(publisher, contact)
-        else listOfNotNull(publisher, contact) + maintainers
+        val maintainers = model.maintainers?.map {
+            Contact().apply {
+                hasOrganizationName = it.name
+                type = "1"
+            }
+        }
+        return if (maintainers == null) {
+            listOfNotNull(publisher, contact)
+        } else {
+            listOfNotNull(publisher, contact) + maintainers
+        }
     }
 
     fun getAddressUuid(contact: Contact): String {

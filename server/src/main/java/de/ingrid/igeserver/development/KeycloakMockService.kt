@@ -81,7 +81,7 @@ class KeycloakMockService : UserManagementService {
         emptyList(),
         Date(0),
         Date(0),
-        Date(0)
+        Date(0),
     )
 
     private fun mapUserRepresentation(index: Int) = UserRepresentation().apply {

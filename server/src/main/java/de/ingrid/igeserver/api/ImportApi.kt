@@ -43,9 +43,8 @@ interface ImportApi {
     @GetMapping(value = ["/import"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getImporter(
         principal: Principal,
-        @Parameter(description = "The catalog profile to get the supported export types from.") @RequestParam(value = "profile") profile: String
+        @Parameter(description = "The catalog profile to get the supported export types from.") @RequestParam(value = "profile") profile: String,
     ): ResponseEntity<List<ImportTypeInfo>>
-
 
     /*
         @Operation
@@ -73,19 +72,21 @@ interface ImportApi {
         ) @RequestParam parentAddress: Int,
             @Parameter(description = "Import-Options", required = true) @RequestParam options: String,
         ): ResponseEntity<ImportAnalyzeInfo>
-    */
+     */
 
     @Operation
     @ApiResponses(
-        value = [ApiResponse(
-            responseCode = "200",
-            description = "The stored dataset, which might contain additional storage information."
-        ), ApiResponse(responseCode = "500", description = "Unexpected error")]
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "The stored dataset, which might contain additional storage information.",
+            ), ApiResponse(responseCode = "500", description = "Unexpected error"),
+        ],
     )
     @PostMapping(value = ["/import/analyze"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun analyzeFile(
         principal: Principal,
-        @Parameter(description = "The dataset to be imported.", required = true) @RequestBody file: @Valid MultipartFile
+        @Parameter(description = "The dataset to be imported.", required = true) @RequestBody file: @Valid MultipartFile,
     ): ResponseEntity<Unit>
 
     /*@Operation

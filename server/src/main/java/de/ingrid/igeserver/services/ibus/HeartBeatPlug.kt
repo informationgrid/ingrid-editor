@@ -20,7 +20,11 @@
 package de.ingrid.igeserver.services.ibus
 
 import de.ingrid.ibus.client.BusClientFactory
-import de.ingrid.utils.*
+import de.ingrid.utils.IBus
+import de.ingrid.utils.IConfigurable
+import de.ingrid.utils.IPlug
+import de.ingrid.utils.IngridDocument
+import de.ingrid.utils.PlugDescription
 import de.ingrid.utils.metadata.IMetadataInjector
 import de.ingrid.utils.metadata.Metadata
 import de.ingrid.utils.processor.IPostProcessor
@@ -30,16 +34,16 @@ import org.apache.commons.logging.LogFactory
 import java.io.File
 import java.io.IOException
 import java.util.*
-
-
-abstract class HeartBeatPlug : IPlug, IConfigurable {
+abstract class HeartBeatPlug :
+    IPlug,
+    IConfigurable {
     internal class HeartBeat(
         private val _name: String,
         val _busUrl: String,
         var _bus: IBus,
         private var _plugDescription: PlugDescription,
         period: Long,
-        var metadataInjectors: Array<IMetadataInjector>?
+        var metadataInjectors: Array<IMetadataInjector>?,
     ) : TimerTask() {
         internal class ShutdownHook(private val _heartBeat: HeartBeat) : Thread() {
             override fun run() {
@@ -51,6 +55,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
             private set
         var isAccurate = false
             private set
+
         private var _heartBeatCount: Long = 0
         private val _metadataInjectors: Array<IMetadataInjector>?
         private val _shutdownHook: ShutdownHook
@@ -116,7 +121,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
                 } catch (e: Throwable) {
                     LOG.error("Can not send heartbeat [" + _heartBeatCount + "] to bus [" + _busUrl + "]. With plugdescription: " + _plugDescription + " Error message: " + e.message)
                     isAccurate = false
-                    //this._heartBeatFailed = true;
+                    // this._heartBeatFailed = true;
                 }
             } else {
                 LOG.debug("Heartbeat not sent since it was disabled or a failure! ($this)")
@@ -145,9 +150,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
             _plugDescription = plugDescription
         }
 
-        fun hasFailed(): Boolean {
-            return _heartBeatFailed
-        }
+        fun hasFailed(): Boolean = _heartBeatFailed
 
         companion object {
             private val LOG = LogFactory.getLog(HeartBeat::class.java)
@@ -206,7 +209,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
 
         companion object {
             private val LOG = LogFactory.getLog(
-                HeartBeatMonitor::class.java
+                HeartBeatMonitor::class.java,
             )
         }
 
@@ -231,7 +234,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
         period: Int,
         injectors: Array<IMetadataInjector>?,
         preProcessors: Array<IPreProcessor>?,
-        postProcessors: Array<IPostProcessor>?
+        postProcessors: Array<IPostProcessor>?,
     ) {
         _period = period
         //        _filters = plugDescriptionFieldFilters;
@@ -281,7 +284,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
                         iBus,
                         _plugDescription,
                         _period.toLong(),
-                        _injectors
+                        _injectors,
                     )
                     _heartBeats[busUrl] = heartBeat
                 }
@@ -290,7 +293,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
                 // force adding of plugdescription the first time
                 iBus.addPlugDescription(_plugDescription)
             }
-            //_heartBeatMonitor = new HeartBeatMonitor(20000, _heartBeats);
+            // _heartBeatMonitor = new HeartBeatMonitor(20000, _heartBeats);
         }
 
         // start sending HeartBeats to connected iBuses

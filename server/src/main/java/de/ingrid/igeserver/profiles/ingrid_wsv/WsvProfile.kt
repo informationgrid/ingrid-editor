@@ -36,7 +36,7 @@ class WsvProfile(
     @Lazy documentService: DocumentService,
     query: QueryRepository,
     dateService: DateService,
-    openDataCategory: OpenDataCategory
+    openDataCategory: OpenDataCategory,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -48,5 +48,4 @@ class WsvProfile(
     override val parentProfile = "ingrid"
 
     override val indexExportFormatID = "indexInGridIDFWsv"
-
 }

@@ -19,8 +19,22 @@
  */
 package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
-import com.fasterxml.jackson.annotation.*
-import jakarta.persistence.*
+import com.fasterxml.jackson.annotation.JsonGetter
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSetter
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.JoinTable
+import jakarta.persistence.ManyToMany
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
@@ -47,23 +61,23 @@ class UserInfo {
     @JoinTable(
         name = "catalog_user_info",
         joinColumns = [JoinColumn(name = "user_info_id")],
-        inverseJoinColumns = [JoinColumn(name = "catalog_id")]
+        inverseJoinColumns = [JoinColumn(name = "catalog_id")],
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var catalogs: MutableSet<Catalog> = LinkedHashSet()
-    
+
     @ManyToOne
-    @JoinColumn(name="role_id")
+    @JoinColumn(name = "role_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     var role: Role? = null
-    
+
     @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_group",
         joinColumns = [JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false)],
-        inverseJoinColumns = [JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false)]
+        inverseJoinColumns = [JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false)],
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
@@ -107,8 +121,7 @@ class UserInfo {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "data", columnDefinition = "jsonb")
     var data: UserInfoData? = null
-    
+
     fun getGroupsForCatalog(catalogIdentifier: String): Set<Group> =
         groups.filter { it.catalog?.identifier == catalogIdentifier }.toSet()
-
 }

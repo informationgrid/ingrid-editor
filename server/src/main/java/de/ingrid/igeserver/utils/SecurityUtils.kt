@@ -32,8 +32,9 @@ fun setAdminAuthentication(principal: String, credentials: String): Authenticati
             credentials,
             listOf(
                 SimpleGrantedAuthority("cat-admin"),
-                SimpleGrantedAuthority("ROLE_ACL_ACCESS"), // needed for ACL changes
-            )
+                // needed for ACL changes
+                SimpleGrantedAuthority("ROLE_ACL_ACCESS"),
+            ),
         )
     SecurityContextHolder.getContext().authentication = auth
     return auth

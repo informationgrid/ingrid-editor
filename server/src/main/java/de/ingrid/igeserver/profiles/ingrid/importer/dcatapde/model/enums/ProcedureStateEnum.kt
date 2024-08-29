@@ -30,10 +30,11 @@ enum class ProcedureStateEnum(val value: String) {
     PLANNED("planned"),
     ONGOING("ongoing"),
     COMPLETED("completed"),
-    UNKNOWN("unknown");
+    UNKNOWN("unknown"),
+    ;
 
     class Converter : EnumConverter<ProcedureStateEnum>(
-        ProcedureStateEnum::class.java
+        ProcedureStateEnum::class.java,
     )
 
     @JsonValue
@@ -43,6 +44,7 @@ enum class ProcedureStateEnum(val value: String) {
 
     companion object {
         private const val uriPrefix = "https://specs.diplanung.de/resource/procedureState#"
+
         @JsonCreator
         fun fromValue(text: String?): ProcedureStateEnum? {
             if (text == null) {
@@ -56,7 +58,8 @@ enum class ProcedureStateEnum(val value: String) {
             val enumValues = java.lang.String.join(
                 ", ",
                 Stream.of(*entries.toTypedArray()).map { anEnum: ProcedureStateEnum -> uriPrefix + anEnum.toString() }
-                    .toList())
+                    .toList(),
+            )
             throw IllegalArgumentException("ProcedureStateEnum value has to be one of [$enumValues], was $text")
         }
 

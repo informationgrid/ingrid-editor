@@ -47,7 +47,6 @@ class WktToGmlTransformation : ShouldSpec({
         val wkt = "MULTILINESTRING ((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))"
         val result = deleteIdAttributes(convertWktToGml32(wkt))
         result shouldBe "<gml:MultiCurve><gml:curveMember><gml:LineString srsDimension=\"2\"><gml:posList>10 10 20 20 10 40</gml:posList></gml:LineString></gml:curveMember><gml:curveMember><gml:LineString srsDimension=\"2\"><gml:posList>40 40 30 30 40 20 30 10</gml:posList></gml:LineString></gml:curveMember></gml:MultiCurve>"
-
     }
 
     should("convert Polygon WKT to GML 3.2") {
@@ -65,7 +64,6 @@ class WktToGmlTransformation : ShouldSpec({
         val result = deleteIdAttributes(convertWktToGml32(wkt))
 
         result shouldBe "<gml:MultiSurface><gml:surfaceMember><gml:Polygon srsDimension=\"2\"><gml:exterior><gml:LinearRing><gml:posList>40 40 20 45 45 30 40 40</gml:posList></gml:LinearRing></gml:exterior></gml:Polygon></gml:surfaceMember><gml:surfaceMember><gml:Polygon srsDimension=\"2\"><gml:exterior><gml:LinearRing><gml:posList>20 35 10 30 10 10 30 5 45 20 20 35</gml:posList></gml:LinearRing></gml:exterior><gml:interior><gml:LinearRing><gml:posList>30 20 20 15 20 25 30 20</gml:posList></gml:LinearRing></gml:interior></gml:Polygon></gml:surfaceMember></gml:MultiSurface>"
-
     }
 
     should("convert MultiGeometry WKT to GML 3.2") {
@@ -75,8 +73,6 @@ class WktToGmlTransformation : ShouldSpec({
 
         result shouldBe "<gml:MultiGeometry><gml:geometryMember><gml:Point srsDimension=\"2\"><gml:pos>40 10</gml:pos></gml:Point></gml:geometryMember><gml:geometryMember><gml:LineString srsDimension=\"2\"><gml:posList>10 10 20 20 10 40</gml:posList></gml:LineString></gml:geometryMember><gml:geometryMember><gml:Polygon srsDimension=\"2\"><gml:exterior><gml:LinearRing><gml:posList>40 40 20 45 45 30 40 40</gml:posList></gml:LinearRing></gml:exterior></gml:Polygon></gml:geometryMember></gml:MultiGeometry>"
     }
-
 })
 
 private fun deleteIdAttributes(gml: String) = gml.replace(Regex(" gml:id=\"[^\"]+\""), "")
-

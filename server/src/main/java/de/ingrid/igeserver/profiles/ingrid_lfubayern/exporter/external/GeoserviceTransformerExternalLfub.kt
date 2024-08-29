@@ -34,7 +34,7 @@ class GeoserviceTransformerExternalLfub(transformerConfig: TransformerConfig) :
         fieldToCodelist.referenceFileFormat = "20002"
     }
 
-    override fun getDescriptiveKeywords(): List<Thesaurus> = lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData, codelists,true)
+    override fun getDescriptiveKeywords(): List<Thesaurus> = lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData, codelists, true)
 
     override val useConstraints: List<UseConstraintTemplate> = lfubUseConstraints(super.useConstraints, docData)
 }

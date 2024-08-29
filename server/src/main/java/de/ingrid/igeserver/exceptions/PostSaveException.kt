@@ -22,9 +22,9 @@ package de.ingrid.igeserver.exceptions
 import de.ingrid.igeserver.ServerException
 import org.springframework.http.HttpStatus
 
-class PostSaveException: ServerException {
+class PostSaveException : ServerException {
     protected constructor(statusCode: HttpStatus, errorCode: String, errorText: String, data: Map<String, Any?>? = null, cause: Throwable? = null) :
-            super(statusCode, errorCode, errorText, data, cause)
+        super(statusCode, errorCode, errorText, data, cause)
 
     companion object {
         private const val ERROR_CODE = "POST_SAVE_ERROR"

@@ -35,5 +35,4 @@ interface MigrationStrategy {
     fun postExec()
 
     fun compareWithVersion(version: String): VersionCompare
-
 }

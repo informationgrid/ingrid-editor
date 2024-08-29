@@ -26,9 +26,7 @@ import jakarta.persistence.AttributeConverter
  * @param <T> basic class type which the enum encapsulates
 </T> */
 abstract class EnumConverter<T : Enum<T>>(private val clazz: Class<T>) : AttributeConverter<T?, String?> {
-    override fun convertToDatabaseColumn(attribute: T?): String? {
-        return attribute?.toString()
-    }
+    override fun convertToDatabaseColumn(attribute: T?): String? = attribute?.toString()
 
     override fun convertToEntityAttribute(dbData: String?): T? {
         val enums = clazz.enumConstants
@@ -38,13 +36,5 @@ abstract class EnumConverter<T : Enum<T>>(private val clazz: Class<T>) : Attribu
             }
         }
         return null
-    } /*@Override
-    public String write(Object value) {
-        return convertToDatabaseColumn((T) value);
     }
-
-    @Override
-    public T read(Object value) {
-        return convertToEntityAttribute(value != null ? value.toString() : null);
-    }*/
 }

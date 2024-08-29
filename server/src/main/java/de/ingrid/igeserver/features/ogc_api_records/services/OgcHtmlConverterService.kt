@@ -28,8 +28,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class OgcHtmlConverterService(
-    private val generalProperties: GeneralProperties
-){
+    private val generalProperties: GeneralProperties,
+) {
 
     private val hostnameOgcApi = generalProperties.host + "/api/ogc"
 
@@ -38,11 +38,11 @@ class OgcHtmlConverterService(
         val title = doc.get("title") ?: ""
         val collectionId: String? = doc["id"]?.toString()?.drop(1)?.dropLast(1)
 
-        val h1 = if(type == null) {
+        val h1 = if (type == null) {
             """<h1>Record: $title</h1>"""
         } else if (type == "Collection") {
-            """<h1>Collection: <a href='/api/ogc/collections/${collectionId}?f=html'>${doc["name"].toString().drop(1).dropLast(1)}</a></h1>
-               <p>Link to <a href='/api/ogc/collections/${collectionId}/items?f=html'">Records</a><p/>
+            """<h1>Collection: <a href='/api/ogc/collections/$collectionId?f=html'>${doc["name"].toString().drop(1).dropLast(1)}</a></h1>
+               <p>Link to <a href='/api/ogc/collections/$collectionId/items?f=html'">Records</a><p/>
             """.trimMargin()
         } else {
             "<h1>$type</h1>"
@@ -63,9 +63,9 @@ class OgcHtmlConverterService(
 
     private fun convertFieldToTable(node: JsonNode): String {
         var table = "<table>"
-        if (node.isTextual)
-            table += "<td>${node.toString()}</td>" // addRow("", node.toString());
-        else
+        if (node.isTextual) {
+            table += "<td>$node</td>" // addRow("", node.toString());
+        } else {
             node.fields().forEach { element ->
                 val key = element.key ?: ""
                 val value = element.value
@@ -80,6 +80,7 @@ class OgcHtmlConverterService(
                     else -> table += addRow(key, value.toString())
                 }
             }
+        }
         return "$table</table>"
     }
 
@@ -87,12 +88,12 @@ class OgcHtmlConverterService(
         return "<tr><td style='width:160px'><b>$key</b></td><td>$value</td></tr>"
     }
 
-    fun wrapperForHtml(responseRecords: String, links: List<Link>?, queryMetadata: QueryMetadata?): String{
-        var metadata =""
+    fun wrapperForHtml(responseRecords: String, links: List<Link>?, queryMetadata: QueryMetadata?): String {
+        var metadata = ""
         var linksElements = ""
         var selfLink = ""
 
-        if(queryMetadata != null) {
+        if (queryMetadata != null) {
             val numberMatched = queryMetadata.numberMatched
             val numberReturned = queryMetadata.numberReturned
             val timeStamp = queryMetadata.timeStamp
@@ -105,32 +106,32 @@ class OgcHtmlConverterService(
             """.trimIndent()
         }
 
-        if(links != null) {
-            val selfLinks = links.filter { it.rel == "self"}
-            val alternateLinks = links.filter { it.rel == "alternate"}
-            val nextLinks = links.filter { it.rel == "next"}
-            val prevLinks = links.filter { it.rel == "prev"}
-            val collectionLinks = links.filter { it.rel == "collection"}
+        if (links != null) {
+            val selfLinks = links.filter { it.rel == "self" }
+            val alternateLinks = links.filter { it.rel == "alternate" }
+            val nextLinks = links.filter { it.rel == "next" }
+            val prevLinks = links.filter { it.rel == "prev" }
+            val collectionLinks = links.filter { it.rel == "collection" }
 
-            for(link in selfLinks) selfLink += "<p>" + link.title + ": " + link.href + "</p>"
+            for (link in selfLinks) selfLink += "<p>" + link.title + ": " + link.href + "</p>"
 
             var htmlCollection = "<div class='grid-item dropdown'><button class='dropdownTitle'>Links to Collection</button><nav class=\"dropdown-content\">"
-            for(link in collectionLinks) htmlCollection += "<a href=" + link.href + ">" + link.title + "</a>"
+            for (link in collectionLinks) htmlCollection += "<a href=" + link.href + ">" + link.title + "</a>"
             htmlCollection += "</nav></div>"
 
             var htmlAlternate = "<div class='grid-item dropdown'><button class='dropdownTitle'>Alternate Formats</button><nav class=\"dropdown-content\">"
-            for(link in alternateLinks) htmlAlternate += "<a href=" + link.href + ">" + link.title + "</a>"
+            for (link in alternateLinks) htmlAlternate += "<a href=" + link.href + ">" + link.title + "</a>"
             htmlAlternate += "</nav></div>"
 
             var htmlNext = "<div class='grid-item dropdown'><button class='dropdownTitle'>Next Page</button><nav class=\"dropdown-content\">"
-            for(link in nextLinks) htmlNext += "<a href=" + link.href + ">" + link.title + "</a>"
+            for (link in nextLinks) htmlNext += "<a href=" + link.href + ">" + link.title + "</a>"
             htmlNext += "</nav></div>"
 
             var htmlPrev = "<div class='grid-item dropdown'><button class='dropdownTitle'>Previous Page</button><nav class=\"dropdown-content\">"
-            for(link in prevLinks) htmlPrev += "<a href=" + link.href + ">" + link.title + "</a>"
+            for (link in prevLinks) htmlPrev += "<a href=" + link.href + ">" + link.title + "</a>"
             htmlPrev += "</nav></div>"
 
-            linksElements += htmlAlternate + htmlCollection + ( if(prevLinks.isNotEmpty() ) htmlPrev else "" ) + ( if(nextLinks.isNotEmpty() ) htmlNext else "" )
+            linksElements += htmlAlternate + htmlCollection + (if (prevLinks.isNotEmpty()) htmlPrev else "") + (if (nextLinks.isNotEmpty()) htmlNext else "")
         }
 
         return """
@@ -140,9 +141,9 @@ class OgcHtmlConverterService(
             <header>
                 <h1>OGC Record API</h1>
                 <div class="grid-container">
-                    <div class='grid-item dropdown'><a href='${hostnameOgcApi}?f=html'><button class='dropdownTitle'>Landing Page</button></a></div>
-                    <div class='grid-item dropdown'><a href='${hostnameOgcApi}/conformance?f=html'><button class='dropdownTitle'>Conformance</button></a></div>
-                    <div class='grid-item dropdown'><a href='${hostnameOgcApi}/collections?f=html'><button class='dropdownTitle'>Collections</button></a></div>
+                    <div class='grid-item dropdown'><a href='$hostnameOgcApi?f=html'><button class='dropdownTitle'>Landing Page</button></a></div>
+                    <div class='grid-item dropdown'><a href='$hostnameOgcApi/conformance?f=html'><button class='dropdownTitle'>Conformance</button></a></div>
+                    <div class='grid-item dropdown'><a href='$hostnameOgcApi/collections?f=html'><button class='dropdownTitle'>Collections</button></a></div>
                 </div>
                 $metadata
                 $selfLink
@@ -202,5 +203,4 @@ class OgcHtmlConverterService(
           </body></html>
         """.trimIndent()
     }
-
 }

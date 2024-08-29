@@ -31,7 +31,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.context.annotation.Profile
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.queryForList
 import org.springframework.stereotype.Component
@@ -40,7 +39,7 @@ import org.springframework.stereotype.Component
 class InGridPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,
-    val indexingTask: IndexingTask
+    val indexingTask: IndexingTask,
 ) : Filter<PostPublishPayload> {
 
     val log = logger()
@@ -49,14 +48,14 @@ class InGridPublishExport(
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
-
         val docId = payload.document.uuid
         val isDocument = payload.wrapper.category == "data"
         val isAddress = payload.wrapper.category == "address"
 
         try {
-            if (isDocument) indexDoc(context, docId, DocumentCategory.DATA)
-            else if (isAddress) {
+            if (isDocument) {
+                indexDoc(context, docId, DocumentCategory.DATA)
+            } else if (isAddress) {
                 indexDoc(context, docId, DocumentCategory.ADDRESS)
                 GlobalScope.launch {
                     indexReferencedDocs(context, docId)
@@ -67,7 +66,6 @@ class InGridPublishExport(
         }
 
         return payload
-
     }
 
     private fun indexReferencedDocs(context: Context, docId: String) {
@@ -83,17 +81,14 @@ class InGridPublishExport(
                 AND d.state = 'PUBLISHED'
                 AND dw.deleted = 0
                 AND data->'pointOfContact' @> '[{"ref": "$docId"}]');
-            """.trimIndent()
+            """.trimIndent(),
         )
 
         docsWithReferences.forEach { indexDoc(context, it, DocumentCategory.DATA) }
-
     }
 
     private fun indexDoc(context: Context, docId: String, category: DocumentCategory) {
-
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
         indexingTask.updateDocument(context.catalogId, category, docId)
-
     }
 }

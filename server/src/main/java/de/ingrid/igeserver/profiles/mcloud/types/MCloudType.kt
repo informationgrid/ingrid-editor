@@ -56,5 +56,4 @@ class MCloudType : EntityType() {
             address.getString("ref")!!
         }
     }
-
 }

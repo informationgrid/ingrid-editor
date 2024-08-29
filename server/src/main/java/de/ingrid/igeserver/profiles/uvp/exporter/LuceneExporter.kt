@@ -37,7 +37,7 @@ import org.unbescape.json.JsonEscape
 @Service
 class LuceneExporter(
     val catalogRepo: CatalogRepository,
-    val codelistService: CodeListService
+    val codelistService: CodeListService,
 ) {
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -52,17 +52,15 @@ class LuceneExporter(
     }
 
     private fun getMapFromObject(json: Document, catalog: Catalog): Map<String, Any> {
-
         val mapper = ObjectMapper().registerKotlinModule()
         return mapOf(
             "map" to mapOf(
                 "model" to mapper.convertValue(json, UVPModel::class.java).apply { init(catalog.identifier) },
                 "catalog" to catalog,
                 "partner" to mapCodelistValue("110", catalog.settings.config.partner),
-                "provider" to mapCodelistValue("111", catalog.settings.config.provider)
-            )
+                "provider" to mapCodelistValue("111", catalog.settings.config.provider),
+            ),
         )
-
     }
 
     private fun mapCodelistValue(codelistId: String, partner: String?): String {
@@ -73,7 +71,7 @@ class LuceneExporter(
         override fun writeUserContent(value: String?) {
             if (value == null) return
             super.writeUserContent(
-                JsonEscape.escapeJson(value)
+                JsonEscape.escapeJson(value),
             )
         }
     }

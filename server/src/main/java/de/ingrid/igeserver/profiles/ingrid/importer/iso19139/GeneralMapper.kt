@@ -45,7 +45,6 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-
 open class GeneralMapper(val isoData: IsoImportData) {
 
     private val log = logger()
@@ -69,7 +68,6 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val isOpenData = containsKeyword("opendata")
     val parentUuid = metadata.parentIdentifier?.value
 
-
     fun getDescription(): String {
         val description = metadata.identificationInfo[0].identificationInfo?.abstract?.value ?: return ""
 
@@ -78,7 +76,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             "Bodenauflösung:",
             "Scanauflösung (DPI):",
             "Systemumgebung:",
-            "Erläuterung zum Fachbezug:"
+            "Erläuterung zum Fachbezug:",
         )
             .map { description.indexOf(it) }
             .filter { it != -1 }
@@ -106,8 +104,9 @@ open class GeneralMapper(val isoData: IsoImportData) {
             // if role is PointOfContact, and it comes from main contact element
             // then it gets special role: pointOfContactMd (key=12)
             val roleIso = contact.responsibleParty?.role?.codelist?.codeListValue!!
-            val role: KeyValue = if (roleIso == "pointOfContact" && index < mainContact.size) KeyValue("12")
-            else {
+            val role: KeyValue = if (roleIso == "pointOfContact" && index < mainContact.size) {
+                KeyValue("12")
+            } else {
                 mapRoleToContactType(roleIso)
             }
 
@@ -129,11 +128,15 @@ open class GeneralMapper(val isoData: IsoImportData) {
                             KeyValue(),
                             true,
                             organization,
-                            address = addressInfo
-                        )
+                            address = addressInfo,
+                        ),
                     )
-                } else mutableListOf()
-            } else mutableListOf()
+                } else {
+                    mutableListOf()
+                }
+            } else {
+                mutableListOf()
+            }
 
             var uuid = contact.responsibleParty?.uuid
             if (uuid == null || !uuidExists(uuid)) {
@@ -163,7 +166,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 addressInfo,
                 positionName,
                 hoursOfService,
-                parentAddressUuid
+                parentAddressUuid,
             )
             parents.add(pointOfContact)
             parents
@@ -181,7 +184,9 @@ open class GeneralMapper(val isoData: IsoImportData) {
     }
 
     private fun uuidExists(uuid: String?) = try {
-        if (uuid == null) false else {
+        if (uuid == null) {
+            false
+        } else {
             documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid)
             true
         }
@@ -197,7 +202,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     private fun findPersonUuid(person: PersonInfo): String? {
         return isoData.addressMaps[getPersonIdentifier(person)]
             ?: documentService.docRepo.findAddressByPerson(catalogId, person.firstName, person.lastName)
-            .firstOrNull()
+                .firstOrNull()
     }
 
     private fun getPersonIdentifier(person: PersonInfo): String {
@@ -240,10 +245,11 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 countryCode,
                 zipCode,
                 zipPostbox,
-                administrativeArea
+                administrativeArea,
             ).isEmpty()
-        ) null
-        else {
+        ) {
+            null
+        } else {
             AddressInfo(
                 city,
                 postbox,
@@ -251,7 +257,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 countryCode,
                 zipCode,
                 zipPostbox,
-                administrativeArea
+                administrativeArea,
             )
         }
     }
@@ -367,7 +373,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     data class PreviewGraphic(
         val fileName: String,
-        val description: String? = null
+        val description: String? = null,
     )
 
     open fun getKeywords() = getKeywords(emptyList())
@@ -379,7 +385,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             "INSPIRE priority data set",
             "Spatial scope",
             "Further legal basis",
-            "IACS data"
+            "IACS data",
         ) + ignoreAdditional
         val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS")
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
@@ -387,9 +393,11 @@ open class GeneralMapper(val isoData: IsoImportData) {
             ?.filter {
                 val thesaurusName = it.keywords?.thesaurusName?.citation?.title?.value
                 val type = it.keywords?.type?.codelist?.codeListValue
-                (thesaurusName == null && type != "theme") || (thesaurusName != null && !ignoreThesaurus.contains(
-                    thesaurusName
-                ))
+                (thesaurusName == null && type != "theme") || (
+                    thesaurusName != null && !ignoreThesaurus.contains(
+                        thesaurusName,
+                    )
+                    )
             }
             ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
             ?.mapNotNull { it }
@@ -434,7 +442,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                         bbox.southBoundLatitude?.value!!,
                         bbox.westBoundLongitude?.value!!,
                         bbox.northBoundLatitude?.value!!,
-                        bbox.eastBoundLongitude?.value!!
+                        bbox.eastBoundLongitude?.value!!,
                     )
                 }
 
@@ -474,8 +482,11 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 val max = it.verticalElement?.maximumValue?.value
                 val datum = it.verticalElement?.verticalCRS?.verticalCRS?.verticalDatum?.verticalDatum?.name
                 val datumId = codeListService.getCodeListEntryId("101", datum, "de")
-                return if (uomId == null || min == null || max == null || datumId == null) null
-                else VerticalExtentModel(uomId, min, max, datumId)
+                return if (uomId == null || min == null || max == null || datumId == null) {
+                    null
+                } else {
+                    VerticalExtentModel(uomId, min, max, datumId)
+                }
             }?.getOrNull<VerticalExtentModel>(0)
     }
 
@@ -544,7 +555,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                         type,
                         if (status == null) null else KeyValue(statusKey),
                         period.endPosition?.value,
-                        typeSince
+                        typeSince,
                     )
                 }
 
@@ -607,7 +618,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                     nameKeyValue,
                     it?.version?.value,
                     it?.fileDecompressionTechnique?.value,
-                    it?.specification?.value
+                    it?.specification?.value,
                 )
                 if (result.isNull()) null else result
             } ?: emptyList()
@@ -640,14 +651,17 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 val nameKey = codeListService.getCodeListEntryId("520", value, "iso")
                 DigitalTransferOption(
                     KeyValue(nameKey),
-                    if (it.transferSize?.value == null) null else UnitField(
-                        it.transferSize.value.toString(),
-                        KeyValue("MB")
-                    ),
-                    it.offLine?.mdMedium?.mediumNote?.value
+                    if (it.transferSize?.value == null) {
+                        null
+                    } else {
+                        UnitField(
+                            it.transferSize.value.toString(),
+                            KeyValue("MB"),
+                        )
+                    },
+                    it.offLine?.mdMedium?.mediumNote?.value,
                 )
             } ?: emptyList()
-
     }
 
     fun getOrderInfo(): String {
@@ -672,16 +686,19 @@ open class GeneralMapper(val isoData: IsoImportData) {
                             if (value == null) null else codeListService.getCodeListEntryId("2000", value, "iso")
                         val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
                         val applicationValue = resource.applicationProfile?.value
-                        val applicationId = if (applicationValue == null) null
-                        else codeListService.getCodeListEntryId(
-                            fieldToCodelist.referenceFileFormat,
-                            applicationValue,
-                            "de"
-                        ) ?: codeListService.getCatalogCodelistKey(
-                            catalogId,
-                            fieldToCodelist.referenceFileFormat,
-                            applicationValue
-                        )
+                        val applicationId = if (applicationValue == null) {
+                            null
+                        } else {
+                            codeListService.getCodeListEntryId(
+                                fieldToCodelist.referenceFileFormat,
+                                applicationValue,
+                                "de",
+                            ) ?: codeListService.getCatalogCodelistKey(
+                                catalogId,
+                                fieldToCodelist.referenceFileFormat,
+                                applicationValue,
+                            )
+                        }
                         val applicationFinalValue = when {
                             applicationValue == null -> null
                             applicationId == null -> KeyValue(null, applicationValue)
@@ -692,7 +709,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                             resource.linkage.url,
                             applicationFinalValue,
                             resource.name?.value,
-                            resource.description?.value
+                            resource.description?.value,
                         )
                     } ?: emptyList()
             } ?: emptyList()
@@ -721,7 +738,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                     specificationEntryId != null,
                     it.explanation.value,
                     specificationKeyValue,
-                    publicationDate
+                    publicationDate,
                 )
             } ?: emptyList()
     }
@@ -787,8 +804,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 result.add(
                     UseConstraint(
                         convertUserConstraintToKeyValue(value),
-                        nextValue?.replace("Quellenvermerk: ", "")
-                    )
+                        nextValue?.replace("Quellenvermerk: ", ""),
+                    ),
                 )
                 index += 2
                 continue
@@ -799,8 +816,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
                     UseConstraint(
                         convertUserConstraintToKeyValue(value),
                         secondNextValue?.replace("Quellenvermerk: ", ""),
-                        nextValue
-                    )
+                        nextValue,
+                    ),
                 )
                 index += 3
                 continue
@@ -817,7 +834,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     private fun getUseConstraintNoteWhenJsonExists(
         otherConstraints: List<String>,
         index: Int,
-        groupStartIndex: Int
+        groupStartIndex: Int,
     ): String? {
         if (index - 1 <= groupStartIndex) return null
         val note = otherConstraints.getOrNull(index - 1)
@@ -825,7 +842,9 @@ open class GeneralMapper(val isoData: IsoImportData) {
             return if (isSourceNote(note)) {
                 if (index - 2 <= groupStartIndex) return null
                 otherConstraints.getOrNull(index - 2)
-            } else note
+            } else {
+                note
+            }
         }
         return null
     }
@@ -845,19 +864,17 @@ open class GeneralMapper(val isoData: IsoImportData) {
         return useConstraint.startsWith("{") && useConstraint.endsWith("}")
     }
 
-
     protected fun containsKeyword(value: String): Boolean {
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
             ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
             ?.any { it == value } ?: false
     }
-
 }
 
 data class UseConstraint(
     val title: KeyValue?,
     val source: String?,
-    val note: String? = null
+    val note: String? = null,
 )
 
 data class ConformanceResult(
@@ -865,7 +882,7 @@ data class ConformanceResult(
     val isInspire: Boolean,
     val explanation: String?,
     val specification: KeyValue?,
-    val publicationDate: String?
+    val publicationDate: String?,
 )
 
 data class Operation(
@@ -883,12 +900,12 @@ data class Resolution(
 data class DigitalTransferOption(
     val name: KeyValue?,
     val transferSize: UnitField?,
-    val mediumNote: String?
+    val mediumNote: String?,
 )
 
 data class UnitField(
     val value: String?,
-    val unit: KeyValue?
+    val unit: KeyValue?,
 )
 
 data class Reference(
@@ -896,14 +913,14 @@ data class Reference(
     val url: String?,
     val urlDataType: KeyValue?,
     val title: String?,
-    val explanation: String?
+    val explanation: String?,
 )
 
 data class DistributionFormat(
     val name: KeyValue,
     val version: String?,
     val compression: String?,
-    val specification: String?
+    val specification: String?,
 ) {
     fun isNull(): Boolean {
         return version.isNullOrEmpty() && compression.isNullOrEmpty() && specification.isNullOrEmpty() && name.key.isNullOrEmpty() && name.value.isNullOrEmpty()
@@ -914,7 +931,7 @@ data class MaintenanceInterval(
     val value: Number?,
     val unit: KeyValue?,
     val interval: KeyValue?,
-    val description: String?
+    val description: String?,
 )
 
 data class TimeInfo(
@@ -922,7 +939,7 @@ data class TimeInfo(
     val type: KeyValue? = null,
     var status: KeyValue? = null,
     val untilDate: String? = null,
-    val dateTypeSince: KeyValue? = null
+    val dateTypeSince: KeyValue? = null,
 )
 
 data class Event(val type: KeyValue, val date: String)
@@ -931,7 +948,7 @@ data class VerticalExtentModel(
     val uom: String,
     val min: Number,
     val max: Number,
-    val datum: String
+    val datum: String,
 )
 
 data class SpatialReference(
@@ -939,14 +956,14 @@ data class SpatialReference(
     val title: String?,
     var coordinates: BoundingBox? = null,
     var wkt: String? = null,
-    var ars: String? = null
+    var ars: String? = null,
 )
 
 data class BoundingBox(
     val lat1: Float,
     val lon1: Float,
     val lat2: Float,
-    val lon2: Float
+    val lon2: Float,
 )
 
 data class CoupledResourceModel(
@@ -969,19 +986,24 @@ data class PointOfContact(
     val address: AddressInfo? = null,
     val positionName: String = "",
     val hoursOfService: String = "",
-    val parent: String? = null
+    val parent: String? = null,
 ) {
     fun getTitle(): String {
-        return if (personInfo?.lastName != null)
-            if (personInfo.firstName.isNullOrEmpty()) personInfo.lastName
-            else "${personInfo.lastName}, ${personInfo.firstName}"
-        else organization ?: ""
+        return if (personInfo?.lastName != null) {
+            if (personInfo.firstName.isNullOrEmpty()) {
+                personInfo.lastName
+            } else {
+                "${personInfo.lastName}, ${personInfo.firstName}"
+            }
+        } else {
+            organization ?: ""
+        }
     }
 }
 
 data class Communication(
     val type: KeyValue,
-    val connection: String
+    val connection: String,
 )
 
 data class PersonInfo(
@@ -997,5 +1019,5 @@ data class AddressInfo(
     val country: KeyValue?,
     val zipCode: String?,
     val zipPOBox: String?,
-    val administrativeArea: KeyValue?
+    val administrativeArea: KeyValue?,
 )

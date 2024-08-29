@@ -496,11 +496,11 @@ describe("TreeComponent", () => {
 
   describe("Multi-Selection", () => {
     beforeEach(() => {
+      spectator.detectChanges();
       spectator.setInput("showMultiSelectButton", true);
     });
 
     it("should enable and disable multi selection mode", () => {
-      spectator.detectChanges();
       spectator.click('[data-cy="edit-button"]');
 
       // all three documents have a checkbox
@@ -515,7 +515,6 @@ describe("TreeComponent", () => {
     });
 
     it("should have the currently opened node initially selected", () => {
-      spectator.detectChanges();
       spectator.click('[data-cy="edit-button"]');
 
       spectator.click('[data-cy="exit-multi-select-mode"]');
@@ -532,7 +531,6 @@ describe("TreeComponent", () => {
     });
 
     it("should check/uncheck all nodes at once", () => {
-      spectator.detectChanges();
       spectator.click('[data-cy="edit-button"]');
 
       const toggleAllSelectionSpy = spyOn(
@@ -568,8 +566,6 @@ describe("TreeComponent", () => {
     });
 
     it("should activate multi-edit mode by using ctrl-key", () => {
-      spectator.detectChanges();
-
       selectNode(0, "ctrl");
 
       expect(spectator.query('[data-cy="toggle-all-selection"]')).toBeVisible();
@@ -578,8 +574,6 @@ describe("TreeComponent", () => {
     });
 
     it("should activate multi-edit mode by using shift-key and mark correct nodes", () => {
-      spectator.detectChanges();
-
       selectNode(1);
       selectNode(2, "shift");
 
@@ -593,7 +587,6 @@ describe("TreeComponent", () => {
     });
 
     it("should select from root when no node was selected using shift-key", () => {
-      spectator.detectChanges();
       spectator.click('[data-cy="edit-button"]');
 
       selectNode(2, "shift");
@@ -603,7 +596,6 @@ describe("TreeComponent", () => {
     });
 
     it("should select multiple nodes and delete them at once", fakeAsync(() => {
-      spectator.detectChanges();
       spectator.click('[data-cy="edit-button"]');
 
       selectNode(0);
@@ -686,7 +678,6 @@ describe("TreeComponent", () => {
     }));
 
     it("should remove a deleted node from the selection model", fakeAsync(() => {
-      spectator.detectChanges();
       spectator.click('[data-cy="edit-button"]');
       let selectionModel = spectator.fixture.componentInstance.selection.model;
 

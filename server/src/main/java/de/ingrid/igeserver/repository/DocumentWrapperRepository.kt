@@ -19,9 +19,8 @@
  */
 package de.ingrid.igeserver.repository
 
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.services.DOCUMENT_STATE
+import de.ingrid.igeserver.services.DocumentState
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Modifying
@@ -32,7 +31,9 @@ import org.springframework.security.access.prepost.PostFilter
 import org.springframework.security.access.prepost.PreAuthorize
 import java.util.*
 
-interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSpecificationExecutor<DocumentWrapper> {
+interface DocumentWrapperRepository :
+    JpaRepository<DocumentWrapper, Int>,
+    JpaSpecificationExecutor<DocumentWrapper> {
 
     @PostAuthorize("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")
     override fun findById(id: Int): Optional<DocumentWrapper>
@@ -47,13 +48,13 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     fun findAllByCatalog_IdentifierAndResponsibleUser_Id(catalog_identifier: String, responsibleUser_id: Int): List<DocumentWrapper>
 
     @PostAuthorize("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")
-    @Query("SELECT dw.*, 0 as countChildren FROM document_wrapper dw JOIN catalog cat ON dw.catalog_id = cat.id WHERE cat.identifier = ?1 AND dw.uuid = ?2", nativeQuery = true )
+    @Query("SELECT dw.*, 0 as countChildren FROM document_wrapper dw JOIN catalog cat ON dw.catalog_id = cat.id WHERE cat.identifier = ?1 AND dw.uuid = ?2", nativeQuery = true)
     fun findByCatalogAndUuidIncludingDeleted(catalogIdentifier: String, uuid: String): DocumentWrapper
 
     @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     @Query("SELECT d FROM DocumentWrapper d")
     fun getAll(): List<DocumentWrapper?>
-    
+
     @Deprecated("Is not secured")
     @Query("SELECT d.parent FROM DocumentWrapper d WHERE d.id = ?1")
     fun getParentWrapper(id: Int): DocumentWrapper?
@@ -61,11 +62,13 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     // TODO: add permission check
     @Deprecated("Is not secured")
     @Query("SELECT d, dw.id as wrapperId FROM DocumentWrapper dw JOIN Document d ON dw.uuid = d.uuid WHERE dw.deleted = 0 AND d.catalog.identifier = ?1 AND dw.catalog.identifier = ?1 AND d.uuid = ?2 AND d.state = ?3")
-    fun getDocumentByState(catalogIdentifier: String, uuid: String, state: DOCUMENT_STATE): Array<Any>
+    fun getDocumentByState(catalogIdentifier: String, uuid: String, state: DocumentState): Array<Any>
 
     @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     fun findAllByCatalog_IdentifierAndParent_IdAndCategory(
-        catalog_identifier: String, parentUuid: Int?, category: String
+        catalog_identifier: String,
+        parentUuid: Int?,
+        category: String,
     ): List<DocumentWrapper>
 
     @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
@@ -97,7 +100,7 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     fun findAllPublished(catalogId: String): List<DocumentWrapper>
 
     @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
-    @Query("SELECT dw FROM DocumentWrapper dw JOIN Document doc ON dw.uuid = doc.uuid WHERE dw.catalog.identifier = ?1 AND dw.category = 'data' AND doc.state = 'PENDING' AND dw.type != 'FOLDER' AND dw.deleted = 0" )
+    @Query("SELECT dw FROM DocumentWrapper dw JOIN Document doc ON dw.uuid = doc.uuid WHERE dw.catalog.identifier = ?1 AND dw.category = 'data' AND doc.state = 'PENDING' AND dw.type != 'FOLDER' AND dw.deleted = 0")
     fun findAllPending(catalogId: String): List<DocumentWrapper>
 
     @PreAuthorize("hasPermission(#id, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
@@ -105,7 +108,7 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
 
     @Modifying
     @PreAuthorize("hasPermission(#id, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")
-    @Query("UPDATE document_wrapper SET deleted = 0 WHERE id = ?1", nativeQuery = true )
+    @Query("UPDATE document_wrapper SET deleted = 0 WHERE id = ?1", nativeQuery = true)
     fun undeleteDocument(wrapperId: Int)
 
     // allow if it's a new document, where id is null
@@ -115,5 +118,4 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
 
     @PreAuthorize("hasPermission(#docWrapper, 'WRITE')")
     fun saveAndFlush(@Param("docWrapper") docWrapper: DocumentWrapper): DocumentWrapper
-
 }

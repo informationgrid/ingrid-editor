@@ -59,5 +59,4 @@ class BmiType : EntityType() {
             address.path("ref").textValue()
         }
     }
-
 }

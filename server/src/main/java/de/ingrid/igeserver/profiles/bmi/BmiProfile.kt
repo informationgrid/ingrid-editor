@@ -32,19 +32,23 @@ import de.ingrid.igeserver.repository.CodelistRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.research.quickfilter.Draft
 import de.ingrid.igeserver.research.quickfilter.ExceptFolders
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogProfile
+import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.IndexIdFieldConfig
+import de.ingrid.igeserver.services.Permissions
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
 @Service
 class BmiProfile(
-        @JsonIgnore val codelistRepo: CodelistRepository,
-        @JsonIgnore val catalogRepo: CatalogRepository,
-        @JsonIgnore val codelistHandler: CodelistHandler,
-        @JsonIgnore val query: QueryRepository,
-        @JsonIgnore val dateService: DateService,
-        @JsonIgnore val authUtils: AuthUtils,
+    @JsonIgnore val codelistRepo: CodelistRepository,
+    @JsonIgnore val catalogRepo: CatalogRepository,
+    @JsonIgnore val codelistHandler: CodelistHandler,
+    @JsonIgnore val query: QueryRepository,
+    @JsonIgnore val dateService: DateService,
+    @JsonIgnore val authUtils: AuthUtils,
 ) : CatalogProfile {
 
     override val identifier = "bmi"
@@ -53,30 +57,30 @@ class BmiProfile(
     override val indexExportFormatID = "index"
     override val indexIdField = IndexIdFieldConfig("uuid", "uuid")
 
-    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state", "Filter", arrayOf(
-                    Draft(),
-                    ExceptFolders()
-                ),
-                viewComponent = ViewComponent.CHECKBOX,
-                combine = Operator.AND
-            )
-        )
-    }
+    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Filter",
+            arrayOf(
+                Draft(),
+                ExceptFolders(),
+            ),
+            viewComponent = ViewComponent.CHECKBOX,
+            combine = Operator.AND,
+        ),
+    )
 
-    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state", "Filter", arrayOf(
-                    Draft(),
-                    ExceptFolders()
-                ),
-                viewComponent = ViewComponent.CHECKBOX
-            )
-        )
-    }
+    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Filter",
+            arrayOf(
+                Draft(),
+                ExceptFolders(),
+            ),
+            viewComponent = ViewComponent.CHECKBOX,
+        ),
+    )
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
@@ -346,7 +350,6 @@ class BmiProfile(
                 add(toCodelistEntry("http://dcat-ap.de/def/licenses/other-closed", "Andere geschlossene Lizenz"))
                 add(toCodelistEntry("http://dcat-ap.de/def/licenses/other-commercial", "Andere kommerzielle Lizenz"))
                 add(toCodelistEntry("http://dcat-ap.de/def/licenses/other-freeware", "Andere Freeware Lizenz"))
-
             }
         }
         val codelist20005 = Codelist().apply {
@@ -374,7 +377,6 @@ class BmiProfile(
                 add(toCodelistEntry("state", "Ebene der Bundesländer"))
                 add(toCodelistEntry("administrativeDistrict", "Ebene der Landkreise und Regierungsbezirke"))
                 add(toCodelistEntry("municipality", "kommunale Ebene"))
-
             }
         }
         val codelist20007 = Codelist().apply {
@@ -423,60 +425,59 @@ class BmiProfile(
     override fun initIndices() {
     }
 
-    override fun getElasticsearchMapping(format: String): String {
-        return {}.javaClass.getResource("/bmi/default-mapping.json")?.readText() ?: ""
-    }
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/bmi/default-mapping.json")?.readText() ?: ""
 
-    override fun getElasticsearchSetting(format: String): String {
-        return {}.javaClass.getResource("/bmi/default-settings.json")?.readText() ?: ""
-    }
+    override fun getElasticsearchSetting(format: String): String = {}.javaClass.getResource("/bmi/default-settings.json")?.readText() ?: ""
 
     private fun removeAndAddCodelist(catalogId: String, codelist: Codelist) {
-
         codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, codelist.identifier)
         codelistRepo.flush()
         codelistRepo.save(codelist)
-
     }
 
-    private fun toCodelistEntry(id: String, german: String): JsonNode {
-        return jacksonObjectMapper().createObjectNode().apply {
-            put("id", id)
-            set<JsonNode>("localisations", jacksonObjectMapper().createObjectNode().apply {
+    private fun toCodelistEntry(id: String, german: String): JsonNode = jacksonObjectMapper().createObjectNode().apply {
+        put("id", id)
+        set<JsonNode>(
+            "localisations",
+            jacksonObjectMapper().createObjectNode().apply {
                 put("de", german)
-            })
-        }
+            },
+        )
     }
 
-    private fun toISOCodelistEntry(id: String, german: String, iso: String): JsonNode {
-        return jacksonObjectMapper().createObjectNode().apply {
-            put("id", id)
-            set<JsonNode>("localisations", jacksonObjectMapper().createObjectNode().apply {
+    private fun toISOCodelistEntry(id: String, german: String, iso: String): JsonNode = jacksonObjectMapper().createObjectNode().apply {
+        put("id", id)
+        set<JsonNode>(
+            "localisations",
+            jacksonObjectMapper().createObjectNode().apply {
                 put("de", german)
                 put("iso", iso)
-            })
-        }
+            },
+        )
     }
 
-    override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String>{
+    override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> {
         val isSuperAdmin = authUtils.containsRole(principal, "ige-super-admin")
         val isCatAdmin = authUtils.containsRole(principal, "cat-admin")
 
         val newPermissions: MutableList<String> = permissions.toMutableList()
 
-        if(isCatAdmin) {
+        if (isCatAdmin) {
             newPermissions.add(Permissions.manage_content.name)
         }
 
-        return  if(isSuperAdmin) {
+        return if (isSuperAdmin) {
             newPermissions.filter { permission ->
                 (!permission.equals(Permissions.manage_ibus.name))
             }
         } else {
-            newPermissions.filter { permission -> (!permission.equals(Permissions.can_import.name)
-                    && !permission.equals(Permissions.can_export.name)
-                    && !permission.equals(Permissions.manage_codelist_repository.name)
-                    && !permission.equals(Permissions.manage_ibus.name))
+            newPermissions.filter { permission ->
+                (
+                    !permission.equals(Permissions.can_import.name) &&
+                        !permission.equals(Permissions.can_export.name) &&
+                        !permission.equals(Permissions.manage_codelist_repository.name) &&
+                        !permission.equals(Permissions.manage_ibus.name)
+                    )
             }
         }
     }

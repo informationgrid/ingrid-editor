@@ -70,8 +70,6 @@ To configure Keycloak completely manually, the following steps are necessary:
 * create the following roles (Realm roles -> Create role)
 ** ige-user
 *** add associated roles from "realm-management": "view-users" (Action -> Add associated roles -> Filter by clients)
-** ige-user-manager
-*** add associated roles from "realm-management": "manage-realm", "manage-users"
 ** ige-super-admin
 *** add associated roles from "realm-management": "manage-realm", "manage-users"
 * create super-admin user "ige" (Users -> Add user)

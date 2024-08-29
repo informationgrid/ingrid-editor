@@ -25,5 +25,5 @@ import java.util.*
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GroupData(
     var creationDate: Date? = null,
-    var modificationDate: Date? = null
+    var modificationDate: Date? = null,
 )

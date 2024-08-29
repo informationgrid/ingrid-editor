@@ -20,7 +20,12 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.model.*
+import de.ingrid.igeserver.model.BoolFilter
+import de.ingrid.igeserver.model.Facets
+import de.ingrid.igeserver.model.QuickFilter
+import de.ingrid.igeserver.model.ResearchPaging
+import de.ingrid.igeserver.model.ResearchQuery
+import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.utils.AuthUtils
 import jakarta.persistence.EntityManager
 import org.hibernate.jpa.AvailableHints
@@ -32,7 +37,6 @@ import org.springframework.stereotype.Service
 import java.security.Principal
 import java.time.Instant
 import java.util.*
-
 
 data class Result(
     val title: String?,
@@ -46,7 +50,7 @@ data class Result(
     var hasWritePermission: Boolean?,
     var hasOnlySubtreeWritePermission: Boolean?,
     var _tags: String?,
-    val _responsibleUser: Any?
+    val _responsibleUser: Any?,
 )
 
 @Service
@@ -67,16 +71,11 @@ class ResearchService {
     @Autowired
     private lateinit var authUtils: AuthUtils
 
-    fun createFacetDefinitions(catalogType: String): Facets {
-        return profiles
-                .find { it.identifier == catalogType }!!
-                .let { Facets(it.getFacetDefinitionsForAddresses(), it.getFacetDefinitionsForDocuments()) }
+    fun createFacetDefinitions(catalogType: String): Facets = profiles
+        .find { it.identifier == catalogType }!!
+        .let { Facets(it.getFacetDefinitionsForAddresses(), it.getFacetDefinitionsForDocuments()) }
 
-    }
-
-    
     fun query(catalogId: String, query: ResearchQuery, principal: Principal = SecurityContextHolder.getContext().authentication): ResearchResponse {
-
         val groups = authUtils.getCurrentUserRoles(catalogId)
         val hasReadAccessToRootDocs = authUtils.isAdmin(principal) || aclService.hasRootReadAccess(groups)
         val idsToSearchIn = if (hasReadAccessToRootDocs) null else aclService.getDatasetIdsSetInGroups(groups)
@@ -101,17 +100,16 @@ class ResearchService {
         return ResearchResponse(totalHits, map)
     }
 
-    private fun getParameters(query: ResearchQuery): List<Any> {
-
-        return if (query.term.isNullOrEmpty()) {
-            emptyList()
+    private fun getParameters(query: ResearchQuery): List<Any> = if (query.term.isNullOrEmpty()) {
+        emptyList()
+    } else {
+        val withWildcard = "%" + query.term + "%"
+        // third parameter is for uuid search and so must not contain wildcard
+        if (checkForTitleSearch(query.clauses)) {
+            listOf(withWildcard)
         } else {
-            val withWildcard = "%" + query.term + "%"
-            // third parameter is for uuid search and so must not contain wildcard
-            if (checkForTitleSearch(query.clauses)) listOf(withWildcard)
-            else listOf(withWildcard, withWildcard, query.term)
+            listOf(withWildcard, withWildcard, query.term)
         }
-
     }
 
     private fun createQuery(catalogId: String, query: ResearchQuery, idsToSearchIn: List<Int>?): String {
@@ -121,9 +119,13 @@ class ResearchService {
                 FROM catalog, document_wrapper Join document document1 on document_wrapper.uuid = document1.uuid
                 ${determineJsonSearch(query.term)}
                 ${determineWhereQuery(catalogId, query, idsToSearchIn)}
-            """ + if (query.orderByField != null) """
+            """ + if (query.orderByField != null) {
+                """
                 ORDER BY document1.${query.orderByField} ${query.orderByDirection}
-            """.trimIndent() else ""
+                """.trimIndent()
+            } else {
+                ""
+            }
         sqlQuery = this.addAdditionalSelectsToQuery(sqlQuery)
         return sqlQuery
     }
@@ -139,10 +141,13 @@ class ResearchService {
         val catalogFilter = createCatalogFilter(catalogId)
         val groupDocIdsString = idsToSearchIn?.joinToString(",")
         // TODO: uuid IN (SELECT(unnest(dw.path))) might be more performant (https://coderwall.com/p/jmtskw/use-in-instead-of-any-in-postgresql)
-        val permissionFilter = if (groupDocIdsString == null ) "" else
+        val permissionFilter = if (groupDocIdsString == null) {
+            ""
+        } else {
             """ AND (document_wrapper.id = ANY(('{$groupDocIdsString}')) 
                     OR ('{$groupDocIdsString}') && document_wrapper.path)
             """.trimIndent()
+        }
 
         val deletedFilter = "document_wrapper.deleted = 0 AND "
 
@@ -169,8 +174,11 @@ class ResearchService {
         if (query.term.isNullOrEmpty()) return ""
 
         val searchOnlyInTitle = checkForTitleSearch(query.clauses)
-        return if (searchOnlyInTitle) "title ILIKE ?"
-        else "(t.val ILIKE ? OR title ILIKE ? OR document1.uuid ILIKE ?)"
+        return if (searchOnlyInTitle) {
+            "title ILIKE ?"
+        } else {
+            "(t.val ILIKE ? OR title ILIKE ? OR document1.uuid ILIKE ?)"
+        }
     }
 
     private fun checkForTitleSearch(clauses: BoolFilter?): Boolean {
@@ -182,9 +190,11 @@ class ResearchService {
             clauses.clauses.map { checkForTitleSearch(it) }
         } else if (clauses.isFacet) {
             clauses.value
-                    ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
-                    ?.map { it?.isFieldQuery ?: false } ?: listOf()
-        } else listOf(false)
+                ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
+                ?.map { it?.isFieldQuery ?: false } ?: listOf()
+        } else {
+            listOf(false)
+        }
 
         return filterString.any { it }
     }
@@ -198,28 +208,21 @@ class ResearchService {
             clauses.clauses.map { checkForPublishedSearch(it) }
         } else {
             clauses.value
-                    ?.map { value -> value.replace(" ", "").contains(".state='PUBLISHED'") } ?: listOf()
+                ?.map { value -> value.replace(" ", "").contains(".state='PUBLISHED'") } ?: listOf()
         }
 
         return filterString.any { it }
     }
 
-    private fun createCatalogFilter(catalogId: String): String {
+    private fun createCatalogFilter(catalogId: String): String = "document1.catalog_id = catalog.id AND document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
 
-        return "document1.catalog_id = catalog.id AND document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
-
-    }
-
-    private fun determineJsonSearch(term: String?): String {
-
-        return if (!term.isNullOrEmpty())
-            "LEFT JOIN jsonb_each_text(document1.data) as t(k, val) on true"
-        else ""
-
+    private fun determineJsonSearch(term: String?): String = if (!term.isNullOrEmpty()) {
+        "LEFT JOIN jsonb_each_text(document1.data) as t(k, val) on true"
+    } else {
+        ""
     }
 
     private fun convertQuery(boolFilter: BoolFilter?): String? {
-
         if (boolFilter == null) {
             return null
         }
@@ -228,9 +231,9 @@ class ResearchService {
             boolFilter.clauses.mapNotNull { convertQuery(it) }
         } else if (boolFilter.isFacet) {
             boolFilter.value
-                    ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
-                    ?.filter { it?.isFieldQuery == false }
-                    ?.map { it?.filter(boolFilter.parameter) }
+                ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
+                ?.filter { it?.isFieldQuery == false }
+                ?.map { it?.filter(boolFilter.parameter) }
         } else {
             boolFilter.value
         }
@@ -239,7 +242,6 @@ class ResearchService {
             0 -> null
             else -> "(${filterString?.joinToString(" ${boolFilter.op} ")})"
         }
-
     }
 
     private fun sendQuery(sql: String, parameter: List<Any>, paging: ResearchPaging): List<Array<out Any?>> {
@@ -250,29 +252,28 @@ class ResearchService {
         }
 
         return nativeQuery
-                .setHint(AvailableHints.HINT_READ_ONLY, true)
-                .unwrap(NativeQuery::class.java)
-                .addScalar("data")
-                .addScalar("title")
-                .addScalar("uuid")
-                .addScalar("type")
-                .addScalar("created")
-                .addScalar("contentmodified")
-                .addScalar("category")
-                .addScalar("wrapperid")
-                .addScalar("state")
-                .addScalar("tags")
-                .addScalar("responsibleUser")
-                .setFirstResult((paging.page - 1) * paging.pageSize + paging.offset)
-                .setMaxResults(paging.pageSize)
-                .resultList as List<Array<out Any?>>
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
+            .unwrap(NativeQuery::class.java)
+            .addScalar("data")
+            .addScalar("title")
+            .addScalar("uuid")
+            .addScalar("type")
+            .addScalar("created")
+            .addScalar("contentmodified")
+            .addScalar("category")
+            .addScalar("wrapperid")
+            .addScalar("state")
+            .addScalar("tags")
+            .addScalar("responsibleUser")
+            .setFirstResult((paging.page - 1) * paging.pageSize + paging.offset)
+            .setMaxResults(paging.pageSize)
+            .resultList as List<Array<out Any?>>
     }
-
 
     private fun getTotalHits(sql: String, termParameters: List<Any>): Int {
         val countSQL = "SELECT count(DISTINCT document_wrapper.id) " + sql
-                .substring(sql.indexOf("FROM"))
-                .substringBeforeLast("ORDER BY")
+            .substring(sql.indexOf("FROM"))
+            .substringBeforeLast("ORDER BY")
         val countQuery = entityManager.createNativeQuery(countSQL)
 
         termParameters.forEachIndexed { index, term ->
@@ -283,50 +284,59 @@ class ResearchService {
     }
 
     private fun filterAndMapResult(
-            result: List<Array<out Any?>>,
-            isAdmin: Boolean,
-            principal: Principal
+        result: List<Array<out Any?>>,
+        isAdmin: Boolean,
+        principal: Principal,
     ): List<Result> {
         principal as Authentication
         return result
-                .filter { item ->
-                    isAdmin || aclService.getPermissionInfo(
-                            principal,
-                            item[7] as Int // "id"
+            .filter { item ->
+                isAdmin ||
+                    aclService.getPermissionInfo(
+                        principal,
+                        // "id"
+                        item[7] as Int,
                     ).canRead
-                }.map { item ->
-                    Result(
-                            title = item[1] as? String,
-                            _uuid = item[2] as? String,
-                            _type = item[3] as? String,
-                            _created = Date.from(item[4] as Instant),
-                            _contentModified = Date.from(item[5] as Instant),
-                            _state = determineDocumentState(item[8] as String),
-                            _category = (item[6] as? String),
-                            hasWritePermission = if (isAdmin) true else aclService.getPermissionInfo(
-                                    principal,
-                                    item[7] as Int
-                            ).canWrite,
-                            hasOnlySubtreeWritePermission = if (isAdmin) false else aclService.getPermissionInfo(
-                                    principal,
-                                    item[7] as Int
-                            ).canOnlyWriteSubtree,
+            }.map { item ->
+                Result(
+                    title = item[1] as? String,
+                    _uuid = item[2] as? String,
+                    _type = item[3] as? String,
+                    _created = Date.from(item[4] as Instant),
+                    _contentModified = Date.from(item[5] as Instant),
+                    _state = determineDocumentState(item[8] as String),
+                    _category = (item[6] as? String),
+                    hasWritePermission = if (isAdmin) {
+                        true
+                    } else {
+                        aclService.getPermissionInfo(
+                            principal,
+                            item[7] as Int,
+                        ).canWrite
+                    },
+                    hasOnlySubtreeWritePermission = if (isAdmin) {
+                        false
+                    } else {
+                        aclService.getPermissionInfo(
+                            principal,
+                            item[7] as Int,
+                        ).canOnlyWriteSubtree
+                    },
                     _id = item[7] as Int,
                     _tags = (item[9] as? Array<*>)?.joinToString(","),
-                    _responsibleUser = item[10]
-                    )
-                }
+                    _responsibleUser = item[10],
+                )
+            }
     }
 
-    private fun determineDocumentState(state: String) = DOCUMENT_STATE.valueOf(state).getState()
+    private fun determineDocumentState(state: String) = DocumentState.valueOf(state).getState()
 
     fun querySql(
-            principal: Principal,
-            catalogId: String,
-            sqlQuery: String,
-            paging: ResearchPaging = ResearchPaging()
+        principal: Principal,
+        catalogId: String,
+        sqlQuery: String,
+        paging: ResearchPaging = ResearchPaging(),
     ): ResearchResponse {
-
         val isAdmin = authUtils.isAdmin(principal)
         var finalQuery = ""
         try {
@@ -347,8 +357,8 @@ class ResearchService {
             return ResearchResponse(totalHits, map)
         } catch (error: Exception) {
             throw ClientException.withReason(
-                    (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage,
-                    data = mapOf("sql" to finalQuery)
+                (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage,
+                data = mapOf("sql" to finalQuery),
             )
         }
     }
@@ -370,7 +380,6 @@ class ResearchService {
     }
 
     private fun restrictQueryOnCatalogAndNotDeleted(catalogId: String, sqlQuery: String): String {
-
         val catalogFilter = createCatalogFilter(catalogId)
         val notDeletedFilter = "document_wrapper.deleted = 0"
         val isLatestFilter = "document1.is_latest = true"
@@ -381,14 +390,13 @@ class ResearchService {
             -1 -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5)}
                 WHERE $catalogFilter AND $notDeletedFilter AND $isLatestFilter
-                """.trimIndent()
+            """.trimIndent()
 
             else -> """
                 ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5, whereIndex + 5)}
                 $catalogFilter AND $notDeletedFilter AND $isLatestFilter AND
-                ${sqlQuery.substring(whereIndex + 6)}""".trimIndent()
+                ${sqlQuery.substring(whereIndex + 6)}
+            """.trimIndent()
         }
-
     }
-
 }

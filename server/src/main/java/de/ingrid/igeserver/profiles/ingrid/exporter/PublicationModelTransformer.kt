@@ -27,10 +27,4 @@ open class PublicationModelTransformer(transformerConfig: TransformerConfig) : I
     val baseDataText = data.publication?.baseDataText
     val publisherOrPlaceholder =
         if (publication?.publisher.isNullOrEmpty()) "Location of the editor" else publication?.publisher
-
-
 }
-
-
-
-

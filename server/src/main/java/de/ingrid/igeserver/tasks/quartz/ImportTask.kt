@@ -43,7 +43,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
 
-
 @Component
 @PersistJobDataAfterExecution
 class ImportTask(
@@ -71,7 +70,6 @@ class ImportTask(
 
             val principal = setAdminAuthentication("Import", "Task")
 
-
             val report = when (stage) {
                 Stage.ANALYZE -> {
                     clearPreviousAnalysis(context)
@@ -94,7 +92,7 @@ class ImportTask(
                         info.catalogId,
                         info.analysis!!,
                         info.options!!,
-                        message
+                        message,
                     )
                     info.analysis.apply { this.importResult = counter }
                 }
@@ -102,16 +100,22 @@ class ImportTask(
                 else -> null
             }
 
-            message.apply { this.report = report; this.endTime = Date(); this.stage = stage.name }.also {
+            message.apply {
+                this.report = report
+                this.endTime = Date()
+                this.stage = stage.name
+            }.also {
                 finishJob(context, it)
                 notifier.sendMessage(notificationType, it)
             }
-
         } catch (ex: Exception) {
             val errorMessage = prepareErrorMessage(ex)
             message.apply {
-                this.report = info.analysis; this.endTime = Date(); this.stage = stage.name; this.errors =
-                mutableListOf(errorMessage)
+                this.report = info.analysis
+                this.endTime = Date()
+                this.stage = stage.name
+                this.errors =
+                    mutableListOf(errorMessage)
             }.also {
                 finishJob(context, it)
                 notifier.sendMessage(notificationType, it)
@@ -186,6 +190,6 @@ class ImportTask(
         val importFile: String?,
         val analysis: OptimizedImportAnalysis?,
         val options: ImportOptions?,
-        val infos: MutableList<String>
+        val infos: MutableList<String>,
     )
 }

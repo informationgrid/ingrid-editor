@@ -45,9 +45,8 @@ class DataHistoryController(private val auditLogger: AuditLogger) : DataHistoryA
         from: LocalDate?,
         to: LocalDate?,
         sort: String?,
-        sortOrder: String?
+        sortOrder: String?,
     ): ResponseEntity<SearchResult<DataHistoryRecord>> {
-
         val records = auditLogger.find(PostDataHistoryLogger.LOGGER_NAME, id, user, action, from, to, sort, sortOrder)
         val searchResult = SearchResult<DataHistoryRecord>()
         searchResult.totalHits = records.totalHits
@@ -59,7 +58,7 @@ class DataHistoryController(private val auditLogger: AuditLogger) : DataHistoryA
                 actor = message.actor!!,
                 action = message.action!!,
                 time = OffsetDateTime.parse(message.time),
-                data = message.data
+                data = message.data,
             )
         }
         return ResponseEntity.ok(searchResult)

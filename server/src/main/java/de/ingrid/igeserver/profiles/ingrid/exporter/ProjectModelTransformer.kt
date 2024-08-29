@@ -25,9 +25,4 @@ open class ProjectModelTransformer(transformerConfig: TransformerConfig) : Ingri
 
     val manager = data.manager
     val participants = data.participants
-
 }
-
-
-
-

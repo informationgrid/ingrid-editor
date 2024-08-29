@@ -36,7 +36,7 @@ class BastProfile(
     @Lazy documentService: DocumentService,
     query: QueryRepository,
     dateService: DateService,
-    openDataCategory: OpenDataCategory
+    openDataCategory: OpenDataCategory,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -52,5 +52,4 @@ class BastProfile(
     override fun getElasticsearchMapping(format: String): String {
         return {}.javaClass.getResource("/ingrid/mappings/bast/default-mapping.json")?.readText() ?: ""
     }
-
 }

@@ -5,17 +5,14 @@
 }
 
 @if (field.fieldGroup.length > 0) {
-    <mat-chip-listbox
-        [disabled]="formControl.disabled"
-        cdkDropListGroup
-        mixedCdkDragDrop
-        orientation="horizontal"
-        (dropped)="drop($event)"
-    >
+    <mat-chip-listbox [disabled]="formControl.disabled" cdkDropListGroup>
         @for (field of field.fieldGroup; track field; let i = $index) {
-            <span cdkDropList mixedCdkDropList>
+            <span
+                cdkDropList
+                cdkDropListOrientation="mixed"
+                (cdkDropListDropped)="drop($event)"
+            >
                 <mat-chip-option
-                    disableRipple
                     cdkDrag
                     [cdkDragDisabled]="formControl.disabled"
                     [removable]="true"

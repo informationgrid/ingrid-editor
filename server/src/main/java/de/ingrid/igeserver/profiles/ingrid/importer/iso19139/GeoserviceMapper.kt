@@ -26,32 +26,26 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
 
     val info = metadata.identificationInfo[0].identificationInfo
 
-    fun getServiceCategories(): List<KeyValue> {
-        return info?.descriptiveKeywords
-            ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
-            ?.mapNotNull { codeListService.getCodeListEntryId("5200", it, "iso") }
-            ?.map { KeyValue(it) } ?: emptyList()
-    }
+    fun getServiceCategories(): List<KeyValue> = info?.descriptiveKeywords
+        ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
+        ?.mapNotNull { codeListService.getCodeListEntryId("5200", it, "iso") }
+        ?.map { KeyValue(it) } ?: emptyList()
 
-    fun getServiceVersions(): List<KeyValue> {
-        return info?.serviceTypeVersion
-            ?.map {
-                codeListService.getCodeListEntryId("5153", it.value, "iso")
-                    ?.let { id -> KeyValue(id) }
-                    ?: KeyValue(null, it.value)
-            } ?: emptyList()
-    }
+    fun getServiceVersions(): List<KeyValue> = info?.serviceTypeVersion
+        ?.map {
+            codeListService.getCodeListEntryId("5153", it.value, "iso")
+                ?.let { id -> KeyValue(id) }
+                ?: KeyValue(null, it.value)
+        } ?: emptyList()
 
-    fun getOperations(): List<Operation> {
-        return info?.containsOperations
-            ?.map {
-                Operation(
-                    getOperationName(it.svOperationMetadata?.operationName?.value),
-                    it.svOperationMetadata?.operationDescription?.value,
-                    it.svOperationMetadata?.connectPoint?.getOrNull(0)?.ciOnlineResource?.linkage?.url
-                )
-            } ?: emptyList()
-    }
+    fun getOperations(): List<Operation> = info?.containsOperations
+        ?.map {
+            Operation(
+                getOperationName(it.svOperationMetadata?.operationName?.value),
+                it.svOperationMetadata?.operationDescription?.value,
+                it.svOperationMetadata?.connectPoint?.getOrNull(0)?.ciOnlineResource?.linkage?.url,
+            )
+        } ?: emptyList()
 
     private fun getOperationName(value: String?): KeyValue? {
         if (value == null) return null
@@ -102,14 +96,12 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         }
     }
 
-    fun getImplementationHistory(): String {
-        return metadata.dataQualityInfo
-            ?.flatMap {
-                it.dqDataQuality?.lineage?.liLinage?.processStep
-                    ?.map { it.liProcessStep.description.value } ?: emptyList()
-            }
-            ?.joinToString(";") ?: ""
-    }
+    fun getImplementationHistory(): String = metadata.dataQualityInfo
+        ?.flatMap {
+            it.dqDataQuality?.lineage?.liLinage?.processStep
+                ?.map { it.liProcessStep.description.value } ?: emptyList()
+        }
+        ?.joinToString(";") ?: ""
 
     fun getCouplingType(): KeyValue {
         val id = info?.couplingType?.code?.codeListValue
@@ -125,18 +117,22 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     ?: false
             }
             ?.flatMap { it.mdDigitalTransferOptions?.onLine?.map { online -> online.ciOnlineResource } ?: emptyList() }
-            ?.map { CoupledResourceModel(
-                null, it?.linkage?.url, it?.name?.value, true,
+            ?.map {
+                CoupledResourceModel(
+                    null,
+                    it?.linkage?.url,
+                    it?.name?.value,
+                    true,
 //                    layerNames = it.title?.split(",") ?: emptyList()) } ?: emptyList()
                 )
             } ?: emptyList()
 
         return internalLinks + externalLinks
     }
-    
+
     private fun groupItemsByUuid(items: List<OperatesOn>?): List<CoupledResourceModel> {
         if (items == null) return emptyList()
-        
+
         val groupedMap = mutableMapOf<String, MutableList<String>>()
 
         for (item in items) {
@@ -144,13 +140,12 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             if (!item.title.isNullOrEmpty()) texts.add(item.title)
         }
 
-        return groupedMap.map { (uuid, layerNames) -> 
+        return groupedMap.map { (uuid, layerNames) ->
             CoupledResourceModel(uuid, null, null, false, layerNames = layerNames)
         }
     }
 
     fun getResolutions(): List<Resolution> {
-
         val description = info?.abstract?.value ?: return emptyList()
         var scale = listOf<String>()
         var groundResolution = listOf<String>()
@@ -173,12 +168,11 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
 
         return (0 until biggestListSize).map {
             Resolution(
-                scale.getOrNull(it)?.split(":")?.getOrNull(1)?.trim()?.toFloat(), // "1:1000"
+                scale.getOrNull(it)?.split(":")?.getOrNull(1)?.trim()?.toFloat(),
                 groundResolution.getOrNull(it)?.substring(0, groundResolution.getOrNull(it)?.length?.minus(1)!!)?.trim()
                     ?.toFloat(),
-                scanResolution.getOrNull(it)?.trim()?.toFloat()
+                scanResolution.getOrNull(it)?.trim()?.toFloat(),
             )
         }
     }
-
 }

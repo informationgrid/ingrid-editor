@@ -38,7 +38,7 @@ class ThesaurusServiceTest : ShouldSpec({
         SNSUbaUmthesThesaurus().search("Wald", searchOptionsExact) shouldBe listOf(Keyword("https://sns.uba.de/umthes/TH_00028708", "Wald"))
     }
     should("return a list of matches to a given string with contains search") {
-        val results = SNSUbaUmthesThesaurus().search("Wald", searchOptions) 
+        val results = SNSUbaUmthesThesaurus().search("Wald", searchOptions)
         results shouldHaveAtLeastSize 10
     }
 })

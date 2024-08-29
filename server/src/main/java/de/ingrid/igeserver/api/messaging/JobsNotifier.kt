@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.api.messaging
 
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import java.util.*
@@ -33,14 +32,16 @@ data class DatasetInfo(val title: String, val type: String, val uuid: String, va
 
 enum class NotificationType(val uri: String) {
     URL_CHECK("/url-check"),
-    IMPORT("/import")
+    IMPORT("/import"),
 }
 
-class MessageTarget(val type: NotificationType, var catalogId : String? = null) {
+class MessageTarget(val type: NotificationType, var catalogId: String? = null) {
     override fun toString(): String {
-        return if (catalogId == null)
+        return if (catalogId == null) {
             type.uri
-        else "${type.uri}/$catalogId"
+        } else {
+            "${type.uri}/$catalogId"
+        }
     }
 }
 
@@ -54,10 +55,12 @@ class JobsNotifier(val msgTemplate: SimpMessagingTemplate) {
         msgTemplate.convertAndSend(WS_MESSAGE_TRANSFER_DESTINATION + type, message)
     }
     fun endMessage(type: MessageTarget, message: Message) {
-        msgTemplate.convertAndSend(WS_MESSAGE_TRANSFER_DESTINATION + type, message.apply {
-            this.endTime = Date()
-            this.progress = 100
-        })
+        msgTemplate.convertAndSend(
+            WS_MESSAGE_TRANSFER_DESTINATION + type,
+            message.apply {
+                this.endTime = Date()
+                this.progress = 100
+            },
+        )
     }
-    
 }

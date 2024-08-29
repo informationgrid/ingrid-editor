@@ -63,7 +63,6 @@ class OpenDataType : EntityType() {
             address.path("ref").textValue()
         }
     }
-
 }
 
 @Component
@@ -77,4 +76,3 @@ class OpenDataAddressType(jdbcTemplate: JdbcTemplate) : AddressType(jdbcTemplate
 
     override val className = "OpenDataAddressDoc"
 }
-

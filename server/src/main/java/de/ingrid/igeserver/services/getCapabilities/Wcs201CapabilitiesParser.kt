@@ -25,14 +25,15 @@ import de.ingrid.utils.xml.Wcs201NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
-                               private val researchService: ResearchService,
-                               catalogId: String) :
+class Wcs201CapabilitiesParser(
+    codelistHandler: CodelistHandler,
+    private val researchService: ResearchService,
+    catalogId: String,
+) :
     GeneralCapabilitiesParser(XPathUtils(Wcs201NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
     override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
         return CapabilitiesBean().apply {
-
             // General settings
             serviceType = "WCS"
             dataServiceType = "3" // download
@@ -59,7 +60,7 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
             boundingBoxes = getBoundingBoxes(doc)
             spatialReferenceSystems = getSpatialReferenceSystems(
                 doc,
-                "/wcs201:Capabilities/wcs201:ServiceMetadata/wcs201:Extension/crs:CrsMetadata/crs:crsSupported"
+                "/wcs201:Capabilities/wcs201:ServiceMetadata/wcs201:Extension/crs:CrsMetadata/crs:crsSupported",
             )
         }
     }
@@ -68,18 +69,19 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
         // Operation List
         val operations: MutableList<OperationBean> = ArrayList()
 
-
         // Operation - GetCapabilities
         val getCapabilitiesOp = mapToOperationBean(
-            doc, arrayOf(
+            doc,
+            arrayOf(
                 XPATH_EXP_WCS_OP_GET_CAPABILITIES_GET_HREF,
-                XPATH_EXP_WCS_OP_GET_CAPABILITIES_POST_HREF
-            ), arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST)
+                XPATH_EXP_WCS_OP_GET_CAPABILITIES_POST_HREF,
+            ),
+            arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST),
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
-                "GetCapabilities"
+                "GetCapabilities",
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
 
@@ -88,17 +90,20 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
 
         // Operation - DescribeCoverage
         val describeCoverageOp = mapToOperationBean(
-            doc, arrayOf(
+            doc,
+            arrayOf(
                 XPATH_EXP_WCS_OP_DESCRIBE_COVERAGE_GET_HREF,
-                XPATH_EXP_WCS_OP_DESCRIBE_COVERAGE_POST_HREF
-            ), arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                XPATH_EXP_WCS_OP_DESCRIBE_COVERAGE_POST_HREF,
+            ),
+            arrayOf(
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (describeCoverageOp.addressList!!.isNotEmpty()) {
             describeCoverageOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "DescribeCoverage", "de"),
-                "DescribeCoverage"
+                "DescribeCoverage",
             )
             describeCoverageOp.methodCall = "DescribeCoverage"
 
@@ -107,15 +112,17 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
 
         // Operation - GetCoverage
         val getCoverageOp = mapToOperationBean(
-            doc, arrayOf(
+            doc,
+            arrayOf(
                 XPATH_EXP_WCS_OP_GET_COVERAGE_GET_HREF,
-                XPATH_EXP_WCS_OP_GET_COVERAGE_POST_HREF
-            ), arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST)
+                XPATH_EXP_WCS_OP_GET_COVERAGE_POST_HREF,
+            ),
+            arrayOf(ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST),
         )
         if (getCoverageOp.addressList!!.isNotEmpty()) {
             getCoverageOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetCoverage", "de"), 
-                "GetCoverage"
+                codelistHandler.getCodeListEntryId("5120", "GetCoverage", "de"),
+                "GetCoverage",
             )
             getCoverageOp.methodCall = "GetCoverage"
 
@@ -134,40 +141,47 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
             address,
             xPathUtils.getString(
                 doc,
-                "$XPATH_EXT_WCS_SERVICECONTACT/ows20:IndividualName"
-            )
+                "$XPATH_EXT_WCS_SERVICECONTACT/ows20:IndividualName",
+            ),
         )
         address.email = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:ElectronicMailAddress"
+            "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:ElectronicMailAddress",
         )
 
         // try to find address in database and set the uuid if found
         searchForAddress(researchService, catalogId, address)
-        
+
         address.street = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:DeliveryPoint"
+            "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:DeliveryPoint",
         )
         address.city = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:City"
+            "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:City",
         )
         address.postcode = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:PostalCode"
+            "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:PostalCode",
         )
-        address.country = getKeyValue("6200", xPathUtils.getString(
-            doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:Country"
-        ))
-        address.state = getKeyValue("6250", xPathUtils.getString(
-            doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:AdministrativeArea"
-        ), "name")
+        address.country = getKeyValue(
+            "6200",
+            xPathUtils.getString(
+                doc,
+                "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:Country",
+            ),
+        )
+        address.state = getKeyValue(
+            "6250",
+            xPathUtils.getString(
+                doc,
+                "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Address/ows20:AdministrativeArea",
+            ),
+            "name",
+        )
         address.phone = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Phone/ows20:Voice"
+            "$XPATH_EXT_WCS_SERVICECONTACT/ows20:ContactInfo/ows20:Phone/ows20:Voice",
         )
         return address
     }
@@ -177,7 +191,7 @@ class Wcs201CapabilitiesParser(codelistHandler: CodelistHandler,
         val title = xPathUtils.getString(doc, "/wcs201:Capabilities/wcs201:Contents/wcs201:CoverageSummary/ows20:Title")
         val layers = xPathUtils.getNodeList(
             doc,
-            "/wcs201:Capabilities/wcs201:Contents/wcs201:CoverageSummary/ows20:WGS84BoundingBox"
+            "/wcs201:Capabilities/wcs201:Contents/wcs201:CoverageSummary/ows20:WGS84BoundingBox",
         )
         for (i in 0 until layers.length) {
             val layer = layers.item(i)

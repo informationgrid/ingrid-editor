@@ -32,7 +32,7 @@ import de.ingrid.igeserver.extension.Extension
  * This allows filters to reject further processing of the payload but also implies that
  * non-fatal exceptions should be handled by the filter itself.
  */
-interface Filter<T: Payload> : Extension, (T, Context) -> T {
+interface Filter<T : Payload> : Extension, (T, Context) -> T {
 
     override val id: String
         get() = this::class.qualifiedName ?: this::class.toString()

@@ -38,7 +38,7 @@ class UvpNegativePreliminarySchema : AnnotationSpec() {
         "spatial",
         "decisionDate",
         "eiaNumbers",
-        "uvpNegativeDecisionDocs"
+        "uvpNegativeDecisionDocs",
     )
 
     @Test
@@ -54,7 +54,7 @@ class UvpNegativePreliminarySchema : AnnotationSpec() {
         val result = SchemaUtils.validate(json, schema)
         result.valid shouldBe true
     }
-    
+
     @Test
     fun fail() {
         val json = "{}"
@@ -67,5 +67,4 @@ class UvpNegativePreliminarySchema : AnnotationSpec() {
             requiredErrors shouldBe requiredFields
         }
     }
-
 }

@@ -30,7 +30,11 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
 import de.ingrid.igeserver.repository.DocumentRepository
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.GroupService
+import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
@@ -73,22 +77,19 @@ class PostMigrationTask(
                 log.info("Finished post migration for catalog: $catalog")
             }
         }
-
     }
 
-    private fun getCatalogsForPostMigration(): List<String> {
-        return try {
-            entityManager
-                .createQuery(
-                    "SELECT version FROM VersionInfo version WHERE version.key = 'doPostMigrationFor'",
-                    VersionInfo::class.java
-                )
-                .resultList
-                .map { it.value!! }
-        } catch (e: Exception) {
-            log.warn("Could not query version_info table")
-            emptyList()
-        }
+    private fun getCatalogsForPostMigration(): List<String> = try {
+        entityManager
+            .createQuery(
+                "SELECT version FROM VersionInfo version WHERE version.key = 'doPostMigrationFor'",
+                VersionInfo::class.java,
+            )
+            .resultList
+            .map { it.value!! }
+    } catch (e: Exception) {
+        log.warn("Could not query version_info table")
+        emptyList()
     }
 
     private fun doPostMigration(catalogIdentifier: String) {
@@ -121,7 +122,6 @@ class PostMigrationTask(
         }
     }
 
-
     private fun lookupSpatialSystem(spatialSystem: JsonNode): JsonNode {
         val potentialId = spatialSystem.get("value")?.asText() ?: return spatialSystem
         if (codelistHandler.getCodelistEntry("100", potentialId) != null) {
@@ -141,14 +141,13 @@ class PostMigrationTask(
     private fun uvpSplitFreeAddresses(catalogIdentifier: String) {
         if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
 
-
         val auth = SecurityContextHolder.getContext().authentication
 
         // root Addresses which aren't organizations are free addresses
         val freeAddresses = documentService.findChildrenDocs(
             catalogIdentifier,
             null,
-            isAddress = true
+            isAddress = true,
         ).hits.filter { "UvpAddressDoc" == it.wrapper.type }
 
         if (freeAddresses.isEmpty()) return
@@ -164,8 +163,8 @@ class PostMigrationTask(
                 it.wrapper.parent = documentService.docWrapperRepo.findById(rootFolderId).get()
                 return
             } else {
-                //{"_type":"UvpOrganisationDoc","_parent":null,"organization":"Testorga","title":"Testorga"}
-                //create parent organization
+                // {"_type":"UvpOrganisationDoc","_parent":null,"organization":"Testorga","title":"Testorga"}
+                // create parent organization
                 val organizationData = jacksonObjectMapper().createObjectNode()
                     .put("_type", "UvpOrganisationDoc")
                     .putNull("_parent")
@@ -177,7 +176,7 @@ class PostMigrationTask(
                     catalogIdentifier,
                     document,
                     rootFolderId,
-                    address = true
+                    address = true,
                 )
                 val parentId = organizationDoc.wrapper.id!!
 
@@ -205,7 +204,7 @@ class PostMigrationTask(
 
     private fun createNewFolderFor(
         migratedObject: DocumentWrapper,
-        title: String
+        title: String,
     ): Int {
         val auth = SecurityContextHolder.getContext().authentication
         val catalogIdentifier = migratedObject.catalog!!.identifier
@@ -220,13 +219,13 @@ class PostMigrationTask(
                 catalogIdentifier,
                 document,
                 migratedObject.parent?.id,
-                false
+                false,
             )
         documentService.docWrapperRepo.flush()
         documentService.updateTags(
             catalogIdentifier,
             folderDoc.wrapper.id!!,
-            TagRequest(add = (migratedObject.tags + "migratedFromObject:${migratedObject.uuid}"), remove = emptyList())
+            TagRequest(add = (migratedObject.tags + "migratedFromObject:${migratedObject.uuid}"), remove = emptyList()),
         )
         return folderDoc.wrapper.id!!
     }
@@ -247,7 +246,7 @@ class PostMigrationTask(
         documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = false).forEach { doc ->
             val foundChildren = documentService.findChildren(
                 catalogIdentifier,
-                doc.id
+                doc.id,
             ).hits
 
             // only migrate objects with children
@@ -273,10 +272,12 @@ class PostMigrationTask(
                 documentService.aclService.updateParent(doc.id!!, newFolderId)
 
                 // only set parentIdentifier if not already set. do not overwrite explicitly set parentIdentifier
-                if (child.document.data.get("parentIdentifier") == null || child.document.data.get("parentIdentifier") is NullNode) child.document.data.set<TextNode>(
-                    "parentIdentifier",
-                    TextNode(doc.uuid)
-                )
+                if (child.document.data.get("parentIdentifier") == null || child.document.data.get("parentIdentifier") is NullNode) {
+                    child.document.data.set<TextNode>(
+                        "parentIdentifier",
+                        TextNode(doc.uuid),
+                    )
+                }
                 documentService.docRepo.saveAndFlush(child.document)
             }
 
@@ -289,7 +290,7 @@ class PostMigrationTask(
     private fun replacePathIDinDescendants(catalogIdentifier: String, doc: DocumentWrapper, oldId: Int, newId: Int) {
         val children = documentService.findChildren(
             catalogIdentifier,
-            doc.id
+            doc.id,
         ).hits.map { it.wrapper }
 
         // no paths to update
@@ -308,21 +309,22 @@ class PostMigrationTask(
             "Ausländische Vorhaben",
             "Vorgelagerte Verfahren",
             "Zulassungsverfahren",
-            "Vorprüfungen, negativ"
+            "Vorprüfungen, negativ",
         ).forEach { title ->
             val oldldBaseFolder = documentService.findChildren(
                 catalogIdentifier,
-                null
+                null,
             ).hits.find { it.document.title == title }
             val auth = SecurityContextHolder.getContext().authentication
-            if (oldldBaseFolder != null) documentService.deleteDocument(
-                auth as Principal,
-                catalogIdentifier,
-                oldldBaseFolder.wrapper.id!!
-            )
+            if (oldldBaseFolder != null) {
+                documentService.deleteDocument(
+                    auth as Principal,
+                    catalogIdentifier,
+                    oldldBaseFolder.wrapper.id!!,
+                )
+            }
         }
     }
-
 
     private fun migratePath(doc: DocumentWrapper) {
         val oldPath = doc.path // Style: [typeFolderId, FolderId, ...]
@@ -334,7 +336,6 @@ class PostMigrationTask(
         }
 
         val newPath = createAndGetPathByTitles(pathTitles, doc.catalog!!.identifier)
-
 
         if (doc.type == "FOLDER") {
             // make sure folders with the same name and path are not saved more than once
@@ -369,7 +370,7 @@ class PostMigrationTask(
     private fun transferRights(
         sourceDoc: DocumentWrapper,
         targetDoc: DocumentWrapper,
-        removeSourceDoc: Boolean = true
+        removeSourceDoc: Boolean = true,
     ) {
         groupService
             .getAll(sourceDoc.catalog!!.identifier)
@@ -378,9 +379,11 @@ class PostMigrationTask(
                 val initialDocs = group.permissions?.documents ?: emptyList()
                 val initialAdr = group.permissions?.addresses ?: emptyList()
 
-                if (initialDocs.any { it.get("id").asInt() == sourceDoc.id!! } || initialAdr.any {
+                if (initialDocs.any { it.get("id").asInt() == sourceDoc.id!! } ||
+                    initialAdr.any {
                         it.get("id").asInt() == sourceDoc.id!!
-                    }) {
+                    }
+                ) {
                     group.permissions?.apply {
                         documents =
                             transformPermissions(initialDocs, targetDoc, sourceDoc, removeSourceDoc)
@@ -388,7 +391,6 @@ class PostMigrationTask(
                             transformPermissions(initialAdr, targetDoc, sourceDoc, removeSourceDoc)
                     }
                 }
-
             }
     }
 
@@ -404,11 +406,15 @@ class PostMigrationTask(
     ) = if (initialDocs.any { it.get("id").asInt() == targetDoc.id!! }) {
         if (removeSourceDoc) removeIDinPermissions(sourceDoc.id!!, initialDocs) else initialDocs
     } else {
-        if (removeSourceDoc) replaceIDinPermissions(
-            sourceDoc.id!!,
-            targetDoc.id!!,
-            initialDocs
-        ) else addIDinPermissions(sourceDoc.id!!, targetDoc.id!!, initialDocs)
+        if (removeSourceDoc) {
+            replaceIDinPermissions(
+                sourceDoc.id!!,
+                targetDoc.id!!,
+                initialDocs,
+            )
+        } else {
+            addIDinPermissions(sourceDoc.id!!, targetDoc.id!!, initialDocs)
+        }
     }
 
     private fun replaceIDinPermissions(sourceId: Int, targetId: Int, permissions: List<JsonNode>): List<JsonNode> {
@@ -418,7 +424,6 @@ class PostMigrationTask(
         }
     }
 
-
     private fun addIDinPermissions(sourceId: Int, targetId: Int, permissions: List<JsonNode>): List<JsonNode> {
         val oldPerm = permissions.find { it.get("id").asInt() == sourceId } as ObjectNode? ?: return permissions
         val newPerm = oldPerm.deepCopy()
@@ -426,9 +431,7 @@ class PostMigrationTask(
         return permissions + listOf(newPerm)
     }
 
-    private fun removeIDinPermissions(sourceId: Int, permissions: List<JsonNode>): List<JsonNode> {
-        return permissions.filter { it.get("id").asInt() != sourceId }
-    }
+    private fun removeIDinPermissions(sourceId: Int, permissions: List<JsonNode>): List<JsonNode> = permissions.filter { it.get("id").asInt() != sourceId }
 
     private fun createAndGetPathByTitles(titles: List<String>, catalogIdentifier: String): MutableList<Int> {
         val auth = SecurityContextHolder.getContext().authentication
@@ -437,10 +440,10 @@ class PostMigrationTask(
         for (title in titles) {
             val foundChild = documentService.findChildren(
                 catalogIdentifier,
-                parentId
+                parentId,
             ).hits.filter { it.document.title == title }
             if (foundChild.isEmpty()) {
-                //create new folder
+                // create new folder
                 val folderData = jacksonObjectMapper().createObjectNode()
                     .put("_type", "FOLDER")
                     .put("_parent", parentId.toString())
@@ -451,9 +454,8 @@ class PostMigrationTask(
                 documentService.docWrapperRepo.flush()
 
                 parentId = folderDoc.wrapper.id!!
-
             } else {
-                //found folder
+                // found folder
                 parentId = foundChild.first().wrapper.id!!
             }
             createdPathIds.add(parentId)
@@ -469,7 +471,7 @@ class PostMigrationTask(
     private fun removePostMigrationInfo(catalogIdentifier: String) {
         entityManager
             .createQuery(
-                "DELETE FROM VersionInfo version WHERE version.key = 'doPostMigrationFor' AND version.value = '${catalogIdentifier}'"
+                "DELETE FROM VersionInfo version WHERE version.key = 'doPostMigrationFor' AND version.value = '$catalogIdentifier'",
             )
             .executeUpdate()
     }

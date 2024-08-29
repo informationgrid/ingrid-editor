@@ -30,7 +30,7 @@ import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.stereotype.Service
 
 @Service
-class IndexExporter(val idfExporter: IDFExporter, val luceneExporter: LuceneExporter, val behaviourService: BehaviourService): IgeExporter {
+class IndexExporter(val idfExporter: IDFExporter, val luceneExporter: LuceneExporter, val behaviourService: BehaviourService) : IgeExporter {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -41,7 +41,7 @@ class IndexExporter(val idfExporter: IDFExporter, val luceneExporter: LuceneExpo
         "json",
         listOf("uvp"),
         isPublic = false,
-        useForPublish = true
+        useForPublish = true,
     )
 
     override fun exportSql(catalogId: String): String {

@@ -29,7 +29,6 @@ class TimeSpan : QuickFilter() {
 
     override val parameters: List<String> = emptyList()
 
-
     override fun filter(parameter: List<*>?): String {
         // returns true if the filter should not be applied. results in sql query ".. AND (true) AND"
         if (parameter == null) return "true"
@@ -47,7 +46,6 @@ class TimeSpan : QuickFilter() {
             .replace("?2", end)
     }
 
-
     //    @Language("PostgreSQL")
     override val filter =
         """document1.modified BETWEEN CAST('?1' as timestamp) AND CAST('?2' as timestamp)"""
@@ -56,5 +54,4 @@ class TimeSpan : QuickFilter() {
         """document1.modified >= CAST('?' as timestamp)"""
     val toFilter =
         """document1.modified <= CAST('?' as timestamp)"""
-
 }

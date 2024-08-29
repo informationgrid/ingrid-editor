@@ -47,7 +47,7 @@ class HmdkProfile(
     openDataCategory: OpenDataCategory,
     isoImport: ISOImport,
     isoImportHMDK: ISOImportHMDK,
-    @JsonIgnore val behaviourService: BehaviourService
+    @JsonIgnore val behaviourService: BehaviourService,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -57,7 +57,6 @@ class HmdkProfile(
     override val identifier = id
     override val title = "InGrid Katalog (HMDK)"
     override val parentProfile = "ingrid"
-
 
     init {
         isoImport.profileMapper[id] = isoImportHMDK
@@ -89,7 +88,6 @@ class HmdkProfile(
         }
 
         super.initCatalogCodelists(catalogId, codelistId)
-
     }
 
     private fun createCodelistInformationsgegenstand(catalogRef: Catalog): Codelist {
@@ -104,14 +102,14 @@ class HmdkProfile(
                 add(
                     CodelistHandler.toCodelistEntry(
                         "hmbtg_03_beschluesse_oeffentliche_sitzung",
-                        "Öffentliche Beschlüsse"
-                    )
+                        "Öffentliche Beschlüsse",
+                    ),
                 )
                 add(
                     CodelistHandler.toCodelistEntry(
                         "hmbtg_04_vertraege_daseinsvorsorge",
-                        "Verträge der Daseinsvorsorge"
-                    )
+                        "Verträge der Daseinsvorsorge",
+                    ),
                 )
                 add(CodelistHandler.toCodelistEntry("hmbtg_05_verwaltungsplaene", "Verwaltungspläne"))
                 add(CodelistHandler.toCodelistEntry("hmbtg_06_verwaltungsvorschriften", "Verwaltungsvorschriften"))
@@ -125,37 +123,36 @@ class HmdkProfile(
                 add(
                     CodelistHandler.toCodelistEntry(
                         "hmbtg_14_zuwendungen_subventionen",
-                        "Subventionen und Zuwendungen"
-                    )
+                        "Subventionen und Zuwendungen",
+                    ),
                 )
                 add(CodelistHandler.toCodelistEntry("hmbtg_15_unternehmensdaten", "Unternehmensdaten"))
                 add(
                     CodelistHandler.toCodelistEntry(
                         "hmbtg_16_vertraege_oeffentl_interesse",
-                        "Verträge von öffentl. Interesse"
-                    )
+                        "Verträge von öffentl. Interesse",
+                    ),
                 )
                 add(CodelistHandler.toCodelistEntry("hmbtg_17_dienstanweisungen", "Dienstanweisungen"))
                 add(
                     CodelistHandler.toCodelistEntry(
                         "hmbtg_18_vergleichbar",
-                        "vergleichbare Informationen von öffentl. Interesse"
-                    )
+                        "vergleichbare Informationen von öffentl. Interesse",
+                    ),
                 )
                 add(
                     CodelistHandler.toCodelistEntry(
                         "hmbtg_19_andere_veroeffentlichungspflicht",
-                        "Veröffentlichungspflicht außerhalb HmbTG"
-                    )
+                        "Veröffentlichungspflicht außerhalb HmbTG",
+                    ),
                 )
                 add(
                     CodelistHandler.toCodelistEntry(
                         "hmbtg_20_ohne_veroeffentlichungspflicht",
-                        "Ohne gesetzliche Verpflichtung"
-                    )
+                        "Ohne gesetzliche Verpflichtung",
+                    ),
                 )
             }
-
         }
     }
 }

@@ -31,6 +31,7 @@ plugins {
     id "com.github.ben-manes.versions" version "0.51.0"
     id "gg.jte.gradle" version "$jte_version"
     id "org.hibernate.orm" version "6.5.2.Final"
+    id "org.jlleitschuh.gradle.ktlint" version "12.1.1"
 }
 
 repositories {
@@ -261,6 +262,12 @@ tasks.withType(KotlinCompile).configureEach {
     }
 }
 
+tasks.register('updateGitHooks', Copy) {
+    mustRunAfter("generateGitProperties")
+    from '../scripts/pre-commit'
+    into '../.git/hooks'
+}
+
 jte {
     sourceDirectory = Paths.get(project.projectDir.absolutePath, "src", "main", "resources", "templates")
     contentType = ContentType.Plain
@@ -270,7 +277,11 @@ jte {
 }
 
 
+tasks.named('generateJte') {
+    mustRunAfter(tasks.runKtlintCheckOverMainSourceSet)
+}
 tasks.named('compileKotlin') {
+    dependsOn(tasks.updateGitHooks)
     dependsOn(tasks.generateJte)
 }
 
@@ -318,9 +329,9 @@ jib {
     }
     extraDirectories {
         permissions = [
-            '/*.sh': '755',
-            '/logs': '777',
-            '/codelists': '777'
+                '/*.sh': '755',
+                '/logs': '777',
+                '/codelists': '777'
         ]
         paths {
             path {
@@ -371,6 +382,7 @@ spotless {
 
     kotlin {
         licenseHeaderFile(file('../LICENSE')).updateYearWithLatest(true)
+        ktlint()
     }
     java {
         target 'src/*/java/**/*.java'

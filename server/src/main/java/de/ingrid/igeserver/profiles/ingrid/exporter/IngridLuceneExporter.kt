@@ -49,7 +49,7 @@ class IngridLuceneExporter(
     val codelistHandler: CodelistHandler,
     val config: Config,
     val catalogService: CatalogService,
-    @Lazy val documentService: DocumentService
+    @Lazy val documentService: DocumentService,
 ) {
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
@@ -74,52 +74,52 @@ class IngridLuceneExporter(
         return when (doc.type) {
             "InGridSpecialisedTask" -> Pair(
                 "export/ingrid/lucene/template-lucene.jte",
-                getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+                getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
             )
 
             "InGridGeoDataset" -> Pair(
                 "export/ingrid/lucene/template-lucene.jte",
-                getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+                getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
             )
 
             "InGridPublication" -> Pair(
                 "export/ingrid/lucene/template-lucene.jte",
-                getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+                getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
             )
 
             "InGridGeoService" -> Pair(
                 "export/ingrid/lucene/template-lucene.jte",
-                getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+                getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
             )
 
             "InGridProject" -> Pair(
                 "export/ingrid/lucene/template-lucene.jte",
-                getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+                getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
             )
 
             "InGridDataCollection" -> Pair(
                 "export/ingrid/lucene/template-lucene.jte",
-                getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+                getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
             )
 
             "InGridInformationSystem" -> Pair(
                 "export/ingrid/lucene/template-lucene.jte",
-                getMapper(IngridDocType.DOCUMENT, doc, catalog, options)
+                getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
             )
 
             "InGridOrganisationDoc" -> Pair(
                 "export/ingrid/lucene/template-lucene-address.jte",
-                getMapper(IngridDocType.ADDRESS, doc, catalog, options)
+                getMapper(IngridDocType.ADDRESS, doc, catalog, options),
             )
 
             "InGridPersonDoc" -> Pair(
                 "export/ingrid/lucene/template-lucene-address.jte",
-                getMapper(IngridDocType.ADDRESS, doc, catalog, options)
+                getMapper(IngridDocType.ADDRESS, doc, catalog, options),
             )
 
             "FOLDER" -> Pair(
                 "export/ingrid/lucene/template-lucene-folder.jte",
-                getMapper(IngridDocType.FOLDER, doc, catalog, options)
+                getMapper(IngridDocType.FOLDER, doc, catalog, options),
             )
 
             else -> {
@@ -129,7 +129,6 @@ class IngridLuceneExporter(
     }
 
     fun getMapper(type: IngridDocType, doc: Document, catalog: Catalog, options: ExportOptions): Map<String, Any> {
-
         val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier)
         val data = TransformerData(type, catalog.identifier, codelistTransformer, doc, options.tags)
 
@@ -140,10 +139,9 @@ class IngridLuceneExporter(
                 "model" to transformer,
                 "catalog" to catalog,
                 "partner" to mapCodelistValue("110", catalog.settings.config.partner),
-                "provider" to mapCodelistValue("111", catalog.settings.config.provider)
-            )
+                "provider" to mapCodelistValue("111", catalog.settings.config.provider),
+            ),
         )
-
     }
 
     fun getTransformer(data: TransformerData): Any {
@@ -154,7 +152,8 @@ class IngridLuceneExporter(
                     data.codelistTransformer,
                     null,
                     data.doc,
-                    documentService = documentService
+                    documentService = documentService,
+                    config = config,
                 )
             }
 
@@ -169,8 +168,8 @@ class IngridLuceneExporter(
                         TransformerCache(),
                         data.doc,
                         documentService,
-                        data.tags
-                    )
+                        data.tags,
+                    ),
                 )
             }
 
@@ -178,7 +177,7 @@ class IngridLuceneExporter(
                 FolderModelTransformer(
                     data.mapper.convertValue(data.doc, FolderModel::class.java),
                     data.catalogIdentifier,
-                    data.codelistTransformer
+                    data.codelistTransformer,
                 )
             }
         }
@@ -192,13 +191,15 @@ class IngridLuceneExporter(
         override fun writeUserContent(value: String?) {
             if (value == null) return
             super.writeUserContent(
-                JsonEscape.escapeJson(value)
+                JsonEscape.escapeJson(value),
             )
         }
     }
 
     enum class IngridDocType {
-        ADDRESS, DOCUMENT, FOLDER
+        ADDRESS,
+        DOCUMENT,
+        FOLDER,
     }
 }
 
@@ -208,5 +209,5 @@ data class TransformerData(
     val codelistTransformer: CodelistTransformer,
     val doc: Document,
     val tags: List<String>,
-    val mapper: ObjectMapper = ObjectMapper().registerKotlinModule()
+    val mapper: ObjectMapper = ObjectMapper().registerKotlinModule(),
 )

@@ -27,7 +27,7 @@ class ChildDatasetException(
     errorCode: String,
     errorText: String,
     data: Map<String, Any?>? = null,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : ServerException(statusCode, errorCode, errorText, data, cause) {
 
     companion object {

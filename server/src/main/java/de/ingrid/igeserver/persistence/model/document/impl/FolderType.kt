@@ -29,6 +29,7 @@ class FolderType : EntityType() {
     companion object {
         @JvmStatic
         protected val TYPE = DocumentCategory.FOLDER
+
         @JvmStatic
         protected val PROFILES = arrayOf<String>()
     }

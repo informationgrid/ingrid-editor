@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service
 class CodelistHandler(
     private val codelistRepo: CodelistRepository,
     private val catalogRepo: CatalogRepository,
-    private val codeListService: CodeListService
+    private val codeListService: CodeListService,
 ) {
 
     companion object {
@@ -44,13 +44,15 @@ class CodelistHandler(
             return jacksonObjectMapper().createObjectNode().apply {
                 put("id", id)
                 if (data != null) put("data", data)
-                set<JsonNode>("localisations", jacksonObjectMapper().createObjectNode().apply {
-                    put("de", german)
-                    if (english != null) put("en", english)
-                })
+                set<JsonNode>(
+                    "localisations",
+                    jacksonObjectMapper().createObjectNode().apply {
+                        put("de", german)
+                        if (english != null) put("en", english)
+                    },
+                )
             }
         }
-
     }
 
     fun removeCodelist(catalogId: String, codelistIdentifier: String) {
@@ -72,20 +74,15 @@ class CodelistHandler(
     }
 
     fun getCodelists(ids: List<String>): List<CodeList> {
-
         return codeListService.codeLists
             .filter { codelist -> ids.contains(codelist.id) }
-
     }
 
     fun fetchCodelists(): List<CodeList>? {
-
         return codeListService.updateFromServer()
-
     }
 
     fun getCatalogCodelists(catalogId: String): List<CodeList> {
-
         return codelistRepo
             .findAllByCatalog_Identifier(catalogId)
             .map {
@@ -98,15 +95,23 @@ class CodelistHandler(
                         CodeListEntry().apply {
                             id = entry.get("id")?.asText() ?: throw ServerException.withReason("Error getting codelist entries from '${it.name}' (${it.identifier})")
                             description =
-                                if (entry.get("description") == null || entry.get("description").isNull) null else entry.get(
-                                    "description"
-                                ).asText()
+                                if (entry.get("description") == null || entry.get("description").isNull) {
+                                    null
+                                } else {
+                                    entry.get(
+                                        "description",
+                                    ).asText()
+                                }
                             data =
-                                if (entry.get("data") == null || entry.get("data").isNull) null else entry.get("data")
-                                    .asText()
+                                if (entry.get("data") == null || entry.get("data").isNull) {
+                                    null
+                                } else {
+                                    entry.get("data")
+                                        .asText()
+                                }
                             fields = ObjectMapper().convertValue(
                                 entry.get("localisations"),
-                                jacksonTypeRef<Map<String, String>>()
+                                jacksonTypeRef<Map<String, String>>(),
                             )
                         }
                     } ?: mutableListOf()

@@ -24,7 +24,9 @@ import de.ingrid.igeserver.TransferResponsibilityException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.MailException
 import de.ingrid.igeserver.mail.EmailServiceImpl
-import de.ingrid.igeserver.model.*
+import de.ingrid.igeserver.model.CatalogAdmin
+import de.ingrid.igeserver.model.User
+import de.ingrid.igeserver.model.Version
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
@@ -51,6 +53,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.util.*
+import de.ingrid.igeserver.model.UserInfo as ServerUserInfo
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -95,7 +98,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     lateinit var generalProperties: GeneralProperties
 
     override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<User> {
-
         // user login must be lowercase
         validateLoginName(user)
 
@@ -117,7 +119,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
                 email.sendWelcomeEmail(user.email, user.firstName, user.lastName)
             }
             createdUser
-
         } else {
             val password = keycloakService.createUser(user)
             val createdUser = catalogService.createUser(catalogId, user)
@@ -128,7 +129,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
                     user.firstName,
                     user.lastName,
                     password,
-                    user.login
+                    user.login,
                 )
             }
             createdUser
@@ -168,7 +169,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
                         user.email,
                         user.firstName,
                         user.lastName,
-                        user.login
+                        user.login,
                     )
                 } catch (ex: Exception) {
                     throw MailException.withException(ex)
@@ -178,7 +179,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         }
 
         return ResponseEntity.ok().build()
-
     }
 
     override fun getUser(principal: Principal, userId: Int): ResponseEntity<User> {
@@ -199,7 +199,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok(user)
     }
 
-
     override fun getFullName(principal: Principal, userId: Int): ResponseEntity<String> {
         val frontendUser =
             userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
@@ -210,7 +209,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     }
 
     private fun getSingleUser(principal: Principal, userId: String): User? {
-
         val user = try {
             keycloakService.getUser(userId)
         } catch (e: Exception) {
@@ -234,17 +232,16 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             val allUsers = catalogService.getAllCatalogUsers(principal)
             return ResponseEntity.ok(allUsers.filter { it.role != "ige-super-admin" })
         }
-        val userIds = catalogService.getAllCatalogUserIds(principal)
-            .filter { catalogService.canEditUser(principal, it) }
+        val userIds = catalogService.getEditableUsernamesForCurrentCatalog(principal)
 
         return ResponseEntity.ok(userIds.mapNotNull { getSingleUser(principal, it) })
-
     }
 
     override fun getResponsibilities(principal: Principal, userId: Int): ResponseEntity<List<Int>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         return ResponseEntity.ok(
-            docWrapperRepo.findAllByCatalog_IdentifierAndResponsibleUser_Id(catalogId, userId).map { it.id!! })
+            docWrapperRepo.findAllByCatalog_IdentifierAndResponsibleUser_Id(catalogId, userId).map { it.id!! },
+        )
     }
 
     override fun reassignResponsibilities(principal: Principal, oldUserId: Int, newUserId: Int): ResponseEntity<Void> {
@@ -254,7 +251,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         if (!catalogService.canEditUser(principal, newResponsibleUser.userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
-
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val docs = docWrapperRepo.findAllByCatalog_IdentifierAndResponsibleUser_Id(catalogId, oldUserId)
@@ -267,24 +263,21 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
                 val docIds = docsWithoutAccess.map { it.uuid }
                 throw TransferResponsibilityException.withReason(
                     "User ${newResponsibleUser.userId} has no access to documents with ids: $docIds",
-                    data = mapOf("docIds" to docIds)
+                    data = mapOf("docIds" to docIds),
                 )
             }
         }
-
 
         docs.forEach { it.responsibleUser = newResponsibleUser }
         docWrapperRepo.saveAll(docs)
         return ResponseEntity.ok().build()
     }
 
-
     override fun listCatAdmins(catalogId: String): ResponseEntity<List<User>> {
         val filteredUsers =
             catalogService.getAllCatalogUsers(catalogId).filter { user -> user.role == "cat-admin" }
         return ResponseEntity.ok(filteredUsers)
     }
-
 
     override fun updateUser(principal: Principal, user: User): ResponseEntity<User> {
         if (!catalogService.canEditUser(principal, user.login)) {
@@ -296,9 +289,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         keycloakService.updateUser(user)
         catalogService.updateUser(catalogId, user)
         return ResponseEntity.ok(getSingleUser(principal, user.login))
-
     }
-
 
     override fun updateCurrentUser(principal: Principal, user: User): ResponseEntity<Void> {
         // TODO set access rights so users can update their own info, but nothing else. especially not other users.
@@ -315,12 +306,11 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok().build()
     }
 
-    override fun currentUserInfo(principal: Principal): ResponseEntity<de.ingrid.igeserver.model.UserInfo> {
+    override fun currentUserInfo(principal: Principal): ResponseEntity<ServerUserInfo> {
         principal as Authentication
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val user = keycloakService.getUser(userId)
-
 
         val lastLogin = this.updateAndGetLastLogin(user.login)
         val dbUser = catalogService.getUser(userId)
@@ -336,7 +326,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         } ?: emptySet()
         val assignedCatalogs = if (authUtils.isSuperAdmin(principal)) catalogService.getCatalogs() else dbUser?.catalogs?.toList() ?: emptyList()
 
-        val userInfo = UserInfo(
+        val userInfo = ServerUserInfo(
             id = dbUser?.id,
             login = user.login,
             name = user.firstName + ' ' + user.lastName,
@@ -352,7 +342,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             externalHelp = generalProperties.externalHelp,
             useElasticsearch = env.activeProfiles.contains("elasticsearch"),
             permissions = permissions,
-            plugins = behaviourService.get(currentCatalog?.identifier ?: "???")
+            plugins = behaviourService.get(currentCatalog?.identifier ?: "???"),
         )
         try {
             userInfo.currentCatalog?.type?.let {
@@ -383,7 +373,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
                         recentLogins = recentLogins.subList(recentLogins.size - 2, recentLogins.size)
                     }
 
-                    //only update if most recent dates are not equal
+                    // only update if most recent dates are not equal
                     if (recentLogins[1].compareTo(lastLoginKeyCloak) != 0) {
                         recentLogins = mutableListOf(recentLogins[1], lastLoginKeyCloak)
                     }
@@ -397,19 +387,16 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return if (recentLogins.isEmpty()) null else recentLogins[0]
     }
 
-    private fun getVersion(): Version {
-        return Version(
-            buildInfo?.version,
-            if (buildInfo != null) Date.from(buildInfo?.time) else null,
-            gitInfo?.commitId
-        )
-    }
+    private fun getVersion(): Version = Version(
+        buildInfo?.version,
+        if (buildInfo != null) Date.from(buildInfo?.time) else null,
+        gitInfo?.commitId,
+    )
 
     override fun setCatalogAdmin(
         principal: Principal,
-        info: CatalogAdmin
+        info: CatalogAdmin,
     ): ResponseEntity<de.ingrid.igeserver.model.UserInfo?> {
-
         val userIds = info.userIds
         if (userIds.isEmpty()) {
             throw InvalidParameterException.withInvalidParameters("info.userIds")
@@ -424,7 +411,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     override fun assignUserToCatalog(
         principal: Principal,
         userId: String,
-        catalogId: String
+        catalogId: String,
     ): ResponseEntity<Void> {
         val catalog = catalogService.getCatalogById(catalogId)
         val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
@@ -435,7 +422,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     }
 
     fun addOrUpdateCatalogAdmin(catalogName: String, userIdent: String) {
-
         var user = userRepo.findByUserId(userIdent)
         val catalog = catalogService.getCatalogById(catalogName)
 
@@ -454,7 +440,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     }
 
     override fun assignedUsers(principal: Principal, id: String): ResponseEntity<List<String>> {
-
         val result = catalogService.getUserOfCatalog(id)
             .map { it.userId }
 
@@ -462,7 +447,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     }
 
     override fun switchCatalog(principal: Principal, catalogId: String): ResponseEntity<Catalog> {
-
         val userId = authUtils.getUsernameFromPrincipal(principal)
 
         val user = userRepo.findByUserId(userId)?.apply {
@@ -480,7 +464,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     }
 
     override fun listExternal(principal: Principal): ResponseEntity<List<User>> {
-
         val users = keycloakService.getUsersWithIgeRoles()
 
         // remove users that are already present in this instance
@@ -488,7 +471,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         val filteredUsers = users.filter { !allIgeUserIds.contains(it.login) }
 
         return ResponseEntity.ok(filteredUsers)
-
     }
 
     override fun listInternal(principal: Principal): ResponseEntity<List<String>> {
@@ -497,24 +479,23 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     }
 
     override fun requestPasswordChange(principal: Principal, id: String): ResponseEntity<Void> {
-
         keycloakService.requestPasswordChange(id)
         return ResponseEntity.ok().build()
-
     }
 
     override fun resetPassword(principal: Principal, id: String): ResponseEntity<Void> {
         val user = keycloakService.getUser(id)
         val password = keycloakService.resetPassword(id)
         logger.debug("Reset password for user $id to $password")
-        if (!developmentMode) email.sendResetPasswordEmail(
-            user.email,
-            user.firstName,
-            user.lastName,
-            password,
-            user.login
-        )
+        if (!developmentMode) {
+            email.sendResetPasswordEmail(
+                user.email,
+                user.firstName,
+                user.lastName,
+                password,
+                user.login,
+            )
+        }
         return ResponseEntity.ok().build()
     }
-
 }

@@ -35,12 +35,11 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
 import java.io.InputStream
 
-
 @Component
 class MigrateUrlDataTypeTask(
     val entityManager: EntityManager,
     val transactionManager: PlatformTransactionManager,
-    val docRepo: DocumentRepository
+    val docRepo: DocumentRepository,
 ) {
 
     private data class DataTypeInfo(val url: String, val key: String, val value: String)
@@ -52,12 +51,12 @@ class MigrateUrlDataTypeTask(
         val catalogs = getCatalogsForPostMigration()
         if (catalogs.isEmpty()) return
 
-        setAdminAuthentication("MigrateUrlDataType","Task")
+        setAdminAuthentication("MigrateUrlDataType", "Task")
 
         catalogs.forEach { catalog ->
             log.info("Execute MigrateUrlDataTypeTask for catalog: $catalog")
-            val resource = MigrateUrlDataTypeTask::class.java.getResource("/url-data-types-${catalog}.csv")
-                ?: throw Exception("CSV file not found for migration: url-data-types-${catalog}.csv")
+            val resource = MigrateUrlDataTypeTask::class.java.getResource("/url-data-types-$catalog.csv")
+                ?: throw Exception("CSV file not found for migration: url-data-types-$catalog.csv")
             val migrateData = readCsv(resource.openStream())
 
             ClosableTransaction(transactionManager).use {
@@ -86,12 +85,12 @@ class MigrateUrlDataTypeTask(
                     ref as ObjectNode
                     ref.set<JsonNode>(
                         "urlDataType",
-                        jacksonObjectMapper().createObjectNode().apply { put("key", info.key) })
+                        jacksonObjectMapper().createObjectNode().apply { put("key", info.key) },
+                    )
                 }
             docRepo.save(doc)
         }
     }
-
 
     private fun readCsv(inputStream: InputStream): List<DataTypeInfo> {
         val reader = inputStream.bufferedReader()
@@ -103,7 +102,7 @@ class MigrateUrlDataTypeTask(
                 DataTypeInfo(
                     url.trim().removeSurrounding("\""),
                     key.trim().removeSurrounding("\""),
-                    value.trim().removeSurrounding("\"")
+                    value.trim().removeSurrounding("\""),
                 )
             }.toList()
     }
@@ -113,7 +112,7 @@ class MigrateUrlDataTypeTask(
             entityManager
                 .createQuery(
                     "SELECT version FROM VersionInfo version WHERE version.key = 'doFixMigrateUrlDataType'",
-                    VersionInfo::class.java
+                    VersionInfo::class.java,
                 )
                 .resultList
                 .map { it.value!! }
@@ -126,9 +125,8 @@ class MigrateUrlDataTypeTask(
     private fun removePostMigrationInfo(catalogIdentifier: String) {
         entityManager
             .createQuery(
-                "DELETE FROM VersionInfo version WHERE version.key = 'doFixMigrateUrlDataType' AND version.value = '${catalogIdentifier}'"
+                "DELETE FROM VersionInfo version WHERE version.key = 'doFixMigrateUrlDataType' AND version.value = '$catalogIdentifier'",
             )
             .executeUpdate()
     }
-
 }

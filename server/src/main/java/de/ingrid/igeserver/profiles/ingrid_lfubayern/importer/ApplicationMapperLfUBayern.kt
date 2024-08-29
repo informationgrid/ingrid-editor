@@ -31,8 +31,7 @@ class ApplicationMapperLfUBayern(isoData: IsoImportData) : ApplicationMapper(iso
     val geolink: String = isoData.data.dataSetURI?.value ?: ""
     val fees: String =
         isoData.data.distributionInfo?.mdDistribution?.distributor?.get(0)?.mdDistributor?.distributionOrderProcess?.get(
-            0
+            0,
         )?.mdStandardOrderProcess?.fees?.value ?: ""
     val useConstraintComments: String = if (getUseConstraints().isNotEmpty()) getUseConstraints()[0].note ?: "" else ""
-
 }

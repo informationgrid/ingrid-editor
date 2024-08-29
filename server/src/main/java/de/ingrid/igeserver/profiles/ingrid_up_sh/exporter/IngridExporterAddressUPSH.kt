@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service
 class IngridExporterAddressUPSH(
     idfExporter: IngridIdfExporterUPSH,
     luceneExporter: IngridLuceneExporterUPSH,
-    documentWrapperRepository: DocumentWrapperRepository
+    documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo =
@@ -41,6 +41,6 @@ class IngridExporterAddressUPSH(
             "application/json",
             "json",
             listOf("ingrid-up-sh"),
-            false
+            false,
         )
 }

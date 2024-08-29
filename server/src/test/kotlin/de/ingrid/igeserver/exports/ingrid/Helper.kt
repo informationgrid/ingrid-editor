@@ -54,7 +54,6 @@ fun exportJsonStringToXML(exporter: IgeExporter, json: String): String {
     return prettyFormatXml(result, 4).replace("\r\n", "\n")
 }
 
-
 fun exportJsonToJson(exporter: IgeExporter, file: String): String {
     val input = SchemaUtils.getJsonFileContent(file)
     val doc = convertToDocument(input)

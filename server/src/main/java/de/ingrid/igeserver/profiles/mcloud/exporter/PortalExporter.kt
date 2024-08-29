@@ -45,18 +45,18 @@ class PortalExporter : IgeExporter {
                 MediaType.APPLICATION_JSON_VALUE,
                 "json",
                 listOf("mcloud"),
-                useForPublish = true
+                useForPublish = true,
             )
         }
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val engine = PebbleEngine.Builder()
             .defaultEscapingStrategy("json")
-            //.newLineTrimming(false)
+            // .newLineTrimming(false)
             .build()
 
         // TODO: should we handle export of addresses here too, instead of having another class
-        //       Then we don't need to define info in ExportTypeInfo! 
+        //       Then we don't need to define info in ExportTypeInfo!
         val compiledTemplate = engine.getTemplate("templates/export/mcloud/portal.peb")
 
         val writer: Writer = StringWriter()
@@ -70,11 +70,9 @@ class PortalExporter : IgeExporter {
     }
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
-
         return mapOf(
             "model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java),
-            "catalogId" to catalogId
+            "catalogId" to catalogId,
         )
-
     }
 }

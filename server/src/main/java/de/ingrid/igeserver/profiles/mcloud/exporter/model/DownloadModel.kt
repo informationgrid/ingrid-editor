@@ -25,6 +25,7 @@ import de.ingrid.igeserver.exports.interfaces.dcat.LinkType
 import de.ingrid.igeserver.model.KeyValue
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class DownloadModel(val title: String?, override val link: LinkTypeModel?, val type: KeyValue?, val format: KeyValue?): Download
+data class DownloadModel(val title: String?, override val link: LinkTypeModel?, val type: KeyValue?, val format: KeyValue?) : Download
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class LinkTypeModel(override val asLink: Boolean?, override val value: String?): LinkType
+data class LinkTypeModel(override val asLink: Boolean?, override val value: String?) : LinkType

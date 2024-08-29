@@ -27,5 +27,5 @@ interface ISOImportProfile {
 
 data class ImportProfileData(
     val template: String,
-    val mapper: GeneralMapper
+    val mapper: GeneralMapper,
 )

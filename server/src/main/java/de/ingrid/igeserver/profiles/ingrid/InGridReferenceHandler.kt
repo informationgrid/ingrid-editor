@@ -26,7 +26,6 @@ import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.UploadInfo
 import jakarta.persistence.EntityManager
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
@@ -52,7 +51,6 @@ class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(en
           AND doc.is_latest = true
     """.trimIndent()
 
-
     override fun getURLsFromCatalog(catalogId: String, groupDocIds: List<Int>, profile: String): List<DocumentLinks> {
         val extraJsonbFields = arrayOf("references", "service", "serviceUrls")
 
@@ -61,7 +59,7 @@ class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(en
     }
 
     private fun mapQueryResults(
-        result: List<Array<Any?>>
+        result: List<Array<Any?>>,
     ): List<DocumentLinks> {
         val uniqueList = mutableListOf<DocumentLinks>()
         val dictionary: MutableMap<String, JsonNode?> = mutableMapOf()
@@ -86,8 +84,8 @@ class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(en
                         docUuid,
                         getUrlsFromJsonFields(dictionary),
                         it[3].toString(),
-                        it[4].toString()
-                    )
+                        it[4].toString(),
+                    ),
                 )
             } else {
                 existingDoc.docs.addAll(getUrlsFromJsonFields(dictionary))
@@ -96,7 +94,6 @@ class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(en
 
         return uniqueList
     }
-
 
     private fun getUrlsFromJsonFields(dictionary: MutableMap<String, JsonNode?>): MutableList<UploadInfo> {
         val linkList: MutableList<UploadInfo> = mutableListOf()
@@ -164,11 +161,9 @@ class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(en
             .toMutableList()
     }
 
-
     @JsonIgnoreProperties(ignoreUnknown = true)
     private data class LinkItem(val fileName: FileInfo, val fileDescription: String?)
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     private data class FileInfo(val uri: String, val value: String, val asLink: Boolean)
-
 }

@@ -58,6 +58,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { ErrorStateMatcher } from "@angular/material/core";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FieldType } from "@ngx-formly/material";
+import { CdkDragDrop } from "@angular/cdk/drag-drop";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: RepeatListComponent) {}
@@ -378,7 +379,7 @@ export class RepeatListComponent
     this.formControl.markAsTouched();
   }
 
-  drop(event: { previousIndex: number; currentIndex: number }) {
+  drop(event: CdkDragDrop<any[]>) {
     const item = this.model[this.field.key as string][event.previousIndex];
     this.formControl.patchValue(
       [...(this.formControl.value || [])].filter(

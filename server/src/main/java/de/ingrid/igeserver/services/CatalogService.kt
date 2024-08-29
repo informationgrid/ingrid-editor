@@ -24,7 +24,11 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.PersistenceException
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
@@ -38,7 +42,6 @@ import java.security.Principal
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
-
 @Service
 class CatalogService(
     private val catalogRepo: CatalogRepository,
@@ -48,7 +51,7 @@ class CatalogService(
     private val authUtils: AuthUtils,
     private val igeAclService: IgeAclService,
     private val keycloakService: UserManagementService,
-    private val catalogProfiles: List<CatalogProfile>
+    private val catalogProfiles: List<CatalogProfile>,
 ) {
 
     private val catalogProfileMap = mutableMapOf<String, CatalogProfile>()
@@ -66,7 +69,6 @@ class CatalogService(
         return user.catalogs.toList()
     }
 
-
     fun getDbUserFromPrincipal(principal: Principal): UserInfo? {
         principal as Authentication
         val userLogin = authUtils.getUsernameFromPrincipal(principal)
@@ -74,7 +76,6 @@ class CatalogService(
     }
 
     private fun getCurrentCatalogForUser(userId: String): String {
-
         val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
 
         val currentCatalogId = user.curCatalog?.identifier
@@ -86,7 +87,6 @@ class CatalogService(
     }
 
     private fun getFirstAssignedCatalog(user: UserInfo): String {
-
         // save first catalog as current catalog
         user.curCatalog = user.catalogs.firstOrNull() ?: throw NotFoundException.withMissingUserCatalog(user.userId)
         userRepo.save(user)
@@ -95,7 +95,6 @@ class CatalogService(
     }
 
     fun getRecentLoginsForUser(userId: String): MutableList<Date> {
-
         val userData = getUser(userId)?.data
 
         return userData?.recentLogins?.map { Date(it) }?.toMutableList() ?: mutableListOf()
@@ -127,9 +126,7 @@ class CatalogService(
 
     fun getAvailableCatalogProfiles(): List<CatalogProfile> = catalogProfiles
 
-    fun getCatalogProfile(id: String): CatalogProfile {
-        return catalogProfiles.find { it.identifier == id } ?: throw NotFoundException.withMissingProfile(id)
-    }
+    fun getCatalogProfile(id: String): CatalogProfile = catalogProfiles.find { it.identifier == id } ?: throw NotFoundException.withMissingProfile(id)
 
     fun initializeCatalog(catalogId: String, type: String) {
         initializeCodelists(catalogId, type)
@@ -161,12 +158,10 @@ class CatalogService(
         return getCatalogById(catalog.identifier)
     }
 
-    private fun transformNameToIdentifier(name: String): String {
-        return name.lowercase()
-            .replace(" ".toRegex(), "_")
-            // slash not valid as it makes problems in URLs
-            .replace("/".toRegex(), "_")
-    }
+    private fun transformNameToIdentifier(name: String): String = name.lowercase()
+        .replace(" ".toRegex(), "_")
+        // slash not valid as it makes problems in URLs
+        .replace("/".toRegex(), "_")
 
     fun catalogWithNameExists(name: String) = catalogExists(transformNameToIdentifier(name))
 
@@ -193,7 +188,6 @@ class CatalogService(
     }
 
     fun createUser(catalogId: String, userModel: User): UserInfo {
-
         // TODO merge existing user who is already in different catalog
         val user = convertUser(catalogId, userModel)
         user.data?.creationDate = Date()
@@ -201,7 +195,6 @@ class CatalogService(
         user.catalogs = mutableSetOf(this.getCatalogById(catalogId))
 
         return userRepo.save(user)
-
     }
 
     private fun convertUser(catalogId: String, user: User): UserInfo {
@@ -211,7 +204,7 @@ class CatalogService(
             userId = user.login
             if (data == null) {
                 data = UserInfoData(
-                    modificationDate = Date()
+                    modificationDate = Date(),
                 )
             }
             data?.modificationDate = user.modificationDate
@@ -224,7 +217,7 @@ class CatalogService(
     private fun mergeGroups(
         catalogId: String,
         groups: MutableSet<Group>,
-        user: User
+        user: User,
     ): HashSet<Group> {
         val groupsFromOtherCatalogs = groups
             .filter { it.catalog?.identifier != catalogId }
@@ -239,7 +232,6 @@ class CatalogService(
     }
 
     fun deleteUser(catalogId: String, userId: String): Boolean {
-
         val user = userRepo.findByUserId(userId)!!
         user.catalogs = user.catalogs.filter { it.identifier != catalogId }.toMutableSet()
 
@@ -251,12 +243,10 @@ class CatalogService(
             userRepo.save(user)
             return false
         }
-
     }
 
     @Transactional
     fun updateUser(catalogId: String, userModel: User) {
-
         userModel.modificationDate = Date()
         val user = convertUser(catalogId, userModel)
         userRepo.save(user)
@@ -293,7 +283,6 @@ class CatalogService(
     )
 
     fun getPermissions(principal: Authentication): List<String> {
-
         val isMdAdmin = authUtils.containsRole(principal, "md-admin")
         val isCatAdmin = authUtils.containsRole(principal, "cat-admin")
         val isSuperAdmin = authUtils.containsRole(principal, "ige-super-admin")
@@ -383,31 +372,60 @@ class CatalogService(
             }
     }
 
-    fun getAllCatalogUserIds(principal: Principal): List<String> {
+    private fun getAllCatalogUsernames(principal: Principal): List<String> {
         val catalogId = getCurrentCatalogForPrincipal(principal)
         return userRepo.findAllUserIdsByCatalogId(catalogId)
     }
 
-    fun canEditUser(principal: Principal, userId: String): Boolean {
+    fun getEditableUsernamesForCurrentCatalog(principal: Principal): List<String> =
+        filterEditableUsers(principal, getAllCatalogUsernames(principal))
+
+    /**
+     * Check if the principal can edit the user
+     *
+     * To check more than one user use filterEditableUsers
+     * for better performance
+     *
+     * @param principal the principal
+     * @param username the username to check
+     * @return true if the principal can edit the user
+     */
+    fun canEditUser(principal: Principal, username: String) =
+        filterEditableUsers(principal, listOf(username)).isNotEmpty()
+
+    /**
+     * Filter users that are editable by the principal
+     * @param principal the principal
+     * @param usernames list of usernames ids to check
+     * @return list of usernames that are editable by the principal
+     */
+    fun filterEditableUsers(principal: Principal, usernames: List<String>): List<String> {
         // admins have access to every user
-        if (authUtils.isAdmin(principal)) return true
-        val requestedUser = userRepo.findByUserId(userId)
+        if (authUtils.isAdmin(principal)) return usernames
+        val groupAccessCache = mutableMapOf<Int, Boolean>()
 
-        // meta admins don't have access to superadmins and katadmins
-        if (listOf("ige-super-admin", "cat-admin").contains(requestedUser?.role?.name)) return false
+        return usernames.filter { username ->
+            val requestedUser = userRepo.findByUserId(username)
+            // meta admins don't have access to superadmins and katadmins
+            if (listOf("ige-super-admin", "cat-admin").contains(requestedUser?.role?.name)) return@filter false
 
-        // check principal has rights for all groups of the requested user (in the active catalog) or the user has no groups
-        val catalogId = getCurrentCatalogForPrincipal(principal)
-        return requestedUser?.groups?.filter { it.catalog?.identifier == catalogId }
-            ?.all { hasRightsForGroup(principal, it) } ?: true
+            // check principal has rights for all groups of the requested user (in the active catalog) or the user has no groups
+            val catalogId = getCurrentCatalogForPrincipal(principal)
+            requestedUser?.groups?.filter { it.catalog?.identifier == catalogId }
+                ?.all { group ->
+                    groupAccessCache.getOrPut(group.id!!) {
+                        hasRightsForGroup(principal, group)
+                    }
+                } ?: true
+        }
     }
 
     fun hasRightsForGroup(
         principal: Principal,
-        group: Group
+        group: Group,
     ) = igeAclService.hasRightsForGroup(
         principal as Authentication,
-        group
+        group,
     )
 
     fun applyIgeUserInfo(user: User, igeUser: UserInfo, catalogId: String): User {
@@ -426,7 +444,7 @@ class CatalogService(
         identifier: String,
         name: String? = null,
         description: String? = null,
-        config: CatalogConfig
+        config: CatalogConfig,
     ) {
         val catalog = catalogRepo.findByIdentifier(identifier)
         catalog.apply {

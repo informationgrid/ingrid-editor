@@ -38,16 +38,16 @@ class UvpApprovalProcedureSchema : AnnotationSpec() {
         "spatial",
         "receiptDate",
         "eiaNumbers",
-        "prelimAssessment"
+        "prelimAssessment",
     )
-    
+
     private val requiredStepFields = listOf(
         "disclosureDate",
         "announcementDocs",
         "applicationDocs",
         "publicHearingDate",
         "considerationDocs",
-        "decisionDate"
+        "decisionDate",
     )
 
     @Test
@@ -99,5 +99,4 @@ class UvpApprovalProcedureSchema : AnnotationSpec() {
             requiredErrors shouldBe requiredFields
         }
     }
-
 }

@@ -35,14 +35,14 @@ import org.springframework.stereotype.Component
 @Component
 class OpenDataPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
-    val jdbcTemplate: JdbcTemplate, val indexingTask: IndexingTask
+    val jdbcTemplate: JdbcTemplate,
+    val indexingTask: IndexingTask,
 ) : Filter<PostPublishPayload> {
     override val profiles = arrayOf("opendata")
-    
+
     private val log = logger()
 
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
-
         val docId = payload.document.uuid
         val docType = payload.document.type
 
@@ -58,7 +58,6 @@ class OpenDataPublishExport(
         }
 
         return payload
-
     }
 
     private fun indexReferencesDocs(context: Context, docId: String) {
@@ -74,17 +73,14 @@ class OpenDataPublishExport(
                 AND d.state = 'PUBLISHED'
                 AND dw.deleted = 0
                 AND data->'addresses' @> '[{"ref": "$docId"}]');
-            """.trimIndent()
+            """.trimIndent(),
         )
 
         docsWithReferences.forEach { indexDoc(context, it) }
-
     }
 
     private fun indexDoc(context: Context, docId: String) {
-
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
         indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA, docId)
-
     }
 }

@@ -65,7 +65,7 @@ class OpenDataIDFExporter(
         "text/xml",
         "xml",
         listOf("opendata"),
-        false
+        false,
     )
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -79,7 +79,7 @@ class OpenDataIDFExporter(
         templateEngine.render(
             getTemplateForDoctype(doc.type),
             getMapFromObject(doc, catalogId, options),
-            output
+            output,
         )
         // pretty printing takes around 5ms
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
@@ -88,7 +88,6 @@ class OpenDataIDFExporter(
         log.debug(prettyXml)
         return prettyXml
     }
-
 
     private fun getTemplateForDoctype(type: String): String {
         return when (type) {
@@ -112,9 +111,9 @@ class OpenDataIDFExporter(
         val transformerClass = getModelTransformerClass(json.type)
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
-        return if (isAddress)
-            transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService)
-        else
+        return if (isAddress) {
+            transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService, config)
+        } else {
             transformerClass.constructors.first().call(
                 TransformerConfig(
                     ingridModel!!,
@@ -125,9 +124,10 @@ class OpenDataIDFExporter(
                     TransformerCache(),
                     json,
                     documentService,
-                    options.tags
-                )
+                    options.tags,
+                ),
             )
+        }
     }
 
     private fun getModelTransformerClass(docType: String): KClass<out Any>? {
@@ -138,15 +138,13 @@ class OpenDataIDFExporter(
         }
     }
 
-
     private fun getMapFromObject(json: Document, catalogId: String, options: ExportOptions): Map<String, Any> {
         val modelTransformer = getModelTransformer(json, catalogId, options)
         return mapOf(
             "map" to mapOf(
-                "model" to modelTransformer
+                "model" to modelTransformer,
             ),
         )
-
     }
 }
 
@@ -154,7 +152,7 @@ private class XMLStringOutput : StringOutput() {
     override fun writeUserContent(value: String?) {
         if (value == null) return
         super.writeUserContent(
-            StringEscapeUtils.escapeXml10(value)
+            StringEscapeUtils.escapeXml10(value),
 //                .replace("\n", "&#10;")
 //                .replace("\r", "&#13;")
 //                .replace("\t", "&#9;")

@@ -42,10 +42,11 @@ enum class AuthorityEnum(val value: String) {
     SN("sn"),
     ST("st"),
     SH("sh"),
-    TH("th");
+    TH("th"),
+    ;
 
     class Converter : EnumConverter<AuthorityEnum>(
-        AuthorityEnum::class.java
+        AuthorityEnum::class.java,
     )
 
     @JsonValue
@@ -55,6 +56,7 @@ enum class AuthorityEnum(val value: String) {
 
     companion object {
         private const val uriPrefix = "https://specs.diplanung.de/resource/authority#"
+
         @JsonCreator
         fun fromValue(text: String?): AuthorityEnum? {
             if (text == null) {
@@ -68,7 +70,8 @@ enum class AuthorityEnum(val value: String) {
             val enumValues = java.lang.String.join(
                 ", ",
                 Stream.of(*entries.toTypedArray()).map { anEnum: AuthorityEnum -> uriPrefix + anEnum.toString() }
-                    .toList())
+                    .toList(),
+            )
             throw IllegalArgumentException("AuthorityEnum value has to be one of [$enumValues], was $text")
         }
 

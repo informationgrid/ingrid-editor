@@ -38,7 +38,7 @@ class PreDefaultDocumentUpdater(
     val docWrapperRepo: DocumentWrapperRepository,
     val catalogService: CatalogService,
     val catalogRepo: CatalogRepository,
-    var authUtils: AuthUtils
+    var authUtils: AuthUtils,
 ) : Filter<PreUpdatePayload> {
 
     val log = logger()

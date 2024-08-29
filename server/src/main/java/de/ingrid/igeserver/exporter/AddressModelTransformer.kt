@@ -27,6 +27,7 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.igeserver.utils.mapToKeyValue
+import de.ingrid.mdek.upload.Config
 import org.springframework.dao.EmptyResultDataAccessException
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
@@ -37,7 +38,8 @@ open class AddressModelTransformer(
     val codelist: CodelistTransformer,
     val relationType: KeyValue?,
     val doc: Document,
-    val documentService: DocumentService
+    val documentService: DocumentService,
+    val config: Config?,
 ) {
 
     var displayAddress: Document
@@ -72,20 +74,25 @@ open class AddressModelTransformer(
     fun getPositionName(): String? =
         if (displayAddress.data.getString("positionName")
                 .isNullOrEmpty()
-        ) determinePositionNameFromAncestors() else displayAddress.data.getString("positionName")
-
+        ) {
+            determinePositionNameFromAncestors()
+        } else {
+            displayAddress.data.getString("positionName")
+        }
 
     private fun determineDisplayAddress(): Document {
         val nonHiddenAddress = ancestorAddressesIncludingSelf
 
         return if (nonHiddenAddress.size > 0) {
             nonHiddenAddress.last().document
-        } else doc
+        } else {
+            doc
+        }
     }
 
     fun getHierarchy(): List<AddressModelTransformer> =
         ancestorAddressesIncludingSelf.map {
-            AddressModelTransformer(catalogIdentifier, codelist, null, it.document, documentService)
+            AddressModelTransformer(catalogIdentifier, codelist, null, it.document, documentService, config)
         }
 
     private fun determineEldestAncestor(): DocumentData? = ancestorAddressesIncludingSelf.firstOrNull()
@@ -124,7 +131,8 @@ open class AddressModelTransformer(
         listOfNotNull(
             // "Postbox" is a fixed string needed for portal display
             this.poBox?.let { "Postbox $it" },
-            this.zipPoBox?.let { it + this.city?.let { " $it" } }).filter { it.isNotEmpty() }
+            this.zipPoBox?.let { it + this.city?.let { " $it" } },
+        ).filter { it.isNotEmpty() }
             .joinToString(", ")
     val telephone = contactType("1")
     val fax = contactType("2")
@@ -141,7 +149,8 @@ open class AddressModelTransformer(
     val addressDocType = getAddressDocType(displayAddress.type)
     fun getAddressDocType(docType: String) = if (docType == "InGridPersonDoc") 2 else 0
 
-    val parentAddresses = ancestorAddressesIncludingSelf.dropLast(1)
+    // in ascending order
+    val parentAddresses = ancestorAddressesIncludingSelf.dropLast(1).reversed()
 
     fun getNextParent() = documentService.getParentWrapper(doc.wrapperId!!)?.uuid
 
@@ -169,41 +178,42 @@ open class AddressModelTransformer(
                 doc.type,
                 doc.data.get("description")?.textValue(),
                 if (doc.data.has("graphicOverviews")) {
-                    doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")?.get("uri")?.textValue()
-                } else null
+                    val fileName = doc.data.get("graphicOverviews").firstOrNull()?.get("fileName")
+                    if (fileName?.get("asLink")?.booleanValue() == true) {
+                        fileName.get("uri")?.textValue() // TODO encode uri
+                    } else {
+                        "${config?.uploadExternalUrl}$catalogIdentifier/${doc.uuid}/${fileName?.get("uri")?.textValue()}"
+                    }
+                } else {
+                    null
+                },
             )
         }.filterNotNull()
     }
-
 
     /**
      *  Get all published children of address including.
      *  Addresses with the flag hideAddress are ignored.
      *  @return List of children
      */
-    fun getSubordinatedParties(): MutableList<SubordinatedParty> {
-        return getPublishedChildren(doc.wrapperId)
-            .filter { it.document.data.get("hideAddress")?.asBoolean() != true }
-            .map {
-                SubordinatedParty(
-                    it.wrapper.uuid,
-                    getAddressDocType(it.wrapper.type),
-                    getIndividualName(it.document),
-                    it.document.data.getString("organization")
-                )
-            }.toMutableList()
-    }
+    fun getSubordinatedParties(): MutableList<SubordinatedParty> = getPublishedChildren(doc.wrapperId)
+        .filter { it.document.data.get("hideAddress")?.asBoolean() != true }
+        .map {
+            SubordinatedParty(
+                it.wrapper.uuid,
+                getAddressDocType(it.wrapper.type),
+                getIndividualName(it.document),
+                it.document.data.getString("organization"),
+            )
+        }.toMutableList()
 
     private fun getPublishedChildren(id: Int?): List<DocumentData> =
         documentService.findChildrenDocs(catalogIdentifier, id, true).hits
 
-    fun getLastPublishedDocument(catalogIdentifier: String, uuid: String): Document? {
-        return try {
-            documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
-        } catch (e: Exception) {
-            null
-        }
-
+    fun getLastPublishedDocument(catalogIdentifier: String, uuid: String): Document? = try {
+        documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
+    } catch (e: Exception) {
+        null
     }
 
     fun getAncestorAddressesIncludingSelf(id: Int?): MutableList<DocumentData> {
@@ -235,7 +245,6 @@ open class AddressModelTransformer(
     private fun contactType(type: String): String? = displayAddress.data.get("contact")
         ?.firstOrNull { it.get("type")?.getString("key") == type }
         ?.getString("connection")
-
 }
 
 data class ObjectReference(
@@ -243,12 +252,12 @@ data class ObjectReference(
     val name: String,
     val type: String,
     val description: String?,
-    val graphicOverview: String?
+    val graphicOverview: String?,
 )
 
 data class SubordinatedParty(
     val uuid: String,
     val type: Int,
     val individualName: String?,
-    val organisationName: String?
+    val organisationName: String?,
 )

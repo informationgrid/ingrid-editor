@@ -34,7 +34,7 @@ import java.time.OffsetDateTime
 @RestController
 @RequestMapping(path = ["/api"])
 class MessagesApiController(
-    private val authUtils: AuthUtils
+    private val authUtils: AuthUtils,
 ) : MessagesApi {
 
     @Autowired
@@ -43,7 +43,6 @@ class MessagesApiController(
     @Autowired
     private lateinit var messageService: MessageService
 
-
     override fun getMessages(principal: Principal): ResponseEntity<List<Message>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         var result = this.messageService.get(catalogId)
@@ -51,24 +50,23 @@ class MessagesApiController(
         result = result + this.messageService.get(null)
 
         // sort and remove expired messages
-        result = result.sortedBy { it.id }.filter { it.expires?.toInstant()?.isAfter(OffsetDateTime.now().minusDays(1).toInstant())  ?: true }
+        result = result.sortedBy { it.id }.filter { it.expires?.toInstant()?.isAfter(OffsetDateTime.now().minusDays(1).toInstant()) ?: true }
         return ResponseEntity.ok(result.map { it.message })
     }
 
     override fun getDbMessages(principal: Principal): ResponseEntity<List<de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Message>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val catalogMessages = this.messageService.get(catalogId)
-        val generalMessages =  this.messageService.get(null)
+        val generalMessages = this.messageService.get(null)
 
         // TODO
         // use one query to get the required messages with order and general messages as the first messages in the list
         var messages = catalogMessages + generalMessages
-        messages = messages.sortedWith(compareByDescending (Comparator.nullsLast<OffsetDateTime?>(nullsFirst())) { it.expires })
+        messages = messages.sortedWith(compareByDescending(Comparator.nullsLast<OffsetDateTime?>(nullsFirst())) { it.expires })
         return ResponseEntity.ok(messages)
     }
 
     override fun createMessage(principal: Principal, messageRequest: MessageCreationRequest): ResponseEntity<Void> {
-
         val catalogId = if (messageRequest.forCurrentCatalog) catalogService.getCurrentCatalogForPrincipal(principal) else null
         val expires = if (messageRequest.validUntil.isNullOrEmpty()) null else OffsetDateTime.parse(messageRequest.validUntil)
         this.messageService.save(messageRequest.message, expires, catalogId)

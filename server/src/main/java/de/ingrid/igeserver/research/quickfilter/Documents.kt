@@ -28,4 +28,3 @@ class Documents : QuickFilter() {
     override val label = "Dokument"
     override val filter = "category = 'data'"
 }
-

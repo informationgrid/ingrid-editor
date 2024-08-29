@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service
 class OpenDataProfile(
     @JsonIgnore val codelistRepo: CodelistRepository,
     @JsonIgnore val catalogRepo: CatalogRepository,
-    @JsonIgnore val codelistHandler: CodelistHandler
+    @JsonIgnore val codelistHandler: CodelistHandler,
 ) : CatalogProfile {
 
     companion object {
@@ -58,25 +58,29 @@ class OpenDataProfile(
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Filter", arrayOf(
+                "state",
+                "Filter",
+                arrayOf(
                     Draft(),
-                    ExceptFolders()
+                    ExceptFolders(),
                 ),
                 viewComponent = ViewComponent.CHECKBOX,
-                combine = Operator.AND
-            )
+                combine = Operator.AND,
+            ),
         )
     }
 
     override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Filter", arrayOf(
+                "state",
+                "Filter",
+                arrayOf(
                     Draft(),
-                    ExceptFolders()
+                    ExceptFolders(),
                 ),
-                viewComponent = ViewComponent.CHECKBOX
-            )
+                viewComponent = ViewComponent.CHECKBOX,
+            ),
         )
     }
 
@@ -170,11 +174,9 @@ class OpenDataProfile(
     }
 
     override fun initCatalogQueries(catalogId: String) {
-
     }
 
     override fun initIndices() {
-
     }
 
     override fun getElasticsearchMapping(format: String): String {
@@ -184,5 +186,4 @@ class OpenDataProfile(
     override fun getElasticsearchSetting(format: String): String {
         return {}.javaClass.getResource("/ingrid/default-settings.json")?.readText() ?: ""
     }
-
 }

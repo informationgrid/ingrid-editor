@@ -87,7 +87,6 @@ data class MCloudModel(
             .map { "http://publications.europa.eu/resource/authority/data-theme/$it" }
     }
 
-
     companion object {
         val codeListService: CodeListService? by lazy {
             SpringContext.getBean(CodeListService::class.java)
@@ -97,16 +96,16 @@ data class MCloudModel(
         }
     }
     fun getLicenseData(): Any? {
-        if(data.license != null) {
-            var jsonString = "{\"id\":\""+data.license.key+"\",\"name\":\""+data.license.value+"\"}";
+        if (data.license != null) {
+            var jsonString = "{\"id\":\"" + data.license.key + "\",\"name\":\"" + data.license.value + "\"}"
             // either use key or if no key search for value
             val entryID = data.license.key ?: codeListService?.getCodeListEntryId("6500", data.license.value, "de")
-            if(entryID != null) {
+            if (entryID != null) {
                 val codeListEntry = codeListService?.getCodeListEntry("6500", entryID)
-                if(!codeListEntry?.data.isNullOrEmpty()) {
-                    jsonString = codeListEntry?.data.toString();
-                } else if(codeListEntry?.getField("de") != null) {
-                    jsonString = "{\"id\":\""+data.license.key+"\",\"name\":\""+codeListEntry.getField("de")+"\"}";
+                if (!codeListEntry?.data.isNullOrEmpty()) {
+                    jsonString = codeListEntry?.data.toString()
+                } else if (codeListEntry?.getField("de") != null) {
+                    jsonString = "{\"id\":\"" + data.license.key + "\",\"name\":\"" + codeListEntry.getField("de") + "\"}"
                 }
             }
             return if (jsonString.isEmpty()) null else JSONParser().parse(jsonString)
@@ -115,33 +114,34 @@ data class MCloudModel(
     }
 
     val periodicity: String?
-    get(){
-        val timePeriod = codeListService?.getCodeListValue("518", data.periodicity?.key, "en")
+        get() {
+            val timePeriod = codeListService?.getCodeListValue("518", data.periodicity?.key, "en")
 
-        when(timePeriod){
-            "continual" -> return "CONT"
-            "daily" -> return "DAILY"
-            "weekly" -> return "WEEKLY"
-            "fortnightly" -> return "BIWEEKLY"
-            "monthly" -> return "MONTHLY"
-            "quarterly" -> return "QUARTERLY"
-            "biannually" -> return "BIENNIAL"
-            "annually" -> return "ANNUAL"
-            "as Needed" -> return "IRREG"
-            "irregular" -> return "IRREG"
-            "not Planned" -> return "NEVER"
-            "unknown" -> return "UNKNOWN"
+            when (timePeriod) {
+                "continual" -> return "CONT"
+                "daily" -> return "DAILY"
+                "weekly" -> return "WEEKLY"
+                "fortnightly" -> return "BIWEEKLY"
+                "monthly" -> return "MONTHLY"
+                "quarterly" -> return "QUARTERLY"
+                "biannually" -> return "BIENNIAL"
+                "annually" -> return "ANNUAL"
+                "as Needed" -> return "IRREG"
+                "irregular" -> return "IRREG"
+                "not Planned" -> return "NEVER"
+                "unknown" -> return "UNKNOWN"
+            }
+            return null
         }
-        return null
-    }
 
     fun getCodelistValue(catalogId: String, codelistId: String, key: String?, value: String?): String {
-        return if (key == null) value ?: ""
-        else {
+        return if (key == null) {
+            value ?: ""
+        } else {
             val codelistValue = codelistHandler?.getCatalogCodelistValue(catalogId, codelistId, key)
             if (codelistValue == null) {
                 // TODO: use logger
-                println("Codelist-Value not found for '${key}' in list '${codelistId}'")
+                println("Codelist-Value not found for '$key' in list '$codelistId'")
             }
             codelistValue ?: ""
         }
@@ -154,11 +154,11 @@ data class MCloudModel(
 
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val modified: String
-    get(){
-        return _contentModified.format(formatter)
-    }
+        get() {
+            return _contentModified.format(formatter)
+        }
     val created: String
-        get(){
+        get() {
             return _created.format(formatter)
         }
 }

@@ -38,7 +38,11 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.repository.CatalogRepository
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogProfile
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.ConnectionService
+import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.SettingsService
 import de.ingrid.igeserver.tasks.quartz.IgeJob
 import de.ingrid.igeserver.utils.setAdminAuthentication
 import org.apache.logging.log4j.kotlin.logger
@@ -53,7 +57,7 @@ data class ExtendedExporterConfig(
     val exporter: IgeExporter,
     val tags: List<String>,
     val category: DocumentCategory,
-    val indexFieldId: String
+    val indexFieldId: String,
 )
 
 @Component
@@ -67,7 +71,7 @@ class IndexingTask(
     private val codelistService: CodeListService,
     private val postIndexPipe: PostIndexPipe,
     private val generalProperties: GeneralProperties,
-    private val connectionService: ConnectionService
+    private val connectionService: ConnectionService,
 ) : IgeJob() {
 
     override val log = logger()
@@ -91,7 +95,7 @@ class IndexingTask(
 
         val message = IndexMessage(catalogId, 0)
         notify.sendMessage(
-            message.apply { this.message = "Start Indexing for catalog: $catalogId" }
+            message.apply { this.message = "Start Indexing for catalog: $catalogId" },
         )
 
         val catalog = catalogRepo.findByIdentifier(catalogId)
@@ -124,7 +128,7 @@ class IndexingTask(
                             postIndexPipe,
                             settingsService,
                             cancellations,
-                            (currentThread ?: Thread.currentThread()).threadId()
+                            (currentThread ?: Thread.currentThread()).threadId(),
                         ).indexAll()
 
                         // make sure to write everything to elasticsearch
@@ -142,7 +146,6 @@ class IndexingTask(
             notify.addAndSendMessageError(message, ex, "Error during indexing: ")
         } catch (ex: NotImplementedError) {
             notify.addAndSendMessageError(message, ServerException.withReason("Not Implemented"))
-
         }
 
         log.info("Indexing finished")
@@ -150,7 +153,7 @@ class IndexingTask(
             message.apply {
                 this.endTime = Date()
                 this.message = "Indexing finished"
-            }
+            },
         )
 
         // save last indexing information to database for this catalog to get this in frontend
@@ -180,7 +183,7 @@ class IndexingTask(
             exporterConfig.category.value,
             partner,
             provider,
-            catalog
+            catalog,
         )
     }
 
@@ -193,7 +196,7 @@ class IndexingTask(
 
     private fun getExporterConfigForCatalog(
         catalog: Catalog,
-        catalogProfile: CatalogProfile
+        catalogProfile: CatalogProfile,
     ): List<ExtendedExporterConfig> {
         val ibusConfigs = settingsService.getIBusConfig()
         val elasticConfig = settingsService.getElasticConfig()
@@ -211,7 +214,7 @@ class IndexingTask(
                 log.error(msg)
                 notify.addAndSendMessageError(
                     IndexMessage(catalog.identifier, 0),
-                    ServerException.withReason(msg)
+                    ServerException.withReason(msg),
                 )
                 return@flatMap emptyList()
             }
@@ -226,8 +229,11 @@ class IndexingTask(
                     exporter,
                     config.tags,
                     it,
-                    if (it == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address
-                    else catalogProfile.indexIdField.document
+                    if (it == DocumentCategory.ADDRESS) {
+                        catalogProfile.indexIdField.address
+                    } else {
+                        catalogProfile.indexIdField.document
+                    },
                 )
             }.also {
                 if (it.isEmpty()) log.warn("No exporter found for any category with ID: ${config.exporterId}")
@@ -242,7 +248,7 @@ class IndexingTask(
     private fun getDefaultExporterConfiguration(
         exportFormatId: String,
         ibusConfigs: List<IBusConfig>,
-        elasticConfig: List<ElasticConfig>
+        elasticConfig: List<ElasticConfig>,
     ): List<ExportConfig> {
         val iBusDefinitions = ibusConfigs.map {
             ExportConfig(it.id!!, exportFormatId, listOf("internet"))
@@ -253,12 +259,10 @@ class IndexingTask(
         return iBusDefinitions + elasticDefinitions
     }
 
-    private fun getExporterOrNull(category: DocumentCategory, exporterId: String): IgeExporter? {
-        return try {
-            indexService.getExporter(category, exporterId)
-        } catch (e: ConfigurationException) {
-            null
-        }
+    private fun getExporterOrNull(category: DocumentCategory, exporterId: String): IgeExporter? = try {
+        indexService.getExporter(category, exporterId)
+    } catch (e: ConfigurationException) {
+        null
     }
 
     private fun getElasticsearchAliasFromCatalog(catalog: Catalog, category: DocumentCategory, exportTarget: String) =
@@ -270,7 +274,7 @@ class IndexingTask(
     fun updateDocument(
         catalogId: String,
         category: DocumentCategory,
-        docId: String
+        docId: String,
     ) {
         log.info("Export dataset from catalog '$catalogId': $docId")
 
@@ -310,7 +314,7 @@ class IndexingTask(
                 }
         } catch (ex: NoSuchElementException) {
             log.info(
-                "Document not indexed, probably because of profile specific condition: $catalogId -> $docId"
+                "Document not indexed, probably because of profile specific condition: $catalogId -> $docId",
             )
         }
     }
@@ -319,7 +323,7 @@ class IndexingTask(
         exporter: ExtendedExporterConfig,
         catalogProfile: CatalogProfile,
         category: DocumentCategory,
-        elasticsearchAlias: String
+        elasticsearchAlias: String,
     ): IndexInfo {
         var currentIndex =
             exporter.target.getIndexNameFromAliasName(elasticsearchAlias)
@@ -329,7 +333,7 @@ class IndexingTask(
                 currentIndex,
                 if (exporter.category == DocumentCategory.ADDRESS) "address" else "base",
                 catalogProfile.getElasticsearchMapping(""),
-                catalogProfile.getElasticsearchSetting("")
+                catalogProfile.getElasticsearchSetting(""),
             )
             exporter.target.switchAlias(elasticsearchAlias, null, currentIndex)
         }
@@ -337,8 +341,11 @@ class IndexingTask(
         return IndexInfo(
             currentIndex,
             elasticsearchAlias,
-            if (category == DocumentCategory.ADDRESS) catalogProfile.indexIdField.address
-            else catalogProfile.indexIdField.document
+            if (category == DocumentCategory.ADDRESS) {
+                catalogProfile.indexIdField.address
+            } else {
+                catalogProfile.indexIdField.document
+            },
         )
     }
 
@@ -362,7 +369,7 @@ class IndexingTask(
                     it.target.flush()
                 } catch (ex: Exception) {
                     throw NoElasticsearchConnectionException.withReason(
-                        ex.message ?: "No connection to Elasticsearch"
+                        ex.message ?: "No connection to Elasticsearch",
                     )
                 }
             }
@@ -379,7 +386,7 @@ data class IndexConfig(
     val exportFormat: String,
     val cron: String,
     var future: ScheduledFuture<*>? = null,
-    val onStartup: Boolean = false
+    val onStartup: Boolean = false,
 )
 
 data class IPlugInfo(
@@ -389,5 +396,5 @@ data class IPlugInfo(
     val category: String,
     val partner: String?,
     val provider: String?,
-    val catalog: Catalog
+    val catalog: Catalog,
 )

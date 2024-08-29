@@ -30,5 +30,4 @@ open class MapperService {
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
         return mapper.readTree(json)
     }
-
 }

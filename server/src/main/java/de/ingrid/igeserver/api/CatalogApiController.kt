@@ -65,7 +65,7 @@ class CatalogApiController(
 
     override fun saveCatalogConfig(
         principal: Principal,
-        @RequestBody data: CatalogConfigRequest
+        @RequestBody data: CatalogConfigRequest,
     ): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         catalogService.updateCatalogConfig(catalogId, data.name, data.description, data.config)
@@ -73,7 +73,6 @@ class CatalogApiController(
     }
 
     private fun getStatisticData(catalogIdentifier: String): CatalogStatistic {
-
         val filter = BoolFilter("AND", listOf("document_wrapper.type != 'FOLDER'", "deleted = 0"), null, null, false)
         val response = researchService.query(
             catalogIdentifier,
@@ -82,15 +81,15 @@ class CatalogApiController(
                 filter,
                 orderByField = "modified",
                 orderByDirection = "DESC",
-                pagination = ResearchPaging(1, 1)
-            )
+                pagination = ResearchPaging(1, 1),
+            ),
         )
 
         return if (response.totalHits > 0) {
             val hit = response.hits[0]
             CatalogStatistic(
                 hit._contentModified,
-                response.totalHits
+                response.totalHits,
             )
         } else {
             CatalogStatistic()
@@ -120,8 +119,7 @@ class CatalogApiController(
     }
 }
 
-
 data class CatalogStatistic(
     val lastDocModification: Date? = null,
-    val countDocuments: Int = 0
+    val countDocuments: Int = 0,
 )

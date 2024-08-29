@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.exports
 
 import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.exports.JSPostProcessor
 import de.ingrid.igeserver.services.ExportPostProcessors
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
@@ -57,7 +56,7 @@ class JSPostProcessor : ExportPostProcessors {
 
     companion object {
         private val log = LogManager.getLogger(
-            JSPostProcessor::class.java
+            JSPostProcessor::class.java,
         )
     }
 }

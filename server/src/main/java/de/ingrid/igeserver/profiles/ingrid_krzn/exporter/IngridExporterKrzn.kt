@@ -22,7 +22,12 @@ package de.ingrid.igeserver.profiles.ingrid_krzn.exporter
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.*
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
@@ -52,7 +57,7 @@ class IngridExporterKrzn(
             "json",
             listOf("ingrid-krzn"),
             isPublic = true,
-            useForPublish = true
+            useForPublish = true,
         )
 }
 
@@ -61,7 +66,7 @@ class IngridIdfExporterKrzn(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
+    @Lazy documentService: DocumentService,
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getKrznTransformer(docType) ?: super.getModelTransformerClass(docType)
@@ -72,38 +77,35 @@ class IngridLuceneExporterKrzn(
     codelistHandler: CodelistHandler,
     config: Config,
     catalogService: CatalogService,
-    @Lazy documentService: DocumentService
-) :
-    IngridLuceneExporter(
-        codelistHandler,
-        config,
-        catalogService,
-        documentService,
-    ) {
+    @Lazy documentService: DocumentService,
+) : IngridLuceneExporter(
+    codelistHandler,
+    config,
+    catalogService,
+    documentService,
+) {
 
-    override fun getTransformer(data: TransformerData): Any {
-        return when (data.type) {
-            IngridDocType.DOCUMENT -> {
-                getKrznTransformer(data.doc.type)
-                    ?.constructors
-                    ?.first()
-                    ?.call(
-                        TransformerConfig(
-                            data.mapper.convertValue(data.doc, IngridModel::class.java),
-                            data.catalogIdentifier,
-                            data.codelistTransformer,
-                            config,
-                            catalogService,
-                            TransformerCache(),
-                            data.doc,
-                            documentService,
-                            data.tags
-                        )
-                    ) ?: super.getTransformer(data)
-            }
-
-            else -> super.getTransformer(data)
+    override fun getTransformer(data: TransformerData): Any = when (data.type) {
+        IngridDocType.DOCUMENT -> {
+            getKrznTransformer(data.doc.type)
+                ?.constructors
+                ?.first()
+                ?.call(
+                    TransformerConfig(
+                        data.mapper.convertValue(data.doc, IngridModel::class.java),
+                        data.catalogIdentifier,
+                        data.codelistTransformer,
+                        config,
+                        catalogService,
+                        TransformerCache(),
+                        data.doc,
+                        documentService,
+                        data.tags,
+                    ),
+                ) ?: super.getTransformer(data)
         }
+
+        else -> super.getTransformer(data)
     }
 }
 
@@ -111,7 +113,7 @@ class IngridLuceneExporterKrzn(
 class IngridISOExporterKrzn(
     idfExporter: IngridIdfExporterKrzn,
     luceneExporter: IngridLuceneExporterKrzn,
-    documentWrapperRepository: DocumentWrapperRepository
+    documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridExporterKrzn(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
@@ -121,12 +123,11 @@ class IngridISOExporterKrzn(
         "Export von KRZN Dokumenten in ISO für die Vorschau im Editor.",
         "text/xml",
         "xml",
-        listOf("ingrid-krzn")
+        listOf("ingrid-krzn"),
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val indexString = super.run(doc, catalogId, options) as String
         return getISOFromElasticDocumentString(indexString)
     }
-
 }

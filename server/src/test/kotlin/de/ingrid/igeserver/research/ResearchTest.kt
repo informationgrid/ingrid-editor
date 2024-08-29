@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
 
-
 @Sql(scripts = ["/test_data.sql"], config = SqlConfig(encoding = "UTF-8"))
 class ResearchTest : IntegrationTest() {
 
@@ -38,7 +37,8 @@ class ResearchTest : IntegrationTest() {
 
     @Test
     fun findByTerm_exact() {
-        @Language("PostgreSQL") val sql = """
+        @Language("PostgreSQL")
+        val sql = """
                 SELECT *
                 FROM document
                 WHERE data ->> 'company' = 'LWL-Schulverwaltung Münster';
@@ -51,7 +51,8 @@ class ResearchTest : IntegrationTest() {
 
     @Test
     fun findByTerm_like() {
-        @Language("PostgreSQL") val sql = """
+        @Language("PostgreSQL")
+        val sql = """
             SELECT *
             FROM document document1
             WHERE document1.is_latest = true AND document1.data ->> 'company' LIKE '%verwaltung%';

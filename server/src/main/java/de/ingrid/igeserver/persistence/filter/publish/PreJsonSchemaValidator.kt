@@ -32,7 +32,7 @@ import org.unbescape.json.JsonEscape
 
 data class JsonErrorEntry(
     val error: String,
-    val instanceLocation: String
+    val instanceLocation: String,
 )
 
 @Component
@@ -53,7 +53,7 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
 
             validate(
                 schema,
-                jsonWithTitle
+                jsonWithTitle,
             )
         }
         return payload
@@ -61,7 +61,7 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
 
     private fun addGenericFields(
         json: ObjectNode,
-        payload: PrePublishPayload
+        payload: PrePublishPayload,
     ): String {
         var extraFields = if (json.isEmpty) "" else ","
         extraFields += """"title": "${JsonEscape.escapeJson(payload.document.title)}""""

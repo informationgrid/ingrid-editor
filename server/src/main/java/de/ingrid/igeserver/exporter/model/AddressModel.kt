@@ -68,8 +68,7 @@ data class Address(
     @JsonProperty("zip-po-box") val zipPoBox: String?,
     @JsonProperty("po-box") val poBox: String?,
     val administrativeArea: KeyValue?,
-    val country: KeyValue?
+    val country: KeyValue?,
 ) {
     val countryKey = country?.key ?: ""
-
 }

@@ -50,7 +50,7 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils, val ca
             language = defaultLanguage,
             name = help.title,
             helpText = helpUtils.renderMarkdownFile(help.markDownFilename),
-            profile = profile
+            profile = profile,
         )
     }
 
@@ -68,15 +68,15 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils, val ca
         it: MarkdownContextHelpItemKey,
         profile: String,
         parentProfile: String?,
-        docType: String
+        docType: String,
     ) = ((it.profile == profile || it.profile == parentProfile) && it.docType == docType)
 
     private fun getContextHelp(profile: String, docType: String, id: String): MarkdownContextHelpItem? {
         val itemKey = MarkdownContextHelpItemKey(
-                fieldId = id,
-                profile = profile,
-                docType = docType,
-                lang = defaultLanguage
+            fieldId = id,
+            profile = profile,
+            docType = docType,
+            lang = defaultLanguage,
         )
 
         if (markdownContextHelp.containsKey(itemKey)) {
@@ -85,5 +85,4 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils, val ca
 
         return null
     }
-
 }

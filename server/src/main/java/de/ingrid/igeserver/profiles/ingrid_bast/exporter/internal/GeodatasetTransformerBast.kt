@@ -38,20 +38,23 @@ class GeodatasetTransformerBast(transformerConfig: TransformerConfig) : Geodatas
 
     private val docData = doc.data
 
-    override fun getDescriptiveKeywords(): List<Thesaurus>  = super.getDescriptiveKeywords() + getBastKeywords(docData)
+    override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBastKeywords(docData)
 
     override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() + getBastKeywords(docData).keywords.mapNotNull { it.name }
 
     override val supplementalInformation = docData.getString("supplementalInformation")
 
     override val useConstraints: List<UseConstraintTemplate> =
-        super.useConstraints + if (docData.getString("resource.useConstraintsComments") == null) emptyList()
-        else listOf(
-            UseConstraintTemplate(
-                CharacterStringModel(docData.getStringOrEmpty("resource.useConstraintsComments"), null),
-                null,
-                null,
-                null
+        super.useConstraints + if (docData.getString("resource.useConstraintsComments") == null) {
+            emptyList()
+        } else {
+            listOf(
+                UseConstraintTemplate(
+                    CharacterStringModel(docData.getStringOrEmpty("resource.useConstraintsComments"), null),
+                    null,
+                    null,
+                    null,
+                ),
             )
-        )
+        }
 }

@@ -23,7 +23,6 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PostUpdatePayload
 import de.ingrid.mdek.upload.storage.Storage
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 /**
@@ -43,5 +42,4 @@ class PostDefaultUploadSaver(val storage: Storage) : Filter<PostUpdatePayload> {
         }
         return payload
     }
-
 }

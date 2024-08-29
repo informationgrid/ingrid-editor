@@ -64,7 +64,7 @@ class ZabbixReportApiController(
             .mapNotNull {
                 val events = zabbixService.getTriggerEvents(it)
                 val lastEvent = events?.get(0) ?: return@mapNotNull null
-                if(lastEvent.severity != "0") {
+                if (lastEvent.severity != "0") {
                     // latest event is a problem
                     problemToReportItem(lastEvent)
                 } else {
@@ -77,8 +77,7 @@ class ZabbixReportApiController(
         return ResponseEntity.ok(problems)
     }
 
-
-    fun problemToReportItem(problem: ZabbixModel.Problem, resolved: Boolean=false): ProblemReportItem {
+    fun problemToReportItem(problem: ZabbixModel.Problem, resolved: Boolean = false): ProblemReportItem {
         return ProblemReportItem(
             problemUrl = ZABBIX_BASE_URL + "/tr_events.php?triggerid=${problem.objectid}&eventid=${problem.eventid}",
             clock = problem.clock,
@@ -87,10 +86,7 @@ class ZabbixReportApiController(
             url = problem.url,
             docUrl = problem.docUrl,
             docUuid = problem.docUuid,
-            resolved =  resolved
+            resolved = resolved,
         )
     }
-
-
 }
-

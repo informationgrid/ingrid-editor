@@ -36,7 +36,6 @@ class IngridModelTransformerLubw(transformerConfig: TransformerConfig) : IngridM
         distributor = getDistributorName()
     }
 
-
     private fun getDistributorName(): String {
         val distributor = orderInfoContact.firstOrNull() ?: return ""
         val oldestAncestorData = distributor.ancestorAddressesIncludingSelf.first().document.data
@@ -51,10 +50,8 @@ class IngridModelTransformerLubw(transformerConfig: TransformerConfig) : IngridM
             val pathDoc = documentService.getDocumentByWrapperId(catalogIdentifier, it)
             TreeNode(
                 pathDoc.title ?: "???",
-                pathDoc.uuid
+                pathDoc.uuid,
             )
         }
     }
-
-
 }

@@ -27,20 +27,16 @@ import de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal.GeodatasetTran
 import de.ingrid.igeserver.profiles.ingrid_bast.exporter.internal.GeoserviceTransformerBast
 import kotlin.reflect.KClass
 
-fun getBastTransformer(docType: String): KClass<out Any>? {
-    return when (docType) {
-        "InGridGeoDataset" -> GeodatasetTransformerBast::class
-        "InGridGeoService" -> GeoserviceTransformerBast::class
-        "InGridDataCollection" -> DataCollectionTransformerBast::class
-        else -> null
-    }
+fun getBastTransformer(docType: String): KClass<out Any>? = when (docType) {
+    "InGridGeoDataset" -> GeodatasetTransformerBast::class
+    "InGridGeoService" -> GeoserviceTransformerBast::class
+    "InGridDataCollection" -> DataCollectionTransformerBast::class
+    else -> null
 }
 
-fun getBastExternalTransformer(docType: String): KClass<out Any>? {
-    return when (docType) {
-        "InGridGeoDataset" -> GeodatasetTransformerExternalBast::class
-        "InGridGeoService" -> GeoserviceTransformerExternalBast::class
-        "InGridDataCollection" -> DataCollectionTransformerExternalBast::class
-        else -> null
-    }
+fun getBastExternalTransformer(docType: String): KClass<out Any>? = when (docType) {
+    "InGridGeoDataset" -> GeodatasetTransformerExternalBast::class
+    "InGridGeoService" -> GeoserviceTransformerExternalBast::class
+    "InGridDataCollection" -> DataCollectionTransformerExternalBast::class
+    else -> null
 }

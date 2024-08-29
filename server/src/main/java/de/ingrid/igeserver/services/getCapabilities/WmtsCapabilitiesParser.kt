@@ -25,9 +25,11 @@ import de.ingrid.utils.xml.WmtsNamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
-                             private val researchService: ResearchService,
-                             catalogId: String) :
+class WmtsCapabilitiesParser(
+    codelistHandler: CodelistHandler,
+    private val researchService: ResearchService,
+    catalogId: String,
+) :
     GeneralCapabilitiesParser(XPathUtils(WmtsNamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.0.0" to "3")
@@ -53,7 +55,7 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
             spatialReferenceSystems =
                 getSpatialReferenceSystems(
                     doc,
-                    "/wmts:Capabilities/wmts:Contents/wmts:TileMatrixSet/ows11:SupportedCRS"
+                    "/wmts:Capabilities/wmts:Contents/wmts:TileMatrixSet/ows11:SupportedCRS",
                 )
             operations = getOperations(doc)
         }
@@ -62,22 +64,28 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
     private fun getOperations(doc: Document): List<OperationBean> {
         val operations: MutableList<OperationBean> = ArrayList()
         val getCapabilitiesOp = mapToOperationBean(
-            doc, arrayOf(
+            doc,
+            arrayOf(
                 XPATH_EXP_WMTS_OP_GET_CAPABILITIES_GET_HREF1,
                 XPATH_EXP_WMTS_OP_GET_CAPABILITIES_GET_HREF2,
                 XPATH_EXP_WMTS_OP_GET_CAPABILITIES_GET_HREF3,
                 XPATH_EXP_WMTS_OP_GET_CAPABILITIES_POST_HREF1,
                 XPATH_EXP_WMTS_OP_GET_CAPABILITIES_POST_HREF2,
-                XPATH_EXP_WMTS_OP_GET_CAPABILITIES_POST_HREF3
-            ), arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_GET,
-                ID_OP_PLATFORM_HTTP_POST, ID_OP_PLATFORM_HTTP_POST, ID_OP_PLATFORM_HTTP_POST
-            )
+                XPATH_EXP_WMTS_OP_GET_CAPABILITIES_POST_HREF3,
+            ),
+            arrayOf(
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+                ID_OP_PLATFORM_HTTP_POST,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (!getCapabilitiesOp.addressList!!.isEmpty()) {
             getCapabilitiesOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"), 
-                "GetCapabilities"
+                codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"),
+                "GetCapabilities",
             )
             // do not set method call so that it doesn't appear in ISO (#3651)
             // getCapabilitiesOp.setMethodCall("GetCapabilities");
@@ -102,7 +110,7 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
         getTileOp.setName("GetTile");
         getTileOp.setMethodCall("GetTile");
 
-        
+
         operations.add(getTileOp);
     }
 
@@ -119,7 +127,7 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
         getFeatureInfoOpAddressList.add(getFeatureInfoAddress);
         getFeatureInfoOp.setAddressList(getFeatureInfoOpAddressList);
 
-        
+
         operations.add(getFeatureInfoOp);
     }*/
         return operations
@@ -135,40 +143,47 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
             address,
             xPathUtils.getString(
                 doc,
-                XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:IndividualName"
-            )
+                XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:IndividualName",
+            ),
         )
         address.email = xPathUtils.getString(
             doc,
-            XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:ElectronicMailAddress"
+            XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:ElectronicMailAddress",
         )
 
         // try to find address in database and set the uuid if found
         searchForAddress(researchService, catalogId, address)
-        
+
         address.street = xPathUtils.getString(
             doc,
-            XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:DeliveryPoint"
+            XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:DeliveryPoint",
         )
         address.city = xPathUtils.getString(
             doc,
-            XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:City"
+            XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:City",
         )
         address.postcode = xPathUtils.getString(
             doc,
-            XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:PostalCode"
+            XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:PostalCode",
         )
-        address.country = getKeyValue("6200", xPathUtils.getString(
-            doc,
-            XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:Country"
-        ))
-        address.state = getKeyValue("6250", xPathUtils.getString(
-            doc,
-            XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:AdministrativeArea"
-        ), "name")
+        address.country = getKeyValue(
+            "6200",
+            xPathUtils.getString(
+                doc,
+                XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:Country",
+            ),
+        )
+        address.state = getKeyValue(
+            "6250",
+            xPathUtils.getString(
+                doc,
+                XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Address/ows11:AdministrativeArea",
+            ),
+            "name",
+        )
         address.phone = xPathUtils.getString(
             doc,
-            XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Phone/ows11:Voice"
+            XPATH_EXT_WMTS_SERVICECONTACT + "/ows11:ContactInfo/ows11:Phone/ows11:Voice",
         )
         return address
     }
@@ -193,7 +208,7 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
                     java.lang.Double.valueOf(upper[1]),
                     java.lang.Double.valueOf(upper[0]),
                     title,
-                    "free"
+                    "free",
                 )
             } else {
                 LocationBean(name = title, type = "free")
@@ -203,7 +218,6 @@ class WmtsCapabilitiesParser(codelistHandler: CodelistHandler,
         }
         return bboxes
     }
-
 
     companion object {
         private const val XPATH_EXP_WMTS_FEES = "/wmts:Capabilities/ows11:ServiceIdentification/ows11:Fees"

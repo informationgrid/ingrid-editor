@@ -46,6 +46,6 @@ class IngridExporterWsvAddress(
             "application/json",
             "json",
             listOf("ingrid-wsv"),
-            isPublic = true
+            isPublic = true,
         )
 }

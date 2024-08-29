@@ -37,8 +37,8 @@ import java.nio.file.StandardCopyOption
 @Component
 class UploadVirusScanTask(
     private var emailService: EmailServiceImpl,
-    private val uploadSettings: Config
-){
+    private val uploadSettings: Config,
+) {
     val log = logger()
     val emailReportSubject = "[IGE-NG] Virus Scan Report"
     val emailErrorReportSubject = "[IGE-NG] Virus Scan ERROR"
@@ -70,7 +70,7 @@ class UploadVirusScanTask(
                             Level.INFO,
                             "Infection found: " + file.toString() + " - " + vfex.infections[file].toString(),
                             report,
-                            null
+                            null,
                         )
                     }
                     // add scan log in case of virus
@@ -115,7 +115,7 @@ class UploadVirusScanTask(
             val targetPath = Paths.get(quarantineDir!!, file.toString())
             log(Level.INFO, "Moving file: '$file' to '$targetPath'", report, null)
             try {
-                log(Level.INFO, Paths.get(file.toString()).toAbsolutePath().toString(), report, null )
+                log(Level.INFO, Paths.get(file.toString()).toAbsolutePath().toString(), report, null)
                 Files.createDirectories(targetPath.parent)
                 Files.move(file, targetPath, StandardCopyOption.REPLACE_EXISTING)
                 movedCount++

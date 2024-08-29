@@ -28,7 +28,6 @@ import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.tasks.IndexingTask
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.context.annotation.Profile
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.queryForList
 import org.springframework.stereotype.Component
@@ -37,7 +36,7 @@ import org.springframework.stereotype.Component
 class BmiPublishExport(
     val docWrapperRepo: DocumentWrapperRepository,
     val jdbcTemplate: JdbcTemplate,
-    val indexingTask: IndexingTask
+    val indexingTask: IndexingTask,
 ) : Filter<PostPublishPayload> {
 
     val log = logger()
@@ -45,7 +44,6 @@ class BmiPublishExport(
     override val profiles = arrayOf("bmi")
 
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
-
         val docId = payload.document.uuid
         val docType = payload.document.type
 
@@ -60,7 +58,6 @@ class BmiPublishExport(
         }
 
         return payload
-
     }
 
     private fun indexReferencesBmiDocs(context: Context, docId: String) {
@@ -68,7 +65,7 @@ class BmiPublishExport(
 
         // get uuids from documents that reference the address
         val docsWithReferences = jdbcTemplate.queryForList<String>(
-                """
+            """
             SELECT DISTINCT d.uuid 
             FROM document d, document_wrapper dw 
             WHERE (
@@ -76,17 +73,14 @@ class BmiPublishExport(
                 AND d.state = 'PUBLISHED'
                 AND dw.deleted = 0
                 AND data->'addresses' @> '[{"ref": "$docId"}]');
-            """.trimIndent()
+            """.trimIndent(),
         )
 
         docsWithReferences.forEach { indexBmiDoc(context, it) }
-
     }
 
     private fun indexBmiDoc(context: Context, docId: String) {
-
         context.addMessage(Message(this, "Index document $docId to Elasticsearch"))
         indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA, docId)
-
     }
 }

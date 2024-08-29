@@ -29,7 +29,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import java.security.Principal
 
 @Hidden
@@ -38,10 +43,12 @@ interface CatalogApi {
     @GetMapping(value = ["/catalogs"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(responses = [], summary = "Get all catalogs")
     @ApiResponses(
-        value = [ApiResponse(responseCode = "200", description = ""), ApiResponse(
-            responseCode = "500",
-            description = "Unexpected error"
-        )]
+        value = [
+            ApiResponse(responseCode = "200", description = ""), ApiResponse(
+                responseCode = "500",
+                description = "Unexpected error",
+            ),
+        ],
     )
     fun catalogs(principal: Principal): ResponseEntity<List<Catalog>>
 
@@ -51,8 +58,8 @@ interface CatalogApi {
     fun createCatalog(
         @Parameter(
             description = "The settings of the catalog to create.",
-            required = true
-        ) @RequestBody settings: Catalog
+            required = true,
+        ) @RequestBody settings: Catalog,
     ): ResponseEntity<Catalog>
 
     @PutMapping(value = ["/catalogs/{name}"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -60,12 +67,12 @@ interface CatalogApi {
     fun updateCatalog(
         @Parameter(
             description = "The name of the catalog to update.",
-            required = true
+            required = true,
         ) @PathVariable("name") name: String,
         @Parameter(
             description = "The settings of the catalog to update.",
-            required = true
-        ) @RequestBody settings: Catalog
+            required = true,
+        ) @RequestBody settings: Catalog,
     ): ResponseEntity<Void>
 
     @DeleteMapping(value = ["/catalogs/{name}"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -74,8 +81,8 @@ interface CatalogApi {
     fun deleteCatalog(
         @Parameter(
             description = "The name of the catalog to delete.",
-            required = true
-        ) @PathVariable("name") name: String
+            required = true,
+        ) @PathVariable("name") name: String,
     ): ResponseEntity<Void>
 
     @GetMapping(value = ["/catalogStatistic/{identifier}"], produces = [MediaType.APPLICATION_JSON_VALUE])

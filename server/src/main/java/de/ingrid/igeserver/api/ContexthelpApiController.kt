@@ -30,10 +30,8 @@ import org.springframework.web.bind.annotation.RestController
 class ContexthelpApiController(val helpService: ContextHelpService) : ContexthelpApi {
 
     override fun getContextHelpText(id: String, profile: String, docType: String): ResponseEntity<HelpMessage> {
-
         val help = helpService.getHelp(profile, docType, id)
         return ResponseEntity.ok(help)
-
     }
 
     override fun listContextHelpIds(profile: String, docType: String): ResponseEntity<List<String>> {

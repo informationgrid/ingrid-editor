@@ -19,14 +19,22 @@
  */
 package de.ingrid.igeserver.services
 
-import com.jillesvangurp.ktsearch.*
+import com.jillesvangurp.ktsearch.BulkItemCallBack
+import com.jillesvangurp.ktsearch.BulkResponse
+import com.jillesvangurp.ktsearch.KtorRestClient
+import com.jillesvangurp.ktsearch.Node
+import com.jillesvangurp.ktsearch.OperationType
+import com.jillesvangurp.ktsearch.SearchClient
+import com.jillesvangurp.ktsearch.bulkSession
+import com.jillesvangurp.ktsearch.clusterHealth
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.index.ElasticClient
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
-import io.ktor.client.*
-import io.ktor.client.engine.java.*
-import io.ktor.client.plugins.auth.*
-import io.ktor.client.plugins.auth.providers.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.java.Java
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
+import io.ktor.client.plugins.auth.providers.basic
 import kotlinx.coroutines.runBlocking
 import org.apache.http.ssl.SSLContexts
 import org.apache.logging.log4j.kotlin.logger
@@ -62,7 +70,7 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
                     val client = createElasticClient(it)
                     ElasticClient(
                         client,
-                        client.bulkSession(timeout = 30.seconds, callBack = itemCallBack, closeOnRequestError = false)
+                        client.bulkSession(timeout = 30.seconds, callBack = itemCallBack, closeOnRequestError = false),
                     )
                 }
             clientConfigMap =
@@ -73,7 +81,6 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
     }
 
     private fun createElasticClient(config: ElasticConfig): SearchClient {
-
         val sslContext: SSLContext? = getSslContext(config.https)
 
         return SearchClient(
@@ -99,13 +106,13 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
                 user = config.username,
                 password = config.password,
                 nodes = config.hosts.map
-                {
-                    val (name, port) = it.split(":")
-                    Node(name, port.toInt())
-                }.toTypedArray()
-            )
+                    {
+                        val (name, port) = it.split(":")
+                        Node(name, port.toInt())
+                    }.toTypedArray(),
+            ),
         )
-}
+    }
 
     private fun getSslContext(https: Boolean?): SSLContext? {
         if (https != true) return null
@@ -125,29 +132,26 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
     }
 
     private val itemCallBack =
-    object : BulkItemCallBack {
-        override fun itemFailed(operationType: OperationType, item: BulkResponse.ItemDetails) {
-            val msg =
-                "Bulk Item Request Failed: ${operationType.name} failed for ${item.id} in ${item.index} with status ${item.status}: ${item.error.toString()}"
-            log.error(msg)
-            throw ServerException.withReason(msg)
+        object : BulkItemCallBack {
+            override fun itemFailed(operationType: OperationType, item: BulkResponse.ItemDetails) {
+                val msg =
+                    "Bulk Item Request Failed: ${operationType.name} failed for ${item.id} in ${item.index} with status ${item.status}: ${item.error}"
+                log.error(msg)
+                throw ServerException.withReason(msg)
+            }
+
+            override fun itemOk(operationType: OperationType, item: BulkResponse.ItemDetails) {}
+
+            override fun bulkRequestFailed(e: Exception, ops: List<Pair<String, String?>>) {
+                log.error("Bulk Request Failed: ${e.message}")
+                // throw exception again to prevent closing session and handle exception in our code
+                throw e
+            }
         }
 
-        override fun itemOk(operationType: OperationType, item: BulkResponse.ItemDetails) {}
+    fun getClient(index: String): ElasticClient = clients[clientConfigMap[index]!!]
 
-        override fun bulkRequestFailed(e: Exception, ops: List<Pair<String, String?>>) {
-            log.error("Bulk Request Failed: ${e.message}")
-            // throw exception again to prevent closing session and handle exception in our code
-            throw e
-        }
-    }
-
-fun getClient(index: String): ElasticClient {
-    return clients[clientConfigMap[index]!!]
-}
-
-override fun isConnected(id: String): Boolean {
-    return runBlocking {
+    override fun isConnected(id: String): Boolean = runBlocking {
         try {
             clients[clientConfigMap[id]!!].client.clusterHealth()
             true
@@ -156,7 +160,6 @@ override fun isConnected(id: String): Boolean {
             false
         }
     }
-}
 
-override fun containsId(id: String): Boolean = clientConfigMap[id] != null
+    override fun containsId(id: String): Boolean = clientConfigMap[id] != null
 }

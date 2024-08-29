@@ -111,10 +111,9 @@ class LfuBayernProfile(
             null -> {
                 codelistHandler.removeAndAddCodelists(
                     catalogId,
-                    listOf(codelist20000, codelist20001, codelist20002)
+                    listOf(codelist20000, codelist20001, codelist20002),
                 )
             }
         }
     }
-
 }

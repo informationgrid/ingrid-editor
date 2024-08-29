@@ -90,40 +90,40 @@ class SpecialisedTask : ShouldSpec() {
                 1638,
                 "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
                 "/export/ingrid/address.organisation.sample.json",
-                type = "InGridOrganisationDoc"
+                type = "InGridOrganisationDoc",
             ),
             MockDocument(
                 1634,
                 "14a37ded-4ca5-4677-bfed-3607bed3071d",
                 "/export/ingrid/address.person.sample.json",
-                1638
+                1638,
             ),
             MockDocument(
                 1652,
                 "fc521f66-0f47-45fb-ae42-b14fc669942e",
                 "/export/ingrid/address.person2.sample.json",
-                1638
+                1638,
             ),
             MockDocument(
                 12331,
                 "107d5e76-2df1-4c0e-8af6-c57ad13bfe9a",
-                "/export/ingrid/address.organisation-12331.sample.json"
+                "/export/ingrid/address.organisation-12331.sample.json",
             ),
             MockDocument(
                 5,
                 "9931a418-a159-4d6e-9b94-f041e3957b24",
-                "/export/ingrid/address.organisation-5.sample.json"
-            )
+                "/export/ingrid/address.organisation-5.sample.json",
+            ),
         )
 
         val datasets = listOf(
             MockDocument(
                 uuid = "a910fde0-3910-413e-9c14-4fa86f3d12c2",
-                template = "/export/ingrid/geo-dataset.maximal.sample.json"
+                template = "/export/ingrid/geo-dataset.maximal.sample.json",
             ),
             MockDocument(uuid = "93CD0919-5A2F-4286-B731-645C34614AA1"),
 //            MockDocument(5, "generalMockedDoc"),
-            MockDocument(1700, "Übergeordneter Identifikator")
+            MockDocument(1700, "Übergeordneter Identifikator"),
         )
 
         initDocumentMocks(addresses + datasets, documentService)
@@ -161,5 +161,4 @@ class SpecialisedTask : ShouldSpec() {
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document2.idf.xml")
         }
     }
-
 }

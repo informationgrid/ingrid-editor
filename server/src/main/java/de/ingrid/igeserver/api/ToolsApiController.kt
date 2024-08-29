@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping(path = ["/api/tools"])
-class ToolsApiController: ToolsApi {
+class ToolsApiController : ToolsApi {
 
     override fun validWkt(wkt: String): ResponseEntity<WktValidateResponse> {
         return try {
@@ -36,5 +36,4 @@ class ToolsApiController: ToolsApi {
             ResponseEntity.ok(WktValidateResponse(false, ex.message))
         }
     }
-
 }

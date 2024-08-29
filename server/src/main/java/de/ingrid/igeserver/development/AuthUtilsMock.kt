@@ -59,5 +59,4 @@ class AuthUtilsMock : AuthUtils {
     override fun getCurrentUserRoles(catalogId: String): Set<Group> {
         return emptySet()
     }
-
 }

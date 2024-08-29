@@ -25,7 +25,6 @@ import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.utils.AuthUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -36,12 +35,12 @@ import java.security.Principal
 class StatisticApiController(
     val researchService: ResearchService,
     val authUtils: AuthUtils,
-    val catalogService: CatalogService
+    val catalogService: CatalogService,
 ) : StatisticApi {
 
     override fun getStatistic(principal: Principal): ResponseEntity<StatisticResponse> {
-        val documentFilter = BoolFilter("AND", listOf("selectDocuments","exceptFolders"), null, null, true)
-        val emptyQuery =  ResearchQuery(null, documentFilter)
+        val documentFilter = BoolFilter("AND", listOf("selectDocuments", "exceptFolders"), null, null, true)
+        val emptyQuery = ResearchQuery(null, documentFilter)
         val result = getStatisticForQuery(principal, emptyQuery)
         return ResponseEntity.ok(result)
 
@@ -89,12 +88,11 @@ class StatisticApiController(
 
     private fun getStatisticForQuery(
         principal: Principal,
-        query: ResearchQuery
+        query: ResearchQuery,
     ): StatisticResponse {
         val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val queryResult = researchService.query(dbId, query, principal)
-
 
         val allData = queryResult.totalHits.toLong()
         var allDataDrafts: Long = 0
@@ -103,12 +101,13 @@ class StatisticApiController(
         queryResult.hits.forEach { hit ->
             if (hit._type != null) {
                 statsPerType.putIfAbsent(
-                    hit._type, StatisticResponse(
+                    hit._type,
+                    StatisticResponse(
                         totalNum = 0,
                         numDrafts = 0,
                         numPublished = 0,
-                        statsPerType = null
-                    )
+                        statsPerType = null,
+                    ),
                 )
 
                 val statsType = statsPerType[hit._type]!!
@@ -127,8 +126,8 @@ class StatisticApiController(
             totalNum = allData,
             numDrafts = allDataDrafts,
             numPublished = allDataPublished,
-            statsPerType = statsPerType
-        );
+            statsPerType = statsPerType,
+        )
         return result
     }
 }
