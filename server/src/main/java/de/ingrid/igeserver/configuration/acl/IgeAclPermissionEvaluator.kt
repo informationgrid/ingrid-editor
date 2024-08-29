@@ -26,8 +26,20 @@ import org.apache.logging.log4j.kotlin.logger
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.core.log.LogMessage
 import org.springframework.security.acls.AclPermissionEvaluator
-import org.springframework.security.acls.domain.*
-import org.springframework.security.acls.model.*
+import org.springframework.security.acls.domain.BasePermission
+import org.springframework.security.acls.domain.GrantedAuthoritySid
+import org.springframework.security.acls.domain.ObjectIdentityRetrievalStrategyImpl
+import org.springframework.security.acls.domain.PermissionFactory
+import org.springframework.security.acls.domain.SidRetrievalStrategyImpl
+import org.springframework.security.acls.model.Acl
+import org.springframework.security.acls.model.AclService
+import org.springframework.security.acls.model.NotFoundException
+import org.springframework.security.acls.model.ObjectIdentity
+import org.springframework.security.acls.model.ObjectIdentityGenerator
+import org.springframework.security.acls.model.ObjectIdentityRetrievalStrategy
+import org.springframework.security.acls.model.Permission
+import org.springframework.security.acls.model.Sid
+import org.springframework.security.acls.model.SidRetrievalStrategy
 import org.springframework.security.core.Authentication
 import java.io.Serializable
 import java.util.*
@@ -153,7 +165,8 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
             // permission being a child of a node with WRITE_ONLY_SUBTREE permission
             try {
                 // check if WRITE_ONLY_SUBTREE Permission was used
-                if (acl != null && requiredPermission.contains(BasePermission.WRITE) &&
+                if (acl != null &&
+                    requiredPermission.contains(BasePermission.WRITE) &&
                     acl.parentAcl != null &&
                     acl.parentAcl.isGranted(listOf(CustomPermission.WRITE_ONLY_SUBTREE), sids, false)
                 ) {
@@ -183,11 +196,12 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
                 // in case parent has WRITE_ONLY_SUBTREE permission, children can still have write-permission
                 // so check parent ACL if it has the permission
                 try {
-                    acl.parentAcl != null && acl.parentAcl.isGranted(
-                        listOf(CustomPermission.WRITE_ONLY_SUBTREE),
-                        sids,
-                        false,
-                    )
+                    acl.parentAcl != null &&
+                        acl.parentAcl.isGranted(
+                            listOf(CustomPermission.WRITE_ONLY_SUBTREE),
+                            sids,
+                            false,
+                        )
                 } catch (nfe: NotFoundException) {
                     false
                 }
@@ -199,11 +213,12 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
             // So only when we don't have write permission and WRITE_ONLY_SUBTREE permission was found
             // then we can be sure to be on the top node with that permission.
             domainObject.hasOnlySubtreeWritePermission = try {
-                !domainObject.hasWritePermission && acl.isGranted(
-                    listOf(CustomPermission.WRITE_ONLY_SUBTREE),
-                    sids,
-                    false,
-                )
+                !domainObject.hasWritePermission &&
+                    acl.isGranted(
+                        listOf(CustomPermission.WRITE_ONLY_SUBTREE),
+                        sids,
+                        false,
+                    )
             } catch (nfe: NotFoundException) {
                 false
             }
@@ -230,11 +245,9 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
         throw IllegalArgumentException("Unsupported permission: $permission")
     }
 
-    private fun buildPermission(permString: String): Permission? {
-        return try {
-            this.permissionFactory.buildFromName(permString)
-        } catch (notfound: IllegalArgumentException) {
-            this.permissionFactory.buildFromName(permString.uppercase(Locale.ENGLISH))
-        }
+    private fun buildPermission(permString: String): Permission? = try {
+        this.permissionFactory.buildFromName(permString)
+    } catch (notfound: IllegalArgumentException) {
+        this.permissionFactory.buildFromName(permString.uppercase(Locale.ENGLISH))
     }
 }

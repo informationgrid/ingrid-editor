@@ -26,7 +26,14 @@ import org.geotools.gml3.v3_2.GMLConfiguration
 import org.geotools.xsd.Encoder
 import org.geotools.xsd.Parser
 import org.locationtech.jts.algorithm.Orientation
-import org.locationtech.jts.geom.*
+import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.geom.GeometryCollection
+import org.locationtech.jts.geom.LineString
+import org.locationtech.jts.geom.MultiLineString
+import org.locationtech.jts.geom.MultiPoint
+import org.locationtech.jts.geom.MultiPolygon
+import org.locationtech.jts.geom.Point
+import org.locationtech.jts.geom.Polygon
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -55,15 +62,13 @@ fun convertWktToGml32(wkt: String): String {
         )
 }
 
-fun convertGml32ToWkt(input: String?): String? {
-    return if (!input.isNullOrEmpty()) {
-        val config = GMLConfiguration()
-        val parser = Parser(config)
-        val wktObj = parser.parse(input.byteInputStream(StandardCharsets.UTF_8))
-        wktObj.toString()
-    } else {
-        null
-    }
+fun convertGml32ToWkt(input: String?): String? = if (!input.isNullOrEmpty()) {
+    val config = GMLConfiguration()
+    val parser = Parser(config)
+    val wktObj = parser.parse(input.byteInputStream(StandardCharsets.UTF_8))
+    wktObj.toString()
+} else {
+    null
 }
 
 fun convertWktToGeoJson(wkt: String): String {
@@ -92,15 +97,13 @@ private fun checkOrientation(geom: Geometry): Geometry {
     return tmpGeom
 }
 
-private fun determineType(geometry: Geometry): QName? {
-    return when (geometry) {
-        is Point -> GML.Point
-        is MultiPoint -> GML.MultiPoint
-        is LineString -> GML.LineString
-        is MultiLineString -> GML.MultiCurve
-        is Polygon -> GML.Polygon
-        is MultiPolygon -> GML.MultiSurface
-        is GeometryCollection -> GML.MultiGeometry
-        else -> throw IllegalArgumentException("Geometry type is currently not supported: " + geometry.geometryType)
-    }
+private fun determineType(geometry: Geometry): QName? = when (geometry) {
+    is Point -> GML.Point
+    is MultiPoint -> GML.MultiPoint
+    is LineString -> GML.LineString
+    is MultiLineString -> GML.MultiCurve
+    is Polygon -> GML.Polygon
+    is MultiPolygon -> GML.MultiSurface
+    is GeometryCollection -> GML.MultiGeometry
+    else -> throw IllegalArgumentException("Geometry type is currently not supported: " + geometry.geometryType)
 }

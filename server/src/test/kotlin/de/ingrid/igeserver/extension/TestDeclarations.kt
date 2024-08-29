@@ -20,7 +20,11 @@
 package de.ingrid.igeserver.extension
 
 import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.extension.pipe.*
+import de.ingrid.igeserver.extension.pipe.Context
+import de.ingrid.igeserver.extension.pipe.Filter
+import de.ingrid.igeserver.extension.pipe.Message
+import de.ingrid.igeserver.extension.pipe.Payload
+import de.ingrid.igeserver.extension.pipe.Pipe
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -70,7 +74,9 @@ open class TestValidatePersistFilter<T : TestPayloadPersist>(override val profil
 }
 
 // Specific validation on create
-open class TestValidateCreateFilter(profiles: Array<String>) : Filter<TestPayloadCreate>, TestValidatePersistFilter<TestPayloadCreate>(profiles) {
+open class TestValidateCreateFilter(profiles: Array<String>) :
+    TestValidatePersistFilter<TestPayloadCreate>(profiles),
+    Filter<TestPayloadCreate> {
 
     override fun invoke(payload: TestPayloadCreate, context: Context): TestPayloadCreate {
         super.invoke(payload, context)
@@ -84,7 +90,9 @@ open class TestValidateCreateFilter(profiles: Array<String>) : Filter<TestPayloa
 }
 
 // Specific validation on update
-open class TestValidateUpdateFilter(profiles: Array<String>) : Filter<TestPayloadUpdate>, TestValidatePersistFilter<TestPayloadUpdate>(profiles) {
+open class TestValidateUpdateFilter(profiles: Array<String>) :
+    TestValidatePersistFilter<TestPayloadUpdate>(profiles),
+    Filter<TestPayloadUpdate> {
 
     override fun invoke(payload: TestPayloadUpdate, context: Context): TestPayloadUpdate {
         super.invoke(payload, context)

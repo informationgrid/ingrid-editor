@@ -20,7 +20,16 @@
 package de.ingrid.igeserver.index
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.jillesvangurp.ktsearch.*
+import com.jillesvangurp.ktsearch.BulkSession
+import com.jillesvangurp.ktsearch.RestException
+import com.jillesvangurp.ktsearch.SearchClient
+import com.jillesvangurp.ktsearch.createIndex
+import com.jillesvangurp.ktsearch.deleteIndex
+import com.jillesvangurp.ktsearch.exists
+import com.jillesvangurp.ktsearch.getAliases
+import com.jillesvangurp.ktsearch.indexDocument
+import com.jillesvangurp.ktsearch.search
+import com.jillesvangurp.ktsearch.updateAliases
 import com.jillesvangurp.searchdsls.querydsl.sort
 import com.jillesvangurp.searchdsls.querydsl.term
 import de.ingrid.elasticsearch.IndexInfo
@@ -47,27 +56,23 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
     private val defaultMapping: String = ElasticIndexer::class.java.getResource("/ingrid-meta-mapping.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-mapping.json' for creating index 'ingrid_meta'")
     private val defaultSettings: String = ElasticIndexer::class.java.getResource("/ingrid-meta-settings.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-settings.json' for creating index 'ingrid_meta'")
 
-    override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? {
-        return runBlocking {
-            val aliases = try {
-                elastic.client.getAliases(indexAlias)
-            } catch (_: RestException) {
-                null
-            }
-            aliases?.keys?.find { partialName == null || it.contains(partialName) }
+    override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? = runBlocking {
+        val aliases = try {
+            elastic.client.getAliases(indexAlias)
+        } catch (_: RestException) {
+            null
         }
+        aliases?.keys?.find { partialName == null || it.contains(partialName) }
     }
 
-    override fun createIndex(name: String, type: String, esMapping: String, esSettings: String): Boolean {
-        return runBlocking {
-            val response = elastic.client.createIndex(
-                name,
-                """
+    override fun createIndex(name: String, type: String, esMapping: String, esSettings: String): Boolean = runBlocking {
+        val response = elastic.client.createIndex(
+            name,
+            """
                 { "mappings": $esMapping, "settings": $esSettings }
-                """.trimIndent(),
-            )
-            response.acknowledged
-        }
+            """.trimIndent(),
+        )
+        response.acknowledged
     }
 
     override fun switchAlias(aliasName: String, oldIndex: String?, newIndex: String) {
@@ -151,10 +156,8 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
         }
     }
 
-    override fun getIndices(filter: String): List<String> {
-        return runBlocking {
-            elastic.client.getAliases().keys.filter { it.startsWith(filter) }
-        }
+    override fun getIndices(filter: String): List<String> = runBlocking {
+        elastic.client.getAliases().keys.filter { it.startsWith(filter) }
     }
 
     override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
@@ -172,7 +175,5 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
         }
     }
 
-    override fun indexExists(indexName: String): Boolean {
-        return runBlocking { elastic.client.exists(indexName) }
-    }
+    override fun indexExists(indexName: String): Boolean = runBlocking { elastic.client.exists(indexName) }
 }

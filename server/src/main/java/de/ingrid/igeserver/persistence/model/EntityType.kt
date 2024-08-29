@@ -21,7 +21,18 @@ package de.ingrid.igeserver.persistence.model
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.FIELD_CONTENT_MODIFIED
+import de.ingrid.igeserver.services.FIELD_CREATED
+import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
+import de.ingrid.igeserver.services.FIELD_ID
+import de.ingrid.igeserver.services.FIELD_MODIFIED
+import de.ingrid.igeserver.services.FIELD_PARENT
+import de.ingrid.igeserver.services.FIELD_STATE
+import de.ingrid.igeserver.services.FIELD_TAGS
+import de.ingrid.igeserver.services.FIELD_UUID
+import de.ingrid.igeserver.services.InitiatorAction
 import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -75,9 +86,7 @@ abstract class EntityType {
     /**
      * Check if the entity type is used in the given profile
      */
-    open fun usedInProfile(profileId: String): Boolean {
-        return profiles != null && (profiles!!.isEmpty() || profileId in profiles!!)
-    }
+    open fun usedInProfile(profileId: String): Boolean = profiles != null && (profiles!!.isEmpty() || profileId in profiles!!)
 
     /**
      * Persistence hook called when an instance of this type is created
@@ -107,16 +116,12 @@ abstract class EntityType {
     /**
      * Get all referenced document UUIDs
      */
-    open fun getReferenceIds(doc: Document): List<String> {
-        return emptyList()
-    }
+    open fun getReferenceIds(doc: Document): List<String> = emptyList()
 
     /**
      * Get all document UUIDs which reference this document
      */
-    open fun getIncomingReferenceIds(doc: Document): List<String> {
-        return emptyList()
-    }
+    open fun getIncomingReferenceIds(doc: Document): List<String> = emptyList()
 
     /**
      * Replace document/address references with their latest version
@@ -126,9 +131,7 @@ abstract class EntityType {
     /**
      * Extract referenced uploads
      */
-    open fun getUploads(doc: Document): List<String> {
-        return emptyList()
-    }
+    open fun getUploads(doc: Document): List<String> = emptyList()
 
     private fun getDocumentForReferenceUuid(
         options: UpdateReferenceOptions,
@@ -158,12 +161,10 @@ abstract class EntityType {
         }
     }
 
-    protected fun getUploadsFromFileList(fileList: JsonNode?, field: String = "downloadURL"): List<String> {
-        return fileList
-            ?.filter { it.get(field)?.get("asLink")?.asBoolean()?.not() ?: true }
-            ?.map { it.get(field).get("uri").textValue() }
-            ?: emptyList()
-    }
+    protected fun getUploadsFromFileList(fileList: JsonNode?, field: String = "downloadURL"): List<String> = fileList
+        ?.filter { it.get(field)?.get("asLink")?.asBoolean()?.not() ?: true }
+        ?.map { it.get(field).get("uri").textValue() }
+        ?: emptyList()
 }
 
 data class UpdateReferenceOptions(

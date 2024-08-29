@@ -44,7 +44,8 @@ import java.io.StringReader
 import java.io.StringWriter
 import java.util.regex.Pattern
 import javax.xml.parsers.DocumentBuilderFactory
-import javax.xml.transform.*
+import javax.xml.transform.Transformer
+import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 

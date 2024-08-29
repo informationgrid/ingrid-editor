@@ -21,7 +21,15 @@ package de.ingrid.igeserver.imports.iso
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.DummyCatalog
-import de.ingrid.igeserver.imports.*
+import de.ingrid.igeserver.imports.changeUuidOfOrganisationTo
+import de.ingrid.igeserver.imports.expectedOrganisationAsPointOfContact
+import de.ingrid.igeserver.imports.expectedOrganisationWithPositionName
+import de.ingrid.igeserver.imports.expectedParentOrganisation
+import de.ingrid.igeserver.imports.expectedPersonPositionName
+import de.ingrid.igeserver.imports.expectedPersonSingle
+import de.ingrid.igeserver.imports.expectedPersonUnderOrganisation
+import de.ingrid.igeserver.imports.expectedPersonUnderOrganisation2
+import de.ingrid.igeserver.imports.minimalMetadata
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.repository.DocumentRepository

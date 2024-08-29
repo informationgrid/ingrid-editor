@@ -34,7 +34,11 @@ import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.Spatial
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.BehaviourService
+import de.ingrid.igeserver.services.CatalogProfile
+import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.IndexIdFieldConfig
+import de.ingrid.igeserver.services.Permissions
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -58,75 +62,71 @@ class UvpProfile(
     override val indexExportFormatID = "indexUvpIDF"
     override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
 
-    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state",
-                "Allgemein",
-                arrayOf(
-                    Published(),
-                    ExceptFolders(),
-                    TitleSearch(),
-                ),
-                viewComponent = ViewComponent.CHECKBOX,
-                combine = Operator.AND,
+    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Allgemein",
+            arrayOf(
+                Published(),
+                ExceptFolders(),
+                TitleSearch(),
             ),
-            FacetGroup(
-                "spatial",
-                "Raumbezug",
-                arrayOf(
-                    Spatial(),
-                ),
-                viewComponent = ViewComponent.SPATIAL,
+            viewComponent = ViewComponent.CHECKBOX,
+            combine = Operator.AND,
+        ),
+        FacetGroup(
+            "spatial",
+            "Raumbezug",
+            arrayOf(
+                Spatial(),
             ),
-            FacetGroup(
-                "timeRef",
-                "Zeitbezug",
-                arrayOf(
-                    TimeSpan(),
-                ),
-                viewComponent = ViewComponent.TIMESPAN,
+            viewComponent = ViewComponent.SPATIAL,
+        ),
+        FacetGroup(
+            "timeRef",
+            "Zeitbezug",
+            arrayOf(
+                TimeSpan(),
             ),
-            FacetGroup(
-                "docType",
-                "Verfahrenstyp",
-                arrayOf(
-                    ProcedureTypes(),
-                ),
-                viewComponent = ViewComponent.SELECT,
+            viewComponent = ViewComponent.TIMESPAN,
+        ),
+        FacetGroup(
+            "docType",
+            "Verfahrenstyp",
+            arrayOf(
+                ProcedureTypes(),
             ),
-            FacetGroup(
-                "eiaNumber",
-                "UVP Nummer",
-                arrayOf(
-                    EIANumber(),
-                ),
-                viewComponent = ViewComponent.SELECT,
+            viewComponent = ViewComponent.SELECT,
+        ),
+        FacetGroup(
+            "eiaNumber",
+            "UVP Nummer",
+            arrayOf(
+                EIANumber(),
             ),
-            FacetGroup(
-                "processStep",
-                "Verfahrensschritt",
-                arrayOf(
-                    ProcessStep(),
-                ),
-                viewComponent = ViewComponent.SELECT,
+            viewComponent = ViewComponent.SELECT,
+        ),
+        FacetGroup(
+            "processStep",
+            "Verfahrensschritt",
+            arrayOf(
+                ProcessStep(),
             ),
-        )
-    }
+            viewComponent = ViewComponent.SELECT,
+        ),
+    )
 
-    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state",
-                "Allgemein",
-                arrayOf(
-                    Published(),
-                    ExceptFolders(),
-                ),
-                viewComponent = ViewComponent.CHECKBOX,
+    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Allgemein",
+            arrayOf(
+                Published(),
+                ExceptFolders(),
             ),
-        )
-    }
+            viewComponent = ViewComponent.CHECKBOX,
+        ),
+    )
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
     }
@@ -144,13 +144,9 @@ class UvpProfile(
     override fun initIndices() {
     }
 
-    override fun getElasticsearchMapping(format: String): String {
-        return {}.javaClass.getResource("/uvp/default-mapping.json")?.readText() ?: ""
-    }
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/uvp/default-mapping.json")?.readText() ?: ""
 
-    override fun getElasticsearchSetting(format: String): String {
-        return {}.javaClass.getResource("/uvp/default-settings.json")?.readText() ?: ""
-    }
+    override fun getElasticsearchSetting(format: String): String = {}.javaClass.getResource("/uvp/default-settings.json")?.readText() ?: ""
 
     override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> {
         val isAdmin = authUtils.isAdmin(principal)

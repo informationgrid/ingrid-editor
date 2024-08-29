@@ -29,7 +29,11 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler
-import org.springframework.security.acls.domain.*
+import org.springframework.security.acls.domain.AclAuthorizationStrategy
+import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl
+import org.springframework.security.acls.domain.ConsoleAuditLogger
+import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy
+import org.springframework.security.acls.domain.SpringCacheBasedAclCache
 import org.springframework.security.acls.jdbc.BasicLookupStrategy
 import org.springframework.security.acls.jdbc.JdbcMutableAclService
 import org.springframework.security.acls.jdbc.LookupStrategy
@@ -45,23 +49,17 @@ import javax.sql.DataSource
 class ACLContext(val dataSource: DataSource, val cacheManager: CacheManager) {
 
     @Bean
-    fun aclCache(): SpringCacheBasedAclCache {
-        return SpringCacheBasedAclCache(
-            cacheManager.getCache("aclCache"),
-            permissionGrantingStrategy(),
-            aclAuthorizationStrategy(),
-        )
-    }
+    fun aclCache(): SpringCacheBasedAclCache = SpringCacheBasedAclCache(
+        cacheManager.getCache("aclCache"),
+        permissionGrantingStrategy(),
+        aclAuthorizationStrategy(),
+    )
 
     @Bean
-    fun permissionGrantingStrategy(): PermissionGrantingStrategy {
-        return DefaultPermissionGrantingStrategy(ConsoleAuditLogger())
-    }
+    fun permissionGrantingStrategy(): PermissionGrantingStrategy = DefaultPermissionGrantingStrategy(ConsoleAuditLogger())
 
     @Bean
-    fun aclAuthorizationStrategy(): AclAuthorizationStrategy {
-        return AclAuthorizationStrategyImpl(SimpleGrantedAuthority("ROLE_ACL_ACCESS"))
-    }
+    fun aclAuthorizationStrategy(): AclAuthorizationStrategy = AclAuthorizationStrategyImpl(SimpleGrantedAuthority("ROLE_ACL_ACCESS"))
 
     @Bean
     fun defaultMethodSecurityExpressionHandler(authUtils: AuthUtils): MethodSecurityExpressionHandler? {
@@ -73,9 +71,7 @@ class ACLContext(val dataSource: DataSource, val cacheManager: CacheManager) {
     }
 
     @Bean
-    fun igeAclPermissionEvaluator(authUtils: AuthUtils): IgeAclPermissionEvaluator {
-        return IgeAclPermissionEvaluator(aclService(), authUtils)
-    }
+    fun igeAclPermissionEvaluator(authUtils: AuthUtils): IgeAclPermissionEvaluator = IgeAclPermissionEvaluator(aclService(), authUtils)
 
     @Bean
     fun lookupStrategy(): LookupStrategy {

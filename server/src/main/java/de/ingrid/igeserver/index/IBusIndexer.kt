@@ -20,7 +20,10 @@
 package de.ingrid.igeserver.index
 
 import de.ingrid.elasticsearch.IndexInfo
-import de.ingrid.utils.*
+import de.ingrid.utils.ElasticDocument
+import de.ingrid.utils.IBus
+import de.ingrid.utils.IngridCall
+import de.ingrid.utils.IngridDocument
 import org.apache.logging.log4j.kotlin.logger
 
 class IBusIndexer(override val name: String, private val iBus: IBus) : IIndexManager {

@@ -29,7 +29,32 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.FindAllResults
-import de.ingrid.igeserver.persistence.filter.*
+import de.ingrid.igeserver.persistence.filter.PostCreatePayload
+import de.ingrid.igeserver.persistence.filter.PostCreatePipe
+import de.ingrid.igeserver.persistence.filter.PostDeletePayload
+import de.ingrid.igeserver.persistence.filter.PostDeletePipe
+import de.ingrid.igeserver.persistence.filter.PostPersistencePayload
+import de.ingrid.igeserver.persistence.filter.PostPersistencePipe
+import de.ingrid.igeserver.persistence.filter.PostPublishPayload
+import de.ingrid.igeserver.persistence.filter.PostPublishPipe
+import de.ingrid.igeserver.persistence.filter.PostRevertPayload
+import de.ingrid.igeserver.persistence.filter.PostRevertPipe
+import de.ingrid.igeserver.persistence.filter.PostUnpublishPayload
+import de.ingrid.igeserver.persistence.filter.PostUnpublishPipe
+import de.ingrid.igeserver.persistence.filter.PostUpdatePayload
+import de.ingrid.igeserver.persistence.filter.PostUpdatePipe
+import de.ingrid.igeserver.persistence.filter.PreCreatePayload
+import de.ingrid.igeserver.persistence.filter.PreCreatePipe
+import de.ingrid.igeserver.persistence.filter.PreDeletePayload
+import de.ingrid.igeserver.persistence.filter.PreDeletePipe
+import de.ingrid.igeserver.persistence.filter.PrePublishPayload
+import de.ingrid.igeserver.persistence.filter.PrePublishPipe
+import de.ingrid.igeserver.persistence.filter.PreRevertPayload
+import de.ingrid.igeserver.persistence.filter.PreRevertPipe
+import de.ingrid.igeserver.persistence.filter.PreUnpublishPayload
+import de.ingrid.igeserver.persistence.filter.PreUnpublishPipe
+import de.ingrid.igeserver.persistence.filter.PreUpdatePayload
+import de.ingrid.igeserver.persistence.filter.PreUpdatePipe
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
@@ -216,9 +241,7 @@ class DocumentService(
     }
 
     // TODO: consolidate function findChildrenDocs and findChildren
-    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentData> {
-        return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
-    }
+    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentData> = findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
 
     fun findChildren(
         catalogId: String,
@@ -287,17 +310,11 @@ class DocumentService(
         }
     }
 
-    fun getDocumentType(docType: String, profile: String): EntityType {
-        return documentTypes.find { it.className == docType && (it.profiles?.isEmpty() == true || it.profiles?.contains(profile) == true) } ?: throw ServerException.withReason("DocumentType '$docType' not known in this profile: $profile")
-    }
+    fun getDocumentType(docType: String, profile: String): EntityType = documentTypes.find { it.className == docType && (it.profiles?.isEmpty() == true || it.profiles?.contains(profile) == true) } ?: throw ServerException.withReason("DocumentType '$docType' not known in this profile: $profile")
 
-    fun isAddress(docType: String): Boolean {
-        return checkNotNull(documentTypes.find { it.className == docType }?.category) == DocumentCategory.ADDRESS.value
-    }
+    fun isAddress(docType: String): Boolean = checkNotNull(documentTypes.find { it.className == docType }?.category) == DocumentCategory.ADDRESS.value
 
-    fun getDocumentTypesOfProfile(profileId: String): List<EntityType> {
-        return checkNotNull(documentTypes.filter { it.usedInProfile(profileId) })
-    }
+    fun getDocumentTypesOfProfile(profileId: String): List<EntityType> = checkNotNull(documentTypes.filter { it.usedInProfile(profileId) })
 
     @Transactional
     fun createDocument(
@@ -767,9 +784,7 @@ class DocumentService(
         return finalDoc
     }
 
-    fun getPendingDocument(catalogId: String, uuid: String): Document {
-        return docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PENDING)
-    }
+    fun getPendingDocument(catalogId: String, uuid: String): Document = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PENDING)
 
     fun unpublishDocument(principal: Principal, catalogId: String, id: Int): DocumentData {
         // remove publish
@@ -842,17 +857,13 @@ class DocumentService(
     }
 
     @Deprecated("Is not secured")
-    fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
-        return if (includeFolders) {
-            docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
-        } else {
-            docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
-        }
+    fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> = if (includeFolders) {
+        docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
+    } else {
+        docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
     }
 
-    fun isAddress(wrapper: DocumentWrapper): Boolean {
-        return wrapper.category == DocumentCategory.ADDRESS.value
-    }
+    fun isAddress(wrapper: DocumentWrapper): Boolean = wrapper.category == DocumentCategory.ADDRESS.value
 
     /**
      * Every document type belongs to a category (data or address). However, a folder can belong to multiple categories

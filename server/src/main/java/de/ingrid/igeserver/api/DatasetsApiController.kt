@@ -31,7 +31,15 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentData
+import de.ingrid.igeserver.services.DocumentInfo
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.GroupService
+import de.ingrid.igeserver.services.IgeAclService
+import de.ingrid.igeserver.services.InitiatorAction
+import de.ingrid.igeserver.services.PermissionInfo
+import de.ingrid.igeserver.services.checkForRootPermissions
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.prepareDocumentWithMetadata
@@ -329,24 +337,22 @@ class DatasetsApiController(
         return ResponseEntity.ok(childDocs)
     }
 
-    private fun mapToDocumentInfo(data: DocumentData, isAddress: Boolean): DocumentInfo {
-        return DocumentInfo(
-            data.wrapper.id!!,
-            data.document.title ?: "???",
-            data.document.uuid,
-            data.document.state.getState(),
-            data.wrapper.countChildren > 0,
-            data.wrapper.parent?.id,
-            data.wrapper.type,
-            data.document.modified!!,
-            data.document.contentmodified!!,
-            data.wrapper.pending_date,
-            data.wrapper.tags.joinToString(","),
-            data.wrapper.hasWritePermission,
-            data.wrapper.hasOnlySubtreeWritePermission,
-            isAddress,
-        )
-    }
+    private fun mapToDocumentInfo(data: DocumentData, isAddress: Boolean): DocumentInfo = DocumentInfo(
+        data.wrapper.id!!,
+        data.document.title ?: "???",
+        data.document.uuid,
+        data.document.state.getState(),
+        data.wrapper.countChildren > 0,
+        data.wrapper.parent?.id,
+        data.wrapper.type,
+        data.document.modified!!,
+        data.document.contentmodified!!,
+        data.wrapper.pending_date,
+        data.wrapper.tags.joinToString(","),
+        data.wrapper.hasWritePermission,
+        data.wrapper.hasOnlySubtreeWritePermission,
+        isAddress,
+    )
 
     private fun getRootDocsFromGroup(
         userGroups: Set<Group>?,

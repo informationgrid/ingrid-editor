@@ -23,7 +23,12 @@ import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.*
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
 import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.tranformer.IngridModelTransformerLubw
@@ -75,52 +80,47 @@ class IngridLuceneExporterLubw(
     config: Config,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) :
-    IngridLuceneExporter(
-        codelistHandler,
-        config,
-        catalogService,
-        documentService,
-    ) {
+) : IngridLuceneExporter(
+    codelistHandler,
+    config,
+    catalogService,
+    documentService,
+) {
 
-    override fun getTemplateForDoctype(doc: Document, catalog: Catalog, options: ExportOptions): Pair<String, Map<String, Any>> {
-        return when (doc.type) {
-            "InGridSpecialisedTask",
-            "InGridGeoDataset",
-            "InGridPublication",
-            "InGridGeoService",
-            "InGridProject",
-            "InGridDataCollection",
-            "InGridInformationSystem",
-            -> Pair(
-                "export/ingrid-lubw/lucene/template-lucene-lubw.jte",
-                getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
-            )
+    override fun getTemplateForDoctype(doc: Document, catalog: Catalog, options: ExportOptions): Pair<String, Map<String, Any>> = when (doc.type) {
+        "InGridSpecialisedTask",
+        "InGridGeoDataset",
+        "InGridPublication",
+        "InGridGeoService",
+        "InGridProject",
+        "InGridDataCollection",
+        "InGridInformationSystem",
+        -> Pair(
+            "export/ingrid-lubw/lucene/template-lucene-lubw.jte",
+            getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
+        )
 
-            else -> super.getTemplateForDoctype(doc, catalog, options)
-        }
+        else -> super.getTemplateForDoctype(doc, catalog, options)
     }
 
-    override fun getTransformer(data: TransformerData): Any {
-        return when (data.type) {
-            IngridDocType.DOCUMENT -> {
-                IngridModelTransformerLubw(
-                    TransformerConfig(
-                        data.mapper.convertValue(data.doc, IngridModel::class.java),
-                        data.catalogIdentifier,
-                        data.codelistTransformer,
-                        config,
-                        catalogService,
-                        TransformerCache(),
-                        data.doc,
-                        documentService,
-                        data.tags,
-                    ),
-                )
-            }
-
-            else -> super.getTransformer(data)
+    override fun getTransformer(data: TransformerData): Any = when (data.type) {
+        IngridDocType.DOCUMENT -> {
+            IngridModelTransformerLubw(
+                TransformerConfig(
+                    data.mapper.convertValue(data.doc, IngridModel::class.java),
+                    data.catalogIdentifier,
+                    data.codelistTransformer,
+                    config,
+                    catalogService,
+                    TransformerCache(),
+                    data.doc,
+                    documentService,
+                    data.tags,
+                ),
+            )
         }
+
+        else -> super.getTransformer(data)
     }
 }
 

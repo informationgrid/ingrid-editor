@@ -31,7 +31,13 @@ import org.springframework.security.acls.domain.GrantedAuthoritySid
 import org.springframework.security.acls.domain.ObjectIdentityImpl
 import org.springframework.security.acls.domain.SidRetrievalStrategyImpl
 import org.springframework.security.acls.jdbc.JdbcMutableAclService
-import org.springframework.security.acls.model.*
+import org.springframework.security.acls.model.Acl
+import org.springframework.security.acls.model.AclService
+import org.springframework.security.acls.model.MutableAcl
+import org.springframework.security.acls.model.NotFoundException
+import org.springframework.security.acls.model.Permission
+import org.springframework.security.acls.model.Sid
+import org.springframework.security.acls.model.SidRetrievalStrategy
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
@@ -122,26 +128,24 @@ class IgeAclService(
         groups: Collection<Group>,
         permissionLevel: String = "",
         isAddress: Boolean? = null,
-    ): List<Int> {
-        return groups
-            .asSequence()
-            // get all dataset permissions for each group
-            .map { group ->
-                mutableListOf<JsonNode>().apply {
-                    if (isAddress != false) addAll(group.permissions?.addresses ?: emptyList())
-                    if (isAddress != true) addAll(group.permissions?.documents ?: emptyList())
-                }
+    ): List<Int> = groups
+        .asSequence()
+        // get all dataset permissions for each group
+        .map { group ->
+            mutableListOf<JsonNode>().apply {
+                if (isAddress != false) addAll(group.permissions?.addresses ?: emptyList())
+                if (isAddress != true) addAll(group.permissions?.documents ?: emptyList())
             }
-            // filter for permission level
-            .map { permissions ->
-                permissions.filter { permission ->
-                    permissionLevel.isEmpty() || permission.get("permission").asText() == permissionLevel
-                }
+        }
+        // filter for permission level
+        .map { permissions ->
+            permissions.filter { permission ->
+                permissionLevel.isEmpty() || permission.get("permission").asText() == permissionLevel
             }
-            // get the dataset ids and flatten the list
-            .map { permissions -> permissions.map { permission -> permission.get("id").asInt() } }
-            .flatten().toSet().toList()
-    }
+        }
+        // get the dataset ids and flatten the list
+        .map { permissions -> permissions.map { permission -> permission.get("id").asInt() } }
+        .flatten().toSet().toList()
 
     private fun isAllowed(acl: Acl, permission: Permission, sids: List<Sid>): Boolean {
         return try {

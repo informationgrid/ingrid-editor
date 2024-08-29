@@ -24,7 +24,11 @@ import de.ingrid.igeserver.services.SettingsService
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.servlet.view.RedirectView
 
 /**
@@ -34,9 +38,7 @@ import org.springframework.web.servlet.view.RedirectView
 class HomeController(val settingsService: SettingsService) {
 
     @GetMapping(value = ["/swagger"])
-    fun swagger(): RedirectView {
-        return RedirectView("swagger-ui/index.html")
-    }
+    fun swagger(): RedirectView = RedirectView("swagger-ui/index.html")
 
     @GetMapping(value = ["/barrierefreiheit"], produces = [MediaType.TEXT_HTML_VALUE])
     @ResponseBody
@@ -52,22 +54,14 @@ class HomeController(val settingsService: SettingsService) {
     }
 
     @GetMapping(value = ["/accessDenied"])
-    fun accessDenied(): ResponseEntity<String> {
-        throw ForbiddenException.withUser("")
-    }
+    fun accessDenied(): ResponseEntity<String> = throw ForbiddenException.withUser("")
 
     @PutMapping(value = ["/accessDenied"])
-    fun accessDeniedPut(): ResponseEntity<String> {
-        throw ForbiddenException.withUser("")
-    }
+    fun accessDeniedPut(): ResponseEntity<String> = throw ForbiddenException.withUser("")
 
     @PostMapping(value = ["/accessDenied"])
-    fun accessDeniedPost(): ResponseEntity<String> {
-        throw ForbiddenException.withUser("")
-    }
+    fun accessDeniedPost(): ResponseEntity<String> = throw ForbiddenException.withUser("")
 
     @DeleteMapping(value = ["/accessDenied"])
-    fun accessDeniedDelete(): ResponseEntity<String> {
-        throw ForbiddenException.withUser("")
-    }
+    fun accessDeniedDelete(): ResponseEntity<String> = throw ForbiddenException.withUser("")
 }

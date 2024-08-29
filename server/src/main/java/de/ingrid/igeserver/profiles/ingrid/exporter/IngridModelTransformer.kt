@@ -31,7 +31,16 @@ import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.*
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.CoupledResource
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileName
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.GraphicOverview
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.Operation
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid.hvdKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
@@ -137,16 +146,14 @@ open class IngridModelTransformer(
         return if (number != null && unit != null) getISORepresentation(unit, number) else null
     }
 
-    private fun getISORepresentation(unit: String, number: Int): String {
-        return when (unit) {
-            "Tage" -> "P${number}D"
-            "Jahre" -> "P${number}Y"
-            "Monate" -> "P${number}M"
-            "Stunden" -> "PT${number}H"
-            "Minuten" -> "PT${number}M"
-            "Sekunden" -> "PT${number}S"
-            else -> throw ServerException.withReason("Unknown unit: $unit")
-        }
+    private fun getISORepresentation(unit: String, number: Int): String = when (unit) {
+        "Tage" -> "P${number}D"
+        "Jahre" -> "P${number}Y"
+        "Monate" -> "P${number}M"
+        "Stunden" -> "PT${number}H"
+        "Minuten" -> "PT${number}M"
+        "Sekunden" -> "PT${number}S"
+        else -> throw ServerException.withReason("Unknown unit: $unit")
     }
 
     val maintenanceNote = data.maintenanceInformation?.description
@@ -235,29 +242,25 @@ open class IngridModelTransformer(
 
     fun padARS(ars: String): String = ars.padEnd(12, '0')
 
-    fun getSpatialReferenceComponents(type: COORD_TYPE): String {
-        return spatialReferences
-            .filter { it.value != null }
-            .map {
-                // null check is done above
-                when (type) {
-                    COORD_TYPE.Lat1 -> it.value!!.lat1
-                    COORD_TYPE.Lat2 -> it.value!!.lat2
-                    COORD_TYPE.Lon1 -> it.value!!.lon1
-                    COORD_TYPE.Lon2 -> it.value!!.lon2
-                }.toFloat()
-            }
-            .joinToString(",", "[", "]")
-    }
+    fun getSpatialReferenceComponents(type: COORD_TYPE): String = spatialReferences
+        .filter { it.value != null }
+        .map {
+            // null check is done above
+            when (type) {
+                COORD_TYPE.Lat1 -> it.value!!.lat1
+                COORD_TYPE.Lat2 -> it.value!!.lat2
+                COORD_TYPE.Lon1 -> it.value!!.lon1
+                COORD_TYPE.Lon2 -> it.value!!.lon2
+            }.toFloat()
+        }
+        .joinToString(",", "[", "]")
 
-    fun getSpatialReferenceLocationNames(): String {
-        return spatialReferences.filter {
-            it.value != null
-        }.map {
-            // must be escaped first, because we don't want to escape the whole array-string
-            JsonEscape.escapeJson(it.title)
-        }.joinToString("\",\"", "[\"", "\"]")
-    }
+    fun getSpatialReferenceLocationNames(): String = spatialReferences.filter {
+        it.value != null
+    }.map {
+        // must be escaped first, because we don't want to escape the whole array-string
+        JsonEscape.escapeJson(it.title)
+    }.joinToString("\",\"", "[\"", "\"]")
 
     fun getSpatialReferenceArs(): List<String> = spatialReferences.mapNotNull { it.ars }
 
@@ -336,12 +339,10 @@ open class IngridModelTransformer(
         name = "GEMET - INSPIRE themes, version 1.0",
     )
 
-    private fun mapToInspireLink(key: String?): String? {
-        return when (key) {
-            "304" -> "http://inspire.ec.europa.eu/theme/lu" // land use
-            "202" -> "http://inspire.ec.europa.eu/theme/lc" // land cover
-            else -> null
-        }
+    private fun mapToInspireLink(key: String?): String? = when (key) {
+        "304" -> "http://inspire.ec.europa.eu/theme/lu" // land use
+        "202" -> "http://inspire.ec.europa.eu/theme/lc" // land cover
+        else -> null
     }
 
     open fun getFreeKeywords(): Thesaurus {
@@ -513,17 +514,15 @@ open class IngridModelTransformer(
 
     val contentField: MutableList<String> = mutableListOf()
 
-    private fun mapDocumentType(type: String): String {
-        return when (type) {
-            "InGridSpecialisedTask" -> "0"
-            "InGridGeoDataset" -> "1"
-            "InGridPublication" -> "2"
-            "InGridGeoService" -> "3"
-            "InGridProject" -> "4"
-            "InGridDataCollection" -> "5"
-            "InGridInformationSystem" -> "6"
-            else -> throw ServerException.withReason("Could not map document type: ${model.type}")
-        }
+    private fun mapDocumentType(type: String): String = when (type) {
+        "InGridSpecialisedTask" -> "0"
+        "InGridGeoDataset" -> "1"
+        "InGridPublication" -> "2"
+        "InGridGeoService" -> "3"
+        "InGridProject" -> "4"
+        "InGridDataCollection" -> "5"
+        "InGridInformationSystem" -> "6"
+        else -> throw ServerException.withReason("Could not map document type: ${model.type}")
     }
 
     // geodataservice
@@ -598,26 +597,22 @@ open class IngridModelTransformer(
             ""
         }
 
-    fun getCapabilitiesUrlsFromService(): List<String> {
-        return if (model.type == "InGridGeoDataset") {
-            val doc = getLastPublishedDocument(model.uuid)
-            documentService.getIncomingReferences(doc, catalogIdentifier)
-                .map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
-                .filter {
-                    it.type == "InGridGeoService" && it.data.getString("service.type.key") == "2"
-                }
-                .mapNotNull {
-                    it.data.get("service").get("operations")
-                        .firstOrNull { isCapabilitiesEntry(it) }?.getString("methodCall")
-                }
-        } else {
-            emptyList()
-        }
+    fun getCapabilitiesUrlsFromService(): List<String> = if (model.type == "InGridGeoDataset") {
+        val doc = getLastPublishedDocument(model.uuid)
+        documentService.getIncomingReferences(doc, catalogIdentifier)
+            .map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
+            .filter {
+                it.type == "InGridGeoService" && it.data.getString("service.type.key") == "2"
+            }
+            .mapNotNull { ref ->
+                ref.data.get("service").get("operations")
+                    .firstOrNull { isCapabilitiesEntry(it) }?.getString("methodCall")
+            }
+    } else {
+        emptyList()
     }
 
-    fun getReferingServiceUuid(service: CrossReference): String {
-        return "${service.uuid}@@${service.objectName}@@${service.serviceUrl.orEmpty()}@@${this.citationURL}"
-    }
+    fun getReferingServiceUuid(service: CrossReference): String = "${service.uuid}@@${service.objectName}@@${service.serviceUrl.orEmpty()}@@${this.citationURL}"
 
     // TODO: move to specific doc types
     // information system or publication
@@ -700,20 +695,18 @@ open class IngridModelTransformer(
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime?): String =
         if (date == null) "" else formatter.format(Date.from(date.toInstant()))
 
-    private fun getPersonStringFromJson(address: AddressModel): String {
-        return listOfNotNull(
-            codelists.getValue(
-                "4300",
-                address.salutation,
-            ),
-            codelists.getValue(
-                "4305",
-                address.academicTitle,
-            ),
-            address.firstName,
-            address.lastName,
-        ).joinToString(" ")
-    }
+    private fun getPersonStringFromJson(address: AddressModel): String = listOfNotNull(
+        codelists.getValue(
+            "4300",
+            address.salutation,
+        ),
+        codelists.getValue(
+            "4305",
+            address.academicTitle,
+        ),
+        address.firstName,
+        address.lastName,
+    ).joinToString(" ")
 
     init {
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
@@ -805,18 +798,14 @@ open class IngridModelTransformer(
             .map { ServiceUrl(it.objectName, it.serviceUrl ?: throw ServerException.withReason("Service URL is NULL"), null) }
     }
 
-    private fun getGetCapabilitiesUrl(): List<ServiceUrl> {
-        return model.data.service.operations
-            ?.filter { isCapabilitiesEntry(it) }
-            ?.map { ServiceUrl("Dienst \"${model.title}\" (GetCapabilities)", it.methodCall ?: throw ServerException.withReason("Operation URL is NULL"), it.description) }
-            ?: emptyList()
-    }
+    private fun getGetCapabilitiesUrl(): List<ServiceUrl> = model.data.service.operations
+        ?.filter { isCapabilitiesEntry(it) }
+        ?.map { ServiceUrl("Dienst \"${model.title}\" (GetCapabilities)", it.methodCall ?: throw ServerException.withReason("Operation URL is NULL"), it.description) }
+        ?: emptyList()
 
-    private fun getExternalCoupledResources(): List<ServiceUrl> {
-        return model.data.service.coupledResources
-            ?.filter { it.isExternalRef }
-            ?.map { ServiceUrl(it.title ?: "", it.url ?: throw ServerException.withReason("External coupled resource URL is NULL"), null) } ?: emptyList()
-    }
+    private fun getExternalCoupledResources(): List<ServiceUrl> = model.data.service.coupledResources
+        ?.filter { it.isExternalRef }
+        ?.map { ServiceUrl(it.title ?: "", it.url ?: throw ServerException.withReason("External coupled resource URL is NULL"), null) } ?: emptyList()
 
     private fun getIncomingReferencesProxy(excludeSubordinate: Boolean = false): List<CrossReference> {
         if (incomingReferencesCache == null) {
@@ -978,34 +967,24 @@ open class IngridModelTransformer(
         return value
     }
 
-    fun hasDistributionInfo(): Boolean {
-        return digitalTransferOptions.isNotEmpty() ||
-            distributionFormats.isNotEmpty() ||
-            hasDistributorInfo() ||
-            !data.references.isNullOrEmpty() ||
-            isAtomDownload ||
-            // TODO Refactor after usage clarification #6322
-            // || serviceUrls.isNotEmpty()
-            // || getCoupledServiceUrls().isNotEmpty()
-            getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs().isNotEmpty()
-    }
+    fun hasDistributionInfo(): Boolean = digitalTransferOptions.isNotEmpty() ||
+        distributionFormats.isNotEmpty() ||
+        hasDistributorInfo() ||
+        !data.references.isNullOrEmpty() ||
+        isAtomDownload ||
+        // TODO Refactor after usage clarification #6322
+        // || serviceUrls.isNotEmpty()
+        // || getCoupledServiceUrls().isNotEmpty()
+        getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs().isNotEmpty()
 
-    fun hasDistributorInfo(): Boolean {
-        return data.orderInfo?.isNotEmpty() == true || data.fees?.isNotEmpty() == true
-    }
+    fun hasDistributorInfo(): Boolean = data.orderInfo?.isNotEmpty() == true || data.fees?.isNotEmpty() == true
 
-    fun hasCompleteVerticalExtent(): Boolean {
-        return data.spatial.verticalExtent?.let {
-            it.Datum != null && it.minimumValue != null && it.maximumValue != null && it.unitOfMeasure != null
-        } ?: false
-    }
+    fun hasCompleteVerticalExtent(): Boolean = data.spatial.verticalExtent?.let {
+        it.Datum != null && it.minimumValue != null && it.maximumValue != null && it.unitOfMeasure != null
+    } ?: false
 
-    private fun isCapabilitiesEntry(entry: JsonNode): Boolean {
-        return entry.getString("name.key") == "1" || entry.getString("name.value") == "GetCapabilities"
-    }
-    private fun isCapabilitiesEntry(op: Operation): Boolean {
-        return op.name?.key == "1" || op.name?.value == "GetCapabilities"
-    }
+    private fun isCapabilitiesEntry(entry: JsonNode): Boolean = entry.getString("name.key") == "1" || entry.getString("name.value") == "GetCapabilities"
+    private fun isCapabilitiesEntry(op: Operation): Boolean = op.name?.key == "1" || op.name?.value == "GetCapabilities"
 
     open val mapLinkUrl: String? = null
 }

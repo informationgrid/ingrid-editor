@@ -22,8 +22,15 @@ package de.ingrid.igeserver.services
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.JobCommand
 import org.apache.logging.log4j.kotlin.logger
-import org.quartz.*
+import org.quartz.CronScheduleBuilder
+import org.quartz.Job
+import org.quartz.JobBuilder
+import org.quartz.JobDataMap
+import org.quartz.JobDetail
+import org.quartz.JobKey
 import org.quartz.Trigger.DEFAULT_PRIORITY
+import org.quartz.TriggerBuilder
+import org.quartz.TriggerKey
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.stereotype.Service
 
@@ -53,9 +60,7 @@ class SchedulerService(factory: SchedulerFactoryBean) {
         scheduler.scheduleJob(trigger)
     }
 
-    fun getJobInfo(jobKey: JobKey): JobDetail {
-        return scheduler.getJobDetail(jobKey)
-    }
+    fun getJobInfo(jobKey: JobKey): JobDetail = scheduler.getJobDetail(jobKey)
 
     private fun createJob(jobClass: Class<out Job>, jobKey: JobKey) {
         val detail = JobBuilder.newJob().ofType(jobClass)
@@ -132,17 +137,15 @@ class SchedulerService(factory: SchedulerFactoryBean) {
         scheduler.scheduleJob(trigger)
     }
 
-    private fun getCronSchedule(cron: String): CronScheduleBuilder {
-        return try {
-            CronScheduleBuilder.cronSchedule(cron)
-        } catch (ex: Exception) {
-            // might be in wrong format where last part is * instead of ?
-            if (cron.last() == '*') {
-                val fixedCron = cron.substring(0..cron.length - 2) + "?"
-                CronScheduleBuilder.cronSchedule(fixedCron)
-            } else {
-                throw ServerException.withReason(ex.message ?: "Cron expression could not be parsed")
-            }
+    private fun getCronSchedule(cron: String): CronScheduleBuilder = try {
+        CronScheduleBuilder.cronSchedule(cron)
+    } catch (ex: Exception) {
+        // might be in wrong format where last part is * instead of ?
+        if (cron.last() == '*') {
+            val fixedCron = cron.substring(0..cron.length - 2) + "?"
+            CronScheduleBuilder.cronSchedule(fixedCron)
+        } else {
+            throw ServerException.withReason(ex.message ?: "Cron expression could not be parsed")
         }
     }
 }
