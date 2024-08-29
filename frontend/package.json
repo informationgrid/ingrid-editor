@@ -16,8 +16,7 @@
     "test-headless": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox",
     "lint": "ng lint",
     "wba": "webpack-bundle-analyzer dist/stats.json",
-    "sme": "source-map-explorer",
-    "prepare": "cd .. && husky install frontend/.husky"
+    "sme": "source-map-explorer"
   },
   "private": true,
   "dependencies": {
@@ -68,7 +67,6 @@
     "@types/leaflet": "^1.9.12",
     "@types/node": "^20.9.0",
     "akita-schematics": "^2.0.1",
-    "husky": "^9.1.1",
     "jasmine-core": "^5.2.0",
     "jasmine-reporters": "^2.5.2",
     "jasmine-spec-reporter": "~7.0.0",
