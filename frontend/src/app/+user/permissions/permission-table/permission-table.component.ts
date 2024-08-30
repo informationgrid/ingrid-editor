@@ -38,6 +38,7 @@ import { TranslocoModule } from "@ngneat/transloco";
 
 import { firstValueFrom } from "rxjs";
 import { map } from "rxjs/operators";
+import { BreadcrumbComponent } from "../../../+form/form-info/breadcrumb/breadcrumb.component";
 
 @Component({
   selector: "permission-table",
@@ -59,6 +60,7 @@ import { map } from "rxjs/operators";
     MatButtonModule,
     MatTooltipModule,
     TranslocoModule,
+    BreadcrumbComponent,
   ],
   standalone: true,
 })
