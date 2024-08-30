@@ -30,7 +30,11 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
 import de.ingrid.igeserver.repository.DocumentRepository
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.GroupService
+import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
@@ -75,19 +79,17 @@ class PostMigrationTask(
         }
     }
 
-    private fun getCatalogsForPostMigration(): List<String> {
-        return try {
-            entityManager
-                .createQuery(
-                    "SELECT version FROM VersionInfo version WHERE version.key = 'doPostMigrationFor'",
-                    VersionInfo::class.java,
-                )
-                .resultList
-                .map { it.value!! }
-        } catch (e: Exception) {
-            log.warn("Could not query version_info table")
-            emptyList()
-        }
+    private fun getCatalogsForPostMigration(): List<String> = try {
+        entityManager
+            .createQuery(
+                "SELECT version FROM VersionInfo version WHERE version.key = 'doPostMigrationFor'",
+                VersionInfo::class.java,
+            )
+            .resultList
+            .map { it.value!! }
+    } catch (e: Exception) {
+        log.warn("Could not query version_info table")
+        emptyList()
     }
 
     private fun doPostMigration(catalogIdentifier: String) {
@@ -377,7 +379,8 @@ class PostMigrationTask(
                 val initialDocs = group.permissions?.documents ?: emptyList()
                 val initialAdr = group.permissions?.addresses ?: emptyList()
 
-                if (initialDocs.any { it.get("id").asInt() == sourceDoc.id!! } || initialAdr.any {
+                if (initialDocs.any { it.get("id").asInt() == sourceDoc.id!! } ||
+                    initialAdr.any {
                         it.get("id").asInt() == sourceDoc.id!!
                     }
                 ) {
@@ -428,9 +431,7 @@ class PostMigrationTask(
         return permissions + listOf(newPerm)
     }
 
-    private fun removeIDinPermissions(sourceId: Int, permissions: List<JsonNode>): List<JsonNode> {
-        return permissions.filter { it.get("id").asInt() != sourceId }
-    }
+    private fun removeIDinPermissions(sourceId: Int, permissions: List<JsonNode>): List<JsonNode> = permissions.filter { it.get("id").asInt() != sourceId }
 
     private fun createAndGetPathByTitles(titles: List<String>, catalogIdentifier: String): MutableList<Int> {
         val auth = SecurityContextHolder.getContext().authentication

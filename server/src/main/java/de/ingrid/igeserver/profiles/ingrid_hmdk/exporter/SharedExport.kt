@@ -25,7 +25,15 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
-import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.*
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.DataCollectionModelTransformerHmdk
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.GeodatasetTransformerHmdk
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.GeodatasetTransformerHmdkMetaver
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.GeoserviceTransformerHmdk
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.GeoserviceTransformerHmdkMetaver
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.InformationSystemModelTransformerHmdk
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.IngridModelTransformerHmdk
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.ProjectModelTransformerHmdk
+import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.transformer.PublicationModelTransformerHmdk
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
@@ -93,22 +101,18 @@ private fun getMapLinkUuidsFromService(doc: Document) = doc.data.get("service")?
     ?.mapNotNull { it.getString("uuid") }
     ?: emptyList()
 
-fun getHmdkModelMetaverTransformerClass(docType: String): KClass<out Any>? {
-    return when (docType) {
-        "InGridGeoDataset" -> GeodatasetTransformerHmdkMetaver::class
-        "InGridGeoService" -> GeoserviceTransformerHmdkMetaver::class
-        else -> null
-    }
+fun getHmdkModelMetaverTransformerClass(docType: String): KClass<out Any>? = when (docType) {
+    "InGridGeoDataset" -> GeodatasetTransformerHmdkMetaver::class
+    "InGridGeoService" -> GeoserviceTransformerHmdkMetaver::class
+    else -> null
 }
-fun getHmdkModelTransformerClass(docType: String): KClass<out Any>? {
-    return when (docType) {
-        "InGridSpecialisedTask" -> IngridModelTransformerHmdk::class
-        "InGridGeoDataset" -> GeodatasetTransformerHmdk::class
-        "InGridGeoService" -> GeoserviceTransformerHmdk::class
-        "InGridPublication" -> PublicationModelTransformerHmdk::class
-        "InGridProject" -> ProjectModelTransformerHmdk::class
-        "InGridDataCollection" -> DataCollectionModelTransformerHmdk::class
-        "InGridInformationSystem" -> InformationSystemModelTransformerHmdk::class
-        else -> null
-    }
+fun getHmdkModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
+    "InGridSpecialisedTask" -> IngridModelTransformerHmdk::class
+    "InGridGeoDataset" -> GeodatasetTransformerHmdk::class
+    "InGridGeoService" -> GeoserviceTransformerHmdk::class
+    "InGridPublication" -> PublicationModelTransformerHmdk::class
+    "InGridProject" -> ProjectModelTransformerHmdk::class
+    "InGridDataCollection" -> DataCollectionModelTransformerHmdk::class
+    "InGridInformationSystem" -> InformationSystemModelTransformerHmdk::class
+    else -> null
 }

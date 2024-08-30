@@ -21,7 +21,7 @@ package de.ingrid.igeserver.repository
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.services.DOCUMENT_STATE
+import de.ingrid.igeserver.services.DocumentState
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -37,7 +37,7 @@ interface DocumentRepository : JpaRepository<Document, Int> {
     // caution! no deleted, latest checks. used for post-migration
     fun findAllByCatalog_Identifier(catalog_identifier: String): List<Document>
 
-    fun countByCatalog_IdentifierAndStateAndIsLatestIsTrue(catalog_identifier: String, state: DOCUMENT_STATE): Long
+    fun countByCatalog_IdentifierAndStateAndIsLatestIsTrue(catalog_identifier: String, state: DocumentState): Long
 
     /**
      * @deprecated
@@ -46,7 +46,7 @@ interface DocumentRepository : JpaRepository<Document, Int> {
     fun getByCatalog_IdentifierAndUuidAndState(
         catalog_identifier: String,
         uuid: String,
-        state: DOCUMENT_STATE,
+        state: DocumentState,
     ): Document
 
     @Modifying

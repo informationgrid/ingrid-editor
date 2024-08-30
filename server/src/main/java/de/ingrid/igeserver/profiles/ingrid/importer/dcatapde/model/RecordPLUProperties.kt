@@ -19,7 +19,11 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model
 
-import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.*
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.Agent
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.Contact
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.Distribution
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.PeriodOfTime
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.ProcessStep
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.enums.PlanStateEnum
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.enums.PlanTypeEnum
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.enums.ProcedureStateEnum

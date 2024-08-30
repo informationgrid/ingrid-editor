@@ -29,7 +29,32 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.FindAllResults
-import de.ingrid.igeserver.persistence.filter.*
+import de.ingrid.igeserver.persistence.filter.PostCreatePayload
+import de.ingrid.igeserver.persistence.filter.PostCreatePipe
+import de.ingrid.igeserver.persistence.filter.PostDeletePayload
+import de.ingrid.igeserver.persistence.filter.PostDeletePipe
+import de.ingrid.igeserver.persistence.filter.PostPersistencePayload
+import de.ingrid.igeserver.persistence.filter.PostPersistencePipe
+import de.ingrid.igeserver.persistence.filter.PostPublishPayload
+import de.ingrid.igeserver.persistence.filter.PostPublishPipe
+import de.ingrid.igeserver.persistence.filter.PostRevertPayload
+import de.ingrid.igeserver.persistence.filter.PostRevertPipe
+import de.ingrid.igeserver.persistence.filter.PostUnpublishPayload
+import de.ingrid.igeserver.persistence.filter.PostUnpublishPipe
+import de.ingrid.igeserver.persistence.filter.PostUpdatePayload
+import de.ingrid.igeserver.persistence.filter.PostUpdatePipe
+import de.ingrid.igeserver.persistence.filter.PreCreatePayload
+import de.ingrid.igeserver.persistence.filter.PreCreatePipe
+import de.ingrid.igeserver.persistence.filter.PreDeletePayload
+import de.ingrid.igeserver.persistence.filter.PreDeletePipe
+import de.ingrid.igeserver.persistence.filter.PrePublishPayload
+import de.ingrid.igeserver.persistence.filter.PrePublishPipe
+import de.ingrid.igeserver.persistence.filter.PreRevertPayload
+import de.ingrid.igeserver.persistence.filter.PreRevertPipe
+import de.ingrid.igeserver.persistence.filter.PreUnpublishPayload
+import de.ingrid.igeserver.persistence.filter.PreUnpublishPipe
+import de.ingrid.igeserver.persistence.filter.PreUpdatePayload
+import de.ingrid.igeserver.persistence.filter.PreUpdatePipe
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
@@ -216,9 +241,7 @@ class DocumentService(
     }
 
     // TODO: consolidate function findChildrenDocs and findChildren
-    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentData> {
-        return findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
-    }
+    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentData> = findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
 
     fun findChildren(
         catalogId: String,
@@ -287,17 +310,11 @@ class DocumentService(
         }
     }
 
-    fun getDocumentType(docType: String, profile: String): EntityType {
-        return documentTypes.find { it.className == docType && (it.profiles?.isEmpty() == true || it.profiles?.contains(profile) == true) } ?: throw ServerException.withReason("DocumentType '$docType' not known in this profile: $profile")
-    }
+    fun getDocumentType(docType: String, profile: String): EntityType = documentTypes.find { it.className == docType && (it.profiles?.isEmpty() == true || it.profiles?.contains(profile) == true) } ?: throw ServerException.withReason("DocumentType '$docType' not known in this profile: $profile")
 
-    fun isAddress(docType: String): Boolean {
-        return checkNotNull(documentTypes.find { it.className == docType }?.category) == DocumentCategory.ADDRESS.value
-    }
+    fun isAddress(docType: String): Boolean = checkNotNull(documentTypes.find { it.className == docType }?.category) == DocumentCategory.ADDRESS.value
 
-    fun getDocumentTypesOfProfile(profileId: String): List<EntityType> {
-        return checkNotNull(documentTypes.filter { it.usedInProfile(profileId) })
-    }
+    fun getDocumentTypesOfProfile(profileId: String): List<EntityType> = checkNotNull(documentTypes.filter { it.usedInProfile(profileId) })
 
     @Transactional
     fun createDocument(
@@ -340,7 +357,7 @@ class DocumentService(
         }
 
         if (publish) {
-            preUpdatePayload.document.state = DOCUMENT_STATE.PUBLISHED
+            preUpdatePayload.document.state = DocumentState.PUBLISHED
 
             val prePublishPayload = PrePublishPayload(docType, catalogId, preUpdatePayload.document, preUpdatePayload.wrapper)
             prePublishPipe.runFilters(prePublishPayload, filterContext)
@@ -387,7 +404,7 @@ class DocumentService(
 
                     val latestDoc = getDocumentFromCatalog(catalogId, wrapper.id!!)
                     latestDoc.document.apply {
-                        state = DOCUMENT_STATE.PUBLISHED
+                        state = DocumentState.PUBLISHED
                         contentmodified = OffsetDateTime.now()
                     }
                     val updatedPublishedDoc = docRepo.save(latestDoc.document)
@@ -467,9 +484,9 @@ class DocumentService(
     ): Boolean {
         var newVersionCreated = false
 
-        if (docData.document.state == DOCUMENT_STATE.PUBLISHED) {
+        if (docData.document.state == DocumentState.PUBLISHED) {
             docData.document.isLatest = false
-            if (!nextStateIsDraft && !delayedPublication) docData.document.state = DOCUMENT_STATE.ARCHIVED
+            if (!nextStateIsDraft && !delayedPublication) docData.document.state = DocumentState.ARCHIVED
             docRepo.save(docData.document)
 
             entityManager.detach(docData.document)
@@ -477,12 +494,12 @@ class DocumentService(
             prepareDocumentForCopy(docData.document)
 
             docData.document.state = if (nextStateIsDraft) {
-                DOCUMENT_STATE.DRAFT_AND_PUBLISHED
+                DocumentState.DRAFT_AND_PUBLISHED
             } else {
-                DOCUMENT_STATE.PUBLISHED
+                DocumentState.PUBLISHED
             }
             newVersionCreated = true
-        } else if (docData.document.state == DOCUMENT_STATE.DRAFT_AND_PUBLISHED && !nextStateIsDraft && !delayedPublication) {
+        } else if (docData.document.state == DocumentState.DRAFT_AND_PUBLISHED && !nextStateIsDraft && !delayedPublication) {
             moveLastPublishedDocumentToArchive(docData.document.catalog!!.identifier, docData.wrapper)
             newVersionCreated = true
         }
@@ -499,7 +516,7 @@ class DocumentService(
     private fun moveLastPublishedDocumentToArchive(catalogId: String, wrapper: DocumentWrapper) {
         try {
             val lastPublishedDoc = getLastPublishedDocument(catalogId, wrapper.uuid)
-            lastPublishedDoc.state = DOCUMENT_STATE.ARCHIVED
+            lastPublishedDoc.state = DocumentState.ARCHIVED
             lastPublishedDoc.wrapperId = wrapper.id
             docRepo.save(lastPublishedDoc)
         } catch (_: EmptyResultDataAccessException) {
@@ -536,7 +553,7 @@ class DocumentService(
 
         val newDatasetVersionCreated = handleUpdateOnPublishedOnlyDocument(docData, false, publishDate != null)
 
-        docData.document.state = if (publishDate == null) DOCUMENT_STATE.PUBLISHED else DOCUMENT_STATE.PENDING
+        docData.document.state = if (publishDate == null) DocumentState.PUBLISHED else DocumentState.PENDING
 
         if (newDatasetVersionCreated) {
             data.version = docData.document.version
@@ -700,7 +717,7 @@ class DocumentService(
         val docData = getDocumentFromCatalog(catalogId, id)
 
         // check if draft and published field are filled
-        assert(docData.document.state == DOCUMENT_STATE.DRAFT)
+        assert(docData.document.state == DocumentState.DRAFT)
 
         // run pre-revert pipe(s)
         val filterContext = DefaultContext.withCurrentProfile(catalogId, catalogService, principal)
@@ -757,7 +774,7 @@ class DocumentService(
         uuid: String,
         forExport: Boolean = false,
     ): Document {
-        val doc = docWrapperRepo.getDocumentByState(catalogId, uuid, DOCUMENT_STATE.PUBLISHED)
+        val doc = docWrapperRepo.getDocumentByState(catalogId, uuid, DocumentState.PUBLISHED)
         if (doc.isEmpty()) throw EmptyResultDataAccessException("Resource with $uuid not found", 1)
 
         val result = doc[0] as Array<*>
@@ -767,9 +784,7 @@ class DocumentService(
         return finalDoc
     }
 
-    fun getPendingDocument(catalogId: String, uuid: String): Document {
-        return docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DOCUMENT_STATE.PENDING)
-    }
+    fun getPendingDocument(catalogId: String, uuid: String): Document = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DocumentState.PENDING)
 
     fun unpublishDocument(principal: Principal, catalogId: String, id: Int): DocumentData {
         // remove publish
@@ -785,7 +800,7 @@ class DocumentService(
         preUnpublishPipe.runFilters(preUnpublishPayload, filterContext)
 
         // update state of published version
-        lastPublished.state = DOCUMENT_STATE.WITHDRAWN
+        lastPublished.state = DocumentState.WITHDRAWN
         lastPublished.isLatest = false
         docRepo.save(lastPublished)
 
@@ -794,11 +809,11 @@ class DocumentService(
             // copy published version to draft
             entityManager.detach(lastPublished)
             prepareDocumentForCopy(lastPublished)
-            lastPublished.state = DOCUMENT_STATE.DRAFT
+            lastPublished.state = DocumentState.DRAFT
             docRepo.save(lastPublished)
         } else {
             // set different state
-            currentDoc.document.state = DOCUMENT_STATE.DRAFT
+            currentDoc.document.state = DocumentState.DRAFT
             docRepo.save(currentDoc.document)
         }
 
@@ -826,7 +841,7 @@ class DocumentService(
 
         // if no draft version exists, move pending version to draft
         val updatedDoc = if (pendingDoc.isLatest) {
-            pendingDoc.state = if (wasPublishedBefore) DOCUMENT_STATE.DRAFT_AND_PUBLISHED else DOCUMENT_STATE.DRAFT
+            pendingDoc.state = if (wasPublishedBefore) DocumentState.DRAFT_AND_PUBLISHED else DocumentState.DRAFT
             pendingDoc.wrapperId = id
             docRepo.save(pendingDoc)
         } else {
@@ -842,17 +857,13 @@ class DocumentService(
     }
 
     @Deprecated("Is not secured")
-    fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> {
-        return if (includeFolders) {
-            docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
-        } else {
-            docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
-        }
+    fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> = if (includeFolders) {
+        docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
+    } else {
+        docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
     }
 
-    fun isAddress(wrapper: DocumentWrapper): Boolean {
-        return wrapper.category == DocumentCategory.ADDRESS.value
-    }
+    fun isAddress(wrapper: DocumentWrapper): Boolean = wrapper.category == DocumentCategory.ADDRESS.value
 
     /**
      * Every document type belongs to a category (data or address). However, a folder can belong to multiple categories
@@ -938,8 +949,8 @@ class DocumentService(
             if (newParentId == null) null else getDocumentFromCatalog(catalogId, newParentId)
 
         // check parent is published if moved dataset also has been published
-        if (parent != null && parent.wrapper.type != DocumentCategory.FOLDER.value && docData.document.state != DOCUMENT_STATE.DRAFT) {
-            if (parent.document.state == DOCUMENT_STATE.DRAFT) {
+        if (parent != null && parent.wrapper.type != DocumentCategory.FOLDER.value && docData.document.state != DocumentState.DRAFT) {
+            if (parent.document.state == DocumentState.DRAFT) {
                 throw ValidationException.withReason(
                     "Parent '${parent.document.uuid}' must be published, since moved dataset '${docData.document.uuid}' is also published",
                     errorCode = "PARENT_IS_NOT_PUBLISHED",

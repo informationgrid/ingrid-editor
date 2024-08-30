@@ -32,7 +32,11 @@ import de.ingrid.igeserver.repository.CodelistRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.research.quickfilter.Draft
 import de.ingrid.igeserver.research.quickfilter.ExceptFolders
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogProfile
+import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.IndexIdFieldConfig
+import de.ingrid.igeserver.services.Permissions
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -53,34 +57,30 @@ class BmiProfile(
     override val indexExportFormatID = "index"
     override val indexIdField = IndexIdFieldConfig("uuid", "uuid")
 
-    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state",
-                "Filter",
-                arrayOf(
-                    Draft(),
-                    ExceptFolders(),
-                ),
-                viewComponent = ViewComponent.CHECKBOX,
-                combine = Operator.AND,
+    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Filter",
+            arrayOf(
+                Draft(),
+                ExceptFolders(),
             ),
-        )
-    }
+            viewComponent = ViewComponent.CHECKBOX,
+            combine = Operator.AND,
+        ),
+    )
 
-    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state",
-                "Filter",
-                arrayOf(
-                    Draft(),
-                    ExceptFolders(),
-                ),
-                viewComponent = ViewComponent.CHECKBOX,
+    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Filter",
+            arrayOf(
+                Draft(),
+                ExceptFolders(),
             ),
-        )
-    }
+            viewComponent = ViewComponent.CHECKBOX,
+        ),
+    )
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
@@ -425,13 +425,9 @@ class BmiProfile(
     override fun initIndices() {
     }
 
-    override fun getElasticsearchMapping(format: String): String {
-        return {}.javaClass.getResource("/bmi/default-mapping.json")?.readText() ?: ""
-    }
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/bmi/default-mapping.json")?.readText() ?: ""
 
-    override fun getElasticsearchSetting(format: String): String {
-        return {}.javaClass.getResource("/bmi/default-settings.json")?.readText() ?: ""
-    }
+    override fun getElasticsearchSetting(format: String): String = {}.javaClass.getResource("/bmi/default-settings.json")?.readText() ?: ""
 
     private fun removeAndAddCodelist(catalogId: String, codelist: Codelist) {
         codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, codelist.identifier)
@@ -439,29 +435,25 @@ class BmiProfile(
         codelistRepo.save(codelist)
     }
 
-    private fun toCodelistEntry(id: String, german: String): JsonNode {
-        return jacksonObjectMapper().createObjectNode().apply {
-            put("id", id)
-            set<JsonNode>(
-                "localisations",
-                jacksonObjectMapper().createObjectNode().apply {
-                    put("de", german)
-                },
-            )
-        }
+    private fun toCodelistEntry(id: String, german: String): JsonNode = jacksonObjectMapper().createObjectNode().apply {
+        put("id", id)
+        set<JsonNode>(
+            "localisations",
+            jacksonObjectMapper().createObjectNode().apply {
+                put("de", german)
+            },
+        )
     }
 
-    private fun toISOCodelistEntry(id: String, german: String, iso: String): JsonNode {
-        return jacksonObjectMapper().createObjectNode().apply {
-            put("id", id)
-            set<JsonNode>(
-                "localisations",
-                jacksonObjectMapper().createObjectNode().apply {
-                    put("de", german)
-                    put("iso", iso)
-                },
-            )
-        }
+    private fun toISOCodelistEntry(id: String, german: String, iso: String): JsonNode = jacksonObjectMapper().createObjectNode().apply {
+        put("id", id)
+        set<JsonNode>(
+            "localisations",
+            jacksonObjectMapper().createObjectNode().apply {
+                put("de", german)
+                put("iso", iso)
+            },
+        )
     }
 
     override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> {

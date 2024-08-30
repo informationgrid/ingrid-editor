@@ -20,7 +20,12 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.model.*
+import de.ingrid.igeserver.model.BoolFilter
+import de.ingrid.igeserver.model.Facets
+import de.ingrid.igeserver.model.QuickFilter
+import de.ingrid.igeserver.model.ResearchPaging
+import de.ingrid.igeserver.model.ResearchQuery
+import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.utils.AuthUtils
 import jakarta.persistence.EntityManager
 import org.hibernate.jpa.AvailableHints
@@ -324,7 +329,7 @@ class ResearchService {
             }
     }
 
-    private fun determineDocumentState(state: String) = DOCUMENT_STATE.valueOf(state).getState()
+    private fun determineDocumentState(state: String) = DocumentState.valueOf(state).getState()
 
     fun querySql(
         principal: Principal,

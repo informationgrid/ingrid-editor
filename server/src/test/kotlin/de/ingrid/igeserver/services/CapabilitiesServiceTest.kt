@@ -20,7 +20,15 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.model.ResearchResponse
-import de.ingrid.igeserver.services.getCapabilities.*
+import de.ingrid.igeserver.services.getCapabilities.AddressBean
+import de.ingrid.igeserver.services.getCapabilities.ConformityBean
+import de.ingrid.igeserver.services.getCapabilities.GeoDataset
+import de.ingrid.igeserver.services.getCapabilities.GetCapabilitiesParserFactory
+import de.ingrid.igeserver.services.getCapabilities.KeyValue
+import de.ingrid.igeserver.services.getCapabilities.LocationBean
+import de.ingrid.igeserver.services.getCapabilities.OperationBean
+import de.ingrid.igeserver.services.getCapabilities.TimeReferenceBean
+import de.ingrid.igeserver.services.getCapabilities.UrlBean
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize

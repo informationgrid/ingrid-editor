@@ -24,7 +24,11 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.PersistenceException
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.GroupRepository
@@ -122,9 +126,7 @@ class CatalogService(
 
     fun getAvailableCatalogProfiles(): List<CatalogProfile> = catalogProfiles
 
-    fun getCatalogProfile(id: String): CatalogProfile {
-        return catalogProfiles.find { it.identifier == id } ?: throw NotFoundException.withMissingProfile(id)
-    }
+    fun getCatalogProfile(id: String): CatalogProfile = catalogProfiles.find { it.identifier == id } ?: throw NotFoundException.withMissingProfile(id)
 
     fun initializeCatalog(catalogId: String, type: String) {
         initializeCodelists(catalogId, type)
@@ -156,12 +158,10 @@ class CatalogService(
         return getCatalogById(catalog.identifier)
     }
 
-    private fun transformNameToIdentifier(name: String): String {
-        return name.lowercase()
-            .replace(" ".toRegex(), "_")
-            // slash not valid as it makes problems in URLs
-            .replace("/".toRegex(), "_")
-    }
+    private fun transformNameToIdentifier(name: String): String = name.lowercase()
+        .replace(" ".toRegex(), "_")
+        // slash not valid as it makes problems in URLs
+        .replace("/".toRegex(), "_")
 
     fun catalogWithNameExists(name: String) = catalogExists(transformNameToIdentifier(name))
 

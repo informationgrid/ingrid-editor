@@ -24,7 +24,9 @@ import de.ingrid.igeserver.TransferResponsibilityException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exceptions.MailException
 import de.ingrid.igeserver.mail.EmailServiceImpl
-import de.ingrid.igeserver.model.*
+import de.ingrid.igeserver.model.CatalogAdmin
+import de.ingrid.igeserver.model.User
+import de.ingrid.igeserver.model.Version
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfo
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
@@ -51,6 +53,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.util.*
+import de.ingrid.igeserver.model.UserInfo as ServerUserInfo
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -303,7 +306,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok().build()
     }
 
-    override fun currentUserInfo(principal: Principal): ResponseEntity<de.ingrid.igeserver.model.UserInfo> {
+    override fun currentUserInfo(principal: Principal): ResponseEntity<ServerUserInfo> {
         principal as Authentication
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
@@ -323,7 +326,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         } ?: emptySet()
         val assignedCatalogs = if (authUtils.isSuperAdmin(principal)) catalogService.getCatalogs() else dbUser?.catalogs?.toList() ?: emptyList()
 
-        val userInfo = UserInfo(
+        val userInfo = ServerUserInfo(
             id = dbUser?.id,
             login = user.login,
             name = user.firstName + ' ' + user.lastName,
@@ -384,13 +387,11 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return if (recentLogins.isEmpty()) null else recentLogins[0]
     }
 
-    private fun getVersion(): Version {
-        return Version(
-            buildInfo?.version,
-            if (buildInfo != null) Date.from(buildInfo?.time) else null,
-            gitInfo?.commitId,
-        )
-    }
+    private fun getVersion(): Version = Version(
+        buildInfo?.version,
+        if (buildInfo != null) Date.from(buildInfo?.time) else null,
+        gitInfo?.commitId,
+    )
 
     override fun setCatalogAdmin(
         principal: Principal,

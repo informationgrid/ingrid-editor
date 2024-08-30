@@ -20,7 +20,7 @@
 package de.ingrid.igeserver.repository
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.services.DOCUMENT_STATE
+import de.ingrid.igeserver.services.DocumentState
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Modifying
@@ -31,7 +31,9 @@ import org.springframework.security.access.prepost.PostFilter
 import org.springframework.security.access.prepost.PreAuthorize
 import java.util.*
 
-interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSpecificationExecutor<DocumentWrapper> {
+interface DocumentWrapperRepository :
+    JpaRepository<DocumentWrapper, Int>,
+    JpaSpecificationExecutor<DocumentWrapper> {
 
     @PostAuthorize("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(returnObject, 'READ')")
     override fun findById(id: Int): Optional<DocumentWrapper>
@@ -60,7 +62,7 @@ interface DocumentWrapperRepository : JpaRepository<DocumentWrapper, Int>, JpaSp
     // TODO: add permission check
     @Deprecated("Is not secured")
     @Query("SELECT d, dw.id as wrapperId FROM DocumentWrapper dw JOIN Document d ON dw.uuid = d.uuid WHERE dw.deleted = 0 AND d.catalog.identifier = ?1 AND dw.catalog.identifier = ?1 AND d.uuid = ?2 AND d.state = ?3")
-    fun getDocumentByState(catalogIdentifier: String, uuid: String, state: DOCUMENT_STATE): Array<Any>
+    fun getDocumentByState(catalogIdentifier: String, uuid: String, state: DocumentState): Array<Any>
 
     @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
     fun findAllByCatalog_IdentifierAndParent_IdAndCategory(

@@ -32,7 +32,11 @@ import de.ingrid.igeserver.research.quickfilter.Draft
 import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Spatial
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogProfile
+import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.IndexIdFieldConfig
+import de.ingrid.igeserver.services.Permissions
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -52,50 +56,46 @@ class MCloudProfile(
     override val indexExportFormatID = "portal"
     override val indexIdField = IndexIdFieldConfig("uuid", "uuid")
 
-    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state",
-                "Allgemein",
-                arrayOf(
-                    Draft(),
-                    ExceptFolders(),
-                ),
-                viewComponent = ViewComponent.CHECKBOX,
-                combine = Operator.AND,
+    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Allgemein",
+            arrayOf(
+                Draft(),
+                ExceptFolders(),
             ),
-            FacetGroup(
-                "spatial",
-                "Raumbezug",
-                arrayOf(
-                    Spatial(),
-                ),
-                viewComponent = ViewComponent.SPATIAL,
+            viewComponent = ViewComponent.CHECKBOX,
+            combine = Operator.AND,
+        ),
+        FacetGroup(
+            "spatial",
+            "Raumbezug",
+            arrayOf(
+                Spatial(),
             ),
-            FacetGroup(
-                "timeRef",
-                "Aktualität der Metadaten",
-                arrayOf(
-                    TimeSpan(),
-                ),
-                viewComponent = ViewComponent.TIMESPAN,
+            viewComponent = ViewComponent.SPATIAL,
+        ),
+        FacetGroup(
+            "timeRef",
+            "Aktualität der Metadaten",
+            arrayOf(
+                TimeSpan(),
             ),
-        )
-    }
+            viewComponent = ViewComponent.TIMESPAN,
+        ),
+    )
 
-    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state",
-                "Allgemein",
-                arrayOf(
-                    Draft(),
-                    ExceptFolders(),
-                ),
-                viewComponent = ViewComponent.CHECKBOX,
+    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Allgemein",
+            arrayOf(
+                Draft(),
+                ExceptFolders(),
             ),
-        )
-    }
+            viewComponent = ViewComponent.CHECKBOX,
+        ),
+    )
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
@@ -365,13 +365,9 @@ class MCloudProfile(
     override fun initIndices() {
     }
 
-    override fun getElasticsearchMapping(format: String): String {
-        return {}.javaClass.getResource("/mcloud/default-mapping.json")?.readText() ?: ""
-    }
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/mcloud/default-mapping.json")?.readText() ?: ""
 
-    override fun getElasticsearchSetting(format: String): String {
-        return {}.javaClass.getResource("/mcloud/default-settings.json")?.readText() ?: ""
-    }
+    override fun getElasticsearchSetting(format: String): String = {}.javaClass.getResource("/mcloud/default-settings.json")?.readText() ?: ""
 
     override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> {
         val isSuperAdmin = authUtils.containsRole(principal, "ige-super-admin")

@@ -24,10 +24,23 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
-import de.ingrid.igeserver.api.messaging.*
+import de.ingrid.igeserver.api.messaging.DatasetInfo
+import de.ingrid.igeserver.api.messaging.JobsNotifier
+import de.ingrid.igeserver.api.messaging.Message
+import de.ingrid.igeserver.api.messaging.MessageTarget
+import de.ingrid.igeserver.api.messaging.NotificationType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogProfile
+import de.ingrid.igeserver.services.DeleteOptions
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.DocumentState
+import de.ingrid.igeserver.services.FIELD_CREATED
+import de.ingrid.igeserver.services.FIELD_CREATED_BY
+import de.ingrid.igeserver.services.FIELD_ID
+import de.ingrid.igeserver.services.FIELD_MODIFIED
+import de.ingrid.igeserver.services.FIELD_MODIFIED_BY
+import de.ingrid.igeserver.services.FIELD_PARENT
 import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.getString
 import org.apache.http.entity.ContentType
@@ -148,37 +161,35 @@ class ImportService(
     private fun analyzeMultipleDocuments(
         result: ArrayNode,
         catalogId: String,
-    ): List<DocumentAnalysis> {
-        return result.flatMap { doc ->
-            // multiple versions
-            if (doc is ArrayNode) {
-                val published = if (!doc[0].isNull) {
-                    analyzeDoc(
-                        catalogId,
-                        doc[0],
-                        forcePublish = true,
-                        isLatest = false,
-                    )
-                } else {
-                    null
-                }
-
-                val draft = if (!doc[1].isNull) {
-                    analyzeDoc(
-                        catalogId,
-                        doc[1],
-                        forcePublish = false,
-                        isLatest = true,
-                        isDraftAndPublished = !doc[0].isNull,
-                    )
-                } else {
-                    null
-                }
-
-                listOfNotNull(published, draft)
+    ): List<DocumentAnalysis> = result.flatMap { doc ->
+        // multiple versions
+        if (doc is ArrayNode) {
+            val published = if (!doc[0].isNull) {
+                analyzeDoc(
+                    catalogId,
+                    doc[0],
+                    forcePublish = true,
+                    isLatest = false,
+                )
             } else {
-                listOf(analyzeDoc(catalogId, doc))
+                null
             }
+
+            val draft = if (!doc[1].isNull) {
+                analyzeDoc(
+                    catalogId,
+                    doc[1],
+                    forcePublish = false,
+                    isLatest = true,
+                    isDraftAndPublished = !doc[0].isNull,
+                )
+            } else {
+                null
+            }
+
+            listOfNotNull(published, draft)
+        } else {
+            listOf(analyzeDoc(catalogId, doc))
         }
     }
 
@@ -206,13 +217,11 @@ class ImportService(
         )
     }
 
-    private fun prepareDocuments(analysis: List<DocumentAnalysis>): List<DocumentAnalysis> {
-        return analysis
-            .map { removeReferencesWithNoType(it) }
-            .flatMap { it.references + it }
-            .distinctBy { Pair(it.document.uuid, it.forcePublish) }
-            .sortedWith(ReferenceComparator)
-    }
+    private fun prepareDocuments(analysis: List<DocumentAnalysis>): List<DocumentAnalysis> = analysis
+        .map { removeReferencesWithNoType(it) }
+        .flatMap { it.references + it }
+        .distinctBy { Pair(it.document.uuid, it.forcePublish) }
+        .sortedWith(ReferenceComparator)
 
     /**
      * References with no types are additional addresses generated from one address, e.g. parent organisation
@@ -238,13 +247,11 @@ class ImportService(
 
         companion object : Comparator<DocumentAnalysis> {
 
-            override fun compare(a: DocumentAnalysis, b: DocumentAnalysis): Int {
-                return when {
-                    // addresses should be listed first
-                    a.isAddress && !b.isAddress -> -1
-                    b.isAddress && !a.isAddress -> 1
-                    else -> 0
-                }
+            override fun compare(a: DocumentAnalysis, b: DocumentAnalysis): Int = when {
+                // addresses should be listed first
+                a.isAddress && !b.isAddress -> -1
+                b.isAddress && !a.isAddress -> 1
+                else -> 0
             }
         }
     }
@@ -281,8 +288,12 @@ class ImportService(
     ): DocumentAnalysis {
         val document = convertToDocument(doc, doc.getString("_type"), null, doc.getString("_uuid"))
         document.state = if (forcePublish) {
-            DOCUMENT_STATE.PUBLISHED
-        } else if (isDraftAndPublished) DOCUMENT_STATE.DRAFT_AND_PUBLISHED else DOCUMENT_STATE.DRAFT
+            DocumentState.PUBLISHED
+        } else if (isDraftAndPublished) {
+            DocumentState.DRAFT_AND_PUBLISHED
+        } else {
+            DocumentState.DRAFT
+        }
         document.isLatest = isLatest
         val documentWrapper = getDocumentWrapperOrNull(catalogId, document.uuid)
 
@@ -297,9 +308,7 @@ class ImportService(
         )
     }
 
-    fun getImporterInfos(): List<ImportTypeInfo> {
-        return factory.getImporterInfos()
-    }
+    fun getImporterInfos(): List<ImportTypeInfo> = factory.getImporterInfos()
 
     private fun extractZip(file: File, consumerFunction: BiConsumer<ZipEntry, ByteArrayOutputStream>) {
         val zipFile = ZipFile(file, Charsets.UTF_8)
@@ -324,16 +333,14 @@ class ImportService(
         }
     }
 
-    private fun getDocumentWrapperOrNull(catalogId: String, uuid: String?): DocumentWrapper? {
-        return try {
-            if (uuid == null) {
-                null
-            } else {
-                documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid, true)
-            }
-        } catch (ex: NotFoundException) {
+    private fun getDocumentWrapperOrNull(catalogId: String, uuid: String?): DocumentWrapper? = try {
+        if (uuid == null) {
             null
+        } else {
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogId, uuid, true)
         }
+    } catch (ex: NotFoundException) {
+        null
     }
 
     @Transactional

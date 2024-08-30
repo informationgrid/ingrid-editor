@@ -30,7 +30,11 @@ import de.ingrid.igeserver.features.ogc_api_records.services.ResponsePackage
 import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcApiResearchQueryFactory
 import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcFilterParameter
 import de.ingrid.igeserver.model.ResearchResponse
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.ApiValidationService
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ResearchService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.Explode
@@ -45,7 +49,16 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.time.Instant
 

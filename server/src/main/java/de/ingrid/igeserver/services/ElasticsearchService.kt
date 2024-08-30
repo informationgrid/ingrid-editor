@@ -19,14 +19,22 @@
  */
 package de.ingrid.igeserver.services
 
-import com.jillesvangurp.ktsearch.*
+import com.jillesvangurp.ktsearch.BulkItemCallBack
+import com.jillesvangurp.ktsearch.BulkResponse
+import com.jillesvangurp.ktsearch.KtorRestClient
+import com.jillesvangurp.ktsearch.Node
+import com.jillesvangurp.ktsearch.OperationType
+import com.jillesvangurp.ktsearch.SearchClient
+import com.jillesvangurp.ktsearch.bulkSession
+import com.jillesvangurp.ktsearch.clusterHealth
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.index.ElasticClient
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
-import io.ktor.client.*
-import io.ktor.client.engine.java.*
-import io.ktor.client.plugins.auth.*
-import io.ktor.client.plugins.auth.providers.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.java.Java
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
+import io.ktor.client.plugins.auth.providers.basic
 import kotlinx.coroutines.runBlocking
 import org.apache.http.ssl.SSLContexts
 import org.apache.logging.log4j.kotlin.logger
@@ -141,19 +149,15 @@ class ElasticsearchService(val settingsService: SettingsService) : IConnection {
             }
         }
 
-    fun getClient(index: String): ElasticClient {
-        return clients[clientConfigMap[index]!!]
-    }
+    fun getClient(index: String): ElasticClient = clients[clientConfigMap[index]!!]
 
-    override fun isConnected(id: String): Boolean {
-        return runBlocking {
-            try {
-                clients[clientConfigMap[id]!!].client.clusterHealth()
-                true
-            } catch (e: Exception) {
-                log.warn("No connection to at least one Elasticsearch-Node: ${e.message}")
-                false
-            }
+    override fun isConnected(id: String): Boolean = runBlocking {
+        try {
+            clients[clientConfigMap[id]!!].client.clusterHealth()
+            true
+        } catch (e: Exception) {
+            log.warn("No connection to at least one Elasticsearch-Node: ${e.message}")
+            false
         }
     }
 

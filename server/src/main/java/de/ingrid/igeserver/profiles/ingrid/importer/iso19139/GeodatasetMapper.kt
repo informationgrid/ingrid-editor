@@ -20,7 +20,16 @@
 package de.ingrid.igeserver.profiles.ingrid.importer.iso19139
 
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.exports.iso.*
+import de.ingrid.igeserver.exports.iso.AxisDimensionProperty
+import de.ingrid.igeserver.exports.iso.CellGeometry
+import de.ingrid.igeserver.exports.iso.DQReport
+import de.ingrid.igeserver.exports.iso.DQReportElement
+import de.ingrid.igeserver.exports.iso.FeatureAttribute
+import de.ingrid.igeserver.exports.iso.GeometricFeature
+import de.ingrid.igeserver.exports.iso.MDGeorectified
+import de.ingrid.igeserver.exports.iso.MDGeoreferenceable
+import de.ingrid.igeserver.exports.iso.MDGridSpatialRepresentation
+import de.ingrid.igeserver.exports.iso.MDVectorSpatialRepresentation
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
 import org.apache.logging.log4j.kotlin.logger

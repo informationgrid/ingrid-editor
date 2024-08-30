@@ -24,7 +24,14 @@ import de.ingrid.ibus.client.BusClientFactory
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
-import de.ingrid.utils.*
+import de.ingrid.utils.IBus
+import de.ingrid.utils.IPlug
+import de.ingrid.utils.IngridCall
+import de.ingrid.utils.IngridDocument
+import de.ingrid.utils.IngridHit
+import de.ingrid.utils.IngridHitDetail
+import de.ingrid.utils.IngridHits
+import de.ingrid.utils.PlugDescription
 import de.ingrid.utils.query.IngridQuery
 import net.weta.components.communication.configuration.ClientConfiguration
 import net.weta.components.communication.tcp.StartCommunication
@@ -34,7 +41,9 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
 @Service
-class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties) : IPlug, IConnection {
+class IBusService(val settingsService: SettingsService, val appProperties: GeneralProperties) :
+    IPlug,
+    IConnection {
 
     val log = logger()
 
@@ -57,16 +66,12 @@ class IBusService(val settingsService: SettingsService, val appProperties: Gener
         }
     }
 
-    fun getIBus(id: String): IBus {
-        return iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!) ?: throw ServerException.withReason("iBus with id '$id' not found. There are ${iBusClient?.cacheableIBusses?.size} iBusses registered.")
-    }
+    fun getIBus(id: String): IBus = iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!) ?: throw ServerException.withReason("iBus with id '$id' not found. There are ${iBusClient?.cacheableIBusses?.size} iBusses registered.")
 
-    override fun isConnected(id: String): Boolean {
-        return try {
-            iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!)?.metadata != null
-        } catch (e: Exception) {
-            false
-        }
+    override fun isConnected(id: String): Boolean = try {
+        iBusClient?.nonCacheableIBusses?.get(iBusConfigMap[id]!!)?.metadata != null
+    } catch (e: Exception) {
+        false
     }
 
     override fun containsId(id: String): Boolean = iBusConfigMap[id] != null

@@ -24,7 +24,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.api.*
+import de.ingrid.igeserver.api.ImportOptions
+import de.ingrid.igeserver.api.InvalidParameterException
+import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.exports.internal.InternalExporter
@@ -38,9 +40,14 @@ import de.ingrid.igeserver.features.ogc_api_records.model.Link
 import de.ingrid.igeserver.features.ogc_api_records.model.RecordCollection
 import de.ingrid.igeserver.features.ogc_api_records.model.RecordsResponse
 import de.ingrid.igeserver.imports.ImportService
-import de.ingrid.igeserver.model.*
+import de.ingrid.igeserver.model.ExportRequestParameter
+import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogProfile
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ExportResult
+import de.ingrid.igeserver.services.ExportService
 import org.keycloak.util.JsonSerialization
 import org.springframework.http.HttpHeaders
 import org.springframework.security.core.Authentication
@@ -387,14 +394,12 @@ class OgcRecordService(
         return list
     }
 
-    private fun createLink(url: String, rel: String, type: String, title: String): Link {
-        return Link(
-            href = url,
-            rel = rel,
-            type = type,
-            title = title,
-        )
-    }
+    private fun createLink(url: String, rel: String, type: String, title: String): Link = Link(
+        href = url,
+        rel = rel,
+        type = type,
+        title = title,
+    )
     fun prepareCatalog(collectionId: String, exporter: OgcCatalogExporter, format: CollectionFormat): ByteArray {
         val catalog = exportCatalog(collectionId, exporter)
         val catalogAsList = listOf(catalog)
@@ -421,28 +426,26 @@ class OgcRecordService(
         }
     }
 
-    private fun editCatalogs(mimeType: String, catalogList: List<Any>, format: CollectionFormat): Any {
-        return if (mimeType == "text/xml") {
-            var response = ""
-            for (catalog in catalogList) response += catalog.toString().substringAfter("?>")
-            response
-        } else if (mimeType == "application/json") {
-            val response: MutableList<JsonNode> = mutableListOf()
-            val list: List<RecordCollection> = catalogList as List<RecordCollection>
-            for (catalog in list) {
-                val wrapperlessCatalog = convertObject2Json(catalog)
+    private fun editCatalogs(mimeType: String, catalogList: List<Any>, format: CollectionFormat): Any = if (mimeType == "text/xml") {
+        var response = ""
+        for (catalog in catalogList) response += catalog.toString().substringAfter("?>")
+        response
+    } else if (mimeType == "application/json") {
+        val response: MutableList<JsonNode> = mutableListOf()
+        val list: List<RecordCollection> = catalogList as List<RecordCollection>
+        for (catalog in list) {
+            val wrapperlessCatalog = convertObject2Json(catalog)
 //                val wc = jacksonObjectMapper().readValue(catalog , JsonNode::class.java)
-                response.add(wrapperlessCatalog)
-            }
-            response
-//            catalogList
-        } else if (mimeType == "text/html") {
-            var response = ""
-            for (catalog in catalogList) response += catalog.toString()
-            response
-        } else {
-            catalogList
+            response.add(wrapperlessCatalog)
         }
+        response
+//            catalogList
+    } else if (mimeType == "text/html") {
+        var response = ""
+        for (catalog in catalogList) response += catalog.toString()
+        response
+    } else {
+        catalogList
     }
     private fun addWrapperToCatalog(catalog: Any, mimeType: String, format: CollectionFormat, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
         var wrappedResponse = ""
@@ -501,26 +504,24 @@ class OgcRecordService(
         return exportService.export(collectionId, options)
     }
 
-    private fun removeDefaultWrapper(mimeType: String, recordList: List<ExportResult>, format: RecordFormat): Any {
-        return if (mimeType == "text/xml") {
-            var response = ""
-            for (record in recordList) response += record.result?.toString(Charsets.UTF_8)?.substringAfter("?>")
-            response
-        } else if (mimeType == "application/json") {
-            val response: MutableList<JsonNode> = mutableListOf()
-            for (record in recordList) {
-                var wrapperlessRecord = jacksonObjectMapper().readValue(record.result, JsonNode::class.java)
-                if (format == RecordFormat.json) wrapperlessRecord = wrapperlessRecord.get("resources").get("published")
-                response.add(wrapperlessRecord)
-            }
-            response
-        } else if (mimeType == "text/html") {
-            var response = ""
-            for (record in recordList) response += record.result?.toString(Charsets.UTF_8)
-            response
-        } else {
-            recordList
+    private fun removeDefaultWrapper(mimeType: String, recordList: List<ExportResult>, format: RecordFormat): Any = if (mimeType == "text/xml") {
+        var response = ""
+        for (record in recordList) response += record.result?.toString(Charsets.UTF_8)?.substringAfter("?>")
+        response
+    } else if (mimeType == "application/json") {
+        val response: MutableList<JsonNode> = mutableListOf()
+        for (record in recordList) {
+            var wrapperlessRecord = jacksonObjectMapper().readValue(record.result, JsonNode::class.java)
+            if (format == RecordFormat.json) wrapperlessRecord = wrapperlessRecord.get("resources").get("published")
+            response.add(wrapperlessRecord)
         }
+        response
+    } else if (mimeType == "text/html") {
+        var response = ""
+        for (record in recordList) response += record.result?.toString(Charsets.UTF_8)
+        response
+    } else {
+        recordList
     }
     private fun addWrapperToRecords(responseRecords: Any, mimeType: String, format: RecordFormat, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
         var wrappedResponse = ""

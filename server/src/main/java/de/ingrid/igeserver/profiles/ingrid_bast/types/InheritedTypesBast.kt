@@ -19,7 +19,13 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_bast.types
 
-import de.ingrid.igeserver.profiles.ingrid.types.*
+import de.ingrid.igeserver.profiles.ingrid.types.InGridDataCollectionType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoDatasetType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoServiceType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridInformationSystemType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridProjectType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridPublicationType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridSpecialisedTaskType
 import de.ingrid.igeserver.profiles.ingrid.types.address.InGridOrganisationType
 import de.ingrid.igeserver.profiles.ingrid.types.address.InGridPersonType
 import de.ingrid.igeserver.profiles.ingrid_bast.BastProfile
@@ -35,6 +41,7 @@ class InGridGeoDatasetTypeBast(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetTyp
 @Component
 class InGridDataCollectionTypeBast(jdbcTemplate: JdbcTemplate) : InGridDataCollectionType(jdbcTemplate) {
     override val profiles = arrayOf(BastProfile.id)
+    override val jsonSchema = "/ingrid/schemes/bast/data-collection_bast.schema.json"
 }
 
 @Component

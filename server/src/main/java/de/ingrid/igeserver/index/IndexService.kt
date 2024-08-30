@@ -28,7 +28,11 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.repository.CatalogRepository
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ExportService
+import de.ingrid.igeserver.services.FIELD_PARENT
+import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.tasks.IndexConfig
 import de.ingrid.igeserver.tasks.IndexingTask
 import jakarta.persistence.EntityManager

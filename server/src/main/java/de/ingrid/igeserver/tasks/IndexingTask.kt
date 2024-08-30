@@ -38,7 +38,11 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import de.ingrid.igeserver.repository.CatalogRepository
-import de.ingrid.igeserver.services.*
+import de.ingrid.igeserver.services.CatalogProfile
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.ConnectionService
+import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.SettingsService
 import de.ingrid.igeserver.tasks.quartz.IgeJob
 import de.ingrid.igeserver.utils.setAdminAuthentication
 import org.apache.logging.log4j.kotlin.logger
@@ -255,12 +259,10 @@ class IndexingTask(
         return iBusDefinitions + elasticDefinitions
     }
 
-    private fun getExporterOrNull(category: DocumentCategory, exporterId: String): IgeExporter? {
-        return try {
-            indexService.getExporter(category, exporterId)
-        } catch (e: ConfigurationException) {
-            null
-        }
+    private fun getExporterOrNull(category: DocumentCategory, exporterId: String): IgeExporter? = try {
+        indexService.getExporter(category, exporterId)
+    } catch (e: ConfigurationException) {
+        null
     }
 
     private fun getElasticsearchAliasFromCatalog(catalog: Catalog, category: DocumentCategory, exportTarget: String) =

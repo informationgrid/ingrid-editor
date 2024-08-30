@@ -26,10 +26,23 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateSerializer
-import de.ingrid.igeserver.services.DOCUMENT_STATE
 import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.utils.SpringContext
-import jakarta.persistence.*
+import jakarta.persistence.AttributeConverter
+import jakarta.persistence.Column
+import jakarta.persistence.Convert
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.PrePersist
+import jakarta.persistence.Table
+import jakarta.persistence.Transient
+import jakarta.persistence.Version
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
@@ -120,7 +133,7 @@ class Document {
 
     @Convert(converter = StateEnumConverter::class)
     @JsonProperty("_state")
-    lateinit var state: DOCUMENT_STATE
+    lateinit var state: DocumentState
 
     companion object {
         private val dateService: DateService? by lazy {
@@ -139,8 +152,8 @@ class Document {
     var wrapperId: Int? = null
 }
 
-class StateEnumConverter : AttributeConverter<DOCUMENT_STATE, String> {
-    override fun convertToDatabaseColumn(attribute: DOCUMENT_STATE): String = attribute.name
+class StateEnumConverter : AttributeConverter<DocumentState, String> {
+    override fun convertToDatabaseColumn(attribute: DocumentState): String = attribute.name
 
-    override fun convertToEntityAttribute(dbData: String): DOCUMENT_STATE = DOCUMENT_STATE.valueOf(dbData)
+    override fun convertToEntityAttribute(dbData: String): DocumentState = DocumentState.valueOf(dbData)
 }

@@ -20,15 +20,25 @@
 package de.ingrid.igeserver.tasks.quartz
 
 import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.api.messaging.*
+import de.ingrid.igeserver.api.messaging.DatasetInfo
+import de.ingrid.igeserver.api.messaging.JobsNotifier
+import de.ingrid.igeserver.api.messaging.Message
+import de.ingrid.igeserver.api.messaging.MessageTarget
+import de.ingrid.igeserver.api.messaging.NotificationType
+import de.ingrid.igeserver.api.messaging.URLCheckerReport
+import de.ingrid.igeserver.api.messaging.UrlReport
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.utils.DocumentLinks
 import de.ingrid.igeserver.utils.ReferenceHandler
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
 import de.ingrid.utils.tool.UrlTool
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.withContext
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
@@ -153,27 +163,25 @@ class URLChecker(
 
     private fun calcProgress(current: Int, total: Int) = ((current / total.toDouble()) * 100).toInt()
 
-    private suspend fun checkAndReportUrl(info: UrlReport) {
-        return try {
-            (
-                withContext(Dispatchers.IO) {
-                    // encode URL to handle those with special characters like umlauts
-                    // alternatively we might use: url.toURI().toASCIIString()
-                    URL(UrlTool.getEncodedUnicodeUrl(info.url)).openConnection()
-                } as HttpURLConnection
-                ).let {
-                it.connectTimeout = 3000
-                it.readTimeout = 1500
-                it.instanceFollowRedirects = true
-                it.connect()
-                info.status = it.responseCode
-                info.success = urlRequestService.isSuccessCode(info.status)
-            }
-        } catch (ex: Exception) {
-            log.warn("Error requesting URL '${info.url}': $ex")
-            info.status = 500
-            info.success = false
+    private suspend fun checkAndReportUrl(info: UrlReport) = try {
+        (
+            withContext(Dispatchers.IO) {
+                // encode URL to handle those with special characters like umlauts
+                // alternatively we might use: url.toURI().toASCIIString()
+                URL(UrlTool.getEncodedUnicodeUrl(info.url)).openConnection()
+            } as HttpURLConnection
+            ).let {
+            it.connectTimeout = 3000
+            it.readTimeout = 1500
+            it.instanceFollowRedirects = true
+            it.connect()
+            info.status = it.responseCode
+            info.success = urlRequestService.isSuccessCode(info.status)
         }
+    } catch (ex: Exception) {
+        log.warn("Error requesting URL '${info.url}': $ex")
+        info.status = 500
+        info.success = false
     }
 
     private data class JobInfo(

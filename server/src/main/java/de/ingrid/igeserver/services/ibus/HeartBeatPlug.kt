@@ -20,7 +20,11 @@
 package de.ingrid.igeserver.services.ibus
 
 import de.ingrid.ibus.client.BusClientFactory
-import de.ingrid.utils.*
+import de.ingrid.utils.IBus
+import de.ingrid.utils.IConfigurable
+import de.ingrid.utils.IPlug
+import de.ingrid.utils.IngridDocument
+import de.ingrid.utils.PlugDescription
 import de.ingrid.utils.metadata.IMetadataInjector
 import de.ingrid.utils.metadata.Metadata
 import de.ingrid.utils.processor.IPostProcessor
@@ -30,8 +34,9 @@ import org.apache.commons.logging.LogFactory
 import java.io.File
 import java.io.IOException
 import java.util.*
-
-abstract class HeartBeatPlug : IPlug, IConfigurable {
+abstract class HeartBeatPlug :
+    IPlug,
+    IConfigurable {
     internal class HeartBeat(
         private val _name: String,
         val _busUrl: String,
@@ -50,6 +55,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
             private set
         var isAccurate = false
             private set
+
         private var _heartBeatCount: Long = 0
         private val _metadataInjectors: Array<IMetadataInjector>?
         private val _shutdownHook: ShutdownHook
@@ -144,9 +150,7 @@ abstract class HeartBeatPlug : IPlug, IConfigurable {
             _plugDescription = plugDescription
         }
 
-        fun hasFailed(): Boolean {
-            return _heartBeatFailed
-        }
+        fun hasFailed(): Boolean = _heartBeatFailed
 
         companion object {
             private val LOG = LogFactory.getLog(HeartBeat::class.java)
