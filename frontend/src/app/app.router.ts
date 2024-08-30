@@ -70,7 +70,9 @@ export const routes: Routes = [
       {
         path: "reports",
         loadChildren: () =>
-          import("./+reports/reports.module").then((m) => m.ReportsModule),
+          import("./+reports/lazy-reports.routing").then(
+            (m) => m.LazyReportsRouting,
+          ),
         data: {
           onlyAdmin: true,
           icon: "Reports",

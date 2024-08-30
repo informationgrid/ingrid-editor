@@ -19,7 +19,7 @@
  */
 import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
-import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyForm, FormlyModule } from "@ngx-formly/core";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -40,7 +40,6 @@ import { MatInputHarness } from "@angular/material/input/testing";
 import { TestKey } from "@angular/cdk/testing";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { getTranslocoModule } from "../../../transloco-testing.module";
-import { IgeFormlyModule } from "../../ige-formly.module";
 
 describe("RepeatListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
@@ -49,7 +48,7 @@ describe("RepeatListComponent", () => {
   const createHost = createHostFactory({
     component: FormlyForm,
     imports: [
-      IgeFormlyModule,
+      FormlyModule,
       MatIconTestingModule,
       MatSnackBarModule,
       FormsModule,

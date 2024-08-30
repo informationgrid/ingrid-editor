@@ -110,24 +110,24 @@ export function ConfigLoader(
     }
   }
 
-  return () => {
-    return configService
-      .load()
-      .then(() => initializeKeycloakAndGetUserInfo(authFactory, configService))
-      .then(() => firstValueFrom(translocoService.load("de")))
-      .then(() => console.debug("FINISHED APP INIT"))
-      .then(() => redirectToCatalogSpecificRoute(router, dialog))
-      .catch((err) => {
-        // remove loading spinner and rethrow error
-        document.getElementsByClassName("app-loading").item(0).innerHTML =
-          "Fehler bei der Initialisierung";
+  return async () => {
+    try {
+      await configService.load();
+      await initializeKeycloakAndGetUserInfo(authFactory, configService);
+      await firstValueFrom(translocoService.load("de"));
+      console.debug("FINISHED APP INIT");
+      return await redirectToCatalogSpecificRoute(router, dialog);
+    } catch (err) {
+      // remove loading spinner and rethrow error
+      document.getElementsByClassName("app-loading").item(0).innerHTML =
+        "Fehler bei der Initialisierung";
 
-        if (err.status === 504) {
-          throw new IgeError("Backend ist wohl nicht gestartet");
-        } else if (err instanceof IgeError) {
-          throw err;
-        }
-        throw new IgeError(err);
-      });
+      if (err.status === 504) {
+        throw new IgeError("Backend ist wohl nicht gestartet");
+      } else if (err instanceof IgeError) {
+        throw err;
+      }
+      throw new IgeError(err);
+    }
   };
 }

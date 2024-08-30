@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormlyFieldConfig } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 
 import {
   AfterViewInit,
@@ -59,7 +59,6 @@ import { UserTableComponent } from "./user-table/user-table.component";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { HeaderMoreComponent } from "./header-more/header-more.component";
-import { IgeFormlyModule } from "../../formly/ige-formly.module";
 
 @UntilDestroy()
 @Component({
@@ -82,7 +81,7 @@ import { IgeFormlyModule } from "../../formly/ige-formly.module";
     MatMenu,
     MatMenuItem,
     HeaderMoreComponent,
-    IgeFormlyModule,
+    FormlyModule,
   ],
   providers: [UserManagementService],
 })

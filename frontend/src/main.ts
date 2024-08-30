@@ -25,7 +25,7 @@ import {
   LOCALE_ID,
 } from "@angular/core";
 
-import { ConfigLoader } from "./app/app.module";
+import { ConfigLoader } from "./app/config.loader";
 import { environment } from "./environments/environment";
 import { enableAkitaProdMode, persistState } from "@datorama/akita";
 import {
@@ -107,6 +107,37 @@ import { ClipboardModule } from "@angular/cdk/clipboard";
 import { AppComponent } from "./app/app.component";
 import Flow from "@flowjs/flow.js";
 import { IgePagingIntl } from "./app/shared/IgePagingIntl";
+import { AutocompleteTypeComponent } from "./app/formly/types/autocomplete-type.component";
+import { LeafletTypeComponent } from "./app/formly/types/map/leaflet-type.component";
+import { TableTypeComponent } from "./app/formly/types/table/table-type.component";
+import { AddressTypeComponent } from "./app/formly/types/address-type/address-type.component";
+import { RepeatComponent } from "./app/formly/types/repeat/repeat.component";
+import { RepeatListComponent } from "./app/formly/types/repeat-list/repeat-list.component";
+import { RepeatDetailListComponent } from "./app/formly/types/repeat-detail-list/repeat-detail-list.component";
+import { RepeatDistributionDetailListComponent } from "./profiles/bmi/formtypes/repeat-distribution-detail-list/repeat-distribution-detail-list.component";
+import { RepeatChipComponent } from "./app/formly/types/repeat-chip/repeat-chip.component";
+import { DateRangeTypeComponent } from "./app/formly/types/date-range-type/date-range-type.component";
+import { UploadTypeComponent } from "./app/formly/types/upload-type/upload-type.component";
+import { SelectTypeComponent } from "./app/formly/types/select-type/select-type.component";
+import { UnitInputComponent } from "./app/formly/types/unit-type/unit-input.component";
+import { UvpSectionsComponent } from "./app/formly/types/uvp-sections/uvp-sections.component";
+import { ReferencedDocumentsTypeComponent } from "./app/formly/types/referenced-documents-type/referenced-documents-type.component";
+import { DocumentReferenceTypeComponent } from "./app/formly/types/document-reference-type/document-reference-type.component";
+import { UpdateGetCapabilitiesComponent } from "./app/formly/types/update-get-capabilities/update-get-capabilities.component";
+import { PreviewImageComponent } from "./app/formly/types/preview-image/preview-image.component";
+import { PrintTypeComponent } from "./app/formly/types/print/print-type.component";
+import {
+  ElasticsearchAliasValidator,
+  EmailValidator,
+  IpValidator,
+  LowercaseValidator,
+  NoSpaceValidator,
+  NotEmptyArrayValidator,
+  PositiveNumValidator,
+  UrlValidator,
+} from "./app/formly/input.validators";
+import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
+import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
 
 if (environment.production) {
   enableProdMode();
@@ -147,6 +178,135 @@ bootstrapApplication(AppComponent, {
       BrowserModule,
       NgxFlowModule,
       FormlyModule.forRoot({
+        types: [
+          {
+            name: "autocomplete",
+            component: AutocompleteTypeComponent,
+          },
+          {
+            name: "leaflet",
+            component: LeafletTypeComponent,
+          },
+          {
+            name: "table",
+            component: TableTypeComponent,
+          },
+          {
+            name: "address-card",
+            component: AddressTypeComponent,
+          },
+          {
+            name: "repeat",
+            component: RepeatComponent,
+          },
+          {
+            name: "repeatList",
+            component: RepeatListComponent,
+          },
+          {
+            name: "repeatDetailList",
+            component: RepeatDetailListComponent,
+          },
+          {
+            name: "repeatDistributionDetailList",
+            component: RepeatDistributionDetailListComponent,
+          },
+          {
+            name: "repeatChip",
+            component: RepeatChipComponent,
+          },
+          {
+            name: "date-range",
+            component: DateRangeTypeComponent,
+          },
+          {
+            name: "upload",
+            component: UploadTypeComponent,
+          },
+          {
+            name: "ige-select",
+            component: SelectTypeComponent,
+          },
+          {
+            name: "unit-input",
+            component: UnitInputComponent,
+          },
+          {
+            name: "uvpPhases",
+            component: UvpSectionsComponent,
+          },
+          {
+            name: "referencedDocuments",
+            component: ReferencedDocumentsTypeComponent,
+          },
+          {
+            name: "couplingService",
+            component: DocumentReferenceTypeComponent,
+          },
+          {
+            name: "updateGetCapabilities",
+            component: UpdateGetCapabilitiesComponent,
+          },
+          {
+            name: "previewImage",
+            component: PreviewImageComponent,
+          },
+          /* FOR PREVIEW */
+          {
+            name: "inputPrint",
+            component: PrintTypeComponent,
+          },
+          {
+            name: "textareaPrint",
+            component: PrintTypeComponent,
+          },
+          {
+            name: "address-cardPrint",
+            component: PrintTypeComponent,
+          },
+          {
+            name: "datepickerPrint",
+            component: PrintTypeComponent,
+          },
+          {
+            name: "repeatListPrint",
+            component: PrintTypeComponent,
+          },
+          {
+            name: "tablePrint",
+            component: PrintTypeComponent,
+          },
+          {
+            name: "ige-selectPrint",
+            component: PrintTypeComponent,
+          },
+          {
+            name: "autocompletePrint",
+            component: PrintTypeComponent,
+          },
+          {
+            name: "previewImagePrint",
+            component: PrintTypeComponent,
+          },
+          {
+            name: "unit-inputPrint",
+            component: PrintTypeComponent,
+          },
+        ],
+        validators: [
+          { name: "ip", validation: IpValidator },
+          { name: "lowercase", validation: LowercaseValidator },
+          { name: "no_space", validation: NoSpaceValidator },
+          { name: "valid_es_alias", validation: ElasticsearchAliasValidator },
+          { name: "email", validation: EmailValidator },
+          { name: "notEmptyArray", validation: NotEmptyArrayValidator },
+          { name: "url", validation: UrlValidator },
+          { name: "positiveNum", validation: PositiveNumValidator },
+        ],
+        /*,
+            wrappers: [
+              { name: 'panel', component: OneColumnWrapperComponent },
+            ]*/
         wrappers: [
           { name: "inline-help", component: InlineHelpWrapperComponent },
           { name: "addons", component: AddonsWrapperComponent },
@@ -169,6 +329,8 @@ bootstrapApplication(AppComponent, {
         },
       }),
       FormlyMaterialModule,
+      FormlyMatToggleModule,
+      FormlyMatDatepickerModule,
       // Material
       MatToolbarModule,
       MatIconModule,

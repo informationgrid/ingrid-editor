@@ -20,13 +20,12 @@
 import { Component } from "@angular/core";
 import { DynamicFormComponent } from "../form-shared/form/dynamic-form.component";
 import { FormDashboardComponent } from "../form-dashboard/form-dashboard.component";
-import { IgeFormlyModule } from "../../formly/ige-formly.module";
 
 @Component({
   selector: "ige-form",
   templateUrl: "./form.component.html",
   styleUrls: ["./form.component.scss"],
   standalone: true,
-  imports: [DynamicFormComponent, FormDashboardComponent, IgeFormlyModule],
+  imports: [DynamicFormComponent, FormDashboardComponent],
 })
 export class FormComponent {}

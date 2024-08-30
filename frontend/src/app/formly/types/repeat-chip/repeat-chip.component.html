@@ -6,12 +6,12 @@
 
 @if (field.fieldGroup.length > 0) {
     <mat-chip-listbox [disabled]="formControl.disabled" cdkDropListGroup>
-        @for (field of field.fieldGroup; track field; let i = $index) {
-            <span
-                cdkDropList
-                cdkDropListOrientation="mixed"
-                (cdkDropListDropped)="drop($event)"
-            >
+        <span
+            cdkDropList
+            cdkDropListOrientation="mixed"
+            (cdkDropListDropped)="drop($event)"
+        >
+            @for (field of field.fieldGroup; track field; let i = $index) {
                 <mat-chip-option
                     cdkDrag
                     [cdkDragDisabled]="formControl.disabled"
@@ -44,8 +44,8 @@
                         </button>
                     }
                 </mat-chip-option>
-            </span>
-        }
+            }
+        </span>
         @if (props.useDialog && formControl.enabled) {
             <ige-add-button
                 [showTitle]="false"
