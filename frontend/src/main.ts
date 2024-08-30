@@ -47,7 +47,7 @@ import { TranslocoService } from "@ngneat/transloco";
 import {
   DateAdapter,
   MAT_DATE_LOCALE,
-  provideNativeDateAdapter,
+  MatNativeDateModule,
 } from "@angular/material/core";
 import { GermanDateAdapter } from "./app/services/german-date.adapter";
 import { AuthInterceptor } from "./app/security/keycloak/auth.interceptor";
@@ -193,6 +193,7 @@ bootstrapApplication(AppComponent, {
       MatMenuModule,
       TranslocoRootModule,
       ClipboardModule,
+      MatNativeDateModule,
     ),
     provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
     // make sure we are authenticated by keycloak before bootstrap
@@ -222,7 +223,6 @@ bootstrapApplication(AppComponent, {
       provide: DateAdapter,
       useClass: GermanDateAdapter,
     },
-    provideNativeDateAdapter(),
     // add authorization header to all requests
     {
       provide: HTTP_INTERCEPTORS,
