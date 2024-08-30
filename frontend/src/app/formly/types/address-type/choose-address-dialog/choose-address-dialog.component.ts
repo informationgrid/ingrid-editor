@@ -24,6 +24,7 @@ import {
   Inject,
   OnDestroy,
   OnInit,
+  signal,
   ViewChild,
 } from "@angular/core";
 import { DocumentAbstract } from "../../../../store/document/document.model";
@@ -96,14 +97,14 @@ export interface ChooseAddressResponse {
 })
 export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   @ViewChild(MatSelect) recentAddressSelect: MatSelect;
-  selection: DocumentAbstract;
+  selection = signal<DocumentAbstract>(null);
   selectedType: string;
   selectedNode = new BehaviorSubject<number>(null);
   recentAddresses$: Observable<DocumentAbstract[]>;
   initialActiveAddressType = new BehaviorSubject<Partial<DocumentAbstract>>(
     null,
   );
-  typeSelectionEnabled = false;
+  typeSelectionEnabled = signal<boolean>(false);
   activeStep = 1;
   referenceTypes: DocumentAbstract[];
 
@@ -135,7 +136,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
           (items) => (this.referenceTypes = this.prepareReferenceTypes(items)),
         ),
         tap((items) => {
-          this.typeSelectionEnabled = items.length > 1;
+          this.typeSelectionEnabled.set(items.length > 1);
           this.cdr.markForCheck();
         }),
       )
@@ -147,7 +148,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     );
 
     this.updateModel(this.data.address);
-    if (this.data.skipToType && this.typeSelectionEnabled) {
+    if (this.data.skipToType && this.typeSelectionEnabled()) {
       this.activeStep = 2;
     }
   }
@@ -164,16 +165,16 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
       .sort((a, b) => a.title.localeCompare(b.title));
   }
 
-  updateAddressTree(addressId: string) {
-    this.selection = this.addressTreeQuery.getEntity(addressId);
+  updateAddressTree(addressId: number) {
+    this.selection.set(this.addressTreeQuery.getEntity(addressId));
   }
 
   getResult(): void {
-    this.documentService.addToRecentAddresses(this.selection);
+    this.documentService.addToRecentAddresses(this.selection());
 
     this.dlgRef.close({
       type: { key: this.selectedType },
-      address: this.selection,
+      address: this.selection(),
     });
   }
 
