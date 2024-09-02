@@ -22,8 +22,15 @@ package de.ingrid.igeserver.services
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.JobCommand
 import org.apache.logging.log4j.kotlin.logger
-import org.quartz.*
+import org.quartz.CronScheduleBuilder
+import org.quartz.Job
+import org.quartz.JobBuilder
+import org.quartz.JobDataMap
+import org.quartz.JobDetail
+import org.quartz.JobKey
 import org.quartz.Trigger.DEFAULT_PRIORITY
+import org.quartz.TriggerBuilder
+import org.quartz.TriggerKey
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.stereotype.Service
 
