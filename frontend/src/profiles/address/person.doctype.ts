@@ -17,7 +17,6 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { DocumentService } from "../../app/services/document/document.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { AddressOptions, AddressShared } from "./address.shared";
 
@@ -122,11 +121,9 @@ export class PersonDoctype extends AddressShared {
     ];
   }
 
-  constructor(
-    storageService: DocumentService,
-    fieldWithAddressReferences: string,
-  ) {
+  constructor(fieldWithAddressReferences: string) {
     super();
     this.fieldWithAddressReferences = fieldWithAddressReferences;
+    this.addressType = "person";
   }
 }

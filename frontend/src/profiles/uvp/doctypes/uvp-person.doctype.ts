@@ -17,7 +17,6 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { DocumentService } from "../../../app/services/document/document.service";
 import { Injectable } from "@angular/core";
 import { PersonDoctype } from "../../address/person.doctype";
 
@@ -27,9 +26,8 @@ import { PersonDoctype } from "../../address/person.doctype";
 export class UvpPersonDoctype extends PersonDoctype {
   id = "UvpAddressDoc";
 
-  constructor(storageService: DocumentService) {
-    super(storageService, "pointOfContact");
-    this.addressType = "person";
+  constructor() {
+    super("pointOfContact");
     this.options = {
       hideAdministrativeArea: true,
       defaultCountry: { key: "276" },

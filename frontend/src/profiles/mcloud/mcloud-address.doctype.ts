@@ -17,7 +17,6 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { DocumentService } from "../../app/services/document/document.service";
 import { Injectable } from "@angular/core";
 import { OrganisationDoctype } from "../address/organisation.doctype";
 
@@ -29,9 +28,8 @@ export class McloudAddressDoctype extends OrganisationDoctype {
 
   label = "Adresse";
 
-  constructor(storageService: DocumentService) {
-    super(storageService, "addresses");
-    this.addressType = "organization";
+  constructor() {
+    super("addresses");
     this.options = {
       hideCountryAndAdministrativeArea: true,
     };
