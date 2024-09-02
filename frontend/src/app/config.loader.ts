@@ -76,7 +76,8 @@ export function ConfigLoader(
       if (hasNoCatalogId) {
         const commands = getRedirectNavigationCommand(catalogId, urlPath);
         // redirect a bit delayed to complete this navigation first before doing another
-        setTimeout(() => router.navigate(commands));
+        // also make sure dynamically added routes have been already added
+        setTimeout(() => router.navigate(commands), 100);
         return;
       }
 
