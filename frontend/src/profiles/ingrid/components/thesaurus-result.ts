@@ -19,6 +19,7 @@
  */
 export interface ThesaurusResult {
   thesaurus:
+    | string
     | "INSPIRE-Themen"
     | "Gemet Schlagworte"
     | "Umthes Schlagworte"

@@ -167,6 +167,21 @@ export class KeywordAnalysis {
     }
   }
 
+  private mapThesaurusToLabel(thesaurus: string): string {
+    switch (thesaurus) {
+      case "gemet":
+        return "Gemet Schlagworte";
+      case "umthes":
+        return "Umthes Schlagworte";
+      case "free":
+        return "Freie Schlagworte";
+      case "themes":
+        return "INSPIRE-Themen";
+      default:
+        throw new IgeError(`Model not supported: ${thesaurus}`);
+    }
+  }
+
   async assignKeyword(item: string, checkThemes: boolean) {
     if (checkThemes) {
       const resultTheme = this.checkInThemes(item);
@@ -206,8 +221,7 @@ export class KeywordAnalysis {
     thesaurus: string,
     timeoutDuration = 10000,
   ): Promise<ThesaurusResult> {
-    const thesaurusName =
-      thesaurus === "gemet" ? "Gemet Schlagworte" : "Umthes Schlagworte";
+    const thesaurusName = this.mapThesaurusToLabel(thesaurus);
 
     try {
       const response = await firstValueFrom(
