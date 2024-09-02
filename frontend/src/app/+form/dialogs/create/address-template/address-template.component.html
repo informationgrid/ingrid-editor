@@ -43,21 +43,6 @@
         </mat-form-field>
     }
 
-    <ng-template #organization>
-        <div class="dlg-field-label required">Organisation</div>
-        <mat-form-field appearance="outline" class="space-bottom">
-            <input
-                igeFocus
-                matInput
-                data-cy="create-address-organization"
-                name="organization"
-                formControlName="organization"
-                (keyup.enter)="create.emit()"
-                aria-label="Titel der Organisation"
-            />
-        </mat-form-field>
-    </ng-template>
-
     <ng-content></ng-content>
 
     @if (documentTypes?.length > 1) {

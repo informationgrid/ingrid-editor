@@ -36,6 +36,10 @@ import { DocBehavioursService } from "../../../../services/event/doc-behaviours.
 import { ProfileService } from "../../../../services/profile.service";
 import { TranslocoService } from "@ngneat/transloco";
 
+interface AddressDocumentAbstract extends DocumentAbstract {
+  addressType: "person" | "organization";
+}
+
 @UntilDestroy()
 @Component({
   selector: "ige-address-template",
@@ -84,7 +88,7 @@ export class AddressTemplateComponent implements OnInit {
       .subscribe((result) => (this.documentTypes = result));
   }
 
-  private setInitialTypeFirstTime(types: DocumentAbstract[]) {
+  private setInitialTypeFirstTime(types: AddressDocumentAbstract[]) {
     // only set it first time
     if (!this.form.get("choice").value) {
       const initialType =
@@ -103,23 +107,26 @@ export class AddressTemplateComponent implements OnInit {
     );
   }
 
-  private prepareDocumentTypes(result: ProfileAbstract[]): DocumentAbstract[] {
+  private prepareDocumentTypes(
+    result: ProfileAbstract[],
+  ): AddressDocumentAbstract[] {
     return result
       .map((profile) => {
         return {
           id: profile.id,
           title: this.translocoService.translate(`docType.${profile.id}`),
           icon: profile.iconClass,
-          _type: profile.addressType,
+          _type: profile.id,
+          addressType: profile.addressType,
           _state: "P",
-        } as DocumentAbstract;
+        } as AddressDocumentAbstract;
       })
       .sort((a, b) => a.title.localeCompare(b.title));
   }
 
-  setDocType(docType: DocumentAbstract) {
+  setDocType(docType: AddressDocumentAbstract) {
     this.form.get("choice").setValue(docType.id);
-    this.isPerson = docType._type !== "organization";
+    this.isPerson = docType.addressType !== "organization";
     const firstName = this.form.get("firstName");
     const lastName = this.form.get("lastName");
     const organization = this.form.get("organization");
