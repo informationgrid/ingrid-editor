@@ -40,6 +40,7 @@ class TestComponent {
     organisation: TestOrganisationDoctype,
   ) {
     const types = [mcloud, folder, test, address, organisation];
+    service.setDefaultAddressType(address);
 
     service.registerProfiles(types);
   }
