@@ -17,10 +17,23 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from "@angular/material/dialog";
 import { Component, Inject } from "@angular/core";
 import { CookieService } from "../../services/cookie.service";
-import { MatCheckboxChange } from "@angular/material/checkbox";
+import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { MatFormField } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 export interface ConfirmDialogData {
   title: string;
@@ -50,6 +63,22 @@ export interface ConfirmDialogButton {
         white-space: normal;
       }
     `,
+  ],
+  standalone: true,
+  imports: [
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    MatFormField,
+    MatInput,
+    ReactiveFormsModule,
+    FormsModule,
+    MatDialogActions,
+    MatCheckbox,
+    MatButton,
   ],
 })
 export class ConfirmDialogComponent {

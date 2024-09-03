@@ -20,12 +20,19 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import {
   FormControl,
+  ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormGroup,
 } from "@angular/forms";
 import { ExchangeService } from "../exchange.service";
 import { catchError, finalize, tap } from "rxjs/operators";
-import { MatStepper } from "@angular/material/stepper";
+import {
+  MatStep,
+  MatStepLabel,
+  MatStepper,
+  MatStepperNext,
+  MatStepperPrevious,
+} from "@angular/material/stepper";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import { DocumentService } from "../../services/document/document.service";
 import {
@@ -37,12 +44,50 @@ import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse, HttpResponse } from "@angular/common/http";
 import { IgeException } from "../../server-validation.util";
 import { TreeComponent } from "../../+form/sidebars/tree/tree.component";
-import { MatSelectChange } from "@angular/material/select";
+import { MatSelect, MatSelectChange } from "@angular/material/select";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { FeatureFlagDirective } from "../../directives/feature-flag.directive";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIcon } from "@angular/material/icon";
+import { MatDivider } from "@angular/material/divider";
+import { BreadcrumbComponent } from "../../+form/form-info/breadcrumb/breadcrumb.component";
+import { MatFormField } from "@angular/material/form-field";
+import { MatOption } from "@angular/material/core";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { AsyncPipe } from "@angular/common";
 
 @Component({
   selector: "ige-export",
   templateUrl: "./export.component.html",
   styleUrls: ["./export.component.scss"],
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    PageTemplateComponent,
+    FeatureFlagDirective,
+    MatIconButton,
+    MatTooltip,
+    MatIcon,
+    MatStepper,
+    MatStep,
+    MatStepLabel,
+    TreeComponent,
+    MatDivider,
+    MatButton,
+    MatStepperNext,
+    ReactiveFormsModule,
+    BreadcrumbComponent,
+    MatFormField,
+    MatSelect,
+    MatOption,
+    MatCheckbox,
+    MatStepperPrevious,
+    MatProgressSpinner,
+    AsyncPipe,
+  ],
 })
 export class ExportComponent implements OnInit {
   @ViewChild("stepper") stepper: MatStepper;

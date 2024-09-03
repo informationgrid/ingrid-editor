@@ -18,13 +18,13 @@
  * limitations under the Licence.
  */
 import { ProfileComponent } from "./profile/profile.component";
-import { RouterModule } from "@angular/router";
+import { Route } from "@angular/router";
 import { AuthGuard } from "../security/auth.guard";
 
-export const routing = RouterModule.forChild([
+export default [
   {
     path: "",
     component: ProfileComponent,
     canActivate: [AuthGuard],
   },
-]);
+] satisfies Route[];

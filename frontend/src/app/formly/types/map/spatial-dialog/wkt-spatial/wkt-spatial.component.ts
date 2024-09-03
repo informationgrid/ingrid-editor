@@ -29,11 +29,32 @@ import { Layer, Map } from "leaflet";
 import { LeafletService } from "../../leaflet.service";
 import { MatDialog } from "@angular/material/dialog";
 import { finalize } from "rxjs/operators";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { MatFormField, MatHint, MatSuffix } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { FocusDirective } from "../../../../../directives/focus.directive";
+import { HelpContextButtonComponent } from "../../../../../help-context-button/help-context-button.component";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { MatButton } from "@angular/material/button";
+import { FormErrorComponent } from "../../../../../+form/form-shared/ige-form-error/form-error.component";
 
 @Component({
   selector: "ige-wkt-spatial",
   templateUrl: "./wkt-spatial.component.html",
   styleUrls: ["./wkt-spatial.component.scss"],
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    MatFormField,
+    MatInput,
+    FocusDirective,
+    HelpContextButtonComponent,
+    MatSuffix,
+    MatProgressSpinner,
+    MatButton,
+    FormErrorComponent,
+    MatHint,
+  ],
 })
 export class WktSpatialComponent implements OnInit, OnDestroy {
   @Input() map: Map;

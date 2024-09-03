@@ -17,23 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { NgModule } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { DialogTemplateComponent } from "./dialog-template.component";
-import { MatIconModule } from "@angular/material/icon";
-import { MatDialogModule } from "@angular/material/dialog";
-import { MatButtonModule } from "@angular/material/button";
-import { DragDropModule } from "@angular/cdk/drag-drop";
+import { Route } from "@angular/router";
+import { AuthGuard } from "../security/auth.guard";
+import { AddressComponent } from "./address/address.component";
+import { FormChangeDeactivateGuard } from "../security/form-change.guard";
+import { RedirectFormGuard } from "../+form/redirect-form.guard";
 
-@NgModule({
-  declarations: [DialogTemplateComponent],
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatDialogModule,
-    MatButtonModule,
-    DragDropModule,
-  ],
-  exports: [DialogTemplateComponent],
-})
-export class DialogTemplateModule {}
+export default [
+  {
+    path: "",
+    component: AddressComponent,
+    canActivate: [RedirectFormGuard, AuthGuard],
+    canDeactivate: [FormChangeDeactivateGuard],
+  },
+] satisfies Route[];

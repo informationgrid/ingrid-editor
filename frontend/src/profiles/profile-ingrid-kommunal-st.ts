@@ -22,6 +22,7 @@ import { InGridComponent } from "./profile-ingrid";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class InGridKommunalStComponent extends InGridComponent {
   constructor() {
@@ -56,7 +57,7 @@ class InGridKommunalStComponent extends InGridComponent {
 }
 
 @NgModule({
-  declarations: [InGridKommunalStComponent],
+  imports: [InGridKommunalStComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

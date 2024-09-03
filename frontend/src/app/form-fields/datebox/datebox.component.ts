@@ -19,6 +19,13 @@
  */
 import { Component, forwardRef, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { MatFormField, MatSuffix } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import {
+  MatDatepicker,
+  MatDatepickerInput,
+  MatDatepickerToggle,
+} from "@angular/material/datepicker";
 
 export const DATEBOX_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -31,6 +38,15 @@ export const DATEBOX_CONTROL_VALUE_ACCESSOR = {
   templateUrl: "./datebox.component.html",
   styleUrls: ["./datebox.component.css"],
   providers: [DATEBOX_CONTROL_VALUE_ACCESSOR],
+  standalone: true,
+  imports: [
+    MatFormField,
+    MatInput,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatSuffix,
+    MatDatepicker,
+  ],
 })
 export class DateboxComponent implements ControlValueAccessor, OnInit {
   // The internal data model

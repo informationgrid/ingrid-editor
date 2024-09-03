@@ -27,11 +27,14 @@ import { FieldWrapper } from "@ngx-formly/core";
 import { ConfigService } from "../../services/config/config.service";
 import { ContextHelpService } from "../../services/context-help/context-help.service";
 import { FormStateService } from "../../+form/form-state.service";
+import { FormLabelComponent } from "./form-label/form-label.component";
 
 @Component({
   selector: "ige-one-column-wrapper",
   templateUrl: "./one-column-wrapper.component.html",
   styleUrls: ["./one-column-wrapper.component.scss"],
+  standalone: true,
+  imports: [FormLabelComponent],
 })
 export class OneColumnWrapperComponent
   extends FieldWrapper

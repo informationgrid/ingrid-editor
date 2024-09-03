@@ -27,7 +27,7 @@ describe("EmptyNavigationComponent", () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [EmptyNavigationComponent],
+      imports: [EmptyNavigationComponent],
     }).compileComponents();
   }));
 

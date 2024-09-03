@@ -17,42 +17,40 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { RouterModule } from "@angular/router";
+import { Route } from "@angular/router";
 import { AuthGuard } from "../security/auth.guard";
-import { UserManagementComponent } from "./user-management/user-management.component";
-import { DeactivateGuard } from "./deactivate.guard";
-import { UserComponent } from "./user/user.component";
-import { GroupComponent } from "./group/group.component";
+import { OverviewComponent } from "./overview.component";
+import { ImportComponent } from "./import/import.component";
+import { ExportComponent } from "./export/export.component";
 
-export const routing = RouterModule.forChild([
+export default [
   {
     path: "",
-    component: UserManagementComponent,
-    canActivate: [AuthGuard],
-    data: { roles: ["admin"], permission: "manage_users" },
+    component: OverviewComponent,
     children: [
       {
         path: "",
-        redirectTo: "user",
+        redirectTo: "import",
         pathMatch: "full",
       },
       {
-        path: "user",
-        component: UserComponent,
-        canDeactivate: [DeactivateGuard],
+        path: "import",
+        component: ImportComponent,
+        canActivate: [AuthGuard],
         data: {
-          title: "Benutzer",
-          tabIdentifier: "manage",
+          permission: ["can_import"],
+          title: "Import",
         },
       },
       {
-        path: "group",
-        component: GroupComponent,
-        canDeactivate: [DeactivateGuard],
+        path: "export",
+        component: ExportComponent,
+        canActivate: [AuthGuard],
         data: {
-          title: "Gruppen & Rechte",
+          permission: ["can_export"],
+          title: "Export",
         },
       },
     ],
   },
-]);
+] satisfies Route[];

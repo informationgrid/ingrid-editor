@@ -20,10 +20,14 @@
 import { Component, inject, OnInit } from "@angular/core";
 import {
   MAT_SNACK_BAR_DATA,
+  MatSnackBarAction,
+  MatSnackBarActions,
   MatSnackBarRef,
 } from "@angular/material/snack-bar";
 import { groupBy } from "../../../app/shared/utils";
 import { ThesaurusResult } from "./thesaurus-result";
+import { MatIcon } from "@angular/material/icon";
+import { MatButton } from "@angular/material/button";
 
 @Component({
   template: `
@@ -50,6 +54,8 @@ import { ThesaurusResult } from "./thesaurus-result";
       </span>
     </div>
   `,
+  standalone: true,
+  imports: [MatIcon, MatSnackBarActions, MatButton, MatSnackBarAction],
 })
 export class ThesaurusReportComponent implements OnInit {
   snackBarRef = inject(MatSnackBarRef);

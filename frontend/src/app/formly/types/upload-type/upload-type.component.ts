@@ -22,9 +22,14 @@ import { FieldType } from "@ngx-formly/material";
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IgeDocument } from "../../../models/ige-document";
-import { UntypedFormControl, Validators } from "@angular/forms";
+import {
+  ReactiveFormsModule,
+  UntypedFormControl,
+  Validators,
+} from "@angular/forms";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { patternWithMessage, REGEX_URL } from "../../input.validators";
+import { MatInput } from "@angular/material/input";
 
 interface LinkType {
   uri: string;
@@ -37,6 +42,8 @@ interface LinkType {
   selector: "ige-upload-type",
   templateUrl: "./upload-type.component.html",
   styleUrls: ["./upload-type.component.scss"],
+  standalone: true,
+  imports: [MatInput, ReactiveFormsModule],
 })
 export class UploadTypeComponent
   extends FieldType<FieldTypeConfig>

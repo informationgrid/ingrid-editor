@@ -37,6 +37,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormGroup,
 } from "@angular/forms";
@@ -47,6 +48,24 @@ import {
   SelectOptionUi,
 } from "../../services/codelist/codelist.service";
 import { BehaviourService } from "../../services/behavior/behaviour.service";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIcon } from "@angular/material/icon";
+import { MatRadioButton, MatRadioGroup } from "@angular/material/radio";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { AddButtonComponent } from "../../shared/add-button/add-button.component";
+import { MatFormField, MatSuffix } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import {
+  MatDatepicker,
+  MatDatepickerInput,
+  MatDatepickerToggle,
+} from "@angular/material/datepicker";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { MatSelect } from "@angular/material/select";
+import { MatOption } from "@angular/material/core";
+import { AsyncPipe, DecimalPipe } from "@angular/common";
 
 export interface FacetUpdate {
   model: any;
@@ -64,6 +83,32 @@ export interface FacetUpdate {
       multi: true,
       useExisting: forwardRef(() => FacetsComponent),
     },
+  ],
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    MatIconButton,
+    MatTooltip,
+    MatIcon,
+    MatRadioGroup,
+    MatRadioButton,
+    MatCheckbox,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    AddButtonComponent,
+    MatFormField,
+    MatInput,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatSuffix,
+    MatDatepicker,
+    TranslocoDirective,
+    MatSelect,
+    MatOption,
+    MatButton,
+    AsyncPipe,
+    DecimalPipe,
   ],
 })
 export class FacetsComponent implements OnInit, ControlValueAccessor {

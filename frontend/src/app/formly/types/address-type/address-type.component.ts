@@ -60,8 +60,8 @@ import { DocumentWithMetadata } from "../../../models/ige-document";
 import { ValidationErrors } from "@angular/forms";
 import { HttpErrorResponse } from "@angular/common/http";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
-import { AddButtonModule } from "../../../shared/add-button/add-button.module";
 import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
+import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 
 @UntilDestroy()
 @Component({
@@ -73,7 +73,7 @@ import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabell
     CdkDropList,
     CdkDrag,
     AddressCardComponent,
-    AddButtonModule,
+    AddButtonComponent,
     FieldToAiraLabelledbyPipe,
   ],
   standalone: true,

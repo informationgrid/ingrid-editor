@@ -29,8 +29,7 @@ describe("IgeCheckboxComponent", () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CheckboxComponent],
-      imports: [MatCheckboxModule, FormsModule],
+      imports: [MatCheckboxModule, FormsModule, CheckboxComponent],
     }).compileComponents();
   }));
 

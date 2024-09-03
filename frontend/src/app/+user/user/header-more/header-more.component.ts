@@ -25,7 +25,8 @@ import {
 } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { FrontendUser } from "../../user";
-import { UntypedFormGroup } from "@angular/forms";
+import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
+import { DatePipe } from "@angular/common";
 
 @Component({
   selector: "user-header-more",
@@ -44,6 +45,8 @@ import { UntypedFormGroup } from "@angular/forms";
     ]),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [ReactiveFormsModule, DatePipe],
 })
 export class HeaderMoreComponent implements OnInit {
   user = input<FrontendUser>();

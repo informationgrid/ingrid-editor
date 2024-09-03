@@ -26,6 +26,7 @@ import { DataCollectionDoctypeBast } from "./ingrid-bast/doctypes/data-collectio
 
 @Component({
   template: "",
+  standalone: true,
 })
 class InGridBastComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeBast);
@@ -74,7 +75,7 @@ class InGridBastComponent extends InGridComponent {
 }
 
 @NgModule({
-  declarations: [InGridBastComponent],
+  imports: [InGridBastComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

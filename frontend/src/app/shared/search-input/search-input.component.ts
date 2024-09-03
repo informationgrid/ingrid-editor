@@ -35,7 +35,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
-import { SharedPipesModule } from "../../directives/shared-pipes.module";
+
 import { ErrorStateMatcher } from "@angular/material/core";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -61,7 +61,6 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
     MatProgressSpinnerModule,
     MatIconModule,
     MatButtonModule,
-    SharedPipesModule,
   ],
   standalone: true,
 })

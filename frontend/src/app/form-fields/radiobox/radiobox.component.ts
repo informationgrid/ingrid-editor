@@ -18,8 +18,17 @@
  * limitations under the Licence.
  */
 import { Component, forwardRef, Input, OnInit } from "@angular/core";
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { MatRadioChange } from "@angular/material/radio";
+import {
+  ControlValueAccessor,
+  FormsModule,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+} from "@angular/forms";
+import {
+  MatRadioButton,
+  MatRadioChange,
+  MatRadioGroup,
+} from "@angular/material/radio";
 
 export const RADIOBOX_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -32,6 +41,8 @@ export const RADIOBOX_CONTROL_VALUE_ACCESSOR = {
   templateUrl: "./radiobox.component.html",
   styleUrls: ["./radiobox.component.css"],
   providers: [RADIOBOX_CONTROL_VALUE_ACCESSOR],
+  standalone: true,
+  imports: [MatRadioGroup, ReactiveFormsModule, FormsModule, MatRadioButton],
 })
 export class RadioboxComponent implements ControlValueAccessor, OnInit {
   @Input() options: any[];

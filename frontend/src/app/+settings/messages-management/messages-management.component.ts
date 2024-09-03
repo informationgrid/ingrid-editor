@@ -24,7 +24,19 @@ import { tap } from "rxjs/operators";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { UntypedFormGroup } from "@angular/forms";
 import { messagesFields } from "./formly-fields";
-import { MatTableDataSource } from "@angular/material/table";
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
+  MatTable,
+  MatTableDataSource,
+} from "@angular/material/table";
 import { NewMessageDialogComponent } from "./new-message-dialog/new-message-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfigService, UserInfo } from "../../services/config/config.service";
@@ -33,12 +45,38 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { AddButtonComponent } from "../../shared/add-button/add-button.component";
+import { CardBoxComponent } from "../../shared/card-box/card-box.component";
+import { DatePipe, NgTemplateOutlet } from "@angular/common";
+import { MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
 
 @UntilDestroy()
 @Component({
   selector: "ige-messages-management",
   templateUrl: "./messages-management.component.html",
   styleUrls: ["./messages-management.component.scss"],
+  standalone: true,
+  imports: [
+    PageTemplateComponent,
+    AddButtonComponent,
+    CardBoxComponent,
+    NgTemplateOutlet,
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatIconButton,
+    MatIcon,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    DatePipe,
+  ],
 })
 export class MessagesManagementComponent implements OnInit {
   messages: MessageFormatBackend[] = [];

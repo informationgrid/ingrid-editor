@@ -28,16 +28,34 @@ import {
 } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { LeafletService } from "../leaflet.service";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from "@angular/material/dialog";
 import {
   SpatialLocation,
   SpatialLocationType,
 } from "../spatial-list/spatial-list.component";
-import { FormControl } from "@angular/forms";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { SpatialBoundingBox } from "./spatial-result.model";
 import { Map } from "leaflet";
 import { TranslocoService } from "@ngneat/transloco";
 import { debounceTime } from "rxjs/operators";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { MatFormField } from "@angular/material/form-field";
+import { MatSelect } from "@angular/material/select";
+import { MatOption } from "@angular/material/core";
+import { FreeSpatialComponent } from "./free-spatial/free-spatial.component";
+import { WktSpatialComponent } from "./wkt-spatial/wkt-spatial.component";
+import { GeothesaurusWfsgndeComponent } from "./geothesaurus-wfsgnde/geothesaurus-wfsgnde.component";
+import { MatInput } from "@angular/material/input";
+import { CoordinatesSpatialComponent } from "./coordinates-spatial/coordinates-spatial.component";
 
 interface LocationType {
   id: SpatialLocationType;
@@ -49,6 +67,26 @@ interface LocationType {
   selector: "ige-spatial-dialog",
   templateUrl: "./spatial-dialog.component.html",
   styleUrls: ["./spatial-dialog.component.scss"],
+  standalone: true,
+  imports: [
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    MatFormField,
+    MatSelect,
+    MatOption,
+    FreeSpatialComponent,
+    WktSpatialComponent,
+    GeothesaurusWfsgndeComponent,
+    MatInput,
+    ReactiveFormsModule,
+    CoordinatesSpatialComponent,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class SpatialDialogComponent implements OnInit, AfterViewInit {
   @ViewChild("leafletDlg") leaflet: ElementRef;

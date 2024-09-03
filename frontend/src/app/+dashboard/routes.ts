@@ -17,16 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { NgModule } from "@angular/core";
-import { DocumentIconComponent } from "./document-icon.component";
-import { MatIconModule } from "@angular/material/icon";
-import { CommonModule } from "@angular/common";
-import { MatTooltipModule } from "@angular/material/tooltip";
-import { TranslocoModule } from "@ngneat/transloco";
+import { DashboardComponent } from "./dashboard.component";
+import { Route } from "@angular/router";
+import { AuthGuard } from "../security/auth.guard";
 
-@NgModule({
-  imports: [MatIconModule, CommonModule, MatTooltipModule, TranslocoModule],
-  declarations: [DocumentIconComponent],
-  exports: [DocumentIconComponent],
-})
-export class DocumentIconModule {}
+export default [
+  {
+    path: "",
+    component: DashboardComponent,
+    canActivate: [AuthGuard /*, NoCatalogAssignedGuard*/],
+    data: { roles: ["admin", "author"] },
+  },
+] satisfies Route[];

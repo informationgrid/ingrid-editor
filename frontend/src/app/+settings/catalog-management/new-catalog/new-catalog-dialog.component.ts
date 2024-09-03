@@ -17,12 +17,29 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from "@angular/material/dialog";
 import { Component, Inject } from "@angular/core";
 import {
   CatalogService,
   Profile,
 } from "../../../+catalog/services/catalog.service";
+import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { FocusDirective } from "../../../directives/focus.directive";
+import { MatSelect } from "@angular/material/select";
+import { MatOption } from "@angular/material/core";
 
 export interface CatalogSettings {
   name?: string;
@@ -31,6 +48,27 @@ export interface CatalogSettings {
 
 @Component({
   templateUrl: "new-catalog-dialog.component.html",
+  standalone: true,
+  imports: [
+    CdkDrag,
+    CdkDragHandle,
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    ReactiveFormsModule,
+    FormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    FocusDirective,
+    MatSelect,
+    MatOption,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class NewCatalogDialogComponent {
   model: CatalogSettings = {};

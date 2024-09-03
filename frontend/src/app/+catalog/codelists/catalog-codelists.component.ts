@@ -37,7 +37,7 @@ import {
   moveItemInArray,
 } from "@angular/cdk/drag-drop";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { PageTemplateModule } from "../../shared/page-template/page-template.module";
+
 import { AsyncPipe } from "@angular/common";
 import { MatFormField } from "@angular/material/form-field";
 import { MatOption, MatSelect } from "@angular/material/select";
@@ -50,6 +50,7 @@ import {
 import { CodelistPresenterComponent } from "../../shared/codelist-presenter/codelist-presenter.component";
 import { MatIcon } from "@angular/material/icon";
 import { MatDivider } from "@angular/material/divider";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 
 @UntilDestroy()
 @Component({
@@ -57,7 +58,6 @@ import { MatDivider } from "@angular/material/divider";
   templateUrl: "./catalog-codelists.component.html",
   styleUrls: ["./catalog-codelists.component.scss"],
   imports: [
-    PageTemplateModule,
     AsyncPipe,
     MatFormField,
     MatSelect,
@@ -72,6 +72,7 @@ import { MatDivider } from "@angular/material/divider";
     MatIcon,
     MatIconButton,
     MatDivider,
+    PageTemplateComponent,
   ],
   standalone: true,
 })

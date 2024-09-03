@@ -26,14 +26,32 @@ import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog
 import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { SqlQuery } from "../../store/query/query.model";
-import { FormControl, UntypedFormControl } from "@angular/forms";
+import {
+  FormControl,
+  ReactiveFormsModule,
+  UntypedFormControl,
+} from "@angular/forms";
 import { ConfigService } from "../../services/config/config.service";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { MatButton } from "@angular/material/button";
+import { MatInput } from "@angular/material/input";
+import { MatFormField } from "@angular/material/form-field";
+import { ResultTableComponent } from "../result-table/result-table.component";
 
 @UntilDestroy()
 @Component({
   selector: "ige-tab-sql",
   templateUrl: "./tab-sql.component.html",
   styleUrls: ["./tab-sql.component.scss"],
+  standalone: true,
+  imports: [
+    PageTemplateComponent,
+    MatButton,
+    MatInput,
+    ReactiveFormsModule,
+    MatFormField,
+    ResultTableComponent,
+  ],
 })
 export class TabSqlComponent implements OnInit {
   sql = new UntypedFormControl("");

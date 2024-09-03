@@ -23,14 +23,15 @@ import { FieldTypeConfig } from "@ngx-formly/core";
 import { BehaviorSubject } from "rxjs";
 import { isObject } from "../../../shared/utils";
 import { AsyncPipe, DatePipe } from "@angular/common";
-import { SharedPipesModule } from "../../../directives/shared-pipes.module";
+
 import { DocumentService } from "../../../services/document/document.service";
+import { CodelistPipe } from "../../../directives/codelist.pipe";
 
 @Component({
   selector: "ige-print-type",
   templateUrl: "./print-type.component.html",
   styleUrls: ["./print-type.component.scss"],
-  imports: [DatePipe, SharedPipesModule, AsyncPipe],
+  imports: [DatePipe, AsyncPipe, CodelistPipe],
   standalone: true,
 })
 export class PrintTypeComponent

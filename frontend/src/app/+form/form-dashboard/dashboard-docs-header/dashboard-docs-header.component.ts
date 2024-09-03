@@ -21,11 +21,15 @@ import { Component, Input, OnInit } from "@angular/core";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Router } from "@angular/router";
 import { ConfigService } from "../../../services/config/config.service";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { ActionButtonComponent } from "../../../shared/action-button/action-button.component";
 
 @Component({
   selector: "dashboard-docs-header",
   templateUrl: "./dashboard-docs-header.component.html",
   styleUrls: ["./dashboard-docs-header.component.scss"],
+  standalone: true,
+  imports: [TranslocoDirective, ActionButtonComponent],
 })
 export class DashboardDocsHeaderComponent implements OnInit {
   @Input() canCreateDatasets: boolean;

@@ -19,11 +19,18 @@
  */
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { LogResult } from "../../+catalog/indexing/index.service";
+import { MatIcon } from "@angular/material/icon";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { MatIconButton } from "@angular/material/button";
+import { DatePipe } from "@angular/common";
 
 @Component({
   selector: "ige-job-handler-header",
   templateUrl: "./job-handler-header.component.html",
   styleUrls: ["./job-handler-header.component.scss"],
+  standalone: true,
+  imports: [MatIcon, MatTooltip, MatProgressSpinner, MatIconButton, DatePipe],
 })
 export class JobHandlerHeaderComponent {
   @Input() message: LogResult;

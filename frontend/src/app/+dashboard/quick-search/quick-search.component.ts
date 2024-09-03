@@ -27,12 +27,26 @@ import { catchError, debounceTime } from "rxjs/operators";
 import { combineLatest, of, Subscription } from "rxjs";
 import { ConfigService } from "../../services/config/config.service";
 import { SearchResult } from "../../models/search-result.model";
+import { SearchInputComponent } from "../../shared/search-input/search-input.component";
+import { MatAutocomplete } from "@angular/material/autocomplete";
+import { MatOptgroup, MatOption } from "@angular/material/core";
+import { MatIcon } from "@angular/material/icon";
+import { DocumentListItemComponent } from "../../shared/document-list-item/document-list-item.component";
 
 @UntilDestroy()
 @Component({
   selector: "ige-quick-search",
   templateUrl: "./quick-search.component.html",
   styleUrls: ["./quick-search.component.scss"],
+  standalone: true,
+  imports: [
+    SearchInputComponent,
+    MatAutocomplete,
+    MatOption,
+    MatIcon,
+    MatOptgroup,
+    DocumentListItemComponent,
+  ],
 })
 export class QuickSearchComponent implements OnInit {
   @Output() selectDoc = new EventEmitter<string>();

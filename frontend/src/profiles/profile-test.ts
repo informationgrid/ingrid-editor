@@ -28,6 +28,7 @@ import { TestOrganisationDoctype } from "./test/test-organisation.doctype";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class TestComponent {
   constructor(
@@ -47,7 +48,7 @@ class TestComponent {
 }
 
 @NgModule({
-  declarations: [TestComponent],
+  imports: [TestComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

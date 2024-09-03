@@ -28,6 +28,7 @@ import { ConfigService } from "../services/config/config.service";
 
 @Directive({
   selector: "[featureFlag]",
+  standalone: true,
 })
 export class FeatureFlagDirective implements OnInit {
   @Input() featureFlag: string | string[];

@@ -29,7 +29,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { AngularSplitModule } from "angular-split";
 import { MatButtonModule } from "@angular/material/button";
-import { DialogTemplateModule } from "../../../shared/dialog-template/dialog-template.module";
+import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-template.component";
 
 @Component({
   templateUrl: "print-view-dialog.component.html",
@@ -52,7 +52,7 @@ import { DialogTemplateModule } from "../../../shared/dialog-template/dialog-tem
     FormlyModule,
     AngularSplitModule,
     MatButtonModule,
-    DialogTemplateModule,
+    DialogTemplateComponent,
   ],
   standalone: true,
 })

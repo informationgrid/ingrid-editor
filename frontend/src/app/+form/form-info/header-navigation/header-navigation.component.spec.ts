@@ -27,7 +27,7 @@ describe("HeaderNavigationComponent", () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [HeaderNavigationComponent],
+      imports: [HeaderNavigationComponent],
     }).compileComponents();
   }));
 

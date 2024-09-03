@@ -26,6 +26,7 @@ import { Observable, of } from "rxjs";
 
 @Pipe({
   name: "codelist",
+  standalone: true,
 })
 export class CodelistPipe implements PipeTransform {
   constructor(

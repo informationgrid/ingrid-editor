@@ -20,13 +20,29 @@
 import { Component } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { SessionService, Tab } from "../services/session.service";
-import { ActivatedRoute, Router } from "@angular/router";
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from "@angular/router";
+import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 
 @UntilDestroy()
 @Component({
   selector: "ige-research",
   templateUrl: "./research.component.html",
   styleUrls: ["./research.component.scss"],
+  standalone: true,
+  imports: [
+    MatTabNav,
+    MatTabLink,
+    RouterLinkActive,
+    RouterLink,
+    MatTabNavPanel,
+    RouterOutlet,
+  ],
 })
 export class ResearchComponent {
   tabs: Tab[];

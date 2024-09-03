@@ -20,6 +20,9 @@
 import { Component, forwardRef, Input, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { CodelistEntry } from "../../store/codelist/codelist.model";
+import { MatFormField } from "@angular/material/form-field";
+import { MatSelect } from "@angular/material/select";
+import { MatOption } from "@angular/material/core";
 
 export const DROPDOWN_CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -32,6 +35,8 @@ export const DROPDOWN_CONTROL_VALUE_ACCESSOR = {
   templateUrl: "./drop-down.component.html",
   styleUrls: ["./drop-down.component.css"],
   providers: [DROPDOWN_CONTROL_VALUE_ACCESSOR],
+  standalone: true,
+  imports: [MatFormField, MatSelect, MatOption],
 })
 export class DropDownComponent implements ControlValueAccessor, OnInit {
   @Input() options: CodelistEntry[];

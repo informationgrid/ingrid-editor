@@ -29,13 +29,42 @@ import { DocumentAbstract } from "../../store/document/document.model";
 import { Observable, of, Subject } from "rxjs";
 import { TreeNode } from "../../store/tree/tree-node.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { MatSelectionList } from "@angular/material/list";
+import {
+  MatListItemIcon,
+  MatListItemTitle,
+  MatListOption,
+  MatSelectionList,
+} from "@angular/material/list";
+import { AsyncPipe, DatePipe, LowerCasePipe, NgFor } from "@angular/common";
+import { CdkMonitorFocus } from "@angular/cdk/a11y";
+import { MatIcon } from "@angular/material/icon";
+import { DocumentIconComponent } from "../document-icon/document-icon.component";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatDivider } from "@angular/material/divider";
+import { DateAgoPipe } from "../../directives/date-ago.pipe";
 
 @UntilDestroy()
 @Component({
   selector: "ige-document-list-item",
   templateUrl: "./document-list-item.component.html",
   styleUrls: ["./document-list-item.component.scss"],
+  standalone: true,
+  imports: [
+    MatSelectionList,
+    NgFor,
+    MatListOption,
+    CdkMonitorFocus,
+    MatIcon,
+    MatListItemIcon,
+    DocumentIconComponent,
+    MatListItemTitle,
+    MatTooltip,
+    MatDivider,
+    AsyncPipe,
+    LowerCasePipe,
+    DatePipe,
+    DateAgoPipe,
+  ],
 })
 export class DocumentListItemComponent implements OnInit {
   _docs: Observable<DocumentAbstract[] | TreeNode[]>;

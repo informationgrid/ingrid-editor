@@ -19,16 +19,43 @@
  */
 import { Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
-import { FormControl, FormGroup } from "@angular/forms";
+import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FieldTypeConfig } from "@ngx-formly/core";
+import { FieldTypeConfig, FormlyModule } from "@ngx-formly/core";
 import { debounceTime } from "rxjs/operators";
+import {
+  MatError,
+  MatFormField,
+  MatLabel,
+  MatSuffix,
+} from "@angular/material/form-field";
+import {
+  MatDatepickerToggle,
+  MatDateRangeInput,
+  MatDateRangePicker,
+  MatEndDate,
+  MatStartDate,
+} from "@angular/material/datepicker";
 
 @UntilDestroy()
 @Component({
   selector: "ige-date-range-type",
   templateUrl: "./date-range-type.component.html",
   styleUrls: ["./date-range-type.component.scss"],
+  standalone: true,
+  imports: [
+    MatFormField,
+    MatLabel,
+    MatDateRangeInput,
+    ReactiveFormsModule,
+    MatStartDate,
+    MatEndDate,
+    MatDatepickerToggle,
+    MatSuffix,
+    MatDateRangePicker,
+    MatError,
+    FormlyModule,
+  ],
 })
 export class DateRangeTypeComponent
   extends FieldType<FieldTypeConfig>

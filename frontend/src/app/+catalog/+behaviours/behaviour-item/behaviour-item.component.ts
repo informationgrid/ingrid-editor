@@ -18,15 +18,35 @@
  * limitations under the Licence.
  */
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { UntypedFormGroup } from "@angular/forms";
+import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { delay, filter } from "rxjs/operators";
+import {
+  MatCard,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+} from "@angular/material/card";
+import { MatSlideToggle } from "@angular/material/slide-toggle";
+import { FormlyModule } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Component({
   selector: "ige-behaviour-item",
   templateUrl: "./behaviour-item.component.html",
   styleUrls: ["./behaviour-item.component.scss"],
+  standalone: true,
+  imports: [
+    MatCard,
+    MatCardHeader,
+    MatCardTitle,
+    MatCardSubtitle,
+    MatSlideToggle,
+    ReactiveFormsModule,
+    MatCardContent,
+    FormlyModule,
+  ],
 })
 export class BehaviourItemComponent implements OnInit {
   @Input() title: string;

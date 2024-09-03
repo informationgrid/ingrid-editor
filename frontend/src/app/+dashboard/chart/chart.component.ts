@@ -19,6 +19,7 @@
  */
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
+import { DecimalPipe } from "@angular/common";
 
 /**
  * This functionality was much inspired by https://stackoverflow.com/questions/48601880/svg-counterclockwise
@@ -29,6 +30,8 @@ import { UntilDestroy } from "@ngneat/until-destroy";
   templateUrl: "./chart.component.html",
   styleUrls: ["./chart.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [DecimalPipe],
 })
 export class ChartComponent {
   @Input() set data(values: number[]) {

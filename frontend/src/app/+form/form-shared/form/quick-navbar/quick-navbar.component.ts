@@ -24,12 +24,27 @@ import { SessionQuery } from "../../../../store/session.query";
 import { SessionStore } from "../../../../store/session.store";
 import { FormStateService } from "../../../form-state.service";
 import { DocumentAbstract } from "../../../../store/document/document.model";
+import { DocumentIconComponent } from "../../../../shared/document-icon/document-icon.component";
+import { HeaderNavigationComponent } from "../../../form-info/header-navigation/header-navigation.component";
+import { FormMessageComponent } from "../../../form-info/form-message/form-message.component";
+import { ErrorPanelComponent } from "../error-panel/error-panel.component";
+import { MatSlideToggle } from "@angular/material/slide-toggle";
+import { AsyncPipe } from "@angular/common";
 
 @UntilDestroy()
 @Component({
   selector: "ige-quick-navbar",
   templateUrl: "./quick-navbar.component.html",
   styleUrls: ["./quick-navbar.component.scss"],
+  standalone: true,
+  imports: [
+    DocumentIconComponent,
+    HeaderNavigationComponent,
+    FormMessageComponent,
+    ErrorPanelComponent,
+    MatSlideToggle,
+    AsyncPipe,
+  ],
 })
 export class QuickNavbarComponent {
   @Input() sections: string[] = [];

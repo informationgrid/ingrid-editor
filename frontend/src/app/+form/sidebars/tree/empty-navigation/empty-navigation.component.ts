@@ -23,6 +23,7 @@ import { Component, OnInit } from "@angular/core";
   selector: "ige-empty-navigation",
   templateUrl: "./empty-navigation.component.html",
   styleUrls: ["./empty-navigation.component.scss"],
+  standalone: true,
 })
 export class EmptyNavigationComponent implements OnInit {
   constructor() {}

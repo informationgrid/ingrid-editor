@@ -21,9 +21,10 @@ import { Component, inject, OnInit } from "@angular/core";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MatInputModule } from "@angular/material/input";
 import { ConfigService } from "../../services/config/config.service";
-import { PageTemplateModule } from "../../shared/page-template/page-template.module";
+
 import { MatButtonModule } from "@angular/material/button";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-template-no-header.component";
 
 @Component({
   selector: "ige-content-management",
@@ -32,8 +33,8 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   imports: [
     MatInputModule,
     ReactiveFormsModule,
-    PageTemplateModule,
     MatButtonModule,
+    PageTemplateNoHeaderComponent,
   ],
   standalone: true,
 })

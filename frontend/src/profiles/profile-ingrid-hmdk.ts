@@ -36,6 +36,7 @@ import { ModifyPublishedBehaviour } from "./ingrid-hmdk/behaviours/modify-publis
 @UntilDestroy()
 @Component({
   template: "",
+  standalone: true,
 })
 class InGridHMDKComponent extends InGridComponent {
   specialisedTask = inject(SpecialisedTaskDoctypeHMDK);
@@ -85,7 +86,7 @@ class InGridHMDKComponent extends InGridComponent {
 }
 
 @NgModule({
-  declarations: [InGridHMDKComponent],
+  imports: [InGridHMDKComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

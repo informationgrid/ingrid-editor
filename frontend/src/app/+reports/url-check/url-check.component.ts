@@ -19,8 +19,20 @@
  */
 import { Component, inject, OnInit, ViewChild } from "@angular/core";
 import { UrlCheckService, UrlInfo, UrlLogResult } from "./url-check.service";
-import { MatTableDataSource } from "@angular/material/table";
-import { MatSort } from "@angular/material/sort";
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
+  MatTable,
+  MatTableDataSource,
+} from "@angular/material/table";
+import { MatSort, MatSortHeader } from "@angular/material/sort";
 import { SelectionModel } from "@angular/cdk/collections";
 import { map, tap } from "rxjs/operators";
 import { merge, Observable } from "rxjs";
@@ -36,11 +48,52 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfigService } from "../../services/config/config.service";
 import { RxStompService } from "../../rx-stomp.service";
 import { ExportService } from "../../services/export.service";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { JobHandlerHeaderComponent } from "../../shared/job-handler-header/job-handler-header.component";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { ResultTableHeaderComponent } from "../../+research/result-table/result-table-header/result-table-header.component";
+import { MatDivider } from "@angular/material/divider";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { MatIcon } from "@angular/material/icon";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatFormField, MatHint } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { AsyncPipe, DatePipe } from "@angular/common";
 
 @Component({
   selector: "ige-url-check",
   templateUrl: "./url-check.component.html",
   styleUrls: ["./url-check.component.scss"],
+  standalone: true,
+  imports: [
+    PageTemplateComponent,
+    JobHandlerHeaderComponent,
+    MatButton,
+    ResultTableHeaderComponent,
+    MatDivider,
+    MatTable,
+    MatSort,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatCheckbox,
+    MatSortHeader,
+    MatIcon,
+    MatTooltip,
+    MatIconButton,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    MatPaginator,
+    MatFormField,
+    MatInput,
+    MatHint,
+    AsyncPipe,
+    DatePipe,
+  ],
 })
 export class UrlCheckComponent implements OnInit {
   private exportService: ExportService = inject(ExportService);

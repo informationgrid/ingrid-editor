@@ -41,17 +41,17 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatSelectModule } from "@angular/material/select";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { GetCapabilitiesDialogComponent } from "../app/formly/types/update-get-capabilities/get-capabilities-dialog/get-capabilities-dialog.component";
-import { DialogTemplateModule } from "../app/shared/dialog-template/dialog-template.module";
+
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatListModule } from "@angular/material/list";
-import { SharedPipesModule } from "../app/directives/shared-pipes.module";
+
 import { ThesaurusReportComponent } from "./ingrid/components/thesaurus-report.component";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { GetCapabilititesWizardPlugin } from "./ingrid/components/getCapWIzard/get-capabilitites-wizard.plugin";
 import { FormToolbarService } from "../app/+form/form-shared/toolbar/form-toolbar.service";
 import { IsoViewPlugin } from "./ingrid/components/iso-view/iso-view.plugin";
 import { IsoViewComponent } from "./ingrid/components/iso-view/iso-view.component";
-import { BreadcrumbModule } from "../app/+form/form-info/breadcrumb/breadcrumb.module";
+
 import { InvekosPlugin } from "./ingrid/behaviours/invekos.plugin";
 import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
 
@@ -67,6 +67,7 @@ export enum InGridDoctype {
 
 @Component({
   template: "",
+  standalone: true,
 })
 export class InGridComponent implements OnInit {
   profileService = inject(ProfileService);
@@ -111,12 +112,6 @@ export class InGridComponent implements OnInit {
 }
 
 @NgModule({
-  declarations: [
-    InGridComponent,
-    ConformityDialogComponent,
-    GetCapabilitiesDialogComponent,
-    ThesaurusReportComponent,
-  ],
   providers: [GetCapabilititesWizardPlugin, IsoViewPlugin, FormToolbarService],
   imports: [
     MatIconModule,
@@ -134,14 +129,15 @@ export class InGridComponent implements OnInit {
     JsonPipe,
     NgIf,
     MatAutocompleteModule,
-    DialogTemplateModule,
     MatProgressSpinnerModule,
     MatListModule,
-    SharedPipesModule,
     DatePipe,
     MatSnackBarModule,
     IsoViewComponent,
-    BreadcrumbModule,
+    InGridComponent,
+    ConformityDialogComponent,
+    GetCapabilitiesDialogComponent,
+    ThesaurusReportComponent,
   ],
   exports: [InGridComponent],
 })

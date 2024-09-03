@@ -31,12 +31,35 @@ import { catchError, debounceTime, map, startWith } from "rxjs/operators";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIconButton } from "@angular/material/button";
+import { MatSuffix } from "@angular/material/form-field";
+import { MatIcon } from "@angular/material/icon";
+import { SearchInputComponent } from "../../../../shared/search-input/search-input.component";
+import { MatAutocomplete } from "@angular/material/autocomplete";
+import { MatOption } from "@angular/material/core";
+import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
+import { AsyncPipe } from "@angular/common";
 
 @UntilDestroy()
 @Component({
   selector: "ige-tree-header",
   templateUrl: "./tree-header.component.html",
   styleUrls: ["./tree-header.component.scss"],
+  standalone: true,
+  imports: [
+    MatCheckbox,
+    MatTooltip,
+    MatIconButton,
+    MatSuffix,
+    MatIcon,
+    SearchInputComponent,
+    MatAutocomplete,
+    MatOption,
+    DocumentListItemComponent,
+    AsyncPipe,
+  ],
 })
 export class TreeHeaderComponent implements OnInit {
   @Input() showReloadButton = false;

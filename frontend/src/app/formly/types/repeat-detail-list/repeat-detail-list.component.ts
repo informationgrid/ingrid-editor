@@ -37,14 +37,15 @@ import {
 } from "@angular/cdk/drag-drop";
 import { MatListModule } from "@angular/material/list";
 import { AsyncPipe, JsonPipe, KeyValuePipe, NgForOf } from "@angular/common";
-import { SharedPipesModule } from "../../../directives/shared-pipes.module";
+
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
-import { AddButtonModule } from "../../../shared/add-button/add-button.module";
 import { MatButtonModule } from "@angular/material/button";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
+import { CodelistPipe } from "../../../directives/codelist.pipe";
+import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 
 interface RepeatDetailListProps extends FormlyFieldProps {
   titleField: string;
@@ -64,15 +65,15 @@ interface RepeatDetailListProps extends FormlyFieldProps {
     MatIconModule,
     MatListModule,
     MatMenuModule,
-    AddButtonModule,
+    AddButtonComponent,
     MatButtonModule,
-    SharedPipesModule,
     FormErrorComponent,
     KeyValuePipe,
     FormlyModule,
     MatTooltipModule,
     JsonPipe,
     NgForOf,
+    CodelistPipe,
   ],
   standalone: true,
 })

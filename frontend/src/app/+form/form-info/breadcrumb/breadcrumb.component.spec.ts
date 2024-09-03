@@ -27,7 +27,7 @@ describe("BreadcrumbComponent", () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [BreadcrumbComponent],
+      imports: [BreadcrumbComponent],
     }).compileComponents();
   }));
 

@@ -23,14 +23,38 @@ import { Observable, of } from "rxjs";
 import { debounceTime, filter, map, startWith, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
-import { FieldTypeConfig } from "@ngx-formly/core";
+import { FieldTypeConfig, FormlyModule } from "@ngx-formly/core";
 import { BackendOption } from "../../store/codelist/codelist.model";
+import { MatInput } from "@angular/material/input";
+import {
+  MatAutocomplete,
+  MatAutocompleteTrigger,
+} from "@angular/material/autocomplete";
+import { ReactiveFormsModule } from "@angular/forms";
+import { MatIconButton } from "@angular/material/button";
+import { MatSuffix } from "@angular/material/form-field";
+import { MatIcon } from "@angular/material/icon";
+import { MatDivider } from "@angular/material/divider";
+import { MatOption } from "@angular/material/core";
 
 @UntilDestroy()
 @Component({
   selector: "ige-formly-autocomplete-type",
   templateUrl: "./autocomplete-type.component.html",
   styleUrls: ["./autocomplete-type.component.scss"],
+  standalone: true,
+  imports: [
+    MatInput,
+    MatAutocompleteTrigger,
+    ReactiveFormsModule,
+    FormlyModule,
+    MatIconButton,
+    MatSuffix,
+    MatIcon,
+    MatAutocomplete,
+    MatDivider,
+    MatOption,
+  ],
 })
 export class AutocompleteTypeComponent
   extends FieldType<FieldTypeConfig>

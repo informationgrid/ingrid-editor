@@ -23,11 +23,16 @@ import { TreeNode } from "../../store/tree/tree-node.model";
 import { TranslocoService } from "@ngneat/transloco";
 import { DocumentState } from "../../models/ige-document";
 import { ProfileService } from "../../services/profile.service";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIcon } from "@angular/material/icon";
+import { NgClass } from "@angular/common";
 
 @Component({
   selector: "ige-document-icon",
   templateUrl: "./document-icon.component.html",
   styleUrls: ["./document-icon.component.scss"],
+  standalone: true,
+  imports: [MatTooltip, MatIcon, NgClass],
 })
 export class DocumentIconComponent implements OnChanges {
   tooltip: string;

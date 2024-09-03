@@ -19,11 +19,43 @@
  */
 import { Component, OnInit } from "@angular/core";
 import { SaveQueryDialogResponse } from "./save-query-dialog.response";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import {
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogTitle,
+} from "@angular/material/dialog";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FocusDirective } from "../../directives/focus.directive";
+import { MatCheckbox } from "@angular/material/checkbox";
 
 @Component({
   selector: "ige-save-query-dialog",
   templateUrl: "./save-query-dialog.component.html",
   styleUrls: ["./save-query-dialog.component.scss"],
+  standalone: true,
+  imports: [
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    ReactiveFormsModule,
+    FocusDirective,
+    FormsModule,
+    MatCheckbox,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class SaveQueryDialogComponent implements OnInit {
   model: SaveQueryDialogResponse = {

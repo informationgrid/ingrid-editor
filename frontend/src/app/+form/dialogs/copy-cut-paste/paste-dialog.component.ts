@@ -22,6 +22,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { ConfigService } from "../../../services/config/config.service";
+import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-template.component";
+import { DestinationSelectionComponent } from "../create/destination-selection/destination-selection.component";
 
 export interface PasteDialogOptions {
   buttonText: string;
@@ -35,6 +37,8 @@ export interface PasteDialogOptions {
 @Component({
   templateUrl: "./paste-dialog.component.html",
   styleUrls: ["./paste-dialog.component.scss"],
+  standalone: true,
+  imports: [DialogTemplateComponent, DestinationSelectionComponent],
 })
 export class PasteDialogComponent implements OnInit {
   selection: string = null;
