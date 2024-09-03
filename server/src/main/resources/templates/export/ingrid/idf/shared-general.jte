@@ -874,9 +874,11 @@ ${contentInfo}
                                     <gco:CharacterString>${digitalTransferOption.getTransferSize().getUnit().getKey()}</gco:CharacterString>
                                 </gmd:unitsOfDistribution>
                             @endif
-                            <gmd:transferSize>
-                                <gco:Real>${digitalTransferOption.getTransferSize().getValue()}</gco:Real>
-                            </gmd:transferSize>
+                            @if(TransformationTools.hasValue(digitalTransferOption.getTransferSize().getValue()))
+                                <gmd:transferSize>
+                                    <gco:Real>${digitalTransferOption.getTransferSize().getValue()}</gco:Real>
+                                </gmd:transferSize>
+                            @endif
                         @endif
                         <gmd:offLine>
                             <gmd:MD_Medium>
