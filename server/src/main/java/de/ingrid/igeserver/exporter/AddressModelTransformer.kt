@@ -120,7 +120,7 @@ open class AddressModelTransformer(
         ?.takeIf { !it.isNull }
         ?.mapToKeyValue()
         ?.let {
-            TransformationTools.getISO3166_1_Alpha_3FromNumericLanguageCode(it)
+            TransformationTools.getISO3166v1Alpha3FromNumericLanguageCode(it)
         }
     val zipCode = displayAddress.data.getString("address.zip-code")
     val zipPoBox = displayAddress.data.getString("address.zip-po-box")

@@ -31,6 +31,7 @@ import org.springframework.security.access.prepost.PostFilter
 import org.springframework.security.access.prepost.PreAuthorize
 import java.util.*
 
+@Suppress("ktlint:standard:function-naming")
 interface DocumentWrapperRepository :
     JpaRepository<DocumentWrapper, Int>,
     JpaSpecificationExecutor<DocumentWrapper> {

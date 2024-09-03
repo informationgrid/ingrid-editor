@@ -28,6 +28,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.security.access.prepost.PreAuthorize
 
+@Suppress("ktlint:standard:function-naming")
 interface DocumentRepository : JpaRepository<Document, Int> {
 
     fun getByCatalogAndUuidAndIsLatestIsTrue(catalog: Catalog, uuid: String): Document

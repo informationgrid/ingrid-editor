@@ -48,7 +48,7 @@ class BeansConfiguration {
     private val codelistDataPath: String? = null
 
     @Bean
-    fun HttpCodelistCommunication(): ICodeListCommunication {
+    fun httpCodelistCommunication(): ICodeListCommunication {
         val communication = HttpCLCommunication()
         communication.setRequestUrl("$codelistUrl/rest/getCodelists")
         communication.setUsername(codelistUserName)
@@ -79,9 +79,7 @@ class BeansConfiguration {
      * This mapper is needed to correctly convert JSONB columns into Classes, especially OffsetDateTime!
      */
     @Bean
-    fun jsonFormatMapperCustomizer(objectMapper: ObjectMapper): HibernatePropertiesCustomizer {
-        return HibernatePropertiesCustomizer { properties: MutableMap<String, Any> ->
-            properties[AvailableSettings.JSON_FORMAT_MAPPER] = JacksonJsonFormatMapper(objectMapper)
-        }
+    fun jsonFormatMapperCustomizer(objectMapper: ObjectMapper): HibernatePropertiesCustomizer = HibernatePropertiesCustomizer { properties: MutableMap<String, Any> ->
+        properties[AvailableSettings.JSON_FORMAT_MAPPER] = JacksonJsonFormatMapper(objectMapper)
     }
 }
