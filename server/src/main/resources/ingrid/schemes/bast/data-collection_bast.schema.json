@@ -51,7 +51,7 @@
             "references": {
               "type": "array",
               "items": {
-                "$ref": "../refs/general.schema.json#/definitions/Spatial"
+                "$ref": "../../../general.schema.json#/definitions/Spatial"
               }
             },
             "description": {
