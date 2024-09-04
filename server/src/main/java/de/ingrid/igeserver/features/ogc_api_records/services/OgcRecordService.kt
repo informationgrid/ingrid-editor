@@ -49,7 +49,6 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportResult
 import de.ingrid.igeserver.services.ExportService
 import org.keycloak.util.JsonSerialization
-import org.springframework.http.HttpHeaders
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -263,27 +262,6 @@ class OgcRecordService(
         val sr = StreamResult(sw)
         transformer.transform(domSource, sr)
         return sw.toString()
-    }
-
-    fun responseHeaders(format: String, links: List<String>?): HttpHeaders {
-        val responseHeaders = HttpHeaders()
-        // add response format
-        if (format == "internal" || format == "geojson") responseHeaders.add("Content-Type", "application/json")
-        if (format == "html") responseHeaders.add("Content-Type", "text/html")
-        if (format == "ingridISO") responseHeaders.add("Content-Type", "application/xml")
-        // add next, previous & self links
-        if (!links.isNullOrEmpty()) {
-            for (link in links) {
-                responseHeaders.add("Link", link)
-            }
-        }
-        return responseHeaders
-    }
-
-    fun ogcDateTimeConverter(datetime: String): List<String> {
-        val dateArray = datetime.split("/") // listOf(datetime)
-        var dateList = dateArray.map { date -> if (date == "..") null else checkDatetime(date) }
-        return dateArray
     }
 
     fun checkDatetime(date: String): String {
