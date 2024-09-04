@@ -64,6 +64,7 @@ class InGridBastComponent extends InGridComponent {
     const geodatasetOptions = this.geoDataset.geodatasetOptions;
     geodatasetOptions.required.identifier = false;
     geodatasetOptions.dynamicRequired.identifier = openDataActiveNotRequired;
+    geodatasetOptions.validators.identifier = { validation: ["url"] };
     geodatasetOptions.required.statement = false;
     geodatasetOptions.dynamicRequired.statement = openDataActiveNotRequired;
 

@@ -48,6 +48,9 @@ export class GeoDatasetDoctype extends IngridShared {
       identifier: undefined,
       statement: undefined,
     },
+    validators: {
+      identifier: null,
+    },
   };
 
   showInspireConform = true;
@@ -96,6 +99,7 @@ export class GeoDatasetDoctype extends IngridShared {
         ]),
         this.addInput("identifier", "Identifikator der Datenquelle", {
           required: this.geodatasetOptions.required.identifier,
+          validators: this.geodatasetOptions.validators.identifier,
           wrappers: this.showIdentifierCreateButton
             ? ["panel", "button", "form-field"]
             : ["panel", "form-field"],
