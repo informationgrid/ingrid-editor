@@ -18,12 +18,14 @@
  * limitations under the Licence.
  */
 import {
+  ChangeDetectionStrategy,
   Component,
-  EventEmitter,
+  effect,
   inject,
-  Input,
+  input,
   OnInit,
-  Output,
+  output,
+  signal,
 } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
@@ -54,6 +56,7 @@ interface AddressDocumentAbstract extends DocumentAbstract {
   templateUrl: "./address-template.component.html",
   styleUrls: ["./address-template.component.scss"],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     MatFormField,
@@ -63,14 +66,12 @@ interface AddressDocumentAbstract extends DocumentAbstract {
   ],
 })
 export class AddressTemplateComponent implements OnInit {
-  @Input() form: UntypedFormGroup;
-  @Input() isPerson: boolean;
+  form = input.required<UntypedFormGroup>();
+  parent = input<number>();
 
-  @Input() set parent(value: number) {
-    this.initializeDocumentTypes(this.profileQuery.addressProfiles, value);
-  }
+  create = output<void>();
 
-  @Output() create = new EventEmitter();
+  isPerson = signal<boolean>(false);
 
   private translocoService = inject(TranslocoService);
 
@@ -84,7 +85,17 @@ export class AddressTemplateComponent implements OnInit {
     private profileQuery: ProfileQuery,
     private docBehaviours: DocBehavioursService,
     private profileService: ProfileService,
-  ) {}
+  ) {
+    effect(
+      () => {
+        this.initializeDocumentTypes(
+          this.profileQuery.addressProfiles,
+          this.parent(),
+        );
+      },
+      { allowSignalWrites: true },
+    );
+  }
 
   ngOnInit(): void {}
 
@@ -106,7 +117,7 @@ export class AddressTemplateComponent implements OnInit {
 
   private setInitialTypeFirstTime(types: AddressDocumentAbstract[]) {
     // only set it first time
-    if (!this.form.get("choice").value) {
+    if (!this.form().get("choice").value) {
       const initialType =
         types.find(
           (t) => t.id == this.profileService.getDefaultAddressType()?.id,
@@ -141,11 +152,11 @@ export class AddressTemplateComponent implements OnInit {
   }
 
   setDocType(docType: AddressDocumentAbstract) {
-    this.form.get("choice").setValue(docType.id);
-    this.isPerson = docType.addressType !== "organization";
-    const firstName = this.form.get("firstName");
-    const lastName = this.form.get("lastName");
-    const organization = this.form.get("organization");
+    this.form().get("choice").setValue(docType.id);
+    this.isPerson.set(docType.addressType !== "organization");
+    const firstName = this.form().get("firstName");
+    const lastName = this.form().get("lastName");
+    const organization = this.form().get("organization");
 
     if (this.isPerson) {
       organization.clearValidators();

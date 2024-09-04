@@ -1,5 +1,5 @@
-<div [formGroup]="form" class="flex-col">
-    @if (isPerson) {
+<div [formGroup]="form()" class="flex-col">
+    @if (isPerson()) {
         <div class="space-bottom flex-1 flex-row gap-24">
             <div class="flex-1">
                 <div class="dlg-field-label required">Vorname</div>

@@ -18,12 +18,12 @@
  * limitations under the Licence.
  */
 import {
+  ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   inject,
-  Input,
+  input,
   OnInit,
-  Output,
+  output,
 } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
@@ -43,6 +43,7 @@ import { DocumentListItemComponent } from "../../../../shared/document-list-item
   templateUrl: "./document-template.component.html",
   styleUrls: ["./document-template.component.scss"],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslocoDirective,
     ReactiveFormsModule,
@@ -54,10 +55,10 @@ import { DocumentListItemComponent } from "../../../../shared/document-list-item
   ],
 })
 export class DocumentTemplateComponent implements OnInit {
-  @Input() form: UntypedFormGroup;
-  @Input() isFolder = true;
+  form = input.required<UntypedFormGroup>();
+  isFolder = input<boolean>(true);
 
-  @Output() create = new EventEmitter<void>();
+  create = output<void>();
 
   private translocoService = inject(TranslocoService);
   private profileQuery = inject(ProfileQuery);
@@ -69,7 +70,7 @@ export class DocumentTemplateComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    if (this.isFolder) {
+    if (this.isFolder()) {
       this.setDocType({ id: "FOLDER" } as DocumentAbstract);
     } else {
       this.initializeDocumentTypes(this.profileQuery.documentProfiles);
@@ -111,6 +112,6 @@ export class DocumentTemplateComponent implements OnInit {
   }
 
   setDocType(docType: DocumentAbstract) {
-    this.form.get("choice").setValue(docType.id);
+    this.form().get("choice").setValue(docType.id);
   }
 }

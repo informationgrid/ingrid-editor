@@ -18,6 +18,7 @@
  * limitations under the Licence.
  */
 import {
+  ChangeDetectionStrategy,
   Component,
   effect,
   ElementRef,
@@ -78,6 +79,7 @@ export interface CreateOptions {
   templateUrl: "./create-node.component.html",
   styleUrls: ["./create-node.component.scss"],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CdkDrag,
     CdkDragHandle,
@@ -107,7 +109,7 @@ export class CreateNodeComponent implements OnInit {
   forAddress: boolean;
   selectedPage = 0;
   rootTreeName: string;
-  isFolder = true;
+  isFolder = signal<boolean>(true);
   formGroup: UntypedFormGroup;
   jumpedTreeNodeId: number = null;
   isAdmin = this.config.hasWriteRootPermission();
@@ -130,13 +132,13 @@ export class CreateNodeComponent implements OnInit {
     public dialogRef: MatDialogRef<CreateNodeComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CreateOptions,
   ) {
-    this.isFolder = data.isFolder;
+    this.isFolder.set(data.isFolder);
     this.forAddress = this.data.forAddress;
     this.rootTreeName = this.translocoService.translate(
       this.forAddress ? "menu.address" : "menu.form",
     );
 
-    if (!this.isFolder) {
+    if (!this.isFolder()) {
       this.title = this.translocoService.translate(
         this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
       );
@@ -150,7 +152,6 @@ export class CreateNodeComponent implements OnInit {
   }
 
   private _path: ShortTreeNode[] = [];
-  isPerson: boolean;
 
   get path() {
     return this._path;
@@ -168,7 +169,7 @@ export class CreateNodeComponent implements OnInit {
   ngOnInit() {
     this.query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
 
-    if (this.isFolder || !this.forAddress) {
+    if (this.isFolder() || !this.forAddress) {
       this.initializeForDocumentsAndFolders();
     } else {
       this.initializeForAddresses();
@@ -194,7 +195,7 @@ export class CreateNodeComponent implements OnInit {
 
     this.alreadySubmitted = true;
 
-    if (this.isFolder || !this.forAddress) {
+    if (this.isFolder() || !this.forAddress) {
       await this.handleDocumentCreate();
     } else {
       await this.handleAddressCreate();
