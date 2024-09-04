@@ -36,45 +36,45 @@ import org.springframework.stereotype.Component
 class InGridGeoDatasetTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
     override val jsonSchema = "/ingrid/schemes/krzn/geo-dataset_krzn.schema.json"
 
-    override val profiles = arrayOf(KrznProfile.id)
+    override val profiles = arrayOf(KrznProfile.ID)
 }
 
 @Component
 class InGridDataCollectionTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridDataCollectionType(jdbcTemplate) {
-    override val profiles = arrayOf(KrznProfile.id)
+    override val profiles = arrayOf(KrznProfile.ID)
 }
 
 @Component
 class InGridGeoServiceTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType(jdbcTemplate) {
-    override val profiles = arrayOf(KrznProfile.id)
+    override val profiles = arrayOf(KrznProfile.ID)
 }
 
 @Component
 class InGridInformationSystemTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
-    override val profiles = arrayOf(KrznProfile.id)
+    override val profiles = arrayOf(KrznProfile.ID)
 }
 
 @Component
 class InGridPublicationTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
-    override val profiles = arrayOf(KrznProfile.id)
+    override val profiles = arrayOf(KrznProfile.ID)
 }
 
 @Component
 class InGridProjectTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
-    override val profiles = arrayOf(KrznProfile.id)
+    override val profiles = arrayOf(KrznProfile.ID)
 }
 
 @Component
 class InGridSpecialisedTaskTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridSpecialisedTaskType(jdbcTemplate) {
-    override val profiles = arrayOf(KrznProfile.id)
+    override val profiles = arrayOf(KrznProfile.ID)
 }
 
 @Component
 class InGridOrganisationTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridOrganisationType(jdbcTemplate) {
-    override val profiles = arrayOf(KrznProfile.id)
+    override val profiles = arrayOf(KrznProfile.ID)
 }
 
 @Component
 class InGridPersonTypeKrzn(jdbcTemplate: JdbcTemplate) : InGridPersonType(jdbcTemplate) {
-    override val profiles = arrayOf(KrznProfile.id)
+    override val profiles = arrayOf(KrznProfile.ID)
 }

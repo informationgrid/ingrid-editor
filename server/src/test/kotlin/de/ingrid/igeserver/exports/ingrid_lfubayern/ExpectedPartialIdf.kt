@@ -19,19 +19,19 @@
  */
 package de.ingrid.igeserver.exports.ingrid_lfubayern
 
-const val dataSetURI = """
+const val DATASET_URI = """
             <gmd:dataSetURI>
                 <gco:CharacterString>https://my-dataseturi.com</gco:CharacterString>
             </gmd:dataSetURI>
 """
 
-const val supplementalInformation = """
+const val SUPPLEMENTAL_INFORMATION = """
                     <gmd:supplementalInformation>
                         <gco:CharacterString>internal comments</gco:CharacterString>
                     </gmd:supplementalInformation>
 """
 
-const val internalKeywords = """
+const val INTERNAL_KEYWORDS = """
                     <gmd:descriptiveKeywords>
                         <gmd:MD_Keywords>
                             <gmd:keyword>
@@ -64,7 +64,7 @@ const val internalKeywords = """
                     </gmd:descriptiveKeywords>
 """
 
-const val geologicalKeywords = """
+const val GEOLOGICAL_KEYWORDS = """
                     <gmd:descriptiveKeywords>
                         <gmd:MD_Keywords>
                             <gmd:keyword>
@@ -97,7 +97,7 @@ const val geologicalKeywords = """
                     </gmd:descriptiveKeywords>
 """
 
-const val fees = """
+const val FEES = """
                             <gmd:distributionOrderProcess>
                                 <gmd:MD_StandardOrderProcess>
                                     <gmd:fees>
@@ -105,13 +105,13 @@ const val fees = """
                                     </gmd:fees>
 """
 
-const val useConstraintComments = """
+const val USE_CONSTRAINT_COMMENTS = """
                             <gmd:otherConstraints>
                                 <gco:CharacterString>my comments to use constraints</gco:CharacterString>
                             </gmd:otherConstraints>
 """
 
-const val useConstraintCommentsFull = """
+const val USE_CONSTRAINT_COMMENTS_FULL = """
                     <gmd:resourceConstraints>
                         <gmd:MD_LegalConstraints>
                             <gmd:useConstraints>

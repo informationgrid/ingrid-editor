@@ -58,7 +58,7 @@ class URLChecker(
 ) : IgeJob() {
 
     companion object {
-        const val jobKey: String = "url-check"
+        const val JOB_KEY: String = "url-check"
     }
 
     override val log = logger()

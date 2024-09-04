@@ -37,7 +37,7 @@ class ZabbixJob(
 ) : IgeJob() {
 
     companion object {
-        const val jobKey: String = "zabbix-job"
+        const val JOB_KEY: String = "zabbix-job"
     }
 
     override val log = logger()

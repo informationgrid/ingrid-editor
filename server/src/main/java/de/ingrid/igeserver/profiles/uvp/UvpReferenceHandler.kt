@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service
 @Service
 class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entityManager) {
 
-    override fun getProfile() = UvpProfile.id
+    override fun getProfile() = UvpProfile.ID
 
     override val urlFields = listOf("uri")
 
@@ -137,28 +137,24 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
         return uniqueList
     }
 
-    private fun getUrlsFromJsonField(json: JsonNode, onlyLinks: Boolean = false): MutableList<UploadInfo> {
-        return (
-            getUrlsFromJsonFieldTable(json, "applicationDocs", onlyLinks) +
-                getUrlsFromJsonFieldTable(json, "announcementDocs", onlyLinks) +
-                getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs", onlyLinks) +
-                getUrlsFromJsonFieldTable(json, "furtherDocs", onlyLinks) +
-                getUrlsFromJsonFieldTable(json, "considerationDocs", onlyLinks) +
-                getUrlsFromJsonFieldTable(json, "approvalDocs", onlyLinks) +
-                getUrlsFromJsonFieldTable(json, "decisionDocs", onlyLinks)
-            ).toMutableList()
-    }
+    private fun getUrlsFromJsonField(json: JsonNode, onlyLinks: Boolean = false): MutableList<UploadInfo> = (
+        getUrlsFromJsonFieldTable(json, "applicationDocs", onlyLinks) +
+            getUrlsFromJsonFieldTable(json, "announcementDocs", onlyLinks) +
+            getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs", onlyLinks) +
+            getUrlsFromJsonFieldTable(json, "furtherDocs", onlyLinks) +
+            getUrlsFromJsonFieldTable(json, "considerationDocs", onlyLinks) +
+            getUrlsFromJsonFieldTable(json, "approvalDocs", onlyLinks) +
+            getUrlsFromJsonFieldTable(json, "decisionDocs", onlyLinks)
+        ).toMutableList()
 
     private fun getUrlsFromJsonFieldTable(
         json: JsonNode,
         tableField: String,
         onlyLinks: Boolean = false,
-    ): List<UploadInfo> {
-        return json.get(tableField)
-            ?.filter { it.get("downloadURL").get("asLink").asBoolean() == onlyLinks }
-            ?.mapNotNull { mapToUploadInfo(tableField, it) }
-            ?: emptyList()
-    }
+    ): List<UploadInfo> = json.get(tableField)
+        ?.filter { it.get("downloadURL").get("asLink").asBoolean() == onlyLinks }
+        ?.mapNotNull { mapToUploadInfo(tableField, it) }
+        ?: emptyList()
 
     private fun mapToUploadInfo(field: String, it: JsonNode): UploadInfo? {
         val validUntilDateField = it.get("validUntil")

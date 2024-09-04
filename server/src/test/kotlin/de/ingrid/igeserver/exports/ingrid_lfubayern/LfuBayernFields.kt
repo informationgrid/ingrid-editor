@@ -69,7 +69,7 @@ class LfuBayernFields : GeodatasetBase() {
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain dataSetURI
+                result shouldContain DATASET_URI
             }
 
             should("export supplementalInformation for GeoDataset, testing: $docType") {
@@ -82,7 +82,7 @@ class LfuBayernFields : GeodatasetBase() {
 
                 val result = exportJsonToXML(exporter, docSample, context)
                 if (docType == "GeoDataset") {
-                    result shouldContain supplementalInformation
+                    result shouldContain SUPPLEMENTAL_INFORMATION
                 } else {
                     result shouldNotContain "internal comments"
                 }
@@ -103,7 +103,7 @@ class LfuBayernFields : GeodatasetBase() {
 
                 val result = exportJsonToXML(exporter, docSample, context)
                 if (docType == "GeoDataset" || docType == "GeoService") {
-                    result shouldContain internalKeywords
+                    result shouldContain INTERNAL_KEYWORDS
                 } else {
                     result shouldNotContain "intern eins"
                     result shouldNotContain "intern zwei"
@@ -125,7 +125,7 @@ class LfuBayernFields : GeodatasetBase() {
 
                 val result = exportJsonToXML(exporter, docSample, context)
                 if (docType == "GeoDataset" || docType == "GeoService") {
-                    result shouldContain geologicalKeywords
+                    result shouldContain GEOLOGICAL_KEYWORDS
                 } else {
                     result shouldNotContain "geological eins"
                     result shouldNotContain "geological zwei"
@@ -141,7 +141,7 @@ class LfuBayernFields : GeodatasetBase() {
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain fees
+                result shouldContain FEES
             }
 
             should("export additional use constraints comment, testing: $docType") {
@@ -155,7 +155,7 @@ class LfuBayernFields : GeodatasetBase() {
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain useConstraintComments
+                result shouldContain USE_CONSTRAINT_COMMENTS
             }
 
             should("export additional use constraints comment with existing constraints, testing: $docType") {
@@ -177,7 +177,7 @@ class LfuBayernFields : GeodatasetBase() {
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain useConstraintCommentsFull
+                result shouldContain USE_CONSTRAINT_COMMENTS_FULL
             }
         }
     }

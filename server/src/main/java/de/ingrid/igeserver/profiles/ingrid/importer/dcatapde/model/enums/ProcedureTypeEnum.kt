@@ -40,17 +40,16 @@ enum class ProcedureTypeEnum(val value: String) {
     UNKNOWN("unknown"),
     ;
 
-    class Converter : EnumConverter<ProcedureTypeEnum>(
-        ProcedureTypeEnum::class.java,
-    )
+    class Converter :
+        EnumConverter<ProcedureTypeEnum>(
+            ProcedureTypeEnum::class.java,
+        )
 
     @JsonValue
-    override fun toString(): String {
-        return value.toString()
-    }
+    override fun toString(): String = value.toString()
 
     companion object {
-        private const val uriPrefix = "https://specs.diplanung.de/resource/procedureType#"
+        private const val URI_PREFIX = "https://specs.diplanung.de/resource/procedureType#"
 
         @JsonCreator
         fun fromValue(text: String?): ProcedureTypeEnum? {
@@ -64,14 +63,12 @@ enum class ProcedureTypeEnum(val value: String) {
             }
             val enumValues = java.lang.String.join(
                 ", ",
-                Stream.of(*entries.toTypedArray()).map { anEnum: ProcedureTypeEnum -> uriPrefix + anEnum.toString() }
+                Stream.of(*entries.toTypedArray()).map { anEnum: ProcedureTypeEnum -> URI_PREFIX + anEnum.toString() }
                     .toList(),
             )
             throw IllegalArgumentException("ProcedureTypeEnum value has to be one of [$enumValues], was $text")
         }
 
-        private fun stripPrefix(uri: String): String {
-            return uri.replaceFirst(uriPrefix.toRegex(), "")
-        }
+        private fun stripPrefix(uri: String): String = uri.replaceFirst(URI_PREFIX.toRegex(), "")
     }
 }

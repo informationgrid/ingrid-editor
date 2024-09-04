@@ -47,6 +47,7 @@ import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 import java.util.*
 
+@Suppress("ktlint:standard:property-naming")
 @Entity
 @Table(name = "document_wrapper")
 @Where(clause = "deleted = 0")

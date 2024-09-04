@@ -34,45 +34,45 @@ import org.springframework.stereotype.Component
 
 @Component
 class InGridGeoDatasetTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
-    override val profiles = arrayOf(InGridKommunalStProfile.id)
+    override val profiles = arrayOf(InGridKommunalStProfile.ID)
 }
 
 @Component
 class InGridDataCollectionTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridDataCollectionType(jdbcTemplate) {
-    override val profiles = arrayOf(InGridKommunalStProfile.id)
+    override val profiles = arrayOf(InGridKommunalStProfile.ID)
 }
 
 @Component
 class InGridGeoServiceTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType(jdbcTemplate) {
-    override val profiles = arrayOf(InGridKommunalStProfile.id)
+    override val profiles = arrayOf(InGridKommunalStProfile.ID)
 }
 
 @Component
 class InGridInformationSystemTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
-    override val profiles = arrayOf(InGridKommunalStProfile.id)
+    override val profiles = arrayOf(InGridKommunalStProfile.ID)
 }
 
 @Component
 class InGridPublicationTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
-    override val profiles = arrayOf(InGridKommunalStProfile.id)
+    override val profiles = arrayOf(InGridKommunalStProfile.ID)
 }
 
 @Component
 class InGridProjectTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
-    override val profiles = arrayOf(InGridKommunalStProfile.id)
+    override val profiles = arrayOf(InGridKommunalStProfile.ID)
 }
 
 @Component
 class InGridSpecialisedTaskTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridSpecialisedTaskType(jdbcTemplate) {
-    override val profiles = arrayOf(InGridKommunalStProfile.id)
+    override val profiles = arrayOf(InGridKommunalStProfile.ID)
 }
 
 @Component
 class InGridOrganisationTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridOrganisationType(jdbcTemplate) {
-    override val profiles = arrayOf(InGridKommunalStProfile.id)
+    override val profiles = arrayOf(InGridKommunalStProfile.ID)
 }
 
 @Component
 class InGridPersonTypeKommunalSt(jdbcTemplate: JdbcTemplate) : InGridPersonType(jdbcTemplate) {
-    override val profiles = arrayOf(InGridKommunalStProfile.id)
+    override val profiles = arrayOf(InGridKommunalStProfile.ID)
 }

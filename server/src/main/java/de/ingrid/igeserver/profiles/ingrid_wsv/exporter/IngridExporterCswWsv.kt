@@ -53,10 +53,10 @@ class IngridExporterCswWsv(
         )
 
     @Value("\${wsv.cart.types:10900,10901,10902,10903,10904}")
-    private val SPECIAL_TYPE: List<String> = emptyList()
+    private val specialType: List<String> = emptyList()
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         if (doc.data.get("references") != null) {
-            (doc.data.get("references") as ArrayNode).removeAll { ref -> SPECIAL_TYPE.contains(ref.get("type")?.get("key")?.textValue()) }
+            (doc.data.get("references") as ArrayNode).removeAll { ref -> specialType.contains(ref.get("type")?.get("key")?.textValue()) }
         }
 
         return super.run(doc, catalogId, options)

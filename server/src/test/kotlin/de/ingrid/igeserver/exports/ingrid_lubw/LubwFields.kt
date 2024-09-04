@@ -61,7 +61,7 @@ class LubwFields : GeodatasetBase() {
                         ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain oacKeyword
+                result shouldContain OAC_KEYWORD
             }
 
             should("export environmentdescription to: $docType") {
@@ -84,7 +84,7 @@ class LubwFields : GeodatasetBase() {
                         ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain systemEnvironment
+                result shouldContain SYSTEM_ENVIRONMENT
             }
         }
     }

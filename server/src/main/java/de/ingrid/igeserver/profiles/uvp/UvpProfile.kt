@@ -53,10 +53,10 @@ class UvpProfile(
 ) : CatalogProfile {
 
     companion object {
-        const val id = "uvp"
+        const val ID = "uvp"
     }
 
-    override val identifier = id
+    override val identifier = ID
     override val title = "UVP Katalog"
     override val description = null
     override val indexExportFormatID = "indexUvpIDF"

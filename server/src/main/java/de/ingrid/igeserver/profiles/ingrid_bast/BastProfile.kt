@@ -40,16 +40,14 @@ class BastProfile(
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
-        const val id = "ingrid-bast"
+        const val ID = "ingrid-bast"
     }
 
-    override val identifier = id
+    override val identifier = ID
     override val title = "InGrid Katalog (BASt)"
     override val parentProfile = "ingrid"
 
     override val indexExportFormatID = "indexInGridIDFBast"
 
-    override fun getElasticsearchMapping(format: String): String {
-        return {}.javaClass.getResource("/ingrid/mappings/bast/default-mapping.json")?.readText() ?: ""
-    }
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/bast/default-mapping.json")?.readText() ?: ""
 }

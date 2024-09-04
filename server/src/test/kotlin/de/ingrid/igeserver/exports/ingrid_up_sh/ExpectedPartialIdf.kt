@@ -19,7 +19,7 @@
  */
 package de.ingrid.igeserver.exports.ingrid_up_sh
 
-const val geometryContextOther = """
+const val GEOMETRY_CONTEXT_OTHER = """
             <gmd:spatialRepresentationInfo>
                 <igctx:MD_GeometryContext gco:isoType="AbstractMD_SpatialRepresentation_Type">
                     <igctx:geometryType>
@@ -74,7 +74,7 @@ const val geometryContextOther = """
                 </igctx:MD_GeometryContext>
             </gmd:spatialRepresentationInfo>"""
 
-const val geometryContextNominal = """
+const val GEOMETRY_CONTEXT_NOMINAL = """
             <gmd:spatialRepresentationInfo>
                 <igctx:MD_GeometryContext gco:isoType="AbstractMD_SpatialRepresentation_Type">
                     <igctx:geometryType>

@@ -64,7 +64,7 @@ class BastFields : GeodatasetBase() {
                         ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain projectTitleAndNumberInKeywords
+                result shouldContain PROJECT_TITLE_AND_NUMBER_IN_KEYWORDS
             }
 
             should("export digitalTransferOptions with correct unit for: $docType") {
@@ -93,7 +93,7 @@ class BastFields : GeodatasetBase() {
                 val result =
                     exportJsonToXML(exporter, docSample, context)
 
-                result shouldContain digitalTransferOptionWithUnit
+                result shouldContain DIGITAL_TRANSFER_OPTION_WITH_UNIT
             }
 
             should("export supplementalInformation for: $docType") {
@@ -109,7 +109,7 @@ class BastFields : GeodatasetBase() {
                 val result =
                     exportJsonToXML(exporter, docSample, context)
 
-                result shouldContain supplementalInformation
+                result shouldContain SUPPLEMENTAL_INFORMATION
             }
 
             should("export useConstraintsComments for: $docType") {
@@ -127,7 +127,7 @@ class BastFields : GeodatasetBase() {
                 val result =
                     exportJsonToXML(exporter, docSample, context)
 
-                result shouldContain useConstraintsComments
+                result shouldContain USE_CONSTRAINTS_COMMENTS
             }
         }
     }

@@ -19,7 +19,7 @@
  */
 package de.ingrid.igeserver.exports.ingrid_hmdk
 
-const val informationsgegenstandISO = """
+const val INFORMATIONSGEGENSTAND_ISO = """
                     <gmd:descriptiveKeywords>
                         <gmd:MD_Keywords>
                             <gmd:keyword>
@@ -49,7 +49,7 @@ const val informationsgegenstandISO = """
                     </gmd:descriptiveKeywords>
 """
 
-const val hmbtgKeyword = """
+const val HMBTG_KEYWORD = """
                     <gmd:descriptiveKeywords>
                         <gmd:MD_Keywords>
                             <gmd:keyword>

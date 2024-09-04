@@ -71,13 +71,15 @@ class GetCapabilitiesParserFactory(val codelistHandler: CodelistHandler, val res
         WMTS,
     }
 
-    // identifier for each service type
-    private val SERVICE_TYPE_WMS = "WMS"
-    private val SERVICE_TYPE_WFS = "WFS"
-    private val SERVICE_TYPE_WCS = "WCS"
-    private val SERVICE_TYPE_CSW = "CSW"
-    private val SERVICE_TYPE_WCTS = "WCTS"
-    private val SERVICE_TYPE_WMTS = "WMTS"
+    companion object {
+        // identifier for each service type
+        private const val SERVICE_TYPE_WMS = "WMS"
+        private const val SERVICE_TYPE_WFS = "WFS"
+        private const val SERVICE_TYPE_WCS = "WCS"
+        private const val SERVICE_TYPE_CSW = "CSW"
+        private const val SERVICE_TYPE_WCTS = "WCTS"
+        private const val SERVICE_TYPE_WMTS = "WMTS"
+    }
 
     fun get(doc: Document, catalogId: String): ICapabilitiesParser = when (getServiceType(doc)) {
         ServiceType.WMS111 -> Wms111CapabilitiesParser(codelistHandler, researchService, catalogId)

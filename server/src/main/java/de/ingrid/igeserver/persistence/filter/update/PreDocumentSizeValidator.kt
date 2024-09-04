@@ -32,10 +32,9 @@ import org.springframework.stereotype.Component
 @Component
 class PreDocumentSizeValidator : Filter<PreUpdatePayload> {
 
-    val MAXIMUM_DOCUMENT_SIZE = 32000000 // 32MB
-
     companion object {
         private val PROFILES = arrayOf<String>()
+        private const val MAXIMUM_DOCUMENT_SIZE = 32000000 // 32MB
     }
 
     override val profiles: Array<String>?

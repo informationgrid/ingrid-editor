@@ -66,7 +66,7 @@ class HmdkFields : GeodatasetBase() {
                         ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain hmbtgKeyword
+                result shouldContain HMBTG_KEYWORD
             }
 
             should("export informationsgegenstand to: $docType") {
@@ -84,7 +84,7 @@ class HmdkFields : GeodatasetBase() {
                         ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain informationsgegenstandISO
+                result shouldContain INFORMATIONSGEGENSTAND_ISO
             }
         }
     }

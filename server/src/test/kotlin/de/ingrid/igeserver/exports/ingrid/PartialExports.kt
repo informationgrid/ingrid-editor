@@ -129,7 +129,7 @@ class PartialExports : ShouldSpec() {
                 context,
             )
 
-            result shouldContain idfReferences
+            result shouldContain IDF_REFERENCES
         }
     }
 }

@@ -60,9 +60,7 @@ interface CatalogProfile {
     fun getElasticsearchSetting(format: String): String
 
     @JsonIgnore
-    fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> {
-        return permissions
-    }
+    fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> = permissions
 
     @JsonIgnore
     fun additionalImportAnalysis(catalogId: String, report: OptimizedImportAnalysis, message: Message) {}

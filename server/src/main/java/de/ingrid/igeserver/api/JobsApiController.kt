@@ -95,7 +95,7 @@ class JobsApiController(
     override fun urlCheckTask(principal: Principal, command: JobCommand): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val profile = catalogService.getProfileFromCatalog(catalogId).identifier
-        val jobKey = JobKey.jobKey(getJobIdString(URLChecker.jobKey, principal), catalogId)
+        val jobKey = JobKey.jobKey(getJobIdString(URLChecker.JOB_KEY, principal), catalogId)
 
         // get only documents with write permission
         val groups = authUtils.getCurrentUserRoles(catalogId)
@@ -126,7 +126,7 @@ class JobsApiController(
     ): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val profile = catalogService.getProfileFromCatalog(catalogId).identifier
-        val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
+        val jobKey = JobKey.jobKey(ImportService.JOB_KEY, catalogId)
 
         val tempFile = kotlin.io.path.createTempFile("import-", "-${file.originalFilename}")
         log.info("Save uploaded file to '${tempFile.absolutePathString()}'")
@@ -146,7 +146,7 @@ class JobsApiController(
     override fun importTask(principal: Principal, command: JobCommand, options: ImportOptions): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val profile = catalogService.getProfileFromCatalog(catalogId).identifier
-        val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
+        val jobKey = JobKey.jobKey(ImportService.JOB_KEY, catalogId)
 
         val jobDataMap = JobDataMap().apply {
             put("profile", profile)
@@ -206,7 +206,7 @@ class JobsApiController(
 
     override fun indexCatalog(principal: Principal, command: JobCommand): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val jobKey = JobKey.jobKey(IndexService.jobKey, catalogId)
+        val jobKey = JobKey.jobKey(IndexService.JOB_KEY, catalogId)
 
         val jobDataMap = JobDataMap().apply {
             put("catalogId", catalogId)

@@ -119,14 +119,12 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
         headers: HttpHeaders,
         status: HttpStatusCode,
         request: WebRequest,
-    ): ResponseEntity<Any> {
-        return if (ex !is IgeException) {
-            // wrap into server exception
-            val httpStatus = HttpStatus.valueOf(status.value())
-            val igeException = IgeException(httpStatus, httpStatus.name, httpStatus.reasonPhrase, null, ex)
-            handleIgeException(igeException, request)
-        } else {
-            ResponseEntity(body, headers, status)
-        }
+    ): ResponseEntity<Any> = if (ex !is IgeException) {
+        // wrap into server exception
+        val httpStatus = HttpStatus.valueOf(status.value())
+        val igeException = IgeException(httpStatus, httpStatus.name, httpStatus.reasonPhrase, null, ex)
+        handleIgeException(igeException, request)
+    } else {
+        ResponseEntity(body, headers, status)
     }
 }

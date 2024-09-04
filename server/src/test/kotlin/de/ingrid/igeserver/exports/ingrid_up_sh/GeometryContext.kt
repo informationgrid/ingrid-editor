@@ -79,7 +79,7 @@ class GeometryContext : GeodatasetBase() {
             val result =
                 exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
 
-            result shouldContain geometryContextOther
+            result shouldContain GEOMETRY_CONTEXT_OTHER
         }
 
         should("export geometry context of type 'nominal'") {
@@ -116,7 +116,7 @@ class GeometryContext : GeodatasetBase() {
             val result =
                 exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
 
-            result shouldContain geometryContextNominal
+            result shouldContain GEOMETRY_CONTEXT_NOMINAL
         }
     }
 }

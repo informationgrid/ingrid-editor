@@ -44,14 +44,14 @@ class UPSHProfile(
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
-        const val id = "ingrid-up-sh"
+        const val ID = "ingrid-up-sh"
     }
 
-    override val identifier = id
+    override val identifier = ID
     override val title = "InGrid Katalog (UP-SH)"
     override val parentProfile = "ingrid"
     override val indexExportFormatID = "indexInGridIDFUPSH"
     init {
-        isoImport.profileMapper[id] = isoImportUPSH
+        isoImport.profileMapper[ID] = isoImportUPSH
     }
 }

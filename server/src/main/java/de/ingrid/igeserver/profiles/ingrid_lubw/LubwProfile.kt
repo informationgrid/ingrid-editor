@@ -44,20 +44,18 @@ class LubwProfile(
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
-        const val id = "ingrid-lubw"
+        const val ID = "ingrid-lubw"
     }
 
-    override val identifier = id
+    override val identifier = ID
     override val title = "InGrid Katalog (LUBW)"
     override val parentProfile = "ingrid"
 
     override val indexExportFormatID = "indexInGridIDFLubw"
 
-    override fun getElasticsearchMapping(format: String): String {
-        return {}.javaClass.getResource("/ingrid/mappings/lubw/default-mapping.json")?.readText() ?: ""
-    }
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/lubw/default-mapping.json")?.readText() ?: ""
 
     init {
-        isoImport.profileMapper[id] = isoImportLUBW
+        isoImport.profileMapper[ID] = isoImportLUBW
     }
 }

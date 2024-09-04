@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service
 @Service
 class InGridReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entityManager) {
 
-    override fun getProfile() = InGridProfile.id
+    override fun getProfile() = InGridProfile.ID
 
     override val urlFields = listOf("uri", "url", "methodCall")
 

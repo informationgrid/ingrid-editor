@@ -42,7 +42,7 @@ import java.util.*
 @Service
 class MarkdownContextHelpUtils {
 
-    val LOG = logger()
+    val log = logger()
 
     val contextHelpPath = DEFAULT_CONTEXT_HELP_PATH
 
@@ -114,7 +114,7 @@ class MarkdownContextHelpUtils {
 
             val profileDir = this::class.java.getResource(contextHelpPath)
             if (profileDir == null) {
-                LOG.error("Path for context help not found: $contextHelpPath")
+                log.error("Path for context help not found: $contextHelpPath")
                 return result
             }
 
@@ -213,7 +213,7 @@ class MarkdownContextHelpUtils {
             val mdNode = parser.parse(content)
             htmlRenderer!!.render(mdNode)
         } catch (e: IOException) {
-            LOG.error("Impossible to open ressource from class path.", e)
+            log.error("Impossible to open ressource from class path.", e)
             throw RuntimeException(e)
         }
         return renderedNode

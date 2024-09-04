@@ -63,7 +63,7 @@ class ImportService(
     private val log = logger()
 
     companion object {
-        const val jobKey: String = "import"
+        const val JOB_KEY: String = "import"
     }
 
     fun analyzeFile(

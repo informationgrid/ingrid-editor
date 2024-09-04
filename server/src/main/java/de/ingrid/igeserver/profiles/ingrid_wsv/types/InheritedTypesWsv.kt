@@ -34,45 +34,45 @@ import org.springframework.stereotype.Component
 
 @Component
 class InGridGeoDatasetTypeWsv(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
-    override val profiles = arrayOf(WsvProfile.id)
+    override val profiles = arrayOf(WsvProfile.ID)
 }
 
 @Component
 class InGridDataCollectionTypeWsv(jdbcTemplate: JdbcTemplate) : InGridDataCollectionType(jdbcTemplate) {
-    override val profiles = arrayOf(WsvProfile.id)
+    override val profiles = arrayOf(WsvProfile.ID)
 }
 
 @Component
 class InGridGeoServiceTypeWsv(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType(jdbcTemplate) {
-    override val profiles = arrayOf(WsvProfile.id)
+    override val profiles = arrayOf(WsvProfile.ID)
 }
 
 @Component
 class InGridInformationSystemTypeWsv(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
-    override val profiles = arrayOf(WsvProfile.id)
+    override val profiles = arrayOf(WsvProfile.ID)
 }
 
 @Component
 class InGridPublicationTypeWsv(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
-    override val profiles = arrayOf(WsvProfile.id)
+    override val profiles = arrayOf(WsvProfile.ID)
 }
 
 @Component
 class InGridProjectTypeWsv(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
-    override val profiles = arrayOf(WsvProfile.id)
+    override val profiles = arrayOf(WsvProfile.ID)
 }
 
 @Component
 class InGridSpecialisedTaskTypeWsv(jdbcTemplate: JdbcTemplate) : InGridSpecialisedTaskType(jdbcTemplate) {
-    override val profiles = arrayOf(WsvProfile.id)
+    override val profiles = arrayOf(WsvProfile.ID)
 }
 
 @Component
 class InGridOrganisationTypeWsv(jdbcTemplate: JdbcTemplate) : InGridOrganisationType(jdbcTemplate) {
-    override val profiles = arrayOf(WsvProfile.id)
+    override val profiles = arrayOf(WsvProfile.ID)
 }
 
 @Component
 class InGridPersonTypeWsv(jdbcTemplate: JdbcTemplate) : InGridPersonType(jdbcTemplate) {
-    override val profiles = arrayOf(WsvProfile.id)
+    override val profiles = arrayOf(WsvProfile.ID)
 }

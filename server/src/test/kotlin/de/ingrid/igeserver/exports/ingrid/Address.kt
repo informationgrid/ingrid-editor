@@ -158,8 +158,8 @@ class Address : ShouldSpec() {
             val doc = documentService.getLastPublishedDocument("test-catalog", "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2")
             val result = exportDocToXML(exporter, doc)
 
-            result shouldContain addressHierarchy
-            result shouldContain addressHierarchyWithPositionNameSet
+            result shouldContain ADDRESS_HIERARCHY
+            result shouldContain ADDRESS_HIERARCHY_WITH_POSITION_NAME_SET
         }
 
         should("export address hierarchy with no position name") {
@@ -174,8 +174,8 @@ class Address : ShouldSpec() {
 
             val result = exportDocToXML(exporter, doc)
 
-            result shouldContain addressHierarchy
-            result shouldContain addressHierarchyWithNoPositionNameSet
+            result shouldContain ADDRESS_HIERARCHY
+            result shouldContain ADDRESS_HIERARCHY_WITH_NO_POSITION_NAME_SET
         }
     }
 }

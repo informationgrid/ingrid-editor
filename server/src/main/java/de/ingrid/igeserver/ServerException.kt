@@ -38,8 +38,6 @@ open class ServerException : IgeException {
         /**
          * Factory method for an arbitrary reason
          */
-        fun withReason(reason: String, cause: Throwable? = null): ServerException {
-            return ServerException(STATUS_CODE, ERROR_CODE, reason, null, cause)
-        }
+        fun withReason(reason: String, cause: Throwable? = null): ServerException = ServerException(STATUS_CODE, ERROR_CODE, reason, null, cause)
     }
 }

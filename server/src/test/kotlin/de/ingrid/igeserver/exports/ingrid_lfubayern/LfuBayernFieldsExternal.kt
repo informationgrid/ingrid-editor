@@ -117,7 +117,7 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
 
                 val result = exportJsonToXML(exporter, docSample, context)
                 if (docType == "GeoDataset" || docType == "GeoService") {
-                    result shouldContain geologicalKeywords
+                    result shouldContain GEOLOGICAL_KEYWORDS
                 } else {
                     result shouldNotContain "geological eins"
                     result shouldNotContain "geological zwei"
@@ -133,7 +133,7 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain fees
+                result shouldContain FEES
             }
 
             should("export additional use constraints comment, testing: $docType") {
@@ -147,7 +147,7 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain useConstraintComments
+                result shouldContain USE_CONSTRAINT_COMMENTS
             }
 
             should("export additional use constraints comment with existing constraints, testing: $docType") {
@@ -169,7 +169,7 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                 ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain useConstraintCommentsFull
+                result shouldContain USE_CONSTRAINT_COMMENTS_FULL
             }
         }
     }

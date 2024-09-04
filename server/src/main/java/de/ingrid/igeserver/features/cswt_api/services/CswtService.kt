@@ -69,7 +69,7 @@ class CswtService(
 
     val log = logger()
 
-    private val PATTERN_IDENTIFIER = Pattern.compile("^(.*:)?identifier", Pattern.CASE_INSENSITIVE)
+    private val patternIdentifier = Pattern.compile("^(.*:)?identifier", Pattern.CASE_INSENSITIVE)
 
     private val utils = XPathUtils(Csw202NamespaceContext())
 
@@ -77,11 +77,10 @@ class CswtService(
 
     @Transactional
     fun cswTransaction(xml: String?, collectionId: String, principal: Authentication, options: ImportOptions): CSWTransactionResult {
-        val factory: DocumentBuilderFactory
         val resultInsert: MutableList<String> = mutableListOf()
         val profile = catalogService.getProfileFromCatalog(collectionId)
 
-        factory = DocumentBuilderFactory.newInstance()
+        val factory: DocumentBuilderFactory = DocumentBuilderFactory.newInstance()
         factory.isNamespaceAware = true
         val builder = factory.newDocumentBuilder()
         val xmlDoc = builder.parse(InputSource(StringReader(xml)))
@@ -107,7 +106,7 @@ class CswtService(
             val item = updateDocs.item(i) as Element
             val propName: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:PropertyName")
             val propValue: String = utils.getString(item, ".//ogc:PropertyIsEqualTo/ogc:Literal")
-            if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
+            if (("uuid" == propName || patternIdentifier.matcher(propName).matches()) && propValue != null) {
                 val metadataDoc = item.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd", "MD_Metadata").item(0)
                 val docData = xmlNodeToString(metadataDoc) // convert Node to String
                 importDocuments(options, collectionId, "application/xml", docData, principal, recordMustExist = true, propValue, profile)
@@ -128,7 +127,7 @@ class CswtService(
             propValue = propValue.replace("\\s".toRegex(), "")
 
             // the property "uuid" is still supported for compatibility reasons, see https://dev.informationgrid.eu/redmine/issues/524
-            if (("uuid" == propName || PATTERN_IDENTIFIER.matcher(propName).matches()) && propValue != null) {
+            if (("uuid" == propName || patternIdentifier.matcher(propName).matches()) && propValue != null) {
                 val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, propValue)
                 wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
             }

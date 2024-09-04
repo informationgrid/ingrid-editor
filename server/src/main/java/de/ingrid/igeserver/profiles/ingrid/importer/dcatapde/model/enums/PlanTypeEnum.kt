@@ -39,17 +39,16 @@ enum class PlanTypeEnum(val value: String) {
     UNKNOWN("unknown"),
     ;
 
-    class Converter : EnumConverter<PlanTypeEnum>(
-        PlanTypeEnum::class.java,
-    )
+    class Converter :
+        EnumConverter<PlanTypeEnum>(
+            PlanTypeEnum::class.java,
+        )
 
     @JsonValue
-    override fun toString(): String {
-        return value.toString()
-    }
+    override fun toString(): String = value.toString()
 
     companion object {
-        private const val uriPrefix = "https://specs.diplanung.de/resource/planType#"
+        private const val URI_PREFIX = "https://specs.diplanung.de/resource/planType#"
 
         @JsonCreator
         fun fromValue(text: String?): PlanTypeEnum? {
@@ -63,14 +62,12 @@ enum class PlanTypeEnum(val value: String) {
             }
             val enumValues = java.lang.String.join(
                 ", ",
-                Stream.of(*entries.toTypedArray()).map { anEnum: PlanTypeEnum -> uriPrefix + anEnum.toString() }
+                Stream.of(*entries.toTypedArray()).map { anEnum: PlanTypeEnum -> URI_PREFIX + anEnum.toString() }
                     .toList(),
             )
             throw IllegalArgumentException("PlanTypeEnum value has to be one of [$enumValues], was $text")
         }
 
-        private fun stripPrefix(uri: String): String {
-            return uri.replaceFirst(uriPrefix.toRegex(), "")
-        }
+        private fun stripPrefix(uri: String): String = uri.replaceFirst(URI_PREFIX.toRegex(), "")
     }
 }

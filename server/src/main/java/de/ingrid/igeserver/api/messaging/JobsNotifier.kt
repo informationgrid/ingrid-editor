@@ -36,12 +36,10 @@ enum class NotificationType(val uri: String) {
 }
 
 class MessageTarget(val type: NotificationType, var catalogId: String? = null) {
-    override fun toString(): String {
-        return if (catalogId == null) {
-            type.uri
-        } else {
-            "${type.uri}/$catalogId"
-        }
+    override fun toString(): String = if (catalogId == null) {
+        type.uri
+    } else {
+        "${type.uri}/$catalogId"
     }
 }
 
@@ -49,7 +47,9 @@ class MessageTarget(val type: NotificationType, var catalogId: String? = null) {
 class JobsNotifier(val msgTemplate: SimpMessagingTemplate) {
     val log = logger()
 
-    private val WS_MESSAGE_TRANSFER_DESTINATION = "/topic/jobs"
+    companion object {
+        private const val WS_MESSAGE_TRANSFER_DESTINATION = "/topic/jobs"
+    }
 
     fun sendMessage(type: MessageTarget, message: Message) {
         msgTemplate.convertAndSend(WS_MESSAGE_TRANSFER_DESTINATION + type, message)

@@ -59,7 +59,7 @@ class IngridExporterWsv(
         )
 
     @Value("\${wsv.cart.types:10900,10901,10902,10903,10904}")
-    private val SPECIAL_TYPE: List<String> = emptyList()
+    private val specialType: List<String> = emptyList()
 
     @Value("\${wsv.cart.url:/terraCatalog/ordering/shop.do?fileid=}")
     private val cartUrl: String = ""
@@ -73,7 +73,7 @@ class IngridExporterWsv(
     private fun hasSpecialType(doc: Document): Boolean {
         if (doc.data.get("references") != null) {
             for (ref in (doc.data.get("references") as ArrayNode).iterator()) {
-                if (SPECIAL_TYPE.contains(ref.get("type")?.get("key")?.textValue())) {
+                if (specialType.contains(ref.get("type")?.get("key")?.textValue())) {
                     return true
                 }
             }

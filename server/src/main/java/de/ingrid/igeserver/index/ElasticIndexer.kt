@@ -44,7 +44,7 @@ data class ElasticClient(
     val bulkProcessor: BulkSession,
 )
 
-private const val metaIndex = "ingrid_meta"
+private const val META_INDEX = "ingrid_meta"
 
 /**
  * Utility class to manage elasticsearch indices and documents.
@@ -93,9 +93,9 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
     }
 
     override fun checkAndCreateInformationIndex() {
-        if (!indexExists(metaIndex)) {
+        if (!indexExists(META_INDEX)) {
             try {
-                createIndex(metaIndex, "info", defaultMapping, defaultSettings)
+                createIndex(META_INDEX, "info", defaultMapping, defaultSettings)
             } catch (e: IOException) {
                 log.error("Could not deserialize: ingrid-meta-mapping.json", e)
             }
@@ -110,7 +110,7 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
 
     override fun updateIPlugInformation(id: String, info: String) {
         runBlocking {
-            val response = elastic.client.search(metaIndex) {
+            val response = elastic.client.search(META_INDEX) {
                 query = term("indexId", id)
                 sort {
                     add("lastIndexed")
@@ -121,11 +121,11 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
                 1L -> {
                     val docId = response.hits?.hits?.get(0)?.id
                     // add index request to queue to avoid sending of too many requests
-                    elastic.bulkProcessor.index(info, metaIndex, docId)
+                    elastic.bulkProcessor.index(info, META_INDEX, docId)
                 }
                 0L -> {
                     // create document immediately so that it's available for further requests
-                    elastic.client.indexDocument(metaIndex, info)
+                    elastic.client.indexDocument(META_INDEX, info)
                 }
                 else -> {
                     log.warn("There is more than one iPlug information document in the index of: $id")
@@ -133,12 +133,12 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
                     val searchHits = response.hits?.hits ?: emptyList()
                     // delete all hits except the first one
                     for (i in 1 until searchHits.size) {
-                        elastic.bulkProcessor.delete(searchHits[i].id, metaIndex)
+                        elastic.bulkProcessor.delete(searchHits[i].id, META_INDEX)
                     }
                     flush()
 
                     // add first hit, which we did not delete
-                    elastic.bulkProcessor.index(info, metaIndex, searchHits[0].id)
+                    elastic.bulkProcessor.index(info, META_INDEX, searchHits[0].id)
                 }
             }
         }

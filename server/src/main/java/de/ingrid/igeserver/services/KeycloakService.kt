@@ -58,18 +58,15 @@ import java.util.*
 @Profile("!dev")
 class KeycloakService : UserManagementService {
 
-    val ROLE_IGE_USER = "ige-user"
-
     companion object {
         // 48h * 60min * 60s => 2 days in seconds
+        const val ROLE_IGE_USER = "ige-user"
         const val EMAIL_VALID_IN_SECONDS = 172800
     }
 
     class KeycloakWithRealm(val client: Keycloak, private val realm: String) {
 
-        fun realm(): RealmResource {
-            return client.realm(realm)
-        }
+        fun realm(): RealmResource = client.realm(realm)
     }
 
     private val log = LogManager.getLogger(KeycloakService::class.java)
@@ -134,35 +131,31 @@ class KeycloakService : UserManagementService {
     private fun getUsersWithRole(
         realm: RealmResource,
         ignoreUsers: Set<User> = emptySet(),
-    ): List<User> {
-        return try {
-            val roles = realm.roles()
-            val users = roles[ROLE_IGE_USER].getUserMembers(0, 10000)
-                .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
-                .map { user -> mapUser(user) }
-            users.forEach { user -> user.role = ROLE_IGE_USER }
-            users
-        } catch (e: jakarta.ws.rs.NotFoundException) {
-            log.warn("No users found with role '$ROLE_IGE_USER'")
-            emptyList()
-        }
+    ): List<User> = try {
+        val roles = realm.roles()
+        val users = roles[ROLE_IGE_USER].getUserMembers(0, 10000)
+            .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
+            .map { user -> mapUser(user) }
+        users.forEach { user -> user.role = ROLE_IGE_USER }
+        users
+    } catch (e: jakarta.ws.rs.NotFoundException) {
+        log.warn("No users found with role '$ROLE_IGE_USER'")
+        emptyList()
     }
 
     private fun getUsersInGroupsWithRole(
         realm: RealmResource,
         ignoreUsers: Set<User> = emptySet(),
-    ): List<User> {
-        return try {
-            val groups = realm.groups()
+    ): List<User> = try {
+        val groups = realm.groups()
 
-            realm.roles()[ROLE_IGE_USER].getRoleGroupMembers(0, 1000)
-                .flatMap { groups.group(it.id).members() }
-                .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
-                .map { mapUser(it) }
-        } catch (e: jakarta.ws.rs.NotFoundException) {
-            log.warn("No groups with users found with role '$ROLE_IGE_USER'")
-            emptyList()
-        }
+        realm.roles()[ROLE_IGE_USER].getRoleGroupMembers(0, 1000)
+            .flatMap { groups.group(it.id).members() }
+            .filter { user -> ignoreUsers.none { ignore -> user.username == ignore.login } }
+            .map { mapUser(it) }
+    } catch (e: jakarta.ws.rs.NotFoundException) {
+        log.warn("No groups with users found with role '$ROLE_IGE_USER'")
+        emptyList()
     }
 
     fun initAdminClient(): KeycloakWithRealm {
@@ -232,31 +225,27 @@ class KeycloakService : UserManagementService {
         }
     }
 
-    private fun mapUser(user: UserRepresentation): User {
-        return User(
-            login = user.username,
-            firstName = user.firstName ?: "",
-            lastName = user.lastName ?: "",
-            email = user.email ?: "",
-            phoneNumber = user.attributes?.get("phoneNumber")?.get(0)?.toString() ?: "",
-            organisation = user.attributes?.get("institution")?.get(0)?.toString() ?: "",
-            department = user.attributes?.get("department")?.get(0)?.toString() ?: "",
-            latestLogin = null,
+    private fun mapUser(user: UserRepresentation): User = User(
+        login = user.username,
+        firstName = user.firstName ?: "",
+        lastName = user.lastName ?: "",
+        email = user.email ?: "",
+        phoneNumber = user.attributes?.get("phoneNumber")?.get(0)?.toString() ?: "",
+        organisation = user.attributes?.get("institution")?.get(0)?.toString() ?: "",
+        department = user.attributes?.get("department")?.get(0)?.toString() ?: "",
+        latestLogin = null,
 //            role = user.realmRoles?.get(0) ?: "" // TODO: get interesting role, like author, md-admin or cat-admin
-        )
-    }
+    )
 
     override fun getRoles(principal: Authentication): Set<String>? {
         principal as JwtAuthenticationToken
         return principal.authorities.map { it.authority }.toSet()
     }
 
-    override fun getName(principal: Principal): String? {
-        return when (principal) {
-            is UsernamePasswordAuthenticationToken -> principal.name
-            is JwtAuthenticationToken -> principal.token.claims["preferred_username"]?.toString() ?: principal.name
-            else -> null
-        }
+    override fun getName(principal: Principal): String? = when (principal) {
+        is UsernamePasswordAuthenticationToken -> principal.name
+        is JwtAuthenticationToken -> principal.token.claims["preferred_username"]?.toString() ?: principal.name
+        else -> null
     }
 
     override fun getCurrentPrincipal(): Principal? {
@@ -267,9 +256,7 @@ class KeycloakService : UserManagementService {
         return securityContext?.authentication as JwtAuthenticationToken?
     }
 
-    override fun userExists(userId: String): Boolean {
-        return keycloakClient.realm().users().search(userId, true).isNotEmpty()
-    }
+    override fun userExists(userId: String): Boolean = keycloakClient.realm().users().search(userId, true).isNotEmpty()
 
     override fun createUser(user: User): String {
         val usersResource = keycloakClient.realm().users()
@@ -435,10 +422,8 @@ class KeycloakService : UserManagementService {
         return roles.filter { !ignoreRoles.contains(it) }
     }
 
-    private fun getRoleRepresentations(roles: List<String>): List<RoleRepresentation> {
-        return keycloakClient.realm().roles().list()
-            .filter { roles.contains(it.name) }
-    }
+    private fun getRoleRepresentations(roles: List<String>): List<RoleRepresentation> = keycloakClient.realm().roles().list()
+        .filter { roles.contains(it.name) }
 
     private fun mapToKeycloakUser(user: User, existingUserRep: UserRepresentation? = null): UserRepresentation {
         val userRep = existingUserRep ?: UserRepresentation().apply { isEnabled = true }

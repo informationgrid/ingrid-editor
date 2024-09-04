@@ -187,7 +187,7 @@ class Geodataservice : ShouldSpec() {
                 },
             )
 
-            result shouldContain idfSuperiorReferences
+            result shouldContain IDF_SUPERIOR_REFERENCES
         }
 
         should("checkSubordinateReferences") {
@@ -204,7 +204,7 @@ class Geodataservice : ShouldSpec() {
 
             val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.minimal.sample.json")
 
-            result shouldContain idfSubordinatedReferences
+            result shouldContain IDF_SUBORDINATED_REFERENCES
         }
     }
 }

@@ -347,13 +347,13 @@ open class IngridModelTransformer(
 
     open fun getFreeKeywords(): Thesaurus {
         // if openData checkbox is checked, and keyword not already added, add "opendata"
-        if (data.isOpenData == true && _freeKeywords.keywords.none { it.name == "opendata" }) {
-            _freeKeywords.keywords += listOf(KeywordIso("opendata"))
+        if (data.isOpenData == true && freeKeywordsThesaurus.keywords.none { it.name == "opendata" }) {
+            freeKeywordsThesaurus.keywords += listOf(KeywordIso("opendata"))
         }
-        return _freeKeywords
+        return freeKeywordsThesaurus
     }
 
-    private val _freeKeywords = Thesaurus(
+    private val freeKeywordsThesaurus = Thesaurus(
         keywords = data.keywords?.free?.map { KeywordIso(name = it.label, link = null) } ?: emptyList(),
         date = null,
         name = null,

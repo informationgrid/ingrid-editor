@@ -34,48 +34,48 @@ import org.springframework.stereotype.Component
 
 @Component
 class InGridGeoDatasetTypeLfuBayern(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
-    override val profiles = arrayOf(LfuBayernProfile.id)
+    override val profiles = arrayOf(LfuBayernProfile.ID)
     override val jsonSchema = "/ingrid/schemes/lfubayern/geo-dataset_lfubayern.schema.json"
 }
 
 @Component
 class InGridDataCollectionTypeLfuBayern(jdbcTemplate: JdbcTemplate) : InGridDataCollectionType(jdbcTemplate) {
-    override val profiles = arrayOf(LfuBayernProfile.id)
+    override val profiles = arrayOf(LfuBayernProfile.ID)
 }
 
 @Component
 class InGridGeoServiceTypeLfuBayern(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType(jdbcTemplate) {
-    override val profiles = arrayOf(LfuBayernProfile.id)
+    override val profiles = arrayOf(LfuBayernProfile.ID)
     override val jsonSchema = "/ingrid/schemes/lfubayern/geo-service_lfubayern.schema.json"
 }
 
 @Component
 class InGridInformationSystemTypeLfuBayern(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
-    override val profiles = arrayOf(LfuBayernProfile.id)
+    override val profiles = arrayOf(LfuBayernProfile.ID)
     override val jsonSchema = "/ingrid/schemes/lfubayern/information-system_lfubayern.schema.json"
 }
 
 @Component
 class InGridPublicationTypeLfuBayern(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
-    override val profiles = arrayOf(LfuBayernProfile.id)
+    override val profiles = arrayOf(LfuBayernProfile.ID)
 }
 
 @Component
 class InGridProjectTypeLfuBayern(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
-    override val profiles = arrayOf(LfuBayernProfile.id)
+    override val profiles = arrayOf(LfuBayernProfile.ID)
 }
 
 @Component
 class InGridSpecialisedTaskTypeLfuBayern(jdbcTemplate: JdbcTemplate) : InGridSpecialisedTaskType(jdbcTemplate) {
-    override val profiles = arrayOf(LfuBayernProfile.id)
+    override val profiles = arrayOf(LfuBayernProfile.ID)
 }
 
 @Component
 class InGridOrganisationTypeLfuBayern(jdbcTemplate: JdbcTemplate) : InGridOrganisationType(jdbcTemplate) {
-    override val profiles = arrayOf(LfuBayernProfile.id)
+    override val profiles = arrayOf(LfuBayernProfile.ID)
 }
 
 @Component
 class InGridPersonTypeLfuBayern(jdbcTemplate: JdbcTemplate) : InGridPersonType(jdbcTemplate) {
-    override val profiles = arrayOf(LfuBayernProfile.id)
+    override val profiles = arrayOf(LfuBayernProfile.ID)
 }

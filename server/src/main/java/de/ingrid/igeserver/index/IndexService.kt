@@ -76,7 +76,7 @@ class IndexService(
     private val log = logger()
 
     companion object {
-        const val jobKey: String = "index"
+        const val JOB_KEY: String = "index"
 
         fun getNextIndexName(name: String): String {
             val dateFormat = SimpleDateFormat("yyyyMMddHHmmssS")
@@ -92,7 +92,7 @@ class IndexService(
             getIndexConfigurations()
                 .filter { it.cron.isNotEmpty() }
                 .forEach { config ->
-                    val jobKey = JobKey.jobKey(IndexService.jobKey, config.catalogId)
+                    val jobKey = JobKey.jobKey(IndexService.JOB_KEY, config.catalogId)
                     try {
                         schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, config.catalogId, config.cron)
                     } catch (e: Exception) {
@@ -161,7 +161,7 @@ class IndexService(
         catalog.settings = settings
         catalogRepo.save(catalog)
 
-        val jobKey = JobKey.jobKey(IndexService.jobKey, catalogId)
+        val jobKey = JobKey.jobKey(IndexService.JOB_KEY, catalogId)
         schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, catalogId, config.cronPattern)
     }
 

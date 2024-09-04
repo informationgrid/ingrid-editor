@@ -73,10 +73,10 @@ class InGridProfile(
     private lateinit var transactionManager: PlatformTransactionManager
 
     companion object {
-        const val id = "ingrid"
+        const val ID = "ingrid"
     }
 
-    override val identifier = id
+    override val identifier = ID
     override val title = "InGrid Katalog"
     override val description = null
     override val indexExportFormatID = "indexInGridIDF"

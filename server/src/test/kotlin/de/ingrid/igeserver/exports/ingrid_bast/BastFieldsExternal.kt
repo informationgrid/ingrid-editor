@@ -67,7 +67,7 @@ class BastFieldsExternal : GeodatasetBase() {
                 val result =
                     exportJsonToXML(exporter, docSample, context)
 
-                result shouldNotContain projectTitleAndNumberInKeywords
+                result shouldNotContain PROJECT_TITLE_AND_NUMBER_IN_KEYWORDS
             }
 
             should("not export digitalTransferOptions with correct unit for: $docType") {
@@ -96,7 +96,7 @@ class BastFieldsExternal : GeodatasetBase() {
                 val result =
                     exportJsonToXML(exporter, docSample, context)
 
-                result shouldNotContain digitalTransferOptionWithUnit
+                result shouldNotContain DIGITAL_TRANSFER_OPTION_WITH_UNIT
             }
 
             should("not export supplementalInformation for: $docType") {
@@ -112,7 +112,7 @@ class BastFieldsExternal : GeodatasetBase() {
                 val result =
                     exportJsonToXML(exporter, docSample, context)
 
-                result shouldNotContain supplementalInformation
+                result shouldNotContain SUPPLEMENTAL_INFORMATION
             }
 
             should("export useConstraintsComments for: $docType") {
@@ -130,7 +130,7 @@ class BastFieldsExternal : GeodatasetBase() {
                 val result =
                     exportJsonToXML(exporter, docSample, context)
 
-                result shouldContain useConstraintsComments
+                result shouldContain USE_CONSTRAINTS_COMMENTS
             }
         }
     }
