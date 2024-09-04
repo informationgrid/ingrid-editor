@@ -253,33 +253,33 @@ class CatalogService(
     }
 
     val catAdminPermisssions = listOf(
-        Permissions.manage_messages.name,
-        Permissions.manage_catalog.name,
-        Permissions.manage_codelist_repository.name,
-        Permissions.manage_ibus.name,
-        Permissions.manage_users.name,
-        Permissions.can_write_root.name,
-        Permissions.can_read_root.name,
-        Permissions.can_export.name,
-        Permissions.can_import.name,
-        Permissions.can_create_dataset.name,
-        Permissions.can_create_address.name,
+        Permissions.MANAGE_MESSAGES.name,
+        Permissions.MANAGE_CATALOG.name,
+        Permissions.MANAGE_CODELIST_REPOSITORY.name,
+        Permissions.MANAGE_IBUS.name,
+        Permissions.MANAGE_USERS.name,
+        Permissions.CAN_WRITE_ROOT.name,
+        Permissions.CAN_READ_ROOT.name,
+        Permissions.CAN_EXPORT.name,
+        Permissions.CAN_IMPORT.name,
+        Permissions.CAN_CREATE_DATASET.name,
+        Permissions.CAN_CREATE_ADDRESS.name,
     )
 
     val superAdminPermissions = listOf(
-        Permissions.manage_messages.name,
-        Permissions.manage_catalog.name,
-        Permissions.manage_all_catalogs.name,
-        Permissions.manage_codelist_repository.name,
-        Permissions.manage_content.name,
-        Permissions.manage_ibus.name,
-        Permissions.manage_users.name,
-        Permissions.can_write_root.name,
-        Permissions.can_read_root.name,
-        Permissions.can_export.name,
-        Permissions.can_import.name,
-        Permissions.can_create_dataset.name,
-        Permissions.can_create_address.name,
+        Permissions.MANAGE_MESSAGES.name,
+        Permissions.MANAGE_CATALOG.name,
+        Permissions.MANAGE_ALL_CATALOGS.name,
+        Permissions.MANAGE_CODELIST_REPOSITORY.name,
+        Permissions.MANAGE_CONTENT.name,
+        Permissions.MANAGE_IBUS.name,
+        Permissions.MANAGE_USERS.name,
+        Permissions.CAN_WRITE_ROOT.name,
+        Permissions.CAN_READ_ROOT.name,
+        Permissions.CAN_EXPORT.name,
+        Permissions.CAN_IMPORT.name,
+        Permissions.CAN_CREATE_DATASET.name,
+        Permissions.CAN_CREATE_ADDRESS.name,
     )
 
     fun getPermissions(principal: Authentication): List<String> {
@@ -293,7 +293,7 @@ class CatalogService(
         } else if (isCatAdmin) {
             catAdminPermisssions
         } else if (isMdAdmin) {
-            listOf(Permissions.manage_users.name) + determineNonAdminUserPermissions(principal)
+            listOf(Permissions.MANAGE_USERS.name) + determineNonAdminUserPermissions(principal)
         } else {
             determineNonAdminUserPermissions(principal)
         }
@@ -308,7 +308,7 @@ class CatalogService(
 
     private fun determineNonAdminUserPermissions(principal: Authentication): MutableList<String> {
         // anyone can export
-        val userPermissions = mutableSetOf(Permissions.can_export.name)
+        val userPermissions = mutableSetOf(Permissions.CAN_EXPORT.name)
 
         val userName = authUtils.getUsernameFromPrincipal(principal)
         val catalogIdentifier = getCurrentCatalogForPrincipal(principal)
@@ -324,20 +324,20 @@ class CatalogService(
     ): MutableSet<String> {
         val userPermissions = mutableSetOf<String>()
         if (group.permissions?.rootPermission == RootPermissionType.WRITE) {
-            userPermissions.add(Permissions.can_write_root.name)
-            userPermissions.add(Permissions.can_create_dataset.name)
-            userPermissions.add(Permissions.can_create_address.name)
-            userPermissions.add(Permissions.can_import.name)
+            userPermissions.add(Permissions.CAN_WRITE_ROOT.name)
+            userPermissions.add(Permissions.CAN_CREATE_DATASET.name)
+            userPermissions.add(Permissions.CAN_CREATE_ADDRESS.name)
+            userPermissions.add(Permissions.CAN_IMPORT.name)
         } else {
-            if (group.permissions?.rootPermission == RootPermissionType.READ) userPermissions.add(Permissions.can_read_root.name)
+            if (group.permissions?.rootPermission == RootPermissionType.READ) userPermissions.add(Permissions.CAN_READ_ROOT.name)
 
             if (containsAnyFolderWritePermission(group.permissions?.documents ?: emptyList())) {
-                userPermissions.add(Permissions.can_create_dataset.name)
-                userPermissions.add(Permissions.can_import.name)
+                userPermissions.add(Permissions.CAN_CREATE_DATASET.name)
+                userPermissions.add(Permissions.CAN_IMPORT.name)
             }
             if (containsAnyFolderWritePermission(group.permissions?.addresses ?: emptyList())) {
-                userPermissions.add(Permissions.can_create_address.name)
-                userPermissions.add(Permissions.can_import.name)
+                userPermissions.add(Permissions.CAN_CREATE_ADDRESS.name)
+                userPermissions.add(Permissions.CAN_IMPORT.name)
             }
         }
         return userPermissions

@@ -68,7 +68,7 @@ class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler
                     put("catalogId", catalogIdentifier)
                     put("data", jacksonObjectMapper().writeValueAsString(data))
                 }
-                scheduler.handleJobWithCommand(JobCommand.start, ZabbixJob::class.java, jobKey, jobDataMap, 1, false)
+                scheduler.handleJobWithCommand(JobCommand.START, ZabbixJob::class.java, jobKey, jobDataMap, 1, false)
             } catch (ex: Exception) {
                 throw ex
             }

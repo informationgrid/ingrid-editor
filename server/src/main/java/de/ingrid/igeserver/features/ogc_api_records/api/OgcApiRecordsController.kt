@@ -63,15 +63,15 @@ import java.security.Principal
 import java.time.Instant
 
 enum class CollectionFormat(val mimeType: String) {
-    json("application/json"),
-    html("text/html"),
+    JSON("application/json"),
+    HTML("text/html"),
 }
 
 enum class RecordFormat(val mimeType: String) {
-    json("application/json"),
-    html("text/html"),
-    ingridISO("text/xml"),
-    geojson("application/json"),
+    JSON("application/json"),
+    HTML("text/html"),
+    INGRID_ISO("text/xml"),
+    GEOJSON("application/json"),
 }
 
 @RestController
@@ -480,7 +480,7 @@ class OgcApiRecordsController(
         apiValidationService.validateRequestParams(allRequestParams, listOf("limit", "offset", "type", "bbox", "datetime", "q", "externalid", "f", "filter"))
         apiValidationService.validateBbox(bbox)
 
-        val exportFormat = if (format == RecordFormat.json) "internal" else format.toString()
+        val exportFormat = if (format == RecordFormat.JSON) "internal" else format.toString()
         val exporter = exporterFactory.getExporter(DocumentCategory.DATA, format = exportFormat)
         val mimeType: String = exporter.typeInfo.dataType
 

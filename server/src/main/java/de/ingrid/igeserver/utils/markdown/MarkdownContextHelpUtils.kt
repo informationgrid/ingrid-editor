@@ -159,13 +159,11 @@ class MarkdownContextHelpUtils {
         sourcePath: File,
         language: String,
         profile: String,
-    ): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> {
-        return sourcePath.walk().maxDepth(1)
-            .filter { it.isFile }
-            .flatMap { readMarkDownFile(it, language, profile) }
-            .map { it!!.first to it.second }
-            .toMap()
-    }
+    ): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> = sourcePath.walk().maxDepth(1)
+        .filter { it.isFile }
+        .flatMap { readMarkDownFile(it, language, profile) }
+        .map { it!!.first to it.second }
+        .toMap()
 
     private fun readMarkDownFile(
         path: File,

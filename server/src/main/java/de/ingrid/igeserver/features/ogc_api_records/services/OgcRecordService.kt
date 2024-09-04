@@ -128,7 +128,7 @@ class OgcRecordService(
             links = linkList,
         )
 
-        val responseByteArray = if (requestedFormat == CollectionFormat.html) {
+        val responseByteArray = if (requestedFormat == CollectionFormat.HTML) {
             val infoAsObjectNode: ObjectNode = JsonSerialization.mapper.valueToTree(info)
             val html = ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Landing page")
             ogcHtmlConverterService.wrapperForHtml(html, null, null).toByteArray()
@@ -152,7 +152,7 @@ class OgcRecordService(
             ),
         )
 
-        val responseByteArray = if (requestedFormat == CollectionFormat.html) {
+        val responseByteArray = if (requestedFormat == CollectionFormat.HTML) {
             val infoAsObjectNode: ObjectNode = JsonSerialization.mapper.valueToTree(conformance)
             val html = ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Conformance")
             ogcHtmlConverterService.wrapperForHtml(html, null, null).toByteArray()
@@ -494,12 +494,12 @@ class OgcRecordService(
     private fun exportRecord(recordId: String, collectionId: String, format: RecordFormat): ExportResult {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
         val id = wrapper.id!!
-        val exportFormat = if (format == RecordFormat.json) "internal" else format.toString()
+        val exportFormat = if (format == RecordFormat.JSON) "internal" else format.toString()
         val options = ExportRequestParameter(
             ids = listOf(id),
             exportFormat = exportFormat,
             // TODO context of ingridISO exporter: check why address documents need to called as drafts
-            useDraft = (format == RecordFormat.ingridISO && wrapper.category == "address"),
+            useDraft = (format == RecordFormat.INGRID_ISO && wrapper.category == "address"),
         )
         return exportService.export(collectionId, options)
     }
@@ -512,7 +512,7 @@ class OgcRecordService(
         val response: MutableList<JsonNode> = mutableListOf()
         for (record in recordList) {
             var wrapperlessRecord = jacksonObjectMapper().readValue(record.result, JsonNode::class.java)
-            if (format == RecordFormat.json) wrapperlessRecord = wrapperlessRecord.get("resources").get("published")
+            if (format == RecordFormat.JSON) wrapperlessRecord = wrapperlessRecord.get("resources").get("published")
             response.add(wrapperlessRecord)
         }
         response
@@ -552,9 +552,9 @@ class OgcRecordService(
     private fun wrapperForJson(responseRecords: List<JsonNode>, links: List<Link>?, queryMetadata: QueryMetadata?, singleRecord: Boolean?, format: RecordFormat): String {
         val wrappedResponse: JsonNode
         val mapper = jacksonObjectMapper()
-        if (format == RecordFormat.geojson && singleRecord == true) {
+        if (format == RecordFormat.GEOJSON && singleRecord == true) {
             wrappedResponse = mapper.convertValue(responseRecords, JsonNode::class.java)
-        } else if (format == RecordFormat.geojson && singleRecord == false) {
+        } else if (format == RecordFormat.GEOJSON && singleRecord == false) {
             val response = RecordsResponse(
                 type = "FeatureCollection",
                 timeStamp = queryMetadata!!.timeStamp,

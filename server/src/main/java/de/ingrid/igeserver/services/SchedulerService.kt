@@ -86,15 +86,15 @@ class SchedulerService(factory: SchedulerFactoryBean) {
         checkRunning: Boolean = true,
     ) {
         when (command) {
-            JobCommand.start -> {
+            JobCommand.START -> {
                 if (scheduler.checkExists(jobKey).not()) {
                     createJob(jobClass, jobKey)
                 }
                 start(jobKey, jobDataMap, jobPriority, checkRunning)
             }
 
-            JobCommand.stop -> stop(jobKey)
-            JobCommand.resume -> TODO()
+            JobCommand.STOP -> stop(jobKey)
+            JobCommand.RESUME -> TODO()
         }
     }
 

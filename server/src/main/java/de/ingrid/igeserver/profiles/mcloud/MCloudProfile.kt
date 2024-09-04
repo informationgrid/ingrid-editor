@@ -377,8 +377,8 @@ class MCloudProfile(
         } else {
             permissions.filter { permission ->
                 (
-                    !permission.equals(Permissions.can_import.name) &&
-                        !permission.equals(Permissions.can_export.name)
+                    !permission.equals(Permissions.CAN_IMPORT.name) &&
+                        !permission.equals(Permissions.CAN_EXPORT.name)
                     )
             }
         }
