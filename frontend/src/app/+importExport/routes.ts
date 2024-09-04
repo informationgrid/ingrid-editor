@@ -30,7 +30,7 @@ export default [
     children: [
       {
         path: "",
-        redirectTo: "import",
+        redirectTo: "export",
         pathMatch: "full",
       },
       {
