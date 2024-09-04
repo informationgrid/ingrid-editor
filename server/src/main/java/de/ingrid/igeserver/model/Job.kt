@@ -21,4 +21,5 @@ package de.ingrid.igeserver.model
 
 data class Job(val id: String, val name: String)
 
-enum class JobCommand { START, STOP, RESUME }
+@Suppress("EnumEntryName")
+enum class JobCommand { start, stop, resume }

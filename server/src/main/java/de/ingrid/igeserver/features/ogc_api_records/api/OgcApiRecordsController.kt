@@ -62,16 +62,19 @@ import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.time.Instant
 
+// We need to use lowercase enums in order to use lowercase values in API-requests
+@Suppress("EnumEntryName")
 enum class CollectionFormat(val mimeType: String) {
-    JSON("application/json"),
-    HTML("text/html"),
+    json("application/json"),
+    html("text/html"),
 }
 
+@Suppress("EnumEntryName")
 enum class RecordFormat(val mimeType: String) {
-    JSON("application/json"),
-    HTML("text/html"),
-    INGRID_ISO("text/xml"),
-    GEOJSON("application/json"),
+    json("application/json"),
+    html("text/html"),
+    ingridISO("text/xml"),
+    geojson("application/json"),
 }
 
 @RestController
@@ -480,7 +483,7 @@ class OgcApiRecordsController(
         apiValidationService.validateRequestParams(allRequestParams, listOf("limit", "offset", "type", "bbox", "datetime", "q", "externalid", "f", "filter"))
         apiValidationService.validateBbox(bbox)
 
-        val exportFormat = if (format == RecordFormat.JSON) "internal" else format.toString()
+        val exportFormat = if (format == RecordFormat.json) "internal" else format.toString()
         val exporter = exporterFactory.getExporter(DocumentCategory.DATA, format = exportFormat)
         val mimeType: String = exporter.typeInfo.dataType
 
