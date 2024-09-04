@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.transaction.PlatformTransactionManager
 
 @WithMockUser(username = "user1", authorities = ["cat-admin"])
-class ExceptionTests : IntegrationTest() {
+class OgcRecordsTests : IntegrationTest() {
 
     val mockPrincipal = mockk<UsernamePasswordAuthenticationToken>(relaxed = true)
 
