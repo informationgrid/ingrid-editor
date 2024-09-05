@@ -160,7 +160,7 @@ class UvpProfile(
         } else {
             // authors can not import or export
             permissions.filterNot {
-                listOf(Permissions.CAN_IMPORT.name, Permissions.CAN_EXPORT.name).contains(it)
+                listOf(Permissions.can_import.name, Permissions.can_export.name).contains(it)
             }
         }
     }
