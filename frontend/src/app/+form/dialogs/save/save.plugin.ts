@@ -123,6 +123,7 @@ export class SavePlugin extends SaveBase {
           version: metadata.version,
           isNewDoc: false,
           isAddress: this.forAddress,
+          type: metadata.docType,
         })
         .pipe(
           catchError((error) =>
