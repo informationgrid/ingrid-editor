@@ -114,7 +114,7 @@ export class CreateNodeComponent implements OnInit {
   jumpedTreeNodeId: number = null;
   isAdmin = this.config.hasWriteRootPermission();
   selectedLocation: number = null;
-  pathWithWritePermission = false;
+  pathWithWritePermission = signal<boolean>(false);
   alreadySubmitted = false;
 
   private query: TreeQuery | AddressTreeQuery;
@@ -144,11 +144,14 @@ export class CreateNodeComponent implements OnInit {
       );
     }
 
-    effect(() => {
-      // update path depending on selected document type
-      this.docTypeChoice();
-      this.mapPath(this.path);
-    });
+    effect(
+      () => {
+        // update path depending on selected document type
+        this.docTypeChoice();
+        this.mapPath(this.path);
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   private _path: ShortTreeNode[] = [];
@@ -159,11 +162,12 @@ export class CreateNodeComponent implements OnInit {
 
   set path(value: ShortTreeNode[]) {
     this._path = value;
-    this.pathWithWritePermission =
+    this.pathWithWritePermission.set(
       value.length === 0
         ? this.isAdmin
         : value[value.length - 1].permission.canOnlyWriteSubtree ||
-          !value[value.length - 1].disabled;
+            !value[value.length - 1].disabled,
+    );
   }
 
   ngOnInit() {
@@ -189,7 +193,7 @@ export class CreateNodeComponent implements OnInit {
     if (
       // don't proceed if invalid form or user without writePermission on selected path
       this.formGroup.invalid ||
-      (!this.isAdmin && !this.pathWithWritePermission)
+      (!this.isAdmin && !this.pathWithWritePermission())
     )
       return;
 
@@ -223,7 +227,7 @@ export class CreateNodeComponent implements OnInit {
 
   jumpToTree(id: number) {
     this.selectedPage = 1;
-    if (id !== null && this.pathWithWritePermission) {
+    if (id !== null && this.pathWithWritePermission()) {
       this.jumpedTreeNodeId = id;
     }
   }

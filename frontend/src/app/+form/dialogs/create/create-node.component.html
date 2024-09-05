@@ -107,7 +107,7 @@
                 data-cy="create-action"
                 [disabled]="
                     formGroup.invalid ||
-                    (!isAdmin && !pathWithWritePermission) ||
+                    (!isAdmin && !pathWithWritePermission()) ||
                     alreadySubmitted
                 "
                 (click)="handleCreate()"
@@ -142,7 +142,7 @@
             [disableRoot]="!isAdmin"
             (select)="quickBreadcrumbChange($event)"
         ></ige-breadcrumb>
-        @if (!pathWithWritePermission) {
+        @if (!pathWithWritePermission()) {
             <div class="error-box">
                 {{ t("missingWritePermission") }}
             </div>
