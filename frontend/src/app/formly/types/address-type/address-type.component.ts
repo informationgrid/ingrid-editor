@@ -101,6 +101,18 @@ export class AddressTypeComponent
       .subscribe((value) => this.prepareAddressCards(value));
 
     this.formControl.addValidators(this.allAddressesPublishedValidator());
+
+    // when coming from another page and a dataset already has been loaded then update the references
+    // in case they have changed, like address state or data
+    this.documentService.reload$
+      .pipe(
+        untilDestroyed(this),
+        map((item) => item.uuid),
+      )
+      .subscribe(() => {
+        this.resolvedAddresses.set([]);
+        this.prepareAddressCards(this.formControl.value);
+      });
   }
 
   async addToAddresses(address: DocumentAbstract, type: BackendOption) {
