@@ -456,6 +456,8 @@ export class PublishPlugin extends SaveBase {
 
     const profileCheck = await this.profileService.additionalPublicationCheck(
       this.formStateService.getForm().getRawValue(),
+      this.formStateService.metadata(),
+      this.forAddress,
     );
     if (!profileCheck) return;
 

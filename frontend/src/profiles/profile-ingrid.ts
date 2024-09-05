@@ -36,6 +36,7 @@ import { InvekosPlugin } from "./ingrid/behaviours/invekos.plugin";
 import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
 import { firstValueFrom } from "rxjs";
 import { PublicationCheckDialogComponent } from "./ingrid/dialogs/publication-check/publication-check-dialog.component";
+import { Metadata } from "../app/models/ige-document";
 
 export enum InGridDoctype {
   InGridSpecialisedTask = "InGridSpecialisedTask",
@@ -99,8 +100,10 @@ export class InGridComponent implements OnInit {
   }
 
   private getAdditionalPublicationCheck() {
-    return (data: any) => {
-      if (data.distribution.format && data.distribution.format.length > 0)
+    return (data: any, metadata: Metadata, isAddress: boolean) => {
+      if (isAddress) return Promise.resolve(true);
+
+      if (data.distribution?.format && data.distribution.format.length > 0)
         return Promise.resolve(true);
 
       return firstValueFrom(

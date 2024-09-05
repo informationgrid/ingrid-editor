@@ -26,6 +26,7 @@ import { ProfileAbstract } from "../store/profile/profile.model";
 import { ContextHelpService } from "./context-help/context-help.service";
 import { forkJoin, from, Observable } from "rxjs";
 import { catchError, filter, map, switchMap, take, tap } from "rxjs/operators";
+import { Metadata } from "../models/ige-document";
 
 @Injectable({
   providedIn: "root",
@@ -35,8 +36,11 @@ export class ProfileService {
   private defaultDataDocType?: Doctype = null;
   private defaultAddressType?: Doctype = null;
 
-  additionalPublicationCheck: (data: any) => Promise<boolean> = (data: any) =>
-    Promise.resolve(true);
+  additionalPublicationCheck: (
+    data: any,
+    metadata: Metadata,
+    isAddress: boolean,
+  ) => Promise<boolean> = (data, metadata, isAddress) => Promise.resolve(true);
 
   constructor(
     private configService: ConfigService,
