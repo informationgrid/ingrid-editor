@@ -53,7 +53,7 @@ class OgcRecordsTests : IntegrationTest() {
     val wrongCollectionId = "no-can-do"
     val recordId = "b08533dc-f3cd-46ea-a12e-d7f799d59330"
     val wrongRecordId = "wrong3dc-f3cd-46ea-a12e-d7f79invalid"
-    val formats = listOf(RecordFormat.json, RecordFormat.geojson, RecordFormat.html) // , RecordFormat.INGRID_ISO)
+    val formats = listOf(RecordFormat.JSON, RecordFormat.GEOJSON, RecordFormat.HTML) // , RecordFormat.INGRID_ISO)
 
     @Before
     fun beforeTest() {

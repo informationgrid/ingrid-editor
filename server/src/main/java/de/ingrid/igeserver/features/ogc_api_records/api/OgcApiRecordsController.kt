@@ -20,19 +20,18 @@
 package de.ingrid.igeserver.features.ogc_api_records.api
 
 import com.fasterxml.jackson.databind.JsonNode
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.features.ogc_api_records.model.Link
 import de.ingrid.igeserver.features.ogc_api_records.services.OgcRecordService
 import de.ingrid.igeserver.features.ogc_api_records.services.QueryMetadata
-import de.ingrid.igeserver.features.ogc_api_records.services.ResponsePackage
 import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcApiResearchQueryFactory
 import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcFilterParameter
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.services.ApiValidationService
 import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
 import io.swagger.v3.oas.annotations.Operation
@@ -45,10 +44,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.context.annotation.Configuration
+import org.springframework.core.convert.converter.Converter
+import org.springframework.format.FormatterRegistry
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
+import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -59,22 +62,48 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import java.security.Principal
 import java.time.Instant
 
-// We need to use lowercase enums in order to use lowercase values in API-requests
-@Suppress("EnumEntryName")
-enum class CollectionFormat(val mimeType: String) {
-    json("application/json"),
-    html("text/html"),
+@Component
+class RecordFormatCapitalizeConverter : Converter<String, RecordFormat> {
+    override fun convert(source: String): RecordFormat? = try {
+        RecordFormat.valueOf(source.uppercase())
+    } catch (err: IllegalArgumentException) {
+        // Todo -> Fix error feedback. The following ClinetException is not return. Instead it returns 'err' from catch .
+        throw ClientException.withReason("Value '$String' for request parameter 'f' not supported")
+    }
 }
 
-@Suppress("EnumEntryName")
-enum class RecordFormat(val mimeType: String) {
-    json("application/json"),
-    html("text/html"),
-    ingridISO("text/xml"),
-    geojson("application/json"),
+@Component
+class CollectionFormatCapitalizeConverter : Converter<String, CollectionFormat> {
+    override fun convert(source: String): CollectionFormat? = try {
+        CollectionFormat.valueOf(source.uppercase())
+    } catch (err: IllegalArgumentException) {
+        // Todo -> Fix error feedback. The following ClinetException is not return. Instead it returns 'err' from catch .
+        throw ClientException.withReason("Value '$String' for request parameter 'f' not supported")
+    }
+}
+
+@Configuration
+class WebConfig : WebMvcConfigurer {
+    override fun addFormatters(registry: FormatterRegistry) {
+        registry.addConverter(RecordFormatCapitalizeConverter())
+        registry.addConverter(CollectionFormatCapitalizeConverter())
+    }
+}
+
+enum class CollectionFormat(val mimeType: String, val exportType: String) {
+    JSON("application/json", "internal"),
+    HTML("text/html", "html"),
+}
+
+enum class RecordFormat(val mimeType: String, val exportType: String) {
+    JSON("application/json", "internal"),
+    HTML("text/html", "html"),
+    INGRID_ISO("text/xml", "ingridISO"),
+    GEOJSON("application/json", "geojson"),
 }
 
 @RestController
@@ -108,15 +137,15 @@ class OgcApiRecordsController(
             description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
-                "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`",
-        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: CollectionFormat,
+                "\n\n• get response in JSON with value `JSON` (default). This represents the internal InGrid format. \n\n• get response in HTML with value `HTML`",
+        ) @RequestParam(value = "f", required = false, defaultValue = "JSON") format: CollectionFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
-        val response: ResponsePackage = ogcRecordService.handleLandingPageRequest(format)
+        val response = ogcRecordService.handleLandingPageRequest(format)
         val responseHeaders = HttpHeaders()
-        responseHeaders.add("Content-Type", response.mimeType)
-        return ResponseEntity.ok().headers(responseHeaders).body(response.data)
+        responseHeaders.add("Content-Type", format.mimeType)
+        return ResponseEntity.ok().headers(responseHeaders).body(response)
     }
 
     @GetMapping(value = ["/conformance"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
@@ -135,8 +164,8 @@ class OgcApiRecordsController(
             description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
-                "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`",
-        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: CollectionFormat,
+                "\n\n• get response in JSON with value `JSON` (default). This represents the internal InGrid format. \n\n• get response in HTML with value `HTML`",
+        ) @RequestParam(value = "f", required = false, defaultValue = "JSON") format: CollectionFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
@@ -162,17 +191,15 @@ class OgcApiRecordsController(
             description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
-                "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`",
-        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: CollectionFormat,
+                "\n\n• get response in JSON with value `JSON` (default). This represents the internal InGrid format. \n\n• get response in HTML with value `HTML`",
+        ) @RequestParam(value = "f", required = false, defaultValue = "JSON") format: CollectionFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
-        val exporter = ogcCatalogExporterFactory.getExporter(format)
         val catalogs = ogcRecordService.prepareCatalogs(principal, format)
 
-        val mimeType = exporter.typeInfo.dataType
         val responseHeaders = HttpHeaders()
-        responseHeaders.add("Content-Type", mimeType)
+        responseHeaders.add("Content-Type", format.mimeType)
         return ResponseEntity.ok().headers(responseHeaders).body(catalogs)
     }
 
@@ -192,8 +219,8 @@ class OgcApiRecordsController(
             description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
-                "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`",
-        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: CollectionFormat,
+                "\n\n• get response in JSON with value `JSON` (default). This represents the internal InGrid format. \n\n• get response in HTML with value `HTML`",
+        ) @RequestParam(value = "f", required = false, defaultValue = "JSON") format: CollectionFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
@@ -201,9 +228,8 @@ class OgcApiRecordsController(
         val exporter = ogcCatalogExporterFactory.getExporter(format)
         val catalog = ogcRecordService.prepareCatalog(collectionId, exporter, format)
 
-        val mimeType = exporter.typeInfo.dataType
         val responseHeaders = HttpHeaders()
-        responseHeaders.add("Content-Type", mimeType)
+        responseHeaders.add("Content-Type", format.mimeType)
         return ResponseEntity.ok().headers(responseHeaders).body(catalog)
     }
 
@@ -337,18 +363,17 @@ class OgcApiRecordsController(
             description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
-                "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
-                "\n\n• get response in XML, ISO 19139 with value `ingridISO` \n\n• get response in GEOJSON with value `geojson`",
-        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: RecordFormat,
+                "\n\n• get response in JSON with value `JSON` (default). This represents the internal InGrid format. \n\n• get response in HTML with value `HTML`" +
+                "\n\n• get response in XML, ISO 19139 with value `INGRID_ISO` \n\n• get response in GEOJSON with value `GEOJSON`",
+        ) @RequestParam(value = "f", required = false, defaultValue = "JSON") format: RecordFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
         val record = ogcRecordService.prepareRecord(collectionId, recordId, format)
-        val mimeType = record.second
         val responseHeaders = HttpHeaders()
-        responseHeaders.add("Content-Type", mimeType)
-        return ResponseEntity.ok().headers(responseHeaders).body(record.first)
+        responseHeaders.add("Content-Type", format.mimeType)
+        return ResponseEntity.ok().headers(responseHeaders).body(record)
     }
 
     @GetMapping(value = ["/collections/{collectionId}/items"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
@@ -465,9 +490,9 @@ class OgcApiRecordsController(
             description = "## Encodings: Response Format\n **OGC Parameter SHOULD**" +
                 "\n\n[Source: DRAFT OGC API - Records - Part 1](https://docs.ogc.org/DRAFTS/20-004.html#_encodings_2)" +
                 "\n\n### Supported formats \n\nWhile OGC API Records does not specify any mandatory encoding, support for the following encodings is given: " +
-                "\n\n• get response in JSON with value `internal` (default) \n\n• get response in HTML with value `html`" +
-                "\n\n• get response in XML, ISO 19139 with value `ingridISO` \n\n• get response in GEOJSON with value `geojson`",
-        ) @RequestParam(value = "f", required = false, defaultValue = "json") format: RecordFormat,
+                "\n\n• get response in JSON with value `JSON` (default). This represents the internal InGrid format. \n\n• get response in HTML with value `HTML`" +
+                "\n\n• get response in XML, ISO 19139 with value `INGRID_ISO` \n\n• get response in GEOJSON with value `GEOJSON`",
+        ) @RequestParam(value = "f", required = false, defaultValue = "JSON") format: RecordFormat,
         // PARAMETER : filter
         @Parameter(
             description = "## Filter\n **OGC Parameter SHOULD**" +
@@ -482,10 +507,6 @@ class OgcApiRecordsController(
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("limit", "offset", "type", "bbox", "datetime", "q", "externalid", "f", "filter"))
         apiValidationService.validateBbox(bbox)
-
-        val exportFormat = if (format == RecordFormat.json) "internal" else format.toString()
-        val exporter = exporterFactory.getExporter(DocumentCategory.DATA, format = exportFormat)
-        val mimeType: String = exporter.typeInfo.dataType
 
         val profile = catalogService.getProfileFromCatalog(collectionId)
 
@@ -507,10 +528,10 @@ class OgcApiRecordsController(
             Instant.now(),
         )
         // query all record details in right response format via exporter
-        val records: ByteArray = ogcRecordService.prepareRecords(researchRecords, collectionId, format, mimeType, links, queryMetadata)
+        val records: ByteArray = ogcRecordService.prepareRecords(researchRecords, collectionId, format, links, queryMetadata)
 
         val responseHeaders = HttpHeaders()
-        responseHeaders.add("Content-Type", mimeType)
+        responseHeaders.add("Content-Type", format.mimeType)
 
         return ResponseEntity.ok().headers(responseHeaders).body(records)
     }
