@@ -20,9 +20,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
   inject,
   input,
+  Input,
   OnInit,
   output,
   signal,
@@ -66,7 +66,7 @@ interface AddressDocumentAbstract extends DocumentAbstract {
   ],
 })
 export class AddressTemplateComponent implements OnInit {
-  form = input.required<UntypedFormGroup>();
+  @Input() form: UntypedFormGroup;
   parent = input<number>();
 
   create = output<void>();
@@ -79,45 +79,38 @@ export class AddressTemplateComponent implements OnInit {
     null,
   );
 
-  documentTypes: DocumentAbstract[];
+  documentTypes = signal<AddressDocumentAbstract[]>([]);
 
   constructor(
     private profileQuery: ProfileQuery,
     private docBehaviours: DocBehavioursService,
     private profileService: ProfileService,
-  ) {
-    effect(
-      () => {
-        this.initializeDocumentTypes(
-          this.profileQuery.addressProfiles,
-          this.parent(),
-        );
-      },
-      { allowSignalWrites: true },
-    );
-  }
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.initializeDocumentTypes(
+      this.profileQuery.addressProfiles,
+      this.parent(),
+    ).subscribe((value) => this.documentTypes.set(value));
+  }
 
   private initializeDocumentTypes(
     profiles: Observable<ProfileAbstract[]>,
     parent: number,
   ) {
-    profiles
-      .pipe(
-        untilDestroyed(this),
-        filter((types) => types.length > 0),
-        map((types) => this.filterDocTypesByParent(types, parent)),
-        map((types) => this.prepareDocumentTypes(types)),
-        tap((types) => this.setInitialTypeFirstTime(types)),
-        filter((types) => this.skipIfSame(types)),
-      )
-      .subscribe((result) => (this.documentTypes = result));
+    return profiles.pipe(
+      untilDestroyed(this),
+      filter((types) => types.length > 0),
+      map((types) => this.filterDocTypesByParent(types, parent)),
+      map((types) => this.prepareDocumentTypes(types)),
+      tap((types) => this.setInitialTypeFirstTime(types)),
+      filter((types) => this.skipIfSame(types)),
+    );
   }
 
   private setInitialTypeFirstTime(types: AddressDocumentAbstract[]) {
     // only set it first time
-    if (!this.form().get("choice").value) {
+    if (!this.form.get("choice").value) {
       const initialType =
         types.find(
           (t) => t.id == this.profileService.getDefaultAddressType()?.id,
@@ -130,7 +123,9 @@ export class AddressTemplateComponent implements OnInit {
   private skipIfSame(types: DocumentAbstract[]) {
     return (
       types.map((item) => item.id).join() !==
-      this.documentTypes?.map((item) => item.id).join()
+      this.documentTypes()
+        ?.map((item) => item.id)
+        .join()
     );
   }
 
@@ -152,13 +147,13 @@ export class AddressTemplateComponent implements OnInit {
   }
 
   setDocType(docType: AddressDocumentAbstract) {
-    this.form().get("choice").setValue(docType.id);
+    this.form.get("choice").setValue(docType.id);
     this.isPerson.set(docType.addressType !== "organization");
-    const firstName = this.form().get("firstName");
-    const lastName = this.form().get("lastName");
-    const organization = this.form().get("organization");
+    const firstName = this.form.get("firstName");
+    const lastName = this.form.get("lastName");
+    const organization = this.form.get("organization");
 
-    if (this.isPerson) {
+    if (this.isPerson()) {
       organization.clearValidators();
       organization.reset();
       organization.updateValueAndValidity();

@@ -1,4 +1,4 @@
-<div [formGroup]="form()" class="flex-col">
+<div [formGroup]="form" class="flex-col">
     @if (isPerson()) {
         <div class="space-bottom flex-1 flex-row gap-24">
             <div class="flex-1">
@@ -45,12 +45,12 @@
 
     <ng-content></ng-content>
 
-    @if (documentTypes?.length > 1) {
+    @if (documentTypes()?.length > 1) {
         <div class="dlg-create-place dlg-field-label required" id="doc-type">
             Adresstyp wählen
         </div>
         <ige-document-list-item
-            [docs]="documentTypes"
+            [docs]="documentTypes()"
             showSelection="true"
             [denseMode]="true"
             [hideDivider]="true"
