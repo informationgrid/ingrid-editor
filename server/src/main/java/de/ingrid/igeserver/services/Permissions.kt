@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.services
 
+@Suppress("EnumEntryName")
 enum class Permissions {
     manage_users,
     manage_catalog,
