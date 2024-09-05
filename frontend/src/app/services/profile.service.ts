@@ -35,6 +35,9 @@ export class ProfileService {
   private defaultDataDocType?: Doctype = null;
   private defaultAddressType?: Doctype = null;
 
+  additionalPublicationCheck: (data: any) => Promise<boolean> = (data: any) =>
+    Promise.resolve(true);
+
   constructor(
     private configService: ConfigService,
     private profileStore: ProfileStore,

@@ -35,17 +35,13 @@ import { inject } from "@angular/core";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 
 export abstract class SaveBase extends Plugin {
-  dialog: MatDialog;
+  sessionStore = inject(SessionStore);
+  messageService = inject(FormMessageService);
   formStateService = inject(FormStateService);
+
+  dialog: MatDialog;
   documentService: DocumentService;
   formToolbarService: FormToolbarService;
-
-  protected constructor(
-    public sessionStore: SessionStore,
-    public messageService: FormMessageService,
-  ) {
-    super();
-  }
 
   handleError(
     error,

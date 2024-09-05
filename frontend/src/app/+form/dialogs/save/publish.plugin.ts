@@ -36,11 +36,10 @@ import {
   BeforePublishData,
   DocEventsService,
 } from "../../../services/event/doc-events.service";
-import { SessionStore } from "../../../store/session.store";
-import { FormMessageService } from "../../../services/form-message.service";
 import { IgeError } from "../../../models/ige-error";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { TranslocoService } from "@ngneat/transloco";
+import { ProfileService } from "../../../services/profile.service";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -58,6 +57,8 @@ export class PublishPlugin extends SaveBase {
   eventValidate = "VALIDATE";
   private tree: TreeQuery | AddressTreeQuery;
 
+  private profileService = inject(ProfileService);
+
   constructor(
     public formToolbarService: FormToolbarService,
     private modalService: ModalService,
@@ -67,10 +68,8 @@ export class PublishPlugin extends SaveBase {
     public documentService: DocumentService,
     private docEvents: DocEventsService,
     private transloco: TranslocoService,
-    messageService: FormMessageService,
-    sessionStore: SessionStore,
   ) {
-    super(sessionStore, messageService);
+    super();
     this.fields.push({
       key: "unpublishDisabled",
       type: "checkbox",
@@ -96,12 +95,10 @@ export class PublishPlugin extends SaveBase {
       this.docEvents.onEvent(this.eventRevertId).subscribe(() => this.revert()),
       this.docEvents
         .onEvent(this.eventPublishId)
-        .subscribe(() => this.validateBeforePublish() && this.publish()),
+        .subscribe(() => this.validateAndPublish()),
       this.docEvents
         .onEvent(this.eventPlanPublishId)
-        .subscribe(
-          () => this.validateBeforePublish() && this.showPlanPublishingDialog(),
-        ),
+        .subscribe(() => this.validateAndPublish(true)),
       this.docEvents
         .onEvent(this.eventUnpublishId)
         .subscribe(() => this.showUnpublishDialog()),
@@ -452,5 +449,17 @@ export class PublishPlugin extends SaveBase {
       }
     });
     return errors;
+  }
+
+  private async validateAndPublish(planned: boolean = false) {
+    if (!this.validateBeforePublish()) return;
+
+    const profileCheck = await this.profileService.additionalPublicationCheck(
+      this.formStateService.getForm().getRawValue(),
+    );
+    if (!profileCheck) return;
+
+    if (planned) this.showPlanPublishingDialog();
+    else this.publish();
   }
 }

@@ -26,9 +26,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { catchError, finalize } from "rxjs/operators";
 import { SaveBase } from "./save.base";
-import { SessionStore } from "../../../store/session.store";
 import { DocEventsService } from "../../../services/event/doc-events.service";
-import { FormMessageService } from "../../../services/form-message.service";
 import { DOCUMENT } from "@angular/common";
 import { IgeError } from "../../../models/ige-error";
 import { PluginService } from "../../../services/plugin/plugin.service";
@@ -50,12 +48,9 @@ export class SavePlugin extends SaveBase {
     private addressTreeQuery: AddressTreeQuery,
     public dialog: MatDialog,
     public documentService: DocumentService,
-    sessionStore: SessionStore,
-    messageService: FormMessageService,
-
     @Inject(DOCUMENT) private _document: Document,
   ) {
-    super(sessionStore, messageService);
+    super();
     inject(PluginService).registerPlugin(this);
   }
 
