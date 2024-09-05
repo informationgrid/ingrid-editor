@@ -1,5 +1,11 @@
 # Changelog
 
+## 7.2.1.1 (05.09.2024)
+
+### Bugfixes
+
+- Hochgeladene entpackte ZIP-Dateien beim Veröffentlichen gelöscht (#6767)
+
 ## 7.2.1 (25.07.2024)
 
 ### Bugfixes
