@@ -736,9 +736,9 @@ public class FileSystemStorage implements Storage {
         var unpublishedFiles = this.listFiles(catalog, null, datasetID, this.docsDir, Scope.UNPUBLISHED);
         var existingFiles = this.listFiles(catalog, null, datasetID, this.docsDir, Scope.PUBLISHED);
         var archivedFiles = this.listFiles(catalog, null, datasetID, this.docsDir, Scope.ARCHIVED);
-        
+
         final CopyOption[] copyOptions = DEFAULT_COPY_OPTIONS;
-        
+
         checkAndLogForMissingFiles(datasetID, referencedFiles, unpublishedFiles, existingFiles, archivedFiles);
 
         // move files to trash from published folder which aren't referenced anymore
@@ -773,7 +773,7 @@ public class FileSystemStorage implements Storage {
         });
 
         // remove files from unpublished folder which aren't referenced by the dataset
-        unpublishedFiles.stream().filter(f -> !referencedFiles.contains(f.getFile())).forEach(f -> {
+        unpublishedFiles.stream().filter(f -> !referencedFiles.contains(f.getRelativePath())).forEach(f -> {
             try {
                 var unsavedFile = f.getRealPath();
                 log.info("publishDataset => Delete unreferenced file from unpublished folder: " + unsavedFile);
@@ -795,7 +795,7 @@ public class FileSystemStorage implements Storage {
                 .filter(ref -> Arrays.stream(filesOnStorage)
                         .allMatch(location -> location.stream().noneMatch(item -> ref.contains(item.getRelativePath()))))
                 .collect(Collectors.toList());
-        
+
         if (!missingFiles.isEmpty()) {
             log.error("Some referenced files could not be found on the file system for the dataset '" + datasetID + "': " + String.join(",", missingFiles));
         }
