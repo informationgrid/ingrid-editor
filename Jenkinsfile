@@ -22,12 +22,8 @@ pipeline {
             when { not { buildingTag() } }
             steps {
                 script {
-                    // use another container, where we can link the database to so that we can access it
-                    // for volume mapping remember that we cannot use filesystem from Jenkins container, but only from HOST!
-                    docker.image('ubuntu:20.04').inside("-v /root/.docker/config.json:/root/.docker/config.json --mount type=bind,src=/opt/docker-setup/jenkins-nexus-sonar/jenkins-home/shared-ro-gradle-cache,dst=/.gradle-ro-cache") {
-                        withEnv(["GRADLE_RO_DEP_CACHE=/.gradle-ro-cache"]) {
-                            sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain clean build -x test -x spotlessCheck'
-                        }
+                    withEnv(["GRADLE_RO_DEP_CACHE=/var/jenkins_home/shared-ro-gradle-cache"]) {
+                        sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain clean build -x test -x spotlessCheck'
                     }
                 }
             }
