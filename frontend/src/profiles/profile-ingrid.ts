@@ -101,9 +101,13 @@ export class InGridComponent implements OnInit {
 
   private getAdditionalPublicationCheck() {
     return (data: any, metadata: Metadata, isAddress: boolean) => {
-      if (isAddress) return Promise.resolve(true);
+      // ignore check for addresses and specialized-tasks (which does not contain format-field
+      const ignoredDocType =
+        metadata.docType === InGridDoctype.InGridSpecialisedTask;
+      const hasAtLeastOneFormat =
+        data.distribution?.format && data.distribution.format.length > 0;
 
-      if (data.distribution?.format && data.distribution.format.length > 0)
+      if (isAddress || ignoredDocType || hasAtLeastOneFormat)
         return Promise.resolve(true);
 
       return firstValueFrom(
