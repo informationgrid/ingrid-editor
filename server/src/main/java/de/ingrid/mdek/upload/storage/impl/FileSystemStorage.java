@@ -873,25 +873,27 @@ public class FileSystemStorage implements Storage {
     }
 
     @Override
-    public void copyToUnpublished(String catalog, String sourceDatasetID, String targetDatasetId) throws IOException{
+    public void copyToUnpublished(String catalog, String sourceDatasetID, String targetDatasetId) throws IOException {
         var unpublishedFiles = this.listFiles(catalog, null, sourceDatasetID, this.docsDir, Scope.UNPUBLISHED);
+        var archivedFiles = this.listFiles(catalog, null, sourceDatasetID, this.docsDir, Scope.ARCHIVED);
+        var archivedFilesUnpublished = this.listFiles(catalog, null, sourceDatasetID, this.docsDir, Scope.ARCHIVED_UNPUBLISHED);
         var publishedFiles = this.listFiles(catalog, null, sourceDatasetID, this.docsDir, Scope.PUBLISHED);
-
 
         final CopyOption[] copyOptions = {StandardCopyOption.REPLACE_EXISTING};
 
-        Stream.concat(unpublishedFiles.stream(),publishedFiles.stream()).forEach(f -> {
-            try {
-                var existingFile = f.getRealPath();
+        Stream.of(unpublishedFiles.stream(), publishedFiles.stream(), archivedFiles.stream(), archivedFilesUnpublished.stream())
+                .flatMap(s -> s)
+                .forEach(f -> {
+                    try {
+                        var existingFile = f.getRealPath();
 
-                var targetPath = this.getUnpublishedPath(catalog, targetDatasetId, f.getRelativePath(), this.docsDir);
-                Files.createDirectories(targetPath.getParent());
-                Files.copy(existingFile, targetPath, copyOptions);
-            }
-            catch (final IOException ex) {
-                throw new UncheckedIOException(ex);
-            }
-        });
+                        var targetPath = this.getUnpublishedPath(catalog, targetDatasetId, f.getRelativePath(), this.docsDir);
+                        Files.createDirectories(targetPath.getParent());
+                        Files.copy(existingFile, targetPath, copyOptions);
+                    } catch (final IOException ex) {
+                        throw new UncheckedIOException(ex);
+                    }
+                });
     }
 
     @Override
