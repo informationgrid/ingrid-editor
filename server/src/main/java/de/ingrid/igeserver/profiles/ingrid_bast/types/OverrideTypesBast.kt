@@ -22,60 +22,26 @@ package de.ingrid.igeserver.profiles.ingrid_bast.types
 import de.ingrid.igeserver.profiles.ingrid.types.InGridDataCollectionType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoDatasetType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoServiceType
-import de.ingrid.igeserver.profiles.ingrid.types.InGridInformationSystemType
-import de.ingrid.igeserver.profiles.ingrid.types.InGridProjectType
-import de.ingrid.igeserver.profiles.ingrid.types.InGridPublicationType
-import de.ingrid.igeserver.profiles.ingrid.types.InGridSpecialisedTaskType
-import de.ingrid.igeserver.profiles.ingrid.types.address.InGridOrganisationType
-import de.ingrid.igeserver.profiles.ingrid.types.address.InGridPersonType
 import de.ingrid.igeserver.profiles.ingrid_bast.BastProfile
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
+private const val PROFILE_ID = BastProfile.ID
+
 @Component
 class InGridGeoDatasetTypeBast(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
-    override val profiles = arrayOf(BastProfile.ID)
+    override val profiles = arrayOf(PROFILE_ID)
     override val jsonSchema = "/ingrid/schemes/bast/geo-dataset_bast.schema.json"
 }
 
 @Component
 class InGridDataCollectionTypeBast(jdbcTemplate: JdbcTemplate) : InGridDataCollectionType(jdbcTemplate) {
-    override val profiles = arrayOf(BastProfile.ID)
+    override val profiles = arrayOf(PROFILE_ID)
     override val jsonSchema = "/ingrid/schemes/bast/data-collection_bast.schema.json"
 }
 
 @Component
 class InGridGeoServiceTypeBast(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType(jdbcTemplate) {
-    override val profiles = arrayOf(BastProfile.ID)
+    override val profiles = arrayOf(PROFILE_ID)
     override val jsonSchema = "/ingrid/schemes/bast/geo-service_bast.schema.json"
-}
-
-@Component
-class InGridInformationSystemTypeBast(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
-    override val profiles = arrayOf(BastProfile.ID)
-}
-
-@Component
-class InGridPublicationTypeBast(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
-    override val profiles = arrayOf(BastProfile.ID)
-}
-
-@Component
-class InGridProjectTypeBast(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
-    override val profiles = arrayOf(BastProfile.ID)
-}
-
-@Component
-class InGridSpecialisedTaskTypeBast(jdbcTemplate: JdbcTemplate) : InGridSpecialisedTaskType(jdbcTemplate) {
-    override val profiles = arrayOf(BastProfile.ID)
-}
-
-@Component
-class InGridOrganisationTypeBast(jdbcTemplate: JdbcTemplate) : InGridOrganisationType(jdbcTemplate) {
-    override val profiles = arrayOf(BastProfile.ID)
-}
-
-@Component
-class InGridPersonTypeBast(jdbcTemplate: JdbcTemplate) : InGridPersonType(jdbcTemplate) {
-    override val profiles = arrayOf(BastProfile.ID)
 }
