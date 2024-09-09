@@ -467,9 +467,7 @@ class BmiProfile(
         }
 
         return if (isSuperAdmin) {
-            newPermissions.filter { permission ->
-                (!permission.equals(Permissions.manage_ibus.name))
-            }
+            newPermissions
         } else {
             newPermissions.filter { permission ->
                 (
