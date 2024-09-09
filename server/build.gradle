@@ -6,7 +6,7 @@ import java.nio.file.Paths
 import static org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 
 buildscript {
-    ext.kotlin_version = '1.9.23'
+    ext.kotlin_version = '1.9.25'
     ext.spring_boot_version = '3.3.2'
     ext.kotest_version = '5.9.1'
     ext.jte_version = '3.1.12'
