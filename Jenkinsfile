@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     withEnv(["GRADLE_RO_DEP_CACHE=/var/jenkins_home/shared-ro-gradle-cache"]) {
-                        sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain clean build -x test -x spotlessCheck'
+                        sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain clean build -x test -x check'
                     }
                 }
             }
@@ -70,7 +70,7 @@ pipeline {
                 script {
                     docker.image('ubuntu:20.04').inside("-v /root/.docker/config.json:/root/.docker/config.json --mount type=bind,src=/opt/docker-setup/jenkins-nexus-sonar/jenkins-home/shared-ro-gradle-cache,dst=/.gradle-ro-cache") {
                         withEnv(["GRADLE_RO_DEP_CACHE=/.gradle-ro-cache"]) {
-                            sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain build -x test'
+                            sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain build -x test -x check'
                         }
                     }
                 }

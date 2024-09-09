@@ -276,10 +276,10 @@ jte {
     generate()
 }
 
-
 tasks.named('generateJte') {
     mustRunAfter(tasks.runKtlintCheckOverMainSourceSet)
 }
+
 tasks.named('compileKotlin') {
     dependsOn(tasks.updateGitHooks)
     dependsOn(tasks.generateJte)
