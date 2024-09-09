@@ -51,6 +51,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
 import { FormStateService } from "../../../../app/+form/form-state.service";
 import { AddButtonComponent } from "../../../../app/shared/add-button/add-button.component";
+import { CodelistPipe } from "../../../../app/directives/codelist.pipe";
 
 interface RepeatDistributionDetailListProps extends FormlyFieldProps {
   infoText: string;
@@ -67,6 +68,7 @@ interface RepeatDistributionDetailListProps extends FormlyFieldProps {
     CdkDrag,
     CdkDropList,
     CdkDragHandle,
+    CodelistPipe,
     MatDialogModule,
     MatIconModule,
     MatListModule,
