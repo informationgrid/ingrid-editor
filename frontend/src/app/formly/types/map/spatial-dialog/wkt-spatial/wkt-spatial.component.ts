@@ -111,6 +111,10 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
   }
 
   private drawWkt(value: string) {
-    this.drawnWkt = this.leafletService.convertWKT(this.map, value, true);
+    this.drawnWkt = this.leafletService.convertWKT(
+      this.map,
+      value,
+      true,
+    ) as any;
   }
 }

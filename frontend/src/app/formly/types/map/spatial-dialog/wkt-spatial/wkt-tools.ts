@@ -18,8 +18,8 @@
  * limitations under the Licence.
  */
 import { Map } from "leaflet";
-import * as Wkt from "wicket";
-import * as Wktleaflet from "wicket/wicket-leaflet";
+import Wkt from "wicket";
+import Wktleaflet from "wicket/wicket-leaflet";
 
 export class WktTools {
   private defaultConfig = {
@@ -34,22 +34,8 @@ export class WktTools {
   private wkt = new Wkt.Wkt();
 
   constructor() {
-    // use lib so that IDE does not remove import statement above
-    Wktleaflet.toString();
-  }
-
-  validate(wkt: string): string {
-    this.wkt.read(wkt);
-    const json = this.wkt.toJson();
-    if (json.type === "Polygon") {
-      const allClosed = (<any[]>json.coordinates).every(
-        (group) =>
-          group[0][0] === group[group.length - 1][0] &&
-          group[0][1] === group[group.length - 1][1],
-      );
-      if (!allClosed) return "Polygon ist nicht geschlossen";
-    }
-    return null;
+    // use lib so that IDE does not remove import statement above!
+    Wktleaflet.name;
   }
 
   /**
@@ -65,9 +51,9 @@ export class WktTools {
     map: Map,
     wktString: string,
     overrideConfig = {},
-    editable = false,
-    focus = true,
-  ) {
+    editable: boolean = false,
+    focus: boolean = true,
+  ): object {
     try {
       // Catch any malformed WKT strings
       this.wkt.read(wktString);
