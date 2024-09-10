@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.features.ogc_api_records.api
 
 import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporterFactory
@@ -44,14 +43,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import org.apache.logging.log4j.kotlin.logger
-import org.springframework.context.annotation.Configuration
-import org.springframework.core.convert.converter.Converter
-import org.springframework.format.FormatterRegistry
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
-import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -62,37 +57,8 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import java.security.Principal
 import java.time.Instant
-
-@Component
-class RecordFormatCapitalizeConverter : Converter<String, RecordFormat> {
-    override fun convert(source: String): RecordFormat? = try {
-        RecordFormat.valueOf(source.uppercase())
-    } catch (err: IllegalArgumentException) {
-        // Todo -> Fix error feedback. The following ClinetException is not return. Instead it returns 'err' from catch .
-        throw ClientException.withReason("Value '$String' for request parameter 'f' not supported")
-    }
-}
-
-@Component
-class CollectionFormatCapitalizeConverter : Converter<String, CollectionFormat> {
-    override fun convert(source: String): CollectionFormat? = try {
-        CollectionFormat.valueOf(source.uppercase())
-    } catch (err: IllegalArgumentException) {
-        // Todo -> Fix error feedback. The following ClinetException is not return. Instead it returns 'err' from catch .
-        throw ClientException.withReason("Value '$String' for request parameter 'f' not supported")
-    }
-}
-
-@Configuration
-class WebConfig : WebMvcConfigurer {
-    override fun addFormatters(registry: FormatterRegistry) {
-        registry.addConverter(RecordFormatCapitalizeConverter())
-        registry.addConverter(CollectionFormatCapitalizeConverter())
-    }
-}
 
 enum class CollectionFormat(val mimeType: String, val exportType: String) {
     JSON("application/json", "internal"),

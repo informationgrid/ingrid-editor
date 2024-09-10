@@ -29,8 +29,11 @@ import io.swagger.v3.oas.models.security.SecurityScheme
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.convert.converter.Converter
+import org.springframework.core.convert.converter.ConverterFactory
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
+import org.springframework.format.FormatterRegistry
 import org.springframework.http.HttpMethod
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
@@ -77,7 +80,13 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
             .addResolver(object : PathResourceResolver() {
                 override fun getResource(resourcePath: String, location: Resource): Resource {
                     val requestedResource = location.createRelative(resourcePath)
-                    return if (requestedResource.exists() && requestedResource.isReadable) requestedResource else ClassPathResource("/static/index.html")
+                    return if (requestedResource.exists() && requestedResource.isReadable) {
+                        requestedResource
+                    } else {
+                        ClassPathResource(
+                            "/static/index.html",
+                        )
+                    }
                 }
             })
     }
@@ -112,5 +121,22 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
                     .addList(oauthSchemeName, Collections.emptyList()),
             )
             .servers(serverList)
+    }
+
+    class StringToEnumConverterFactory : ConverterFactory<String, Enum<*>> {
+        override fun <T : Enum<*>> getConverter(targetType: Class<T>): Converter<String, T> = StringToEnumConverter(targetType)
+        private class StringToEnumConverter<T : Enum<*>>(private val enumType: Class<T>) : Converter<String, T> {
+            override fun convert(source: String): T {
+                val upperCasedSource = source.uppercase()
+                // Loop through the enum constants and match case-insensitively
+                for (enumConstant in enumType.enumConstants) {
+                    if ((enumConstant as Enum<*>).name == upperCasedSource) return enumConstant
+                }
+                throw IllegalArgumentException("No enum constant ${enumType.simpleName}.$upperCasedSource")
+            }
+        }
+    }
+    override fun addFormatters(registry: FormatterRegistry) {
+        registry.addConverterFactory(StringToEnumConverterFactory())
     }
 }
