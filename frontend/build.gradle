@@ -39,7 +39,7 @@ task bundle(type: YarnTask, dependsOn: 'yarnInstall') {
   inputs.dir('src')
   inputs.files('package.json', 'package-lock.json', 'angular.json', 'tsconfig.json', 'tsconfig.app.json')
 
-  outputs.dir('build/dist')
+  outputs.dir('build/dist/browser')
 
   args = buildArgs
 }
@@ -57,7 +57,7 @@ task packageNpmApp(type: Zip) {
   archiveFileName = 'ige-frontend-app.jar'
   destinationDirectory = file("${projectDir}/build/packageApp")
   duplicatesStrategy = DuplicatesStrategy.INCLUDE
-  from('build/dist') {
+  from('build/dist/browser') {
     // optional path under which output will be visible in Java classpath, e.g. static resources path
     into 'static'
   }

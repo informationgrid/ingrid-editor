@@ -8,14 +8,17 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "aot": true,
-            "outputPath": "build/dist",
+            "outputPath": {
+              "base": "build/dist"
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": [
+              "src/polyfills.ts"
+            ],
             "allowedCommonJsDependencies": [
               "leaflet",
               "@flowjs/flow.js",
@@ -58,12 +61,16 @@
               "src/theme.scss"
             ],
             "scripts": [],
-            "vendorChunk": true,
             "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "browser": "src/main.ts",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "."
+              ]
+            }
           },
           "configurations": {
             "hmr": {
@@ -95,8 +102,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
