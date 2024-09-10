@@ -18,41 +18,24 @@
                     geprüft. Grün hinterlegte Schlagworte werden der Liste
                     hinzugefügt. Rot hinterlegte Schlagworte werden entfernt.
                 </div>
-                @if (isInspireIdentified && inspireTopicsNew.length) {
-                    <div class="keyword-section" aria-label="INSPIRE Themen">
-                        <div class="label-wrapper">
-                            <label>INSPIRE Themen</label>
-                        </div>
-                        <mat-chip-listbox class="chip-list">
-                            <mat-chip
-                                *ngFor="let keyword of inspireTopicsNew"
-                                [ngClass]="{
-                                    'added-keyword': keyword.status === 'added',
-                                    'removed-keyword':
-                                        keyword.status === 'removed'
-                                }"
-                                [aria-label]="keyword.label"
-                            >
-                                {{ keyword.label }}
-                            </mat-chip>
-                        </mat-chip-listbox>
-                    </div>
-                }
-                @if (isInspireIdentified && isoCategoriesNew.length) {
+                <div *ngFor="let keywordType of keywordDialogData">
                     <div
+                        *ngIf="keywordType.condition"
                         class="keyword-section"
-                        aria-label="ISO-Themenkategorie"
+                        [attr.aria-label]="keywordType.label"
                     >
                         <div class="label-wrapper">
-                            <label>ISO-Themenkategorie</label>
+                            <label>{{ keywordType.label }}</label>
                         </div>
                         <mat-chip-listbox class="chip-list">
                             <mat-chip
-                                *ngFor="let keyword of isoCategoriesNew"
+                                *ngFor="let keyword of keywordType.keywords"
                                 [ngClass]="{
                                     'added-keyword': keyword.status === 'added',
                                     'removed-keyword':
-                                        keyword.status === 'removed'
+                                        keyword.status === 'removed',
+                                    'unchanged-keyword':
+                                        keyword.status === 'unchanged'
                                 }"
                                 [aria-label]="keyword.label"
                             >
@@ -60,71 +43,7 @@
                             </mat-chip>
                         </mat-chip-listbox>
                     </div>
-                }
-                @if (gemetKeywordsNew.length) {
-                    <div class="keyword-section" aria-label="Gemet Schlagworte">
-                        <div class="label-wrapper">
-                            <label>Gemet Schlagworte</label>
-                        </div>
-                        <mat-chip-listbox class="chip-list">
-                            <mat-chip
-                                *ngFor="let keyword of gemetKeywordsNew"
-                                [ngClass]="{
-                                    'added-keyword': keyword.status === 'added',
-                                    'removed-keyword':
-                                        keyword.status === 'removed'
-                                }"
-                                [aria-label]="keyword.label"
-                            >
-                                {{ keyword.label }}
-                            </mat-chip>
-                        </mat-chip-listbox>
-                    </div>
-                }
-                @if (umthesKeywordsNew.length) {
-                    <div
-                        class="keyword-section"
-                        aria-label="Umthes Schlagworte"
-                    >
-                        <div class="label-wrapper">
-                            <label>Umthes Schlagworte</label>
-                        </div>
-
-                        <mat-chip-listbox class="chip-list">
-                            <mat-chip
-                                *ngFor="let keyword of umthesKeywordsNew"
-                                [ngClass]="{
-                                    'added-keyword': keyword.status === 'added',
-                                    'removed-keyword':
-                                        keyword.status === 'removed'
-                                }"
-                                [aria-label]="keyword.label"
-                            >
-                                {{ keyword.label }}
-                            </mat-chip>
-                        </mat-chip-listbox>
-                    </div>
-                }
-                @if (freeKeywordsNew.length) {
-                    <div class="keyword-section" aria-label="Freie Schlagworte">
-                        <div class="label-wrapper">
-                            <label>Freie Schlagworte</label>
-                        </div>
-                        <mat-chip-listbox class="chip-list">
-                            <mat-chip
-                                *ngFor="let keyword of freeKeywordsNew"
-                                [ngClass]="{
-                                    'added-keyword': keyword.status === 'added',
-                                    'removed-keyword':
-                                        keyword.status === 'removed'
-                                }"
-                                [aria-label]="keyword.label"
-                            >
-                                {{ keyword.label }}
-                            </mat-chip>
-                        </mat-chip-listbox>
-                    </div>
-                }
+                </div>
             </div>
 
             <div *ngIf="isLoading" class="loading-wrapper">
@@ -133,6 +52,14 @@
                     diameter="40"
                 ></mat-spinner>
             </div>
+            @if (timedOutKeywords.length && !this.isLoading) {
+                <div class="error-box flex-row align-items-center">
+                    Verbindungsprobleme bei:
+                    {{ timedOutThesauri.join(", ") }}. Folgende Schlagworte
+                    werden den Freien Schlagworten zugeordnet:
+                    {{ timedOutKeywords.join(", ") }}
+                </div>
+            }
             <div class="help flex-row align-items-center">
                 <mat-icon svgIcon="info-24px"></mat-icon>
                 <div class="legend" *ngIf="!isLoading">
@@ -160,6 +87,17 @@
     <mat-dialog-actions>
         <button mat-flat-button mat-dialog-close="true">Schließen</button>
         <div class="flex-1"></div>
+        <button
+            color="secondary"
+            mat-flat-button
+            data-cy="save-btn"
+            id="retry-btn"
+            [disabled]="isLoading || saveButtonClicked"
+            *ngIf="!this.isLoading"
+            (click)="consolidateKeywords()"
+        >
+            <span> Wiederholen </span>
+        </button>
         <button
             color="primary"
             mat-flat-button

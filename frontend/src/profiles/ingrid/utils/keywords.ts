@@ -193,7 +193,7 @@ export class KeywordAnalysis {
 
     const umthesResult = await this.checkInThesaurus(item, "umthes");
     if (umthesResult.found) return umthesResult;
-    else return this.addFreeKeyword(item);
+    return this.addFreeKeyword(item);
   }
 
   checkInThemes(item: string): ThesaurusResult {
@@ -223,49 +223,43 @@ export class KeywordAnalysis {
   ): Promise<ThesaurusResult> {
     const thesaurusName = this.mapThesaurusToLabel(thesaurus);
 
-    try {
-      const response = await firstValueFrom(
-        this.http
-          .get<any[]>(
-            `${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(
-              item,
-            )}&type=EXACT`,
-          )
-          .pipe(
-            timeout(timeoutDuration), // Set the timeout for the HTTP request
-            catchError((err) => {
-              // Handle timeout error or other errors
-              if (err.name === "TimeoutError") {
-                return throwError(() => new Error("Request timed out"));
-              }
-              return throwError(() => err);
-            }),
-          ),
-      );
+    const response = await firstValueFrom(
+      this.http
+        .get<any[]>(
+          `${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(
+            item,
+          )}&type=EXACT`,
+        )
+        .pipe(
+          timeout(timeoutDuration),
+          catchError((err) => {
+            if (err.name === "TimeoutError") {
+              throw {
+                message: thesaurus + " request timed out for " + item,
+                label: item,
+                thesaurus: thesaurus,
+                found: false,
+              };
+            }
+            return throwError(() => err);
+          }),
+        ),
+    );
 
-      if (response.length > 0) {
-        return {
-          thesaurus: thesaurusName,
-          found: true,
-          value: response[0],
-          label: response[0].label,
-        };
-      }
-
+    if (response.length > 0) {
       return {
         thesaurus: thesaurusName,
-        found: false,
-        value: null,
-        label: item,
-      };
-    } catch (error) {
-      console.error("Error in checkInThesaurus:", error);
-      return {
-        thesaurus: thesaurusName,
-        found: false,
-        value: null,
-        label: item,
+        found: true,
+        value: response[0],
+        label: response[0].label,
       };
     }
+
+    return {
+      thesaurus: thesaurusName,
+      found: false,
+      value: null,
+      label: item,
+    };
   }
 }

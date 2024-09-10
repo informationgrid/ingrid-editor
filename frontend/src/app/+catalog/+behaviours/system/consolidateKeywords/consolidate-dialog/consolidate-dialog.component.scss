@@ -29,18 +29,15 @@
 
 /* Chip status styles */
 .added-keyword {
-  background-color: #49a84d;
-  color: white;
+  background-color: #c8e6c9;
 }
 
 .removed-keyword {
-  background-color: #f44336;
-  color: white;
+  background-color: #ffcdd2;
 }
 
 .unchanged-keyword {
-  background-color: #9e9e9e; /* Grey */
-  color: white;
+  border: 1px solid transparent;
 }
 
 .mat-mdc-chip {
@@ -63,6 +60,10 @@
     border-radius: 50%;
     background-color: $ige-background;
   }
+}
+
+.error-box {
+  margin-top: 20px;
 }
 
 #save-btn {

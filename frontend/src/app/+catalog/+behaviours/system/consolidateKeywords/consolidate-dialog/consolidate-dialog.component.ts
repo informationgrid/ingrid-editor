@@ -83,16 +83,24 @@ export class ConsolidateDialogComponent implements OnInit {
   umthesKeywords: any[];
   freeKeywords: any[];
 
+  timedOutKeywords: string[] = [];
+  timedOutThesauri: string[] = [];
+
   inspireTopicsNew: ThesaurusResult[] = [];
   isoCategoriesNew: ThesaurusResult[] = [];
   gemetKeywordsNew: ThesaurusResult[] = [];
   umthesKeywordsNew: ThesaurusResult[] = [];
   freeKeywordsNew: ThesaurusResult[] = [];
 
+  keywordDialogData = [];
   isLoading: boolean;
   saveButtonClicked: boolean;
 
   ngOnInit() {
+    this.consolidateKeywords();
+  }
+
+  private init() {
     this.isLoading = true;
     this.resetNewKeywords();
     this.form = this.formStateService.getForm().value;
@@ -114,24 +122,30 @@ export class ConsolidateDialogComponent implements OnInit {
     this.gemetKeywords = this.form.keywords.gemet;
     this.umthesKeywords = this.form.keywords.umthes;
     this.freeKeywords = this.form.keywords.free;
-
-    this.consolidateKeywords().then(() => {
-      this.sortKeywordsByStatus();
-      this.removeDuplicateKeywords();
-      this.isLoading = false;
-    });
   }
 
-  private async consolidateKeywords() {
+  protected async consolidateKeywords() {
+    this.init();
+
+    this.resetNewKeywords();
+    this.timedOutKeywords = [];
+    this.timedOutThesauri = [];
+
     this.inspireTopics.forEach((theme) => this.handleInspireTopics(theme));
     this.isoCategories.forEach((category) =>
       this.handleIsoCategories(category),
     );
+
     await this.assignKeywords([
       ...this.gemetKeywords,
       ...this.umthesKeywords,
       ...this.freeKeywords,
-    ]);
+    ]).then(() => {
+      this.sortKeywordsByStatus();
+      this.removeDuplicateKeywords();
+      this.setKeywordDialogData();
+      this.isLoading = false;
+    });
   }
 
   private handleInspireTopics(theme: { key: string }) {
@@ -159,10 +173,26 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   private async assignKeyword(keyword: ThesaurusResult) {
-    const res = await this.keywordAnalysis.assignKeyword(
-      keyword.label,
-      this.isInspireIdentified,
-    );
+    let res: ThesaurusResult;
+    try {
+      res = await this.keywordAnalysis.assignKeyword(
+        keyword.label,
+        this.isInspireIdentified,
+      );
+    } catch (e) {
+      // Thesaurus response time out
+      console.error(e.message);
+      if (!this.timedOutThesauri.includes(e.thesaurus)) {
+        this.timedOutThesauri.push(e.thesaurus);
+      }
+      this.timedOutKeywords.push(keyword.label);
+      res = {
+        thesaurus: this.keywordCategories.free,
+        value: keyword.value,
+        label: keyword.label,
+        found: false,
+      };
+    }
 
     const keywordMap = {
       [this.keywordCategories.gemet]: {
@@ -281,7 +311,6 @@ export class ConsolidateDialogComponent implements OnInit {
         });
     });
   }
-
   private mapKeywords(keywords: ThesaurusResult[]) {
     return keywords.map((k) => ({
       id: k.value.id,
@@ -319,5 +348,35 @@ export class ConsolidateDialogComponent implements OnInit {
     this.gemetKeywordsNew = [];
     this.umthesKeywordsNew = [];
     this.freeKeywordsNew = [];
+  }
+
+  private setKeywordDialogData() {
+    this.keywordDialogData = [
+      {
+        label: "INSPIRE Themen",
+        condition: this.isInspireIdentified && this.inspireTopicsNew.length,
+        keywords: this.inspireTopicsNew,
+      },
+      {
+        label: "ISO-Themenkategorie",
+        condition: this.isInspireIdentified && this.isoCategoriesNew.length,
+        keywords: this.isoCategoriesNew,
+      },
+      {
+        label: "Gemet Schlagworte",
+        condition: this.gemetKeywordsNew.length,
+        keywords: this.gemetKeywordsNew,
+      },
+      {
+        label: "Umthes Schlagworte",
+        condition: this.umthesKeywordsNew.length,
+        keywords: this.umthesKeywordsNew,
+      },
+      {
+        label: "Freie Schlagworte",
+        condition: this.freeKeywordsNew.length,
+        keywords: this.freeKeywordsNew,
+      },
+    ];
   }
 }
