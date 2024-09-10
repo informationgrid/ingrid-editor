@@ -311,7 +311,7 @@ class DocumentService(
         }
     }
 
-    private fun getDocumentType(docType: String, profile: String, parentProfile: String?): EntityType {
+    fun getDocumentType(docType: String, profile: String, parentProfile: String?): EntityType {
         val profileDocumentType = documentTypes.find {
             it.className == docType && (it.profiles?.isEmpty() == true || it.profiles?.contains(profile) == true)
         }
@@ -323,9 +323,6 @@ class DocumentService(
 
     fun isAddress(docType: String): Boolean =
         checkNotNull(documentTypes.find { it.className == docType }?.category) == DocumentCategory.ADDRESS.value
-
-    fun getDocumentTypesOfProfile(profileId: String): List<EntityType> =
-        checkNotNull(documentTypes.filter { it.usedInProfile(profileId) })
 
     @Transactional
     fun createDocument(

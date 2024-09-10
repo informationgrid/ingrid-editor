@@ -21,7 +21,6 @@ package de.ingrid.igeserver.tasks.quartz
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.api.messaging.JobsNotifier
@@ -144,17 +143,12 @@ class ImportTask(
     }
 
     private fun checkForValidDocumentsInProfile(profile: CatalogProfile, report: OptimizedImportAnalysis) {
-        val documentTypesOfProfile = profile
-            .let { documentService.getDocumentTypesOfProfile(it.identifier) }
-            .map { it.className }
-
         report.references
             .map { it.document.type }
             .toSet()
             .forEach {
-                if (it !in documentTypesOfProfile) {
-                    throw ServerException.withReason("DocumentType not known in this profile: $it")
-                }
+                // will throw an exception if document is not known in profile
+                documentService.getDocumentType(it, profile.identifier, profile.parentProfile)
             }
     }
 
