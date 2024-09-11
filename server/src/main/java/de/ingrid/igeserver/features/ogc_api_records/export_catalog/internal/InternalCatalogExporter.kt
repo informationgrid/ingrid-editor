@@ -41,7 +41,7 @@ class InternalCatalogExporter(
     override val typeInfo: CatalogExportTypeInfo
         get() = CatalogExportTypeInfo(
             DocumentCategory.DATA,
-            "json",
+            "internal",
             "IGE Catalog in JSON",
             "Interne Datenstruktur des IGE Catalog",
             MediaType.APPLICATION_JSON_VALUE,
@@ -49,9 +49,7 @@ class InternalCatalogExporter(
             listOf(),
         )
 
-    override fun run(catalog: Catalog): RecordCollection {
-        return mapCatalogToRecordCollection(catalog)
-    }
+    override fun run(catalog: Catalog): RecordCollection = mapCatalogToRecordCollection(catalog)
 
     private fun mapCatalogToRecordCollection(catalog: Catalog): RecordCollection {
         val apiHost = generalProperties.host
