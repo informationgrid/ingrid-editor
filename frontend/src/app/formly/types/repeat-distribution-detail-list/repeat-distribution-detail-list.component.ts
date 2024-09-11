@@ -28,7 +28,7 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import {
   FormDialogComponent,
   FormDialogData,
-} from "../../../../app/formly/types/table/form-dialog/form-dialog.component";
+} from "../table/form-dialog/form-dialog.component";
 import {
   CdkDrag,
   CdkDragDrop,
@@ -41,17 +41,17 @@ import { AsyncPipe, JsonPipe, KeyValuePipe, NgForOf } from "@angular/common";
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatButtonModule } from "@angular/material/button";
-import { FormErrorComponent } from "../../../../app/+form/form-shared/ige-form-error/form-error.component";
+import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import {
   LinkInfo,
   UploadFilesDialogComponent,
-} from "../../../../app/formly/types/table/upload-files-dialog/upload-files-dialog.component";
+} from "../table/upload-files-dialog/upload-files-dialog.component";
 import { filter } from "rxjs/operators";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
-import { FormStateService } from "../../../../app/+form/form-state.service";
-import { AddButtonComponent } from "../../../../app/shared/add-button/add-button.component";
-import { CodelistPipe } from "../../../../app/directives/codelist.pipe";
+import { FormStateService } from "../../../+form/form-state.service";
+import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
+import { CodelistPipe } from "../../../directives/codelist.pipe";
 
 interface RepeatDistributionDetailListProps extends FormlyFieldProps {
   infoText: string;

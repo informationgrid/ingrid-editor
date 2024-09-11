@@ -114,7 +114,7 @@ import { AddressTypeComponent } from "./app/formly/types/address-type/address-ty
 import { RepeatComponent } from "./app/formly/types/repeat/repeat.component";
 import { RepeatListComponent } from "./app/formly/types/repeat-list/repeat-list.component";
 import { RepeatDetailListComponent } from "./app/formly/types/repeat-detail-list/repeat-detail-list.component";
-import { RepeatDistributionDetailListComponent } from "./profiles/bmi/formtypes/repeat-distribution-detail-list/repeat-distribution-detail-list.component";
+import { RepeatDistributionDetailListComponent } from "./app/formly/types/repeat-distribution-detail-list/repeat-distribution-detail-list.component";
 import { RepeatChipComponent } from "./app/formly/types/repeat-chip/repeat-chip.component";
 import { DateRangeTypeComponent } from "./app/formly/types/date-range-type/date-range-type.component";
 import { UploadTypeComponent } from "./app/formly/types/upload-type/upload-type.component";
