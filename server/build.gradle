@@ -155,7 +155,7 @@ dependencies {
     implementation "org.hibernate.orm:hibernate-core"
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.5'
 
-    implementation 'de.ingrid:ingrid-codelist-service:7.1.0'
+    implementation 'de.ingrid:ingrid-codelist-service:7.3.0-SNAPSHOT'
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.15.0'
     implementation 'org.apache.commons:commons-text:1.12.0'

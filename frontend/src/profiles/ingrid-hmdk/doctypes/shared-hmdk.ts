@@ -29,6 +29,7 @@ import {
 import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { FormStateService } from "../../../app/+form/form-state.service";
+import { FormFieldHelper } from "../../form-field-helper";
 
 @Injectable({ providedIn: "root" })
 export class SharedHmdk {
@@ -40,17 +41,23 @@ export class SharedHmdk {
     fieldConfig: FormlyFieldConfig[],
   ) => {
     // add "Veröffentlichung gemäß HmbTG" to "OpenData" Section
-    const openData = doc.findFieldElementWithId(fieldConfig, "isOpenData");
+    const openData = FormFieldHelper.findFieldElementWithId(
+      fieldConfig,
+      "isOpenData",
+    );
     openData.fieldConfig.push(this.getPublicationHmbTGFieldConfig(doc));
     // add "Informationsgegenstand" right after OpenData Section
     const openDataParent = doc.findParentFieldElementWithId(
       fieldConfig,
       "isOpenData",
     );
-    doc.addAfter(openDataParent, this.getInformationHmbTGFieldConfig(doc));
+    FormFieldHelper.addAfter(
+      openDataParent,
+      this.getInformationHmbTGFieldConfig(doc),
+    );
 
     // at least one "Herausgeber" is required when Dataset is OpenData
-    const pointOfContact = doc.findFieldElementWithId(
+    const pointOfContact = FormFieldHelper.findFieldElementWithId(
       fieldConfig,
       "pointOfContact",
     );

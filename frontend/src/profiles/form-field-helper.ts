@@ -130,6 +130,7 @@ export interface SelectOptions extends Options {
   multiple?: boolean;
   simple?: boolean;
   useFirstValueInitially?: boolean;
+  hintStart?: string;
 }
 
 export interface TableOptions extends Options {
@@ -621,6 +622,7 @@ export class FormFieldHelper {
         multiple: options?.multiple,
         simple: options?.simple,
         useFirstValueInitially: options?.useFirstValueInitially,
+        hintStart: options?.hintStart,
       },
       expressions: expressions,
       hooks: options?.hooks,
@@ -843,7 +845,7 @@ export class FormFieldHelper {
     if (!fieldConfig) return null;
     let currentFieldConfigPosition = null;
     id.split(".").forEach((idPart) => {
-      currentFieldConfigPosition = this.findFieldElementWithId(
+      currentFieldConfigPosition = FormFieldHelper.findFieldElementWithId(
         currentFieldConfigPosition?.fieldConfig ?? fieldConfig,
         idPart,
       );
@@ -851,7 +853,7 @@ export class FormFieldHelper {
     return currentFieldConfigPosition;
   }
 
-  findFieldElementWithId(
+  static findFieldElementWithId(
     fieldConfig: FormlyFieldConfig[],
     id: string,
   ): FieldConfigPosition {
@@ -900,7 +902,11 @@ export class FormFieldHelper {
     return subFound;
   }
 
-  addAfter(info: FieldConfigPosition, field: FormlyFieldConfig) {
+  static addBefore(info: FieldConfigPosition, field: FormlyFieldConfig) {
+    info.fieldConfig.splice(info.index, 0, field);
+  }
+
+  static addAfter(info: FieldConfigPosition, field: FormlyFieldConfig) {
     info.fieldConfig.splice(info.index + 1, 0, field);
   }
 

@@ -19,18 +19,49 @@
  */
 import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
-import { GeoDatasetDoctypeUPSH } from "./ingrid-up-sh/doctypes/geo-dataset.doctype";
+import { FormlyFieldConfig } from "@ngx-formly/core";
+import { FormFieldHelper } from "./form-field-helper";
+import { CommonFieldsBkg } from "./ingrid-bkg/doctypes/common-fields";
 
 @Component({
   template: "",
   standalone: true,
 })
 class InGridBkgComponent extends InGridComponent {
-  // geoDataset = inject(GeoDatasetDoctypeUPSH);
+  common = inject(CommonFieldsBkg);
 
   constructor() {
     super();
     this.isoView.isoExportFormat = "ingridISOBkg";
+    this.manipulateFields();
+  }
+
+  private manipulateFields() {
+    [this.geoDataset, this.geoService, this.informationSystem].forEach(
+      (docType) => {
+        docType.manipulateDocumentFields = (
+          fieldConfig: FormlyFieldConfig[],
+        ) => {
+          this.addFields(fieldConfig, docType.id);
+          return fieldConfig;
+        };
+      },
+    );
+  }
+
+  private addFields(fieldConfig: FormlyFieldConfig[], docType: string) {
+    const accessConstraintsPosition = FormFieldHelper.findFieldElementWithId(
+      fieldConfig,
+      "accessConstraints",
+    );
+    FormFieldHelper.addAfter(
+      accessConstraintsPosition,
+      this.common.getUseConstraints(),
+    );
+    FormFieldHelper.addBefore(
+      accessConstraintsPosition,
+      this.common.getAccessConstraints(),
+    );
   }
 }
 

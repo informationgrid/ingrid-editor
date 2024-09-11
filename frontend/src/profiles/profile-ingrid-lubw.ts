@@ -20,7 +20,7 @@
 import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { FieldConfigPosition } from "./form-field-helper";
+import { FieldConfigPosition, FormFieldHelper } from "./form-field-helper";
 import { CommonFieldsLUBW } from "./ingrid-lubw/doctypes/common-fields";
 
 @Component({
@@ -53,11 +53,11 @@ class InGridLUBWComponent extends InGridComponent {
   // description", "Herstellungsprozess",
 
   private addFields(fieldConfig: FormlyFieldConfig[]) {
-    const identifierPosition = this.common.findFieldElementWithId(
+    const identifierPosition = FormFieldHelper.findFieldElementWithId(
       fieldConfig,
       "identifier",
     );
-    const processStepPosition = this.common.findFieldElementWithId(
+    const processStepPosition = FormFieldHelper.findFieldElementWithId(
       fieldConfig,
       "processStep",
     );

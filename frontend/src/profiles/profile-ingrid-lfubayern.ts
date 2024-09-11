@@ -24,6 +24,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CommonFieldsLfuBayern } from "./ingrid-lfubayern/doctypes/common-fields";
 import { AnonymousAddressPlugin } from "./ingrid-lfubayern/behaviours/anonymous-address.plugin";
 import { PluginService } from "../app/services/plugin/plugin.service";
+import { FormFieldHelper } from "./form-field-helper";
 
 @Component({
   template: "",
@@ -71,26 +72,29 @@ class InGridLFUBayernComponent extends InGridComponent {
   }
 
   private addFields(fieldConfig: FormlyFieldConfig[], docType: string) {
-    const pointOfContactPosition = this.common.findFieldElementWithId(
+    const pointOfContactPosition = FormFieldHelper.findFieldElementWithId(
       fieldConfig,
       "pointOfContact",
     );
-    const freeKeywordsPosition = this.common.findFieldElementWithId(
+    const freeKeywordsPosition = FormFieldHelper.findFieldElementWithId(
       fieldConfig,
       "free",
     );
-    const orderInfoPosition = this.common.findFieldElementWithId(
+    const orderInfoPosition = FormFieldHelper.findFieldElementWithId(
       fieldConfig,
       "orderInfo",
     );
 
     // for all classes
-    this.common.addAfter(
+    FormFieldHelper.addAfter(
       pointOfContactPosition,
       this.common.getGeodataFieldConfig(),
     );
-    this.common.addAfter(orderInfoPosition, this.common.getFeesFieldConfig());
-    const useConstraintsElement = this.common.findFieldElementWithId(
+    FormFieldHelper.addAfter(
+      orderInfoPosition,
+      this.common.getFeesFieldConfig(),
+    );
+    const useConstraintsElement = FormFieldHelper.findFieldElementWithId(
       fieldConfig,
       "useConstraints",
     );
@@ -99,7 +103,7 @@ class InGridLFUBayernComponent extends InGridComponent {
     useConstraintsElement.fieldConfig[useConstraintsElement.index].expressions[
       "props.maxLength"
     ] = "1";
-    this.common.addAfter(
+    FormFieldHelper.addAfter(
       useConstraintsElement,
       this.common.getUseConstraintsCommentFieldConfig(),
     );
@@ -108,18 +112,18 @@ class InGridLFUBayernComponent extends InGridComponent {
       docType === InGridDoctype.InGridGeoDataset.toString() ||
       docType === InGridDoctype.InGridGeoService.toString()
     ) {
-      this.common.addAfter(
+      FormFieldHelper.addAfter(
         freeKeywordsPosition,
         this.common.getInternalKeywordsFieldConfig(),
       );
     }
 
     if (docType === InGridDoctype.InGridGeoDataset.toString()) {
-      this.common.addAfter(
+      FormFieldHelper.addAfter(
         pointOfContactPosition,
         this.common.getSupplementFieldConfig(),
       );
-      this.common.addAfter(
+      FormFieldHelper.addAfter(
         freeKeywordsPosition,
         this.common.getGeologicalKeywordsFieldConfig(),
       );
