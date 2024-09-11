@@ -28,7 +28,7 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import {
   FormDialogComponent,
   FormDialogData,
-} from "../../../../app/formly/types/table/form-dialog/form-dialog.component";
+} from "../table/form-dialog/form-dialog.component";
 import {
   CdkDrag,
   CdkDragDrop,
@@ -41,19 +41,25 @@ import { AsyncPipe, JsonPipe, KeyValuePipe, NgForOf } from "@angular/common";
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatButtonModule } from "@angular/material/button";
-import { FormErrorComponent } from "../../../../app/+form/form-shared/ige-form-error/form-error.component";
+import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import {
   LinkInfo,
   UploadFilesDialogComponent,
-} from "../../../../app/formly/types/table/upload-files-dialog/upload-files-dialog.component";
+} from "../table/upload-files-dialog/upload-files-dialog.component";
 import { filter } from "rxjs/operators";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
-import { FormStateService } from "../../../../app/+form/form-state.service";
-import { AddButtonComponent } from "../../../../app/shared/add-button/add-button.component";
-import { CodelistPipe } from "../../../../app/directives/codelist.pipe";
+import { FormStateService } from "../../../+form/form-state.service";
+import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
+import { CodelistPipe } from "../../../directives/codelist.pipe";
 
 interface RepeatDistributionDetailListProps extends FormlyFieldProps {
+  supportLink?: boolean;
+  supportUpload?: boolean;
+  enableFileUploadOverride?: boolean;
+  enableFileUploadReuse?: boolean;
+  enableFileUploadRename?: boolean;
+  jsonTemplate?: object;
   infoText: string;
   backendUrl: string;
   fields: FormlyFieldConfig[];
@@ -117,6 +123,9 @@ export class RepeatDistributionDetailListComponent
           uploadFieldKey: this.getUploadFieldKey(),
           hasExtractZipOption: true,
           infoText: this.field.props.infoText,
+          enableFileUploadOverride: this.field.props.enableFileUploadOverride,
+          enableFileUploadReuse: this.field.props.enableFileUploadReuse,
+          enableFileUploadRename: this.field.props.enableFileUploadRename,
         },
       })
       .afterClosed()
@@ -157,26 +166,19 @@ export class RepeatDistributionDetailListComponent
 
   private addUploadInfoToDatasource(file: LinkInfo) {
     const newRow = this.getEmptyEntry();
-    newRow.title = "";
+    // newRow.title = "";
     newRow[this.getUploadFieldKey()] = {
       asLink: false,
       value: file.file,
       uri: file.uri,
       lastModified: new Date(),
+      sizeInBytes: file.sizeInBytes,
     };
     this.replaceItem(null, newRow);
   }
 
   private getEmptyEntry() {
-    const template = {
-      format: { key: null },
-      title: "",
-      description: "",
-      license: null,
-      byClause: "",
-      languages: [],
-      plannedAvailability: null,
-    };
+    const template = structuredClone(this.field.props.jsonTemplate ?? {});
     template[this.getUploadFieldKey()] = {
       asLink: true,
       value: "",

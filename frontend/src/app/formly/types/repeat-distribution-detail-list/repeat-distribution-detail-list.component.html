@@ -219,29 +219,37 @@
 </mat-accordion>
 
 @if (formControl.enabled) {
-    <div class="button-wrapper">
-        <button
-            type="button"
-            mat-stroked-button
-            color="primary"
-            (click)="showUploadFilesDialog()"
-            [attr.aria-label]="$any(props)?.ariaLabel"
-            aria-haspopup="dialog"
-            aria-description="Dateien hochladen"
-        >
-            Dateien hochladen
-        </button>
-        oder
-        <button
-            type="button"
-            mat-stroked-button
-            color="primary"
-            (click)="openDialog()"
-            [attr.aria-label]="$any(props)?.ariaLabel"
-            aria-haspopup="dialog"
-            aria-description="Link angeben"
-        >
-            Link angeben
-        </button>
-    </div>
+    @if (this.props.supportLink || this.props.supportUpload) {
+        <div class="button-wrapper">
+            @if (this.props.supportUpload) {
+                <button
+                    type="button"
+                    mat-stroked-button
+                    color="primary"
+                    (click)="showUploadFilesDialog()"
+                    [attr.aria-label]="$any(props)?.ariaLabel"
+                    aria-haspopup="dialog"
+                    aria-description="Dateien hochladen"
+                >
+                    Dateien hochladen
+                </button>
+            }
+            @if (this.props.supportLink && this.props.supportUpload) {
+                oder
+            }
+            @if (this.props.supportLink) {
+                <button
+                    type="button"
+                    mat-stroked-button
+                    color="primary"
+                    (click)="openDialog()"
+                    [attr.aria-label]="$any(props)?.ariaLabel"
+                    aria-haspopup="dialog"
+                    aria-description="Link angeben"
+                >
+                    Link angeben
+                </button>
+            }
+        </div>
+    }
 }
