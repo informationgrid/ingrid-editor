@@ -124,18 +124,13 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
     }
 
     class StringToEnumConverterFactory : ConverterFactory<String, Enum<*>> {
-        override fun <T : Enum<*>> getConverter(targetType: Class<T>): Converter<String, T> = StringToEnumConverter(targetType)
-        private class StringToEnumConverter<T : Enum<*>>(private val enumType: Class<T>) : Converter<String, T> {
-            override fun convert(source: String): T {
-                val upperCasedSource = source.uppercase()
-                // Loop through the enum constants and match case-insensitively
-                for (enumConstant in enumType.enumConstants) {
-                    if ((enumConstant as Enum<*>).name == upperCasedSource) return enumConstant
-                }
-                throw IllegalArgumentException("No enum constant ${enumType.simpleName}.$upperCasedSource")
+        override fun <T : Enum<*>> getConverter(targetType: Class<T>): Converter<String, T> =
+            Converter { source ->
+                targetType.enumConstants.find { it.name == source.uppercase() }
+                    ?: throw IllegalArgumentException("No enum constant ${targetType.simpleName}.${source.uppercase()}")
             }
-        }
     }
+
     override fun addFormatters(registry: FormatterRegistry) {
         registry.addConverterFactory(StringToEnumConverterFactory())
     }
