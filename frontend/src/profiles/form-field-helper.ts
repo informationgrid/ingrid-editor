@@ -187,6 +187,14 @@ export interface UnitInputOptions extends InputOptions {
   fieldGroup?: any;
 }
 
+export interface SpatialOptions {
+  expressions?: any;
+  defaultValue?: any;
+  required?: boolean;
+  limitTypes?: Array<"free" | "wkt" | "wfsgnde">;
+  max?: number;
+}
+
 export class FormFieldHelper {
   protected transloco = inject(TranslocoService);
 
@@ -673,7 +681,7 @@ export class FormFieldHelper {
     };
   }
 
-  addSpatial(id, label, options?) {
+  addSpatial(id, label, options?: SpatialOptions) {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,

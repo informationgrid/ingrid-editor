@@ -784,7 +784,6 @@ export abstract class IngridShared extends BaseDoctype {
         [
           this.addSpatial("references", "Raumbezug", {
             required: this.options.required.spatialReferences,
-            hasInlineContextHelp: true,
             defaultValue: defaultSpatial ? defaultSpatial : undefined,
             expressions: {
               "props.required": this.options.dynamicRequired.spatialReferences,

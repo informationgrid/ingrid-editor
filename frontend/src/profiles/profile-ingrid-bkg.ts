@@ -42,14 +42,29 @@ class InGridBkgComponent extends InGridComponent {
         docType.manipulateDocumentFields = (
           fieldConfig: FormlyFieldConfig[],
         ) => {
-          this.addFields(fieldConfig, docType.id);
+          this.modifyFields(fieldConfig, docType.id);
           return fieldConfig;
         };
       },
     );
   }
 
-  private addFields(fieldConfig: FormlyFieldConfig[], docType: string) {
+  private modifyFields(fieldConfig: FormlyFieldConfig[], docType: string) {
+    this.addUseAndAccessConstraints(fieldConfig);
+    this.removeOriginalUseConstraints(fieldConfig);
+    this.removeWktFromSpatialReferences(fieldConfig);
+  }
+
+  private removeWktFromSpatialReferences(fieldConfig: FormlyFieldConfig[]) {
+    const spatialRefPosition = FormFieldHelper.findFieldElementWithId(
+      fieldConfig,
+      "references",
+    );
+    spatialRefPosition.fieldConfig[spatialRefPosition.index].props.limitTypes =
+      ["free", "wfsgnde"];
+  }
+
+  private addUseAndAccessConstraints(fieldConfig: FormlyFieldConfig[]) {
     const accessConstraintsPosition = FormFieldHelper.findFieldElementWithId(
       fieldConfig,
       "accessConstraints",
@@ -62,6 +77,14 @@ class InGridBkgComponent extends InGridComponent {
       accessConstraintsPosition,
       this.common.getAccessConstraints(),
     );
+  }
+
+  private removeOriginalUseConstraints(fieldConfig: FormlyFieldConfig[]) {
+    const useConstraintsPosition = FormFieldHelper.findFieldElementWithId(
+      fieldConfig,
+      "useConstraints",
+    );
+    useConstraintsPosition.fieldConfig.splice(useConstraintsPosition.index, 1);
   }
 }
 
