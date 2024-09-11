@@ -81,6 +81,7 @@ data class DataModel(
     var orderInfo: String?,
     val fees: String?,
     var references: List<Reference>?,
+    var fileReferences: List<FileReference>?,
     val serviceUrls: List<ServiceUrl>?,
     val dataQuality: DataQuality?,
     val dataQualityInfo: DataQualityInfo?,
@@ -163,6 +164,20 @@ data class Reference(
     var uuidRefClass: String? = null,
     var uuidRefVersion: String? = null,
     var uuidRefServiceType: KeyValue? = null,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class FileReference(
+    val link: FileName,
+    val title: String?,
+    val description: String?,
+    val format: FileFormat?,
+    var url: String?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class FileFormat(
+    val key: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -316,6 +331,7 @@ data class FileName(
     val asLink: Boolean,
     val value: String,
     val uri: String,
+    val sizeInBytes: Number?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

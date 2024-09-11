@@ -24,7 +24,6 @@ import { UploadService } from "../../app/shared/upload/upload.service";
 import { ConfigService } from "../../app/services/config/config.service";
 import { map } from "rxjs/operators";
 import { CodelistQuery } from "../../app/store/codelist/codelist.query";
-import { RepeatDetailListOptions } from "../form-field-helper";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 @Injectable({
@@ -91,8 +90,18 @@ export class BmiDoctype extends BaseDoctype {
         }),
         this.addRepeatDistributionDetailList("distributions", "Ressourcen", {
           required: true,
+          backendUrl: this.configService.getConfiguration().backendUrl,
           infoText:
             "Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten.",
+          jsonTemplate: {
+            format: { key: null },
+            title: "",
+            description: "",
+            license: null,
+            byClause: "",
+            languages: [],
+            plannedAvailability: null,
+          },
           fields: [
             this.addGroupSimple(null, [
               { key: "_title" },
@@ -260,36 +269,4 @@ export class BmiDoctype extends BaseDoctype {
         }),
       ]),
     ];
-
-  addRepeatDistributionDetailList(
-    id,
-    label,
-    options?: RepeatDetailListOptions,
-  ): FormlyFieldConfig {
-    const expressions = this._initExpressions(options?.expressions);
-    return {
-      key: id,
-      type: "repeatDistributionDetailList",
-      wrappers: options?.wrappers ?? ["panel"],
-      className: options?.className,
-      props: {
-        externalLabel: label,
-        required: options?.required,
-        supportUpload: options?.supportLink ?? true,
-        supportLink: options?.supportLink ?? true,
-        backendUrl: this.configService.getConfiguration().backendUrl,
-        infoText: options?.infoText,
-        fields: options?.fields[0].fieldGroup,
-      },
-      expressions: expressions,
-      validators: options?.validators,
-    };
-  }
-
-  private _initExpressions(expressions = {}) {
-    return {
-      "props.disabled": "formState.disabled",
-      ...expressions,
-    };
-  }
 }

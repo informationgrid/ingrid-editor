@@ -85,6 +85,9 @@ export class UploadComponent implements OnInit {
   @Input() allowedUploadTypes: string[];
 
   @Input() infoText: string;
+  @Input() enableFileUploadOverride: boolean;
+  @Input() enableFileUploadReuse: boolean;
+  @Input() enableFileUploadRename: boolean;
 
   @Output() complete = new EventEmitter<void>();
   @Output() chosenFiles = new EventEmitter<TransfersWithErrorInfo[]>();
