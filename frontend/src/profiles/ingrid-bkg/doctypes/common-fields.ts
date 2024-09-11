@@ -28,6 +28,7 @@ export class CommonFieldsBkg extends BaseDoctype {
             )?.data;
             return data ? JSON.parse(data)?.de : "";
           },
+          "props.required": "!formState.mainModel?.isInspireIdentified",
         },
       }),
       this.addTextArea("accessConstraintsBkgComment", null, "bkg", {
