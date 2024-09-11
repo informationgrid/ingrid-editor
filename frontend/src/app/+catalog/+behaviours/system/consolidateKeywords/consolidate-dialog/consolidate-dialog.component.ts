@@ -100,7 +100,7 @@ export class ConsolidateDialogComponent implements OnInit {
     this.consolidateKeywords();
   }
 
-  private init() {
+  private initKeywords() {
     this.isLoading = true;
     this.resetNewKeywords();
     this.form = this.formStateService.getForm().value;
@@ -111,8 +111,7 @@ export class ConsolidateDialogComponent implements OnInit {
     );
 
     if (!this.hasKeywords) {
-      this.isLoading = false;
-      return;
+      return false;
     }
 
     this.isInspireIdentified = this.form.isInspireIdentified;
@@ -122,14 +121,17 @@ export class ConsolidateDialogComponent implements OnInit {
     this.gemetKeywords = this.form.keywords.gemet;
     this.umthesKeywords = this.form.keywords.umthes;
     this.freeKeywords = this.form.keywords.free;
-  }
-
-  protected async consolidateKeywords() {
-    this.init();
-
     this.resetNewKeywords();
     this.timedOutKeywords = [];
     this.timedOutThesauri = [];
+  }
+
+  protected async consolidateKeywords() {
+    const noKeywords = this.initKeywords();
+    if (noKeywords) {
+      this.isLoading = false;
+      return;
+    }
 
     this.inspireTopics.forEach((theme) => this.handleInspireTopics(theme));
     this.isoCategories.forEach((category) =>

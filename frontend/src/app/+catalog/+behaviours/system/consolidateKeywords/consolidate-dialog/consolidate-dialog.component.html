@@ -40,6 +40,16 @@
                                 [aria-label]="keyword.label"
                             >
                                 {{ keyword.label }}
+                                <mat-icon
+                                    *ngIf="keyword.status === 'removed'"
+                                    svgIcon="baseline-clear-24px"
+                                >
+                                </mat-icon>
+                                <mat-icon
+                                    *ngIf="keyword.status === 'added'"
+                                    svgIcon="baseline-add-24px"
+                                >
+                                </mat-icon>
                             </mat-chip>
                         </mat-chip-listbox>
                     </div>

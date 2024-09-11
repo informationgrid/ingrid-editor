@@ -235,7 +235,7 @@ export class KeywordAnalysis {
           catchError((err) => {
             if (err.name === "TimeoutError") {
               throw {
-                message: thesaurus + " request timed out for " + item,
+                message: `${thesaurus} + " request timed out for " + '${item}'`,
                 label: item,
                 thesaurus: thesaurus,
                 found: false,

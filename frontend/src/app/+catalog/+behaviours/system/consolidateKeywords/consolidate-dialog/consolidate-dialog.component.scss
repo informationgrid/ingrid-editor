@@ -30,10 +30,12 @@
 /* Chip status styles */
 .added-keyword {
   background-color: #c8e6c9;
+  border: 1px solid #81c784;
 }
 
 .removed-keyword {
   background-color: #ffcdd2;
+  border: 1px solid #e57373;
 }
 
 .unchanged-keyword {
@@ -41,6 +43,8 @@
 }
 
 .mat-mdc-chip {
+  display: flex;
+  align-items: center;
   border-radius: 4px;
   cursor: move;
   min-height: 36px;
@@ -48,6 +52,13 @@
   .label {
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  mat-icon {
+    font-size: 18px; /* Ensure the icon size is appropriate */
+    border-radius: 50%;
+    vertical-align: middle; /* Align the icon with the text */
+    //background-color: $ige-background;
   }
 }
 
