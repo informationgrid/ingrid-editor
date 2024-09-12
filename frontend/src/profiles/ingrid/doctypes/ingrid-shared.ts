@@ -98,6 +98,9 @@ export abstract class IngridShared extends BaseDoctype {
     hide: {
       openData: false,
     },
+    validate: {
+      downloadLinkWhenOpenData: true,
+    },
   };
 
   private inspireChangeMessage =
@@ -1358,13 +1361,15 @@ export abstract class IngridShared extends BaseDoctype {
       this.addRepeatDetailList("references", "Verweise", {
         fields: [this.urlRefFields()],
         validators: {
-          downloadLinkWhenOpenData: {
-            expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
-              !field.form.value.isOpenData ||
-              ctrl.value?.some((row) => row.type?.key === "9990"), // Datendownload
-            message:
-              "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
-          },
+          ...(this.options.validate.downloadLinkWhenOpenData && {
+            downloadLinkWhenOpenData: {
+              expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
+                !field.form.value.isOpenData ||
+                ctrl.value?.some((row) => row.type?.key === "9990"), // Datendownload
+              message:
+                "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
+            },
+          }),
           requiredFieldsInItems: {
             expression: (ctrl: FormControl) =>
               !ctrl.value ||

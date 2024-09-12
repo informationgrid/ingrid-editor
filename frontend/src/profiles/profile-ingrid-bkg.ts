@@ -22,6 +22,8 @@ import { InGridComponent } from "./profile-ingrid";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { FormFieldHelper } from "./form-field-helper";
 import { CommonFieldsBkg } from "./ingrid-bkg/doctypes/common-fields";
+import { OpendataBehaviour } from "./ingrid-bkg/behaviours/opendata.behaviour";
+import { PluginService } from "../app/services/plugin/plugin.service";
 
 @Component({
   template: "",
@@ -29,10 +31,13 @@ import { CommonFieldsBkg } from "./ingrid-bkg/doctypes/common-fields";
 })
 class InGridBkgComponent extends InGridComponent {
   common = inject(CommonFieldsBkg);
+  pluginService = inject(PluginService);
+  opendataBehaviour = inject(OpendataBehaviour);
 
   constructor() {
     super();
     this.isoView.isoExportFormat = "ingridISOBkg";
+    this.pluginService.registerPlugin(this.opendataBehaviour);
     this.manipulateFields();
   }
 
@@ -43,8 +48,13 @@ class InGridBkgComponent extends InGridComponent {
           fieldConfig: FormlyFieldConfig[],
         ) => {
           this.modifyFields(fieldConfig, docType.id);
+
           return fieldConfig;
         };
+        if (this.opendataBehaviour.isActive) {
+          docType.options.dynamicHide.openDataCategories = "true";
+          docType.options.validate.downloadLinkWhenOpenData = false;
+        }
       },
     );
   }
