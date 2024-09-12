@@ -41,7 +41,7 @@ data class BmiModel(
     val _modified: OffsetDateTime,
     val distributions: List<DownloadModel>?,
 ) {
-
+/*
     val creator: AddressModel? get() {
         return getAddresses("creator")
     }
@@ -66,6 +66,8 @@ data class BmiModel(
             ?.firstOrNull { it.type?.key == type }
             ?.ref
     }
+
+ */
     val hasSingleSpatial: Boolean
         get() = realSpatials?.size == 1
 
