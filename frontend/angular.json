@@ -21,6 +21,7 @@
               "leaflet",
               "@flowjs/flow.js",
               "cronstrue/i18n",
+              "@geoman-io/leaflet-geoman-free",
               "js-sha256"
             ],
             "assets": [
