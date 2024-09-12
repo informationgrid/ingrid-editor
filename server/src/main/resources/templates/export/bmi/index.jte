@@ -46,7 +46,7 @@
                 "zip-code": "${ address.get().getAddress().getZipCode() }",
                 "city": "${ address.get().getAddress().getCity() }",
                 "country": "${ address.get().getAddress().getCountryName() }"
-            }
+            }@if (!address.isLast()),@endif
         @endfor
     ],
     @if(data.getLegalBasis() != null)
@@ -125,17 +125,15 @@
         "politicalGeocodingLevel": "${ data.getPoliticalGeocodingLevel().getKey() }",
     @endif
     "temporal": [
-        {
-           @if(data.getTemporal().getStart() != null || data.getTemporal().getEnd() != null)
-                {
-                    @if(data.getTemporal().getStart() != null)
-                        "gte": "${data.getTemporal().getStart()}"@if(data.getTemporal().getEnd() != null),@endif
-                    @endif
-                    @if(data.getTemporal().getEnd() != null)
-                        "lte": "${data.getTemporal().getEnd()}"
-                    @endif
-                }
-            @endif
-        }
+        @if(data.getTemporal().getStart() != null || data.getTemporal().getEnd() != null)
+            {
+                @if(data.getTemporal().getStart() != null)
+                    "gte": "${data.getTemporal().getStart()}"@if(data.getTemporal().getEnd() != null),@endif
+                @endif
+                @if(data.getTemporal().getEnd() != null)
+                    "lte": "${data.getTemporal().getEnd()}"
+                @endif
+            }
+        @endif
     ]
 }
