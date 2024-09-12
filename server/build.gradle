@@ -328,11 +328,6 @@ jib {
         entrypoint = ['/run.sh']
     }
     extraDirectories {
-        permissions = [
-                '/*.sh': '755',
-                '/logs': '777',
-                '/codelists': '777'
-        ]
         paths {
             path {
                 from = file('src/main/jib')
@@ -342,6 +337,13 @@ jib {
                 into = '/app/resources/static'
             }
         }
+        permissions = [
+                '/*.sh': '755',
+                '/logs': '777',
+                '/codelists': '777',
+                '/app/resources/static/index.html': '777',
+                '/app/resources/static/assets': '777'
+        ]
     }
 }
 
