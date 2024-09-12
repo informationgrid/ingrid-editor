@@ -8,7 +8,9 @@ if [[ -n "${WAIT_FOR_PARAM}" ]]; then
 fi
 
 echo "Adapt index.html to match context path"
-sed -i -r "s@href=\"/\"@href=\"$CONTEXT_PATH/\"@" /app/resources/static/index.html
+TEMP_SED=$(sed "s@href=\"/\"@href=\"$CONTEXT_PATH/\"@" /app/resources/static/index.html)
+echo "$TEMP_SED" > /app/resources/static/index.html
+unset TEMP_SED
 sed -i -r "s@contextPath\": \"/\"@contextPath\": \"$CONTEXT_PATH/\"@" /app/resources/static/assets/config.json
 
 if [[ -n "${BROKER_URL}" ]]; then
