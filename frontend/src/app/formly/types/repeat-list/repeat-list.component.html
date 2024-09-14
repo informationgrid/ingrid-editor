@@ -7,7 +7,7 @@
         <formly-validation-message [field]="field"></formly-validation-message>
     </ige-form-error>
 }
-@if (props.view === "chip" && model[field.key + ""]?.length > 0) {
+@if (props.view === "chip" && items().length > 0) {
     <mat-chip-listbox
         [disabled]="formControl.disabled"
         cdkDropListGroup
@@ -19,7 +19,7 @@
             (cdkDropListDropped)="drop($event)"
         >
             @for (
-                item of model[$any(field.key)];
+                item of items();
                 track props.labelField
                     ? item[props.labelField]
                     : getParameter(item);
@@ -64,7 +64,7 @@
     </mat-chip-listbox>
 }
 
-@if (props.view !== "chip" && model[field.key + ""]?.length > 0) {
+@if (props.view !== "chip" && items().length > 0) {
     <div
         class="component-list"
         cdkDropList
@@ -73,12 +73,10 @@
         role="list"
     >
         <div
-            *ngFor="let item of model[$any(field.key)]; let i = index"
+            *ngFor="let item of items(); let i = index"
             cdkDrag
             [cdkDragDisabled]="
-                props.noDrag ||
-                formControl.disabled ||
-                model[field.key]?.length < 2
+                props.noDrag || formControl.disabled || items().length < 2
             "
             class="clickable list-item"
             data-cy="list-item"
