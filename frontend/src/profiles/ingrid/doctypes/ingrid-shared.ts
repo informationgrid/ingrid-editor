@@ -1440,6 +1440,7 @@ export abstract class IngridShared extends BaseDoctype {
         required: true,
         wrappers: ["inline-help", "form-field"],
         hasInlineContextHelp: true,
+        updateOn: "change",
       }),
       this.addGroupSimple(
         null,
