@@ -219,7 +219,7 @@ export class KeywordAnalysis {
   async checkInThesaurus(
     item: string,
     thesaurus: string,
-    timeoutDuration = 10000,
+    timeoutDuration = 20000,
   ): Promise<ThesaurusResult> {
     const thesaurusName = this.mapThesaurusToLabel(thesaurus);
 
