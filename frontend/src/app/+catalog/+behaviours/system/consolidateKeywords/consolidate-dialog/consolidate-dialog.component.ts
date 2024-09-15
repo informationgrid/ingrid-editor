@@ -22,6 +22,7 @@ import { ThesaurusResult } from "../../../../../../profiles/ingrid/components/th
 import { CodelistQuery } from "../../../../../store/codelist/codelist.query";
 import { FormStateService } from "../../../../../+form/form-state.service";
 import { removeDuplicates } from "../../../../../shared/utils";
+import { FormGroup } from "@angular/forms";
 
 export interface ConsolidateDialogData {
   id: number;
@@ -65,6 +66,7 @@ export class ConsolidateDialogComponent implements OnInit {
 
   id: number;
   form: any;
+  formControls: any;
   keywords: any[];
   isInspireIdentified: boolean;
 
@@ -97,14 +99,21 @@ export class ConsolidateDialogComponent implements OnInit {
   saveButtonClicked: boolean;
 
   ngOnInit() {
+    const hasKeywords = this.initKeywords();
+    if (!hasKeywords) {
+      this.isLoading = false;
+      return;
+    }
     this.consolidateKeywords();
   }
 
   private initKeywords() {
     this.isLoading = true;
     this.resetNewKeywords();
+
     this.form = this.formStateService.getForm().value;
-    this.keywords = this.form.keywords;
+    this.formControls = this.formStateService.getForm().controls;
+    this.keywords = this.formControls.keywords.value;
 
     this.hasKeywords = Object.values(this.keywords).some(
       (keywords) => keywords.length > 0,
@@ -114,25 +123,22 @@ export class ConsolidateDialogComponent implements OnInit {
       return false;
     }
 
-    this.isInspireIdentified = this.form.isInspireIdentified;
-    this.inspireTopics = this.isInspireIdentified ? this.form.themes : [];
-    this.isoCategories = this.form.topicCategories || [];
+    this.isInspireIdentified = this.formControls.isInspireIdentified.value;
+    this.inspireTopics = this.isInspireIdentified ? this.form.themes : []; // INSPIRE-Themen
+    this.isoCategories = this.formControls.topicCategories.value || []; // ISO-Themenkategorie
 
-    this.gemetKeywords = this.form.keywords.gemet;
-    this.umthesKeywords = this.form.keywords.umthes;
-    this.freeKeywords = this.form.keywords.free;
-    this.resetNewKeywords();
+    this.gemetKeywords = this.formControls.keywords.value.gemet;
+    this.umthesKeywords = this.formControls.keywords.value.umthes;
+    this.freeKeywords = this.formControls.keywords.value.free;
+
     this.timedOutKeywords = [];
     this.timedOutThesauri = [];
+
+    return true;
   }
 
   protected async consolidateKeywords() {
-    const noKeywords = this.initKeywords();
-    if (noKeywords) {
-      this.isLoading = false;
-      return;
-    }
-
+    this.isLoading = true;
     this.inspireTopics.forEach((theme) => this.handleInspireTopics(theme));
     this.isoCategories.forEach((category) =>
       this.handleIsoCategories(category),
@@ -157,8 +163,6 @@ export class ConsolidateDialogComponent implements OnInit {
     if (res.found) {
       this.inspireTopicsNew.push({ ...res, status: "unchanged" });
     } else {
-      // TODO:
-      // this.inspireTopicsNew.push({ ...res, status: "removed" });
     }
   }
 
