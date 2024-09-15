@@ -103,7 +103,9 @@
             data-cy="save-btn"
             id="retry-btn"
             [disabled]="isLoading || saveButtonClicked"
-            *ngIf="!this.isLoading && this.hasKeywords"
+            *ngIf="
+                !this.isLoading && this.hasKeywords && timedOutKeywords.length
+            "
             (click)="consolidateKeywords()"
         >
             <span> Wiederholen </span>
