@@ -278,7 +278,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
       .open(SpatialDialogComponent, { data: data })
       .afterClosed()
       .subscribe((result) => {
-        if (result) this.updateLocation(result);
+        if (result && result.value) this.updateLocation(result);
       });
   }
 
