@@ -33,14 +33,26 @@ import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
 
-open class AddressModelTransformer(
+data class AddressTransformerConfig(
     val catalogIdentifier: String,
     val codelist: CodelistTransformer,
     val relationType: KeyValue?,
     val doc: Document,
     val documentService: DocumentService,
     val config: Config?,
+    val tags: List<String>,
+)
+
+open class AddressModelTransformer(
+    val transformerConfig: AddressTransformerConfig,
 ) {
+    val catalogIdentifier = transformerConfig.catalogIdentifier
+    val codelist = transformerConfig.codelist
+    val relationType = transformerConfig.relationType
+    val doc = transformerConfig.doc
+    val documentService = transformerConfig.documentService
+    val config = transformerConfig.config
+    val tags = transformerConfig.tags
 
     var displayAddress: Document
 
@@ -92,7 +104,7 @@ open class AddressModelTransformer(
 
     fun getHierarchy(): List<AddressModelTransformer> =
         ancestorAddressesIncludingSelf.map {
-            AddressModelTransformer(catalogIdentifier, codelist, null, it.document, documentService, config)
+            AddressModelTransformer(AddressTransformerConfig(catalogIdentifier, codelist, null, it.document, documentService, config, transformerConfig.tags))
         }
 
     private fun determineEldestAncestor(): DocumentData? = ancestorAddressesIncludingSelf.firstOrNull()
@@ -171,6 +183,8 @@ open class AddressModelTransformer(
         val addressDoc = getLastPublishedDocument(catalogIdentifier, doc.uuid)
         return documentService.getIncomingReferences(addressDoc, catalogIdentifier).map {
             val doc = getLastPublishedDocument(catalogIdentifier, it) ?: return@map null
+            val docTags = documentService.getWrapperById(doc.wrapperId ?: return@map null).tags
+            kotlin.runCatching { documentService.checkPublicationTags(docTags, tags) }.onFailure { return@map null }
 
             ObjectReference(
                 doc.uuid,

@@ -24,6 +24,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exceptions.IndexException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.exporter.AddressTransformerConfig
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.FolderModelTransformer
 import de.ingrid.igeserver.exporter.model.FolderModel
@@ -72,16 +73,14 @@ class OpenDataLuceneExporter(
         }
     }
 
-    private fun getTemplateForDoctype(doc: Document, catalog: Catalog, options: ExportOptions): Pair<String, Map<String, Any>> {
-        return when (doc.type) {
-            "InGridSpecialisedTask" -> Pair(
-                "export/ingrid/lucene/template-lucene.jte",
-                getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options),
-            )
-            "FOLDER" -> Pair("export/ingrid/lucene/template-lucene-folder.jte", getMapper(OpenDataDocType.FOLDER, doc, catalog, options))
-            else -> {
-                throw ServerException.withReason("Cannot get template for type: ${doc.type}")
-            }
+    private fun getTemplateForDoctype(doc: Document, catalog: Catalog, options: ExportOptions): Pair<String, Map<String, Any>> = when (doc.type) {
+        "InGridSpecialisedTask" -> Pair(
+            "export/ingrid/lucene/template-lucene.jte",
+            getMapper(OpenDataDocType.DOCUMENT, doc, catalog, options),
+        )
+        "FOLDER" -> Pair("export/ingrid/lucene/template-lucene-folder.jte", getMapper(OpenDataDocType.FOLDER, doc, catalog, options))
+        else -> {
+            throw ServerException.withReason("Cannot get template for type: ${doc.type}")
         }
     }
 
@@ -101,48 +100,47 @@ class OpenDataLuceneExporter(
         )
     }
 
-    fun getTransformer(data: TransformerData): Any {
-        return when (data.type) {
-            OpenDataDocType.ADDRESS -> {
-                AddressModelTransformer(
+    fun getTransformer(data: TransformerData): Any = when (data.type) {
+        OpenDataDocType.ADDRESS -> {
+            AddressModelTransformer(
+                AddressTransformerConfig(
                     data.catalogIdentifier,
                     data.codelistTransformer,
                     null,
                     data.doc,
                     documentService = documentService,
                     config = config,
-                )
-            }
+                    data.tags,
+                ),
+            )
+        }
 
-            OpenDataDocType.DOCUMENT -> {
-                IngridModelTransformer(
-                    TransformerConfig(
-                        data.mapper.convertValue(data.doc, IngridModel::class.java),
-                        data.catalogIdentifier,
-                        data.codelistTransformer,
-                        config,
-                        catalogService,
-                        TransformerCache(),
-                        data.doc,
-                        documentService,
-                        data.tags,
-                    ),
-                )
-            }
-
-            OpenDataDocType.FOLDER -> {
-                FolderModelTransformer(
-                    data.mapper.convertValue(data.doc, FolderModel::class.java),
+        OpenDataDocType.DOCUMENT -> {
+            IngridModelTransformer(
+                TransformerConfig(
+                    data.mapper.convertValue(data.doc, IngridModel::class.java),
                     data.catalogIdentifier,
                     data.codelistTransformer,
-                )
-            }
+                    config,
+                    catalogService,
+                    TransformerCache(),
+                    data.doc,
+                    documentService,
+                    data.tags,
+                ),
+            )
+        }
+
+        OpenDataDocType.FOLDER -> {
+            FolderModelTransformer(
+                data.mapper.convertValue(data.doc, FolderModel::class.java),
+                data.catalogIdentifier,
+                data.codelistTransformer,
+            )
         }
     }
 
-    private fun mapCodelistValue(codelistId: String, partner: String?): String {
-        return partner?.let { codelistHandler.getCodelistValue(codelistId, it, "ident") } ?: ""
-    }
+    private fun mapCodelistValue(codelistId: String, partner: String?): String = partner?.let { codelistHandler.getCodelistValue(codelistId, it, "ident") } ?: ""
 
     class JsonStringOutput : StringOutput() {
         override fun writeUserContent(value: String?) {

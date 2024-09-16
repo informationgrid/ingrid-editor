@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.exporter.AddressTransformerConfig
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressModel
@@ -728,14 +729,14 @@ open class IngridModelTransformer(
 
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
-                ?.map { toAddressModelTransformer(it) } ?: emptyList()
+                ?.mapNotNull { toAddressModelTransformer(it) } ?: emptyList()
         contacts = data.pointOfContact?.filter { addressIsPointContactMD(it) && hasKnownAddressType(it) }
-            ?.map { toAddressModelTransformer(it) } ?: emptyList()
+            ?.mapNotNull { toAddressModelTransformer(it) } ?: emptyList()
         // TODO: gmd:contact [1..*] is not supported everywhere yet only [1..1]
         contact = contacts.firstOrNull()
 
         orderInfoContact =
-            data.pointOfContact?.filter { addressIsDistributor(it) }?.map { toAddressModelTransformer(it) }
+            data.pointOfContact?.filter { addressIsDistributor(it) }?.mapNotNull { toAddressModelTransformer(it) }
                 ?: emptyList()
 
         atomDownloadURL = catalog.settings.config.atomDownloadUrl + model.uuid
@@ -749,21 +750,35 @@ open class IngridModelTransformer(
         } ?: emptyList()
     }
 
-    private fun toAddressModelTransformer(it: AddressRefModel) =
-        AddressModelTransformer(
-            catalogIdentifier,
-            codelists,
-            // Map pointOfContactMD type to pointOfContact for ISO Exports
-            if (it.type?.key != "12") it.type else KeyValue("7", "pointOfContact"),
-            getLastPublishedDocument(it.ref ?: throw ServerException.withReason("Address-Reference UUID is NULL")) ?: Document().apply {
-                data = jacksonObjectMapper().createObjectNode()
-                type = "null-address"
-                modified = OffsetDateTime.now()
-                wrapperId = -1
-            },
-            documentService,
-            config,
+    private fun toAddressModelTransformer(it: AddressRefModel): AddressModelTransformer? {
+        val lastPublishedDoc = getLastPublishedDocument(it.ref ?: throw ServerException.withReason("Address-Reference UUID is NULL"))
+
+        // filter out addresses with wrong tags
+        if (lastPublishedDoc != null) {
+            kotlin.runCatching { documentService.checkPublicationTags(documentService.getWrapperById(lastPublishedDoc.wrapperId!!).tags, tags) }
+                .onFailure { return null }
+        }
+
+        // if no lastPublishedDoc is found, create a dummy address with the type "null-address"
+        val doc = lastPublishedDoc ?: Document().apply {
+            data = jacksonObjectMapper().createObjectNode()
+            type = "null-address"
+            modified = OffsetDateTime.now()
+            wrapperId = -1
+        }
+        return AddressModelTransformer(
+            AddressTransformerConfig(
+                catalogIdentifier,
+                codelists,
+                // Map pointOfContactMD type to pointOfContact for ISO Exports
+                if (it.type?.key != "12") it.type else KeyValue("7", "pointOfContact"),
+                doc,
+                documentService,
+                config,
+                tags,
+            ),
         )
+    }
 
     private fun getCitationFromGeodataset(uuid: String?): String? {
         if (uuid == null) return null
