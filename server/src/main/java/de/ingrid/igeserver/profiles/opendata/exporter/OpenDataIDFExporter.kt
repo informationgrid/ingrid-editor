@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.exporter.AddressTransformerConfig
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
@@ -89,13 +90,11 @@ class OpenDataIDFExporter(
         return prettyXml
     }
 
-    private fun getTemplateForDoctype(type: String): String {
-        return when (type) {
-            "OpenDataDoc" -> "export/ingrid/idf/idf-specialisedTask.jte"
-            "OpenDataAddressDoc" -> "export/ingrid/idf/idf-address.jte"
-            else -> {
-                throw ServerException.withReason("Cannot get template for type: $type")
-            }
+    private fun getTemplateForDoctype(type: String): String = when (type) {
+        "OpenDataDoc" -> "export/ingrid/idf/idf-specialisedTask.jte"
+        "OpenDataAddressDoc" -> "export/ingrid/idf/idf-address.jte"
+        else -> {
+            throw ServerException.withReason("Cannot get template for type: $type")
         }
     }
 
@@ -112,7 +111,9 @@ class OpenDataIDFExporter(
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
         return if (isAddress) {
-            transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService, config)
+            transformerClass.constructors.first().call(
+                AddressTransformerConfig(catalogId, codelistTransformer, null, json, documentService, config, options.tags),
+            )
         } else {
             transformerClass.constructors.first().call(
                 TransformerConfig(
@@ -130,12 +131,10 @@ class OpenDataIDFExporter(
         }
     }
 
-    private fun getModelTransformerClass(docType: String): KClass<out Any>? {
-        return when (docType) {
-            "OpenDataDoc" -> IngridModelTransformer::class
-            "OpenDataAddressDoc" -> AddressModelTransformer::class
-            else -> null
-        }
+    private fun getModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
+        "OpenDataDoc" -> IngridModelTransformer::class
+        "OpenDataAddressDoc" -> AddressModelTransformer::class
+        else -> null
     }
 
     private fun getMapFromObject(json: Document, catalogId: String, options: ExportOptions): Map<String, Any> {
