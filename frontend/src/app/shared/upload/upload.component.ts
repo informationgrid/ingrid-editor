@@ -24,6 +24,7 @@ import {
   OnInit,
   Output,
   ViewChild,
+  input,
 } from "@angular/core";
 import {
   animate,
@@ -85,9 +86,9 @@ export class UploadComponent implements OnInit {
   @Input() allowedUploadTypes: string[];
 
   @Input() infoText: string;
-  @Input() enableFileUploadOverride: boolean;
-  @Input() enableFileUploadReuse: boolean;
-  @Input() enableFileUploadRename: boolean;
+  enableFileUploadOverride = input<boolean>();
+  enableFileUploadReuse = input<boolean>();
+  enableFileUploadRename = input<boolean>();
 
   @Output() complete = new EventEmitter<void>();
   @Output() chosenFiles = new EventEmitter<TransfersWithErrorInfo[]>();

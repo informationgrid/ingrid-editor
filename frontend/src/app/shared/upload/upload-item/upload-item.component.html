@@ -65,17 +65,17 @@
     <div class="flex-col">
         <div class="flex-1 align-self-end">
             @if (file.error.status === 409) {
-                @if (enableFileUploadOverride) {
+                @if (enableFileUploadOverride()) {
                     <button mat-button color="primary" (click)="overwrite()">
                         Überschreiben
                     </button>
                 }
-                @if (enableFileUploadRename) {
+                @if (enableFileUploadRename()) {
                     <button mat-button color="primary" (click)="rename()">
                         Umbenennen
                     </button>
                 }
-                @if (enableFileUploadReuse) {
+                @if (enableFileUploadReuse()) {
                     <button
                         mat-button
                         color="primary"
