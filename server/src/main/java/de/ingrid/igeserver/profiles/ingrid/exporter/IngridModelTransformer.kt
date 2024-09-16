@@ -50,6 +50,7 @@ import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.checkPublicationTags
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
@@ -755,7 +756,7 @@ open class IngridModelTransformer(
 
         // filter out addresses with wrong tags
         if (lastPublishedDoc != null) {
-            kotlin.runCatching { documentService.checkPublicationTags(documentService.getWrapperById(lastPublishedDoc.wrapperId!!).tags, tags) }
+            kotlin.runCatching { checkPublicationTags(documentService.getWrapperById(lastPublishedDoc.wrapperId!!).tags, tags) }
                 .onFailure { return null }
         }
 

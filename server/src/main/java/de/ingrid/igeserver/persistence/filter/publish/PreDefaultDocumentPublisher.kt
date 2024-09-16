@@ -27,6 +27,7 @@ import de.ingrid.igeserver.persistence.filter.PrePublishPayload
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.DocumentState
+import de.ingrid.igeserver.utils.checkPublicationTags
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
 
@@ -57,7 +58,7 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService) : 
             .map { ref -> documentService.getDocumentFromCatalog(catalogId, ref) }
             .forEach { refData: DocumentData ->
                 checkPublishState(refData)
-                documentService.checkPublicationTags(refData.wrapper.tags, publicationDocTags)
+                checkPublicationTags(refData.wrapper.tags, publicationDocTags)
             }
     }
 

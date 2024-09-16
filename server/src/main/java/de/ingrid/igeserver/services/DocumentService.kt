@@ -1008,30 +1008,6 @@ class DocumentService(
     fun detachDocumentFromDatabase(doc: Any) {
         this.entityManager.detach(doc)
     }
-
-    fun checkPublicationTags(
-        wrapperTags: List<String>,
-        publicationDocTags: List<String>,
-    ) {
-        val refPublicationDocTags =
-            wrapperTags.filter { it == "intranet" || it == "amtsintern" }
-
-        val docIsAmtsintern = publicationDocTags.contains("amtsintern")
-        val intranetAndRefsNotAmtsintern =
-            publicationDocTags.contains("intranet") && !refPublicationDocTags.contains("amtsintern")
-        val allAreInternet = publicationDocTags.isEmpty() && refPublicationDocTags.isEmpty()
-
-        if (!(docIsAmtsintern || intranetAndRefsNotAmtsintern || allAreInternet)) {
-            val tags = refPublicationDocTags.joinToString(",").run { ifEmpty { "internet" } }
-            throw ValidationException.withReason(
-                "Reference has wrong publication type condition: ${
-                    publicationDocTags.joinToString(
-                        ",",
-                    ).ifEmpty { "internet" }
-                } => $tags",
-            )
-        }
-    }
 }
 
 class DocumentData(val wrapper: DocumentWrapper, val document: Document)

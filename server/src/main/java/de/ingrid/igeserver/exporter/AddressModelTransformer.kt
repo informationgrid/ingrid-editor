@@ -24,6 +24,7 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.checkPublicationTags
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.igeserver.utils.mapToKeyValue
@@ -184,7 +185,7 @@ open class AddressModelTransformer(
         return documentService.getIncomingReferences(addressDoc, catalogIdentifier).map {
             val doc = getLastPublishedDocument(catalogIdentifier, it) ?: return@map null
             val docTags = documentService.getWrapperById(doc.wrapperId ?: return@map null).tags
-            kotlin.runCatching { documentService.checkPublicationTags(docTags, tags) }.onFailure { return@map null }
+            kotlin.runCatching { checkPublicationTags(docTags, tags) }.onFailure { return@map null }
 
             ObjectReference(
                 doc.uuid,
