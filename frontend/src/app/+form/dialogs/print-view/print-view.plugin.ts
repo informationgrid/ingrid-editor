@@ -124,6 +124,7 @@ export class PrintViewPlugin extends Plugin {
       }
       this.dialog.open(PrintViewDialogComponent, {
         width: "80%",
+        maxWidth: "90vw",
         data: {
           fields: fields,
           fieldsPublished: fieldsPublished,

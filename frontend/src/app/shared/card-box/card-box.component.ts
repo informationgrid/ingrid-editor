@@ -24,13 +24,25 @@ import {
   Input,
   OnInit,
   Output,
-  signal,
 } from "@angular/core";
+import { MatCard, MatCardContent, MatCardTitle } from "@angular/material/card";
+import { MatSlideToggle } from "@angular/material/slide-toggle";
+import { MatDivider } from "@angular/material/divider";
+import { MatButton } from "@angular/material/button";
 
 @Component({
   selector: "ige-card-box",
   templateUrl: "./card-box.component.html",
   styleUrls: ["./card-box.component.scss"],
+  standalone: true,
+  imports: [
+    MatCard,
+    MatCardTitle,
+    MatSlideToggle,
+    MatCardContent,
+    MatDivider,
+    MatButton,
+  ],
 })
 export class CardBoxComponent implements OnInit {
   @Input() label: string;

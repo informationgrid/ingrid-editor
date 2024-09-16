@@ -31,7 +31,6 @@ class McloudSchemaAddress : AnnotationSpec() {
     private val schema = "/mcloud/schemes/address.schema.json"
     private val requiredFields = listOf("_uuid", "_type", "organization", "contact")
 
-
     @Test
     fun minAddress() {
         val json = SchemaUtils.getJsonFileContent("/export/mcloud/mcloud-address.minimal.json")

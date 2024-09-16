@@ -52,7 +52,7 @@ class OgcGeoJsonExporter(
             MediaType.APPLICATION_JSON_VALUE,
             "json",
             listOf(),
-            false
+            false,
         )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
@@ -82,7 +82,6 @@ class OgcGeoJsonExporter(
     }
 
     private fun addExportWrapper(uuid: String, publishedVersion: JsonNode?, draftVersion: JsonNode?): Record {
-
         val dataset = publishedVersion ?: draftVersion
 
         val geometry: MutableList<JsonNode> = mutableListOf()
@@ -97,12 +96,11 @@ class OgcGeoJsonExporter(
             type = "Feature",
             time,
             geometry,
-            properties = dataset
+            properties = dataset,
         )
     }
 
     fun convertToJsonNode(record: Record): JsonNode {
-
         val mapper = jacksonObjectMapper()
         mapper.registerModule(JavaTimeModule())
 
@@ -111,12 +109,9 @@ class OgcGeoJsonExporter(
             node.replace(entry.key, entry.value)
         }
         return node
-
     }
 
     override fun toString(exportedObject: Any): String {
         return exportedObject as String
     }
-
-
 }

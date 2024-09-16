@@ -42,7 +42,6 @@ class ImporterFactory {
     }
 
     fun getImporter(profile: CatalogProfile, contentType: String, fileContent: String): List<IgeImporter> {
-
         val responsibleImporter = importer
             .filter { it.typeInfo.profiles.isEmpty() || it.typeInfo.profiles.contains(profile.identifier) || it.typeInfo.profiles.contains(profile.parentProfile) }
             .filter { it.canHandleImportFile(contentType, fileContent) }
@@ -60,5 +59,4 @@ class ImporterFactory {
             throw ConfigurationException.withReason("More than one importer found for content type '$contentType': '$importerNames'.")
         }
     }
-
 }

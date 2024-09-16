@@ -37,7 +37,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.transaction.PlatformTransactionManager
 
-
 @Sql(scripts = ["/uvp/test_data_uvp-report.sql"], config = SqlConfig(encoding = "UTF-8"))
 class UvpReportApiControllerTest : IntegrationTest() {
 
@@ -167,8 +166,8 @@ class UvpReportApiControllerTest : IntegrationTest() {
     fun filterByStartAndEndDate() {
         mockMvc.perform(
             get("/api/uvp/report?from=2022-10-08T22:00:00.000Z&to=2022-10-10T22:00:00.000Z").principal(
-                mockPrincipal
-            )
+                mockPrincipal,
+            ),
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -185,8 +184,8 @@ class UvpReportApiControllerTest : IntegrationTest() {
         execSQL("/uvp/test_data_uvp-report_startEndMultipleDecisionDates.sql")
         mockMvc.perform(
             get("/api/uvp/report?from=2021-10-09T22:00:00.000Z&to=2021-10-10T22:00:00.000Z").principal(
-                mockPrincipal
-            )
+                mockPrincipal,
+            ),
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -202,8 +201,8 @@ class UvpReportApiControllerTest : IntegrationTest() {
         execSQL("/uvp/test_data_uvp-report_addPublishedWithoutReceiptDate.sql")
         mockMvc.perform(
             get("/api/uvp/report?from=2022-01-22T23:00:00.000Z&to=2022-01-22T23:00:00.000Z").principal(
-                mockPrincipal
-            )
+                mockPrincipal,
+            ),
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -214,7 +213,6 @@ class UvpReportApiControllerTest : IntegrationTest() {
             .andExpect(jsonPath("$.averageProcedureDuration", `is`(daysInSeconds(17))))
     }
 
-
     private fun execSQL(sqlFile: String) {
         val sql = {}.javaClass.getResource(sqlFile)?.readText()!!
         ClosableTransaction(transactionManager).use {
@@ -224,5 +222,4 @@ class UvpReportApiControllerTest : IntegrationTest() {
     }
 
     private fun daysInSeconds(days: Int) = days * 60 * 60 * 24
-
 }

@@ -27,22 +27,21 @@ open class CodelistTransformer(
     val catalogIdentifier: String,
 ) {
 
-
     fun getValue(codelistId: String, entry: KeyValue?): String? {
         return getValue(codelistId, entry, "de")
     }
 
     fun getCatalogCodelistValue(codelistId: String, entry: KeyValue?): String? =
-    if (entry?.key != null) codelistHandler.getCatalogCodelistValue( catalogIdentifier, codelistId, entry.key) else entry?.value
+        if (entry?.key != null) codelistHandler.getCatalogCodelistValue(catalogIdentifier, codelistId, entry.key) else entry?.value
 
     fun getValue(codelistId: String, entry: KeyValue?, field: String): String? =
-        if (entry?.key != null) codelistHandler.getCodelistValue(codelistId, entry.key, field) 
-            ?: codelistHandler.getCatalogCodelistValue(catalogIdentifier, codelistId, entry.key) 
-        else entry?.value
-
+        if (entry?.key != null) {
+            codelistHandler.getCodelistValue(codelistId, entry.key, field)
+                ?: codelistHandler.getCatalogCodelistValue(catalogIdentifier, codelistId, entry.key)
+        } else {
+            entry?.value
+        }
 
     fun getData(codelistId: String, key: String?): String? = key?.let { codelistHandler.getCodelistEntryDataField(codelistId, it) }
-    fun getDataField(codelistId: String, key: String?, dataField: String?): String? = getData(codelistId, key)?.let { Regex("\"$dataField\":\"([^\"]*)\"").find(it)?.groupValues?.get(1)}
-
+    fun getDataField(codelistId: String, key: String?, dataField: String?): String? = getData(codelistId, key)?.let { Regex("\"$dataField\":\"([^\"]*)\"").find(it)?.groupValues?.get(1) }
 }
-

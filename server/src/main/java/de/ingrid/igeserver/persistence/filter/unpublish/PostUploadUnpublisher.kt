@@ -23,7 +23,6 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PostUnpublishPayload
 import de.ingrid.mdek.upload.storage.Storage
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 /**
@@ -42,5 +41,4 @@ class PostUploadUnpublisher(val storage: Storage) : Filter<PostUnpublishPayload>
 
         return payload
     }
-
 }

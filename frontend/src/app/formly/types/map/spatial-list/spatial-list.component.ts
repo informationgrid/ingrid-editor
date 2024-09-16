@@ -26,6 +26,13 @@ import {
   ConfirmDialogData,
 } from "../../../../dialogs/confirm/confirm-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
+import { MatIcon } from "@angular/material/icon";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { MatLine } from "@angular/material/core";
+import { MatIconButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { DecimalPipe } from "@angular/common";
 
 export type SpatialLocationType = "free" | "wkt" | "wfsgnde";
 
@@ -48,6 +55,18 @@ export interface SpatialLocationWithColor extends SpatialLocation {
   selector: "ige-spatial-list",
   templateUrl: "./spatial-list.component.html",
   styleUrls: ["./spatial-list.component.scss"],
+  standalone: true,
+  imports: [
+    MatIcon,
+    TranslocoDirective,
+    MatLine,
+    MatIconButton,
+    MatTooltip,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    DecimalPipe,
+  ],
 })
 export class SpatialListComponent implements OnInit {
   @Input() locations: Observable<SpatialLocationWithColor[]>;

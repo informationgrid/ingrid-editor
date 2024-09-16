@@ -25,12 +25,16 @@ import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { Router } from "@angular/router";
-import { SharedModule } from "../../../../app/shared/shared.module";
-import { PageTemplateModule } from "../../../../app/shared/page-template/page-template.module";
+
 import { DatePipe } from "@angular/common";
-import { SharedPipesModule } from "../../../../app/directives/shared-pipes.module";
+
 import { MatMenuModule } from "@angular/material/menu";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { PageTemplateNoHeaderComponent } from "../../../../app/shared/page-template/page-template-no-header.component";
+import { CardBoxComponent } from "../../../../app/shared/card-box/card-box.component";
+import { MatTooltip } from "@angular/material/tooltip";
+import { DateAgoPipe } from "../../../../app/directives/date-ago.pipe";
+import { MatIcon } from "@angular/material/icon";
 
 @UntilDestroy()
 @Component({
@@ -39,15 +43,17 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
   styleUrls: ["./zabbix-report.component.scss"],
   standalone: true,
   imports: [
-    SharedModule,
-    PageTemplateModule,
     DatePipe,
-    SharedPipesModule,
     MatMenuModule,
     MatPaginatorModule,
     MatTableModule,
     MatSortModule,
     MatProgressSpinner,
+    PageTemplateNoHeaderComponent,
+    CardBoxComponent,
+    MatTooltip,
+    DateAgoPipe,
+    MatIcon,
   ],
 })
 export class ZabbixReportComponent implements AfterViewInit {

@@ -29,19 +29,20 @@ import java.util.stream.Stream
 enum class PlanStateEnum(val value: String) {
     IN_PREPARATION("inPreparation"),
     FIXED("fixed"),
-    UNKNOWN("unknown");
+    UNKNOWN("unknown"),
+    ;
 
-    class Converter : EnumConverter<PlanStateEnum>(
-        PlanStateEnum::class.java
-    )
+    class Converter :
+        EnumConverter<PlanStateEnum>(
+            PlanStateEnum::class.java,
+        )
 
     @JsonValue
-    override fun toString(): String {
-        return value.toString()
-    }
+    override fun toString(): String = value.toString()
 
     companion object {
-        private const val uriPrefix = "https://specs.diplanung.de/resource/planState#"
+        private const val URI_PREFIX = "https://specs.diplanung.de/resource/planState#"
+
         @JsonCreator
         fun fromValue(text: String?): PlanStateEnum? {
             if (text == null) {
@@ -54,13 +55,12 @@ enum class PlanStateEnum(val value: String) {
             }
             val enumValues = java.lang.String.join(
                 ", ",
-                Stream.of(*entries.toTypedArray()).map { anEnum: PlanStateEnum -> uriPrefix + anEnum.toString() }
-                    .toList())
+                Stream.of(*entries.toTypedArray()).map { anEnum: PlanStateEnum -> URI_PREFIX + anEnum.toString() }
+                    .toList(),
+            )
             throw IllegalArgumentException("PlanStateEnum value has to be one of [$enumValues], was $text")
         }
 
-        private fun stripPrefix(uri: String): String {
-            return uri.replaceFirst(uriPrefix.toRegex(), "")
-        }
+        private fun stripPrefix(uri: String): String = uri.replaceFirst(URI_PREFIX.toRegex(), "")
     }
 }

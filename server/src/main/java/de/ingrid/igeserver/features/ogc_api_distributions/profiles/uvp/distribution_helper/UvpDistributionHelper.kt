@@ -36,17 +36,17 @@ import org.springframework.stereotype.Service
 data class PublicHearing(
     val type: String,
     val considerationDocs: JsonNode,
-    val publicHearingDate: JsonNode
+    val publicHearingDate: JsonNode,
 )
 data class DecisionOfAdmissionDecisionDocs(
     val type: String,
     val decisionDate: String,
-    val decisionDocs: List<JsonNode>
+    val decisionDocs: List<JsonNode>,
 )
 data class DecisionOfAdmissionApprovalDocs(
     val type: String,
     val decisionDate: String,
-    val approvalDocs: List<JsonNode>
+    val approvalDocs: List<JsonNode>,
 )
 data class PublicDisclosureFurtherDocs(
     val type: String,
@@ -76,14 +76,14 @@ data class PublicDisclosureReportsRecommendationDocs(
 @Profile("uvp")
 @Service
 class UvpDistributionHelper(
-    private val storage: Storage
-): OgcDistributionHelper {
+    private val storage: Storage,
+) : OgcDistributionHelper {
     override val typeInfo: DistributionTypeInfo
         get() = DistributionTypeInfo(
             "uvp",
             "UVP",
             "UVP Distribution Helper",
-            emptyList()
+            emptyList(),
         )
 
     override fun canHandleDistribution(profile: String): Boolean {
@@ -93,7 +93,7 @@ class UvpDistributionHelper(
     override fun getDistributionDetails(document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
         val allDistributions: JsonNode = document.data.get("processingSteps")
 
-        return if(distributionId.isNullOrEmpty()) {
+        return if (distributionId.isNullOrEmpty()) {
             allDistributions
         } else {
             val matchedDistributions = mutableListOf<Any>()
@@ -101,7 +101,7 @@ class UvpDistributionHelper(
                 val processStep = it
                 val type = processStep.getString("type")
 
-                if(type == "publicHearing") {
+                if (type == "publicHearing") {
                     val docTypeList: List<String> = listOf("considerationDocs")
                     docTypeList.forEach { docType ->
                         val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)
@@ -109,14 +109,14 @@ class UvpDistributionHelper(
                             val requestedInfo = PublicHearing(
                                 type = updatedProcessStep.getString("type")!!,
                                 publicHearingDate = updatedProcessStep.get("publicHearingDate"),
-                                considerationDocs = updatedProcessStep.get("considerationDocs")
+                                considerationDocs = updatedProcessStep.get("considerationDocs"),
                             )
                             matchedDistributions.add(requestedInfo)
                         }
                     }
                 }
 
-                if(type == "decisionOfAdmission") {
+                if (type == "decisionOfAdmission") {
                     val docTypeList: List<String> = listOf("approvalDocs", "decisionDocs")
                     docTypeList.forEach { docType ->
                         val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)
@@ -128,7 +128,7 @@ class UvpDistributionHelper(
                                 val requestedInfo = DecisionOfAdmissionApprovalDocs(
                                     type = updatedProcessStep.getString("type")!!,
                                     decisionDate = updatedProcessStep.getString("decisionDate")!!,
-                                    approvalDocs = approvalDocs
+                                    approvalDocs = approvalDocs,
                                 )
                                 matchedDistributions.add(requestedInfo)
                             }
@@ -137,7 +137,7 @@ class UvpDistributionHelper(
                                 val requestedInfo = DecisionOfAdmissionDecisionDocs(
                                     type = updatedProcessStep.getString("type")!!,
                                     decisionDate = updatedProcessStep.getString("decisionDate")!!,
-                                    decisionDocs = decisionDocs
+                                    decisionDocs = decisionDocs,
                                 )
                                 matchedDistributions.add(requestedInfo)
                             }
@@ -145,7 +145,7 @@ class UvpDistributionHelper(
                     }
                 }
 
-                if(type == "publicDisclosure") {
+                if (type == "publicDisclosure") {
                     val docTypeList: List<String> = listOf("furtherDocs", "applicationDocs", "announcementDocs", "reportsRecommendationDocs")
                     docTypeList.forEach { docType ->
                         val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)
@@ -160,7 +160,7 @@ class UvpDistributionHelper(
                                     type = updatedProcessStep.getString("type")!!,
                                     disclosureDate = updatedProcessStep.get("disclosureDate"),
                                     furtherDocs = furtherDocs,
-                                    furtherDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("furtherDocsPublishDuringDisclosure")!!
+                                    furtherDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("furtherDocsPublishDuringDisclosure")!!,
                                 )
                                 matchedDistributions.add(requestedInfo)
                             }
@@ -170,7 +170,7 @@ class UvpDistributionHelper(
                                     type = updatedProcessStep.getString("type")!!,
                                     disclosureDate = updatedProcessStep.get("disclosureDate"),
                                     applicationDocs = applicationDocs,
-                                    applicationDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("applicationDocsPublishDuringDisclosure")!!
+                                    applicationDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("applicationDocsPublishDuringDisclosure")!!,
                                 )
                                 matchedDistributions.add(requestedInfo)
                             }
@@ -180,7 +180,7 @@ class UvpDistributionHelper(
                                     type = updatedProcessStep.getString("type")!!,
                                     disclosureDate = updatedProcessStep.get("disclosureDate"),
                                     announcementDocs = announcementDocs,
-                                    announcementDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("announcementDocsPublishDuringDisclosure")!!
+                                    announcementDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("announcementDocsPublishDuringDisclosure")!!,
                                 )
                                 matchedDistributions.add(requestedInfo)
                             }
@@ -190,15 +190,13 @@ class UvpDistributionHelper(
                                     type = updatedProcessStep.getString("type")!!,
                                     disclosureDate = updatedProcessStep.get("disclosureDate"),
                                     reportsRecommendationDocs = applicationDocs,
-                                    reportsRecommendationDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("reportsRecommendationDocsPublishDuringDisclosure")!!
+                                    reportsRecommendationDocsPublishDuringDisclosure = updatedProcessStep.getBoolean("reportsRecommendationDocsPublishDuringDisclosure")!!,
                                 )
                                 matchedDistributions.add(requestedInfo)
                             }
-
                         }
                     }
                 }
-
             }
             return convertListToJsonNode(matchedDistributions as List<Any>)
         }
@@ -238,7 +236,7 @@ class UvpDistributionHelper(
         collectionId: String,
         userID: String,
         recordId: String,
-        missingFiles: MutableList<String>
+        missingFiles: MutableList<String>,
     ) {
         val currentDistributionId = doc.getString("downloadURL.uri")!!
         val isLink = doc.getBoolean("downloadURL.asLink")!!
@@ -248,7 +246,7 @@ class UvpDistributionHelper(
         }
     }
 
-    private fun removeUnwantedInfos(distributionId: String, docType: String, processStep: JsonNode): JsonNode?  {
+    private fun removeUnwantedInfos(distributionId: String, docType: String, processStep: JsonNode): JsonNode? {
         val jsonNodeList = processStep.get(docType).filter {
             it.getString("downloadURL.uri") == distributionId
         }
@@ -261,5 +259,4 @@ class UvpDistributionHelper(
 
     private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode =
         jacksonObjectMapper().valueToTree(listOfJsonNodes)
-
 }

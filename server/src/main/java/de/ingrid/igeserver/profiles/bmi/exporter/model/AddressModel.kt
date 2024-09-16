@@ -21,22 +21,18 @@ package de.ingrid.igeserver.profiles.bmi.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.codelists.CodeListService
-import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
-import java.time.OffsetDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AddressModel(
-    @JsonProperty("_uuid") val uuid: String,
-    @JsonProperty("_id") val id: Int,
+    var type: String?,
     val salutation: KeyValue?,
     @JsonProperty("academic-title") val academicTitle: KeyValue?,
     val firstName: String?,
@@ -46,11 +42,6 @@ data class AddressModel(
     val contact: List<ContactModel>,
     val hideAddress: Boolean?,
     var address: Address = Address(false, "", "", "", "", "", null, null),
-    @JsonDeserialize(using = DateDeserializer::class)
-    @JsonProperty("_created") val created: OffsetDateTime,
-    @JsonDeserialize(using = DateDeserializer::class)
-    @JsonProperty("_modified") val modified: OffsetDateTime,
-    @JsonProperty("_parent") val parent: Int?,
 ) {
 
     companion object {
@@ -100,7 +91,6 @@ data class AddressModel(
     }
 
     private fun addInternalFields(publishedParent: Document, wrapper: DocumentWrapper): AddressModel {
-
         val visibleAddress = publishedParent.data.apply {
             put("_id", wrapper.id)
             put("_uuid", publishedParent.uuid)
@@ -132,7 +122,7 @@ data class AddressModel(
         ?.connection
 }
 
-data class ContactModel(val type: KeyValue?, val connection: String?){
+data class ContactModel(val type: KeyValue?, val connection: String?) {
     val typeLabel: String?
         get() = AddressModel.codeListService?.getCodeListValue("4430", type?.key, "en")
 }
@@ -146,7 +136,7 @@ data class Address(
     @JsonProperty("zip-po-box") val zipPoBox: String?,
     @JsonProperty("po-box") val poBox: String?,
     val administrativeArea: KeyValue?,
-    val country: KeyValue?
+    val country: KeyValue?,
 ) {
     val countryKey = country?.key ?: ""
 

@@ -32,7 +32,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
 
     @Value("\${geothesaurus.max.results:50}")
     private val maxResults: Int = 50
-    
+
     override val id = "wfsgnde"
 
     val searchUrlTemplate = "http://sg.geodatenzentrum.de/wfs_gnde"
@@ -47,7 +47,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         "AX_StehendesGewaesser",
         "AX_Meer",
         "AX_Insel",
-        "AX_SchutzgebietNachNaturUmweltOderBodenschutzrecht"
+        "AX_SchutzgebietNachNaturUmweltOderBodenschutzrecht",
     )
 
     private fun template(query: String): String {
@@ -66,7 +66,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
                 <ogc:And>
                     <ogc:PropertyIsLike wildCard="*" singleChar="?" matchCase="false" escapeChar="\">
                         <ogc:PropertyName>gn:hatEndonym/gn:Endonym/gn:name</ogc:PropertyName>
-                        <ogc:Literal>${query}</ogc:Literal>
+                        <ogc:Literal>$query</ogc:Literal>
                     </ogc:PropertyIsLike>
                     <ogc:Or>
                         $filter
@@ -74,7 +74,8 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
                 </ogc:And>
             </ogc:Filter>
         </wfs:Query>
-    </wfs:GetFeature>""".trimIndent()
+    </wfs:GetFeature>
+        """.trimIndent()
     }
 
     override fun search(term: String, options: GeoThesaurusSearchOptions): List<SpatialResponse> {
@@ -84,10 +85,10 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         val response = sendRequest("POST", searchUrlTemplate, template(term))
         val mapper = XmlMapper(JacksonXmlModule())
         val featureMember = mapper.readTree(response).get("featureMember")
-        
+
         val result = if (featureMember is ObjectNode) {
             listOfNotNull(mapToSpatial(featureMember.get("GnObjekt"), false))
-        }else {
+        } else {
             val maxReached = featureMember?.size() == maxResults
             featureMember
                 ?.mapNotNull { mapToSpatial(it.get("GnObjekt"), maxReached) }
@@ -97,9 +98,9 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
     }
 
     private fun resolveTypeReferences(spatials: List<SpatialResponse>): List<SpatialResponse> {
-        return spatials.map {spatial ->
+        return spatials.map { spatial ->
             if (spatial.type.startsWith("#")) {
-                spatial.type = spatials.find { it.typeId ==  spatial.type.substring(1)}?.type!!
+                spatial.type = spatials.find { it.typeId == spatial.type.substring(1) }?.type!!
             }
             spatial
         }
@@ -107,7 +108,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
 
     private fun mapToSpatial(featureMember: JsonNode?, maxReached: Boolean): SpatialResponse? {
         if (featureMember == null) return null
-        
+
         val (typeName, typeId) = getType(featureMember)
         return SpatialResponse(
             featureMember.get("nnid").asText(),
@@ -116,7 +117,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
             mapName(featureMember),
             mapBoundingBox(featureMember),
             getARS(featureMember),
-            maxReached
+            maxReached,
         )
     }
 
@@ -124,9 +125,11 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         return featureMember.get("hatArs")?.get("Ars")?.get("ars")?.asText()
     }
 
-    private fun getType(featureMember: JsonNode): Pair<String,String?> {
+    private fun getType(featureMember: JsonNode): Pair<String, String?> {
         val href = featureMember.get("hatObjektart")?.get("href")?.asText()
-        return if (href != null) Pair(href, null) else {
+        return if (href != null) {
+            Pair(href, null)
+        } else {
             val type = featureMember.get("hatObjektart")?.get("Objektart")?.get("objektart")?.asText()!!
             val typeId = featureMember.get("hatObjektart")?.get("Objektart")?.get("id")?.asText()!!
             Pair(type, typeId)
@@ -138,7 +141,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         val posListUpper = featureMember.get("boundedBy")?.get("Envelope")?.get("upperCorner")?.asText()?.split(" ")
         return getBBoxFromBoundedByElement(posListLower!!, posListUpper!!)
     }
-    
+
     private fun getBBoxFromBoundedByElement(lower: List<String>, upper: List<String>): BoundingBox {
         return BoundingBox(lower[1].toFloat(), lower[0].toFloat(), upper[1].toFloat(), upper[0].toFloat())
     }
@@ -149,9 +152,8 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
             null -> null
             1 -> endonyms.get("Endonym").get("name").asText()
             else -> {
-
                 getGermanName(featureMember)?.let { return it }
-                
+
                 val endo = endonyms.get(0)?.get("Endonym")
                 "${endo?.get("name")?.asText()} (${endonyms.get(1)?.get("Endonym")?.get("name")?.asText()})"
             }
@@ -172,4 +174,3 @@ private fun convertType(searchType: ThesaurusSearchType, term: String): String {
         ThesaurusSearchType.CONTAINS -> "*$term*"
     }
 }
-

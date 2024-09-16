@@ -19,6 +19,7 @@
  */
 import { Component, OnInit } from "@angular/core";
 import {
+  ReactiveFormsModule,
   UntypedFormControl,
   UntypedFormGroup,
   Validators,
@@ -26,12 +27,43 @@ import {
 import { GroupService } from "../../../services/role/group.service";
 import { Group } from "../../../models/user-group";
 import { ModalService } from "../../../services/modal/modal.service";
-import { MatDialogRef } from "@angular/material/dialog";
+import {
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from "@angular/material/dialog";
 import { GroupQuery } from "../../../store/group/group.query";
+import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { FocusDirective } from "../../../directives/focus.directive";
 
 @Component({
   selector: "ige-new-group-dialog",
   templateUrl: "./new-group-dialog.component.html",
+  standalone: true,
+  imports: [
+    CdkDrag,
+    CdkDragHandle,
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    FocusDirective,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class NewGroupDialogComponent implements OnInit {
   form = new UntypedFormGroup({

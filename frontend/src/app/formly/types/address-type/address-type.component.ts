@@ -60,8 +60,8 @@ import { DocumentWithMetadata } from "../../../models/ige-document";
 import { ValidationErrors } from "@angular/forms";
 import { HttpErrorResponse } from "@angular/common/http";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
-import { AddButtonModule } from "../../../shared/add-button/add-button.module";
 import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
+import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 
 @UntilDestroy()
 @Component({
@@ -73,7 +73,7 @@ import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabell
     CdkDropList,
     CdkDrag,
     AddressCardComponent,
-    AddButtonModule,
+    AddButtonComponent,
     FieldToAiraLabelledbyPipe,
   ],
   standalone: true,
@@ -101,6 +101,18 @@ export class AddressTypeComponent
       .subscribe((value) => this.prepareAddressCards(value));
 
     this.formControl.addValidators(this.allAddressesPublishedValidator());
+
+    // when coming from another page and a dataset already has been loaded then update the references
+    // in case they have changed, like address state or data
+    this.documentService.reload$
+      .pipe(
+        untilDestroyed(this),
+        map((item) => item.uuid),
+      )
+      .subscribe(() => {
+        this.resolvedAddresses.set([]);
+        this.prepareAddressCards(this.formControl.value);
+      });
   }
 
   async addToAddresses(address: DocumentAbstract, type: BackendOption) {

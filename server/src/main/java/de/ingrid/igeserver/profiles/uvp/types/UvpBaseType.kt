@@ -42,7 +42,7 @@ abstract class UvpBaseType : EntityType() {
             "furtherDocs",
             "reportsRecommendationDocs",
             "applicationDocs",
-            "announcementDocs"
+            "announcementDocs",
         )
 
         // special case as negative decision docs are not part of any processingSteps
@@ -55,7 +55,8 @@ abstract class UvpBaseType : EntityType() {
                 fileFields.flatMap { fileField ->
                     getUploadsFromFileList(step.get(fileField))
                 }
-            } ?: emptyList())
+            } ?: emptyList(),
+        )
         return uploads
     }
 }

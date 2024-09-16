@@ -1376,3 +1376,8 @@ table.big-font {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
+
+.longtext-no-wrap {
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Hide any overflow text */
+}

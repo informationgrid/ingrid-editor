@@ -54,5 +54,4 @@ abstract class ThesaurusService {
             .uri(URI.create(url))
             .timeout(Duration.ofSeconds(10))
             .build()
-
 }

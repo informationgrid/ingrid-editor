@@ -40,7 +40,6 @@ class GeoserviceTransformerKrzn(transformerConfig: TransformerConfig) :
                     if (it == "0") return@outer null
                     codelists.getCatalogCodelistValue("10500", KeyValue(it, null))
                         ?.replace("{ID}", coupledUuids)
-
                 }
             }
         }

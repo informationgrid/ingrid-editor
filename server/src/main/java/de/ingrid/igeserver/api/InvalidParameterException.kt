@@ -22,10 +22,10 @@ package de.ingrid.igeserver.api
 import de.ingrid.igeserver.ClientException
 import org.springframework.http.HttpStatus
 
-open class InvalidParameterException: ClientException {
+open class InvalidParameterException : ClientException {
 
     protected constructor(statusCode: HttpStatus, errorCode: String, errorText: String, data: Map<String, Any?>? = null, cause: Throwable? = null) :
-            super(statusCode, errorCode, errorText, data, cause)
+        super(statusCode, errorCode, errorText, data, cause)
 
     companion object {
         private const val ERROR_CODE = "INVALID_PARAMETER"
@@ -34,7 +34,7 @@ open class InvalidParameterException: ClientException {
         /**
          * Factory method for invalid parameters
          */
-        fun withInvalidParameters(vararg parameterNames: String, cause: Throwable? = null) : InvalidParameterException {
+        fun withInvalidParameters(vararg parameterNames: String, cause: Throwable? = null): InvalidParameterException {
             return InvalidParameterException(STATUS_CODE, ERROR_CODE, ERROR_TEXT_INVALID, mapOf("parameterNames" to parameterNames), cause)
         }
     }

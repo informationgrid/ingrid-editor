@@ -152,11 +152,12 @@ export class CodelistService {
         untilDestroyed(this),
         // ignore multiple same ids
         distinct(),
+        // mark already as processed so that incoming codelists trigger a new event
+        tap(() => (this.batchProcessed = true)),
         filter((ids) => ids.length > 0),
         switchMap((ids) => this.requestCodelists(ids)),
         map((codelists) => this.prepareCodelists(codelists)),
         tap((codelists) => this.store.add(codelists)),
-        tap(() => (this.batchProcessed = true)),
       )
       .subscribe();
   }

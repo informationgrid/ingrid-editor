@@ -27,11 +27,15 @@ import { FieldWrapper } from "@ngx-formly/core";
 import { ConfigService } from "../../services/config/config.service";
 import { ContextHelpService } from "../../services/context-help/context-help.service";
 import { FormStateService } from "../../+form/form-state.service";
+import { FormLabelComponent } from "./form-label/form-label.component";
+import { NgIf } from "@angular/common";
 
 @Component({
   selector: "ige-full-width-wrapper",
   templateUrl: "./full-width-wrapper.component.html",
   styleUrls: ["./full-width-wrapper.component.scss"],
+  standalone: true,
+  imports: [FormLabelComponent, NgIf],
 })
 export class FullWidthWrapperComponent
   extends FieldWrapper

@@ -42,7 +42,6 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
     val log = logger()
 
     override fun getUsernameFromPrincipal(principal: Principal): String {
-
         return when (principal) {
             is JwtAuthenticationToken -> {
                 (principal.principal as Jwt).getClaimAsString("preferred_username")
@@ -75,7 +74,6 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
     private fun getRoles(principal: AbstractAuthenticationToken): Collection<GrantedAuthority> =
         principal.authorities ?: emptyList()
 
-
     override fun isAdmin(principal: Principal): Boolean {
         return containsRole(principal, "cat-admin") || containsRole(principal, "ige-super-admin")
     }
@@ -94,5 +92,4 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
     companion object {
         fun isAdminRole(vararg roles: String?) = roles.contains("ige-super-admin") || roles.contains("cat-admin")
     }
-
 }

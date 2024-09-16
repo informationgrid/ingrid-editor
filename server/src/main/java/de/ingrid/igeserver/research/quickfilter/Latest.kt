@@ -28,4 +28,3 @@ class Latest : QuickFilter() {
     override val label = "neueste Version"
     override val filter = ""
 }
-

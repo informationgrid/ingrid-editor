@@ -60,7 +60,7 @@ class JobsApiController(
     val referenceHandlerFactory: ReferenceHandlerFactory,
     val urlRequestService: UrlRequestService,
     val aclService: IgeAclService,
-    val authUtils: AuthUtils
+    val authUtils: AuthUtils,
 ) : JobsApi {
 
     val log = logger()
@@ -79,7 +79,7 @@ class JobsApiController(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isRunning = scheduler.isRunning(id, catalogId)
         val jobDataMap = scheduler.getJobDetail(id, catalogId)?.jobDataMap?.apply {
-            getString("report")?.let { 
+            getString("report")?.let {
                 put("report", jacksonObjectMapper().readValue(it, Any::class.java))
             }
             getString("errors")?.let {
@@ -95,21 +95,21 @@ class JobsApiController(
     override fun urlCheckTask(principal: Principal, command: JobCommand): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val profile = catalogService.getProfileFromCatalog(catalogId).identifier
-        val jobKey = JobKey.jobKey(getJobIdString(URLChecker.jobKey, principal), catalogId)
+        val jobKey = JobKey.jobKey(getJobIdString(URLChecker.JOB_KEY, principal), catalogId)
 
         // get only documents with write permission
         val groups = authUtils.getCurrentUserRoles(catalogId)
         var docIds = emptyList<Int>()
-        
+
         if (groups.isEmpty() && !authUtils.isAdmin(principal)) throw ServerException.withReason("User has not been assigned any groups")
-        
+
         val hasWriteRoot = authUtils.isAdmin(principal) || groups.any { it.permissions?.rootPermission == RootPermissionType.WRITE }
         if (!hasWriteRoot) {
             docIds = listOf("writeTree", "writeTreeExceptParent").flatMap {
                 aclService.getDatasetIdsSetInGroups(groups, it)
             }
         }
-        
+
         val jobDataMap = JobDataMap().apply {
             put("profile", profile)
             put("catalogId", catalogId)
@@ -122,11 +122,11 @@ class JobsApiController(
     override fun importAnalyzeTask(
         principal: Principal,
         file: MultipartFile,
-        command: JobCommand
+        command: JobCommand,
     ): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val profile = catalogService.getProfileFromCatalog(catalogId).identifier
-        val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
+        val jobKey = JobKey.jobKey(ImportService.JOB_KEY, catalogId)
 
         val tempFile = kotlin.io.path.createTempFile("import-", "-${file.originalFilename}")
         log.info("Save uploaded file to '${tempFile.absolutePathString()}'")
@@ -146,7 +146,7 @@ class JobsApiController(
     override fun importTask(principal: Principal, command: JobCommand, options: ImportOptions): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val profile = catalogService.getProfileFromCatalog(catalogId).identifier
-        val jobKey = JobKey.jobKey(ImportService.jobKey, catalogId)
+        val jobKey = JobKey.jobKey(ImportService.JOB_KEY, catalogId)
 
         val jobDataMap = JobDataMap().apply {
             put("profile", profile)
@@ -172,11 +172,10 @@ class JobsApiController(
             mapOf(
                 "status" to status,
                 "urlValid" to urlRequestService.isSuccessCode(status),
-                "docsUpdated" to docsNumberUpdated
-            )
+                "docsUpdated" to docsNumberUpdated,
+            ),
         )
     }
-
 
     @Autowired(required = false)
     var uploadCleanupTask: UploadCleanupTask? = null
@@ -191,7 +190,7 @@ class JobsApiController(
     var removeUnreferencedDocsTask: RemoveUnreferencedDocsTask? = null
     override fun removeUnreferencedDocuments(principal: Principal): ResponseEntity<List<String>> {
         if (removeUnreferencedDocsTask == null) throw ServerException.withReason("RemoveUnreferencedDocsTask not available")
-        
+
         val result = removeUnreferencedDocsTask?.start() ?: emptyList()
         return ResponseEntity.ok(result)
     }
@@ -200,14 +199,14 @@ class JobsApiController(
     var updateExternalCoupledResourcesTask: UpdateExternalCoupledResourcesTask? = null
     override fun updateExternalCoupledResources(principal: Principal): ResponseEntity<String> {
         if (updateExternalCoupledResourcesTask == null) throw ServerException.withReason("UpdateExternalCoupledResourcesTask not available")
-        
+
         val result = updateExternalCoupledResourcesTask?.updateExternalCoupledResources() ?: "No external coupled resources found"
         return ResponseEntity.ok(result)
     }
-    
+
     override fun indexCatalog(principal: Principal, command: JobCommand): ResponseEntity<Unit> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val jobKey = JobKey.jobKey(IndexService.jobKey, catalogId)
+        val jobKey = JobKey.jobKey(IndexService.JOB_KEY, catalogId)
 
         val jobDataMap = JobDataMap().apply {
             put("catalogId", catalogId)

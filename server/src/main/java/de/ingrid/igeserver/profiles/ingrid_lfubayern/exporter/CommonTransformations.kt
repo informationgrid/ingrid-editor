@@ -38,7 +38,7 @@ import kotlin.reflect.KClass
 
 fun lfubUseConstraints(
     superUseConstraints: List<UseConstraintTemplate>,
-    docData: JsonNode
+    docData: JsonNode,
 ): List<UseConstraintTemplate> {
     val comment = docData.getString("resource.useConstraintsComments")
     if (superUseConstraints.isEmpty() && comment == null) return emptyList()
@@ -50,17 +50,19 @@ fun lfubUseConstraints(
                 listOfNotNull(
                     it.title.text.ifEmpty { null },
                     it.source?.ifEmpty { null }?.prefixIfNot("Datenquelle: "),
-                    comment?.ifEmpty { null }
+                    comment?.ifEmpty { null },
                 ).joinToString("; "),
-                it.title.link
+                it.title.link,
             )
         }
 
         Pair(title, superUseConstraints[0].json)
-    } else Pair(CharacterStringModel(comment!!, null), null)
+    } else {
+        Pair(CharacterStringModel(comment!!, null), null)
+    }
 
     return listOf(
-        UseConstraintTemplate(title, null, json, null)
+        UseConstraintTemplate(title, null, json, null),
     )
 }
 
@@ -68,7 +70,7 @@ fun lfubGetDescriptiveKeywords(
     superDescriptiveKeywords: List<Thesaurus>,
     docData: JsonNode,
     codelistHandler: CodelistTransformer,
-    ignoreInternalKeywords: Boolean = false
+    ignoreInternalKeywords: Boolean = false,
 ): List<Thesaurus> {
     val lfuInternalKeywords = Thesaurus(
         "LfU Bayern Internal Keywords",
@@ -92,8 +94,11 @@ fun lfubGetDescriptiveKeywords(
             KeywordIso(value)
         } ?: emptyList(),
     )
-    return if (ignoreInternalKeywords) superDescriptiveKeywords + lfugeoKeywords
-    else superDescriptiveKeywords + lfuInternalKeywords + lfugeoKeywords
+    return if (ignoreInternalKeywords) {
+        superDescriptiveKeywords + lfugeoKeywords
+    } else {
+        superDescriptiveKeywords + lfuInternalKeywords + lfugeoKeywords
+    }
 }
 
 fun getLfuBayernTransformer(docType: String): KClass<out Any>? {

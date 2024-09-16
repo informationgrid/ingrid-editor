@@ -21,7 +21,12 @@ package de.ingrid.igeserver.persistence.postgresql.jpa.model.ige
 
 import de.ingrid.igeserver.annotations.NoArgs
 import io.hypersistence.utils.hibernate.type.json.JsonType
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 import org.hibernate.annotations.Type
 
 @NoArgs
@@ -39,5 +44,4 @@ class Settings {
     @Type(JsonType::class)
     @Column(name = "value", columnDefinition = "jsonb")
     var value: Any? = null
-
 }

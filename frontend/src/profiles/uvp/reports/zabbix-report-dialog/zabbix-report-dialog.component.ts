@@ -54,7 +54,6 @@ import { MatPaginator } from "@angular/material/paginator";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
 import { MatTooltip } from "@angular/material/tooltip";
-import { SharedPipesModule } from "../../../../app/directives/shared-pipes.module";
 
 @Component({
   selector: "zabbix-report-dialog",
@@ -86,7 +85,6 @@ import { SharedPipesModule } from "../../../../app/directives/shared-pipes.modul
     MatSortHeader,
     MatTable,
     MatTooltip,
-    SharedPipesModule,
     MatMenuTrigger,
     MatHeaderCellDef,
   ],

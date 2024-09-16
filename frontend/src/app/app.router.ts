@@ -37,10 +37,7 @@ export const routes: Routes = [
     children: [
       {
         path: "dashboard",
-        loadChildren: () =>
-          import("./+dashboard/dashboard.module").then(
-            (m) => m.DashboardModule,
-          ),
+        loadChildren: () => import("./+dashboard/routes"),
         canActivate: [AuthGuard],
         data: {
           icon: "Uebersicht",
@@ -48,8 +45,7 @@ export const routes: Routes = [
       },
       {
         path: "form",
-        loadChildren: () =>
-          import("./+form/ige-form.module").then((m) => m.IgeFormModule),
+        loadChildren: () => import("./+form/routes"),
         canActivate: [AuthGuard],
         data: {
           icon: "Daten",
@@ -57,8 +53,7 @@ export const routes: Routes = [
       },
       {
         path: "address",
-        loadChildren: () =>
-          import("./+address/address.module").then((m) => m.AddressModule),
+        loadChildren: () => import("./+address/routes"),
         canActivate: [AuthGuard],
         data: {
           icon: "Adressen",
@@ -66,8 +61,7 @@ export const routes: Routes = [
       },
       {
         path: "research",
-        loadChildren: () =>
-          import("./+research/research.module").then((m) => m.ResearchModule),
+        loadChildren: () => import("./+research/routes"),
         canActivate: [AuthGuard],
         data: {
           icon: "Recherche",
@@ -76,7 +70,9 @@ export const routes: Routes = [
       {
         path: "reports",
         loadChildren: () =>
-          import("./+reports/reports.module").then((m) => m.ReportsModule),
+          import("./+reports/lazy-reports.routing").then(
+            (m) => m.LazyReportsRouting,
+          ),
         data: {
           onlyAdmin: true,
           icon: "Reports",
@@ -84,8 +80,7 @@ export const routes: Routes = [
       },
       {
         path: "manage",
-        loadChildren: () =>
-          import("./+user/user.module").then((m) => m.UserModule),
+        loadChildren: () => import("./+user/routes"),
         data: {
           onlyAdmin: true,
           permission: "manage_users",
@@ -95,10 +90,7 @@ export const routes: Routes = [
       // TODO: check canActivateChild: [AuthGuard],
       {
         path: "importExport",
-        loadChildren: () =>
-          import("./+importExport/import-export.module").then(
-            (m) => m.ImportExportModule,
-          ),
+        loadChildren: () => import("./+importExport/routes"),
         canActivate: [AuthGuard],
         data: {
           onlyAdmin: true,
@@ -108,8 +100,7 @@ export const routes: Routes = [
       },
       {
         path: "catalogs",
-        loadChildren: () =>
-          import("./+catalog/catalog.module").then((m) => m.CatalogModule),
+        loadChildren: () => import("./+catalog/routes"),
         data: {
           onlyAdmin: true,
           permission: "manage_catalog",
@@ -118,8 +109,7 @@ export const routes: Routes = [
       },
       {
         path: "settings",
-        loadChildren: () =>
-          import("./+settings/settings.module").then((m) => m.SettingsModule),
+        loadChildren: () => import("./+settings/routes"),
         data: {
           onlyAdmin: true,
           icon: "",
@@ -128,8 +118,7 @@ export const routes: Routes = [
       },
       {
         path: "profile",
-        loadChildren: () =>
-          import("./+profile/profile.module").then((m) => m.ProfileModule),
+        loadChildren: () => import("./+profile/routes"),
         data: {
           icon: "",
           hideFromMenu: true,

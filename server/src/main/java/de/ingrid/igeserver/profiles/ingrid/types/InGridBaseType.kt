@@ -28,10 +28,8 @@ import org.springframework.stereotype.Component
 abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
     override val profiles = arrayOf("ingrid")
 
-    override fun getReferenceIds(doc: Document): List<String> {
-        return doc.data.path("pointOfContact").map { address ->
-            address.path("ref").textValue()
-        }
+    override fun getReferenceIds(doc: Document): List<String> = doc.data.path("pointOfContact").map { address ->
+        address.path("ref").textValue()
     }
 
     override fun getIncomingReferenceIds(doc: Document): List<String> {
@@ -50,15 +48,21 @@ abstract class InGridBaseType(val jdbcTemplate: JdbcTemplate) : EntityType() {
                     OR data->'references' @> '[{"uuidRef": "${doc.uuid}"}]' 
                     OR data->'parentIdentifier' @> (jsonb('"${doc.uuid}"')))
                 )
-            """.trimIndent()
+        """.trimIndent()
         val result = jdbcTemplate.queryForList(sqlQuery)
 
         return result.map { it["uuid"] as String }
     }
 
     override fun getUploads(doc: Document): List<String> {
-        return doc.data.get("graphicOverviews")?.let {
+        val graphicOverviews: List<String> = doc.data.get("graphicOverviews")?.let {
             getUploadsFromFileList(it, "fileName")
         } ?: emptyList()
+
+        val fileReferences: List<String> = doc.data.get("fileReferences")?.let {
+            getUploadsFromFileList(it, "link")
+        } ?: emptyList()
+
+        return graphicOverviews + fileReferences
     }
 }

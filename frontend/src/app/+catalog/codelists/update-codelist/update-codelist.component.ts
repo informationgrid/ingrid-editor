@@ -24,21 +24,59 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from "@angular/material/dialog";
 import { CodelistEntry } from "../../../store/codelist/codelist.model";
 import {
   AbstractControl,
+  ReactiveFormsModule,
   UntypedFormArray,
   UntypedFormBuilder,
   UntypedFormGroup,
   ValidationErrors,
   ValidatorFn,
 } from "@angular/forms";
+import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { MatError, MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { FocusDirective } from "../../../directives/focus.directive";
+import { MatDivider } from "@angular/material/divider";
+import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 
 @Component({
   selector: "ige-update-codelist",
   templateUrl: "./update-codelist.component.html",
   styleUrls: ["./update-codelist.component.scss"],
+  standalone: true,
+  imports: [
+    CdkDrag,
+    CdkDragHandle,
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    FocusDirective,
+    MatError,
+    MatDivider,
+    AddButtonComponent,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class UpdateCodelistComponent implements OnInit {
   @ViewChild("contextCodeListContainer") container: ElementRef;

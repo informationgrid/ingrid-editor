@@ -24,8 +24,8 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { FormlyFieldConfig, FormlyForm, FormlyModule } from "@ngx-formly/core";
 import { MatFormFieldModule } from "@angular/material/form-field";
-import { FormFieldsModule } from "../../../form-fields/form-fields.module";
 import { FormlyMaterialModule } from "@ngx-formly/material";
+import { provideNativeDateAdapter } from "@angular/material/core";
 
 describe("DateRangeTypeComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
@@ -35,7 +35,6 @@ describe("DateRangeTypeComponent", () => {
     imports: [
       MatDatepickerModule,
       MatFormFieldModule,
-      FormFieldsModule,
       ReactiveFormsModule,
       FormlyMaterialModule,
       FormsModule,
@@ -48,6 +47,7 @@ describe("DateRangeTypeComponent", () => {
         ],
       }),
     ],
+    providers: [provideNativeDateAdapter()],
   });
 
   beforeEach(() => {

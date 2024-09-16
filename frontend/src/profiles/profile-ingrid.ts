@@ -28,32 +28,15 @@ import { PublicationDoctype } from "./ingrid/doctypes/publication-doctype.servic
 import { ProjectDoctype } from "./ingrid/doctypes/project.doctype";
 import { DataCollectionDoctype } from "./ingrid/doctypes/data-collection.doctype";
 import { InformationSystemDoctype } from "./ingrid/doctypes/information-system.doctype";
-import { ConformityDialogComponent } from "./ingrid/dialogs/conformity-dialog.component";
-import { MatIconModule } from "@angular/material/icon";
-import { MatDialogModule } from "@angular/material/dialog";
-import { MatButtonModule } from "@angular/material/button";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { ReactiveFormsModule } from "@angular/forms";
-import { MatInputModule } from "@angular/material/input";
-import { AsyncPipe, DatePipe, JsonPipe, NgForOf, NgIf } from "@angular/common";
-import { MatDatepickerModule } from "@angular/material/datepicker";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { MatSelectModule } from "@angular/material/select";
-import { MatAutocompleteModule } from "@angular/material/autocomplete";
-import { GetCapabilitiesDialogComponent } from "../app/formly/types/update-get-capabilities/get-capabilities-dialog/get-capabilities-dialog.component";
-import { DialogTemplateModule } from "../app/shared/dialog-template/dialog-template.module";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { MatListModule } from "@angular/material/list";
-import { SharedPipesModule } from "../app/directives/shared-pipes.module";
-import { ThesaurusReportComponent } from "./ingrid/components/thesaurus-report.component";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatDialog } from "@angular/material/dialog";
 import { GetCapabilititesWizardPlugin } from "./ingrid/components/getCapWIzard/get-capabilitites-wizard.plugin";
-import { FormToolbarService } from "../app/+form/form-shared/toolbar/form-toolbar.service";
 import { IsoViewPlugin } from "./ingrid/components/iso-view/iso-view.plugin";
-import { IsoViewComponent } from "./ingrid/components/iso-view/iso-view.component";
-import { BreadcrumbModule } from "../app/+form/form-info/breadcrumb/breadcrumb.module";
+
 import { InvekosPlugin } from "./ingrid/behaviours/invekos.plugin";
 import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
+import { firstValueFrom } from "rxjs";
+import { PublicationCheckDialogComponent } from "./ingrid/dialogs/publication-check/publication-check-dialog.component";
+import { Metadata } from "../app/models/ige-document";
 
 export enum InGridDoctype {
   InGridSpecialisedTask = "InGridSpecialisedTask",
@@ -67,6 +50,7 @@ export enum InGridDoctype {
 
 @Component({
   template: "",
+  standalone: true,
 })
 export class InGridComponent implements OnInit {
   profileService = inject(ProfileService);
@@ -80,9 +64,12 @@ export class InGridComponent implements OnInit {
   informationSystem = inject(InformationSystemDoctype);
   person = inject(IngridPersonDoctype);
   organisation = inject(IngridOrganisationDoctype);
+  // will be created and registered automatically, but needs to be injected!
+  // noinspection JSUnusedGlobalSymbols
   getCapWizard = inject(GetCapabilititesWizardPlugin);
   isoView = inject(IsoViewPlugin);
   invekos = inject(InvekosPlugin);
+  dialog = inject(MatDialog);
 
   // docTypesEnum: InGridDoctype
 
@@ -107,43 +94,31 @@ export class InGridComponent implements OnInit {
     this.profileService.registerProfiles(this.getDocTypes());
 
     this.profileService.setDefaultDataDoctype(this.geoDataset);
+
+    this.profileService.additionalPublicationCheck =
+      this.getAdditionalPublicationCheck();
+  }
+
+  private getAdditionalPublicationCheck() {
+    return (data: any, metadata: Metadata, isAddress: boolean) => {
+      // ignore check for addresses and specialized-tasks (which does not contain format-field
+      const ignoredDocType =
+        metadata.docType === InGridDoctype.InGridSpecialisedTask;
+      const hasAtLeastOneFormat =
+        data.distribution?.format && data.distribution.format.length > 0;
+
+      if (isAddress || ignoredDocType || hasAtLeastOneFormat)
+        return Promise.resolve(true);
+
+      return firstValueFrom(
+        this.dialog.open(PublicationCheckDialogComponent).afterClosed(),
+      );
+    };
   }
 }
 
 @NgModule({
-  declarations: [
-    InGridComponent,
-    ConformityDialogComponent,
-    GetCapabilitiesDialogComponent,
-    ThesaurusReportComponent,
-  ],
-  providers: [GetCapabilititesWizardPlugin, IsoViewPlugin, FormToolbarService],
-  imports: [
-    MatIconModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    AsyncPipe,
-    NgForOf,
-    MatDatepickerModule,
-    MatCheckboxModule,
-    JsonPipe,
-    NgIf,
-    MatAutocompleteModule,
-    DialogTemplateModule,
-    MatProgressSpinnerModule,
-    MatListModule,
-    SharedPipesModule,
-    DatePipe,
-    MatSnackBarModule,
-    IsoViewComponent,
-    BreadcrumbModule,
-  ],
-  exports: [InGridComponent],
+  imports: [InGridComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

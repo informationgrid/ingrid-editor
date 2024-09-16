@@ -78,6 +78,8 @@ export abstract class IngridShared extends BaseDoctype {
       openDataCategories: undefined,
       spatialReferences: undefined,
       spatialSystems: undefined,
+      dataFormat: undefined,
+      spatialScope: undefined,
     },
     dynamicHide: {
       openDataCategories: "!formState.mainModel?.isOpenData",
@@ -91,6 +93,7 @@ export abstract class IngridShared extends BaseDoctype {
       spatialReferences: true,
       spatialSystems: false,
       extraInfoLangData: false,
+      useConstraints: false,
     },
     hide: {
       openData: false,
@@ -584,9 +587,7 @@ export abstract class IngridShared extends BaseDoctype {
                 options: this.getCodelistForSelect("6360", "spatialScope"),
                 codelistId: "6360",
                 expressions: {
-                  "props.required": (field: FormlyFieldConfig) =>
-                    this.isGeoDataset &&
-                    field.options.formState.mainModel?.isInspireIdentified,
+                  "props.required": this.options.dynamicRequired.spatialScope,
                   className: "field.props.required ? '' : 'optional'",
                   hide: "!formState.mainModel?.isInspireIdentified",
                 },
@@ -1124,7 +1125,7 @@ export abstract class IngridShared extends BaseDoctype {
                   key: "pass",
                   type: "ige-select",
                   label: "Grad",
-                  width: "100px",
+                  width: "130px",
                   props: {
                     required: true,
                     label: "Grad",
@@ -1269,8 +1270,8 @@ export abstract class IngridShared extends BaseDoctype {
           },
         }),
         this.addRepeat("useConstraints", "Nutzungsbedingungen", {
+          required: this.options.required.useConstraints,
           expressions: {
-            "props.required": () => this.isGeoDataset || this.isGeoService,
             "props.minLength": "field.props.required ? 1 : undefined",
             defaultValue: "field.props.required ? [{}] : null",
             className: "field.props.required ? '' : 'optional'",
@@ -1304,9 +1305,7 @@ export abstract class IngridShared extends BaseDoctype {
       this.addGroupSimple("distribution", [
         this.addRepeat("format", "Datenformat", {
           expressions: {
-            "props.required": (field: FormlyFieldConfig) =>
-              this.isGeoDataset &&
-              field.options.formState.mainModel?.isInspireIdentified,
+            "props.required": this.options.dynamicRequired.dataFormat,
             className: "field.props.required ? '' : 'optional'",
           },
           fields: [

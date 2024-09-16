@@ -27,17 +27,42 @@ import {
   ViewChild,
 } from "@angular/core";
 import { CdkTextareaAutosize } from "@angular/cdk/text-field";
-import { UntypedFormGroup } from "@angular/forms";
+import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
 import { IgeDocument } from "../../../models/ige-document";
 import { FormMenuService, FormularMenuItem } from "../../form-menu.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { FormStateService } from "../../form-state.service";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIcon } from "@angular/material/icon";
+import { MatFormField } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { MatIconButton } from "@angular/material/button";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { HeaderMoreComponent } from "../header-more/header-more.component";
 
 @Component({
   selector: "ige-header-title-row",
   templateUrl: "./header-title-row.component.html",
   styleUrls: ["./header-title-row.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    DocumentIconComponent,
+    MatTooltip,
+    MatIcon,
+    ReactiveFormsModule,
+    MatFormField,
+    MatInput,
+    CdkTextareaAutosize,
+    MatIconButton,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    HeaderMoreComponent,
+  ],
 })
 export class HeaderTitleRowComponent implements OnInit {
   @Input() set form(value: UntypedFormGroup) {

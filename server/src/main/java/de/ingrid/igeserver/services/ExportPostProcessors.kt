@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode
 
 interface ExportPostProcessors {
     enum class TransformationType {
-        ISO
+        ISO,
     }
 
     fun process(exportedDoc: Any?, jsonData: JsonNode): Any?

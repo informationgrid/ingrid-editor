@@ -29,7 +29,11 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
 
@@ -41,106 +45,105 @@ interface JobsApi {
 
     @GetMapping(
         value = ["/jobs"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
+        produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun getJobs(
-        principal: Principal
+        principal: Principal,
     ): ResponseEntity<Job>
 
     @GetMapping(
         value = ["/jobs/{id}/is-running"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
+        produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun isRunning(
         principal: Principal,
-        @Parameter(description = "The ID of the job.", required = true) @PathVariable("id") id: String
+        @Parameter(description = "The ID of the job.", required = true) @PathVariable("id") id: String,
     ): ResponseEntity<Boolean>
 
     @GetMapping(
         value = ["/jobs/{id}/info"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
+        produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun getInfo(
         principal: Principal,
-        @Parameter(description = "The ID of the job.", required = true) @PathVariable("id") id: String
+        @Parameter(description = "The ID of the job.", required = true) @PathVariable("id") id: String,
     ): ResponseEntity<JobInfo>
 
     @PostMapping(
         value = ["/jobs/url-check"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
+        produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun urlCheckTask(
         principal: Principal,
         @Parameter(description = "command for the job", required = true) @RequestParam(
             value = "command",
-            required = true
-        ) command: JobCommand
+            required = true,
+        ) command: JobCommand,
     ): ResponseEntity<Unit>
 
     @PostMapping(
         value = ["/jobs/import/analyze"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
+        produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun importAnalyzeTask(
         principal: Principal,
         @Parameter(
             description = "The dataset to be imported.",
-            required = true
+            required = true,
         ) @RequestBody file: @Valid MultipartFile,
         @Parameter(description = "command for the job", required = true) @RequestParam(
             value = "command",
-            required = true
-        ) command: JobCommand
+            required = true,
+        ) command: JobCommand,
     ): ResponseEntity<Unit>
 
     @PostMapping(
         value = ["/jobs/import"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
+        produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun importTask(
         principal: Principal,
         @Parameter(description = "command for the job", required = true) @RequestParam(
             value = "command",
-            required = true
+            required = true,
         ) command: JobCommand,
         @Parameter(required = true) @RequestBody(
-            required = true
-        ) options: ImportOptions
+            required = true,
+        ) options: ImportOptions,
     ): ResponseEntity<Unit>
 
     @PostMapping(
         value = ["/jobs/url-check/replace"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
+        produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun replaceUrl(
         principal: Principal,
         @Parameter(description = "command for the job", required = true) @RequestBody(
-            required = true
-        ) data: UrlReplaceData
+            required = true,
+        ) data: UrlReplaceData,
     ): ResponseEntity<Map<String, Any>>
 
     @PostMapping(
         value = ["/jobs/cleanup-uploads"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
+        produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun cleanupUploads(principal: Principal): ResponseEntity<Unit>
 
     @PostMapping(
         value = ["/jobs/remove-unreferenced-documents"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
+        produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun removeUnreferencedDocuments(principal: Principal): ResponseEntity<List<String>>
 
     @PostMapping(
         value = ["/jobs/update-external-coupled-resources"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
+        produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun updateExternalCoupledResources(principal: Principal): ResponseEntity<String>
 
     @PostMapping(
         value = ["/jobs/index"],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
+        produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun indexCatalog(principal: Principal, command: JobCommand): ResponseEntity<Unit>
 }
-

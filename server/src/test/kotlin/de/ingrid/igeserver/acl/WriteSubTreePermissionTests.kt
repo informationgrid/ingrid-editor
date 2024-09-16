@@ -41,7 +41,6 @@ class WriteSubTreePermissionTests : IntegrationTest() {
     private val subChildUuidNoParentRead = "17cafb6e-3356-4225-8040-a62b11a5a8eb"
     private val excludedUuid = "5d2ff598-45fd-4516-b843-0b1787bd8264"
 
-
     @Test
     fun readAllowedToRootDocumentInGroup() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", rootUuid)
@@ -123,5 +122,4 @@ class WriteSubTreePermissionTests : IntegrationTest() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", excludedUuid)
         docWrapperRepo.deleteById(doc.id!!)
     }
-
 }

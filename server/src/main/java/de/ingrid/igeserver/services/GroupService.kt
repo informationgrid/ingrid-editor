@@ -46,7 +46,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 import java.util.*
 
-
 @Service
 class GroupService(
     private val groupRepo: GroupRepository,
@@ -55,7 +54,7 @@ class GroupService(
     private val aclService: AclService,
     private val catalogService: CatalogService,
     private val igeAclPermissionEvaluator: IgeAclPermissionEvaluator,
-    private var keycloakService: UserManagementService
+    private var keycloakService: UserManagementService,
 ) {
 
     private val log = logger()
@@ -80,9 +79,7 @@ class GroupService(
     }
 
     fun getAll(catalogId: String): List<Group> {
-
         return groupRepo.findAllByCatalog_Identifier(catalogId, Sort.by(Sort.Direction.ASC, "name"))
-
     }
 
     fun exists(catalogId: String, id: Int): Boolean {
@@ -90,14 +87,11 @@ class GroupService(
     }
 
     fun get(catalogId: String, id: Int): Group? {
-
         return groupRepo.findAllByCatalog_IdentifierAndId(catalogId, id)
-
     }
 
     @Transactional
     fun update(catalogId: String, id: Int, group: Group, updateAcls: Boolean): Group {
-
         val oldGroup = get(catalogId, id)!!
         group.apply {
             this.id = oldGroup.id
@@ -113,7 +107,6 @@ class GroupService(
         }
 
         return groupRepo.save(group)
-
     }
 
     private fun removeAllPermissionsFromGroup(group: Group) {
@@ -140,7 +133,7 @@ class GroupService(
     fun getGroupsWithAccess(
         catalogId: String,
         datasetId: Int,
-        permission: Permission = BasePermission.READ
+        permission: Permission = BasePermission.READ,
     ): List<Group> {
         val allGroups = getAll(catalogId)
         val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, datasetId)
@@ -149,10 +142,9 @@ class GroupService(
             igeAclPermissionEvaluator.checkPermissionForSids(
                 this.getSidsForGroup(group),
                 objIdentity,
-                permission
+                permission,
             )
         }
-
     }
 
     fun hasAnyGroupAccess(
@@ -167,20 +159,18 @@ class GroupService(
             igeAclPermissionEvaluator.checkPermissionForSids(
                 this.getSidsForGroup(group),
                 objIdentity,
-                permission
+                permission,
             )
         }
-
     }
 
     fun getUsersWithAccess(
         principal: Principal,
         catalogId: String,
         datasetId: Int,
-        permission: Permission = BasePermission.READ
+        permission: Permission = BasePermission.READ,
     ): Set<User> =
         getGroupsWithAccess(catalogId, datasetId, permission).flatMap { getUsersOfGroup(it.id!!, principal) }.toSet()
-
 
     private fun getAllDocPermissions(group: Group): List<JsonNode> {
         val docs = group.permissions?.documents ?: emptyList()
@@ -212,7 +202,7 @@ class GroupService(
     private fun addACEs(
         acl: MutableAcl,
         docPermission: JsonNode,
-        sid: GrantedAuthoritySid
+        sid: GrantedAuthoritySid,
     ) {
         determinePermission(docPermission)
             .forEach {
@@ -226,7 +216,7 @@ class GroupService(
             "writeTreeExceptParent" -> listOf(
                 BasePermission.READ,
                 BasePermission.ADMINISTRATION,
-                CustomPermission.WRITE_ONLY_SUBTREE
+                CustomPermission.WRITE_ONLY_SUBTREE,
             )
 
             "readTree" -> listOf(BasePermission.READ)
@@ -235,9 +225,7 @@ class GroupService(
     }
 
     fun remove(catalogId: String, id: Int) {
-
         groupRepo.deleteById(id)
-
     }
 
     fun getUsersOfGroup(id: Int, principal: Principal): List<User> {
@@ -259,7 +247,6 @@ class GroupService(
     fun getUserIdsOfGroup(id: Int, principal: Principal, ignoredRoles: List<String>): List<String> =
         userRepo.findByGroups_Id(id).filterNot { ignoredRoles.contains(it.role?.name) }.map { it.userId }
 
-
     fun removeDocFromGroups(catalogId: String, docId: Int) {
         var wasUpdated = false
 
@@ -276,16 +263,15 @@ class GroupService(
 
             if (countDocsBefore > countDocsAfter) {
                 update(catalogId, group.id!!, group, false)
-                log.debug("Group ${group.id} must be updated after document '${docId}' was deleted")
+                log.debug("Group ${group.id} must be updated after document '$docId' was deleted")
                 wasUpdated = true
             }
         }
 
         if (!wasUpdated) {
-            log.debug("No group had to be updated after deleting document '${docId}'")
+            log.debug("No group had to be updated after deleting document '$docId'")
         }
     }
-
 
     fun getSidsForGroup(group: Group): List<Sid> {
         val sids = mutableListOf(GrantedAuthoritySid("GROUP_${group.id}"))
@@ -296,5 +282,4 @@ class GroupService(
         }
         return sids
     }
-
 }

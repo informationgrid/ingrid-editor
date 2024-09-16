@@ -19,14 +19,29 @@
  */
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { SessionService, Tab } from "../services/session.service";
-import { MatTabNav } from "@angular/material/tabs";
+import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { ActivatedRoute, Router } from "@angular/router";
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from "@angular/router";
 
 @UntilDestroy()
 @Component({
   templateUrl: "./overview.component.html",
   styleUrls: ["./overview.component.scss"],
+  standalone: true,
+  imports: [
+    MatTabNav,
+    MatTabLink,
+    RouterLinkActive,
+    RouterLink,
+    MatTabNavPanel,
+    RouterOutlet,
+  ],
 })
 export class OverviewComponent implements OnInit {
   @ViewChild("navigation") tabNav: MatTabNav;

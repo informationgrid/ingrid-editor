@@ -29,12 +29,15 @@ import { TreeQuery } from "../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
 import { filter, take } from "rxjs/operators";
 import { ConfigService } from "../../services/config/config.service";
+import { TreeComponent } from "./tree/tree.component";
 
 @UntilDestroy()
 @Component({
   selector: "ige-sidebar",
   templateUrl: "./sidebar.component.html",
   styleUrls: ["./sidebar.component.scss"],
+  standalone: true,
+  imports: [TreeComponent],
 })
 export class SidebarComponent implements OnInit {
   @Input() address = false;

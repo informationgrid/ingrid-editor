@@ -47,15 +47,18 @@ class RemoveUnreferencedDocsTaskTest : FunSpec({
         considerationDocs: String = "null",
         approvalDocs: String = "null",
         decisionDocs: String = "null",
-        negativeDocs: String = "null"
+        negativeDocs: String = "null",
     ) {
         clearAllMocks()
-        every { catalogRepo.findAllByType("uvp") } returns listOf(Catalog().apply {
-            identifier = "test-cat"
-        })
+        every { catalogRepo.findAllByType("uvp") } returns listOf(
+            Catalog().apply {
+                identifier = "test-cat"
+            },
+        )
         val input =
             """{"applicationDocs": $applicationDocs, "announcementDocs": $announcementDocs, "reportsRecommendationDocs": $reportsRecommendationDocs, 
-                "furtherDocs": $furtherDocs, "considerationDocs": $considerationDocs, "approvalDocs": $approvalDocs, "decisionDocs": $decisionDocs }""".trimMargin()
+                "furtherDocs": $furtherDocs, "considerationDocs": $considerationDocs, "approvalDocs": $approvalDocs, "decisionDocs": $decisionDocs }
+            """.trimMargin()
 
         val inputNegative = """{"uvpNegativeDecisionDocs": $negativeDocs}""".trimMargin()
 
@@ -105,7 +108,7 @@ class RemoveUnreferencedDocsTaskTest : FunSpec({
         init("[]", negativeDocs = """[{"downloadURL": { "asLink": false, "uri": "negative"}}]""")
         every { fileSystemStorage.list("test-cat", Scope.PUBLISHED) } returns listOf(
             fakeFile(fileSystemStorage, "abc"),
-            fakeFile(fileSystemStorage, "negative")
+            fakeFile(fileSystemStorage, "negative"),
         )
         task.start()
 
@@ -138,7 +141,7 @@ class RemoveUnreferencedDocsTaskTest : FunSpec({
 
     test("referenced document from extracted zip file should not be deleted") {
         init(
-            """[{"downloadURL": { "asLink": false, "uri": "test-upload/test-upload/obj (10).csv"}}]"""
+            """[{"downloadURL": { "asLink": false, "uri": "test-upload/test-upload/obj (10).csv"}}]""",
         )
         every { fileSystemStorage.list("test-cat", Scope.PUBLISHED) } returns listOf(
             fakeFile(fileSystemStorage, "obj (10).csv", "123/test-upload/test-upload"),

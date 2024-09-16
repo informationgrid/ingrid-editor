@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component
 class PostDefaultDocumentUnpublisher(
     var auditLogger: AuditLogger,
     @Lazy var documentService: DocumentService,
-    val indexTask: IndexingTask
+    val indexTask: IndexingTask,
 ) :
     Filter<PostUnpublishPayload> {
 
@@ -49,7 +49,6 @@ class PostDefaultDocumentUnpublisher(
     override val profiles = arrayOf<String>()
 
     override fun invoke(payload: PostUnpublishPayload, context: Context): PostUnpublishPayload {
-
         // remove from index
         try {
             this.indexTask.removeFromIndex(context.catalogId, payload.wrapper.uuid, payload.wrapper.category!!)
@@ -58,7 +57,7 @@ class PostDefaultDocumentUnpublisher(
             log.warn("Could not remove '${payload.wrapper.uuid}' from ES index: ${e.message}")
         }
 
-        //log in audit-log
+        // log in audit-log
         val docId = payload.document.uuid
         context.addMessage(Message(this, "Log document data '$docId' after unpublish"))
         auditLogger.log(
@@ -68,9 +67,8 @@ class PostDefaultDocumentUnpublisher(
             data = getRawJsonFromDocument(payload.document, true),
             logger = PostDataHistoryLogger.LOGGER_NAME,
             catalogIdentifier = payload.catalogIdentifier,
-            principal = context.principal
+            principal = context.principal,
         )
         return payload
     }
-
 }

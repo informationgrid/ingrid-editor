@@ -26,13 +26,21 @@ import {
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material/form-field";
 import { MatSelect, MatSelectChange } from "@angular/material/select";
-import { UntypedFormControl } from "@angular/forms";
+import { ReactiveFormsModule, UntypedFormControl } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { MatPseudoCheckboxState } from "@angular/material/core";
+import {
+  MatOption,
+  MatPseudoCheckbox,
+  MatPseudoCheckboxState,
+} from "@angular/material/core";
 import { debounceTime, filter, map, take, tap } from "rxjs/operators";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
-import { FieldTypeConfig } from "@ngx-formly/core";
+import { FieldTypeConfig, FormlyModule } from "@ngx-formly/core";
 import { BackendOption } from "../../../store/codelist/codelist.model";
+import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
+import { NgTemplateOutlet } from "@angular/common";
+import { MatDivider } from "@angular/material/divider";
+import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
 
 @UntilDestroy()
 @Component({
@@ -40,6 +48,18 @@ import { BackendOption } from "../../../store/codelist/codelist.model";
   templateUrl: "./select-type.component.html",
   styleUrls: ["./select-type.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    MatOption,
+    MatPseudoCheckbox,
+    MatSelect,
+    ReactiveFormsModule,
+    FormlyModule,
+    NgxMatSelectSearchModule,
+    NgTemplateOutlet,
+    MatDivider,
+    FieldToAiraLabelledbyPipe,
+  ],
 })
 export class SelectTypeComponent
   extends FieldType<FieldTypeConfig>

@@ -24,5 +24,5 @@ data class UvpReport(
     val procedureCount: Number,
     val negativePreliminaryAssessments: Number,
     val positivePreliminaryAssessments: Number,
-    val averageProcedureDuration: Number
+    val averageProcedureDuration: Number,
 )

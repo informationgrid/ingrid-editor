@@ -19,13 +19,20 @@
  */
 package de.ingrid.igeserver.api
 
-import jakarta.servlet.*
+import jakarta.servlet.Filter
+import jakarta.servlet.FilterChain
+import jakarta.servlet.FilterConfig
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletResponse
 
 class ApiOriginFilter : Filter {
 
-    override fun doFilter(request: ServletRequest, response: ServletResponse,
-                          chain: FilterChain) {
+    override fun doFilter(
+        request: ServletRequest,
+        response: ServletResponse,
+        chain: FilterChain,
+    ) {
         val res = response as HttpServletResponse
         res.addHeader("Access-Control-Allow-Origin", "*")
         res.addHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")

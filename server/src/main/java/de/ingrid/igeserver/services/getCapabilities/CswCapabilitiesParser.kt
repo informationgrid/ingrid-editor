@@ -28,7 +28,7 @@ import org.w3c.dom.Document
 class CswCapabilitiesParser(
     codelistHandler: CodelistHandler,
     private val researchService: ResearchService,
-    catalogId: String
+    catalogId: String,
 ) :
     GeneralCapabilitiesParser(XPathUtils(Csw202NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
@@ -62,60 +62,61 @@ class CswCapabilitiesParser(
             doc,
             arrayOf(
                 XPATH_EXP_CSW_OP_GET_CAPABILITIES_GET_HREF,
-                XPATH_EXP_CSW_OP_GET_CAPABILITIES_POST_HREF
+                XPATH_EXP_CSW_OP_GET_CAPABILITIES_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5105", "GetCapabilities", "de"),
-                "GetCapabilities"
+                "GetCapabilities",
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
 
             operations.add(getCapabilitiesOp)
         }
 
-
         // Operation - DescribeRecord
         val describeRecordOp = mapToOperationBean(
             doc,
             arrayOf(
                 XPATH_EXP_CSW_OP_DESCRIBE_RECORD_GET_HREF,
-                XPATH_EXP_CSW_OP_DESCRIBE_RECORD_POST_HREF
+                XPATH_EXP_CSW_OP_DESCRIBE_RECORD_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (describeRecordOp.addressList!!.isNotEmpty()) {
             describeRecordOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5105", "DescribeRecord", "de"),
-                "DescribeRecord"
+                "DescribeRecord",
             )
             describeRecordOp.methodCall = "DescribeRecord"
 
             operations.add(describeRecordOp)
         }
 
-
         // Operation - GetDomain
         val getDomainOp = mapToOperationBean(
             doc,
             arrayOf(
                 XPATH_EXP_CSW_OP_GET_DOMAIN_GET_HREF,
-                XPATH_EXP_CSW_OP_GET_DOMAIN_POST_HREF
+                XPATH_EXP_CSW_OP_GET_DOMAIN_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (getDomainOp.addressList!!.isNotEmpty()) {
             getDomainOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5105", "GetDomain", "de"),
-                "GetDomain"
+                "GetDomain",
             )
             getDomainOp.methodCall = "GetDomain"
 
@@ -127,16 +128,17 @@ class CswCapabilitiesParser(
             doc,
             arrayOf(
                 XPATH_EXP_CSW_OP_GET_RECORDS_GET_HREF,
-                XPATH_EXP_CSW_OP_GET_RECORDS_POST_HREF
+                XPATH_EXP_CSW_OP_GET_RECORDS_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (getRecordsOp.addressList!!.isNotEmpty()) {
             getRecordsOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5105", "GetRecords", "de"),
-                "GetRecords"
+                "GetRecords",
             )
             getRecordsOp.methodCall = "GetRecords"
 
@@ -148,16 +150,17 @@ class CswCapabilitiesParser(
             doc,
             arrayOf(
                 XPATH_EXP_CSW_OP_GET_RECORD_BY_ID_GET_HREF,
-                XPATH_EXP_CSW_OP_GET_RECORD_BY_ID_POST_HREF
+                XPATH_EXP_CSW_OP_GET_RECORD_BY_ID_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (getRecordByIdOp.addressList!!.isNotEmpty()) {
             getRecordByIdOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5105", "GetRecordById", "de"),
-                "GetRecordById"
+                "GetRecordById",
             )
             getRecordByIdOp.methodCall = "GetRecordById"
 
@@ -169,16 +172,17 @@ class CswCapabilitiesParser(
             doc,
             arrayOf(
                 XPATH_EXP_CSW_OP_HARVEST_GET_HREF,
-                XPATH_EXP_CSW_OP_HARVEST_POST_HREF
+                XPATH_EXP_CSW_OP_HARVEST_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (harvestOp.addressList!!.isNotEmpty()) {
             harvestOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5105", "Harvest", "de"),
-                "Harvest"
+                "Harvest",
             )
             harvestOp.methodCall = "Harvest"
 
@@ -197,12 +201,12 @@ class CswCapabilitiesParser(
             address,
             xPathUtils.getString(
                 doc,
-                "$XPATH_EXT_CSW_SERVICECONTACT/ows:IndividualName"
-            )
+                "$XPATH_EXT_CSW_SERVICECONTACT/ows:IndividualName",
+            ),
         )
         address.email = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:ElectronicMailAddress"
+            "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:ElectronicMailAddress",
         )
 
         // try to find address in database and set the uuid if found
@@ -210,31 +214,34 @@ class CswCapabilitiesParser(
 
         address.street = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:DeliveryPoint"
+            "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:DeliveryPoint",
         )
         address.city = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:City"
+            "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:City",
         )
         address.postcode = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:PostalCode"
+            "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:PostalCode",
         )
         address.country = getKeyValue(
-            "6200", xPathUtils.getString(
+            "6200",
+            xPathUtils.getString(
                 doc,
-                "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:Country"
-            )
+                "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:Country",
+            ),
         )
         address.state = getKeyValue(
-            "6250", xPathUtils.getString(
+            "6250",
+            xPathUtils.getString(
                 doc,
-                "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:AdministrativeArea"
-            ), "name"
+                "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:AdministrativeArea",
+            ),
+            "name",
         )
         address.phone = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Phone/ows:Voice"
+            "$XPATH_EXT_CSW_SERVICECONTACT/ows:ContactInfo/ows:Phone/ows:Voice",
         )
         return address
     }

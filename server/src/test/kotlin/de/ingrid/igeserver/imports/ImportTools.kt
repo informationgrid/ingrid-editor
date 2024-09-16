@@ -37,7 +37,6 @@ fun changeUuidOfOrganisationTo(json: JsonNode, name: String, uuid: String) {
         .filter { it.getString("ref") == oldUuid }
         .forEach { (it as ObjectNode).put("ref", uuid) }
 
-
     // Next, update parentAsUuid fields if they match any oldUuid
     json.forEach { item ->
         val parentAsUuid = item.getString("parentAsUuid")

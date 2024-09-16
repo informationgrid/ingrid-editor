@@ -30,7 +30,7 @@ import { ProfileService } from "../../../services/profile.service";
 import { PermissionLegendsComponent } from "../permission-legends/permission-legends.component";
 import { MatTableModule } from "@angular/material/table";
 import { MatIconModule } from "@angular/material/icon";
-import { BreadcrumbModule } from "../../../+form/form-info/breadcrumb/breadcrumb.module";
+
 import { MatMenuModule } from "@angular/material/menu";
 import { MatButtonModule } from "@angular/material/button";
 import { MatTooltipModule } from "@angular/material/tooltip";
@@ -38,6 +38,7 @@ import { TranslocoModule } from "@ngneat/transloco";
 
 import { firstValueFrom } from "rxjs";
 import { map } from "rxjs/operators";
+import { BreadcrumbComponent } from "../../../+form/form-info/breadcrumb/breadcrumb.component";
 
 @Component({
   selector: "permission-table",
@@ -55,11 +56,11 @@ import { map } from "rxjs/operators";
     PermissionLegendsComponent,
     MatTableModule,
     MatIconModule,
-    BreadcrumbModule,
     MatMenuModule,
     MatButtonModule,
     MatTooltipModule,
     TranslocoModule,
+    BreadcrumbComponent,
   ],
   standalone: true,
 })

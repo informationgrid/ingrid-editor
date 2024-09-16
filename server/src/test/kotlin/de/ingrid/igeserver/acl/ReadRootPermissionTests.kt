@@ -84,5 +84,4 @@ class ReadRootPermissionTests : IntegrationTest() {
         val doc = docWrapperRepo.findByCatalog_IdentifierAndUuid("test_catalog", childUuid)
         docWrapperRepo.deleteById(doc.id!!)
     }
-
 }

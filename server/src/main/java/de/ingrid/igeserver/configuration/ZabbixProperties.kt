@@ -29,5 +29,5 @@ data class ZabbixProperties(
     val apiKey: String,
     val catalogs: List<String>?,
     val checkDelay: String,
-    val checkCount: Int
+    val checkCount: Int,
 )

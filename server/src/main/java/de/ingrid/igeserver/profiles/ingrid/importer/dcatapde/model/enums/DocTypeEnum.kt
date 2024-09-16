@@ -61,19 +61,20 @@ enum class DocTypeEnum(val value: String) {
     PROCEDURE_URL("procedureURL"),
     XPLAN_ARCHIVE("xplanArchive"),
     XPLAN_GML("xplanGML"),
-    UNKNOWN("unknown");
+    UNKNOWN("unknown"),
+    ;
 
-    class Converter : EnumConverter<DocTypeEnum>(
-        DocTypeEnum::class.java
-    )
+    class Converter :
+        EnumConverter<DocTypeEnum>(
+            DocTypeEnum::class.java,
+        )
 
     @JsonValue
-    override fun toString(): String {
-        return value.toString()
-    }
+    override fun toString(): String = value.toString()
 
     companion object {
-        private const val uriPrefix = "https://specs.diplanung.de/resource/docType#"
+        private const val URI_PREFIX = "https://specs.diplanung.de/resource/docType#"
+
         @JsonCreator
         fun fromValue(text: String?): DocTypeEnum? {
             if (text == null) {
@@ -86,13 +87,12 @@ enum class DocTypeEnum(val value: String) {
             }
             val enumValues = java.lang.String.join(
                 ", ",
-                Stream.of(*entries.toTypedArray()).map { anEnum: DocTypeEnum -> uriPrefix + anEnum.toString() }
-                    .toList())
+                Stream.of(*entries.toTypedArray()).map { anEnum: DocTypeEnum -> URI_PREFIX + anEnum.toString() }
+                    .toList(),
+            )
             throw IllegalArgumentException("DocTypeEnum value has to be one of [$enumValues], was $text")
         }
 
-        private fun stripPrefix(uri: String): String {
-            return uri.replaceFirst(uriPrefix.toRegex(), "")
-        }
+        private fun stripPrefix(uri: String): String = uri.replaceFirst(URI_PREFIX.toRegex(), "")
     }
 }

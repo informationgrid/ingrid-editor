@@ -24,11 +24,16 @@ import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { map, tap } from "rxjs/operators";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { toSignal } from "@angular/core/rxjs-interop";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { FilterSelectComponent } from "../../shared/filter-select/filter-select.component";
+import { MatButton } from "@angular/material/button";
 
 @Component({
   selector: "ige-catalog-assignment",
   templateUrl: "./catalog-assignment.component.html",
   styleUrls: ["./catalog-assignment.component.scss"],
+  standalone: true,
+  imports: [PageTemplateComponent, FilterSelectComponent, MatButton],
 })
 export class CatalogAssignmentComponent implements OnInit {
   selectedCatalogId: string;

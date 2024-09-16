@@ -36,17 +36,16 @@ class WsvProfile(
     @Lazy documentService: DocumentService,
     query: QueryRepository,
     dateService: DateService,
-    openDataCategory: OpenDataCategory
+    openDataCategory: OpenDataCategory,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
-        const val id = "ingrid-wsv"
+        const val ID = "ingrid-wsv"
     }
 
-    override val identifier = id
+    override val identifier = ID
     override val title = "InGrid Katalog (WSV)"
     override val parentProfile = "ingrid"
 
     override val indexExportFormatID = "indexInGridIDFWsv"
-
 }

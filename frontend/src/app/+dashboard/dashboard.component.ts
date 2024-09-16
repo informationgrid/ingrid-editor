@@ -32,10 +32,27 @@ import {
 import { map } from "rxjs/operators";
 import { MessageService } from "../services/messages/message.service";
 import { Message } from "../services/messages/message";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { QuickSearchComponent } from "./quick-search/quick-search.component";
+import { ActionButtonComponent } from "../shared/action-button/action-button.component";
+import { CardBoxComponent } from "../shared/card-box/card-box.component";
+import { ChartComponent } from "./chart/chart.component";
+import { DocumentListItemComponent } from "../shared/document-list-item/document-list-item.component";
+import { AsyncPipe } from "@angular/common";
 
 @Component({
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    QuickSearchComponent,
+    ActionButtonComponent,
+    CardBoxComponent,
+    ChartComponent,
+    DocumentListItemComponent,
+    AsyncPipe,
+  ],
 })
 export class DashboardComponent implements OnInit {
   canCreateAddress: boolean;

@@ -18,8 +18,6 @@
  * limitations under the Licence.
  */
 import { DestinationSelectionComponent } from "./destination-selection.component";
-import { PageTemplateModule } from "../../../../shared/page-template/page-template.module";
-import { SharedModule } from "../../../../shared/shared.module";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatDialogModule } from "@angular/material/dialog";
 import {
@@ -46,13 +44,7 @@ describe("DestinationSelectionComponent", () => {
 
   const createHost = createComponentFactory({
     component: DestinationSelectionComponent,
-    imports: [
-      PageTemplateModule,
-      SharedModule,
-      MatDialogModule,
-      MatSnackBarModule,
-      getTranslocoModule(),
-    ],
+    imports: [MatDialogModule, MatSnackBarModule, getTranslocoModule()],
     componentMocks: [DynamicDatabase, ConfigService],
     providers: [
       provideHttpClient(withInterceptorsFromDi()),

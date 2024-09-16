@@ -47,20 +47,19 @@ class HmdkProfile(
     openDataCategory: OpenDataCategory,
     isoImport: ISOImport,
     isoImportHMDK: ISOImportHMDK,
-    @JsonIgnore val behaviourService: BehaviourService
+    @JsonIgnore val behaviourService: BehaviourService,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
-        const val id = "ingrid-hmdk"
+        const val ID = "ingrid-hmdk"
     }
 
-    override val identifier = id
+    override val identifier = ID
     override val title = "InGrid Katalog (HMDK)"
     override val parentProfile = "ingrid"
 
-
     init {
-        isoImport.profileMapper[id] = isoImportHMDK
+        isoImport.profileMapper[ID] = isoImportHMDK
     }
     override val indexExportFormatID = "indexInGridIDFHmdk"
 
@@ -89,73 +88,69 @@ class HmdkProfile(
         }
 
         super.initCatalogCodelists(catalogId, codelistId)
-
     }
 
-    private fun createCodelistInformationsgegenstand(catalogRef: Catalog): Codelist {
-        return Codelist().apply {
-            identifier = "informationsgegenstand"
-            catalog = catalogRef
-            name = "Informationsgegenstand"
-            description = ""
-            data = jacksonObjectMapper().createArrayNode().apply {
-                add(CodelistHandler.toCodelistEntry("hmbtg_01_senatsbeschluss", "Senatsbeschlüsse"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_02_mitteilung_buergerschaft", "Mitteilungen des Senats"))
-                add(
-                    CodelistHandler.toCodelistEntry(
-                        "hmbtg_03_beschluesse_oeffentliche_sitzung",
-                        "Öffentliche Beschlüsse"
-                    )
-                )
-                add(
-                    CodelistHandler.toCodelistEntry(
-                        "hmbtg_04_vertraege_daseinsvorsorge",
-                        "Verträge der Daseinsvorsorge"
-                    )
-                )
-                add(CodelistHandler.toCodelistEntry("hmbtg_05_verwaltungsplaene", "Verwaltungspläne"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_06_verwaltungsvorschriften", "Verwaltungsvorschriften"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_07_statistiken", "Statistiken und Tätigkeitsberichte"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_08_gutachten", "Gutachten und Studien"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_09_geodaten", "Geodaten"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_10_messungen", "Umweltdaten"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_11_baumkataster", "Baumkataster"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_12_oeffentliche_plaene", "Öffentliche Pläne"))
-                add(CodelistHandler.toCodelistEntry("hmbtg_13_baugenehmigungen", "Baugenehmigungen"))
-                add(
-                    CodelistHandler.toCodelistEntry(
-                        "hmbtg_14_zuwendungen_subventionen",
-                        "Subventionen und Zuwendungen"
-                    )
-                )
-                add(CodelistHandler.toCodelistEntry("hmbtg_15_unternehmensdaten", "Unternehmensdaten"))
-                add(
-                    CodelistHandler.toCodelistEntry(
-                        "hmbtg_16_vertraege_oeffentl_interesse",
-                        "Verträge von öffentl. Interesse"
-                    )
-                )
-                add(CodelistHandler.toCodelistEntry("hmbtg_17_dienstanweisungen", "Dienstanweisungen"))
-                add(
-                    CodelistHandler.toCodelistEntry(
-                        "hmbtg_18_vergleichbar",
-                        "vergleichbare Informationen von öffentl. Interesse"
-                    )
-                )
-                add(
-                    CodelistHandler.toCodelistEntry(
-                        "hmbtg_19_andere_veroeffentlichungspflicht",
-                        "Veröffentlichungspflicht außerhalb HmbTG"
-                    )
-                )
-                add(
-                    CodelistHandler.toCodelistEntry(
-                        "hmbtg_20_ohne_veroeffentlichungspflicht",
-                        "Ohne gesetzliche Verpflichtung"
-                    )
-                )
-            }
-
+    private fun createCodelistInformationsgegenstand(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "informationsgegenstand"
+        catalog = catalogRef
+        name = "Informationsgegenstand"
+        description = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("hmbtg_01_senatsbeschluss", "Senatsbeschlüsse"))
+            add(CodelistHandler.toCodelistEntry("hmbtg_02_mitteilung_buergerschaft", "Mitteilungen des Senats"))
+            add(
+                CodelistHandler.toCodelistEntry(
+                    "hmbtg_03_beschluesse_oeffentliche_sitzung",
+                    "Öffentliche Beschlüsse",
+                ),
+            )
+            add(
+                CodelistHandler.toCodelistEntry(
+                    "hmbtg_04_vertraege_daseinsvorsorge",
+                    "Verträge der Daseinsvorsorge",
+                ),
+            )
+            add(CodelistHandler.toCodelistEntry("hmbtg_05_verwaltungsplaene", "Verwaltungspläne"))
+            add(CodelistHandler.toCodelistEntry("hmbtg_06_verwaltungsvorschriften", "Verwaltungsvorschriften"))
+            add(CodelistHandler.toCodelistEntry("hmbtg_07_statistiken", "Statistiken und Tätigkeitsberichte"))
+            add(CodelistHandler.toCodelistEntry("hmbtg_08_gutachten", "Gutachten und Studien"))
+            add(CodelistHandler.toCodelistEntry("hmbtg_09_geodaten", "Geodaten"))
+            add(CodelistHandler.toCodelistEntry("hmbtg_10_messungen", "Umweltdaten"))
+            add(CodelistHandler.toCodelistEntry("hmbtg_11_baumkataster", "Baumkataster"))
+            add(CodelistHandler.toCodelistEntry("hmbtg_12_oeffentliche_plaene", "Öffentliche Pläne"))
+            add(CodelistHandler.toCodelistEntry("hmbtg_13_baugenehmigungen", "Baugenehmigungen"))
+            add(
+                CodelistHandler.toCodelistEntry(
+                    "hmbtg_14_zuwendungen_subventionen",
+                    "Subventionen und Zuwendungen",
+                ),
+            )
+            add(CodelistHandler.toCodelistEntry("hmbtg_15_unternehmensdaten", "Unternehmensdaten"))
+            add(
+                CodelistHandler.toCodelistEntry(
+                    "hmbtg_16_vertraege_oeffentl_interesse",
+                    "Verträge von öffentl. Interesse",
+                ),
+            )
+            add(CodelistHandler.toCodelistEntry("hmbtg_17_dienstanweisungen", "Dienstanweisungen"))
+            add(
+                CodelistHandler.toCodelistEntry(
+                    "hmbtg_18_vergleichbar",
+                    "vergleichbare Informationen von öffentl. Interesse",
+                ),
+            )
+            add(
+                CodelistHandler.toCodelistEntry(
+                    "hmbtg_19_andere_veroeffentlichungspflicht",
+                    "Veröffentlichungspflicht außerhalb HmbTG",
+                ),
+            )
+            add(
+                CodelistHandler.toCodelistEntry(
+                    "hmbtg_20_ohne_veroeffentlichungspflicht",
+                    "Ohne gesetzliche Verpflichtung",
+                ),
+            )
         }
     }
 }

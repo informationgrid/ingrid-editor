@@ -62,10 +62,12 @@ import java.time.ZoneOffset
  */
 @Component
 @Plugin(name = "PostgreSQLAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
-class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?,
-                              @Suppress("SpringJavaInjectionPointsAutowiringInspection") filter: Filter?,
-                              @Suppress("SpringJavaInjectionPointsAutowiringInspection") var table: String?) :
-        AbstractAppender(name, filter, null, false, null) {
+class PostgreSQLLog4JAppender(
+    @Value("PostgreSQL") name: String?,
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection") filter: Filter?,
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection") var table: String?,
+) :
+    AbstractAppender(name, filter, null, false, null) {
 
     companion object {
         // type column name used ot define the EmbeddedData type in the database
@@ -121,9 +123,10 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?,
         @PluginFactory
         @JvmStatic
         fun createAppender(
-                @PluginAttribute("name") name: String?,
-                @PluginAttribute("table") table: String?,
-                @PluginElement("Filter") filter: Filter?): PostgreSQLLog4JAppender {
+            @PluginAttribute("name") name: String?,
+            @PluginAttribute("table") table: String?,
+            @PluginElement("Filter") filter: Filter?,
+        ): PostgreSQLLog4JAppender {
             if (table.isNullOrEmpty()) {
                 error("Configuration attribute 'table' must be a valid table name")
             }
@@ -164,8 +167,7 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?,
                     }
                 }
             }
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             throw PersistenceException.withReason("Failed to initialize PostgreSQLLog4JAppender.", e)
         }
     }
@@ -188,8 +190,7 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?,
             if (queue.size >= MAX_QUEUE_LENGTH) {
                 saveQueue()
             }
-        }
-        else {
+        } else {
             log.warn("PostgreSQLLog4JAppender is not initialized properly. Ignoring log requests.")
         }
     }
@@ -198,8 +199,7 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?,
         // create message node
         val msg: JsonNode = try {
             mapper.readTree(event.message.formattedMessage)
-        }
-        catch (ex: Exception) {
+        } catch (ex: Exception) {
             // message is no valid json
             mapper.createObjectNode().apply {
                 put("text", event.message.formattedMessage)
@@ -239,8 +239,7 @@ class PostgreSQLLog4JAppender(@Value("PostgreSQL") name: String?,
                 jdbcTemplate.batchUpdate(INSERT_RECORD_STMT.replace(TABLE_NAME_VAR, it), parameters)
             }
             log.debug("Inserted ${count?.sum()} records in to log table '$table'.")
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             error("Unexpected exception while saving log events", null, e)
         }
         queue.clear()

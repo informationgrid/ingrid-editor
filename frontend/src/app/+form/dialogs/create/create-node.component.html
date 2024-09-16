@@ -25,9 +25,9 @@
         <mat-tab-group [selectedIndex]="selectedPage" dynamicHeight>
             <mat-tab>
                 <div class="first-tab-wrapper flex-col" [formGroup]="formGroup">
-                    @if (isFolder || !forAddress) {
+                    @if (isFolder() || !forAddress) {
                         <ige-document-template
-                            [isFolder]="isFolder"
+                            [isFolder]="isFolder()"
                             [form]="formGroup"
                             (create)="handleCreate()"
                         >
@@ -38,7 +38,6 @@
                     } @else {
                         <ige-address-template
                             [form]="formGroup"
-                            [isPerson]="isPerson"
                             [parent]="parent"
                             (create)="handleCreate()"
                         >
@@ -108,7 +107,7 @@
                 data-cy="create-action"
                 [disabled]="
                     formGroup.invalid ||
-                    (!isAdmin && !pathWithWritePermission) ||
+                    (!isAdmin && !pathWithWritePermission()) ||
                     alreadySubmitted
                 "
                 (click)="handleCreate()"
@@ -143,7 +142,7 @@
             [disableRoot]="!isAdmin"
             (select)="quickBreadcrumbChange($event)"
         ></ige-breadcrumb>
-        @if (!pathWithWritePermission) {
+        @if (!pathWithWritePermission()) {
             <div class="error-box">
                 {{ t("missingWritePermission") }}
             </div>

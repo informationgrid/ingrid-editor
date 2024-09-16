@@ -28,8 +28,7 @@ describe("CardBoxComponent", () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CardBoxComponent],
-      imports: [MatCardModule],
+      imports: [MatCardModule, CardBoxComponent],
     }).compileComponents();
   }));
 

@@ -19,23 +19,74 @@
  */
 import { Component, OnInit } from "@angular/core";
 import {
+  ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormControl,
   UntypedFormGroup,
   Validators,
 } from "@angular/forms";
-import { MatDialogRef } from "@angular/material/dialog";
+import {
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from "@angular/material/dialog";
 import { MessageService } from "../../../services/messages/message.service";
-import { MatSlideToggleChange } from "@angular/material/slide-toggle";
+import {
+  MatSlideToggle,
+  MatSlideToggleChange,
+} from "@angular/material/slide-toggle";
 import {
   ConfigService,
   UserInfo,
 } from "../../../services/config/config.service";
+import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import {
+  MatFormField,
+  MatHint,
+  MatLabel,
+  MatSuffix,
+} from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import {
+  MatDatepicker,
+  MatDatepickerInput,
+  MatDatepickerToggle,
+} from "@angular/material/datepicker";
+import { MatCardSubtitle } from "@angular/material/card";
 
 @Component({
   selector: "ige-new-message-dialog",
   templateUrl: "./new-message-dialog.component.html",
   styleUrls: ["./new-message-dialog.component.scss"],
+  standalone: true,
+  imports: [
+    CdkDrag,
+    CdkDragHandle,
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatSuffix,
+    MatDatepicker,
+    MatSlideToggle,
+    MatHint,
+    MatCardSubtitle,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class NewMessageDialogComponent implements OnInit {
   form = new UntypedFormGroup({

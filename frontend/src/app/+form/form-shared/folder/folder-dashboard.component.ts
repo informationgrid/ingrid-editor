@@ -27,12 +27,25 @@ import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query
 import { ConfigService } from "../../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DocEventsService } from "../../../services/event/doc-events.service";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { ActionButtonComponent } from "../../../shared/action-button/action-button.component";
+import { CardBoxComponent } from "../../../shared/card-box/card-box.component";
+import { DocumentListItemComponent } from "../../../shared/document-list-item/document-list-item.component";
+import { MatIcon } from "@angular/material/icon";
 
 @UntilDestroy()
 @Component({
   selector: "ige-folder-dashboard",
   templateUrl: "./folder-dashboard.component.html",
   styleUrls: ["./folder-dashboard.component.scss"],
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    ActionButtonComponent,
+    CardBoxComponent,
+    DocumentListItemComponent,
+    MatIcon,
+  ],
 })
 export class FolderDashboardComponent {
   query: TreeQuery | AddressTreeQuery;

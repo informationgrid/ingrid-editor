@@ -20,16 +20,35 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FlowDirective, Transfer } from "@flowjs/ngx-flow";
 import { TransfersWithErrorInfo } from "../TransferWithErrors";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { MatIcon } from "@angular/material/icon";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatProgressBar } from "@angular/material/progress-bar";
+import { DecimalPipe } from "@angular/common";
+import { SizePipe } from "../../../directives/size.pipe";
 
 @Component({
   selector: "ige-upload-item",
   templateUrl: "./upload-item.component.html",
   styleUrls: ["./upload-item.component.scss"],
+  standalone: true,
+  imports: [
+    MatProgressSpinner,
+    MatIcon,
+    MatIconButton,
+    MatProgressBar,
+    MatButton,
+    DecimalPipe,
+    SizePipe,
+  ],
 })
 export class UploadItemComponent implements OnInit {
   @Input() file: TransfersWithErrorInfo;
   @Input() flow: FlowDirective;
   @Input() showOnlyProgress = false;
+  @Input() enableFileUploadOverride: boolean;
+  @Input() enableFileUploadReuse: boolean;
+  @Input() enableFileUploadRename: boolean;
 
   @Output() remove = new EventEmitter<string>();
   @Output() useExisting = new EventEmitter<Transfer>();

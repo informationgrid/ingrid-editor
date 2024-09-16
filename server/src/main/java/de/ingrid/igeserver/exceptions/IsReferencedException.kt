@@ -27,7 +27,7 @@ class IsReferencedException(
     errorCode: String,
     errorText: String,
     data: Map<String, Any?>? = null,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : ServerException(statusCode, errorCode, errorText, data, cause) {
 
     companion object {
@@ -42,7 +42,7 @@ class IsReferencedException(
         fun byUuids(uuids: List<String>): IsReferencedException {
             return IsReferencedException(STATUS_CODE, ERROR_CODE, ERROR_TEXT, mapOf("uuids" to uuids))
         }
-        
+
         fun addressByPublishedDatasets(uuids: List<String>): IsReferencedException {
             return IsReferencedException(STATUS_CODE, ERROR_CODE_ADDRESS_UNPUBLISH, ERROR_TEXT_ADDRESS, mapOf("uuids" to uuids))
         }

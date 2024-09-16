@@ -34,11 +34,43 @@ import { NewCatalogDialogComponent } from "./new-catalog/new-catalog-dialog.comp
 import { catchError, filter, finalize, map, tap } from "rxjs/operators";
 import { combineLatest, Observable } from "rxjs";
 import { SessionService } from "../../services/session.service";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { AddButtonComponent } from "../../shared/add-button/add-button.component";
+import {
+  AsyncPipe,
+  DatePipe,
+  DecimalPipe,
+  NgTemplateOutlet,
+} from "@angular/common";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { MatCard, MatCardContent } from "@angular/material/card";
+import { MatIcon } from "@angular/material/icon";
+import { MatIconButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 
 @Component({
   selector: "ige-catalog-management",
   templateUrl: "./catalog-management.component.html",
   styleUrls: ["./catalog-management.component.scss"],
+  standalone: true,
+  imports: [
+    PageTemplateComponent,
+    AddButtonComponent,
+    NgTemplateOutlet,
+    MatProgressSpinner,
+    MatCard,
+    MatCardContent,
+    MatIcon,
+    MatIconButton,
+    MatTooltip,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    AsyncPipe,
+    DecimalPipe,
+    DatePipe,
+  ],
 })
 export class CatalogManagementComponent implements OnInit {
   // TODO: there is a race condition .... catalogs are often not loaded in time before

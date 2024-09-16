@@ -39,6 +39,7 @@ import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -93,28 +94,28 @@ class Geodataservice : ShouldSpec() {
                 1638,
                 "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
                 "/export/ingrid/address.organisation.sample.json",
-                type = "InGridOrganisationDoc"
+                type = "InGridOrganisationDoc",
             ),
             MockDocument(
                 1634,
                 "14a37ded-4ca5-4677-bfed-3607bed3071d",
                 "/export/ingrid/address.person.sample.json",
-                1638
+                1638,
             ),
             MockDocument(
                 1652,
                 "fc521f66-0f47-45fb-ae42-b14fc669942e",
                 "/export/ingrid/address.person2.sample.json",
-                1638
-            )
+                1638,
+            ),
         )
 
         val datasets = listOf(
             MockDocument(
                 uuid = "a910fde0-3910-413e-9c14-4fa86f3d12c2",
-                template = "/export/ingrid/geo-dataset.maximal.sample.json"
+                template = "/export/ingrid/geo-dataset.maximal.sample.json",
             ),
-            MockDocument(uuid = "93CD0919-5A2F-4286-B731-645C34614AA1")
+            MockDocument(uuid = "93CD0919-5A2F-4286-B731-645C34614AA1"),
         )
 
         initDocumentMocks(addresses + datasets, documentService)
@@ -123,19 +124,20 @@ class Geodataservice : ShouldSpec() {
     init {
 
         /*
-        * export with only required inputs.
-        * address has no organization assigned.
-        **/
+         * export with only required inputs.
+         * address has no organization assigned.
+         **/
         should("minimalExport") {
             val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.minimal.sample.json")
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.minimal.expected.idf.xml")
+            result shouldNotContain "<gmd:distributionInfo>"
         }
 
         /*
-        * export with all inputs possible.
-        * three addresses with different roles have an organization assigned.
-        **/
+         * export with all inputs possible.
+         * three addresses with different roles have an organization assigned.
+         **/
         should("maximalExport") {
             var result = exportJsonToXML(exporter, "/export/ingrid/geo-service.maximal.sample.json")
             // replace generated UUIDs and windows line endings
@@ -146,9 +148,9 @@ class Geodataservice : ShouldSpec() {
         }
 
         /*
-        * export with only required inputs and  Download-Dienste selected.
-        * address has no organization assigned.
-        **/
+         * export with only required inputs and  Download-Dienste selected.
+         * address has no organization assigned.
+         **/
         should("downloadDiensteExport") {
             every { documentService.getIncomingReferences(any(), "test-catalog") } returns emptySet()
             val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.DownloadDienste.json")
@@ -184,9 +186,10 @@ class Geodataservice : ShouldSpec() {
                 "/export/ingrid/geo-service.minimal.sample.json",
                 jacksonObjectMapper().createObjectNode().apply {
                     put("parentIdentifier", "1000")
-                })
+                },
+            )
 
-            result shouldContain idfSuperiorReferences
+            result shouldContain IDF_SUPERIOR_REFERENCES
         }
 
         should("checkSubordinateReferences") {
@@ -203,7 +206,7 @@ class Geodataservice : ShouldSpec() {
 
             val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.minimal.sample.json")
 
-            result shouldContain idfSubordinatedReferences
+            result shouldContain IDF_SUBORDINATED_REFERENCES
         }
     }
 }

@@ -46,7 +46,7 @@ class UploadExpiredTaskTest : FunSpec({
 
     fun init(docs: String) {
         clearAllMocks()
-        val input = jacksonObjectMapper().readValue("""{"applicationDocs": ${docs}}""", JsonNode::class.java)
+        val input = jacksonObjectMapper().readValue("""{"applicationDocs": $docs}""", JsonNode::class.java)
 
 //        every { fileSystemStorage.docsDir } returns ""
         every {
@@ -107,7 +107,8 @@ class UploadExpiredTaskTest : FunSpec({
         init(
             """[
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"validUntil": null, "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
+            {"validUntil": null, "downloadURL": { "asLink": false, "uri": "def"}}]
+            """.trimMargin(),
         )
         task.start()
 
@@ -120,7 +121,8 @@ class UploadExpiredTaskTest : FunSpec({
         init(
             """[
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
+            {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "def"}}]
+            """.trimMargin(),
         )
         task.start()
 
@@ -133,7 +135,8 @@ class UploadExpiredTaskTest : FunSpec({
         init(
             """[
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]
+            """.trimMargin(),
         )
         task.start()
 
@@ -146,7 +149,8 @@ class UploadExpiredTaskTest : FunSpec({
         init(
             """[
             {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]
+            """.trimMargin(),
         )
         task.start()
 
@@ -159,7 +163,8 @@ class UploadExpiredTaskTest : FunSpec({
         init(
             """[
             {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]""".trimMargin()
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]
+            """.trimMargin(),
         )
         task.start()
 
@@ -173,7 +178,8 @@ class UploadExpiredTaskTest : FunSpec({
         init(
             """[
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}]
+            """.trimMargin(),
         )
         task.start()
 
@@ -186,7 +192,8 @@ class UploadExpiredTaskTest : FunSpec({
         init(
             """[
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]
+            """.trimMargin(),
         )
         task.start()
 
@@ -199,7 +206,8 @@ class UploadExpiredTaskTest : FunSpec({
         init(
             """[
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]
+            """.trimMargin(),
         )
         task.start()
 
@@ -212,7 +220,8 @@ class UploadExpiredTaskTest : FunSpec({
         init(
             """[
             {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]
+            """.trimMargin(),
         )
         task.start()
 
@@ -225,7 +234,8 @@ class UploadExpiredTaskTest : FunSpec({
         init(
             """[
             {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}, 
-            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]
+            """.trimMargin(),
         )
         task.start()
 
@@ -236,7 +246,7 @@ class UploadExpiredTaskTest : FunSpec({
 
     test("archive file is not restored when still expired") {
         init(
-            """[{"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            """[{"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin(),
         )
         every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
 
@@ -249,7 +259,7 @@ class UploadExpiredTaskTest : FunSpec({
 
     test("archive file is restored when not yet expired") {
         init(
-            """[{"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            """[{"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin(),
         )
         every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
 
@@ -262,7 +272,7 @@ class UploadExpiredTaskTest : FunSpec({
 
     test("archive file is restored when expired = null") {
         init(
-            """[{"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin()
+            """[{"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin(),
         )
         every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
 

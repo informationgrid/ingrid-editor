@@ -25,6 +25,7 @@ import { CommonFieldsLUBW } from "./ingrid-lubw/doctypes/common-fields";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class InGridLUBWComponent extends InGridComponent {
   common = inject(CommonFieldsLUBW);
@@ -74,7 +75,7 @@ class InGridLUBWComponent extends InGridComponent {
 }
 
 @NgModule({
-  declarations: [InGridLUBWComponent],
+  imports: [InGridLUBWComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

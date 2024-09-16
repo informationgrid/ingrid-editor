@@ -24,5 +24,5 @@ data class FrontendConfiguration(
     val keycloakRealm: String,
     val keycloakClientId: String,
     val supportEmail: String,
-    val keycloakEnabled: Boolean
+    val keycloakEnabled: Boolean,
 )

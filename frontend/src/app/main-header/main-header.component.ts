@@ -24,20 +24,49 @@ import {
   UserInfo,
   Version,
 } from "../services/config/config.service";
-import { NavigationEnd, Router, Routes } from "@angular/router";
+import { NavigationEnd, Router, RouterLink, Routes } from "@angular/router";
 import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { StorageService } from "../../storage.service";
 import { AuthenticationFactory } from "../security/auth.factory";
 import { CatalogService } from "../+catalog/services/catalog.service";
-import { settingsRoutes } from "../+settings/settings.routing";
+import { default as settingsRoutes } from "../+settings/routes";
 import { FormMenuService, FormularMenuItem } from "../+form/form-menu.service";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { MatToolbar, MatToolbarRow } from "@angular/material/toolbar";
+import { SessionTimeoutInfoComponent } from "./session-timeout-info/session-timeout-info.component";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { MatIcon } from "@angular/material/icon";
+import { MatCardTitle } from "@angular/material/card";
+import { MatDivider } from "@angular/material/divider";
+import { AsyncPipe, DatePipe } from "@angular/common";
 
 @Component({
   selector: "ige-main-header",
   templateUrl: "./main-header.component.html",
   styleUrls: ["./main-header.component.scss"],
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    MatToolbar,
+    MatToolbarRow,
+    SessionTimeoutInfoComponent,
+    MatButton,
+    MatTooltip,
+    MatMenuTrigger,
+    MatIcon,
+    MatMenu,
+    MatMenuItem,
+    MatIconButton,
+    MatCardTitle,
+    MatDivider,
+    RouterLink,
+    AsyncPipe,
+    DatePipe,
+  ],
 })
 export class MainHeaderComponent implements OnInit {
   @Output() onLogout = new EventEmitter<void>();

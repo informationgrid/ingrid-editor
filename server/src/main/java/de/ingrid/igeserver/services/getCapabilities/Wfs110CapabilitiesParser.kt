@@ -29,7 +29,7 @@ import javax.xml.xpath.XPathExpressionException
 class Wfs110CapabilitiesParser(
     codelistHandler: CodelistHandler,
     private val researchService: ResearchService,
-    catalogId: String
+    catalogId: String,
 ) :
     GeneralCapabilitiesParser(XPathUtils(Wfs110NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
 
@@ -53,15 +53,17 @@ class Wfs110CapabilitiesParser(
             onlineResources =
                 getOnlineResources(doc, XPATH_EXP_WFS_ONLINE_RESOURCE)
             addExtendedCapabilities(this, doc, XPATH_EXP_WFS_EXTENDED_CAPABILITIES)
-            keywords += (getKeywords(doc, XPATH_EXP_WFS_KEYWORDS) + getKeywords(
-                doc,
-                XPATH_EXP_WFS_KEYWORDS_FEATURE_TYPE
-            )).distinctBy { it.lowercase() }
+            keywords += (
+                getKeywords(doc, XPATH_EXP_WFS_KEYWORDS) + getKeywords(
+                    doc,
+                    XPATH_EXP_WFS_KEYWORDS_FEATURE_TYPE,
+                )
+                ).distinctBy { it.lowercase() }
             boundingBoxes = getBoundingBoxesFromLayers(doc)
             spatialReferenceSystems = getSpatialReferenceSystems(
                 doc,
                 "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:DefaultSRS",
-                "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherSRS"
+                "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherSRS",
             )
             address = getAddress(doc)
             operations = getOperations(doc)
@@ -69,20 +71,22 @@ class Wfs110CapabilitiesParser(
     }
 
     private fun getOperations(doc: Document): List<OperationBean> {
-
         // Operation List
         val operations: MutableList<OperationBean> = ArrayList()
 
         // Operation - GetCapabilities
         val getCapabilitiesOp = mapToOperationBean(
-            doc, arrayOf(XPATH_EXP_WFS_OP_GET_CAPABILITIES_HREF, XPATH_EXP_WFS_OP_POST_CAPABILITIES_HREF), arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+            doc,
+            arrayOf(XPATH_EXP_WFS_OP_GET_CAPABILITIES_HREF, XPATH_EXP_WFS_OP_POST_CAPABILITIES_HREF),
+            arrayOf(
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
-                "GetCapabilities"
+                "GetCapabilities",
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
 
@@ -94,16 +98,17 @@ class Wfs110CapabilitiesParser(
             doc,
             arrayOf(
                 XPATH_EXP_WFS_OP_DESCRIBE_FEATURE_TYPE_GET_HREF,
-                XPATH_EXP_WFS_OP_DESCRIBE_FEATURE_TYPE_POST_HREF
+                XPATH_EXP_WFS_OP_DESCRIBE_FEATURE_TYPE_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (describeFeatureTypeOp.addressList!!.isNotEmpty()) {
             describeFeatureTypeOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "DescribeFeatureType", "de"),
-                "DescribeFeatureType"
+                "DescribeFeatureType",
             )
             describeFeatureTypeOp.methodCall = "DescribeFeatureType"
 
@@ -115,16 +120,17 @@ class Wfs110CapabilitiesParser(
             doc,
             arrayOf(
                 XPATH_EXP_WFS_OP_GET_FEATURE_GET_HREF,
-                XPATH_EXP_WFS_OP_GET_FEATURE_POST_HREF
+                XPATH_EXP_WFS_OP_GET_FEATURE_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (getFeatureOp.addressList!!.isNotEmpty()) {
             getFeatureOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "GetFeature", "de"),
-                "GetFeature"
+                "GetFeature",
             )
             getFeatureOp.methodCall = "GetFeature"
 
@@ -136,16 +142,17 @@ class Wfs110CapabilitiesParser(
             doc,
             arrayOf(
                 XPATH_EXP_WFS_OP_GET_GML_OBJECT_GET_HREF,
-                XPATH_EXP_WFS_OP_GET_GML_OBJECT_POST_HREF
+                XPATH_EXP_WFS_OP_GET_GML_OBJECT_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (getGmlObjectOp.addressList!!.isNotEmpty()) {
             getGmlObjectOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "GetGmlObject", "de"),
-                "GetGmlObject"
+                "GetGmlObject",
             )
             getGmlObjectOp.methodCall = "GetGmlObject"
 
@@ -157,16 +164,17 @@ class Wfs110CapabilitiesParser(
             doc,
             arrayOf(
                 XPATH_EXP_WFS_OP_LOCK_FEATURE_GET_HREF,
-                XPATH_EXP_WFS_OP_LOCK_FEATURE_POST_HREF
+                XPATH_EXP_WFS_OP_LOCK_FEATURE_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (lockFeatureOp.addressList!!.isNotEmpty()) {
             lockFeatureOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "LockFeature", "de"),
-                "LockFeature"
+                "LockFeature",
             )
             lockFeatureOp.methodCall = "LockFeature"
 
@@ -178,16 +186,17 @@ class Wfs110CapabilitiesParser(
             doc,
             arrayOf(
                 XPATH_EXP_WFS_OP_TRANSACTION_GET_HREF,
-                XPATH_EXP_WFS_OP_TRANSACTION_POST_HREF
+                XPATH_EXP_WFS_OP_TRANSACTION_POST_HREF,
             ),
             arrayOf(
-                ID_OP_PLATFORM_HTTP_GET, ID_OP_PLATFORM_HTTP_POST
-            )
+                ID_OP_PLATFORM_HTTP_GET,
+                ID_OP_PLATFORM_HTTP_POST,
+            ),
         )
         if (transactionOp.addressList!!.isNotEmpty()) {
             transactionOp.name = KeyValue(
                 codelistHandler.getCodeListEntryId("5120", "Transaction", "de"),
-                "Transaction"
+                "Transaction",
             )
             transactionOp.methodCall = "Transaction"
 
@@ -215,7 +224,8 @@ class Wfs110CapabilitiesParser(
                     java.lang.Double.valueOf(lower[0]),
                     java.lang.Double.valueOf(upper[1]),
                     java.lang.Double.valueOf(upper[0]),
-                    title, "free"
+                    title,
+                    "free",
                 )
             } else {
                 LocationBean(name = title, type = "free")
@@ -236,12 +246,12 @@ class Wfs110CapabilitiesParser(
             address,
             xPathUtils.getString(
                 doc,
-                "$XPATH_EXT_WFS_SERVICECONTACT/ows:IndividualName"
-            )
+                "$XPATH_EXT_WFS_SERVICECONTACT/ows:IndividualName",
+            ),
         )
         address.email = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:ElectronicMailAddress"
+            "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:ElectronicMailAddress",
         )
 
         // try to find address in database and set the uuid if found
@@ -249,31 +259,34 @@ class Wfs110CapabilitiesParser(
 
         address.street = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:DeliveryPoint"
+            "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:DeliveryPoint",
         )
         address.city = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:City"
+            "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:City",
         )
         address.postcode = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:PostalCode"
+            "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:PostalCode",
         )
         address.country = getKeyValue(
-            "6200", xPathUtils.getString(
+            "6200",
+            xPathUtils.getString(
                 doc,
-                "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:Country"
-            )
+                "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:Country",
+            ),
         )
         address.state = getKeyValue(
-            "6250", xPathUtils.getString(
+            "6250",
+            xPathUtils.getString(
                 doc,
-                "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:AdministrativeArea"
-            ), "name"
+                "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Address/ows:AdministrativeArea",
+            ),
+            "name",
         )
         address.phone = xPathUtils.getString(
             doc,
-            "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Phone/ows:Voice"
+            "$XPATH_EXT_WFS_SERVICECONTACT/ows:ContactInfo/ows:Phone/ows:Voice",
         )
         return address
     }

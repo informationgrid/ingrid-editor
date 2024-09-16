@@ -28,8 +28,7 @@ describe("DialogTemplateComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DialogTemplateComponent],
-      imports: [MatDialogModule],
+      imports: [MatDialogModule, DialogTemplateComponent],
     }).compileComponents();
   });
 

@@ -37,7 +37,7 @@ const val JSONRPC = "2.0"
 @Service
 @Profile("zabbix")
 class ZabbixService(
-    zabbixProperties: ZabbixProperties
+    zabbixProperties: ZabbixProperties,
 ) {
     private var log = logger()
     private val apiKey = zabbixProperties.apiKey
@@ -83,7 +83,7 @@ class ZabbixService(
         uuid: String,
         name: String,
         url: String,
-        documentsToAdd: List<ZabbixModel.Upload>
+        documentsToAdd: List<ZabbixModel.Upload>,
     ) {
         val hostId = createHost(uuid, name, url, catalogIdentifier)
         documentsToAdd.forEach { document ->
@@ -123,7 +123,7 @@ class ZabbixService(
         val tags = listOf(
             ZabbixModel.Tag("id", uuid),
             ZabbixModel.Tag("name", hostname),
-            ZabbixModel.Tag("url", hostUrl)
+            ZabbixModel.Tag("url", hostUrl),
         )
         val params = ZabbixModel.HostParams(uuid, visiblename, groups, tags)
         val host = ZabbixModel.Host(method = "host.create", params = params, auth = apiKey, id = 1)
@@ -183,7 +183,6 @@ class ZabbixService(
         severity = item.get("severity").asText(),
     )
 
-
     private fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String) {
         val docNameStep = shortenString(docName, 64)
         val docNameTag = shortenString(docName, 255)
@@ -192,7 +191,7 @@ class ZabbixService(
         val tags = listOf(
             ZabbixModel.Tag("id", uuid),
             ZabbixModel.Tag("document name", docNameTag),
-            ZabbixModel.Tag("document url", docUrlTag)
+            ZabbixModel.Tag("document url", docUrlTag),
         )
         val steps =
             listOf(ZabbixModel.Step(name = docNameStep, url = docUrl, required = "", status_codes = "200", no = 1))
@@ -212,14 +211,14 @@ class ZabbixService(
         val tags = listOf(
             ZabbixModel.Tag("id", uuid),
             ZabbixModel.Tag("document name", docNameTag),
-            ZabbixModel.Tag("document url", docUrlTag)
+            ZabbixModel.Tag("document url", docUrlTag),
         )
         val params = ZabbixModel.TriggerParams(
             "Dokument: ${docName.trim()}",
             "min(/$uuid/web.test.fail[$docNameTriggerExpression],#$checkCount)>0",
             4,
             0,
-            tags
+            tags,
         )
         val trigger = ZabbixModel.Trigger(method = "trigger.create", params = params, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(trigger)
@@ -271,10 +270,11 @@ class ZabbixService(
         val delimiter = ".."
         val tname = name.trim()
         return if (tname.length > length) {
-            if (onlyEnd)
+            if (onlyEnd) {
                 tname.take(length - delimiter.length) + delimiter
-            else
+            } else {
                 tname.take(length / 2) + delimiter + tname.takeLast(length / 2 - delimiter.length)
+            }
         } else {
             tname
         }
@@ -292,10 +292,11 @@ class ZabbixService(
 
         if (json.has("error")) {
             val error = json.get("error").get("data")?.asText()
-            if (error?.contains("exist") == true)
+            if (error?.contains("exist") == true) {
                 log.debug(error)
-            else
+            } else {
                 throw ServerException.withReason(json.get("error").get("data")?.asText() ?: "Request Error occurred")
+            }
         }
         return json
     }
@@ -344,5 +345,4 @@ class ZabbixService(
         val results = requestApi(jsonTriggerGet).get("result") as ArrayNode
         return results.mapNotNull { it.get("triggerid")?.asText() }
     }
-
 }

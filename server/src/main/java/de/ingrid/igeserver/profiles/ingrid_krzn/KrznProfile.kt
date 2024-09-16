@@ -47,17 +47,17 @@ class KrznProfile(
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
-        const val id = "ingrid-krzn"
+        const val ID = "ingrid-krzn"
     }
 
-    override val identifier = id
+    override val identifier = ID
     override val title = "InGrid Katalog (KRZN)"
     override val parentProfile = "ingrid"
 
     override val indexExportFormatID = "indexInGridIDFKrzn"
-    
+
     init {
-        isoImport.profileMapper[id] = isoImportKRZN
+        isoImport.profileMapper[ID] = isoImportKRZN
     }
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
@@ -71,24 +71,21 @@ class KrznProfile(
             }
             null -> codelistHandler.removeAndAddCodelist(catalogId, codelist10500)
         }
-        
-        super.initCatalogCodelists(catalogId, codelistId)
 
+        super.initCatalogCodelists(catalogId, codelistId)
     }
 
-    private fun createCodelist10500(catalogRef: Catalog): Codelist {
-        return Codelist().apply {
-            identifier = "10500"
-            catalog = catalogRef
-            name = "Alternative Karten-Clients"
-            description = ""
-            defaultEntry = "1"
-            data = jacksonObjectMapper().createArrayNode().apply {
-                add(CodelistHandler.toCodelistEntry("0", "keine Daten im Geoportal"))
-                add(CodelistHandler.toCodelistEntry("1", "https://geoportal-niederrhein.de?mdid={ID}"))
-                add(CodelistHandler.toCodelistEntry("2", "https://geoportal-niederrhein.de/krefeld/bauenundplanen/?mdid={ID}"))
-                add(CodelistHandler.toCodelistEntry("3", "https://geoportal-niederrhein.de/krefeld/natur/?mdid={ID}"))
-            }
+    private fun createCodelist10500(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "10500"
+        catalog = catalogRef
+        name = "Alternative Karten-Clients"
+        description = ""
+        defaultEntry = "1"
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("0", "keine Daten im Geoportal"))
+            add(CodelistHandler.toCodelistEntry("1", "https://geoportal-niederrhein.de?mdid={ID}"))
+            add(CodelistHandler.toCodelistEntry("2", "https://geoportal-niederrhein.de/krefeld/bauenundplanen/?mdid={ID}"))
+            add(CodelistHandler.toCodelistEntry("3", "https://geoportal-niederrhein.de/krefeld/natur/?mdid={ID}"))
         }
     }
 }

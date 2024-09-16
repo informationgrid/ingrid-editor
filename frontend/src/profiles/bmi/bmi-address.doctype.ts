@@ -17,9 +17,6 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { DocumentService } from "../../app/services/document/document.service";
-import { CodelistService } from "../../app/services/codelist/codelist.service";
-import { CodelistQuery } from "../../app/store/codelist/codelist.query";
 import { Injectable } from "@angular/core";
 import { OrganisationDoctype } from "../address/organisation.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
@@ -38,12 +35,8 @@ export class BmiAddressDoctype extends OrganisationDoctype {
 
   label = "Adresse";
 
-  constructor(
-    storageService: DocumentService,
-    codelistService: CodelistService,
-    codelistQuery: CodelistQuery,
-  ) {
-    super(storageService, "addresses");
+  constructor() {
+    super("addresses");
     this.addressType = "organization";
     this.options = {
       hideAdministrativeArea: true,

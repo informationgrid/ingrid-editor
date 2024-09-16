@@ -30,7 +30,8 @@ import de.ingrid.igeserver.model.KeyValue
 data class DataModel(
     val description: String?,
     val mCloudCategories: List<String>?,
-    val DCATThemes: List<String>?, val origin: String?,
+    val DCATThemes: List<String>?,
+    val origin: String?,
     val addresses: List<AddressRefModel>?,
     val accessRights: String?,
     val distributions: List<DownloadModel>?,
@@ -40,5 +41,5 @@ data class DataModel(
     val periodicity: KeyValue?,
     val mfundFKZ: String?,
     val mfundProject: String?,
-    val keywords: List<String>?
+    val keywords: List<String>?,
 )

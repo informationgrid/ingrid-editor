@@ -72,43 +72,53 @@ class TestProfile : CatalogProfile {
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Allgemein", arrayOf(
+                "state",
+                "Allgemein",
+                arrayOf(
                     Published(),
-                    ExceptFolders()
+                    ExceptFolders(),
                 ),
                 viewComponent = ViewComponent.CHECKBOX,
-                combine = Operator.AND
+                combine = Operator.AND,
             ),
             FacetGroup(
-                "docType", "Dokumententyp", arrayOf(
-                    DocTest()
-                )
-            ),
-            FacetGroup(
-                "timeRef", "Zeitbezug", arrayOf(
-                    TimeSpan()
+                "docType",
+                "Dokumententyp",
+                arrayOf(
+                    DocTest(),
                 ),
-                viewComponent = ViewComponent.TIMESPAN
-            )
+            ),
+            FacetGroup(
+                "timeRef",
+                "Zeitbezug",
+                arrayOf(
+                    TimeSpan(),
+                ),
+                viewComponent = ViewComponent.TIMESPAN,
+            ),
         )
     }
 
     override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
         return arrayOf(
             FacetGroup(
-                "state", "Allgemein", arrayOf(
+                "state",
+                "Allgemein",
+                arrayOf(
                     Published(),
-                    ExceptFolders()
+                    ExceptFolders(),
                 ),
-                viewComponent = ViewComponent.CHECKBOX
+                viewComponent = ViewComponent.CHECKBOX,
             ),
             FacetGroup(
-                "addrType", "Typ", arrayOf(
+                "addrType",
+                "Typ",
+                arrayOf(
                     Organisations(),
-                    Persons()
+                    Persons(),
                 ),
-                viewComponent = ViewComponent.CHECKBOX
-            )
+                viewComponent = ViewComponent.CHECKBOX,
+            ),
         )
     }
 
@@ -195,9 +205,12 @@ class TestProfile : CatalogProfile {
             data = jacksonObjectMapper().createObjectNode().apply {
                 val model = jacksonObjectMapper().createObjectNode().apply {
                     put("type", "selectDocuments")
-                    set<ObjectNode>("docType", jacksonObjectMapper().createObjectNode().apply {
-                        put("selectDocTest", true)
-                    })
+                    set<ObjectNode>(
+                        "docType",
+                        jacksonObjectMapper().createObjectNode().apply {
+                            put("selectDocTest", true)
+                        },
+                    )
                 }
                 set<ObjectNode>("model", model)
             }
@@ -218,19 +231,20 @@ class TestProfile : CatalogProfile {
     }
 
     private fun removeAndAddCodelist(catalogId: String, codelist: Codelist) {
-
         codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, codelist.identifier)
         codelistRepo.flush()
         codelistRepo.save(codelist)
-
     }
 
     private fun toCodelistEntry(id: String, german: String): JsonNode {
         return jacksonObjectMapper().createObjectNode().apply {
             put("id", id)
-            set<JsonNode>("localisations", jacksonObjectMapper().createObjectNode().apply {
-                put("de", german)
-            })
+            set<JsonNode>(
+                "localisations",
+                jacksonObjectMapper().createObjectNode().apply {
+                    put("de", german)
+                },
+            )
         }
     }
 }

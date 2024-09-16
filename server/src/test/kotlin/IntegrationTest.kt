@@ -36,7 +36,9 @@ import org.springframework.test.context.jdbc.SqlConfig
 @Sql(scripts = ["/test_data_acl.sql"], config = SqlConfig(encoding = "UTF-8"))
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles(profiles = ["default", "uvp", "ogc-api", "ingrid", "mcloud"])
-class IntegrationTest: AnnotationSpec() {
+class IntegrationTest : AnnotationSpec() {
     override fun extensions() = listOf(SpringExtension)
-    @MockkBean(relaxed = true) lateinit var userManagementService: UserManagementService
+
+    @MockkBean(relaxed = true)
+    lateinit var userManagementService: UserManagementService
 }

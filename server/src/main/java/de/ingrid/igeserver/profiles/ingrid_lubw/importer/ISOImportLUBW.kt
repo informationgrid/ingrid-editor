@@ -33,21 +33,20 @@ import org.springframework.stereotype.Service
 class ISOImportLUBW(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService) :
     ISOImportProfile {
     override fun handle(catalogId: String, data: Metadata, addressMaps: MutableMap<String, String>): ImportProfileData? {
-
         val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps)
 
         return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset", "series" -> {
                 ImportProfileData(
                     "imports/ingrid-lubw/geodataset.jte",
-                    GeodatasetMapperLUBW(isoData)
+                    GeodatasetMapperLUBW(isoData),
                 )
             }
 
             "service" -> {
                 ImportProfileData(
                     "imports/ingrid/geoservice.jte",
-                    GeoserviceMapper(isoData)
+                    GeoserviceMapper(isoData),
                 )
             }
 

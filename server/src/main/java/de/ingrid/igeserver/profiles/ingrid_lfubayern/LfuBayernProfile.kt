@@ -47,17 +47,17 @@ class LfuBayernProfile(
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
-        const val id = "ingrid-lfubayern"
+        const val ID = "ingrid-lfubayern"
     }
 
-    override val identifier = id
+    override val identifier = ID
     override val title = "InGrid Katalog (LfU Bayern)"
     override val parentProfile = "ingrid"
 
     override val indexExportFormatID = "indexInGridIDFLfuBayern"
 
     init {
-        isoImport.profileMapper[id] = isoImportLfUBayern
+        isoImport.profileMapper[ID] = isoImportLfUBayern
     }
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
@@ -111,10 +111,9 @@ class LfuBayernProfile(
             null -> {
                 codelistHandler.removeAndAddCodelists(
                     catalogId,
-                    listOf(codelist20000, codelist20001, codelist20002)
+                    listOf(codelist20000, codelist20001, codelist20002),
                 )
             }
         }
     }
-
 }

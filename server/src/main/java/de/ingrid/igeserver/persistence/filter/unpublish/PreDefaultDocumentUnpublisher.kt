@@ -53,12 +53,11 @@ class PreDefaultDocumentUnpublisher(@Lazy val documentService: DocumentService) 
     private fun checkChildren(catalogId: String, wrapperId: Int) {
         val publishedChildren = documentService.findChildren(
             catalogId,
-            wrapperId
+            wrapperId,
         ).hits.filter { documentInPublishedState(it.document) }
-        
+
         if (publishedChildren.isNotEmpty()) {
             throw ChildDatasetException.mustNotBePublished(publishedChildren.map { it.wrapper.uuid })
         }
     }
-    
 }

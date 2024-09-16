@@ -28,12 +28,21 @@ import { FormlyFormBuilder } from "@ngx-formly/core";
 import { ActivatedRoute } from "@angular/router";
 import { PluginService } from "../../services/plugin/plugin.service";
 import { Plugin } from "./plugin";
+import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-template-no-header.component";
+import { BehaviourItemComponent } from "./behaviour-item/behaviour-item.component";
+import { KeyValuePipe } from "@angular/common";
 
 @UntilDestroy()
 @Component({
   selector: "ige-behaviours",
   templateUrl: "./behaviours.component.html",
   styleUrls: ["./behaviours.component.scss"],
+  standalone: true,
+  imports: [
+    PageTemplateNoHeaderComponent,
+    BehaviourItemComponent,
+    KeyValuePipe,
+  ],
 })
 export class BehavioursComponent implements OnInit {
   type: string;

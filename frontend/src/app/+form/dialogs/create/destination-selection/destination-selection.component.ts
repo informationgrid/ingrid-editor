@@ -23,11 +23,15 @@ import { BehaviorSubject, of } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { DocBehavioursService } from "../../../../services/event/doc-behaviours.service";
 import { TranslocoService } from "@ngneat/transloco";
+import { TreeComponent } from "../../../sidebars/tree/tree.component";
+import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
 
 @Component({
   selector: "ige-destination-selection",
   templateUrl: "./destination-selection.component.html",
   styleUrls: ["./destination-selection.component.scss"],
+  standalone: true,
+  imports: [TreeComponent, DocumentListItemComponent],
 })
 export class DestinationSelectionComponent implements OnInit {
   @Input() forAddress: boolean;

@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.bmi.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.model.KeyValue
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -36,5 +37,5 @@ data class DataModel(
     val politicalGeocodingLevel: KeyValue?,
     val temporal: TimeSpanModel?,
     val periodicity: KeyValue?,
-    val keywords: List<String>?
+    val keywords: List<String>?,
 )

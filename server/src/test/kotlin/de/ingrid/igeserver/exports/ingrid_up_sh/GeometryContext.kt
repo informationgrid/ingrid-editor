@@ -38,7 +38,7 @@ class GeometryContext : GeodatasetBase() {
                 this.codelistHandler,
                 this.config,
                 this.catalogService,
-                this.documentService
+                this.documentService,
             )
         every { catalogService.getProfileFromCatalog(any()) } returns
             DummyCatalog("ingrid-up-sh")
@@ -73,13 +73,13 @@ class GeometryContext : GeodatasetBase() {
                         ]
                       }]
                     }"""
-                            .trimIndent()
+                            .trimIndent(),
                     ) as ObjectNode
 
             val result =
                 exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
 
-            result shouldContain geometryContextOther
+            result shouldContain GEOMETRY_CONTEXT_OTHER
         }
 
         should("export geometry context of type 'nominal'") {
@@ -110,13 +110,13 @@ class GeometryContext : GeodatasetBase() {
                         ]
                       }]
                     }"""
-                            .trimIndent()
+                            .trimIndent(),
                     ) as ObjectNode
 
             val result =
                 exportJsonToXML(exporter, "/export/ingrid/geo-dataset.minimal.sample.json", context)
 
-            result shouldContain geometryContextNominal
+            result shouldContain GEOMETRY_CONTEXT_NOMINAL
         }
     }
 }

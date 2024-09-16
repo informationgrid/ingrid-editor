@@ -80,13 +80,13 @@ class Address : ShouldSpec() {
                 1638,
                 "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
                 "/export/ingrid/address.organisation.sample.json",
-                type = "InGridOrganisationDoc"
+                type = "InGridOrganisationDoc",
             ),
             MockDocument(
                 1634,
                 "14a37ded-4ca5-4677-bfed-3607bed3071d",
                 "/export/ingrid/address.person.sample.json",
-                1638
+                1638,
             ),
             MockDocument(
                 1652,
@@ -100,23 +100,23 @@ class Address : ShouldSpec() {
                 "/export/ingrid/address.organisation.sample.json",
                 type = "InGridOrganisationDoc",
                 parent = 1638,
-                organization = "Sub-Organization"
+                organization = "Sub-Organization",
             ),
             MockDocument(
                 1660,
                 "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2",
                 "/export/ingrid/address.person.sample.json",
                 1650,
-                personName = "PersonSubOrga"
+                personName = "PersonSubOrga",
             ),
         )
 
         val datasets = listOf(
             MockDocument(
                 uuid = "a910fde0-3910-413e-9c14-4fa86f3d12c2",
-                template = "/export/ingrid/geo-dataset.maximal.sample.json"
+                template = "/export/ingrid/geo-dataset.maximal.sample.json",
             ),
-            MockDocument(uuid = "93CD0919-5A2F-4286-B731-645C34614AA1")
+            MockDocument(uuid = "93CD0919-5A2F-4286-B731-645C34614AA1"),
         )
 
         initDocumentMocks(addresses + datasets, documentService)
@@ -144,7 +144,6 @@ class Address : ShouldSpec() {
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/address.person2.sample.expected.idf.xml")
         }
 
-
         should("organisationExport") {
             var result = exportJsonToXML(exporter, "/export/ingrid/address.organisation.sample.json")
             // replace generated UUIDs and windows line endings
@@ -159,8 +158,8 @@ class Address : ShouldSpec() {
             val doc = documentService.getLastPublishedDocument("test-catalog", "bf4c615b-cd7c-4fd9-a306-1dfb2fbcf6d2")
             val result = exportDocToXML(exporter, doc)
 
-            result shouldContain addressHierarchy
-            result shouldContain addressHierarchyWithPositionNameSet
+            result shouldContain ADDRESS_HIERARCHY
+            result shouldContain ADDRESS_HIERARCHY_WITH_POSITION_NAME_SET
         }
 
         should("export address hierarchy with no position name") {
@@ -175,8 +174,8 @@ class Address : ShouldSpec() {
 
             val result = exportDocToXML(exporter, doc)
 
-            result shouldContain addressHierarchy
-            result shouldContain addressHierarchyWithNoPositionNameSet
+            result shouldContain ADDRESS_HIERARCHY
+            result shouldContain ADDRESS_HIERARCHY_WITH_NO_POSITION_NAME_SET
         }
     }
 }

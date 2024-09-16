@@ -19,7 +19,7 @@
  */
 package de.ingrid.igeserver.exports.ingrid_bast
 
-const val projectTitleAndNumberInKeywords = """
+const val PROJECT_TITLE_AND_NUMBER_IN_KEYWORDS = """
                     <gmd:descriptiveKeywords>
                         <gmd:MD_Keywords>
                             <gmd:keyword>
@@ -49,7 +49,7 @@ const val projectTitleAndNumberInKeywords = """
                     </gmd:descriptiveKeywords>
 """
 
-const val digitalTransferOptionWithUnit = """
+const val DIGITAL_TRANSFER_OPTION_WITH_UNIT = """
                     <gmd:transferOptions>
                         <gmd:MD_DigitalTransferOptions>
                             <gmd:unitsOfDistribution>
@@ -72,13 +72,13 @@ const val digitalTransferOptionWithUnit = """
                     </gmd:transferOptions>
 """
 
-const val supplementalInformation = """
+const val SUPPLEMENTAL_INFORMATION = """
                     <gmd:supplementalInformation>
                         <gco:CharacterString>Bemerkung zur BASt</gco:CharacterString>
                     </gmd:supplementalInformation>
 """
 
-const val useConstraintsComments = """
+const val USE_CONSTRAINTS_COMMENTS = """
                             <gmd:otherConstraints>
                                 <gco:CharacterString>BASt Nutzungshinweise</gco:CharacterString>
                             </gmd:otherConstraints>

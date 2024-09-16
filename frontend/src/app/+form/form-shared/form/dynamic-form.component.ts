@@ -32,6 +32,8 @@ import {
   FormArray,
   FormControl,
   FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
   UntypedFormGroup,
 } from "@angular/forms";
 import { FormToolbarService } from "../toolbar/form-toolbar.service";
@@ -44,7 +46,11 @@ import {
 } from "../../../models/ige-document";
 import { FormUtils } from "../../form.utils";
 import { TreeQuery } from "../../../store/tree/tree.query";
-import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
+import {
+  FormlyFieldConfig,
+  FormlyFormOptions,
+  FormlyModule,
+} from "@ngx-formly/core";
 import { SessionQuery } from "../../../store/session.query";
 import { FormularService } from "../../formular.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -70,14 +76,37 @@ import { FormMessageService } from "../../../services/form-message.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { TranslocoService } from "@ngneat/transloco";
 import { IgeError } from "../../../models/ige-error";
+import { FormToolbarComponent } from "../toolbar/form-toolbar.component";
+import { AngularSplitModule } from "angular-split";
+import { SidebarComponent } from "../../sidebars/sidebar.component";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { FormInfoComponent } from "../../form-info/form-info.component";
+import { QuickNavbarComponent } from "./quick-navbar/quick-navbar.component";
+import { FolderDashboardComponent } from "../folder/folder-dashboard.component";
+import { AsyncPipe, JsonPipe } from "@angular/common";
 
 @UntilDestroy()
 @Component({
   selector: "ige-form-wrapper",
   templateUrl: "./dynamic-form.component.html",
   styleUrls: ["./dynamic-form.component.scss"],
-  // data and addresses need their own configured service
-  // changeDetection: ChangeDetectionStrategy.OnPush
+  standalone: true,
+  imports: [
+    FormToolbarComponent,
+    AngularSplitModule,
+    SidebarComponent,
+    CdkScrollable,
+    MatProgressSpinner,
+    FormInfoComponent,
+    QuickNavbarComponent,
+    ReactiveFormsModule,
+    FormsModule,
+    FormlyModule,
+    FolderDashboardComponent,
+    AsyncPipe,
+    JsonPipe,
+  ],
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() address = false;

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.exporter.AddressTransformerConfig
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
@@ -65,7 +66,7 @@ class OpenDataIDFExporter(
         "text/xml",
         "xml",
         listOf("opendata"),
-        false
+        false,
     )
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -79,7 +80,7 @@ class OpenDataIDFExporter(
         templateEngine.render(
             getTemplateForDoctype(doc.type),
             getMapFromObject(doc, catalogId, options),
-            output
+            output,
         )
         // pretty printing takes around 5ms
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
@@ -89,14 +90,11 @@ class OpenDataIDFExporter(
         return prettyXml
     }
 
-
-    private fun getTemplateForDoctype(type: String): String {
-        return when (type) {
-            "OpenDataDoc" -> "export/ingrid/idf/idf-specialisedTask.jte"
-            "OpenDataAddressDoc" -> "export/ingrid/idf/idf-address.jte"
-            else -> {
-                throw ServerException.withReason("Cannot get template for type: $type")
-            }
+    private fun getTemplateForDoctype(type: String): String = when (type) {
+        "OpenDataDoc" -> "export/ingrid/idf/idf-specialisedTask.jte"
+        "OpenDataAddressDoc" -> "export/ingrid/idf/idf-address.jte"
+        else -> {
+            throw ServerException.withReason("Cannot get template for type: $type")
         }
     }
 
@@ -112,9 +110,11 @@ class OpenDataIDFExporter(
         val transformerClass = getModelTransformerClass(json.type)
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
-        return if (isAddress)
-            transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService)
-        else
+        return if (isAddress) {
+            transformerClass.constructors.first().call(
+                AddressTransformerConfig(catalogId, codelistTransformer, null, json, documentService, config, options.tags),
+            )
+        } else {
             transformerClass.constructors.first().call(
                 TransformerConfig(
                     ingridModel!!,
@@ -125,28 +125,25 @@ class OpenDataIDFExporter(
                     TransformerCache(),
                     json,
                     documentService,
-                    options.tags
-                )
+                    options.tags,
+                ),
             )
-    }
-
-    private fun getModelTransformerClass(docType: String): KClass<out Any>? {
-        return when (docType) {
-            "OpenDataDoc" -> IngridModelTransformer::class
-            "OpenDataAddressDoc" -> AddressModelTransformer::class
-            else -> null
         }
     }
 
+    private fun getModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
+        "OpenDataDoc" -> IngridModelTransformer::class
+        "OpenDataAddressDoc" -> AddressModelTransformer::class
+        else -> null
+    }
 
     private fun getMapFromObject(json: Document, catalogId: String, options: ExportOptions): Map<String, Any> {
         val modelTransformer = getModelTransformer(json, catalogId, options)
         return mapOf(
             "map" to mapOf(
-                "model" to modelTransformer
+                "model" to modelTransformer,
             ),
         )
-
     }
 }
 
@@ -154,7 +151,7 @@ private class XMLStringOutput : StringOutput() {
     override fun writeUserContent(value: String?) {
         if (value == null) return
         super.writeUserContent(
-            StringEscapeUtils.escapeXml10(value)
+            StringEscapeUtils.escapeXml10(value),
 //                .replace("\n", "&#10;")
 //                .replace("\r", "&#13;")
 //                .replace("\t", "&#9;")

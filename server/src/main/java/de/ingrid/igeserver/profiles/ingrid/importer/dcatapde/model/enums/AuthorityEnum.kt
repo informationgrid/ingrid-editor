@@ -42,19 +42,20 @@ enum class AuthorityEnum(val value: String) {
     SN("sn"),
     ST("st"),
     SH("sh"),
-    TH("th");
+    TH("th"),
+    ;
 
-    class Converter : EnumConverter<AuthorityEnum>(
-        AuthorityEnum::class.java
-    )
+    class Converter :
+        EnumConverter<AuthorityEnum>(
+            AuthorityEnum::class.java,
+        )
 
     @JsonValue
-    override fun toString(): String {
-        return value.toString()
-    }
+    override fun toString(): String = value.toString()
 
     companion object {
-        private const val uriPrefix = "https://specs.diplanung.de/resource/authority#"
+        private const val URI_PREFIX = "https://specs.diplanung.de/resource/authority#"
+
         @JsonCreator
         fun fromValue(text: String?): AuthorityEnum? {
             if (text == null) {
@@ -67,13 +68,12 @@ enum class AuthorityEnum(val value: String) {
             }
             val enumValues = java.lang.String.join(
                 ", ",
-                Stream.of(*entries.toTypedArray()).map { anEnum: AuthorityEnum -> uriPrefix + anEnum.toString() }
-                    .toList())
+                Stream.of(*entries.toTypedArray()).map { anEnum: AuthorityEnum -> URI_PREFIX + anEnum.toString() }
+                    .toList(),
+            )
             throw IllegalArgumentException("AuthorityEnum value has to be one of [$enumValues], was $text")
         }
 
-        private fun stripPrefix(uri: String): String {
-            return uri.replaceFirst(uriPrefix.toRegex(), "")
-        }
+        private fun stripPrefix(uri: String): String = uri.replaceFirst(URI_PREFIX.toRegex(), "")
     }
 }

@@ -20,7 +20,11 @@
 package de.ingrid.igeserver.extension
 
 import com.fasterxml.jackson.databind.JsonNode
-import de.ingrid.igeserver.extension.pipe.*
+import de.ingrid.igeserver.extension.pipe.Context
+import de.ingrid.igeserver.extension.pipe.Filter
+import de.ingrid.igeserver.extension.pipe.Message
+import de.ingrid.igeserver.extension.pipe.Payload
+import de.ingrid.igeserver.extension.pipe.Pipe
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -28,7 +32,7 @@ import org.springframework.context.annotation.Configuration
  * Test payloads
  */
 
-open class TestPayloadPersist(var action: Action, var data: JsonNode): Payload {
+open class TestPayloadPersist(var action: Action, var data: JsonNode) : Payload {
     /**
      * Persistence action to perform on the contained data
      */
@@ -36,7 +40,7 @@ open class TestPayloadPersist(var action: Action, var data: JsonNode): Payload {
         CREATE,
         UPDATE,
         PUBLISH,
-        DELETE
+        DELETE,
     }
 }
 
@@ -62,8 +66,7 @@ open class TestValidatePersistFilter<T : TestPayloadPersist>(override val profil
     override fun invoke(payload: T, context: Context): T {
         if (payload.action == TestPayloadPersist.Action.CREATE || payload.action == TestPayloadPersist.Action.UPDATE) {
             context.addMessage(Message(this, "Validate data on persist"))
-        }
-        else {
+        } else {
             context.addMessage(Message(this, "Filter does not apply"))
         }
         return payload
@@ -71,14 +74,15 @@ open class TestValidatePersistFilter<T : TestPayloadPersist>(override val profil
 }
 
 // Specific validation on create
-open class TestValidateCreateFilter(profiles: Array<String>) : Filter<TestPayloadCreate>, TestValidatePersistFilter<TestPayloadCreate>(profiles) {
+open class TestValidateCreateFilter(profiles: Array<String>) :
+    TestValidatePersistFilter<TestPayloadCreate>(profiles),
+    Filter<TestPayloadCreate> {
 
     override fun invoke(payload: TestPayloadCreate, context: Context): TestPayloadCreate {
         super.invoke(payload, context)
         if (payload.action == TestPayloadPersist.Action.CREATE) {
             context.addMessage(Message(this, "Validate data on create"))
-        }
-        else {
+        } else {
             context.addMessage(Message(this, "Filter does not apply"))
         }
         return payload
@@ -86,14 +90,15 @@ open class TestValidateCreateFilter(profiles: Array<String>) : Filter<TestPayloa
 }
 
 // Specific validation on update
-open class TestValidateUpdateFilter(profiles: Array<String>) : Filter<TestPayloadUpdate>, TestValidatePersistFilter<TestPayloadUpdate>(profiles) {
+open class TestValidateUpdateFilter(profiles: Array<String>) :
+    TestValidatePersistFilter<TestPayloadUpdate>(profiles),
+    Filter<TestPayloadUpdate> {
 
     override fun invoke(payload: TestPayloadUpdate, context: Context): TestPayloadUpdate {
         super.invoke(payload, context)
         if (payload.action == TestPayloadPersist.Action.UPDATE) {
             context.addMessage(Message(this, "Validate data on update"))
-        }
-        else {
+        } else {
             context.addMessage(Message(this, "Filter does not apply"))
         }
         return payload
@@ -106,8 +111,7 @@ open class TestValidatePublishFilter<T : TestPayloadUpdate>(override val profile
     override fun invoke(payload: T, context: Context): T {
         if (payload.action == TestPayloadPersist.Action.PUBLISH) {
             context.addMessage(Message(this, "Validate data on publish"))
-        }
-        else {
+        } else {
             context.addMessage(Message(this, "Filter does not apply"))
         }
         return payload
@@ -120,8 +124,7 @@ open class TestAuthorizePublishFilter(override val profiles: Array<String>?) : F
     override fun invoke(payload: TestPayloadPublish, context: Context): TestPayloadPublish {
         if (payload.action == TestPayloadPersist.Action.PUBLISH) {
             context.addMessage(Message(this, "Authorize on publish"))
-        }
-        else {
+        } else {
             context.addMessage(Message(this, "Filter does not apply"))
         }
         return payload
@@ -134,8 +137,7 @@ open class TestAuthorizePublishProfileAFilter(override val profiles: Array<Strin
     override fun invoke(payload: TestPayloadPublish, context: Context): TestPayloadPublish {
         if (payload.action == TestPayloadPersist.Action.PUBLISH) {
             context.addMessage(Message(this, "Authorize on publish for 'profileA'"))
-        }
-        else {
+        } else {
             context.addMessage(Message(this, "Filter does not apply"))
         }
         return payload
@@ -148,8 +150,7 @@ open class TestAuthorizePublishNullFilter(override val profiles: Array<String>?)
     override fun invoke(payload: TestPayloadPublish, context: Context): TestPayloadPublish {
         if (payload.action == TestPayloadPersist.Action.PUBLISH) {
             context.addMessage(Message(this, "Should not run"))
-        }
-        else {
+        } else {
             context.addMessage(Message(this, "Filter does not apply"))
         }
         return payload

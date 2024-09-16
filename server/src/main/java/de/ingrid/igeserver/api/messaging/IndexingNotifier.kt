@@ -27,19 +27,19 @@ import org.springframework.stereotype.Service
 data class IndexMessage(
     val catalogId: String,
     var totalDatasets: Long = 0,
-    val targets: MutableList<TargetMessage> = mutableListOf()
+    val targets: MutableList<TargetMessage> = mutableListOf(),
 ) : Message() {
-    
+
     private var indexDatasets: Int = 0
-    
+
     fun getTargetByName(name: String): TargetMessage {
         val result = targets.find { it.name == name }
         return result ?: TargetMessage(name).also { targets.push(it) }
     }
-    
+
     fun increaseProgress() {
         indexDatasets++
-        progress = ((indexDatasets.toFloat() / totalDatasets)*100).toInt()
+        progress = ((indexDatasets.toFloat() / totalDatasets) * 100).toInt()
     }
 }
 
@@ -57,15 +57,17 @@ data class TargetMessage(
 class IndexingNotifier(val msgTemplate: SimpMessagingTemplate) {
     val log = logger()
 
-    private val WS_MESSAGE_TRANSFER_DESTINATION = "/topic/indexStatus"
-
     fun sendMessage(message: IndexMessage) {
-        msgTemplate.convertAndSend("$WS_MESSAGE_TRANSFER_DESTINATION/${message.catalogId}", message)
+        msgTemplate.convertAndSend("${Companion.WS_MESSAGE_TRANSFER_DESTINATION}/${message.catalogId}", message)
     }
 
     fun addAndSendMessageError(message: IndexMessage, ex: Exception?, errorPrefix: String = "") {
         val errorMessage = ex?.message?.let { errorPrefix + it } ?: errorPrefix
         log.error(errorMessage, ex)
         sendMessage(message.apply { errors.add(errorMessage) })
+    }
+
+    companion object {
+        private const val WS_MESSAGE_TRANSFER_DESTINATION = "/topic/indexStatus"
     }
 }

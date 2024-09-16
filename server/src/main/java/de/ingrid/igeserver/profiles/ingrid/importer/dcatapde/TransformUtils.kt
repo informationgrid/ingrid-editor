@@ -51,9 +51,9 @@ object TransformUtils {
      */
     @JvmStatic
     fun getRdfModel(serializedRdf: String?, rdfFormat: Lang?): Model {
-        val `is` = IOUtils.toInputStream(serializedRdf, "utf-8")
+        val stream = IOUtils.toInputStream(serializedRdf, "utf-8")
         val model = ModelFactory.createDefaultModel()
-        RDFDataMgr.read(model, `is`, rdfFormat)
+        RDFDataMgr.read(model, stream, rdfFormat)
         return model
     }
 

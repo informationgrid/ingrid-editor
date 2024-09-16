@@ -18,11 +18,15 @@
  * limitations under the Licence.
  */
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { MatButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: "ige-action-button",
   templateUrl: "./action-button.component.html",
   styleUrls: ["./action-button.component.scss"],
+  standalone: true,
+  imports: [MatButton, MatIcon],
 })
 export class ActionButtonComponent implements OnInit {
   @Input() label: string;

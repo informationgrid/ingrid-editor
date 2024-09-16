@@ -18,16 +18,22 @@
  * limitations under the Licence.
  */
 import {
+  ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   inject,
+  input,
   Input,
   OnInit,
-  Output,
+  output,
+  signal,
 } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
-import { UntypedFormGroup, Validators } from "@angular/forms";
+import {
+  ReactiveFormsModule,
+  UntypedFormGroup,
+  Validators,
+} from "@angular/forms";
 import { ProfileAbstract } from "../../../../store/profile/profile.model";
 import { filter, map, tap } from "rxjs/operators";
 import { ProfileQuery } from "../../../../store/profile/profile.query";
@@ -35,22 +41,37 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DocBehavioursService } from "../../../../services/event/doc-behaviours.service";
 import { ProfileService } from "../../../../services/profile.service";
 import { TranslocoService } from "@ngneat/transloco";
+import { MatFormField } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { FocusDirective } from "../../../../directives/focus.directive";
+import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
+
+interface AddressDocumentAbstract extends DocumentAbstract {
+  addressType: "person" | "organization";
+}
 
 @UntilDestroy()
 @Component({
   selector: "ige-address-template",
   templateUrl: "./address-template.component.html",
   styleUrls: ["./address-template.component.scss"],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    ReactiveFormsModule,
+    MatFormField,
+    MatInput,
+    FocusDirective,
+    DocumentListItemComponent,
+  ],
 })
 export class AddressTemplateComponent implements OnInit {
   @Input() form: UntypedFormGroup;
-  @Input() isPerson: boolean;
+  parent = input<number>();
 
-  @Input() set parent(value: number) {
-    this.initializeDocumentTypes(this.profileQuery.addressProfiles, value);
-  }
+  create = output<void>();
 
-  @Output() create = new EventEmitter();
+  isPerson = signal<boolean>(false);
 
   private translocoService = inject(TranslocoService);
 
@@ -58,7 +79,7 @@ export class AddressTemplateComponent implements OnInit {
     null,
   );
 
-  documentTypes: DocumentAbstract[];
+  documentTypes = signal<AddressDocumentAbstract[]>([]);
 
   constructor(
     private profileQuery: ProfileQuery,
@@ -66,25 +87,28 @@ export class AddressTemplateComponent implements OnInit {
     private profileService: ProfileService,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.initializeDocumentTypes(
+      this.profileQuery.addressProfiles,
+      this.parent(),
+    ).subscribe((value) => this.documentTypes.set(value));
+  }
 
   private initializeDocumentTypes(
     profiles: Observable<ProfileAbstract[]>,
     parent: number,
   ) {
-    profiles
-      .pipe(
-        untilDestroyed(this),
-        filter((types) => types.length > 0),
-        map((types) => this.filterDocTypesByParent(types, parent)),
-        map((types) => this.prepareDocumentTypes(types)),
-        tap((types) => this.setInitialTypeFirstTime(types)),
-        filter((types) => this.skipIfSame(types)),
-      )
-      .subscribe((result) => (this.documentTypes = result));
+    return profiles.pipe(
+      untilDestroyed(this),
+      filter((types) => types.length > 0),
+      map((types) => this.filterDocTypesByParent(types, parent)),
+      map((types) => this.prepareDocumentTypes(types)),
+      tap((types) => this.setInitialTypeFirstTime(types)),
+      filter((types) => this.skipIfSame(types)),
+    );
   }
 
-  private setInitialTypeFirstTime(types: DocumentAbstract[]) {
+  private setInitialTypeFirstTime(types: AddressDocumentAbstract[]) {
     // only set it first time
     if (!this.form.get("choice").value) {
       const initialType =
@@ -99,32 +123,37 @@ export class AddressTemplateComponent implements OnInit {
   private skipIfSame(types: DocumentAbstract[]) {
     return (
       types.map((item) => item.id).join() !==
-      this.documentTypes?.map((item) => item.id).join()
+      this.documentTypes()
+        ?.map((item) => item.id)
+        .join()
     );
   }
 
-  private prepareDocumentTypes(result: ProfileAbstract[]): DocumentAbstract[] {
+  private prepareDocumentTypes(
+    result: ProfileAbstract[],
+  ): AddressDocumentAbstract[] {
     return result
       .map((profile) => {
         return {
           id: profile.id,
           title: this.translocoService.translate(`docType.${profile.id}`),
           icon: profile.iconClass,
-          _type: profile.addressType,
+          _type: profile.id,
+          addressType: profile.addressType,
           _state: "P",
-        } as DocumentAbstract;
+        } as AddressDocumentAbstract;
       })
       .sort((a, b) => a.title.localeCompare(b.title));
   }
 
-  setDocType(docType: DocumentAbstract) {
+  setDocType(docType: AddressDocumentAbstract) {
     this.form.get("choice").setValue(docType.id);
-    this.isPerson = docType._type !== "organization";
+    this.isPerson.set(docType.addressType !== "organization");
     const firstName = this.form.get("firstName");
     const lastName = this.form.get("lastName");
     const organization = this.form.get("organization");
 
-    if (this.isPerson) {
+    if (this.isPerson()) {
       organization.clearValidators();
       organization.reset();
       organization.updateValueAndValidity();

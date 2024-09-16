@@ -24,7 +24,7 @@
         </span>
         @for (
             item of collapsed ? shortPath : fullPath;
-            track item;
+            track item.title;
             let last = $last
         ) {
             <span>

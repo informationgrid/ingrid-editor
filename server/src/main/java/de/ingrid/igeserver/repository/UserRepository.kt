@@ -24,6 +24,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 
+@Suppress("ktlint:standard:function-naming")
 interface UserRepository : JpaRepository<UserInfo, Int> {
     // TODO: implement caching
 //    @Cacheable(value = ["user"])

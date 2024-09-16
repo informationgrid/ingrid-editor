@@ -74,7 +74,7 @@
         >
             <mat-icon svgIcon="Mehr"></mat-icon>
             <mat-menu #moreActionsMenu="matMenu">
-                @for (action of moreActions; track action) {
+                @for (action of moreActions; track action.name) {
                     <button
                         [attr.data-cy]="'action-' + action.name"
                         mat-menu-item

@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service
 class IngridExporterExternalAddressBast(
     idfExporter: IngridIdfExporterExternalBast,
     luceneExporter: IngridLuceneExporterBast,
-    documentWrapperRepository: DocumentWrapperRepository
+    documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo =
@@ -41,6 +41,6 @@ class IngridExporterExternalAddressBast(
             "application/json",
             "json",
             listOf("ingrid-bast"),
-            false
+            false,
         )
 }

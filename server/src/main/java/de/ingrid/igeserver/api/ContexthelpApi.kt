@@ -39,14 +39,16 @@ interface ContexthelpApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the role")])
     @RequestMapping(value = ["/contexthelp"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     fun getContextHelpText(
-            @Parameter(description = "The unique id of the field.", required = true) @RequestParam("fieldId") id: String,
-            @Parameter(description = "The active profile.", required = true) @RequestParam("profile") profile: String,
-            @Parameter(description = "The current document type.", required = true) @RequestParam("docType") docType: String): ResponseEntity<HelpMessage>
+        @Parameter(description = "The unique id of the field.", required = true) @RequestParam("fieldId") id: String,
+        @Parameter(description = "The active profile.", required = true) @RequestParam("profile") profile: String,
+        @Parameter(description = "The current document type.", required = true) @RequestParam("docType") docType: String,
+    ): ResponseEntity<HelpMessage>
 
     @Operation(description = "Get all fields with contexthelptexts")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Returns the list of field ids with contexthelptexts")])
     @RequestMapping(value = ["/contexthelpIds"], produces = [MediaType.APPLICATION_JSON_VALUE], method = [RequestMethod.GET])
     fun listContextHelpIds(
-            @Parameter(description = "The active profile.", required = true) @RequestParam("profile") profile: String,
-            @Parameter(description = "The current document type.", required = true) @RequestParam("docType") docType: String): ResponseEntity<List<String>>
+        @Parameter(description = "The active profile.", required = true) @RequestParam("profile") profile: String,
+        @Parameter(description = "The current document type.", required = true) @RequestParam("docType") docType: String,
+    ): ResponseEntity<List<String>>
 }

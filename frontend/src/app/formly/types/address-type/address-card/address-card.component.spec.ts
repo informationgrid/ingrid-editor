@@ -24,7 +24,6 @@ import { CodelistService } from "../../../../services/codelist/codelist.service"
 import { MatDialogModule } from "@angular/material/dialog";
 import { ProfileService } from "../../../../services/profile.service";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
-import { DocumentIconModule } from "../../../../shared/document-icon/document-icon.module";
 import { getTranslocoModule } from "../../../../transloco-testing.module";
 import { DocumentWithMetadata } from "../../../../models/ige-document";
 import { DocumentService } from "../../../../services/document/document.service";
@@ -42,7 +41,6 @@ describe("AddressCardComponent", () => {
       MatCardModule,
       MatDialogModule,
       MatIconTestingModule,
-      DocumentIconModule,
       getTranslocoModule(),
     ],
     // declarations: [CodelistPipe],
@@ -85,7 +83,7 @@ describe("AddressCardComponent", () => {
     doc.metadata = { state: "PW", docType: "" };
     spectator.fixture.componentRef.setInput("address", {
       type: { key: "1" },
-      address: [doc],
+      address: doc,
     });
     spectator.detectChanges();
 

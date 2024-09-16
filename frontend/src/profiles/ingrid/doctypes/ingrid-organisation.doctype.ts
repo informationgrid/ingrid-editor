@@ -17,7 +17,6 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { DocumentService } from "../../../app/services/document/document.service";
 import { Injectable } from "@angular/core";
 import { OrganisationDoctype } from "../../address/organisation.doctype";
 
@@ -27,9 +26,8 @@ import { OrganisationDoctype } from "../../address/organisation.doctype";
 export class IngridOrganisationDoctype extends OrganisationDoctype {
   id = "InGridOrganisationDoc";
 
-  constructor(storageService: DocumentService) {
-    super(storageService, "pointOfContact");
-    this.addressType = "organization";
+  constructor() {
+    super("pointOfContact");
     this.options = {
       defaultCountry: { key: "276" },
       requiredField: { administrativeArea: true },

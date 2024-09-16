@@ -20,6 +20,8 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { Group } from "../../../models/user-group";
+import { MatTooltip } from "@angular/material/tooltip";
+import { DatePipe } from "@angular/common";
 
 @Component({
   selector: "group-header-more",
@@ -37,6 +39,8 @@ import { Group } from "../../../models/user-group";
       ]),
     ]),
   ],
+  standalone: true,
+  imports: [MatTooltip, DatePipe],
 })
 export class GroupHeaderMoreComponent implements OnInit {
   @Input() group: Group;

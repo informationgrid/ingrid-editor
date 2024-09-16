@@ -1,0 +1,14 @@
+<ige-dialog-template
+    label="Angabe eines Datenformates"
+    [disabled]="!check.checked"
+    (submit)="dlgRef.close(true)"
+>
+    <ng-container content>
+        <label class="padding"
+            >Die Angabe eines Datenformates wird erwartet. Wollen Sie den
+            Datensatz ohne die Angabe eines Datenformates
+            veröffentlichen?</label
+        >
+        <mat-checkbox #check>Ohne Datenformat veröffentlichen</mat-checkbox>
+    </ng-container>
+</ige-dialog-template>

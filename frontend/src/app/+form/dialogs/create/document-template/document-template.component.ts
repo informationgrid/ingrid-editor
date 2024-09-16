@@ -18,32 +18,47 @@
  * limitations under the Licence.
  */
 import {
+  ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   inject,
-  Input,
+  input,
   OnInit,
-  Output,
+  output,
 } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
-import { UntypedFormGroup } from "@angular/forms";
+import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
 import { ProfileAbstract } from "../../../../store/profile/profile.model";
 import { filter, map, take, tap } from "rxjs/operators";
 import { ProfileQuery } from "../../../../store/profile/profile.query";
 import { ProfileService } from "../../../../services/profile.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
+import { MatError, MatFormField } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { FocusDirective } from "../../../../directives/focus.directive";
+import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
 
 @Component({
   selector: "ige-document-template",
   templateUrl: "./document-template.component.html",
   styleUrls: ["./document-template.component.scss"],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    TranslocoDirective,
+    ReactiveFormsModule,
+    MatFormField,
+    MatInput,
+    FocusDirective,
+    MatError,
+    DocumentListItemComponent,
+  ],
 })
 export class DocumentTemplateComponent implements OnInit {
-  @Input() form: UntypedFormGroup;
-  @Input() isFolder = true;
+  form = input.required<UntypedFormGroup>();
+  isFolder = input<boolean>(true);
 
-  @Output() create = new EventEmitter<void>();
+  create = output<void>();
 
   private translocoService = inject(TranslocoService);
   private profileQuery = inject(ProfileQuery);
@@ -55,7 +70,7 @@ export class DocumentTemplateComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    if (this.isFolder) {
+    if (this.isFolder()) {
       this.setDocType({ id: "FOLDER" } as DocumentAbstract);
     } else {
       this.initializeDocumentTypes(this.profileQuery.documentProfiles);
@@ -97,6 +112,6 @@ export class DocumentTemplateComponent implements OnInit {
   }
 
   setDocType(docType: DocumentAbstract) {
-    this.form.get("choice").setValue(docType.id);
+    this.form().get("choice").setValue(docType.id);
   }
 }

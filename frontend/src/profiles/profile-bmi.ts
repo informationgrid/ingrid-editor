@@ -28,6 +28,7 @@ import { ReportsService } from "../app/+reports/reports.service";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class BmiComponent {
   constructor(
@@ -47,8 +48,7 @@ class BmiComponent {
 }
 
 @NgModule({
-  declarations: [BmiComponent],
-  imports: [NgxFlowModule],
+  imports: [NgxFlowModule, BmiComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

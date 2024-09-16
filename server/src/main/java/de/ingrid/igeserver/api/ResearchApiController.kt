@@ -43,7 +43,6 @@ import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
 import de.ingrid.igeserver.utils.AuthUtils
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -58,9 +57,9 @@ class ResearchApiController(
     val catalogService: CatalogService,
     val authUtils: AuthUtils,
     val geoThesaurusFactory: GeoThesaurusFactory,
-    val generalProperties: GeneralProperties
+    val generalProperties: GeneralProperties,
 ) : ResearchApi {
-    
+
     override fun load(principal: Principal): ResponseEntity<List<Query>> {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -70,13 +69,11 @@ class ResearchApiController(
     }
 
     override fun save(principal: Principal, query: Query): ResponseEntity<Query> {
-
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val result = queryService.saveQuery(userId, catalogId, query)
         return ResponseEntity.ok(result)
-
     }
 
     override fun delete(principal: Principal, id: Int): ResponseEntity<Void> {
@@ -85,12 +82,10 @@ class ResearchApiController(
     }
 
     override fun search(principal: Principal, query: ResearchQuery): ResponseEntity<ResearchResponse> {
-
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val result = researchService.query(catalogId, query, principal)
         return ResponseEntity.ok(result)
-
     }
 
     override fun searchSql(principal: Principal, sqlQuery: String, page: Int?, pageSize: Int?): ResponseEntity<ResearchResponse> {
@@ -98,8 +93,10 @@ class ResearchApiController(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val paging = if (page != null && pageSize != null) {
             ResearchPaging(page, pageSize)
-        } else ResearchPaging()
-        
+        } else {
+            ResearchPaging()
+        }
+
         val result = researchService.querySql(principal, catalogId, sqlQuery, paging)
         return ResponseEntity.ok(result)
     }
@@ -119,22 +116,21 @@ class ResearchApiController(
     override fun geoSearch(principal: Principal, query: String): ResponseEntity<List<SpatialResponse>> {
         val response = geoThesaurusFactory.get("wfsgnde").search(query, GeoThesaurusSearchOptions(ThesaurusSearchType.CONTAINS))
         return ResponseEntity.ok(response)
-        
     }
 
     override fun aiSearch(principal: Principal, query: String): ResponseEntity<String> {
         var answer: String? = null
         runBlocking {
-            launch { 
+            launch {
                 answer = doAISearch(query)
             }
         }
         return ResponseEntity.ok(answer ?: "Error")
     }
-    
+
     private suspend fun doAISearch(query: String): String? {
         if (generalProperties.openAIToken.isNullOrEmpty()) throw ServerException.withReason("No OpenAI-Token configured")
-        
+
         val openAI = OpenAI(
             token = generalProperties.openAIToken!!,
             timeout = Timeout(socket = 60.seconds),
@@ -146,17 +142,16 @@ class ResearchApiController(
             messages = listOf(
                 ChatMessage(
                     role = ChatRole.System,
-                    content = "Given the following SQL tables in a Postgres database, your job is to write queries given a user’s request. create table document( id integer   default nextval('document_id_seq'::regclass) not null primary key, catalog_id integer not null references catalog on delete cascade, uuid varchar(255) not null, type varchar(255)             not null, title             varchar(4096)            not null, data jsonb); Das JSONB Feld ist so aufgebaut: { isOpenData: boolean, isInspireIdentified: boolean, isAdVCompatible: boolean, description: string, keywords: { free: {label: string}[], gemet: {label: string}[], umthes: {label: string}[] }}. Querying 'Schlüsselwort' should be searched in each JSON-field under 'keywords'. Search should be case-insensitive."
+                    content = "Given the following SQL tables in a Postgres database, your job is to write queries given a user’s request. create table document( id integer   default nextval('document_id_seq'::regclass) not null primary key, catalog_id integer not null references catalog on delete cascade, uuid varchar(255) not null, type varchar(255)             not null, title             varchar(4096)            not null, data jsonb); Das JSONB Feld ist so aufgebaut: { isOpenData: boolean, isInspireIdentified: boolean, isAdVCompatible: boolean, description: string, keywords: { free: {label: string}[], gemet: {label: string}[], umthes: {label: string}[] }}. Querying 'Schlüsselwort' should be searched in each JSON-field under 'keywords'. Search should be case-insensitive.",
                 ),
                 ChatMessage(
                     role = ChatRole.User,
-                    content = query
-                )
-            )
+                    content = query,
+                ),
+            ),
         )
         val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
-        
+
         return completion.choices.firstOrNull()?.message?.content
     }
-
 }

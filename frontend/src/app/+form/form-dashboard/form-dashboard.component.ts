@@ -29,12 +29,29 @@ import { TreeQuery } from "../../store/tree/tree.query";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter } from "rxjs/operators";
 import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
+import { DashboardAddressHeaderComponent } from "./dashboard-address-header/dashboard-address-header.component";
+import { DashboardDocsHeaderComponent } from "./dashboard-docs-header/dashboard-docs-header.component";
+import { CardBoxComponent } from "../../shared/card-box/card-box.component";
+import { DocumentListItemComponent } from "../../shared/document-list-item/document-list-item.component";
+import { MatIcon } from "@angular/material/icon";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { AsyncPipe } from "@angular/common";
 
 @UntilDestroy()
 @Component({
   selector: "ige-form-dashboard",
   templateUrl: "./form-dashboard.component.html",
   styleUrls: ["./form-dashboard.component.scss"],
+  standalone: true,
+  imports: [
+    DashboardAddressHeaderComponent,
+    DashboardDocsHeaderComponent,
+    CardBoxComponent,
+    DocumentListItemComponent,
+    MatIcon,
+    TranslocoDirective,
+    AsyncPipe,
+  ],
 })
 export class FormDashboardComponent implements OnInit {
   @Input() address = false;

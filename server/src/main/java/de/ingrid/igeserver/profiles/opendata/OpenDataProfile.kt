@@ -40,14 +40,14 @@ import org.springframework.stereotype.Service
 class OpenDataProfile(
     @JsonIgnore val codelistRepo: CodelistRepository,
     @JsonIgnore val catalogRepo: CatalogRepository,
-    @JsonIgnore val codelistHandler: CodelistHandler
+    @JsonIgnore val codelistHandler: CodelistHandler,
 ) : CatalogProfile {
 
     companion object {
-        const val id = "opendata"
+        const val ID = "opendata"
     }
 
-    override val identifier = id
+    override val identifier = ID
     override val title = "Open-Data Katalog"
     override val description: String? = null
 
@@ -55,30 +55,30 @@ class OpenDataProfile(
 
     override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
 
-    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state", "Filter", arrayOf(
-                    Draft(),
-                    ExceptFolders()
-                ),
-                viewComponent = ViewComponent.CHECKBOX,
-                combine = Operator.AND
-            )
-        )
-    }
+    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Filter",
+            arrayOf(
+                Draft(),
+                ExceptFolders(),
+            ),
+            viewComponent = ViewComponent.CHECKBOX,
+            combine = Operator.AND,
+        ),
+    )
 
-    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state", "Filter", arrayOf(
-                    Draft(),
-                    ExceptFolders()
-                ),
-                viewComponent = ViewComponent.CHECKBOX
-            )
-        )
-    }
+    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Filter",
+            arrayOf(
+                Draft(),
+                ExceptFolders(),
+            ),
+            viewComponent = ViewComponent.CHECKBOX,
+        ),
+    )
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
@@ -170,19 +170,12 @@ class OpenDataProfile(
     }
 
     override fun initCatalogQueries(catalogId: String) {
-
     }
 
     override fun initIndices() {
-
     }
 
-    override fun getElasticsearchMapping(format: String): String {
-        return {}.javaClass.getResource("/opendata/mappings/default-mapping.json")?.readText() ?: ""
-    }
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/opendata/mappings/default-mapping.json")?.readText() ?: ""
 
-    override fun getElasticsearchSetting(format: String): String {
-        return {}.javaClass.getResource("/ingrid/default-settings.json")?.readText() ?: ""
-    }
-
+    override fun getElasticsearchSetting(format: String): String = {}.javaClass.getResource("/ingrid/default-settings.json")?.readText() ?: ""
 }

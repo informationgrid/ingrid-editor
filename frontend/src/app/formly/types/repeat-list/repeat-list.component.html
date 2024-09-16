@@ -11,53 +11,55 @@
     <mat-chip-listbox
         [disabled]="formControl.disabled"
         cdkDropListGroup
-        mixedCdkDragDrop
-        (dropped)="drop($event)"
         [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
     >
         <span
-            *ngFor="let item of model[$any(field.key)]; let i = index"
             cdkDropList
-            mixedCdkDropList
+            cdkDropListOrientation="mixed"
+            (cdkDropListDropped)="drop($event)"
         >
-            <mat-chip-option
-                disableRipple
-                cdkDrag
-                data-cy="list-item"
-                [cdkDragDisabled]="formControl.disabled"
-                [removable]="true"
-                [selectable]="false"
-                (removed)="removeItem(i)"
-            >
-                @if (props.showLanguage) {
-                    <mat-icon
-                        class="avatar gray"
-                        svgIcon="language-24px"
-                    ></mat-icon>
-                }
-                @if (!props.labelField) {
+            @for (
+                item of model[$any(field.key)];
+                track props.labelField
+                    ? item[props.labelField]
+                    : getParameter(item);
+                let idx = $index
+            ) {
+                <mat-chip-option
+                    cdkDrag
+                    data-cy="list-item"
+                    [cdkDragDisabled]="formControl.disabled"
+                    [removable]="true"
+                    [selectable]="false"
+                    (removed)="removeItem(idx)"
+                >
+                    @if (props.showLanguage) {
+                        <mat-icon
+                            class="avatar gray"
+                            svgIcon="language-24px"
+                        ></mat-icon>
+                    }
                     <div class="label">
-                        {{ getParameter(item) }}
+                        @if (!props.labelField) {
+                            {{ getParameter(item) }}
+                        } @else {
+                            {{ item[props.labelField] }}
+                        }
                     </div>
-                }
-                @if (props.labelField) {
-                    <div class="label">
-                        {{ item[props.labelField] }}
-                    </div>
-                }
-                @if (formControl.enabled) {
-                    <button
-                        matChipRemove
-                        [attr.aria-description]="
-                            props.labelField
-                                ? item[props.labelField]
-                                : getParameter(item) + ' entfernen'
-                        "
-                    >
-                        <mat-icon>cancel</mat-icon>
-                    </button>
-                }
-            </mat-chip-option>
+                    @if (formControl.enabled) {
+                        <button
+                            matChipRemove
+                            [attr.aria-description]="
+                                props.labelField
+                                    ? item[props.labelField]
+                                    : getParameter(item) + ' entfernen'
+                            "
+                        >
+                            <mat-icon>cancel</mat-icon>
+                        </button>
+                    }
+                </mat-chip-option>
+            }
         </span>
     </mat-chip-listbox>
 }
@@ -94,8 +96,7 @@
                     }
                     @if (type !== "search") {
                         {{ getParameter(item) }}
-                    }
-                    @if (type === "search") {
+                    } @else {
                         <div class="label">
                             {{ item[props.labelField] }}
                         </div>

@@ -25,17 +25,26 @@ import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { Router } from "@angular/router";
-import { FormControl, UntypedFormControl } from "@angular/forms";
+import {
+  FormControl,
+  ReactiveFormsModule,
+  UntypedFormControl,
+} from "@angular/forms";
 import { debounceTime } from "rxjs/operators";
-import { PageTemplateModule } from "../../../../app/shared/page-template/page-template.module";
+
 import { SearchInputComponent } from "../../../../app/shared/search-input/search-input.component";
-import { SharedModule } from "../../../../app/shared/shared.module";
-import { DocumentIconModule } from "../../../../app/shared/document-icon/document-icon.module";
+
 import { MatMenuModule } from "@angular/material/menu";
 import { DatePipe } from "@angular/common";
-import { FormSharedModule } from "../../../../app/+form/form-shared/form-shared.module";
 import { ExportService } from "../../../../app/services/export.service";
 import { BackendQuery } from "../../../../app/+research/backend-query.model";
+import { PageTemplateNoHeaderComponent } from "../../../../app/shared/page-template/page-template-no-header.component";
+import { CardBoxComponent } from "../../../../app/shared/card-box/card-box.component";
+import { MatTooltip } from "@angular/material/tooltip";
+import { DocumentIconComponent } from "../../../../app/shared/document-icon/document-icon.component";
+import { FacetsComponent } from "../../../../app/+research/+facets/facets.component";
+import { MatIcon } from "@angular/material/icon";
+import { MatButton, MatIconButton } from "@angular/material/button";
 
 @UntilDestroy()
 @Component({
@@ -44,16 +53,21 @@ import { BackendQuery } from "../../../../app/+research/backend-query.model";
   styleUrls: ["./activity-report.component.scss"],
   standalone: true,
   imports: [
-    PageTemplateModule,
     SearchInputComponent,
-    SharedModule,
     MatTableModule,
-    DocumentIconModule,
     MatMenuModule,
     MatPaginatorModule,
     DatePipe,
-    FormSharedModule,
     MatSortModule,
+    PageTemplateNoHeaderComponent,
+    CardBoxComponent,
+    MatTooltip,
+    DocumentIconComponent,
+    ReactiveFormsModule,
+    FacetsComponent,
+    MatIcon,
+    MatIconButton,
+    MatButton,
   ],
 })
 export class ActivityReportComponent implements AfterViewInit {

@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service
 class IngridExporterExternalAddressLfub(
     idfExporter: IngridIdfExporterLfub,
     luceneExporter: IngridLuceneExporterLfub,
-    documentWrapperRepository: DocumentWrapperRepository
+    documentWrapperRepository: DocumentWrapperRepository,
 ) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
 
     override val typeInfo =
@@ -41,6 +41,6 @@ class IngridExporterExternalAddressLfub(
             "application/json",
             "json",
             listOf("ingrid-lfubayern"),
-            false
+            false,
         )
 }

@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component
 class RemoveUnreferencedDocsTask(
     val storage: FileSystemStorage,
     val entityManager: EntityManager,
-    val catalogRepo: CatalogRepository
+    val catalogRepo: CatalogRepository,
 ) {
 
     private val log = logger()
@@ -63,7 +63,7 @@ class RemoveUnreferencedDocsTask(
             DocUrls(
                 it[1] as String,
                 it[0] as String,
-                getUrlsFromJsonFieldTable(data, "uvpNegativeDecisionDocs")
+                getUrlsFromJsonFieldTable(data, "uvpNegativeDecisionDocs"),
             )
         }
         val allUploads = uploads + uploadsNegative
@@ -93,7 +93,7 @@ class RemoveUnreferencedDocsTask(
     private fun getReferencedFilesOfCatalog(
         allFiles: List<FileSystemItem>,
         allUploads: List<DocUrls>,
-        catalogId: String
+        catalogId: String,
     ): MutableList<FileSystemItem> {
         val referencedFiles = mutableListOf<FileSystemItem>()
         allFiles.forEach { file ->
@@ -107,7 +107,6 @@ class RemoveUnreferencedDocsTask(
     }
 
     private fun queryDocs(query: String, jsonbField: String): List<Array<Any>> {
-
         @Suppress("UNCHECKED_CAST")
         return entityManager.createNativeQuery(query).unwrap(NativeQuery::class.java)
             .addScalar("uuid")

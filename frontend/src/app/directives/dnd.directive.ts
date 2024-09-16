@@ -19,14 +19,15 @@
  */
 import {
   Directive,
-  Output,
   EventEmitter,
   HostBinding,
   HostListener,
+  Output,
 } from "@angular/core";
 
 @Directive({
   selector: "[appDnd]",
+  standalone: true,
 })
 export class DndDirective {
   @HostBinding("class.fileover") fileOver: boolean;

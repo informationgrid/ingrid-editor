@@ -41,7 +41,7 @@ class PlannedPublishTask(val documentService: DocumentService, val catalogServic
     @Scheduled(cron = "\${cron.publish.expression}")
     fun plannedPublishTask() {
         log.info("Starting Task: Planned-Publish")
-        val principal = setAdminAuthentication("PlanedPublish", "Task")
+        val principal = setAdminAuthentication("PlannedPublish", "Task")
 
         catalogService.getCatalogs().forEach { documentService.publishPendingDocuments(principal, it.identifier) }
         log.info("Task finished: Planned-Publish")

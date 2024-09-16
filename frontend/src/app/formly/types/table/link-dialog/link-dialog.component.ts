@@ -24,22 +24,29 @@ import {
   Inject,
   OnInit,
 } from "@angular/core";
-import { UntypedFormGroup } from "@angular/forms";
+import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { FormDialogData } from "../form-dialog/form-dialog.component";
-import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
+import {
+  FormlyFieldConfig,
+  FormlyFormOptions,
+  FormlyModule,
+} from "@ngx-formly/core";
+import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 
 @Component({
   selector: "ige-link-dialog",
   templateUrl: "./link-dialog.component.html",
   styleUrls: ["./link-dialog.component.scss"],
+  standalone: true,
+  imports: [DialogTemplateComponent, ReactiveFormsModule, FormlyModule],
 })
 export class LinkDialogComponent implements OnInit, AfterViewInit {
   form = new UntypedFormGroup({});
 
   options: FormlyFormOptions = {};
 
-  data: FormDialogData = { fields: [], model: {} };
+  data: FormDialogData = { fields: [], model: null };
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -55,8 +62,7 @@ export class LinkDialogComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.data = {
       fields: this.adaptFields(),
-      model: {},
-      newEntry: true,
+      model: null,
     };
   }
 

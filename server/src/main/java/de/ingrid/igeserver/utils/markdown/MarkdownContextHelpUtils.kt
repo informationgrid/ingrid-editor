@@ -42,7 +42,7 @@ import java.util.*
 @Service
 class MarkdownContextHelpUtils {
 
-    val LOG = logger()
+    val log = logger()
 
     val contextHelpPath = DEFAULT_CONTEXT_HELP_PATH
 
@@ -62,7 +62,7 @@ class MarkdownContextHelpUtils {
         parser = Parser.builder().extensions(extensions).build()
         val renderExtensions = Arrays.asList(TablesExtension.create())
         htmlRenderer = HtmlRenderer.builder().extensions(renderExtensions).build()
-    }// read profile directories, exclude directory override// override directory
+    } // read profile directories, exclude directory override// override directory
 
     /**
      * Returns a Map with rendered HTML from markdown files.
@@ -114,7 +114,7 @@ class MarkdownContextHelpUtils {
 
             val profileDir = this::class.java.getResource(contextHelpPath)
             if (profileDir == null) {
-                LOG.error("Path for context help not found: $contextHelpPath")
+                log.error("Path for context help not found: $contextHelpPath")
                 return result
             }
 
@@ -129,15 +129,13 @@ class MarkdownContextHelpUtils {
                     result.putAll(from)
                 }
 
-
             return result
         }
 
     private fun getLanguageHelpFiles(
         sourcePath: File,
-        profile: String
+        profile: String,
     ): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> {
-
         val result = mutableMapOf<MarkdownContextHelpItemKey, MarkdownContextHelpItem>()
 
         // get default language
@@ -160,21 +158,17 @@ class MarkdownContextHelpUtils {
     private fun getHelpFilesFromPath(
         sourcePath: File,
         language: String,
-        profile: String
-    ): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> {
-
-        return sourcePath.walk().maxDepth(1)
-            .filter { it.isFile }
-            .flatMap { readMarkDownFile(it, language, profile) }
-            .map { it!!.first to it.second }
-            .toMap()
-
-    }
+        profile: String,
+    ): Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> = sourcePath.walk().maxDepth(1)
+        .filter { it.isFile }
+        .flatMap { readMarkDownFile(it, language, profile) }
+        .map { it!!.first to it.second }
+        .toMap()
 
     private fun readMarkDownFile(
         path: File,
         language: String,
-        profile: String
+        profile: String,
     ): List<Pair<MarkdownContextHelpItemKey, MarkdownContextHelpItem>?> {
         val result = mutableListOf<Pair<MarkdownContextHelpItemKey, MarkdownContextHelpItem>>()
         val content = File(path.toURI()).readText()
@@ -188,7 +182,10 @@ class MarkdownContextHelpUtils {
 
             if (fieldId != null) {
                 val itemKey = MarkdownContextHelpItemKey(
-                    fieldId, docType, language, profile
+                    fieldId,
+                    docType,
+                    language,
+                    profile,
                 )
 
                 val helpItem = MarkdownContextHelpItem(path.toPath())
@@ -214,7 +211,7 @@ class MarkdownContextHelpUtils {
             val mdNode = parser.parse(content)
             htmlRenderer!!.render(mdNode)
         } catch (e: IOException) {
-            LOG.error("Impossible to open ressource from class path.", e)
+            log.error("Impossible to open ressource from class path.", e)
             throw RuntimeException(e)
         }
         return renderedNode

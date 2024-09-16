@@ -19,7 +19,7 @@
  */
 package de.ingrid.igeserver.exports.ingrid_lubw
 
-const val oacKeyword = """
+const val OAC_KEYWORD = """
                     <gmd:descriptiveKeywords>
                         <gmd:MD_Keywords>
                             <gmd:keyword>
@@ -29,7 +29,7 @@ const val oacKeyword = """
                     </gmd:descriptiveKeywords>
 """
 
-const val systemEnvironment = """
+const val SYSTEM_ENVIRONMENT = """
                     <gmd:environmentDescription>
                         <gco:CharacterString>test_environmentDescription</gco:CharacterString>
                     </gmd:environmentDescription>

@@ -28,4 +28,3 @@ class Unpublished : QuickFilter() {
     override val label = "Nur Unveröffentlichte"
     override val filter = "document1.state = 'DRAFT'"
 }
-

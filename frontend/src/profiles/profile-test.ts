@@ -24,9 +24,11 @@ import { Component, NgModule } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { ContextHelpService } from "../app/services/context-help/context-help.service";
 import { TestAddressDoctype } from "./test/test-address.doctype";
+import { TestOrganisationDoctype } from "./test/test-organisation.doctype";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class TestComponent {
   constructor(
@@ -36,15 +38,17 @@ class TestComponent {
     folder: FolderDoctype,
     test: TestDoctype,
     address: TestAddressDoctype,
+    organisation: TestOrganisationDoctype,
   ) {
-    const types = [mcloud, folder, test, address];
+    const types = [mcloud, folder, test, address, organisation];
+    service.setDefaultAddressType(address);
 
     service.registerProfiles(types);
   }
 }
 
 @NgModule({
-  declarations: [TestComponent],
+  imports: [TestComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

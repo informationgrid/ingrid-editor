@@ -1,5 +1,5 @@
 <div [formGroup]="form" class="flex-col">
-    @if (isPerson) {
+    @if (isPerson()) {
         <div class="space-bottom flex-1 flex-row gap-24">
             <div class="flex-1">
                 <div class="dlg-field-label required">Vorname</div>
@@ -43,29 +43,14 @@
         </mat-form-field>
     }
 
-    <ng-template #organization>
-        <div class="dlg-field-label required">Organisation</div>
-        <mat-form-field appearance="outline" class="space-bottom">
-            <input
-                igeFocus
-                matInput
-                data-cy="create-address-organization"
-                name="organization"
-                formControlName="organization"
-                (keyup.enter)="create.emit()"
-                aria-label="Titel der Organisation"
-            />
-        </mat-form-field>
-    </ng-template>
-
     <ng-content></ng-content>
 
-    @if (documentTypes?.length > 1) {
+    @if (documentTypes()?.length > 1) {
         <div class="dlg-create-place dlg-field-label required" id="doc-type">
             Adresstyp wählen
         </div>
         <ige-document-list-item
-            [docs]="documentTypes"
+            [docs]="documentTypes()"
             showSelection="true"
             [denseMode]="true"
             [hideDivider]="true"

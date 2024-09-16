@@ -27,5 +27,4 @@ interface DCAT {
     val description: String?
     val publisher: String?
     val license: String?
-
 }

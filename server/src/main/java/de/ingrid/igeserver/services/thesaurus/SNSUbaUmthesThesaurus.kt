@@ -49,7 +49,7 @@ class SNSUbaUmthesThesaurus : ThesaurusService() {
         val labelElement = it.get("prefLabel") ?: it.get("officialName") ?: it.get("altLabel") ?: return null
         val alternativeLabel = it.get("altLabel")?.get(1)?.get("")?.asText()
         val label = labelElement.get(1).get("").asText()
-        
+
         return Keyword(
             labelElement.get(0).get("resource").asText(),
             label,

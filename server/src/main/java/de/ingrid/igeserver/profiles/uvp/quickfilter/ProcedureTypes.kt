@@ -30,7 +30,10 @@ class ProcedureTypes : QuickFilter() {
 
     override fun filter(parameter: List<*>?) = "document1.type = '${parameter?.get(0)}'"
     override val parameters = listOf(
-        "UvpNegativePreliminaryAssessmentDoc", "UvpApprovalProcedureDoc", "UvpSpatialPlanningProcedureDoc",
-        "UvpLineDeterminationDoc", "UvpForeignProjectDoc",
+        "UvpNegativePreliminaryAssessmentDoc",
+        "UvpApprovalProcedureDoc",
+        "UvpSpatialPlanningProcedureDoc",
+        "UvpLineDeterminationDoc",
+        "UvpForeignProjectDoc",
     )
 }

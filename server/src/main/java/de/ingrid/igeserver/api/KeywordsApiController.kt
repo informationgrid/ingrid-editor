@@ -36,10 +36,9 @@ class KeywordsApiController(val thesaurusFactory: ThesaurusFactory) : KeywordsAp
     override fun search(
         @Parameter(required = true) @PathVariable(value = "thesaurusId") thesaurusId: String,
         @RequestParam(required = true, value = "q") term: String,
-        @RequestParam(value = "type") type: ThesaurusSearchType?
+        @RequestParam(value = "type") type: ThesaurusSearchType?,
     ): ResponseEntity<List<Keyword>> {
         val result = thesaurusFactory.get(thesaurusId).search(term, ThesaurusSearchOptions(type ?: ThesaurusSearchType.CONTAINS))
         return ResponseEntity.ok(result)
     }
-
 }

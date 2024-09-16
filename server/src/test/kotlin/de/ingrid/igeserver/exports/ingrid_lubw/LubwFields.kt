@@ -35,7 +35,6 @@ class LubwFields : GeodatasetBase() {
         "InGridGeoDataset" to "/export/ingrid/geo-dataset.minimal.sample.json",
     )
 
-
     override suspend fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
         this.exporter =
@@ -43,10 +42,10 @@ class LubwFields : GeodatasetBase() {
                 this.codelistHandler,
                 this.config,
                 this.catalogService,
-                this.documentService
+                this.documentService,
             )
         every { catalogService.getProfileFromCatalog(any()) } returns
-                DummyCatalog("ingrid-lubw")
+            DummyCatalog("ingrid-lubw")
     }
 
     init {
@@ -57,13 +56,13 @@ class LubwFields : GeodatasetBase() {
                         .readTree(
                             """{
                             "oac": "test_oac"
-                            }""".trimIndent()
+                            }
+                            """.trimIndent(),
                         ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain oacKeyword
+                result shouldContain OAC_KEYWORD
             }
-
 
             should("export environmentdescription to: $docType") {
                 val context =
@@ -80,13 +79,13 @@ class LubwFields : GeodatasetBase() {
                                       }
                                     }
                                   }
-                                }""".trimIndent()
+                                }
+                            """.trimIndent(),
                         ) as ObjectNode
 
                 val result = exportJsonToXML(exporter, docSample, context)
-                result shouldContain systemEnvironment
+                result shouldContain SYSTEM_ENVIRONMENT
             }
-
         }
     }
 }

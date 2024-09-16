@@ -28,4 +28,3 @@ class DocTest : QuickFilter() {
     override val label = "Test"
     override val filter = "document1.type = 'TestDoc'"
 }
-

@@ -28,7 +28,7 @@ data class FolderModel(
     @JsonProperty("_id") val id: Int,
     @JsonProperty("_type") val docType: String,
     val title: String?,
-    val data: FolderDataModel
+    val data: FolderDataModel,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

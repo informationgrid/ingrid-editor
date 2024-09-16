@@ -26,11 +26,24 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.ServerException.Companion.withReason
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.TransformUtils.getRdfModel
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.RecordPLUProperties
-import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.*
-import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.enums.*
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.Agent
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.Contact
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.Distribution
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.PeriodOfTime
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.elasticsearch.ProcessStep
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.enums.DocTypeEnum
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.enums.PlanStateEnum
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.enums.PlanTypeEnum
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.enums.ProcedureStateEnum
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.enums.ProcedureTypeEnum
+import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.model.enums.ProcessStepTypeEnum
 import de.ingrid.igeserver.profiles.ingrid.importer.dcatapde.util.ValidationUtils
 import org.apache.http.client.utils.URIBuilder
-import org.apache.jena.rdf.model.*
+import org.apache.jena.rdf.model.Literal
+import org.apache.jena.rdf.model.Model
+import org.apache.jena.rdf.model.RDFNode
+import org.apache.jena.rdf.model.Resource
+import org.apache.jena.rdf.model.Statement
 import org.apache.jena.riot.Lang
 import org.apache.jena.riot.RiotException
 import org.apache.jena.vocabulary.DCTerms
@@ -48,8 +61,7 @@ import java.util.function.Consumer
 import java.util.function.Function
 
 @Component
-class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val validationUtils: ValidationUtils) :
-    Deserializer {
+class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val validationUtils: ValidationUtils) : Deserializer {
 
     val uuidPattern = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
 
@@ -151,7 +163,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
         record.procedurePeriod = handleProperties(
             model,
             dataset,
-            listOf("procedurePeriod")
+            listOf("procedurePeriod"),
         )["procedurePeriod"] as PeriodOfTime?
         // TODO refactor to remove procedureStartDate handling once k1 and k3 have updated
         if (record.procedurePeriod != null && record.procedurePeriod!!.startDate != null) {
@@ -172,7 +184,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
         record.developmentFreezePeriod = handleProperties(
             model,
             dataset,
-            listOf("developmentFreezePeriod")
+            listOf("developmentFreezePeriod"),
         )["developmentFreezePeriod"] as PeriodOfTime?
         val publishers = createAgents(model, dataset, "dct", "publisher").iterator()
         record.publisher = if (publishers.hasNext()) publishers.next() else null
@@ -199,9 +211,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
         return record
     }
 
-    private fun statement(model: Model, parent: Resource?, ns: String, localname: String): Statement {
-        return parent!!.getProperty(model.getProperty(model.getNsPrefixURI(ns), localname))
-    }
+    private fun statement(model: Model, parent: Resource?, ns: String, localname: String): Statement = parent!!.getProperty(model.getProperty(model.getNsPrefixURI(ns), localname))
 
     private fun obj(model: Model, parent: Resource?, ns: String, localname: String): RDFNode? {
         val s = parent!!.getProperty(model.getProperty(model.getNsPrefixURI(ns), localname))
@@ -281,7 +291,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
         dataset: Resource,
         ns: String,
         localname: String,
-        allowedProperties: List<String>
+        allowedProperties: List<String>,
     ): Set<Map<String, Any>> {
         val p = model.getProperty(model.getNsPrefixURI(ns), localname)
         val maps: MutableSet<Map<String, Any>> = HashSet()
@@ -361,14 +371,14 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
                     featuresNode.forEach(
                         Consumer { feature: JsonNode ->
                             geometries.add(
-                                feature["geometry"]
+                                feature["geometry"],
                             )
-                        }
+                        },
                     )
                     val objectNode = mapper.createObjectNode()
                     objectNode.set<JsonNode>(
                         "type",
-                        mapper.convertValue("GeometryCollection", JsonNode::class.java)
+                        mapper.convertValue("GeometryCollection", JsonNode::class.java),
                     )
                     objectNode.set<JsonNode>("geometries", geometries)
                     return mapper.readValue(objectNode.toString(), Map::class.java) as Map<String, Any>
@@ -500,7 +510,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
             "mapLayerNames",
             "modified",
             "temporal",
-            "title"
+            "title",
         )
         private val processStepProperties: List<String> =
             mutableListOf("identifier", "distribution", "passNumber", "processStepType", "temporal", "title")
@@ -513,7 +523,7 @@ class RdfDeserializer(@Autowired val mapper: ObjectMapper, @Autowired val valida
             "MultiPoint",
             "MultiLineString",
             "MultiPolygon",
-            "GeometryCollection"
+            "GeometryCollection",
         )
     }
 }

@@ -40,7 +40,7 @@ open class PersistencePayload(
     var type: EntityType,
     var catalogIdentifier: String,
     var document: Document,
-    var wrapper: DocumentWrapper
+    var wrapper: DocumentWrapper,
 ) : Payload {
     /**
      * Persistence action to perform on the contained data
@@ -52,7 +52,7 @@ open class PersistencePayload(
         UNPUBLISH,
         REVERT,
         DELETE,
-        INDEX
+        INDEX,
     }
 }
 
@@ -64,7 +64,7 @@ open class PrePersistencePayload(
     type: EntityType,
     catalogIdentifier: String,
     document: Document,
-    wrapper: DocumentWrapper
+    wrapper: DocumentWrapper,
 ) :
     PersistencePayload(action, type, catalogIdentifier, document, wrapper) {
     constructor(action: Action, type: EntityType, catalogIdentifier: String, document: Document) : this(
@@ -72,7 +72,7 @@ open class PrePersistencePayload(
         type,
         catalogIdentifier,
         document,
-        DocumentWrapper()
+        DocumentWrapper(),
     )
 }
 
@@ -84,7 +84,7 @@ open class PostPersistencePayload(
     type: EntityType,
     catalogIdentifier: String,
     document: Document,
-    wrapper: DocumentWrapper
+    wrapper: DocumentWrapper,
 ) :
     PersistencePayload(action, type, catalogIdentifier, document, wrapper)
 
@@ -97,7 +97,7 @@ open class PreCreatePayload(
     document: Document,
     val parentId: Int?,
     val category: String,
-    val initiator: InitiatorAction
+    val initiator: InitiatorAction,
 ) :
     PrePersistencePayload(Action.CREATE, type, catalogIdentifier, document)
 
@@ -108,7 +108,7 @@ open class PostCreatePayload(
     type: EntityType,
     catalogIdentifier: String,
     document: Document,
-    wrapper: DocumentWrapper
+    wrapper: DocumentWrapper,
 ) :
     PostPersistencePayload(Action.CREATE, type, catalogIdentifier, document, wrapper)
 
@@ -131,7 +131,7 @@ open class PrePublishPayload(
     type: EntityType,
     catalogIdentifier: String,
     document: Document,
-    wrapper: DocumentWrapper
+    wrapper: DocumentWrapper,
 ) :
     PrePersistencePayload(Action.PUBLISH, type, catalogIdentifier, document, wrapper)
 
@@ -148,7 +148,7 @@ open class PreUnpublishPayload(
     type: EntityType,
     catalogIdentifier: String,
     document: Document,
-    wrapper: DocumentWrapper
+    wrapper: DocumentWrapper,
 ) :
     PrePersistencePayload(Action.UNPUBLISH, type, catalogIdentifier, document, wrapper)
 

@@ -19,15 +19,21 @@
  */
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { generateUUID } from "../../../app/services/utils";
+import { UploadService } from "../../../app/shared/upload/upload.service";
+import { map } from "rxjs/operators";
+import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 
 @Injectable({
   providedIn: "root",
 })
 export class GeoDatasetDoctype extends IngridShared {
+  private uploadService = inject(UploadService);
+  protected codelistQuery = inject(CodelistQuery);
+
   id = "InGridGeoDataset";
 
   label = "Geodatensatz";
@@ -48,6 +54,9 @@ export class GeoDatasetDoctype extends IngridShared {
       identifier: undefined,
       statement: undefined,
     },
+    validators: {
+      identifier: null,
+    },
   };
 
   showInspireConform = true;
@@ -61,7 +70,12 @@ export class GeoDatasetDoctype extends IngridShared {
   constructor() {
     super();
     this.options.required.spatialSystems = true;
+    this.options.required.useConstraints = true;
     this.options.required.extraInfoLangData = true;
+    this.options.dynamicRequired.dataFormat =
+      "formState.mainModel?.isInspireIdentified";
+    this.options.dynamicRequired.spatialScope =
+      "formState.mainModel?.isInspireIdentified";
   }
 
   documentFields = () => {
@@ -96,6 +110,7 @@ export class GeoDatasetDoctype extends IngridShared {
         ]),
         this.addInput("identifier", "Identifikator der Datenquelle", {
           required: this.geodatasetOptions.required.identifier,
+          validators: this.geodatasetOptions.validators.identifier,
           wrappers: this.showIdentifierCreateButton
             ? ["panel", "button", "form-field"]
             : ["panel", "form-field"],
@@ -518,6 +533,87 @@ export class GeoDatasetDoctype extends IngridShared {
       }),
       this.addAvailabilitySection(),
       this.addLinksSection(),
+      this.addSection("Dokumente", [
+        this.addRepeatDistributionDetailList("fileReferences", "Dokumente", {
+          required: false,
+          supportLink: false,
+          enableFileUploadOverride: false,
+          enableFileUploadReuse: false,
+          backendUrl: this.configService.getConfiguration().backendUrl,
+          infoText:
+            "Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten.",
+          jsonTemplate: {
+            format: { key: null },
+            title: "",
+            description: "",
+          },
+          fields: [
+            this.addGroupSimple(null, [
+              { key: "_title" },
+              this.addInputInline("title", "Titel", {
+                contextHelpId: "distribution_title",
+                hasInlineContextHelp: true,
+                wrappers: ["inline-help", "form-field"],
+              }),
+              {
+                key: "link",
+                type: "upload",
+                label: "Link",
+                class: "flex-2",
+                wrappers: ["form-field", "inline-help"],
+                props: {
+                  label: "Link",
+                  appearance: "outline",
+                  required: true,
+                  hasInlineContextHelp: true,
+                  contextHelpId: "distribution_upload",
+                  validators: {
+                    validation: ["url"],
+                  },
+                  onClick: (docUuid, uri, $event) => {
+                    this.uploadService.downloadFile(docUuid, uri, $event);
+                  },
+                },
+                expressions: {
+                  "props.label": (field) =>
+                    field.formControl.value?.asLink
+                      ? "URL (Link)"
+                      : "Dateiname (Upload)",
+                },
+              },
+              this.addSelectInline("format", "Format", {
+                required: true,
+                showSearch: true,
+                options: this.getCodelistForSelect("20003", "type").pipe(
+                  map((data) => {
+                    return data;
+                  }),
+                ),
+                codelistId: "20003",
+                wrappers: ["inline-help", "form-field"],
+                hasInlineContextHelp: true,
+              }),
+              this.addTextAreaInline("description", "Beschreibung", "ingrid", {
+                wrappers: ["form-field", "inline-help"],
+                hasInlineContextHelp: true,
+                contextHelpId: "distribution_description",
+              }),
+            ]),
+          ],
+          validators: {
+            requiredFormat: {
+              expression: (ctrl) => {
+                if (!ctrl.value || ctrl.value.length === 0) {
+                  return true;
+                }
+                return ctrl.value?.every((entry) => entry?.format?.key);
+              },
+              message:
+                "Fehler: Es muss für jedes Dokument ein Format angegeben werden (Dokument bearbeiten).",
+            },
+          },
+        }),
+      ]),
     ];
 
     return this.manipulateDocumentFields(fields);

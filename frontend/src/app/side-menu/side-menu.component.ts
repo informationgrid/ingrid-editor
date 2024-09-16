@@ -28,6 +28,16 @@ import { MainMenuService } from "../menu/main-menu.service";
 import { NavigationEnd, Route, Router } from "@angular/router";
 import { SessionQuery } from "../store/session.query";
 import { animate, style, transition, trigger } from "@angular/animations";
+import { TranslocoDirective } from "@ngneat/transloco";
+import {
+  MatListItem,
+  MatListItemIcon,
+  MatListItemTitle,
+  MatNavList,
+} from "@angular/material/list";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIcon } from "@angular/material/icon";
+import { AsyncPipe } from "@angular/common";
 
 @Component({
   selector: "ige-side-menu",
@@ -44,6 +54,17 @@ import { animate, style, transition, trigger } from "@angular/animations";
         animate("300ms ease-out", style({ width: 56 })),
       ]),
     ]),
+  ],
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    MatNavList,
+    MatListItem,
+    MatTooltip,
+    MatIcon,
+    MatListItemIcon,
+    MatListItemTitle,
+    AsyncPipe,
   ],
 })
 export class SideMenuComponent implements OnInit {

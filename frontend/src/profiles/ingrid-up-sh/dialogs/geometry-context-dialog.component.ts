@@ -21,24 +21,25 @@ import { Component, Inject, OnInit } from "@angular/core";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { DialogTemplateModule } from "../../../app/shared/dialog-template/dialog-template.module";
+
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 import { geometryContextFields } from "./geometry-context.fields";
+import { DialogTemplateComponent } from "../../../app/shared/dialog-template/dialog-template.component";
 
 @UntilDestroy()
 @Component({
   templateUrl: "./geometry-context-dialog.component.html",
   imports: [
-    DialogTemplateModule,
     MatCheckboxModule,
     MatInputModule,
     MatSelectModule,
     ReactiveFormsModule,
     FormlyModule,
+    DialogTemplateComponent,
   ],
   standalone: true,
 })

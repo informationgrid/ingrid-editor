@@ -23,27 +23,29 @@ import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.schema.SchemaUtils
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldNotContain
 
 open class Geodataset : GeodatasetBase() {
 
     init {
 
         /*
-        * export with only required inputs.
-        * address has no organization assigned.
-        * */
+         * export with only required inputs.
+         * address has no organization assigned.
+         * */
         this.should("minimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.minimal.sample.json")
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.expected.idf.xml")
+            result shouldNotContain "<gmd:distributionInfo>"
         }
 
         /*
-        * export with all inputs possible.
-        * address has an organization assigned.
-        * */
+         * export with all inputs possible.
+         * address has an organization assigned.
+         * */
         this.should("maximalExport") {
 
             var result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.maximal.sample.json")
@@ -56,9 +58,9 @@ open class Geodataset : GeodatasetBase() {
         }
 
         /*
-        * export with only required inputs and openData selected.
-        * address has an organization assigned.
-        * */
+         * export with only required inputs and openData selected.
+         * address has an organization assigned.
+         * */
         this.should("openDataMinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.openData.json")
             result shouldNotBe null
@@ -66,9 +68,9 @@ open class Geodataset : GeodatasetBase() {
         }
 
         /*
-        * export with only required inputs and INSPIRE selected.
-        * address has an organization assigned.
-        * */
+         * export with only required inputs and INSPIRE selected.
+         * address has an organization assigned.
+         * */
         this.should("inspireMinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.INSPIRE.json")
             result shouldNotBe null
@@ -76,9 +78,9 @@ open class Geodataset : GeodatasetBase() {
         }
 
         /*
-        * export with only required inputs and AdV selected.
-        * address has an organization assigned.
-        * */
+         * export with only required inputs and AdV selected.
+         * address has an organization assigned.
+         * */
         this.should("advMinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.AdV.json")
             result shouldNotBe null
@@ -86,9 +88,9 @@ open class Geodataset : GeodatasetBase() {
         }
 
         /*
-        * export with only required inputs and Vektor selected in Digitale Repräsentation.
-        * address has an organization assigned.
-        * */
+         * export with only required inputs and Vektor selected in Digitale Repräsentation.
+         * address has an organization assigned.
+         * */
         this.should("vectorMinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.vector.json")
             result shouldNotBe null
@@ -96,9 +98,9 @@ open class Geodataset : GeodatasetBase() {
         }
 
         /*
-        * export with only required inputs and Geobasis Raster selected in Digitale Repräsentation.
-        * address has an organization assigned.
-        * */
+         * export with only required inputs and Geobasis Raster selected in Digitale Repräsentation.
+         * address has an organization assigned.
+         * */
         this.should("raster1MinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.GeobasisRaster.json")
             result shouldNotBe null
@@ -106,9 +108,9 @@ open class Geodataset : GeodatasetBase() {
         }
 
         /*
-        * export with only required inputs and Georektifiziertes Raster selected in Digitale Repräsentation.
-        * address has an organization assigned.
-        * */
+         * export with only required inputs and Georektifiziertes Raster selected in Digitale Repräsentation.
+         * address has an organization assigned.
+         * */
         this.should("raster2MinimalExport") {
             val result =
                 exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.GeorektifiziertesRaster.json")
@@ -117,9 +119,9 @@ open class Geodataset : GeodatasetBase() {
         }
 
         /*
-        * export with only required inputs and Georeferenzierbares Raster selected in Digitale Repräsentation.
-        * address has an organization assigned.
-        * */
+         * export with only required inputs and Georeferenzierbares Raster selected in Digitale Repräsentation.
+         * address has an organization assigned.
+         * */
         this.should("raster3MinimalExport") {
             val result =
                 exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.GeoreferenzierbaresRaster.json")
@@ -132,12 +134,11 @@ open class Geodataset : GeodatasetBase() {
             // replace generated UUIDs
             result = result
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
-    
+
             result shouldNotBe null
             // result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataset-Document2.idf.xml")
             // TODO: pending testdata adjustment or remove?
         }*/
-
 
         this.xshould("completeLuceneExport") {
             var result = exportJsonToJson(this@Geodataset.indexExporter, "/export/ingrid/geodataset-Document2.json")

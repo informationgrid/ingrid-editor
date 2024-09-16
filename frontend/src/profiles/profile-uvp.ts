@@ -39,6 +39,7 @@ import { AuthGuard } from "../app/security/auth.guard";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class UVPComponent {
   constructor(
@@ -172,7 +173,7 @@ class UVPComponent {
 }
 
 @NgModule({
-  declarations: [UVPComponent],
+  imports: [UVPComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

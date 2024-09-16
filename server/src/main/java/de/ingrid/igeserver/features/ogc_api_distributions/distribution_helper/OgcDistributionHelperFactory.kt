@@ -30,7 +30,6 @@ class OgcDistributionHelperFactory() {
     private lateinit var distributionHelper: List<OgcDistributionHelper>
 
     fun getDistributionHelper(profile: String): List<OgcDistributionHelper> {
-
         val responsibleDistributionHelper = distributionHelper
             .filter { it.canHandleDistribution(profile) }
 
@@ -41,7 +40,7 @@ class OgcDistributionHelperFactory() {
 
     private fun handleEmptyOrMultipleDistributionHelper(
         responsibleImporter: List<OgcDistributionHelper>,
-        profile: String
+        profile: String,
     ) {
         if (responsibleImporter.isEmpty()) {
             throw ConfigurationException.withReason("No distribution helper found for profile type '$profile'.")
@@ -50,5 +49,4 @@ class OgcDistributionHelperFactory() {
             throw ConfigurationException.withReason("More than one distribution helper found for profile type '$profile': '$importerNames'.")
         }
     }
-
 }

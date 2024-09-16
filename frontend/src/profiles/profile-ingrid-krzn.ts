@@ -23,6 +23,7 @@ import { GeoDatasetDoctypeKrzn } from "./krzn/doctypes/geo-dataset.doctype";
 
 @Component({
   template: "",
+  standalone: true,
 })
 class InGridKrznComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeKrzn);
@@ -51,7 +52,7 @@ class InGridKrznComponent extends InGridComponent {
 }
 
 @NgModule({
-  declarations: [InGridKrznComponent],
+  imports: [InGridKrznComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

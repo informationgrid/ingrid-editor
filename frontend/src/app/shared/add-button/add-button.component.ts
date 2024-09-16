@@ -27,11 +27,29 @@ import {
   ViewChild,
 } from "@angular/core";
 import { MatError } from "@angular/material/form-field";
+import { MatButton } from "@angular/material/button";
+import { NgTemplateOutlet } from "@angular/common";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: "ige-add-button",
   templateUrl: "./add-button.component.html",
   styleUrls: ["./add-button.component.scss"],
+  standalone: true,
+  imports: [
+    MatButton,
+    NgTemplateOutlet,
+    MatTooltip,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    TranslocoDirective,
+    MatError,
+    MatIcon,
+  ],
 })
 export class AddButtonComponent implements OnInit {
   @Input() buttonType: "stroked" | "flat" | "menu" = "stroked";

@@ -24,8 +24,10 @@ import { ModalService } from "./modal/modal.service";
 import { ProfileStore } from "../store/profile/profile.store";
 import { ProfileAbstract } from "../store/profile/profile.model";
 import { ContextHelpService } from "./context-help/context-help.service";
-import { forkJoin, from, Observable } from "rxjs";
+import { forkJoin, Observable } from "rxjs";
 import { catchError, filter, map, switchMap, take, tap } from "rxjs/operators";
+import { Metadata } from "../models/ige-document";
+import { ProfileMapper } from "../../profiles/profile.mapper";
 
 @Injectable({
   providedIn: "root",
@@ -34,6 +36,13 @@ export class ProfileService {
   private doctypes: Doctype[] = [];
   private defaultDataDocType?: Doctype = null;
   private defaultAddressType?: Doctype = null;
+
+  additionalPublicationCheck: (
+    data: any,
+    metadata: Metadata,
+    isAddress: boolean,
+  ) => Promise<boolean> = (_data, _metadata, _isAddress) =>
+    Promise.resolve(true);
 
   constructor(
     private configService: ConfigService,
@@ -45,7 +54,7 @@ export class ProfileService {
   initProfile(): Observable<Type<any>> {
     return this.configService.$userInfo.pipe(
       filter((info) => ProfileService.userHasAnyCatalog(info)),
-      switchMap((info) => ProfileService.importProfile(info)),
+      switchMap((info) => ProfileMapper(info.currentCatalog.type)),
       map(({ ProfilePack }) => ProfileService.getComponent(ProfilePack)),
       take(1),
       catchError((error) => {
@@ -55,13 +64,9 @@ export class ProfileService {
     );
   }
 
-  private static getComponent(ProfilePack) {
+  private static getComponent(ProfilePack: any) {
     console.debug("Loaded module: ", ProfilePack);
     return ProfilePack.getMyComponent() as Type<any>;
-  }
-
-  private static importProfile(info: UserInfo) {
-    return from(import("../../profiles/profile-" + info.currentCatalog.type));
   }
 
   private static userHasAnyCatalog(info: UserInfo) {

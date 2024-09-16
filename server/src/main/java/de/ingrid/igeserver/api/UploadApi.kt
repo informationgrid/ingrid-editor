@@ -30,7 +30,11 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.security.Principal
@@ -42,7 +46,7 @@ interface UploadApi {
     @GetMapping("/upload")
     fun chunkExists(
         @RequestParam("flowChunkNumber") flowChunkNumber: Int,
-        @RequestParam("flowIdentifier") flowIdentifier: String?
+        @RequestParam("flowIdentifier") flowIdentifier: String?,
     ): ResponseEntity<Void>
 
     @PostMapping(value = ["/upload/{docId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -77,24 +81,24 @@ interface UploadApi {
     fun getFileDownloadHash(
         request: HttpServletRequest,
         principal: Principal,
-            @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docUuid: String
-            //@Parameter(description = "The file to be downloaded", required = true) @PathVariable("file") file: String
-        ): ResponseEntity<String>
+        @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docUuid: String,
+        // @Parameter(description = "The file to be downloaded", required = true) @PathVariable("file") file: String
+    ): ResponseEntity<String>
 
     @GetMapping(value = ["/upload/download/{hash}"])
     @Operation(description = "Get an uploaded file")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully downloaded"), ApiResponse(responseCode = "500", description = "An error occurred during download")])
     fun getFileByHash(
         request: HttpServletRequest,
-            @Parameter(description = "The Downloadhash for the dataset", required = true) @PathVariable("hash") hash: String,
-        ): ResponseEntity<StreamingResponseBody>
+        @Parameter(description = "The Downloadhash for the dataset", required = true) @PathVariable("hash") hash: String,
+    ): ResponseEntity<StreamingResponseBody>
 
     @DeleteMapping(value = ["/upload/{docId}/{file}"])
     @Operation(description = "Delete an uploaded file")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "File was successfully deleted"), ApiResponse(responseCode = "500", description = "An error occurred during deletion")])
     fun deleteFile(
-            principal: Principal,
-            @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docUuid: String,
-            @Parameter(description = "The file to delete", required = true) @PathVariable("file") file: String
-        ): ResponseEntity<Unit>
+        principal: Principal,
+        @Parameter(description = "The UUID of the dataset", required = true) @PathVariable("docId") docUuid: String,
+        @Parameter(description = "The file to delete", required = true) @PathVariable("file") file: String,
+    ): ResponseEntity<Unit>
 }

@@ -25,8 +25,15 @@ import {
   TemplateRef,
   ViewChild,
 } from "@angular/core";
-import { FieldTypeConfig, FormlyFieldProps } from "@ngx-formly/core";
-import { MatAutocompleteTrigger } from "@angular/material/autocomplete";
+import {
+  FieldTypeConfig,
+  FormlyFieldProps,
+  FormlyModule,
+} from "@ngx-formly/core";
+import {
+  MatAutocomplete,
+  MatAutocompleteTrigger,
+} from "@angular/material/autocomplete";
 import {
   debounceTime,
   distinctUntilChanged,
@@ -49,15 +56,45 @@ import {
 } from "../../../services/codelist/codelist.service";
 import {
   FormControl,
+  ReactiveFormsModule,
   UntypedFormControl,
   ValidationErrors,
 } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSelect } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { ErrorStateMatcher } from "@angular/material/core";
+import { ErrorStateMatcher, MatOption } from "@angular/material/core";
 import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FieldType } from "@ngx-formly/material";
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDropList,
+  CdkDropListGroup,
+} from "@angular/cdk/drag-drop";
+import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
+import {
+  MatChipListbox,
+  MatChipOption,
+  MatChipRemove,
+} from "@angular/material/chips";
+import { MatIcon } from "@angular/material/icon";
+import { AsyncPipe, NgFor, NgTemplateOutlet } from "@angular/common";
+import { MatIconButton } from "@angular/material/button";
+import {
+  MatError,
+  MatFormField,
+  MatHint,
+  MatLabel,
+  MatSuffix,
+} from "@angular/material/form-field";
+import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
+import { MatDivider } from "@angular/material/divider";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { MatInput } from "@angular/material/input";
+import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: RepeatListComponent) {}
@@ -96,6 +133,39 @@ interface RepeatListProps extends FormlyFieldProps {
   selector: "ige-repeat-list",
   templateUrl: "./repeat-list.component.html",
   styleUrls: ["./repeat-list.component.scss"],
+  standalone: true,
+  imports: [
+    FormErrorComponent,
+    FormlyModule,
+    MatChipListbox,
+    CdkDropListGroup,
+    CdkDropList,
+    MatChipOption,
+    CdkDrag,
+    MatIcon,
+    MatChipRemove,
+    NgFor,
+    MatIconButton,
+    MatFormField,
+    MatSelect,
+    ReactiveFormsModule,
+    MatOption,
+    NgxMatSelectSearchModule,
+    MatDivider,
+    MatSuffix,
+    NgTemplateOutlet,
+    TranslocoDirective,
+    MatError,
+    MatLabel,
+    MatInput,
+    MatAutocompleteTrigger,
+    MatAutocomplete,
+    MatHint,
+    SearchInputComponent,
+    MatProgressSpinner,
+    AsyncPipe,
+    FieldToAiraLabelledbyPipe,
+  ],
 })
 export class RepeatListComponent
   extends FieldType<FieldTypeConfig<RepeatListProps>>
@@ -378,7 +448,7 @@ export class RepeatListComponent
     this.formControl.markAsTouched();
   }
 
-  drop(event: { previousIndex: number; currentIndex: number }) {
+  drop(event: CdkDragDrop<any[]>) {
     const item = this.model[this.field.key as string][event.previousIndex];
     this.formControl.patchValue(
       [...(this.formControl.value || [])].filter(

@@ -32,7 +32,7 @@ import {
   transition,
   trigger,
 } from "@angular/animations";
-import { FlowDirective, Transfer } from "@flowjs/ngx-flow";
+import { FlowDirective, NgxFlowModule, Transfer } from "@flowjs/ngx-flow";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { map, skip } from "rxjs/operators";
 import { IgeError } from "../../models/ige-error";
@@ -40,6 +40,10 @@ import { BehaviorSubject, combineLatest, Subject } from "rxjs";
 import { TransfersWithErrorInfo } from "./TransferWithErrors";
 import { UploadError, UploadService } from "./upload.service";
 import { TranslocoService } from "@ngneat/transloco";
+import { MatIcon } from "@angular/material/icon";
+import { MatButton } from "@angular/material/button";
+import { UploadItemComponent } from "./upload-item/upload-item.component";
+import { AsyncPipe } from "@angular/common";
 
 @UntilDestroy()
 @Component({
@@ -52,6 +56,8 @@ import { TranslocoService } from "@ngneat/transloco";
       transition("* => void", [animate(300, style({ opacity: 0 }))]),
     ]),
   ],
+  standalone: true,
+  imports: [NgxFlowModule, MatIcon, MatButton, UploadItemComponent, AsyncPipe],
 })
 export class UploadComponent implements OnInit {
   /** Link text */
@@ -79,6 +85,9 @@ export class UploadComponent implements OnInit {
   @Input() allowedUploadTypes: string[];
 
   @Input() infoText: string;
+  @Input() enableFileUploadOverride: boolean;
+  @Input() enableFileUploadReuse: boolean;
+  @Input() enableFileUploadRename: boolean;
 
   @Output() complete = new EventEmitter<void>();
   @Output() chosenFiles = new EventEmitter<TransfersWithErrorInfo[]>();

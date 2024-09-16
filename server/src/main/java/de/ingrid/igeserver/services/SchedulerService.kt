@@ -22,8 +22,15 @@ package de.ingrid.igeserver.services
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.JobCommand
 import org.apache.logging.log4j.kotlin.logger
-import org.quartz.*
+import org.quartz.CronScheduleBuilder
+import org.quartz.Job
+import org.quartz.JobBuilder
+import org.quartz.JobDataMap
+import org.quartz.JobDetail
+import org.quartz.JobKey
 import org.quartz.Trigger.DEFAULT_PRIORITY
+import org.quartz.TriggerBuilder
+import org.quartz.TriggerKey
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.stereotype.Service
 
@@ -43,7 +50,7 @@ class SchedulerService(factory: SchedulerFactoryBean) {
         }
         val triggerKey = TriggerKey(jobKey.name, jobKey.group)
         if (scheduler.checkExists(triggerKey)) scheduler.unscheduleJob(triggerKey)
-        
+
         val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
             .usingJobData(jobDataMap)
             .withPriority(jobPriority)
@@ -53,9 +60,7 @@ class SchedulerService(factory: SchedulerFactoryBean) {
         scheduler.scheduleJob(trigger)
     }
 
-    fun getJobInfo(jobKey: JobKey): JobDetail {
-        return scheduler.getJobDetail(jobKey)
-    }
+    fun getJobInfo(jobKey: JobKey): JobDetail = scheduler.getJobDetail(jobKey)
 
     private fun createJob(jobClass: Class<out Job>, jobKey: JobKey) {
         val detail = JobBuilder.newJob().ofType(jobClass)
@@ -78,9 +83,8 @@ class SchedulerService(factory: SchedulerFactoryBean) {
         jobKey: JobKey,
         jobDataMap: JobDataMap? = null,
         jobPriority: Int = DEFAULT_PRIORITY,
-        checkRunning: Boolean = true
+        checkRunning: Boolean = true,
     ) {
-
         when (command) {
             JobCommand.start -> {
                 if (scheduler.checkExists(jobKey).not()) {
@@ -119,9 +123,11 @@ class SchedulerService(factory: SchedulerFactoryBean) {
 
         val cronSchedule = getCronSchedule(cron)
         val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
-            .usingJobData(JobDataMap().apply {
-                put("catalogId", catalogId)
-            })
+            .usingJobData(
+                JobDataMap().apply {
+                    put("catalogId", catalogId)
+                },
+            )
             .withSchedule(cronSchedule)
             .withIdentity(triggerKey)
             .build()
@@ -131,15 +137,20 @@ class SchedulerService(factory: SchedulerFactoryBean) {
         scheduler.scheduleJob(trigger)
     }
 
-    private fun getCronSchedule(cron: String): CronScheduleBuilder {
-        return try {
-            CronScheduleBuilder.cronSchedule(cron)
-        } catch (ex: Exception) {
-            // might be in wrong format where last part is * instead of ?
-            if (cron.last() == '*') {
-                val fixedCron = cron.substring(0..cron.length - 2) + "?"
-                CronScheduleBuilder.cronSchedule(fixedCron)
-            } else throw ServerException.withReason(ex.message ?: "Cron expression could not be parsed")
+    private fun getCronSchedule(cron: String): CronScheduleBuilder = try {
+        CronScheduleBuilder.cronSchedule(cron)
+    } catch (ex: Exception) {
+        // might be in wrong format where last part is * instead of ?
+        if (cron.last() == '*') {
+            val fixedCron = cron.substring(0..cron.length - 2) + "?"
+            CronScheduleBuilder.cronSchedule(fixedCron)
+        } else if (cron.split(" ")[3] == "*") {
+            val fixedCron = cron.split(" ").toMutableList()
+                .apply { this[3] = "?" }
+                .joinToString(" ")
+            CronScheduleBuilder.cronSchedule(fixedCron)
+        } else {
+            throw ServerException.withReason(ex.message ?: "Cron expression could not be parsed")
         }
     }
 }

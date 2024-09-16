@@ -20,10 +20,13 @@
 package de.ingrid.igeserver.index
 
 import de.ingrid.elasticsearch.IndexInfo
-import de.ingrid.utils.*
+import de.ingrid.utils.ElasticDocument
+import de.ingrid.utils.IBus
+import de.ingrid.utils.IngridCall
+import de.ingrid.utils.IngridDocument
 import org.apache.logging.log4j.kotlin.logger
 
-class IBusIndexer(override val name: String, private val iBus: IBus): IIndexManager {
+class IBusIndexer(override val name: String, private val iBus: IBus) : IIndexManager {
     val log = logger()
 
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? {
@@ -32,7 +35,7 @@ class IBusIndexer(override val name: String, private val iBus: IBus): IIndexMana
         call.target = "__centralIndex__"
         call.parameter = mapOf(
             "indexAlias" to indexAlias,
-            "partialName" to partialName
+            "partialName" to partialName,
         )
 
         val response = sendCallToIBus(iBus, call)
@@ -45,7 +48,7 @@ class IBusIndexer(override val name: String, private val iBus: IBus): IIndexMana
             "name" to name,
             "type" to type,
             "esMapping" to esMapping,
-            "esSettings" to esSettings
+            "esSettings" to esSettings,
         )
 
         val response = sendCallToIBus(iBus, call)
@@ -57,7 +60,7 @@ class IBusIndexer(override val name: String, private val iBus: IBus): IIndexMana
         val map = mapOf(
             "aliasName" to aliasName,
             "oldIndex" to oldIndex,
-            "newIndex" to newIndex
+            "newIndex" to newIndex,
         )
         call.parameter = map
 
@@ -75,7 +78,7 @@ class IBusIndexer(override val name: String, private val iBus: IBus): IIndexMana
         call.parameter = mapOf(
             "indexinfo" to indexinfo,
             "doc" to doc,
-            "updateOldIndex" to false
+            "updateOldIndex" to false,
         )
 
         sendCallToIBus(iBus, call)
@@ -85,7 +88,7 @@ class IBusIndexer(override val name: String, private val iBus: IBus): IIndexMana
         val call = prepareCall("updateIPlugInformation")
         call.parameter = mapOf(
             "id" to id,
-            "info" to info
+            "info" to info,
         )
 
         sendCallToIBus(iBus, call)
@@ -111,13 +114,13 @@ class IBusIndexer(override val name: String, private val iBus: IBus): IIndexMana
         @Suppress("UNCHECKED_CAST")
         return (response?.get("result") as Array<String>? ?: emptyArray<String>()).toList()
     }
-    
+
     override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
         val call = prepareCall("deleteDocById")
         call.parameter = mapOf(
             "indexinfo" to indexinfo,
             "id" to id,
-            "updateOldIndex" to updateOldIndex
+            "updateOldIndex" to updateOldIndex,
         )
 
         sendCallToIBus(iBus, call)

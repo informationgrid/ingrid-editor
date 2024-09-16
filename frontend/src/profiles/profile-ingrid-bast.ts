@@ -26,6 +26,7 @@ import { DataCollectionDoctypeBast } from "./ingrid-bast/doctypes/data-collectio
 
 @Component({
   template: "",
+  standalone: true,
 })
 class InGridBastComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeBast);
@@ -63,6 +64,7 @@ class InGridBastComponent extends InGridComponent {
     const geodatasetOptions = this.geoDataset.geodatasetOptions;
     geodatasetOptions.required.identifier = false;
     geodatasetOptions.dynamicRequired.identifier = openDataActiveNotRequired;
+    geodatasetOptions.validators.identifier = { validation: ["url"] };
     geodatasetOptions.required.statement = false;
     geodatasetOptions.dynamicRequired.statement = openDataActiveNotRequired;
 
@@ -74,7 +76,7 @@ class InGridBastComponent extends InGridComponent {
 }
 
 @NgModule({
-  declarations: [InGridBastComponent],
+  imports: [InGridBastComponent],
 })
 export class ProfilePack {
   static getMyComponent() {

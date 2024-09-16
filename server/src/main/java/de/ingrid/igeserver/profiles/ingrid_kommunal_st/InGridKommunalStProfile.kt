@@ -36,13 +36,13 @@ class InGridKommunalStProfile(
     @Lazy documentService: DocumentService,
     query: QueryRepository,
     dateService: DateService,
-    openDataCategory: OpenDataCategory
+    openDataCategory: OpenDataCategory,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
     companion object {
-        const val id = "ingrid-kommunal-st"
+        const val ID = "ingrid-kommunal-st"
     }
 
-    override val identifier = id
+    override val identifier = ID
     override val title = "InGrid Katalog (Kommunal ST)"
     override val parentProfile: String? = "ingrid"
 }

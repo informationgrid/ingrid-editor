@@ -32,5 +32,5 @@ data class MailProperties(
     val body: String,
     val bodyDeleteUser: String,
     val bodyWithPassword: String,
-    val bodyResetPassword: String
+    val bodyResetPassword: String,
 )

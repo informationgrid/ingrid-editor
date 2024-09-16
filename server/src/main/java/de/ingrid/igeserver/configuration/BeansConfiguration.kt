@@ -32,9 +32,8 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomi
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-
+// @ComponentScan(basePackages = ["de.ingrid.igeserver"])
 @Configuration
-//@ComponentScan(basePackages = ["de.ingrid.igeserver"])
 class BeansConfiguration {
     @Value("\${codelist.url:http://localhost:9000}")
     private val codelistUrl: String? = null
@@ -49,7 +48,7 @@ class BeansConfiguration {
     private val codelistDataPath: String? = null
 
     @Bean
-    fun HttpCodelistCommunication(): ICodeListCommunication {
+    fun httpCodelistCommunication(): ICodeListCommunication {
         val communication = HttpCLCommunication()
         communication.setRequestUrl("$codelistUrl/rest/getCodelists")
         communication.setUsername(codelistUserName)
@@ -67,7 +66,7 @@ class BeansConfiguration {
     @Bean
     fun codeListService(
         communication: ICodeListCommunication?,
-        persistencies: List<ICodeListPersistency?>?
+        persistencies: List<ICodeListPersistency?>?,
     ): CodeListService {
         val service = CodeListService()
         service.setPersistencies(persistencies)
@@ -80,9 +79,7 @@ class BeansConfiguration {
      * This mapper is needed to correctly convert JSONB columns into Classes, especially OffsetDateTime!
      */
     @Bean
-    fun jsonFormatMapperCustomizer(objectMapper: ObjectMapper): HibernatePropertiesCustomizer {
-        return HibernatePropertiesCustomizer { properties: MutableMap<String, Any> ->
-            properties[AvailableSettings.JSON_FORMAT_MAPPER] = JacksonJsonFormatMapper(objectMapper)
-        }
+    fun jsonFormatMapperCustomizer(objectMapper: ObjectMapper): HibernatePropertiesCustomizer = HibernatePropertiesCustomizer { properties: MutableMap<String, Any> ->
+        properties[AvailableSettings.JSON_FORMAT_MAPPER] = JacksonJsonFormatMapper(objectMapper)
     }
 }

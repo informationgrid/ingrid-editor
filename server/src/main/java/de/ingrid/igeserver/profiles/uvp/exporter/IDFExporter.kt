@@ -37,7 +37,6 @@ import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 
-
 @Service
 class IDFExporter(val config: Config) : IgeExporter {
 
@@ -50,7 +49,7 @@ class IDFExporter(val config: Config) : IgeExporter {
         "Export von UVP Verfahren ins IDF Format für die Anzeige im Portal.",
         "text/xml",
         "xml",
-        listOf("uvp")
+        listOf("uvp"),
     )
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -85,15 +84,13 @@ class IDFExporter(val config: Config) : IgeExporter {
     }
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
-
         val mapper = ObjectMapper().registerKotlinModule()
         return mapOf(
             "map" to mapOf(
                 "model" to mapper.convertValue(json, UVPModel::class.java).apply { init(catalogId) },
-                "docInfo" to DocInfo(catalogId, json.uuid, config.uploadExternalUrl)
-            )
+                "docInfo" to DocInfo(catalogId, json.uuid, config.uploadExternalUrl),
+            ),
         )
-
     }
 }
 
@@ -101,7 +98,7 @@ private class XMLStringOutput : StringOutput() {
     override fun writeUserContent(value: String?) {
         if (value == null) return
         super.writeUserContent(
-            StringEscapeUtils.escapeXml10(value)
+            StringEscapeUtils.escapeXml10(value),
 //                .replace("\n", "&#10;")
 //                .replace("\r", "&#13;")
 //                .replace("\t", "&#9;")

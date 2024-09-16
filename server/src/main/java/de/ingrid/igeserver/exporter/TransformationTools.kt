@@ -36,34 +36,31 @@ class TransformationTools {
         fun hasValue(s: List<Any>?) = !s.isNullOrEmpty()
 
         @kotlin.jvm.JvmStatic
-        fun getISORealFromIGCNumber(igcNumber: Float): String? {
-            return try {
-                val n = igcNumber.toDouble()
-                if (java.lang.Double.isNaN(n)) {
-                    "NaN"
-                } else if (java.lang.Double.isInfinite(n)) {
-                    "INF"
-                } else {
-                    n.toString()
-                }
-            } catch (e: NumberFormatException) {
-                log.warn("Could not convert to ISO gco:Real: $igcNumber")
+        fun getISORealFromIGCNumber(igcNumber: Float): String? = try {
+            val n = igcNumber.toDouble()
+            if (java.lang.Double.isNaN(n)) {
                 "NaN"
+            } else if (java.lang.Double.isInfinite(n)) {
+                "INF"
+            } else {
+                n.toString()
             }
+        } catch (e: NumberFormatException) {
+            log.warn("Could not convert to ISO gco:Real: $igcNumber")
+            "NaN"
         }
 
         /** returns java generated UUID via UUID.randomUUID()  */
         @kotlin.jvm.JvmStatic
-        fun getRandomUUID(): String {
-            return UUID.randomUUID().toString()
-        }
-
+        fun getRandomUUID(): String = UUID.randomUUID().toString()
 
         // TODO: move to MappingUtils class and refactor to use already present map iso639LanguageMapping
         @kotlin.jvm.JvmStatic
-        fun getLanguageISO639_2Value(language: KeyValue): String {
-            if (language.key == null) return language.value
-                ?: throw ServerException.withReason("Could not map document language: $language")
+        fun getLanguageISO639v2Value(language: KeyValue): String {
+            if (language.key == null) {
+                return language.value
+                    ?: throw ServerException.withReason("Could not map document language: $language")
+            }
             return when (language.key) {
                 "150" -> "ger"
                 "123" -> "eng"
@@ -99,9 +96,11 @@ class TransformationTools {
         }
 
         @kotlin.jvm.JvmStatic
-        fun getISO3166_1_Alpha_3FromNumericLanguageCode(language: KeyValue): String {
-            if (language.key == null) return language.value
-                ?: throw ServerException.withReason("Could not map document language: $language")
+        fun getISO3166v1Alpha3FromNumericLanguageCode(language: KeyValue): String {
+            if (language.key == null) {
+                return language.value
+                    ?: throw ServerException.withReason("Could not map document language: $language")
+            }
             return when (language.key) {
                 "4" -> "AFG"
                 "818" -> "EGY"
@@ -352,11 +351,5 @@ class TransformationTools {
                 else -> throw ServerException.withReason("Could not map document language key: language.key")
             }
         }
-
-
     }
-
-
-
-
 }

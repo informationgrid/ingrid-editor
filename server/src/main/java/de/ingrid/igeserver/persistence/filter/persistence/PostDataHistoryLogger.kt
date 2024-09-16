@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component
 @Component
 class PostDataHistoryLogger(
     var auditLogger: AuditLogger,
-    @Lazy var documentService: DocumentService
+    @Lazy var documentService: DocumentService,
 ) : Filter<PostPersistencePayload> {
 
     companion object {
@@ -57,7 +57,7 @@ class PostDataHistoryLogger(
             data = getRawJsonFromDocument(payload.document, true),
             logger = LOGGER_NAME,
             catalogIdentifier = payload.catalogIdentifier,
-            principal = context.principal
+            principal = context.principal,
         )
         return payload
     }

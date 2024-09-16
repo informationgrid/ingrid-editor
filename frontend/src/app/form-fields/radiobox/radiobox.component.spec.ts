@@ -29,8 +29,7 @@ describe("RadioboxComponent", () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [RadioboxComponent],
-      imports: [MatRadioModule, FormsModule],
+      imports: [MatRadioModule, FormsModule, RadioboxComponent],
     }).compileComponents();
   }));
 

@@ -21,7 +21,6 @@ package de.ingrid.igeserver.tasks.quartz
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.api.messaging.JobsNotifier
@@ -42,7 +41,6 @@ import org.springframework.stereotype.Component
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
-
 
 @Component
 @PersistJobDataAfterExecution
@@ -71,7 +69,6 @@ class ImportTask(
 
             val principal = setAdminAuthentication("Import", "Task")
 
-
             val report = when (stage) {
                 Stage.ANALYZE -> {
                     clearPreviousAnalysis(context)
@@ -94,7 +91,7 @@ class ImportTask(
                         info.catalogId,
                         info.analysis!!,
                         info.options!!,
-                        message
+                        message,
                     )
                     info.analysis.apply { this.importResult = counter }
                 }
@@ -102,16 +99,22 @@ class ImportTask(
                 else -> null
             }
 
-            message.apply { this.report = report; this.endTime = Date(); this.stage = stage.name }.also {
+            message.apply {
+                this.report = report
+                this.endTime = Date()
+                this.stage = stage.name
+            }.also {
                 finishJob(context, it)
                 notifier.sendMessage(notificationType, it)
             }
-
         } catch (ex: Exception) {
             val errorMessage = prepareErrorMessage(ex)
             message.apply {
-                this.report = info.analysis; this.endTime = Date(); this.stage = stage.name; this.errors =
-                mutableListOf(errorMessage)
+                this.report = info.analysis
+                this.endTime = Date()
+                this.stage = stage.name
+                this.errors =
+                    mutableListOf(errorMessage)
             }.also {
                 finishJob(context, it)
                 notifier.sendMessage(notificationType, it)
@@ -140,17 +143,12 @@ class ImportTask(
     }
 
     private fun checkForValidDocumentsInProfile(profile: CatalogProfile, report: OptimizedImportAnalysis) {
-        val documentTypesOfProfile = profile
-            .let { documentService.getDocumentTypesOfProfile(it.identifier) }
-            .map { it.className }
-
         report.references
             .map { it.document.type }
             .toSet()
             .forEach {
-                if (it !in documentTypesOfProfile) {
-                    throw ServerException.withReason("DocumentType not known in this profile: $it")
-                }
+                // will throw an exception if document is not known in profile
+                documentService.getDocumentType(it, profile.identifier, profile.parentProfile)
             }
     }
 
@@ -186,6 +184,6 @@ class ImportTask(
         val importFile: String?,
         val analysis: OptimizedImportAnalysis?,
         val options: ImportOptions?,
-        val infos: MutableList<String>
+        val infos: MutableList<String>,
     )
 }

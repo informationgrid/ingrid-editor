@@ -32,16 +32,28 @@ import { FieldType } from "@ngx-formly/material";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
-import { PageEvent } from "@angular/material/paginator";
+import { MatPaginator, PageEvent } from "@angular/material/paginator";
 import { ConfigService } from "../../../services/config/config.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { FormStateService } from "../../../+form/form-state.service";
+import { MatButton } from "@angular/material/button";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { DocumentListItemComponent } from "../../../shared/document-list-item/document-list-item.component";
+import { MatHint } from "@angular/material/form-field";
 
 @UntilDestroy()
 @Component({
   selector: "ige-referenced-documents-type",
   templateUrl: "./referenced-documents-type.component.html",
   styleUrls: ["./referenced-documents-type.component.scss"],
+  standalone: true,
+  imports: [
+    MatButton,
+    MatProgressSpinner,
+    MatPaginator,
+    DocumentListItemComponent,
+    MatHint,
+  ],
 })
 export class ReferencedDocumentsTypeComponent
   extends FieldType<FieldTypeConfig>

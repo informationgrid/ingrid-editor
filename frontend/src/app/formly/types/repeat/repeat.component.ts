@@ -24,11 +24,23 @@ import {
   FieldTypeConfig,
   FormlyFieldConfig,
   FormlyFieldProps,
+  FormlyModule,
 } from "@ngx-formly/core";
-import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragHandle,
+  CdkDropList,
+  moveItemInArray,
+} from "@angular/cdk/drag-drop";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { clone, groupByWithIndexReference } from "../../../shared/utils";
 import { debounceTime, startWith, tap } from "rxjs/operators";
+import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
+import { MatIcon } from "@angular/material/icon";
+import { MatTooltip } from "@angular/material/tooltip";
+import { MatIconButton } from "@angular/material/button";
+import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 
 export interface RepeatProps extends FormlyFieldProps {
   menuOptions: {
@@ -48,6 +60,18 @@ export interface RepeatProps extends FormlyFieldProps {
   selector: "ige-repeat",
   templateUrl: "./repeat.component.html",
   styleUrls: ["./repeat.component.scss"],
+  standalone: true,
+  imports: [
+    FormErrorComponent,
+    FormlyModule,
+    CdkDropList,
+    CdkDrag,
+    MatIcon,
+    CdkDragHandle,
+    MatTooltip,
+    MatIconButton,
+    AddButtonComponent,
+  ],
 })
 export class RepeatComponent
   extends FieldArrayType<FieldTypeConfig<RepeatProps>>

@@ -24,12 +24,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.UserInfoData
 import de.ingrid.igeserver.persistence.postgresql.model.meta.RootPermissionType
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
-import jakarta.servlet.Filter
-import jakarta.servlet.FilterChain
-import jakarta.servlet.ServletRequest
-import jakarta.servlet.ServletResponse
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -44,7 +38,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.session.SessionRegistryImpl
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
@@ -59,14 +52,13 @@ import org.springframework.security.web.firewall.StrictHttpFirewall
 import org.springframework.web.client.RestTemplate
 import java.net.InetSocketAddress
 import java.net.Proxy
-import java.net.URL
+import java.net.URI
 import java.util.*
-
 
 @Profile("!dev")
 @Configuration
 @EnableWebSecurity
-//@EnableMethodSecurity(jsr250Enabled = true, prePostEnabled = true)
+// @EnableMethodSecurity(jsr250Enabled = true, prePostEnabled = true)
 internal class KeycloakConfig {
     val log = logger()
 
@@ -87,7 +79,6 @@ internal class KeycloakConfig {
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-
         http {
             headers {
                 frameOptions {
@@ -100,14 +91,12 @@ internal class KeycloakConfig {
                 authorize("/api/upload/download/**", permitAll)
                 authorize("/api/**", hasAnyRole("ige-user", "ige-super-admin"))
                 authorize(anyRequest, permitAll)
-
             }
             oauth2Login {}
             oauth2ResourceServer {
                 jwt {
                     jwtAuthenticationConverter = jwtAuthenticationConverter()
                 }
-
             }
             if (generalProperties.enableCsrf) {
                 csrf { csrfTokenRepository to CookieCsrfTokenRepository.withHttpOnlyFalse() }
@@ -125,22 +114,20 @@ internal class KeycloakConfig {
             }
         }
 
-        return http.build();
+        return http.build()
     }
-
 
     @Bean
     fun jwtDecoder(): JwtDecoder {
         if (keycloakProxyUrl != null) {
-            with(URL(keycloakProxyUrl)) {
+            with(URI(keycloakProxyUrl)) {
                 val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
                 val requestFactory = SimpleClientHttpRequestFactory()
-                requestFactory.setProxy(proxy)
+                requestFactory.setProxy(proxy) // should already work with system properties: http.proxyHost
                 return NimbusJwtDecoder
                     .withJwkSetUri(jwkSetUri)
                     .restOperations(RestTemplate(requestFactory)).build()
             }
-
         } else {
             return NimbusJwtDecoder
                 .withJwkSetUri(jwkSetUri)
@@ -148,31 +135,10 @@ internal class KeycloakConfig {
         }
     }
 
-
     private fun jwtAuthenticationConverter(): Converter<Jwt, out AbstractAuthenticationToken> {
         val jwtConverter = JwtAuthenticationConverter()
         jwtConverter.setJwtGrantedAuthoritiesConverter(KeycloakRealmRoleConverter(userRepository, roleRepository))
         return jwtConverter
-    }
-
-    inner class RequestResponseLoggingFilter : Filter {
-        override fun doFilter(
-            request: ServletRequest,
-            response: ServletResponse,
-            chain: FilterChain
-        ) {
-            request as HttpServletRequest
-            response as HttpServletResponse
-
-            if (request.requestURI == "/error") {
-                // redirect to login-resource, which redirects to keycloak or extract authentication
-                // information from response
-                if (SecurityContextHolder.getContext().authentication == null) {
-                    response.sendRedirect("/sso/login")
-                }
-            }
-            chain.doFilter(request, response)
-        }
     }
 
     /**
@@ -182,9 +148,7 @@ internal class KeycloakConfig {
      */
 
     @Bean
-    fun sessionAuthenticationStrategy(): SessionAuthenticationStrategy {
-        return RegisterSessionAuthenticationStrategy(SessionRegistryImpl())
-    }
+    fun sessionAuthenticationStrategy(): SessionAuthenticationStrategy = RegisterSessionAuthenticationStrategy(SessionRegistryImpl())
 
     /**
      * Do allow semicolons in URL, which are matrix-parameters used by Angular
@@ -206,13 +170,11 @@ internal class KeycloakConfig {
 //    override fun httpSessionManager(): HttpSessionManager {
 //        return HttpSessionManager()
 //    }
-
 }
-
 
 class KeycloakRealmRoleConverter(
     private val userRepository: UserRepository,
-    private val roleRepository: RoleRepository
+    private val roleRepository: RoleRepository,
 ) : Converter<Jwt, Collection<GrantedAuthority>> {
     override fun convert(jwt: Jwt): Collection<GrantedAuthority> {
         val realmAccess = jwt.claims["realm_access"] as Map<*, *>
@@ -258,8 +220,8 @@ class KeycloakRealmRoleConverter(
             grantedAuthorities.addAll(
                 listOf(
                     SimpleGrantedAuthority("ROLE_$it"),
-                    SimpleGrantedAuthority("ROLE_ACL_ACCESS")
-                )
+                    SimpleGrantedAuthority("ROLE_ACL_ACCESS"),
+                ),
             )
         }
 
@@ -269,7 +231,7 @@ class KeycloakRealmRoleConverter(
     private fun checkAndCreateSuperUser(
         userDb: UserInfo?,
         isSuperAdmin: Boolean,
-        username: String
+        username: String,
     ): UserInfo? {
         if (userDb == null && isSuperAdmin) {
             // create user for super admin in db
@@ -285,5 +247,4 @@ class KeycloakRealmRoleConverter(
         }
         return userDb
     }
-
 }

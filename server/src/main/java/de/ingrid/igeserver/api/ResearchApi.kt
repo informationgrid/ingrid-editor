@@ -32,7 +32,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseBody
 import java.security.Principal
 
 @Hidden
@@ -50,7 +56,7 @@ interface ResearchApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun save(
         principal: Principal,
-        @Parameter(description = "The dataset to be stored.", required = true) @RequestBody query: Query
+        @Parameter(description = "The dataset to be stored.", required = true) @RequestBody query: Query,
     ): ResponseEntity<Query>
 
     @Operation
@@ -58,7 +64,7 @@ interface ResearchApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun delete(
         principal: Principal,
-        @Parameter(description = "The id of the query to be deleted") @PathVariable id: Int
+        @Parameter(description = "The id of the query to be deleted") @PathVariable id: Int,
     ): ResponseEntity<Void>
 
     @Operation
@@ -66,7 +72,7 @@ interface ResearchApi {
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun search(
         principal: Principal,
-        @Parameter(description = "the query with filter definitions") @RequestBody query: ResearchQuery
+        @Parameter(description = "the query with filter definitions") @RequestBody query: ResearchQuery,
     ): ResponseEntity<ResearchResponse>
 
     @Operation
@@ -98,5 +104,4 @@ interface ResearchApi {
     @PostMapping(value = ["/ai"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun aiSearch(principal: Principal, @RequestBody query: String): ResponseEntity<String>
-    
 }

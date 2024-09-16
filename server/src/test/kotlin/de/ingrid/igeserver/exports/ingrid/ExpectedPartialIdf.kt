@@ -19,7 +19,7 @@
  */
 package de.ingrid.igeserver.exports.ingrid
 
-const val idfSuperiorReferences = """
+const val IDF_SUPERIOR_REFERENCES = """
             <idf:superiorReference uuid="1000">
                 <idf:objectName>Test-Datensatz Minimal</idf:objectName>
                 <idf:objectType>1</idf:objectType>
@@ -27,7 +27,7 @@ const val idfSuperiorReferences = """
             </idf:superiorReference>
 """
 
-const val idfSubordinatedReferences = """
+const val IDF_SUBORDINATED_REFERENCES = """
             <idf:subordinatedReference uuid="1000">
                 <idf:objectName>Test-Datensatz Minimal</idf:objectName>
                 <idf:objectType>1</idf:objectType>
@@ -35,7 +35,7 @@ const val idfSubordinatedReferences = """
             </idf:subordinatedReference>
 """
 
-const val idfReferences = """
+const val IDF_REFERENCES = """
                     <gmd:transferOptions>
                         <gmd:MD_DigitalTransferOptions>
                             <gmd:onLine>
@@ -62,7 +62,7 @@ const val idfReferences = """
                     </gmd:transferOptions>
 """
 
-const val addressHierarchy = """
+const val ADDRESS_HIERARCHY = """
             <idf:hierarchyParty uuid="25d56d6c-ed8d-4589-8c14-f8cfcb669115">
                 <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
                 <idf:addressType>0</idf:addressType>
@@ -77,7 +77,7 @@ const val addressHierarchy = """
             </idf:hierarchyParty>
 """
 
-const val addressHierarchyWithPositionNameSet = """
+const val ADDRESS_HIERARCHY_WITH_POSITION_NAME_SET = """
             <gmd:individualName>
                 <gco:CharacterString>PersonSubOrga, Max, Herr Dr.</gco:CharacterString>
             </gmd:individualName>
@@ -89,7 +89,7 @@ const val addressHierarchyWithPositionNameSet = """
             </gmd:positionName>
 """
 
-const val addressHierarchyWithNoPositionNameSet = """
+const val ADDRESS_HIERARCHY_WITH_NO_POSITION_NAME_SET = """
             <gmd:individualName>
                 <gco:CharacterString>PersonSubOrga, Max, Herr Dr.</gco:CharacterString>
             </gmd:individualName>

@@ -22,30 +22,33 @@ package de.ingrid.igeserver.configuration
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Contact
 import io.swagger.v3.oas.annotations.info.Info
-import io.swagger.v3.oas.models.servers.Server as OpenApiServer
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
-import io.swagger.v3.oas.models.security.*
+import io.swagger.v3.oas.models.security.SecurityRequirement
+import io.swagger.v3.oas.models.security.SecurityScheme
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.convert.converter.Converter
+import org.springframework.core.convert.converter.ConverterFactory
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
+import org.springframework.format.FormatterRegistry
 import org.springframework.http.HttpMethod
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.resource.PathResourceResolver
 import java.util.*
-
+import io.swagger.v3.oas.models.servers.Server as OpenApiServer
 
 @OpenAPIDefinition(
     info = Info(
         title = "IGE-NG API",
         version = "v1",
         description = "The IGE-NG provides the following REST-APIs",
-        contact = Contact(name = "Wemove", email = "contact@wemove.com", url = "https://www.wemove.com")
-    )
+        contact = Contact(name = "Wemove", email = "contact@wemove.com", url = "https://www.wemove.com"),
+    ),
 )
 @Configuration
 class SwaggerDocumentationConfig : WebMvcConfigurer {
@@ -56,13 +59,12 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
                 HttpMethod.POST.toString(),
                 HttpMethod.PUT.toString(),
                 HttpMethod.DELETE.toString(),
-                HttpMethod.OPTIONS.toString()
+                HttpMethod.OPTIONS.toString(),
             )
             .allowedOrigins("*")
     }
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
-
         /*
          * This configuration is needed to map path correctly to angular application
          * Otherwise a reload will lead to a 404 - Not Found error
@@ -78,21 +80,26 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
             .addResolver(object : PathResourceResolver() {
                 override fun getResource(resourcePath: String, location: Resource): Resource {
                     val requestedResource = location.createRelative(resourcePath)
-                    return if (requestedResource.exists() && requestedResource.isReadable) requestedResource else ClassPathResource("/static/index.html")
+                    return if (requestedResource.exists() && requestedResource.isReadable) {
+                        requestedResource
+                    } else {
+                        ClassPathResource(
+                            "/static/index.html",
+                        )
+                    }
                 }
             })
     }
 
     @Bean
     fun openAPI(@Value("\${SWAGGER_SERVERS:}") servers: List<String>): OpenAPI {
-
         val serverList: MutableList<OpenApiServer> = mutableListOf()
         servers.forEach { pair ->
             val parts = pair.split("::")
             if (parts.size == 2) {
                 val url = parts[0]
                 val description = parts[1]
-                serverList.add( OpenApiServer().url(url).description(description) )
+                serverList.add(OpenApiServer().url(url).description(description))
             }
         }
 
@@ -105,14 +112,26 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
                         SecurityScheme()
                             .type(SecurityScheme.Type.HTTP)
                             .scheme("bearer")
-                            .bearerFormat("JWT")
-                    )
+                            .bearerFormat("JWT"),
+                    ),
             )
             .addSecurityItem(
                 SecurityRequirement()
                     .addList("bearer-jwt", listOf("read", "write"))
-                    .addList(oauthSchemeName, Collections.emptyList())
+                    .addList(oauthSchemeName, Collections.emptyList()),
             )
             .servers(serverList)
+    }
+
+    class StringToEnumConverterFactory : ConverterFactory<String, Enum<*>> {
+        override fun <T : Enum<*>> getConverter(targetType: Class<T>): Converter<String, T> =
+            Converter { source ->
+                targetType.enumConstants.find { it.name == source.uppercase() }
+                    ?: throw IllegalArgumentException("No enum constant ${targetType.simpleName}.${source.uppercase()}")
+            }
+    }
+
+    override fun addFormatters(registry: FormatterRegistry) {
+        registry.addConverterFactory(StringToEnumConverterFactory())
     }
 }

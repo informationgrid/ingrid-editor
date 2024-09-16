@@ -26,7 +26,8 @@ enum class SourceTypeEnum(val value: String) {
     K1("cockpit"),
     K3("beteiligungsdb"),
     CSW("csw"),
-    WFS("wfs");
+    WFS("wfs"),
+    ;
 
     companion object {
         fun fromValue(source: String?): SourceTypeEnum? {
@@ -54,7 +55,8 @@ enum class SourceTypeEnum(val value: String) {
             val enumValues = java.lang.String.join(
                 ", ",
                 Stream.of(*entries.toTypedArray()).map { anEnum: SourceTypeEnum -> anEnum.toString() }
-                    .toList())
+                    .toList(),
+            )
             throw IllegalArgumentException("SourceTypeEnum value has to be one of [$enumValues], was $source")
         }
     }

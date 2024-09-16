@@ -1,6 +1,8 @@
 {
   "docType": {
     "TestDoc": "Testdokument",
-    "mCloudDoc": "mCLOUD"
+    "mCloudDoc": "mCLOUD",
+    "OrganisationDoc": "Organisation",
+    "AddressDoc": "Person"
   }
 }

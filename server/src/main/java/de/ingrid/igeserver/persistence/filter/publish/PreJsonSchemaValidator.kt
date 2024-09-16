@@ -32,7 +32,7 @@ import org.unbescape.json.JsonEscape
 
 data class JsonErrorEntry(
     val error: String,
-    val instanceLocation: String
+    val instanceLocation: String,
 )
 
 @Component
@@ -53,7 +53,7 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
 
             validate(
                 schema,
-                jsonWithTitle
+                jsonWithTitle,
             )
         }
         return payload
@@ -61,7 +61,7 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
 
     private fun addGenericFields(
         json: ObjectNode,
-        payload: PrePublishPayload
+        payload: PrePublishPayload,
     ): String {
         var extraFields = if (json.isEmpty) "" else ","
         extraFields += """"title": "${JsonEscape.escapeJson(payload.document.title)}""""
@@ -91,10 +91,17 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
 
         if (!output.valid) {
             // map to prevent leaking of information about server in absoluteKeywordLocation (#5772)
-            val error = output.errors?.map { JsonErrorEntry(it.error, it.instanceLocation) }
+            val error = output.errors?.map { JsonErrorEntry(it.error, removePathPrefix(it.absoluteKeywordLocation ?: it.instanceLocation)) }
             throw ValidationException.withReason(error)
         }
 
         return output
+    }
+
+    private fun removePathPrefix(path: String): String {
+        // example: file:/path/to/schema.json#/definitions/definitionName
+        val location = path.substringAfterLast("#")
+        val fileName = path.substringBeforeLast("#").substringAfterLast("/")
+        return "$fileName#$location"
     }
 }

@@ -24,6 +24,7 @@ import { ImportLogReport } from "../../exchange.service";
   selector: "ige-import-report",
   templateUrl: "./import-report.component.html",
   styleUrls: ["./import-report.component.scss"],
+  standalone: true,
 })
 export class ImportReportComponent {
   @Input() report: ImportLogReport;

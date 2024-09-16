@@ -25,11 +25,16 @@ import {
   ViewChild,
 } from "@angular/core";
 import { FieldWrapper } from "@ngx-formly/core";
+import { NgStyle, NgTemplateOutlet } from "@angular/common";
+import { MatIcon } from "@angular/material/icon";
+import { MatIconButton } from "@angular/material/button";
 
 @Component({
   selector: "ige-addons",
   templateUrl: "./addons-wrapper.component.html",
   styleUrls: ["./addons-wrapper.component.scss"],
+  standalone: true,
+  imports: [NgStyle, MatIcon, NgTemplateOutlet, MatIconButton],
 })
 export class AddonsWrapperComponent
   extends FieldWrapper

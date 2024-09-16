@@ -28,4 +28,3 @@ class DocMCloud : QuickFilter() {
     override val label = "mCLOUD"
     override val filter = "document1.type = 'mCloudDoc'"
 }
-

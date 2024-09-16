@@ -39,7 +39,7 @@ class ZabbixReportApiController(
     val catalogService: CatalogService,
     val documentService: DocumentService,
 ) : ZabbixReportApi {
-    private final val ZABBIX_BASE_URL = zabbixProperties.apiURL.replace("/api_jsonrpc.php", "")
+    private final val zabbixBaseURL = zabbixProperties.apiURL.replace("/api_jsonrpc.php", "")
     override fun getReport(principal: Principal): ResponseEntity<List<ProblemReportItem>> {
         val catalogIdentifier = catalogService.getCurrentCatalogForPrincipal(principal)
         // assumes apiURL is like https://zabbix.example.com/api_jsonrpc.php
@@ -64,7 +64,7 @@ class ZabbixReportApiController(
             .mapNotNull {
                 val events = zabbixService.getTriggerEvents(it)
                 val lastEvent = events?.get(0) ?: return@mapNotNull null
-                if(lastEvent.severity != "0") {
+                if (lastEvent.severity != "0") {
                     // latest event is a problem
                     problemToReportItem(lastEvent)
                 } else {
@@ -77,20 +77,14 @@ class ZabbixReportApiController(
         return ResponseEntity.ok(problems)
     }
 
-
-    fun problemToReportItem(problem: ZabbixModel.Problem, resolved: Boolean=false): ProblemReportItem {
-        return ProblemReportItem(
-            problemUrl = ZABBIX_BASE_URL + "/tr_events.php?triggerid=${problem.objectid}&eventid=${problem.eventid}",
-            clock = problem.clock,
-            docName = problem.docName,
-            name = problem.name,
-            url = problem.url,
-            docUrl = problem.docUrl,
-            docUuid = problem.docUuid,
-            resolved =  resolved
-        )
-    }
-
-
+    fun problemToReportItem(problem: ZabbixModel.Problem, resolved: Boolean = false): ProblemReportItem = ProblemReportItem(
+        problemUrl = zabbixBaseURL + "/tr_events.php?triggerid=${problem.objectid}&eventid=${problem.eventid}",
+        clock = problem.clock,
+        docName = problem.docName,
+        name = problem.name,
+        url = problem.url,
+        docUrl = problem.docUrl,
+        docUuid = problem.docUuid,
+        resolved = resolved,
+    )
 }
-

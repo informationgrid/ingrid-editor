@@ -43,11 +43,11 @@ interface UserManagementService {
      * Returns the temporary password for the new user
      */
     fun createUser(user: User): String
-    fun updateUser( user: User)
-    fun requestPasswordChange( id: String)
-    fun resetPassword( id: String): String
+    fun updateUser(user: User)
+    fun requestPasswordChange(id: String)
+    fun resetPassword(id: String): String
 
-    fun removeRoles( userId: String, roles: List<String>)
-    fun addRoles( userLogin: String, roles: List<String>)
-    fun deleteUser( userId: String)
+    fun removeRoles(userId: String, roles: List<String>)
+    fun addRoles(userLogin: String, roles: List<String>)
+    fun deleteUser(userId: String)
 }

@@ -41,5 +41,4 @@ interface IgeImporter {
      * @return true if this importer can handle this file, otherwise false
      */
     fun canHandleImportFile(contentType: String, fileContent: String): Boolean
-
 }

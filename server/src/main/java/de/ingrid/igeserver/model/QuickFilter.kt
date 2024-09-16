@@ -33,7 +33,7 @@ abstract class QuickFilter {
     open val isFieldQuery: Boolean = false
 
     open val codelistId: String? = null
-    
+
     // in case the codelist ID is catalog specific stored in a behaviour
     // format: <behaviourId>::<field>::<defaultValue>
     open val codelistIdFromBehaviour: String? = null

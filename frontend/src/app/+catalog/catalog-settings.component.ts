@@ -19,8 +19,14 @@
  */
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { BehavioursComponent } from "./+behaviours/behaviours.component";
-import { ActivatedRoute, Router } from "@angular/router";
-import { MatTabNav } from "@angular/material/tabs";
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from "@angular/router";
+import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 import { SessionService, Tab } from "../services/session.service";
 import { UntilDestroy } from "@ngneat/until-destroy";
 
@@ -29,6 +35,15 @@ import { UntilDestroy } from "@ngneat/until-destroy";
   selector: "ige-catalog-settings",
   templateUrl: "./catalog-settings.component.html",
   styleUrls: ["./catalog-settings.component.scss"],
+  standalone: true,
+  imports: [
+    MatTabNav,
+    MatTabLink,
+    RouterLinkActive,
+    RouterLink,
+    MatTabNavPanel,
+    RouterOutlet,
+  ],
 })
 export class CatalogSettingsComponent implements OnInit {
   @ViewChild("navigation") tabNav: MatTabNav;

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import {
   FieldTypeConfig,
   FormlyFieldConfig,
@@ -37,14 +37,15 @@ import {
 } from "@angular/cdk/drag-drop";
 import { MatListModule } from "@angular/material/list";
 import { AsyncPipe, JsonPipe, KeyValuePipe, NgForOf } from "@angular/common";
-import { SharedPipesModule } from "../../../directives/shared-pipes.module";
+
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
-import { AddButtonModule } from "../../../shared/add-button/add-button.module";
 import { MatButtonModule } from "@angular/material/button";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
+import { CodelistPipe } from "../../../directives/codelist.pipe";
+import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 
 interface RepeatDetailListProps extends FormlyFieldProps {
   titleField: string;
@@ -64,15 +65,15 @@ interface RepeatDetailListProps extends FormlyFieldProps {
     MatIconModule,
     MatListModule,
     MatMenuModule,
-    AddButtonModule,
+    AddButtonComponent,
     MatButtonModule,
-    SharedPipesModule,
     FormErrorComponent,
     KeyValuePipe,
     FormlyModule,
     MatTooltipModule,
     JsonPipe,
     NgForOf,
+    CodelistPipe,
   ],
   standalone: true,
 })
@@ -80,7 +81,10 @@ export class RepeatDetailListComponent
   extends FieldType<FieldTypeConfig<RepeatDetailListProps>>
   implements OnInit
 {
-  constructor(private dialog: MatDialog) {
+  constructor(
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef,
+  ) {
     super();
   }
 
@@ -95,18 +99,17 @@ export class RepeatDetailListComponent
   }
 
   private openDialog(index?: number) {
+    const existingModel =
+      index == null
+        ? null
+        : JSON.parse(JSON.stringify(this.model[this.field.key + ""][index]));
     this.dialog
       .open(FormDialogComponent, {
         width: "90vw",
         maxWidth: "950px",
         data: <FormDialogData>{
           fields: this.props.fields,
-          model:
-            index === null
-              ? {}
-              : JSON.parse(
-                  JSON.stringify(this.model[this.field.key + ""][index]),
-                ),
+          model: existingModel,
         },
       })
       .afterClosed()
@@ -114,6 +117,7 @@ export class RepeatDetailListComponent
         if (response) {
           this.replaceItem(index, response);
         }
+        this.cdr.detectChanges();
       });
   }
 

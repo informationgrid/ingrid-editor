@@ -25,10 +25,11 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 
+@Suppress("ktlint:standard:function-naming")
 interface GroupRepository : JpaRepository<Group, Int> {
-    
+
     fun findAllByCatalog_Identifier(catalog_identifier: String, sort: Sort = Sort.by(Sort.Direction.ASC, "name")): List<Group>
-    
+
     fun findAllByCatalog_IdentifierAndId(catalog_identifier: String, id: Int): Group
 
     /**
@@ -38,5 +39,4 @@ interface GroupRepository : JpaRepository<Group, Int> {
     @Modifying
     @Query("delete from Group g where g.id = ?1")
     override fun deleteById(id: Int)
-    
 }

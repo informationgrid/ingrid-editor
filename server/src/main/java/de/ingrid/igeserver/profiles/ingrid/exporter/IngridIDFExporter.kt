@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.exporter.AddressTransformerConfig
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
@@ -44,7 +45,6 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
 
-
 @Service
 class IngridIDFExporter(
     val codelistHandler: CodelistHandler,
@@ -65,7 +65,7 @@ class IngridIDFExporter(
         "text/xml",
         "xml",
         listOf("ingrid"),
-        false
+        false,
     )
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -77,7 +77,7 @@ class IngridIDFExporter(
         templateEngine.render(
             getTemplateForDoctype(doc.type),
             getMapFromObject(doc, catalogId, options),
-            output
+            output,
         )
         // pretty printing takes around 5ms
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
@@ -87,21 +87,18 @@ class IngridIDFExporter(
         return prettyXml
     }
 
-
-    private fun getTemplateForDoctype(type: String): String {
-        return when (type) {
-            "InGridSpecialisedTask" -> "export/ingrid/idf/idf-specialisedTask.jte"
-            "InGridGeoDataset" -> "export/ingrid/idf/idf-geodataset.jte"
-            "InGridPublication" -> "export/ingrid/idf/idf-publication.jte"
-            "InGridGeoService" -> "export/ingrid/idf/idf-geoservice.jte"
-            "InGridProject" -> "export/ingrid/idf/idf-project.jte"
-            "InGridDataCollection" -> "export/ingrid/idf/idf-dataCollection.jte"
-            "InGridInformationSystem" -> "export/ingrid/idf/idf-informationSystem.jte"
-            "InGridOrganisationDoc" -> "export/ingrid/idf/idf-address.jte"
-            "InGridPersonDoc" -> "export/ingrid/idf/idf-address.jte"
-            else -> {
-                throw ServerException.withReason("Cannot get template for type: $type")
-            }
+    private fun getTemplateForDoctype(type: String): String = when (type) {
+        "InGridSpecialisedTask" -> "export/ingrid/idf/idf-specialisedTask.jte"
+        "InGridGeoDataset" -> "export/ingrid/idf/idf-geodataset.jte"
+        "InGridPublication" -> "export/ingrid/idf/idf-publication.jte"
+        "InGridGeoService" -> "export/ingrid/idf/idf-geoservice.jte"
+        "InGridProject" -> "export/ingrid/idf/idf-project.jte"
+        "InGridDataCollection" -> "export/ingrid/idf/idf-dataCollection.jte"
+        "InGridInformationSystem" -> "export/ingrid/idf/idf-informationSystem.jte"
+        "InGridOrganisationDoc" -> "export/ingrid/idf/idf-address.jte"
+        "InGridPersonDoc" -> "export/ingrid/idf/idf-address.jte"
+        else -> {
+            throw ServerException.withReason("Cannot get template for type: $type")
         }
     }
 
@@ -113,9 +110,11 @@ class IngridIDFExporter(
         val transformerClass = getModelTransformerClass(json.type)
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
-        return if (isAddress)
-            transformerClass.constructors.first().call(catalogId, codelistTransformer, null, json, documentService)
-        else
+        return if (isAddress) {
+            transformerClass.constructors.first().call(
+                AddressTransformerConfig(catalogId, codelistTransformer, null, json, documentService, config, exportOptions.tags),
+            )
+        } else {
             transformerClass.constructors.first().call(
                 TransformerConfig(
                     getIngridModel(json, catalogId),
@@ -126,37 +125,34 @@ class IngridIDFExporter(
                     TransformerCache(),
                     json,
                     documentService,
-                    exportOptions.tags
-                )
+                    exportOptions.tags,
+                ),
             )
+        }
     }
 
     fun getIngridModel(doc: Document, catalogId: String): IngridModel = mapper.convertValue(doc, IngridModel::class.java)
 
-    fun getModelTransformerClass(docType: String): KClass<out Any>? {
-        return when (docType) {
-            "InGridSpecialisedTask" -> IngridModelTransformer::class
-            "InGridGeoDataset" -> GeodatasetModelTransformer::class
-            "InGridPublication" -> PublicationModelTransformer::class
-            "InGridGeoService" -> GeodataserviceModelTransformer::class
-            "InGridProject" -> ProjectModelTransformer::class
-            "InGridDataCollection" -> DataCollectionModelTransformer::class
-            "InGridInformationSystem" -> InformationSystemModelTransformer::class
-            "InGridOrganisationDoc" -> AddressModelTransformer::class
-            "InGridPersonDoc" -> AddressModelTransformer::class
-            else -> null
-        }
+    fun getModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
+        "InGridSpecialisedTask" -> IngridModelTransformer::class
+        "InGridGeoDataset" -> GeodatasetModelTransformer::class
+        "InGridPublication" -> PublicationModelTransformer::class
+        "InGridGeoService" -> GeodataserviceModelTransformer::class
+        "InGridProject" -> ProjectModelTransformer::class
+        "InGridDataCollection" -> DataCollectionModelTransformer::class
+        "InGridInformationSystem" -> InformationSystemModelTransformer::class
+        "InGridOrganisationDoc" -> AddressModelTransformer::class
+        "InGridPersonDoc" -> AddressModelTransformer::class
+        else -> null
     }
-
 
     private fun getMapFromObject(json: Document, catalogId: String, options: ExportOptions): Map<String, Any> {
         val modelTransformer = getModelTransformer(json, catalogId, options)
         return mapOf(
             "map" to mapOf(
-                "model" to modelTransformer
+                "model" to modelTransformer,
             ),
         )
-
     }
 }
 
@@ -164,7 +160,7 @@ private class XMLStringOutput : StringOutput() {
     override fun writeUserContent(value: String?) {
         if (value == null) return
         super.writeUserContent(
-            StringEscapeUtils.escapeXml10(value)
+            StringEscapeUtils.escapeXml10(value),
 //                .replace("\n", "&#10;")
 //                .replace("\r", "&#13;")
 //                .replace("\t", "&#9;")

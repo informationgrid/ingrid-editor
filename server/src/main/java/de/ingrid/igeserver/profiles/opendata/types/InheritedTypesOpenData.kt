@@ -33,7 +33,7 @@ import java.net.URLDecoder
 @Component
 class OpenDataType : EntityType() {
     override val className = "OpenDataDoc"
-    override val profiles = arrayOf(OpenDataProfile.id)
+    override val profiles = arrayOf(OpenDataProfile.ID)
 
     val log = logger()
 
@@ -58,12 +58,9 @@ class OpenDataType : EntityType() {
         }
     }
 
-    override fun getReferenceIds(doc: Document): List<String> {
-        return doc.data.path("addresses").map { address ->
-            address.path("ref").textValue()
-        }
+    override fun getReferenceIds(doc: Document): List<String> = doc.data.path("addresses").map { address ->
+        address.path("ref").textValue()
     }
-
 }
 
 @Component
@@ -73,8 +70,7 @@ class OpenDataAddressType(jdbcTemplate: JdbcTemplate) : AddressType(jdbcTemplate
 
     override val category = DocumentCategory.ADDRESS.value
 
-    override val profiles = arrayOf(OpenDataProfile.id)
+    override val profiles = arrayOf(OpenDataProfile.ID)
 
     override val className = "OpenDataAddressDoc"
 }
-

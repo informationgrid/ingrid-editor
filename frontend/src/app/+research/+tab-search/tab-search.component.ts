@@ -18,7 +18,11 @@
  * limitations under the Licence.
  */
 import { Component, EventEmitter, OnInit } from "@angular/core";
-import { UntypedFormBuilder, UntypedFormGroup } from "@angular/forms";
+import {
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormGroup,
+} from "@angular/forms";
 import { firstValueFrom, of } from "rxjs";
 import { Facets, ResearchResponse, ResearchService } from "../research.service";
 import {
@@ -36,12 +40,35 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FacetQuery } from "../../store/query/query.model";
+import { TranslocoDirective } from "@ngneat/transloco";
+import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { FacetsComponent } from "../+facets/facets.component";
+import { MatFormField, MatPrefix } from "@angular/material/form-field";
+import { MatSelect } from "@angular/material/select";
+import { MatOption } from "@angular/material/core";
+import { SearchInputComponent } from "../../shared/search-input/search-input.component";
+import { MatButton } from "@angular/material/button";
+import { ResultTableComponent } from "../result-table/result-table.component";
 
 @UntilDestroy()
 @Component({
   selector: "ige-tab-search",
   templateUrl: "./tab-search.component.html",
   styleUrls: ["./tab-search.component.scss"],
+  standalone: true,
+  imports: [
+    TranslocoDirective,
+    PageTemplateComponent,
+    ReactiveFormsModule,
+    FacetsComponent,
+    MatFormField,
+    MatPrefix,
+    MatSelect,
+    MatOption,
+    SearchInputComponent,
+    MatButton,
+    ResultTableComponent,
+  ],
 })
 export class TabSearchComponent implements OnInit {
   form: UntypedFormGroup;

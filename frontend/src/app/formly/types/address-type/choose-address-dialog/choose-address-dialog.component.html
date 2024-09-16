@@ -25,12 +25,12 @@
 
         <div
             class="side-padding"
-            [class.hide]="!typeSelectionEnabled || activeStep !== 2"
+            [class.hide]="!typeSelectionEnabled() || activeStep !== 2"
         >
             <div>Adresstyp zuordnen für:</div>
             <div class="chosen-address">
-                <mat-icon [svgIcon]="selection?.icon"></mat-icon>
-                <span>{{ selection?.title }}</span>
+                <mat-icon [svgIcon]="selection()?.icon"></mat-icon>
+                <span>{{ selection()?.title }}</span>
             </div>
             <ige-document-list-item
                 data-cy="address-type-select"
@@ -68,25 +68,27 @@
             </button>
         }
         <div class="flex-1"></div>
-        @if (typeSelectionEnabled && activeStep == 1) {
+        @if (typeSelectionEnabled() && activeStep == 1) {
             <button
                 mat-flat-button
                 color="primary"
                 data-cy="choose-address-next-step"
-                [disabled]="!selection || selection._type === 'FOLDER'"
+                [disabled]="!selection() || selection()._type === 'FOLDER'"
                 (click)="activeStep = 2"
                 aria-label="Weiter zur Auswahl des Adresstyps"
             >
                 Weiter
             </button>
         }
-        @if (!typeSelectionEnabled || activeStep == 2) {
+        @if (!typeSelectionEnabled() || activeStep == 2) {
             <button
                 mat-flat-button
                 color="primary"
                 data-cy="choose-address-confirm"
                 [disabled]="
-                    !selection || !selectedType || selection._type === 'FOLDER'
+                    !selection() ||
+                    !selectedType ||
+                    selection()._type === 'FOLDER'
                 "
                 (click)="getResult()"
                 aria-label="Adresse mit Auswahl bestätigen"

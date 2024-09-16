@@ -98,7 +98,6 @@ class Migration : ApplicationRunner {
             .sortedBy { it.version }
     }
 
-
     private fun getVersion(): String {
         val info = versionRepo.findById(1).get()
         return info.value ?: "0"

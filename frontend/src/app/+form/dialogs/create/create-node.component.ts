@@ -18,6 +18,7 @@
  * limitations under the Licence.
  */
 import {
+  ChangeDetectionStrategy,
   Component,
   effect,
   ElementRef,
@@ -30,12 +31,20 @@ import {
   DocumentService,
   SaveOptions,
 } from "../../../services/document/document.service";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from "@angular/material/dialog";
 import { tap } from "rxjs/operators";
 import { TreeQuery } from "../../../store/tree/tree.query";
 import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { Router } from "@angular/router";
 import {
+  ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormGroup,
   Validators,
@@ -46,8 +55,18 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
 import { firstValueFrom } from "rxjs";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
 import { TreeNode } from "../../../store/tree/tree-node.model";
+import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { MatTab, MatTabGroup } from "@angular/material/tabs";
+import { DocumentTemplateComponent } from "./document-template/document-template.component";
+import { NgTemplateOutlet } from "@angular/common";
+import { AddressTemplateComponent } from "./address-template/address-template.component";
+import { DestinationSelectionComponent } from "./destination-selection/destination-selection.component";
+import { BreadcrumbComponent } from "../../form-info/breadcrumb/breadcrumb.component";
 
 export interface CreateOptions {
   parent: string;
@@ -59,6 +78,29 @@ export interface CreateOptions {
 @Component({
   templateUrl: "./create-node.component.html",
   styleUrls: ["./create-node.component.scss"],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CdkDrag,
+    CdkDragHandle,
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    MatTabGroup,
+    MatTab,
+    ReactiveFormsModule,
+    DocumentTemplateComponent,
+    NgTemplateOutlet,
+    AddressTemplateComponent,
+    DestinationSelectionComponent,
+    MatDialogActions,
+    MatButton,
+    TranslocoDirective,
+    BreadcrumbComponent,
+  ],
 })
 export class CreateNodeComponent implements OnInit {
   @ViewChild("contextNodeContainer") container: ElementRef;
@@ -67,12 +109,12 @@ export class CreateNodeComponent implements OnInit {
   forAddress: boolean;
   selectedPage = 0;
   rootTreeName: string;
-  isFolder = true;
+  isFolder = signal<boolean>(true);
   formGroup: UntypedFormGroup;
   jumpedTreeNodeId: number = null;
   isAdmin = this.config.hasWriteRootPermission();
   selectedLocation: number = null;
-  pathWithWritePermission = false;
+  pathWithWritePermission = signal<boolean>(false);
   alreadySubmitted = false;
 
   private query: TreeQuery | AddressTreeQuery;
@@ -90,27 +132,29 @@ export class CreateNodeComponent implements OnInit {
     public dialogRef: MatDialogRef<CreateNodeComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CreateOptions,
   ) {
-    this.isFolder = data.isFolder;
+    this.isFolder.set(data.isFolder);
     this.forAddress = this.data.forAddress;
     this.rootTreeName = this.translocoService.translate(
       this.forAddress ? "menu.address" : "menu.form",
     );
 
-    if (!this.isFolder) {
+    if (!this.isFolder()) {
       this.title = this.translocoService.translate(
         this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
       );
     }
 
-    effect(() => {
-      // update path depending on selected document type
-      this.docTypeChoice();
-      this.mapPath(this.path);
-    });
+    effect(
+      () => {
+        // update path depending on selected document type
+        this.docTypeChoice();
+        this.mapPath(this.path);
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   private _path: ShortTreeNode[] = [];
-  isPerson: boolean;
 
   get path() {
     return this._path;
@@ -118,17 +162,18 @@ export class CreateNodeComponent implements OnInit {
 
   set path(value: ShortTreeNode[]) {
     this._path = value;
-    this.pathWithWritePermission =
+    this.pathWithWritePermission.set(
       value.length === 0
         ? this.isAdmin
         : value[value.length - 1].permission.canOnlyWriteSubtree ||
-          !value[value.length - 1].disabled;
+            !value[value.length - 1].disabled,
+    );
   }
 
   ngOnInit() {
     this.query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
 
-    if (this.isFolder || !this.forAddress) {
+    if (this.isFolder() || !this.forAddress) {
       this.initializeForDocumentsAndFolders();
     } else {
       this.initializeForAddresses();
@@ -148,13 +193,13 @@ export class CreateNodeComponent implements OnInit {
     if (
       // don't proceed if invalid form or user without writePermission on selected path
       this.formGroup.invalid ||
-      (!this.isAdmin && !this.pathWithWritePermission)
+      (!this.isAdmin && !this.pathWithWritePermission())
     )
       return;
 
     this.alreadySubmitted = true;
 
-    if (this.isFolder || !this.forAddress) {
+    if (this.isFolder() || !this.forAddress) {
       await this.handleDocumentCreate();
     } else {
       await this.handleAddressCreate();
@@ -182,7 +227,7 @@ export class CreateNodeComponent implements OnInit {
 
   jumpToTree(id: number) {
     this.selectedPage = 1;
-    if (id !== null && this.pathWithWritePermission) {
+    if (id !== null && this.pathWithWritePermission()) {
       this.jumpedTreeNodeId = id;
     }
   }

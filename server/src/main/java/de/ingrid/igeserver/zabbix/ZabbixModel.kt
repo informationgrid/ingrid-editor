@@ -31,7 +31,7 @@ class ZabbixModel {
         val method: String,
         val params: HostParams,
         val auth: String?,
-        val id: Int
+        val id: Int,
     )
 
     data class Webscenario(
@@ -39,7 +39,7 @@ class ZabbixModel {
         val method: String,
         val params: WebscenarioParams,
         val auth: String?,
-        val id: Int
+        val id: Int,
     )
 
     data class Step(
@@ -48,7 +48,7 @@ class ZabbixModel {
         val url: String,
         val required: String?,
         val status_codes: String,
-        val no: Int
+        val no: Int,
     )
 
     data class Trigger(
@@ -56,7 +56,7 @@ class ZabbixModel {
         val method: String,
         val params: TriggerParams,
         val auth: String?,
-        val id: Int
+        val id: Int,
     )
 
     data class Group(val groupid: String)
@@ -67,7 +67,7 @@ class ZabbixModel {
         val host: String,
         val name: String?,
         val groups: List<Group>,
-        val tags: List<Tag>?
+        val tags: List<Tag>?,
     )
 
     data class WebscenarioParams(
@@ -75,7 +75,7 @@ class ZabbixModel {
         val hostid: String,
         val delay: String,
         val steps: List<Step>,
-        val tags: List<Tag>?
+        val tags: List<Tag>?,
     )
 
     data class TriggerParams(
@@ -83,7 +83,7 @@ class ZabbixModel {
         val expression: String,
         val priority: Int,
         val status: Int = 0,
-        val tags: List<Tag>?
+        val tags: List<Tag>?,
     )
 
     data class ZabbixData(
@@ -91,13 +91,13 @@ class ZabbixModel {
         val uuid: String,
         val documentTitle: String,
         val documentURL: String,
-        val uploads: List<Upload>
+        val uploads: List<Upload>,
     )
 
     data class Upload(
         val name: String,
         val url: String,
-        val webscenarioId: String = ""
+        val webscenarioId: String = "",
     )
 
     data class Create(
@@ -105,11 +105,11 @@ class ZabbixModel {
         val method: String,
         val params: CreateParams,
         val auth: String?,
-        val id: Int
+        val id: Int,
     )
 
     data class CreateParams(
-        val name: String
+        val name: String,
     )
 
     data class Delete(
@@ -117,7 +117,7 @@ class ZabbixModel {
         val method: String,
         val params: List<String>,
         val auth: String?,
-        val id: Int
+        val id: Int,
     )
 
     data class Problem(

@@ -20,13 +20,28 @@
 import { Component } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { SessionService } from "../../services/session.service";
-import { ActivatedRoute } from "@angular/router";
+import {
+  ActivatedRoute,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from "@angular/router";
+import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 
 @UntilDestroy()
 @Component({
   selector: "ige-reports",
   templateUrl: "./reports.component.html",
   styleUrls: ["./reports.component.scss"],
+  standalone: true,
+  imports: [
+    MatTabNav,
+    MatTabLink,
+    RouterLinkActive,
+    RouterLink,
+    MatTabNavPanel,
+    RouterOutlet,
+  ],
 })
 export class ReportsComponent {
   tabs = [];

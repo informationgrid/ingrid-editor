@@ -45,7 +45,7 @@ class IndexApiController(
 
     override fun setExportConfig(
         principal: Principal,
-        config: List<ExportConfig>
+        config: List<ExportConfig>,
     ): ResponseEntity<Void> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         indexService.updateExporterConfig(catalogId, config)
@@ -58,11 +58,10 @@ class IndexApiController(
         val config = catalogService.getCatalogById(catalogId).run {
             IndexOptions(
                 settings.indexCronPattern ?: "",
-                settings.exports
+                settings.exports,
             )
         }
         return ResponseEntity.ok(config)
-
     }
 
     override fun getLog(principal: Principal): ResponseEntity<IndexMessage> {

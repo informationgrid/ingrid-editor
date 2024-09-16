@@ -26,11 +26,14 @@ import { GetCapabilitiesService } from "./get-capabilities-dialog/get-capabiliti
 import { filter } from "rxjs/operators";
 import { GetCapabilitiesAnalysis } from "./get-capabilities-dialog/get-capabilities.model";
 import { FormStateService } from "../../../+form/form-state.service";
+import { MatButton } from "@angular/material/button";
 
 @Component({
   selector: "ige-update-get-capabilities",
   templateUrl: "./update-get-capabilities.component.html",
   styleUrls: ["./update-get-capabilities.component.scss"],
+  standalone: true,
+  imports: [MatButton],
 })
 export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {
   constructor(

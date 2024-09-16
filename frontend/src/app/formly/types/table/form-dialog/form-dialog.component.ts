@@ -18,15 +18,19 @@
  * limitations under the Licence.
  */
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
-import { FormlyFieldConfig, FormlyFormOptions } from "@ngx-formly/core";
+import {
+  FormlyFieldConfig,
+  FormlyFormOptions,
+  FormlyModule,
+} from "@ngx-formly/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 
 export interface FormDialogData {
   fields: FormlyFieldConfig[];
   model: any;
-  newEntry?: boolean;
 }
 
 @UntilDestroy()
@@ -34,21 +38,24 @@ export interface FormDialogData {
   selector: "ige-form-dialog",
   templateUrl: "./form-dialog.component.html",
   styleUrls: ["./form-dialog.component.scss"],
+  standalone: true,
+  imports: [DialogTemplateComponent, FormlyModule],
 })
 export class FormDialogComponent implements OnInit, OnDestroy {
   form = new UntypedFormGroup({});
   titleText: string;
   options: FormlyFormOptions = {};
   disabled = true;
+  isExistingEntry: boolean;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: FormDialogData,
     private dlgRef: MatDialogRef<string>,
   ) {
-    this.titleText = data?.newEntry
-      ? "Eintrag hinzufügen"
-      : "Eintrag bearbeiten";
-
+    this.isExistingEntry = data.model != null;
+    this.titleText = this.isExistingEntry
+      ? "Eintrag bearbeiten"
+      : "Eintrag hinzufügen";
     this.form.statusChanges.pipe(untilDestroyed(this)).subscribe((value) => {
       setTimeout(() => {
         if (value === "VALID") this.disabled = false;
@@ -58,7 +65,7 @@ export class FormDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (Object.keys(this.data.model).length > 0) {
+    if (this.isExistingEntry) {
       setTimeout(() => {
         this.form.markAllAsTouched();
         // @ts-ignore
