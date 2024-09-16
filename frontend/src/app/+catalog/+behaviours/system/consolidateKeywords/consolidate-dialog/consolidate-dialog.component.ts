@@ -28,6 +28,12 @@ export interface ConsolidateDialogData {
   id: number;
 }
 
+class Keywords {
+  gemet: Object[];
+  umthes: Object[];
+  free: Object[];
+}
+
 @Component({
   selector: "consolidate-keywords-dialog",
   templateUrl: "./consolidate-dialog.component.html",
@@ -65,9 +71,7 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   id: number;
-  form: any;
-  formControls: any;
-  keywords: any[];
+  keywords: Keywords;
   isInspireIdentified: boolean;
 
   keywordCategories = {
@@ -111,9 +115,8 @@ export class ConsolidateDialogComponent implements OnInit {
     this.isLoading = true;
     this.resetNewKeywords();
 
-    this.form = this.formStateService.getForm().value;
-    this.formControls = this.formStateService.getForm().controls;
-    this.keywords = this.formControls.keywords.value;
+    const form = this.formStateService.getForm();
+    this.keywords = form.get("keywords").value;
 
     this.hasKeywords = Object.values(this.keywords).some(
       (keywords) => keywords.length > 0,
@@ -123,13 +126,16 @@ export class ConsolidateDialogComponent implements OnInit {
       return false;
     }
 
-    this.isInspireIdentified = this.formControls.isInspireIdentified.value;
-    this.inspireTopics = this.isInspireIdentified ? this.form.themes : []; // INSPIRE-Themen
-    this.isoCategories = this.formControls.topicCategories.value || []; // ISO-Themenkategorie
+    this.isInspireIdentified = form.get("isInspireIdentified").value;
+    this.inspireTopics = this.isInspireIdentified
+      ? form.get("themes").value
+      : []; // INSPIRE-Themen
+    this.isoCategories = form.get("topicCategories").value || []; // ISO-Themenkategorie
+    this.keywords = form.get("keywords").value;
 
-    this.gemetKeywords = this.formControls.keywords.value.gemet;
-    this.umthesKeywords = this.formControls.keywords.value.umthes;
-    this.freeKeywords = this.formControls.keywords.value.free;
+    this.gemetKeywords = this.keywords?.gemet || [];
+    this.umthesKeywords = this.keywords?.umthes || [];
+    this.freeKeywords = this.keywords?.free || [];
 
     this.timedOutKeywords = [];
     this.timedOutThesauri = [];
