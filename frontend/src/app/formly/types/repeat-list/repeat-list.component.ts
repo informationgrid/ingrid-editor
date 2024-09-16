@@ -313,10 +313,7 @@ export class RepeatListComponent
 
     this.formControl.valueChanges
       .pipe(untilDestroyed(this))
-      .subscribe((data) => {
-        console.log("Repeat list changed: ", data);
-        this.items.set(data);
-      });
+      .subscribe((data) => this.items.set(data));
   }
 
   addToList(option: SelectOptionUi) {
