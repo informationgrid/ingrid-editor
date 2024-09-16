@@ -158,7 +158,7 @@ export class InGridComponent implements OnInit {
           ]
         : [false]),
       metadata.docType === InGridDoctype.InGridInformationSystem
-        ? data.serviceUrls?.length > 0 ?? false
+        ? data.serviceUrls?.length > 0
         : false,
     ];
   }
