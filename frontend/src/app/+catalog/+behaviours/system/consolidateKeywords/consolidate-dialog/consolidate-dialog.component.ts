@@ -9,7 +9,6 @@ import { UserTableComponent } from "../../../../../+user/user/user-table/user-ta
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
-import { SharedModule } from "../../../../../shared/shared.module";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -44,7 +43,6 @@ class Keywords {
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
-    SharedModule,
     MatProgressSpinnerModule,
     CdkDragHandle,
     MatChip,
