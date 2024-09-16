@@ -411,6 +411,7 @@ export class FormFieldHelper {
       props: {
         externalLabel: label,
         required: options?.required,
+        // TODO: put those options in an options-object since they are used in nested components
         supportUpload: options?.supportUpload ?? true,
         supportLink: options?.supportLink ?? true,
         enableFileUploadOverride: options?.enableFileUploadOverride,
