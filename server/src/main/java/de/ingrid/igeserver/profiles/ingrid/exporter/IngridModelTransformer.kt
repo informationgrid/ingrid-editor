@@ -649,8 +649,7 @@ open class IngridModelTransformer(
             .map { applyRefInfos(it) }
     }
 
-    fun getFileReferenceTransferOptions(): List<FileReferenceTransferOption> = fileReferenceTransferOptionsList
-    private val fileReferenceTransferOptionsList: List<FileReferenceTransferOption> by lazy {
+    val fileReferenceTransferOptions: List<FileReferenceTransferOption> by lazy {
         val fileReferences = data.fileReferences ?: emptyList()
         fileReferences.map {
             FileReferenceTransferOption(
