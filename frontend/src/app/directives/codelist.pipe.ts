@@ -77,7 +77,7 @@ export class CodelistPipe implements PipeTransform {
     if (entries.length === 1) {
       return entries[0].fields;
     } else {
-      console.log(
+      console.warn(
         `Codelist entry ${codelistValue} not found for codelist ${id}`,
       );
       return `${codelistValue} (Freier Eintrag)`;

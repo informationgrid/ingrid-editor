@@ -39,7 +39,7 @@ export class FormUtils {
   ) {
     // CTRL + ALT + S (save current document)
     if (event.ctrlKey && event.altKey && event.key === "s") {
-      console.log("SAVE");
+      console.debug("SAVE");
       event.stopImmediatePropagation();
       event.stopPropagation();
       let dif = event.timeStamp - FormUtils.timestamp;
@@ -51,7 +51,7 @@ export class FormUtils {
 
     // CTRL + ALT + V (trigger publish menu)
     if (event.ctrlKey && event.altKey && event.key === "v") {
-      console.log("PUBLISH_MENU");
+      console.debug("PUBLISH_MENU");
       event.stopImmediatePropagation();
       event.stopPropagation();
       service.openItemMenu("btnPublishMore");
@@ -68,7 +68,7 @@ export class FormUtils {
     const metadata = formStateService.metadata();
     const formHasChanged = form?.dirty;
     if (formHasChanged) {
-      console.log("Dirty fields:", this.getDirtyState(form));
+      console.debug("Dirty fields:", this.getDirtyState(form));
 
       const value = form.value;
       const decision = await this.showDecisionDialog(dialog);

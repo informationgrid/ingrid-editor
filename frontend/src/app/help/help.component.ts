@@ -69,7 +69,7 @@ export class HelpComponent implements OnInit {
         event instanceof NavigationEnd &&
         url.indexOf(this.previousPath) === -1
       ) {
-        console.log("fetch help:", url);
+        console.debug("fetch help:", url);
         this.text = url;
         this.previousPath = HelpComponent.preparePreviousPath(url);
       }
@@ -83,7 +83,7 @@ export class HelpComponent implements OnInit {
   }
 
   toggleMaximized() {
-    console.log("max");
+    console.debug("max");
     this.menuState === "maximized"
       ? (this.menuState = "expanded")
       : (this.menuState = "maximized");

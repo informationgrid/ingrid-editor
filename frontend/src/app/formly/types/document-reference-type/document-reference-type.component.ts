@@ -174,7 +174,7 @@ export class DocumentReferenceTypeComponent
     }
     setTimeout(() => this.add(index, item));
     this.props.change?.(this.field);
-    console.log("update value", item);
+    console.debug("update value", item);
   }
 
   async openReference(item: DocumentReference | UrlReference) {

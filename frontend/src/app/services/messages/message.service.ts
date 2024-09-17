@@ -44,12 +44,14 @@ export class MessageService {
 
   loadStoredMessages(): Observable<Message[]> {
     return this.dataService.loadStoredMessages().pipe(
-      tap((storedMessages) => console.log(`fetched messages`, storedMessages)),
+      tap((storedMessages) =>
+        console.debug(`fetched messages`, storedMessages),
+      ),
       catchError((e) => {
         const userInfo = this.configService.$userInfo.value;
         console.error("Could not get messages");
         if (userInfo?.assignedCatalogs?.length === 0) {
-          console.log("because of user with no assigned catalogs");
+          console.error("because of user with no assigned catalogs");
           return [];
         } else {
           throw e;

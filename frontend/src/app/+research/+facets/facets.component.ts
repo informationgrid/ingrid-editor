@@ -304,7 +304,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   // TODO: refactor map to separate component
   private updateMap(location: SpatialLocation) {
     if (!this.leafletReference) {
-      console.log("Map not initialized yet ... try again updating spatial");
+      console.debug("Map not initialized yet ... try again updating spatial");
       setTimeout(() => this.updateMap(location), 100);
       return;
     }

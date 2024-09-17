@@ -104,7 +104,7 @@ export class PermissionsComponent implements OnInit, ControlValueAccessor {
     this.formGroup.patchValue({
       rootPermission: write ? "WRITE" : read ? "READ" : null,
     });
-    console.log(this.formGroup.value);
+    console.debug(this.formGroup.value);
     this.onChange(this.formGroup.value);
   }
 }

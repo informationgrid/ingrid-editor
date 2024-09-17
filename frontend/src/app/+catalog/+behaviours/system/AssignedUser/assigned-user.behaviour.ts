@@ -182,7 +182,7 @@ export class AssignedUserBehaviour extends Plugin {
       ? this.addressTreeQuery
       : this.documentTreeQuery;
     const currentUUID = query.getOpenedDocument()._uuid;
-    console.log("currentUUID", currentUUID);
+    console.debug("currentUUID", currentUUID);
 
     const handled = await FormUtils.handleDirtyForm(
       this.formStateService,

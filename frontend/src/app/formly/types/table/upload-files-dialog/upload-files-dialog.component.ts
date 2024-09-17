@@ -126,7 +126,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   }
 
   removeUploadedFile(fileId: string) {
-    console.log("uploaded files will not be removed for now due to a bug");
+    console.warn("uploaded files will not be removed for now due to a bug");
     /*const fileNotReferenced = this.fileExistsInTable(fileId);
     if (!fileNotReferenced) {
       this.uploadService.deleteUploadedFile(this.docUuid, fileId);

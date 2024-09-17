@@ -202,7 +202,6 @@ export class RepeatDistributionDetailListComponent
   }
 
   openDialog(index?: number) {
-    console.log(index);
     this.dialog
       .open(FormDialogComponent, {
         width: "90vw",

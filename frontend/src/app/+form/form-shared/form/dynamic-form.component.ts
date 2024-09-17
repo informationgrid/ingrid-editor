@@ -286,7 +286,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe((errors: ValidationError[]) => {
         this.showValidationErrors = true;
         errors.forEach((error) => {
-          console.log("Received server side validation error", error);
+          console.error("Received server side validation error", error);
           const message = this.translocoService.translate(
             `form.validationMessages.${error.errorCode}`,
           );

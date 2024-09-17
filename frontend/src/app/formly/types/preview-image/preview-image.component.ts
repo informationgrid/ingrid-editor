@@ -254,7 +254,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
       .pipe(
         tap((hash) => this.addUploadUri(uri, hash)),
         catchError((error) => {
-          console.log(error);
+          console.error(error);
           this.messageService.sendError(
             "Die Vorschaugrafik konnte auf dem Server nicht mehr gefunden werden",
           );

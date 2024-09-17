@@ -191,7 +191,7 @@ export class LeafletTypeComponent
   }
 
   openSpatialDialog(locationIndex?: number) {
-    console.log(
+    console.debug(
       "The Location index array size before adding / updating: ",
       this.locations.length,
     );
@@ -210,13 +210,13 @@ export class LeafletTypeComponent
       .afterClosed()
       .subscribe((result: SpatialLocation) => {
         if (result) {
-          console.log("Spatial result:", result);
+          console.debug("Spatial result:", result);
           if (locationIndex >= 0) {
             this.locations[locationIndex] = result;
           } else {
             this.locations.push(result);
           }
-          console.log(
+          console.debug(
             "The Location index array size after adding / updating: ",
             this.locations.length,
           );

@@ -85,7 +85,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
     const onEvent = this.docEvents
       .onEvent("REPLACE_ADDRESS")
       .subscribe((event) => {
-        console.log("REPLACE_ADDRESS", event);
+        console.debug("REPLACE_ADDRESS", event);
         this.showDialog(event.data.uuid, false).subscribe();
       });
 
