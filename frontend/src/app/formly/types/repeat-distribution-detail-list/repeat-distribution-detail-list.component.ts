@@ -110,7 +110,7 @@ export class RepeatDistributionDetailListComponent
   ngOnInit(): void {
     this.formControl.valueChanges
       .pipe(untilDestroyed(this))
-      .subscribe((data) => this.items.set(data));
+      .subscribe((data) => this.items.set(data ?? []));
   }
 
   editItem(index: number) {
