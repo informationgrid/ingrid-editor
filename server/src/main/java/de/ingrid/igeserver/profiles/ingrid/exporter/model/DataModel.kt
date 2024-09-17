@@ -171,7 +171,16 @@ data class FileReference(
     val link: FileName,
     val title: String?,
     val description: String?,
-    val format: FileFormat?,
+    var format: KeyValue?,
+    var url: String?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class FileReferenceTransferOption(
+    val link: FileName,
+    val title: String?,
+    val description: String?,
+    var applicationProfile: String? = null,
     var url: String?,
 )
 

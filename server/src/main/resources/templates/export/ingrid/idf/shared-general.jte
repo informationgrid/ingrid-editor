@@ -895,7 +895,7 @@ ${contentInfo}
                     </gmd:MD_DigitalTransferOptions>
                 </gmd:transferOptions>
             @endfor
-            @for( FileReference fileReference : page.getFileReferencesWithUrl() )
+            @for( FileReferenceTransferOption fileReference : page.getFileReferenceTransferOptions() )
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
                         <gmd:transferSize>
@@ -907,7 +907,7 @@ ${contentInfo}
                                     <gmd:URL>${fileReference.getUrl()}</gmd:URL>
                                 </gmd:linkage>
                                 <gmd:applicationProfile>
-                                    <gco:CharacterString>${fileReference.getFormat().getKey()}</gco:CharacterString>
+                                    <gco:CharacterString>${fileReference.getApplicationProfile()}</gco:CharacterString>
                                 </gmd:applicationProfile>
                                 <gmd:name>
                                     <gco:CharacterString>${fileReference.getTitle()}</gco:CharacterString>

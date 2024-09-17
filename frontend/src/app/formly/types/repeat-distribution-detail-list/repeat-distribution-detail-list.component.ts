@@ -64,6 +64,7 @@ interface RepeatDistributionDetailListProps extends FormlyFieldProps {
   infoText: string;
   backendUrl: string;
   fields: FormlyFieldConfig[];
+  codelistIdForFileReferenceFormats: string;
 }
 
 @UntilDestroy()
@@ -98,6 +99,14 @@ export class RepeatDistributionDetailListComponent
 {
   showMore = {};
 
+  setCodelistIdForFileReferenceFormats() {
+    let codelistIdForFileReferenceFormats = this.field.props.fields.filter(
+      (field) => field.key == "format",
+    )[0]?.props?.codelistId;
+    this.field.props.codelistIdForFileReferenceFormats =
+      codelistIdForFileReferenceFormats;
+  }
+
   items = signal<any[]>([]);
 
   constructor(
@@ -108,6 +117,7 @@ export class RepeatDistributionDetailListComponent
   }
 
   ngOnInit(): void {
+    this.setCodelistIdForFileReferenceFormats();
     this.formControl.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe((data) => this.items.set(data ?? []));
