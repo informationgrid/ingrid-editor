@@ -12,10 +12,10 @@
 {
     "uuid": "${ model.getUuid() }",
     "title": "${ model.getTitle().trim() }",
-    "description": "${ model.getDescription() }",
+    "description": "${ data.getDescription() }",
     "landingPage": "${ data.getLandingPage() }",
     "theme": [
-        @for(var entry : ForSupport.of(model.getThemes()))
+        @for(var entry : ForSupport.of(page.getThemes()))
             "${entry.get()}"@if (!entry.isLast()),@endif
         @endfor
     ],
@@ -32,7 +32,7 @@
     "contact": [
         @for(var address : ForSupport.of(page.getAddresses()))
             {
-                "type": "${ address.get().getType() }",
+                "type": "${ address.get().getDcatType() }",
                 "organization": "${ address.get().getOrganization().trim() }",
                 "communication": [
                     @for(var contact : ForSupport.of(address.get().getContact()))

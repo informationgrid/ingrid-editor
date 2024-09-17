@@ -1,7 +1,7 @@
 ---
 # ID des GUI Elements
 id: organization
-docType: BmiAddressDoc
+docType: OpenDataAddressDoc
 profile: bmi
 ---
 

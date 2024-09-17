@@ -17,32 +17,40 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { BmiDoctype } from "./bmi/bmi.doctype";
 import { FolderDoctype } from "./folder/folder.doctype";
 import { Component, NgModule } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
-import { ContextHelpService } from "../app/services/context-help/context-help.service";
-import { BmiAddressDoctype } from "./bmi/bmi-address.doctype";
 import { NgxFlowModule } from "@flowjs/ngx-flow";
 import { ReportsService } from "../app/+reports/reports.service";
+import { OpenDataComponent } from "./profile-opendata";
+import { OpenDataAddressDoctype } from "./opendata/doctypes/open-data-address.doctype";
+import { OpenDataDoctype } from "./opendata/doctypes/open-data.doctype";
+import { CodelistStore } from "../app/store/codelist/codelist.store";
+import { CodelistQuery } from "../app/store/codelist/codelist.query";
 
 @Component({
   template: "",
   standalone: true,
 })
-class BmiComponent {
+class BmiComponent extends OpenDataComponent {
   constructor(
     service: ProfileService,
-    contextHelpService: ContextHelpService,
     reportsService: ReportsService,
-    bmi: BmiDoctype,
+    dataset: OpenDataDoctype,
     folder: FolderDoctype,
-    bmiAddress: BmiAddressDoctype,
+    address: OpenDataAddressDoctype,
+    codelistStore: CodelistStore,
+    codelistQuery: CodelistQuery,
   ) {
-    const types = [bmi, folder, bmiAddress];
-
-    service.registerProfiles(types);
-
+    super(
+      service,
+      reportsService,
+      dataset,
+      folder,
+      address,
+      codelistStore,
+      codelistQuery,
+    );
     reportsService.setFilter((route) => route.path != "url-check");
   }
 }

@@ -56,12 +56,12 @@ export class OpenDataDoctype extends BaseDoctype {
         }),
         this.addAddressCard("addresses", "Adressen", {
           required: true,
-          allowedTypes: ["2", "6", "7", "11", "12"],
+          allowedTypes: ["2", "6", "7", "10", "11"],
           validators: {
             needPublisher: {
               expression: (ctrl) =>
                 ctrl.value
-                  ? ctrl.value.some((row) => row.type.key === "12")
+                  ? ctrl.value.some((row) => row.type.key === "10")
                   : false,
               message:
                 'Fehler: Es muss eine Adresse als "veröffentlichende Stelle" eingetragen sein.',
@@ -69,7 +69,7 @@ export class OpenDataDoctype extends BaseDoctype {
             onePublisher: {
               expression: (ctrl) =>
                 ctrl.value
-                  ? ctrl.value.filter((row) => row.type.key === "12").length < 2
+                  ? ctrl.value.filter((row) => row.type.key === "10").length < 2
                   : true,
               message:
                 "Fehler: Es darf nur eine Adresse als veröffentlichende Stelle angegeben werden",
