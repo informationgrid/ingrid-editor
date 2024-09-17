@@ -35,7 +35,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.CoupledResource
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileName
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileReference
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileReferenceTransferOption
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.GraphicOverview
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
@@ -649,13 +649,18 @@ open class IngridModelTransformer(
             .map { applyRefInfos(it) }
     }
 
-    private val fileReferences = data.fileReferences ?: emptyList()
-    val fileReferencesWithUrl = addUrlToFileReferences(fileReferences, model.uuid)
-    private fun addUrlToFileReferences(listofFileReferences: List<FileReference>?, datasetUuid: String): List<FileReference>? {
-        listofFileReferences?.forEach {
-            it.url = getDownloadLink(datasetUuid, it.link.uri)
+    fun getFileReferenceTransferOptions(): List<FileReferenceTransferOption> = fileReferenceTransferOptionsList
+    private val fileReferenceTransferOptionsList: List<FileReferenceTransferOption> by lazy {
+        val fileReferences = data.fileReferences ?: emptyList()
+        fileReferences.map {
+            FileReferenceTransferOption(
+                link = it.link,
+                title = it.title,
+                description = it.description,
+                applicationProfile = codelists.getValue(fieldToCodelist.referenceFileFormat, it.format, "de"),
+                url = getDownloadLink(model.uuid, it.link.uri),
+            )
         }
-        return listofFileReferences
     }
 
     private fun applyRefInfos(it: Reference): Reference {

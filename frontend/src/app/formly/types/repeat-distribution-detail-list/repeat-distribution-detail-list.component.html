@@ -145,10 +145,20 @@
                                 {{ item.description }}
                             </div>
                         }
-                        @if (item.format?.key) {
+                        @if (item.format) {
                             <div>
                                 <div class="type">
-                                    Format: {{ item.format?.key }}
+                                    Format:
+                                    @if (item.format?.key) {
+                                        {{
+                                            item.format?.key
+                                                | codelist
+                                                    : props.codelistIdForFileReferenceFormats
+                                                | async
+                                        }}
+                                    } @else {
+                                        {{ item.format?.value }}
+                                    }
                                 </div>
                             </div>
                         }
