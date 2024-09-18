@@ -57,6 +57,9 @@ export class CommonFieldsBkg extends BaseDoctype {
       this.addTextArea("useConstraintsBkgComment", null, "bkg", {
         fieldLabel: "Kommentar",
       }),
+      this.addTextArea("useConstraintsBkgSource", null, "bkg", {
+        fieldLabel: "Quellenvermerk",
+      }),
     ]);
   }
 }
