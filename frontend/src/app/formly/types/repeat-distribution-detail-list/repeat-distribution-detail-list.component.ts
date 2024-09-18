@@ -46,7 +46,7 @@ import {
   LinkInfo,
   UploadFilesDialogComponent,
 } from "../table/upload-files-dialog/upload-files-dialog.component";
-import { filter } from "rxjs/operators";
+import { filter, startWith } from "rxjs/operators";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
 import { FormStateService } from "../../../+form/form-state.service";
@@ -119,7 +119,7 @@ export class RepeatDistributionDetailListComponent
   ngOnInit(): void {
     this.setCodelistIdForFileReferenceFormats();
     this.formControl.valueChanges
-      .pipe(untilDestroyed(this))
+      .pipe(untilDestroyed(this), startWith(this.formControl.value))
       .subscribe((data) => this.items.set(data ?? []));
   }
 

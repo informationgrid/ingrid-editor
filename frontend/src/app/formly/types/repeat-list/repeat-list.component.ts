@@ -212,6 +212,10 @@ export class RepeatListComponent
   }
 
   ngOnInit(): void {
+    this.formControl.valueChanges
+      .pipe(untilDestroyed(this), startWith(this.formControl.value))
+      .subscribe((data) => this.items.set(data ?? []));
+
     if (this.props.asSelect) {
       this.type = "select";
       if (this.props.showSearch) {
@@ -310,10 +314,6 @@ export class RepeatListComponent
         this.filteredOptions.subscribe();
       }
     }
-
-    this.formControl.valueChanges
-      .pipe(untilDestroyed(this))
-      .subscribe((data) => this.items.set(data));
   }
 
   addToList(option: SelectOptionUi) {
