@@ -406,15 +406,19 @@
     @if(TransformationTools.hasValue(page.getUseConstraints()))
         <gmd:resourceConstraints>
             <gmd:MD_LegalConstraints>
-                <gmd:useConstraints>
-                    <gmd:MD_RestrictionCode
-                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode"
-                            codeListValue="otherRestrictions" />
-                </gmd:useConstraints>
+                @for(String value : page.getUseConstraintsCodelistValues() )
+                    <gmd:useConstraints>
+                        <gmd:MD_RestrictionCode
+                                codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode"
+                                codeListValue="${value}" />
+                    </gmd:useConstraints>
+                @endfor
                 @for(UseConstraintTemplate useconstraint : page.getUseConstraints() )
-                    <gmd:otherConstraints>
-                        @template.export.ingrid.idf.anchorOrCharacterString(model = useconstraint.getTitle())
-                    </gmd:otherConstraints>
+                    @if(TransformationTools.hasValue(useconstraint.getTitle().getText()))
+                        <gmd:otherConstraints>
+                            @template.export.ingrid.idf.anchorOrCharacterString(model = useconstraint.getTitle())
+                        </gmd:otherConstraints>
+                    @endif
                     @if(TransformationTools.hasValue(useconstraint.getNote()))
                         <gmd:otherConstraints>
                             <gco:CharacterString>${useconstraint.getNote()}</gco:CharacterString>
@@ -434,22 +438,24 @@
             </gmd:MD_LegalConstraints>
         </gmd:resourceConstraints>
     @endif
-    @if(TransformationTools.hasValue( page.getAvailabilityAccessConstraints()))
+    @for(AccessConstraint accessConstraint : page.getAccessConstraints())
         <gmd:resourceConstraints>
             <gmd:MD_LegalConstraints>
-                <gmd:accessConstraints>
-                    <gmd:MD_RestrictionCode
-                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode"
-                            codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
-                </gmd:accessConstraints>
-                @for(CharacterStringModel accessConstraint : page.getAvailabilityAccessConstraints() )
+                @for(String value : accessConstraint.getCodelistValues() )
+                    <gmd:accessConstraints>
+                        <gmd:MD_RestrictionCode
+                                codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode"
+                                codeListValue="${value}">${value}</gmd:MD_RestrictionCode>
+                    </gmd:accessConstraints>
+                @endfor
+                @for(CharacterStringModel item : accessConstraint.getItems() )
                     <gmd:otherConstraints>
-                        @template.export.ingrid.idf.anchorOrCharacterString(model = accessConstraint)
+                        @template.export.ingrid.idf.anchorOrCharacterString(model = item)
                     </gmd:otherConstraints>
                 @endfor
             </gmd:MD_LegalConstraints>
         </gmd:resourceConstraints>
-    @endif
+    @endfor
     @for(String spatialRepresentationType : page.getSpatialRepresentationTypes())
         <gmd:spatialRepresentationType>
             <gmd:MD_SpatialRepresentationTypeCode
