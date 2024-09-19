@@ -47,22 +47,19 @@ class InGridBkgComponent extends InGridComponent {
         docType.manipulateDocumentFields = (
           fieldConfig: FormlyFieldConfig[],
         ) => {
-          this.modifyFields(fieldConfig, docType.id);
+          this.addUseAndAccessConstraints(fieldConfig);
+          this.removeOriginalUseConstraints(fieldConfig);
+          this.removeWktFromSpatialReferences(fieldConfig);
 
           return fieldConfig;
         };
+
         if (this.opendataBehaviour.isActive) {
           docType.options.dynamicHide.openDataCategories = "true";
           docType.options.validate.downloadLinkWhenOpenData = false;
         }
       },
     );
-  }
-
-  private modifyFields(fieldConfig: FormlyFieldConfig[], docType: string) {
-    this.addUseAndAccessConstraints(fieldConfig);
-    this.removeOriginalUseConstraints(fieldConfig);
-    this.removeWktFromSpatialReferences(fieldConfig);
   }
 
   private removeWktFromSpatialReferences(fieldConfig: FormlyFieldConfig[]) {

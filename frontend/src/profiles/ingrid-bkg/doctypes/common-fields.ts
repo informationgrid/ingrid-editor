@@ -15,7 +15,7 @@ export class CommonFieldsBkg extends BaseDoctype {
 
   getAccessConstraints(): FormlyFieldConfig {
     return this.addGroupSimple(null, [
-      this.addSelect("accessConstraintsBkg", "Zugriffsbeschränkungen BKG", {
+      this.addSelect("accessConstraintsBkg", "Zugriffsbeschränkungen", {
         wrappers: ["panel", "form-field"],
         options: this.getCodelistForSelect("10001", "accessConstraintsBkg"),
         codelistId: "10001",
@@ -39,7 +39,7 @@ export class CommonFieldsBkg extends BaseDoctype {
 
   getUseConstraints(): FormlyFieldConfig {
     return this.addGroupSimple(null, [
-      this.addSelect("useConstraintsBkg", "Nutzungsbedingungen BKG", {
+      this.addSelect("useConstraintsBkg", "Nutzungsbedingungen", {
         wrappers: ["panel", "form-field"],
         options: this.getCodelistForSelect("10003", "useConstraintsBkg"),
         codelistId: "10003",
@@ -54,12 +54,22 @@ export class CommonFieldsBkg extends BaseDoctype {
           },
         },
       }),
-      this.addTextArea("useConstraintsBkgComment", null, "bkg", {
-        fieldLabel: "Kommentar",
-      }),
-      this.addTextArea("useConstraintsBkgSource", null, "bkg", {
-        fieldLabel: "Quellenvermerk",
-      }),
+      this.addGroupSimple(
+        null,
+        [
+          this.addTextAreaInline(
+            "useConstraintsBkgComment",
+            "Kommentar",
+            "bkg",
+          ),
+          this.addTextAreaInline(
+            "useConstraintsBkgSource",
+            "Quellenvermerk",
+            "bkg",
+          ),
+        ],
+        { fieldGroupClassName: "flex-row", wrappers: ["panel"] },
+      ),
     ]);
   }
 }

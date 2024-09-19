@@ -1259,20 +1259,24 @@ export abstract class IngridShared extends BaseDoctype {
   addAvailabilitySection() {
     return this.addSection("Verfügbarkeit", [
       this.addGroupSimple("resource", [
-        this.addRepeatList("accessConstraints", "Zugriffsbeschränkungen", {
-          asSelect: false,
-          showSearch: true,
-          required: this.options.required.accessConstraints,
-          options: this.getCodelistForSelect(
-            "6010",
-            "availabilityAccessConstraints",
-          ),
-          codelistId: "6010",
-          expressions: {
-            "props.required": this.options.dynamicRequired.accessConstraints,
-            className: "field.props.required ? '' : 'optional'",
+        this.addRepeatList(
+          "accessConstraints",
+          this.transloco.translate("form.accessConstraints"),
+          {
+            asSelect: false,
+            showSearch: true,
+            required: this.options.required.accessConstraints,
+            options: this.getCodelistForSelect(
+              "6010",
+              "availabilityAccessConstraints",
+            ),
+            codelistId: "6010",
+            expressions: {
+              "props.required": this.options.dynamicRequired.accessConstraints,
+              className: "field.props.required ? '' : 'optional'",
+            },
           },
-        }),
+        ),
         this.addRepeat("useConstraints", "Nutzungsbedingungen", {
           required: this.options.required.useConstraints,
           expressions: {
