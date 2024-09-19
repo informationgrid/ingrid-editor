@@ -534,12 +534,16 @@ open class IngridModelTransformer(
     val specificUsage = data.resource?.specificUsage
     val useLimitation = data.resource?.useLimitation
 
-    open fun getAccessConstraints(): List<AccessConstraint> = listOf(
-        AccessConstraint(
-            listOf("otherRestrictions"),
-            availabilityAccessConstraints,
-        ),
-    )
+    open fun getAccessConstraints(): List<AccessConstraint> = if (availabilityAccessConstraints.isEmpty()) {
+        emptyList()
+    } else {
+        listOf(
+            AccessConstraint(
+                listOf("otherRestrictions"),
+                availabilityAccessConstraints,
+            ),
+        )
+    }
 
     private val availabilityAccessConstraints = data.resource?.accessConstraints?.map {
         CharacterStringModel(
