@@ -54,7 +54,7 @@ class BmiPublishExport(
                 else -> return payload
             }
         } catch (ex: Exception) {
-            throw ClientException.withReason("No connection to Elasticsearch: ${ex.message}")
+            throw ClientException.withReason("Error during indexing: ${ex.message}", ex)
         }
 
         return payload

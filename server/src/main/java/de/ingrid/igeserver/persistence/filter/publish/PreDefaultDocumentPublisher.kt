@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.persistence.filter.publish
 
 import de.ingrid.igeserver.ServerException
-import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.Message
@@ -28,6 +27,7 @@ import de.ingrid.igeserver.persistence.filter.PrePublishPayload
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.DocumentState
+import de.ingrid.igeserver.utils.checkPublicationTags
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
 
@@ -58,32 +58,8 @@ class PreDefaultDocumentPublisher(@Lazy val documentService: DocumentService) : 
             .map { ref -> documentService.getDocumentFromCatalog(catalogId, ref) }
             .forEach { refData: DocumentData ->
                 checkPublishState(refData)
-                checkPublicationCondition(refData, publicationDocTags)
+                checkPublicationTags(refData.wrapper.tags, publicationDocTags)
             }
-    }
-
-    private fun checkPublicationCondition(
-        refData: DocumentData,
-        publicationDocTags: List<String>,
-    ) {
-        val refPublicationDocTags =
-            refData.wrapper.tags.filter { it == "intranet" || it == "amtsintern" }
-
-        val docIsAmtsintern = publicationDocTags.contains("amtsintern")
-        val intranetAndRefsNotAmtsintern =
-            publicationDocTags.contains("intranet") && !refPublicationDocTags.contains("amtsintern")
-        val allAreInternet = publicationDocTags.isEmpty() && refPublicationDocTags.isEmpty()
-
-        if (!(docIsAmtsintern || intranetAndRefsNotAmtsintern || allAreInternet)) {
-            val tags = refPublicationDocTags.joinToString(",").run { ifEmpty { "internet" } }
-            throw ValidationException.withReason(
-                "Reference has wrong publication type condition: ${
-                    publicationDocTags.joinToString(
-                        ",",
-                    ).ifEmpty { "internet" }
-                } => $tags",
-            )
-        }
     }
 
     private fun checkPublishState(refData: DocumentData) {

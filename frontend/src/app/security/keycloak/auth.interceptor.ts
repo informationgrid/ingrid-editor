@@ -66,7 +66,7 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   private showError(message: string) {
-    console.log(message);
+    console.error(message);
     const loggedOutError = new IgeError();
     loggedOutError.setMessage(message);
     this.modalService.showIgeError(loggedOutError, true);

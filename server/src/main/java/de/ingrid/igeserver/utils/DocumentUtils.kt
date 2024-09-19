@@ -21,6 +21,7 @@ package de.ingrid.igeserver.utils
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.model.DocMetadata
 import de.ingrid.igeserver.model.DocumentWithMetadata
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -79,5 +80,29 @@ fun getRawJsonFromDocument(document: Document, includeMetadataForExport: Boolean
     if (includeMetadataForExport) {
         put(FIELD_UUID, document.uuid)
         put(FIELD_DOCUMENT_TYPE, document.type)
+    }
+}
+
+fun checkPublicationTags(
+    wrapperTags: List<String>,
+    publicationDocTags: List<String>,
+) {
+    val refPublicationDocTags =
+        wrapperTags.filter { it == "intranet" || it == "amtsintern" }
+
+    val docIsAmtsintern = publicationDocTags.contains("amtsintern")
+    val intranetAndRefsNotAmtsintern =
+        publicationDocTags.contains("intranet") && !refPublicationDocTags.contains("amtsintern")
+    val allAreInternet = publicationDocTags.isEmpty() && refPublicationDocTags.isEmpty()
+
+    if (!(docIsAmtsintern || intranetAndRefsNotAmtsintern || allAreInternet)) {
+        val tags = refPublicationDocTags.joinToString(",").run { ifEmpty { "internet" } }
+        throw ValidationException.withReason(
+            "Reference has wrong publication type condition: ${
+                publicationDocTags.joinToString(
+                    ",",
+                ).ifEmpty { "internet" }
+            } => $tags",
+        )
     }
 }

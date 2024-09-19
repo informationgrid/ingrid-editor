@@ -142,7 +142,7 @@ export class FreeSpatialComponent implements OnInit, OnDestroy {
           .filter((item) => item.type !== "city")
           .map((item) => FreeSpatialComponent.addTypeToDisplayName(item));
         this.nominatimResult = response;
-        console.log("Nominatim:", response);
+        console.debug("Nominatim:", response);
         this.showNoResult = response.length === 0;
         // @ts-ignore
         setTimeout(() => (<Map>this.map)._onResize());

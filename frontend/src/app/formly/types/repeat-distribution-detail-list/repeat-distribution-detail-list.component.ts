@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import {
   FieldTypeConfig,
   FormlyFieldConfig,
@@ -28,7 +28,7 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import {
   FormDialogComponent,
   FormDialogData,
-} from "../../../../app/formly/types/table/form-dialog/form-dialog.component";
+} from "../table/form-dialog/form-dialog.component";
 import {
   CdkDrag,
   CdkDragDrop,
@@ -41,24 +41,33 @@ import { AsyncPipe, JsonPipe, KeyValuePipe, NgForOf } from "@angular/common";
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatButtonModule } from "@angular/material/button";
-import { FormErrorComponent } from "../../../../app/+form/form-shared/ige-form-error/form-error.component";
+import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import {
   LinkInfo,
   UploadFilesDialogComponent,
-} from "../../../../app/formly/types/table/upload-files-dialog/upload-files-dialog.component";
-import { filter } from "rxjs/operators";
+} from "../table/upload-files-dialog/upload-files-dialog.component";
+import { filter, startWith } from "rxjs/operators";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
-import { FormStateService } from "../../../../app/+form/form-state.service";
-import { AddButtonComponent } from "../../../../app/shared/add-button/add-button.component";
-import { CodelistPipe } from "../../../../app/directives/codelist.pipe";
+import { FormStateService } from "../../../+form/form-state.service";
+import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
+import { CodelistPipe } from "../../../directives/codelist.pipe";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
 interface RepeatDistributionDetailListProps extends FormlyFieldProps {
+  supportLink?: boolean;
+  supportUpload?: boolean;
+  enableFileUploadOverride?: boolean;
+  enableFileUploadReuse?: boolean;
+  enableFileUploadRename?: boolean;
+  jsonTemplate?: object;
   infoText: string;
   backendUrl: string;
   fields: FormlyFieldConfig[];
+  codelistIdForFileReferenceFormats: string;
 }
 
+@UntilDestroy()
 @Component({
   selector: "ige-repeat-distribution-detail-list",
   templateUrl: "./repeat-distribution-detail-list.component.html",
@@ -89,7 +98,16 @@ export class RepeatDistributionDetailListComponent
   implements OnInit
 {
   showMore = {};
-  batchMode = false;
+
+  setCodelistIdForFileReferenceFormats() {
+    let codelistIdForFileReferenceFormats = this.field.props.fields.filter(
+      (field) => field.key == "format",
+    )[0]?.props?.codelistId;
+    this.field.props.codelistIdForFileReferenceFormats =
+      codelistIdForFileReferenceFormats;
+  }
+
+  items = signal<any[]>([]);
 
   constructor(
     private dialog: MatDialog,
@@ -98,10 +116,11 @@ export class RepeatDistributionDetailListComponent
     super();
   }
 
-  ngOnInit(): void {}
-
-  addItem() {
-    this.openDialog(null);
+  ngOnInit(): void {
+    this.setCodelistIdForFileReferenceFormats();
+    this.formControl.valueChanges
+      .pipe(untilDestroyed(this), startWith(this.formControl.value))
+      .subscribe((data) => this.items.set(data ?? []));
   }
 
   editItem(index: number) {
@@ -117,6 +136,9 @@ export class RepeatDistributionDetailListComponent
           uploadFieldKey: this.getUploadFieldKey(),
           hasExtractZipOption: true,
           infoText: this.field.props.infoText,
+          enableFileUploadOverride: this.field.props.enableFileUploadOverride,
+          enableFileUploadReuse: this.field.props.enableFileUploadReuse,
+          enableFileUploadRename: this.field.props.enableFileUploadRename,
         },
       })
       .afterClosed()
@@ -141,7 +163,7 @@ export class RepeatDistributionDetailListComponent
       ?.key?.toString();
   }
 
-  private getDownloadURL(uri: string) {
+  getDownloadURL(uri: string) {
     return (
       this.field.props.backendUrl +
       "upload/" +
@@ -151,42 +173,31 @@ export class RepeatDistributionDetailListComponent
     );
   }
 
-  private getDateString(datetime: string): string {
+  getDateString(datetime: string): string {
     return new Date(datetime).toLocaleDateString();
   }
 
   private addUploadInfoToDatasource(file: LinkInfo) {
     const newRow = this.getEmptyEntry();
-    newRow.title = "";
+    // newRow.title = "";
     newRow[this.getUploadFieldKey()] = {
       asLink: false,
       value: file.file,
       uri: file.uri,
       lastModified: new Date(),
+      sizeInBytes: file.sizeInBytes,
     };
     this.replaceItem(null, newRow);
   }
 
   private getEmptyEntry() {
-    const template = {
-      format: { key: null },
-      title: "",
-      description: "",
-      license: null,
-      byClause: "",
-      languages: [],
-      plannedAvailability: null,
-    };
+    const template = structuredClone(this.field.props.jsonTemplate ?? {});
     template[this.getUploadFieldKey()] = {
       asLink: true,
       value: "",
       uri: "",
     };
     return template;
-  }
-
-  private addLinkInfoToDatasource(link: any) {
-    this.model[this.key + ""].push(link);
   }
 
   private isNotInTable(file: LinkInfo) {
@@ -201,7 +212,6 @@ export class RepeatDistributionDetailListComponent
   }
 
   openDialog(index?: number) {
-    console.log(index);
     this.dialog
       .open(FormDialogComponent, {
         width: "90vw",
@@ -256,18 +266,15 @@ export class RepeatDistributionDetailListComponent
   }
 
   handleCellClick(index: number, element, $event: MouseEvent) {
-    //if (!this.props.supportUpload) return;
+    if (element.asLink) return;
 
-    const uploadKey = this.getUploadFieldKey();
-    if (!element.asLink) {
-      const options = this.props.fields[2].props;
-      if (options.onClick) {
-        options.onClick(
-          this.formStateService.metadata().uuid,
-          element.uri,
-          $event,
-        );
-      }
+    const options = this.props.fields[2].props;
+    if (options.onClick) {
+      options.onClick(
+        this.formStateService.metadata().uuid,
+        element.uri,
+        $event,
+      );
     }
   }
 }

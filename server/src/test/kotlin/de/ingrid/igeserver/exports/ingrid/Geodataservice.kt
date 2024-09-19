@@ -39,6 +39,7 @@ import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -130,6 +131,7 @@ class Geodataservice : ShouldSpec() {
             val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.minimal.sample.json")
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.minimal.expected.idf.xml")
+            result shouldNotContain "<gmd:distributionInfo>"
         }
 
         /*

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.exporter.AddressTransformerConfig
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.exporter.model.AddressModel
@@ -34,6 +35,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.CoupledResource
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileName
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileReferenceTransferOption
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.GraphicOverview
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
@@ -48,8 +50,10 @@ import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.checkPublicationTags
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
+import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
 import org.jetbrains.kotlin.util.suffixIfNot
@@ -165,16 +169,15 @@ open class IngridModelTransformer(
 
     val browseGraphics = generateBrowseGraphics(graphicOverviews, model.uuid)
 
-    private fun generateBrowseGraphics(
-        graphicOverviews: List<GraphicOverview>?,
-        datasetUuid: String,
-    ): List<BrowseGraphic> =
+    private fun getDownloadLink(datasetUuid: String, fileName: String): String = "${config.uploadExternalUrl}$catalogIdentifier/$datasetUuid/$fileName"
+
+    private fun generateBrowseGraphics(graphicOverviews: List<GraphicOverview>?, datasetUuid: String): List<BrowseGraphic> =
         graphicOverviews?.map {
             BrowseGraphic(
                 if (it.fileName.asLink) {
                     it.fileName.uri // TODO encode uri
                 } else {
-                    "${config.uploadExternalUrl}$catalogIdentifier/$datasetUuid/${it.fileName.uri}"
+                    getDownloadLink(datasetUuid, it.fileName.uri)
                 },
                 it.fileDescription,
             )
@@ -683,6 +686,19 @@ open class IngridModelTransformer(
             .map { applyRefInfos(it) }
     }
 
+    val fileReferenceTransferOptions: List<FileReferenceTransferOption> by lazy {
+        val fileReferences = data.fileReferences ?: emptyList()
+        fileReferences.map {
+            FileReferenceTransferOption(
+                link = it.link,
+                title = it.title,
+                description = it.description,
+                applicationProfile = codelists.getValue(fieldToCodelist.referenceFileFormat, it.format, "de"),
+                url = getDownloadLink(model.uuid, it.link.uri),
+            )
+        }
+    }
+
     private fun applyRefInfos(it: Reference): Reference {
         val refClass =
             getLastPublishedDocument(it.uuidRef ?: throw ServerException.withReason("UUID of a reference is NULL"))
@@ -767,14 +783,14 @@ open class IngridModelTransformer(
 
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
-                ?.map { toAddressModelTransformer(it) } ?: emptyList()
+                ?.mapNotNull { toAddressModelTransformer(it) } ?: emptyList()
         contacts = data.pointOfContact?.filter { addressIsPointContactMD(it) && hasKnownAddressType(it) }
-            ?.map { toAddressModelTransformer(it) } ?: emptyList()
+            ?.mapNotNull { toAddressModelTransformer(it) } ?: emptyList()
         // TODO: gmd:contact [1..*] is not supported everywhere yet only [1..1]
         contact = contacts.firstOrNull()
 
         orderInfoContact =
-            data.pointOfContact?.filter { addressIsDistributor(it) }?.map { toAddressModelTransformer(it) }
+            data.pointOfContact?.filter { addressIsDistributor(it) }?.mapNotNull { toAddressModelTransformer(it) }
                 ?: emptyList()
 
         atomDownloadURL = catalog.settings.config.atomDownloadUrl + model.uuid
@@ -788,22 +804,35 @@ open class IngridModelTransformer(
         } ?: emptyList()
     }
 
-    private fun toAddressModelTransformer(it: AddressRefModel) =
-        AddressModelTransformer(
-            catalogIdentifier,
-            codelists,
-            // Map pointOfContactMD type to pointOfContact for ISO Exports
-            if (it.type?.key != "12") it.type else KeyValue("7", "pointOfContact"),
-            getLastPublishedDocument(it.ref ?: throw ServerException.withReason("Address-Reference UUID is NULL"))
-                ?: Document().apply {
-                    data = jacksonObjectMapper().createObjectNode()
-                    type = "null-address"
-                    modified = OffsetDateTime.now()
-                    wrapperId = -1
-                },
-            documentService,
-            config,
+    private fun toAddressModelTransformer(it: AddressRefModel): AddressModelTransformer? {
+        val lastPublishedDoc = getLastPublishedDocument(it.ref ?: throw ServerException.withReason("Address-Reference UUID is NULL"))
+
+        // filter out addresses with wrong tags
+        if (lastPublishedDoc != null) {
+            kotlin.runCatching { checkPublicationTags(documentService.getWrapperById(lastPublishedDoc.wrapperId!!).tags, tags) }
+                .onFailure { return null }
+        }
+
+        // if no lastPublishedDoc is found, create a dummy address with the type "null-address"
+        val doc = lastPublishedDoc ?: Document().apply {
+            data = jacksonObjectMapper().createObjectNode()
+            type = "null-address"
+            modified = OffsetDateTime.now()
+            wrapperId = -1
+        }
+        return AddressModelTransformer(
+            AddressTransformerConfig(
+                catalogIdentifier,
+                codelists,
+                // Map pointOfContactMD type to pointOfContact for ISO Exports
+                if (it.type?.key != "12") it.type else KeyValue("7", "pointOfContact"),
+                doc,
+                documentService,
+                config,
+                tags,
+            ),
         )
+    }
 
     private fun getCitationFromGeodataset(uuid: String?): String? {
         if (uuid == null) return null
@@ -819,7 +848,7 @@ open class IngridModelTransformer(
         return addNamespaceIfNeeded(identifier)
     }
 
-    private fun addNamespaceIfNeeded(identifier: String): String =
+    open fun addNamespaceIfNeeded(identifier: String): String =
         // if identifier is a URI, don't add namespace
         if (identifier.contains("://")) {
             identifier
@@ -1008,12 +1037,10 @@ open class IngridModelTransformer(
 
         return GraphicOverview(
             FileName(
-                json.getBoolean("fileName.asLink")
-                    ?: throw ServerException.withReason("Preview image 'asLink'-property is NULL"),
-                json.getString("fileName.value")
-                    ?: throw ServerException.withReason("Preview image 'value'-property is NULL"),
-                json.getString("fileName.uri")
-                    ?: throw ServerException.withReason("Preview image 'uri'-property is NULL"),
+                json.getBoolean("fileName.asLink") ?: throw ServerException.withReason("Preview image 'asLink'-property is NULL"),
+                json.getString("fileName.value") ?: throw ServerException.withReason("Preview image 'value'-property is NULL"),
+                json.getString("fileName.uri") ?: throw ServerException.withReason("Preview image 'uri'-property is NULL"),
+                json.getDouble("fileName.sizeInBytes") ?: null,
             ),
             json.getString("fieldDescription"),
         )
@@ -1055,6 +1082,7 @@ open class IngridModelTransformer(
         distributionFormats.isNotEmpty() ||
         hasDistributorInfo() ||
         !data.references.isNullOrEmpty() ||
+        !data.fileReferences.isNullOrEmpty() ||
         isAtomDownload ||
         // TODO Refactor after usage clarification #6322
         // || serviceUrls.isNotEmpty()

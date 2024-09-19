@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  input,
+  Input,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { FlowDirective, Transfer } from "@flowjs/ngx-flow";
 import { TransfersWithErrorInfo } from "../TransferWithErrors";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
@@ -46,6 +53,9 @@ export class UploadItemComponent implements OnInit {
   @Input() file: TransfersWithErrorInfo;
   @Input() flow: FlowDirective;
   @Input() showOnlyProgress = false;
+  enableFileUploadOverride = input<boolean>();
+  enableFileUploadReuse = input<boolean>();
+  enableFileUploadRename = input<boolean>();
 
   @Output() remove = new EventEmitter<string>();
   @Output() useExisting = new EventEmitter<Transfer>();

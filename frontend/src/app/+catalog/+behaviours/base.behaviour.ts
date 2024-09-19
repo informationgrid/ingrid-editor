@@ -24,12 +24,12 @@ export abstract class BaseBehaviour {
   private subscribers: Subscription[] = [];
 
   public addListener(listener: Function) {
-    console.log("add listener");
+    console.debug("add listener");
     this.listeners.push(listener);
   }
 
   public addSubscriber(subscriber: Subscription) {
-    console.log("add subscriber");
+    console.debug("add subscriber");
     this.subscribers.push(subscriber);
   }
 

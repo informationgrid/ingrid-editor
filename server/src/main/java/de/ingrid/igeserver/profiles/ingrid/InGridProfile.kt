@@ -44,6 +44,7 @@ import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.CodelistHandler.Companion.toCodelistEntry
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.IndexIdFieldConfig

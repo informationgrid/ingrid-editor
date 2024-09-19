@@ -342,7 +342,7 @@ export class PublishPlugin extends SaveBase {
         if (doRevert) {
           this.documentService.revert(docId, this.forAddress).subscribe({
             error: (err) => {
-              console.log("Error when reverting data", err);
+              console.error("Error when reverting data", err);
               throw err;
             },
           });
@@ -409,7 +409,7 @@ export class PublishPlugin extends SaveBase {
         }),
       )
       .subscribe((result) => {
-        console.log("backendValidation: ", result);
+        console.debug("backendValidation: ", result);
         if (!isValid || result instanceof IgeError) return;
 
         this.modalService.confirmWith({
@@ -419,7 +419,7 @@ export class PublishPlugin extends SaveBase {
         });
         this.documentService.publishState$.next(false);
       });
-    console.log("isValid: ", isValid);
+    console.debug("isValid: ", isValid);
   }
 
   private extractFormValidationErrors(controls): string[] {

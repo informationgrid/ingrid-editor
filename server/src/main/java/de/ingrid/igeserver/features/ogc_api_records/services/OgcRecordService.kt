@@ -107,7 +107,7 @@ class OgcRecordService(
 ) {
     val hostnameOgcApi = generalProperties.host + "/api/ogc"
 
-    fun handleLandingPageRequest(requestedFormat: CollectionFormat): ResponsePackage {
+    fun handleLandingPageRequest(requestedFormat: CollectionFormat): ByteArray {
         val linkList: MutableList<Link> = mutableListOf()
 
         linkList.add(Link(href = hostnameOgcApi, rel = "self", type = requestedFormat.mimeType, title = "This document"))
@@ -127,7 +127,7 @@ class OgcRecordService(
             links = linkList,
         )
 
-        val responseByteArray = if (requestedFormat == CollectionFormat.html) {
+        val responseByteArray = if (requestedFormat == CollectionFormat.HTML) {
             val infoAsObjectNode: ObjectNode = JsonSerialization.mapper.valueToTree(info)
             val html = ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Landing page")
             ogcHtmlConverterService.wrapperForHtml(html, null, null).toByteArray()
@@ -135,10 +135,7 @@ class OgcRecordService(
             convertObject2Json(info).toString().toByteArray()
         }
 
-        return ResponsePackage(
-            data = responseByteArray,
-            mimeType = requestedFormat.mimeType,
-        )
+        return responseByteArray
     }
 
     fun handleConformanceRequest(requestedFormat: CollectionFormat): ResponsePackage {
@@ -151,7 +148,7 @@ class OgcRecordService(
             ),
         )
 
-        val responseByteArray = if (requestedFormat == CollectionFormat.html) {
+        val responseByteArray = if (requestedFormat == CollectionFormat.HTML) {
             val infoAsObjectNode: ObjectNode = JsonSerialization.mapper.valueToTree(conformance)
             val html = ogcHtmlConverterService.convertObjectNode2Html(infoAsObjectNode, "Conformance")
             ogcHtmlConverterService.wrapperForHtml(html, null, null).toByteArray()
@@ -453,59 +450,56 @@ class OgcRecordService(
         wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
     }
 
-    fun prepareRecord(collectionId: String, recordId: String, format: RecordFormat): Pair<ByteArray, String> {
+    fun prepareRecord(collectionId: String, recordId: String, format: RecordFormat): ByteArray {
         val record = exportRecord(recordId, collectionId, format)
-        val mimeType = record.exportFormat.toString()
-
         val singleRecordInList: List<ExportResult> = listOf(record)
-        val unwrappedRecord = removeDefaultWrapper(mimeType, singleRecordInList, format)
-        val wrappedRecord = addWrapperToRecords(unwrappedRecord, mimeType, format, null, true, null)
-        return Pair(wrappedRecord, mimeType)
+        val unwrappedRecord = removeDefaultWrapper(format, singleRecordInList)
+        val wrappedRecord = addWrapperToRecords(unwrappedRecord, format, null, true, null)
+        return wrappedRecord
     }
 
-    fun prepareRecords(records: ResearchResponse, collectionId: String, format: RecordFormat, mimeType: String, links: List<Link>, queryMetadata: QueryMetadata): ByteArray {
+    fun prepareRecords(records: ResearchResponse, collectionId: String, format: RecordFormat, links: List<Link>, queryMetadata: QueryMetadata): ByteArray {
         val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record._uuid!!, collectionId, format) }
-        val unwrappedRecords = removeDefaultWrapper(mimeType, recordList, format)
-        return addWrapperToRecords(unwrappedRecords, mimeType, format, links, false, queryMetadata)
+        val unwrappedRecords = removeDefaultWrapper(format, recordList)
+        return addWrapperToRecords(unwrappedRecords, format, links, false, queryMetadata)
     }
 
     private fun exportRecord(recordId: String, collectionId: String, format: RecordFormat): ExportResult {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
         val id = wrapper.id!!
-        val exportFormat = if (format == RecordFormat.json) "internal" else format.toString()
         val options = ExportRequestParameter(
             ids = listOf(id),
-            exportFormat = exportFormat,
+            exportFormat = format.exportType,
             // TODO context of ingridISO exporter: check why address documents need to called as drafts
-            useDraft = (format == RecordFormat.ingridISO && wrapper.category == "address"),
+            useDraft = (format == RecordFormat.INGRID_ISO && wrapper.category == "address"),
         )
         return exportService.export(collectionId, options)
     }
 
-    private fun removeDefaultWrapper(mimeType: String, recordList: List<ExportResult>, format: RecordFormat): Any = if (mimeType == "text/xml") {
+    private fun removeDefaultWrapper(format: RecordFormat, recordList: List<ExportResult>): Any = if (format.mimeType == "text/xml") {
         var response = ""
         for (record in recordList) response += record.result?.toString(Charsets.UTF_8)?.substringAfter("?>")
         response
-    } else if (mimeType == "application/json") {
+    } else if (format.mimeType == "application/json") {
         val response: MutableList<JsonNode> = mutableListOf()
         for (record in recordList) {
             var wrapperlessRecord = jacksonObjectMapper().readValue(record.result, JsonNode::class.java)
-            if (format == RecordFormat.json) wrapperlessRecord = wrapperlessRecord.get("resources").get("published")
+            if (format.exportType == "internal") wrapperlessRecord = wrapperlessRecord.get("resources").get("published")
             response.add(wrapperlessRecord)
         }
         response
-    } else if (mimeType == "text/html") {
+    } else if (format.mimeType == "text/html") {
         var response = ""
         for (record in recordList) response += record.result?.toString(Charsets.UTF_8)
         response
     } else {
         recordList
     }
-    private fun addWrapperToRecords(responseRecords: Any, mimeType: String, format: RecordFormat, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
+    private fun addWrapperToRecords(responseRecords: Any, format: RecordFormat, links: List<Link>?, singleRecord: Boolean?, queryMetadata: QueryMetadata?): ByteArray {
         var wrappedResponse = ""
-        if (mimeType == "text/html") wrappedResponse = ogcHtmlConverterService.wrapperForHtml(responseRecords as String, links, queryMetadata)
-        if (mimeType == "text/xml") wrappedResponse = wrapperForXml(responseRecords as String, links, queryMetadata)
-        if (mimeType == "application/json") wrappedResponse = wrapperForJson(responseRecords as List<JsonNode>, links, queryMetadata, singleRecord, format)
+        if (format.mimeType == "text/html") wrappedResponse = ogcHtmlConverterService.wrapperForHtml(responseRecords as String, links, queryMetadata)
+        if (format.mimeType == "text/xml") wrappedResponse = wrapperForXml(responseRecords as String, links, queryMetadata)
+        if (format.mimeType == "application/json") wrappedResponse = wrapperForJson(responseRecords as List<JsonNode>, links, queryMetadata, singleRecord, format)
         return wrappedResponse.toByteArray()
     }
     private fun convertObject2Json(data: Any): ObjectNode {
@@ -530,9 +524,9 @@ class OgcRecordService(
     private fun wrapperForJson(responseRecords: List<JsonNode>, links: List<Link>?, queryMetadata: QueryMetadata?, singleRecord: Boolean?, format: RecordFormat): String {
         val wrappedResponse: JsonNode
         val mapper = jacksonObjectMapper()
-        if (format == RecordFormat.geojson && singleRecord == true) {
+        if (format == RecordFormat.GEOJSON && singleRecord == true) {
             wrappedResponse = mapper.convertValue(responseRecords, JsonNode::class.java)
-        } else if (format == RecordFormat.geojson && singleRecord == false) {
+        } else if (format == RecordFormat.GEOJSON && singleRecord == false) {
             val response = RecordsResponse(
                 type = "FeatureCollection",
                 timeStamp = queryMetadata!!.timeStamp,

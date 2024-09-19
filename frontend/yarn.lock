@@ -3102,27 +3102,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ngx-formly/core@npm:6.3.6":
-  version: 6.3.6
-  resolution: "@ngx-formly/core@npm:6.3.6"
+"@ngx-formly/core@npm:6.3.7":
+  version: 6.3.7
+  resolution: "@ngx-formly/core@npm:6.3.7"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
     "@angular/forms": ">=13.2.0"
     rxjs: ^6.5.3 || ^7.0.0
-  checksum: 10c0/7bb31ae80245e9873f93e084cd86b55d40889465912ed3d4905b7481c74e63dc8ac4516ba788c7093aacfa7667d2417655252af199769e93660bf4163261d499
+  checksum: 10c0/ec302e65a55a527af4003acc5b8412e87c4190d2b9968c6f08475ace71ec975bca46c8e455a0164e1e72f0017f9159d724bf415a5e1b74205e041e1433cdd505
   languageName: node
   linkType: hard
 
-"@ngx-formly/material@npm:6.3.6":
-  version: 6.3.6
-  resolution: "@ngx-formly/material@npm:6.3.6"
+"@ngx-formly/material@npm:6.3.7":
+  version: 6.3.7
+  resolution: "@ngx-formly/material@npm:6.3.7"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
     "@angular/material": ">=13.0.0"
-    "@ngx-formly/core": 6.3.6
-  checksum: 10c0/c86f7c5e9fef3da86d228fa0830f4da2eb2d25c0a09a30b5d86fd374810875ab1fd679fa1ed1bd93f3d414094d533329d58e43160482360b9b2c79e314a3d444
+    "@ngx-formly/core": 6.3.7
+  checksum: 10c0/197f289a512e5e7dddb4cfb36041ee2d6ef280bfd3d80b2e4900aa5dcb9876909cc4d6f5b9473b3d149e1fffbe46e92e9561d07d4e8beda3bf54806cd4e01f19
   languageName: node
   linkType: hard
 
@@ -3587,6 +3587,13 @@ __metadata:
   version: 7.0.0
   resolution: "@stomp/stompjs@npm:7.0.0"
   checksum: 10c0/b68d32625efa71d12c57eb5174a83625277da306f9adb044ebf91000c6dec1a433abfd11e44a74d21f7b6fc27490e12997468f0c4f276767ab25c59f7ae93bd4
+  languageName: node
+  linkType: hard
+
+"@terraformer/wkt@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "@terraformer/wkt@npm:2.2.1"
+  checksum: 10c0/02a64b1a447ee5b602484501eada0871a6c2bad3bce650d1c86430c37fe42c8418be8c35eaef77df83545958a7a7a97fa97ac41f29e1c0e92a06c1db54cfe286
   languageName: node
   linkType: hard
 
@@ -4160,6 +4167,15 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10c0/b20b7820ee813f22de4f2ce98bdd12c68c930e016a8912b1ed967595ac0d8a4cbbff44f4d486dd97f77f5927e7b5725bdac7472c9ec5b27f53a5a13179f0612f
+  languageName: node
+  linkType: hard
+
+"@types/terraformer__wkt@npm:^2":
+  version: 2.0.3
+  resolution: "@types/terraformer__wkt@npm:2.0.3"
+  dependencies:
+    "@types/geojson": "npm:*"
+  checksum: 10c0/1125488b43bff2ba307ae6adf2ce16539207c7b39a61571c701f0da3f018875fdbf57548921fec1653f135dc76b615447bee0dc92d0f701c5682756d5d9d7c7b
   languageName: node
   linkType: hard
 
@@ -7862,15 +7878,17 @@ __metadata:
     "@ngneat/spectator": "npm:^16.0.0"
     "@ngneat/transloco": "npm:6.0.4"
     "@ngneat/until-destroy": "npm:^10.0.0"
-    "@ngx-formly/core": "npm:6.3.6"
-    "@ngx-formly/material": "npm:6.3.6"
+    "@ngx-formly/core": "npm:6.3.7"
+    "@ngx-formly/material": "npm:6.3.7"
     "@stomp/rx-stomp": "npm:^2.0.0"
     "@stomp/stompjs": "npm:^7.0.0"
+    "@terraformer/wkt": "npm:^2.2.1"
     "@types/file-saver-es": "npm:~2.0.3"
     "@types/flowjs": "npm:~2.13.13"
     "@types/jasmine": "npm:~5.1.4"
     "@types/leaflet": "npm:^1.9.12"
     "@types/node": "npm:^20.9.0"
+    "@types/terraformer__wkt": "npm:^2"
     akita-schematics: "npm:^2.0.1"
     angular-split: "npm:^17.2.0"
     cronstrue: "npm:^2.50.0"
@@ -7879,7 +7897,7 @@ __metadata:
     jasmine-core: "npm:^5.2.0"
     jasmine-reporters: "npm:^2.5.2"
     jasmine-spec-reporter: "npm:~7.0.0"
-    karma: "npm:~6.4.3"
+    karma: "npm:~6.4.4"
     karma-chrome-launcher: "npm:~3.2.0"
     karma-cli: "npm:~2.0.0"
     karma-coverage-istanbul-reporter: "npm:~3.0.3"
@@ -7899,7 +7917,6 @@ __metadata:
     stop-only: "npm:^3.3.2"
     tslib: "npm:^2.6.2"
     typescript: "npm:~5.4.5"
-    wicket: "npm:^1.3.8"
     zone.js: "npm:~0.14.10"
   languageName: unknown
   linkType: soft
@@ -8926,9 +8943,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"karma@npm:~6.4.3":
-  version: 6.4.3
-  resolution: "karma@npm:6.4.3"
+"karma@npm:~6.4.4":
+  version: 6.4.4
+  resolution: "karma@npm:6.4.4"
   dependencies:
     "@colors/colors": "npm:1.5.0"
     body-parser: "npm:^1.19.0"
@@ -8956,7 +8973,7 @@ __metadata:
     yargs: "npm:^16.1.1"
   bin:
     karma: bin/karma
-  checksum: 10c0/dc9710600c69265fce24a91312a136396acef969b72aac05e342724a4223a799cd3676a20f73a4beda797908b7f534fa95c8228bd79fd5c54682020c626e4fdd
+  checksum: 10c0/1658c4b7396c0edf6f048289182e075b561902e02992e1a3eb72f56f67090ff0c7ad7c91ab099e88a790c60f9500c5a6f974d75f1769e3ea2dfccda52876ec0b
   languageName: node
   linkType: hard
 
@@ -13424,13 +13441,6 @@ __metadata:
   bin:
     node-which: bin/which.js
   checksum: 10c0/449fa5c44ed120ccecfe18c433296a4978a7583bf2391c50abce13f76878d2476defde04d0f79db8165bdf432853c1f8389d0485ca6e8ebce3bbcded513d5e6a
-  languageName: node
-  linkType: hard
-
-"wicket@npm:^1.3.8":
-  version: 1.3.8
-  resolution: "wicket@npm:1.3.8"
-  checksum: 10c0/61a5fecf69e4c2ae1226ef7e65198317616ac7e4362e46a256444b76641968cf072334cd018fd301f5ebad42cf28a3f5e9707a8e0ddd550fcef490f39cbdff9f
   languageName: node
   linkType: hard
 

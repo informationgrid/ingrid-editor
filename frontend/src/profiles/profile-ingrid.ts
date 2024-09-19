@@ -34,9 +34,10 @@ import { IsoViewPlugin } from "./ingrid/components/iso-view/iso-view.plugin";
 
 import { InvekosPlugin } from "./ingrid/behaviours/invekos.plugin";
 import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
-import { firstValueFrom } from "rxjs";
+import { firstValueFrom, of, switchMap } from "rxjs";
 import { PublicationCheckDialogComponent } from "./ingrid/dialogs/publication-check/publication-check-dialog.component";
 import { Metadata } from "../app/models/ige-document";
+import { ResearchService } from "../app/+research/research.service";
 
 export enum InGridDoctype {
   InGridSpecialisedTask = "InGridSpecialisedTask",
@@ -70,6 +71,7 @@ export class InGridComponent implements OnInit {
   isoView = inject(IsoViewPlugin);
   invekos = inject(InvekosPlugin);
   dialog = inject(MatDialog);
+  researchService = inject(ResearchService);
 
   // docTypesEnum: InGridDoctype
 
@@ -110,10 +112,75 @@ export class InGridComponent implements OnInit {
       if (isAddress || ignoredDocType || hasAtLeastOneFormat)
         return Promise.resolve(true);
 
+      const conditions = this.getConditionsForDistributionInfo(data, metadata);
+
+      // if none of the above conditions apply then no distributionFormat will be written to ISO
+      if (conditions.every((item) => item === false)) {
+        // additional expensive check if geodataset and is a coupled resource from a service with getCapabilities-URL
+        if (metadata.docType === InGridDoctype.InGridGeoDataset) {
+          return this.checkForCoupledServiceWithGetCapOperation(metadata);
+        }
+        return Promise.resolve(true);
+      }
+
+      // otherwise show an extra info before allowing to publish
       return firstValueFrom(
         this.dialog.open(PublicationCheckDialogComponent).afterClosed(),
       );
     };
+  }
+
+  private checkForCoupledServiceWithGetCapOperation(metadata: Metadata) {
+    return firstValueFrom(
+      this.checkForCoupledServiceWithGetCap(metadata.uuid).pipe(
+        switchMap((result) => {
+          if (result.totalHits === 0) return of(true);
+          return this.dialog
+            .open(PublicationCheckDialogComponent)
+            .afterClosed();
+        }),
+      ),
+    );
+  }
+
+  private getConditionsForDistributionInfo(data: any, metadata: Metadata) {
+    return [
+      data.orderInfo?.length > 0,
+      data.fees?.length > 0,
+      data.digitalTransferOptions?.length > 0,
+      ...(metadata.docType === InGridDoctype.InGridGeoService
+        ? [
+            data.service.operations?.filter((op) => op.name.key === "1")
+              .length > 0,
+            data.service.isAtomDownload ?? false,
+            data.service.coupledResources?.filter((cr) => cr.isExternalRef)
+              .length > 0,
+          ]
+        : [false]),
+      metadata.docType === InGridDoctype.InGridInformationSystem
+        ? data.serviceUrls?.length > 0
+        : false,
+    ];
+  }
+
+  private checkForCoupledServiceWithGetCap(uuid: string) {
+    const sql = `WITH filtered_documents AS (SELECT document1.*, document_wrapper.category
+                                             FROM document_wrapper
+                                                    JOIN document document1 ON document_wrapper.uuid = document1.uuid
+                                             WHERE document1.is_latest = true
+                                               AND document_wrapper.deleted = 0
+                                               AND jsonb_path_exists(jsonb_strip_nulls(document1.data),
+                                                                     '$.service.coupledResources')
+                                               AND jsonb_path_exists(jsonb_strip_nulls(document1.data),
+                                                                     '$.service.operations'))
+                 SELECT DISTINCT fd.*
+                 FROM filtered_documents fd
+                        JOIN LATERAL jsonb_array_elements(fd.data -> 'service' -> 'coupledResources') AS cr(s) ON true
+                        JOIN LATERAL jsonb_array_elements(fd.data -> 'service' -> 'operations') AS o ON true
+                 WHERE cr.s ->> 'uuid' = '${uuid}'
+                   AND o -> 'name' ->> 'key' = '1'
+    `;
+    return this.researchService.searchBySQL(sql);
   }
 }
 

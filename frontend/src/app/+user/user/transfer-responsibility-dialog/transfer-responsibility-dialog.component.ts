@@ -70,7 +70,7 @@ export class TransferResponsibilityDialogComponent implements OnInit {
   ngOnInit() {}
 
   transferResponsibility() {
-    console.log(
+    console.debug(
       `von ${this.oldUser.login} zu ${this.selectedUser.login} wechseln`,
     );
     this.userService

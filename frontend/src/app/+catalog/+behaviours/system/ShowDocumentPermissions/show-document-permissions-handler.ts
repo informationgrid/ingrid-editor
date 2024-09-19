@@ -69,7 +69,7 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
       const onEvent = this.docEvents
         .onEvent("SHOW_DOCUMENT_PERMISSIONS")
         .subscribe((event) => {
-          console.log("SHOW_DOCUMENT_PERMISSIONS", event);
+          console.debug("SHOW_DOCUMENT_PERMISSIONS", event);
           this.showDialog(event.data.id);
         });
       this.subscriptions.push(onEvent);

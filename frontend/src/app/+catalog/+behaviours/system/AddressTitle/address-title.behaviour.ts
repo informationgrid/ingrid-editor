@@ -42,8 +42,7 @@ export class AddressTitleBehaviour extends Plugin {
     address: IgeDocument /* IMPORTANT FOR EVALUATION! */,
   ) => {
     const value = this.replaceVariables(this.data.template);
-    // tslint:disable-next-line:no-eval
-    return eval(value) ?? "";
+    return (0, eval)(`address = ${JSON.stringify(address)};${value}`) ?? "";
   };
 
   constructor(private documentService: DocumentService) {
@@ -74,18 +73,14 @@ export class AddressTitleBehaviour extends Plugin {
   private validateInputString() {
     return (c) => {
       let error = false;
-      const address = {
-        firstName: "",
-        lastName: "",
-        organization: "",
-      }; /* IMPORTANT FOR EVALUATION! */
+      const address =
+        'address = {firstName: "",lastName: "",organization: ""};';
       try {
         const value = this.replaceVariables(c.value);
 
-        // tslint:disable-next-line:no-eval
-        const testString = eval(value);
-        console.log("Eval string value: ", value);
-        console.log("Eval string evaluated: ", testString);
+        const testString = (0, eval)(address + value);
+        console.debug("Eval string value: ", value);
+        console.debug("Eval string evaluated: ", testString);
         if (testString && typeof testString !== "string") {
           throw new Error("Not a String");
         } else if (
@@ -95,7 +90,7 @@ export class AddressTitleBehaviour extends Plugin {
           throw new Error("One or more fields are not defined");
         }
       } catch (e) {
-        console.log("Evaluation error");
+        console.debug("Evaluation error");
         error = true;
       }
       return !error;

@@ -19,12 +19,12 @@ With each activated profile a separate configuration file can be used, which has
 [cols="1,2"]
 |===
 |Profile |Description
-| dev 
+| dev
 | Contains configuration used during development for correct setup.
 It also disables Keycloak.
 
-| elasticsearch 
-| Activate export to Elasticsearch during publishing and indexing 
+| elasticsearch
+| Activate export to Elasticsearch during publishing and indexing
 
 | ibus | Use configuation for an iBus
 
@@ -560,6 +560,7 @@ export class ProfilePack {
 }
 ----
 
+* update the file `profile.mapper.ts` in the same directory to map the profile-ID to the profile-module
 * update the following files to include the new profile for compilation
 ** frontend/src/tsconfig.app.json -> add to "files"
 ** frontend/src/tsconfig.spec.json -> add to "files"
@@ -581,7 +582,7 @@ export class TestDoctype extends BaseDoctype {
 }
 ----
 
-NOTE: When extending a profile there are things to keep in mind. The IDs of the supported document types should not be changed, since they are probably used in other places, like for the export. In order to ...
+NOTE: When extending a profile there are things to keep in mind. The IDs of the supported document types should not be changed, since they are probably used in other places, like for the export.
 
 ==== Profile inheritance
 
@@ -595,7 +596,7 @@ Backend:
 ** annotate it with `@Service`
 ** override at least the fields: `identifier`, `title` and `parentProfile`
 ** when modifying the export you should override the field `indexExportFormatID`
-* Optional: 
+* Optional:
 * under `types`-directory create the inherited types you want to use
 ** need to be created even if the same functionality as from the parent profile
 

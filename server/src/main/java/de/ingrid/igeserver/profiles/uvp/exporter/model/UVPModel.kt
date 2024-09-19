@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.exporter.AddressTransformerConfig
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.model.KeyValue
@@ -63,15 +64,13 @@ data class UVPModel(
 
     val contentField: MutableList<String> = mutableListOf()
 
-    private fun mapDocumentType(): String {
-        return when (type) {
-            "UvpApprovalProcedureDoc" -> "10"
-            "UvpNegativePreliminaryAssessmentDoc" -> "12"
-            "UvpForeignProjectDoc" -> "11"
-            "UvpSpatialPlanningProcedureDoc" -> "13"
-            "UvpLineDeterminationDoc" -> "14"
-            else -> throw ServerException.withReason("Could not map document type: $type")
-        }
+    private fun mapDocumentType(): String = when (type) {
+        "UvpApprovalProcedureDoc" -> "10"
+        "UvpNegativePreliminaryAssessmentDoc" -> "12"
+        "UvpForeignProjectDoc" -> "11"
+        "UvpSpatialPlanningProcedureDoc" -> "13"
+        "UvpLineDeterminationDoc" -> "14"
+        else -> throw ServerException.withReason("Could not map document type: $type")
     }
 
     val parentUuid: String? = data._parent
@@ -98,22 +97,40 @@ data class UVPModel(
         val address = documentService?.getLastPublishedDocument(catalogId, ref)!!
         val codelistTransformer = CodelistTransformer(codelistHandler!!, catalogId)
         val addressTransformer =
-            AddressModelTransformer(catalogId, codelistTransformer, null, address, documentService!!, null)
+            AddressModelTransformer(
+                AddressTransformerConfig(
+                    catalogId,
+                    codelistTransformer,
+                    null,
+                    address,
+                    documentService!!,
+                    null,
+                    emptyList(),
+                ),
+            )
         nonHiddenAncestorAddresses = addressTransformer.getAncestorAddressesIncludingSelf(address.wrapperId)
 
         return if (nonHiddenAncestorAddresses!!.size > 0) {
             val result = nonHiddenAncestorAddresses!!.last().document
-            AddressModelTransformer(catalogId, codelistTransformer, null, result, documentService!!, null)
+            AddressModelTransformer(
+                AddressTransformerConfig(
+                    catalogId,
+                    codelistTransformer,
+                    null,
+                    result,
+                    documentService!!,
+                    null,
+                    emptyList(),
+                ),
+            )
         } else {
             null
         }
     }
 
-    fun getSpatial(): String? {
-        return data.spatials
-            ?.map { prepareSpatialString(it) }
-            ?.getOrNull(0)
-    }
+    fun getSpatial(): String? = data.spatials
+        ?.map { prepareSpatialString(it) }
+        ?.getOrNull(0)
 
     fun getSpatial(field: String): Float? {
         val value = getSpatialBoundingBox() ?: return null
@@ -127,11 +144,9 @@ data class UVPModel(
         }
     }
 
-    private fun getSpatialBoundingBox(): SpatialModel.BoundingBoxModel? {
-        return data.spatials
-            ?.getOrNull(0)
-            ?.value
-    }
+    private fun getSpatialBoundingBox(): SpatialModel.BoundingBoxModel? = data.spatials
+        ?.getOrNull(0)
+        ?.value
 
     fun getSpatialLatCenter(): Float? {
         val bbox = getSpatialBoundingBox() ?: return null
@@ -152,17 +167,15 @@ data class UVPModel(
 
     val steps = data.steps
 
-    fun getStepsAsPhases(): List<String> {
-        return steps
-            .map {
-                when (it) {
-                    is StepPublicDisclosure -> "phase1"
-                    is StepPublicHearing -> "phase2"
-                    is StepDecisionOfAdmission -> "phase3"
-                    else -> "???"
-                }
+    fun getStepsAsPhases(): List<String> = steps
+        .map {
+            when (it) {
+                is StepPublicDisclosure -> "phase1"
+                is StepPublicHearing -> "phase2"
+                is StepDecisionOfAdmission -> "phase3"
+                else -> "???"
             }
-    }
+        }
 
     fun getDecisionDate(): List<String> {
         val decisionDates =
@@ -192,19 +205,13 @@ data class UVPModel(
 
     fun getUvpNumbers(): List<UVPNumber> = data.uvpNumbers
 
-    fun getUvpCategories(): List<String> {
-        return getUvpNumbers().map { it.category }.filter { it.isNotEmpty() }
-    }
+    fun getUvpCategories(): List<String> = getUvpNumbers().map { it.category }.filter { it.isNotEmpty() }
 
-    fun getUvpCategoryTypes(): List<String> {
-        return getUvpNumbers().map { it.type }.filter { it.isNotEmpty() }
-    }
+    fun getUvpCategoryTypes(): List<String> = getUvpNumbers().map { it.type }.filter { it.isNotEmpty() }
 
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime) = formatter.format(Date.from(date.toInstant()))
 
-    fun getPostBoxString(): String {
-        return "Postbox ${pointOfContact?.poBox}, ${pointOfContact?.zipPoBox ?: pointOfContact?.poBox} ${pointOfContact?.city}"
-    }
+    fun getPostBoxString(): String = "Postbox ${pointOfContact?.poBox}, ${pointOfContact?.zipPoBox ?: pointOfContact?.poBox} ${pointOfContact?.city}"
 
     fun hasPoBox(): Boolean = !pointOfContact?.poBox.isNullOrEmpty()
 
@@ -214,28 +221,24 @@ data class UVPModel(
     fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> =
         if (pointOfContact == null) emptyList() else nonHiddenAncestorAddresses!!.map { getAddressShort(it.document) }
 
-    fun getAddressShort(address: Document): AddressShort {
-        return if (address.data.getString("organization") == null) {
-            AddressShort(address.uuid, getPersonStringFromJson(address))
-        } else {
-            AddressShort(address.uuid, address.data.getString("organization")!!)
-        }
+    fun getAddressShort(address: Document): AddressShort = if (address.data.getString("organization") == null) {
+        AddressShort(address.uuid, getPersonStringFromJson(address))
+    } else {
+        AddressShort(address.uuid, address.data.getString("organization")!!)
     }
 
-    private fun getPersonStringFromJson(address: Document): String {
-        return listOfNotNull(
-            getCodelistValue(
-                "4300",
-                address.data.get("salutation")?.mapToKeyValue(),
-            ),
-            getCodelistValue(
-                "4305",
-                address.data.get("academic-title")?.mapToKeyValue(),
-            ),
-            address.data.getString("firstName"),
-            address.data.getString("lastName"),
-        ).filter { it.isNotEmpty() }.joinToString(" ")
-    }
+    private fun getPersonStringFromJson(address: Document): String = listOfNotNull(
+        getCodelistValue(
+            "4300",
+            address.data.get("salutation")?.mapToKeyValue(),
+        ),
+        getCodelistValue(
+            "4305",
+            address.data.get("academic-title")?.mapToKeyValue(),
+        ),
+        address.data.getString("firstName"),
+        address.data.getString("lastName"),
+    ).filter { it.isNotEmpty() }.joinToString(" ")
 }
 
 data class AddressShort(val uuid: String, val title: String)

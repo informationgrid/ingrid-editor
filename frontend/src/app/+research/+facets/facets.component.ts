@@ -278,7 +278,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
       .open(SpatialDialogComponent, { data: data })
       .afterClosed()
       .subscribe((result) => {
-        if (result) this.updateLocation(result);
+        if (result && result.value) this.updateLocation(result);
       });
   }
 
@@ -304,7 +304,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   // TODO: refactor map to separate component
   private updateMap(location: SpatialLocation) {
     if (!this.leafletReference) {
-      console.log("Map not initialized yet ... try again updating spatial");
+      console.debug("Map not initialized yet ... try again updating spatial");
       setTimeout(() => this.updateMap(location), 100);
       return;
     }

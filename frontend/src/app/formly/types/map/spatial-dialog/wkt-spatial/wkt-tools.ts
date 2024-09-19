@@ -17,9 +17,9 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Map } from "leaflet";
-import * as Wkt from "wicket";
-import * as Wktleaflet from "wicket/wicket-leaflet";
+import { geoJson, Map } from "leaflet";
+import { IgeError } from "../../../../../models/ige-error";
+import { wktToGeoJSON } from "@terraformer/wkt"; // GeoJSON types
 
 export class WktTools {
   private defaultConfig = {
@@ -30,27 +30,6 @@ export class WktTools {
     opacity: 1,
     weight: 3,
   };
-
-  private wkt = new Wkt.Wkt();
-
-  constructor() {
-    // use lib so that IDE does not remove import statement above
-    Wktleaflet.toString();
-  }
-
-  validate(wkt: string): string {
-    this.wkt.read(wkt);
-    const json = this.wkt.toJson();
-    if (json.type === "Polygon") {
-      const allClosed = (<any[]>json.coordinates).every(
-        (group) =>
-          group[0][0] === group[group.length - 1][0] &&
-          group[0][1] === group[group.length - 1][1],
-      );
-      if (!allClosed) return "Polygon ist nicht geschlossen";
-    }
-    return null;
-  }
 
   /**
    * Maps the current contents of the textarea.
@@ -65,73 +44,46 @@ export class WktTools {
     map: Map,
     wktString: string,
     overrideConfig = {},
-    editable = false,
-    focus = true,
-  ) {
-    try {
-      // Catch any malformed WKT strings
-      this.wkt.read(wktString);
-    } catch (e1) {
-      try {
-        this.wkt.read(
-          wktString.replace("\n", "").replace("\r", "").replace("\t", ""),
-        );
-      } catch (e2) {
-        if (e2.name === "WKTError") {
-          alert(
-            "Wicket could not understand the WKT string you entered. Check that you have parentheses " +
-              "balanced, and try removing tabs and newline characters.",
-          );
-          return;
-        }
-      }
-    }
+    editable: boolean = false,
+    focus: boolean = true,
+  ): object {
+    let geom = this.readWKTString(wktString);
 
-    const config = {
+    const config: any = {
       ...this.defaultConfig,
       ...overrideConfig,
       editable: editable,
     };
 
-    const obj = this.wkt.toObject(config); // Make an object
-
-    // Add listeners for overlay editing events
-    if (this.wkt.type === "polygon" || this.wkt.type === "linestring") {
-    }
-
-    if (Wkt.isArray(obj)) {
-      // Distinguish multigeometries (Arrays) from objects
-      for (const i in obj) {
-        if (obj.hasOwnProperty(i) && !Wkt.isArray(obj[i])) {
-          obj[i].addTo(map);
-          // this.features.push(obj[i]);
-        }
-      }
-    } else {
-      obj.addTo(map); // Add it to the map
-      // this.features.push(obj);
-    }
+    // const json = this.writer.write(geom);
+    const geoJsonResult = geoJson(geom, config);
+    geoJsonResult.addTo(map);
 
     // Pan the map to the feature
-    setTimeout(() => {
-      if (
-        focus &&
-        obj.getBounds !== undefined &&
-        typeof obj.getBounds === "function"
-      ) {
-        // For objects that have defined bounds or a way to get them
-        map.fitBounds(obj.getBounds());
-      } else {
-        if (
-          focus &&
-          obj.getLatLng !== undefined &&
-          typeof obj.getLatLng === "function"
-        ) {
-          map.panTo(obj.getLatLng());
+    if (focus) {
+      map.fitBounds(geoJsonResult.getBounds());
+    }
+
+    return geoJsonResult;
+  }
+
+  private readWKTString(wktString: string) {
+    try {
+      // Catch any malformed WKT strings
+      return wktToGeoJSON(wktString);
+    } catch (e1) {
+      try {
+        return wktToGeoJSON(
+          wktString.replace("\n", "").replace("\r", "").replace("\t", ""),
+        );
+      } catch (e2) {
+        if (e2.name === "WKTError") {
+          throw new IgeError(
+            "We could not understand the WKT string you entered. Check that you have parentheses " +
+              "balanced, and try removing tabs and newline characters.",
+          );
         }
       }
-    });
-
-    return obj;
+    }
   }
 }

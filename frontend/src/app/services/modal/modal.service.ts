@@ -73,7 +73,7 @@ export class ModalService {
     }
 
     if (this.dialogRef) {
-      console.log("Dialog already open, just updated error information");
+      console.warn("Dialog already open, just updated error information");
       return;
     }
 
@@ -108,7 +108,7 @@ export class ModalService {
     errorObj.message = message;
 
     if (this.dialogRef) {
-      console.log("Dialog already open, just updated error information");
+      console.warn("Dialog already open, just updated error information");
       return;
     }
 

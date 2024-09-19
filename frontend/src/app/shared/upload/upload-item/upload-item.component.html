@@ -65,19 +65,25 @@
     <div class="flex-col">
         <div class="flex-1 align-self-end">
             @if (file.error.status === 409) {
-                <button mat-button color="primary" (click)="overwrite()">
-                    Überschreiben
-                </button>
-                <button mat-button color="primary" (click)="rename()">
-                    Umbenennen
-                </button>
-                <button
-                    mat-button
-                    color="primary"
-                    (click)="useExisting.next(file.transfer)"
-                >
-                    Existierende verwenden
-                </button>
+                @if (enableFileUploadOverride()) {
+                    <button mat-button color="primary" (click)="overwrite()">
+                        Überschreiben
+                    </button>
+                }
+                @if (enableFileUploadRename()) {
+                    <button mat-button color="primary" (click)="rename()">
+                        Umbenennen
+                    </button>
+                }
+                @if (enableFileUploadReuse()) {
+                    <button
+                        mat-button
+                        color="primary"
+                        (click)="useExisting.next(file.transfer)"
+                    >
+                        Existierende verwenden
+                    </button>
+                }
             } @else {
                 <button mat-button color="primary" (click)="retry()">
                     Erneut versuchen

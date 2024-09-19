@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.bmi.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.model.KeyValue
 
 @JsonIgnoreProperties(ignoreUnknown = true)

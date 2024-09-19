@@ -180,7 +180,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
       doc.hasOnlySubtreeWritePermission &&
       doc.permission === PermissionLevel.WRITE
     ) {
-      console.log("adjusting permission");
+      console.debug("adjusting permission");
       doc.permission = PermissionLevel.WRITE_EXCEPT_PARENT;
     }
 

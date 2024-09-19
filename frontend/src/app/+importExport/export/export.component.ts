@@ -149,7 +149,7 @@ export class ExportComponent implements OnInit {
         finalize(() => (this.exportFinished = true)),
       )
       .subscribe((response: HttpResponse<Blob>) => {
-        console.log("Export-Result:", response);
+        console.debug("Export-Result:", response);
         this.exportResult = response;
       });
   }

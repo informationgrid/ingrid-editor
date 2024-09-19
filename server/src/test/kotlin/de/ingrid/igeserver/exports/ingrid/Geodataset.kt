@@ -23,6 +23,7 @@ import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.schema.SchemaUtils
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldNotContain
 
 open class Geodataset : GeodatasetBase() {
 
@@ -38,6 +39,7 @@ open class Geodataset : GeodatasetBase() {
 
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.expected.idf.xml")
+            result shouldNotContain "<gmd:distributionInfo>"
         }
 
         /*

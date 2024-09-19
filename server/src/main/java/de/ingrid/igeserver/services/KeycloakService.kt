@@ -234,7 +234,7 @@ class KeycloakService : UserManagementService {
         organisation = user.attributes?.get("institution")?.get(0)?.toString() ?: "",
         department = user.attributes?.get("department")?.get(0)?.toString() ?: "",
         latestLogin = null,
-//            role = user.realmRoles?.get(0) ?: "" // TODO: get interesting role, like author, md-admin or cat-admin
+        fromLdap = user.federationLink != null,
     )
 
     override fun getRoles(principal: Authentication): Set<String>? {

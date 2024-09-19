@@ -38,4 +38,5 @@ data class User(
     var modificationDate: Date = Date(0),
     var latestLogin: Date? = null,
     var id: Int? = null,
+    var fromLdap: Boolean = false,
 )

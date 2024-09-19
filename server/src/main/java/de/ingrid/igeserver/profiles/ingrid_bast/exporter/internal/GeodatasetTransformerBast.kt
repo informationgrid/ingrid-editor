@@ -29,6 +29,14 @@ import de.ingrid.igeserver.utils.getStringOrEmpty
 
 class GeodatasetTransformerBast(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
+    init {
+        this.citationURL = if (model.data.identifier.isNullOrBlank() && model.data.isOpenData == true) {
+            null
+        } else {
+            super.addNamespaceIfNeeded(model.data.identifier ?: model.uuid)
+        }
+    }
+
     private val docData = doc.data
 
     override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBastKeywords(docData)
