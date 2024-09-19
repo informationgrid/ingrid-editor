@@ -100,3 +100,11 @@ const val ADDRESS_HIERARCHY_WITH_NO_POSITION_NAME_SET = """
                 <gco:CharacterString>Sub-Organization</gco:CharacterString>
             </gmd:positionName>
 """
+
+const val USE_LIMITATION_CONSTRAINTS = """
+                        <gmd:MD_LegalConstraints>
+                            <gmd:useLimitation>
+                                <gco:CharacterString>bkg useLimitation constraint</gco:CharacterString>
+                            </gmd:useLimitation>
+                        </gmd:MD_LegalConstraints>
+"""
