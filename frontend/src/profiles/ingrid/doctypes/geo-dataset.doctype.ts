@@ -533,8 +533,8 @@ export class GeoDatasetDoctype extends IngridShared {
       }),
       this.addAvailabilitySection(),
       this.addLinksSection(),
-      this.addSection("Dokumente", [
-        this.addRepeatDistributionDetailList("fileReferences", "Dokumente", {
+      this.addSection("Dateien", [
+        this.addRepeatDistributionDetailList("fileReferences", "Dateien", {
           required: false,
           supportLink: false,
           enableFileUploadOverride: false,
