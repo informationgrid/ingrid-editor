@@ -448,7 +448,7 @@
                                 codeListValue="${value}">${value}</gmd:MD_RestrictionCode>
                     </gmd:accessConstraints>
                 @endfor
-                @for(CharacterStringModel item : accessConstraint.getItems() )
+                @for(CharacterStringModel item : accessConstraint.getOtherConstraints() )
                     <gmd:otherConstraints>
                         @template.export.ingrid.idf.anchorOrCharacterString(model = item)
                     </gmd:otherConstraints>

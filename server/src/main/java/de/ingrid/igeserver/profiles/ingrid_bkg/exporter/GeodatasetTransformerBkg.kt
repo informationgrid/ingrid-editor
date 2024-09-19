@@ -23,6 +23,7 @@ import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.AccessConstraint
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 
 class GeodatasetTransformerBkg(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
@@ -68,23 +69,34 @@ class GeodatasetTransformerBkg(transformerConfig: TransformerConfig) : Geodatase
             )
         }
 
-    override fun getAccessConstraints(): List<AccessConstraint> = super.getAccessConstraints() + AccessConstraint(
-        accessConstraintsCodelistValues,
-        listOf(
-            CharacterStringModel(
-                getValueFromCodelistData("10001", bkgAccessConstraintsTitleKey) ?: "",
-                if (bkgAccessConstraintsTitleKey == "99") {
-                    "http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations"
-                } else {
-                    getValueFromCodelistData(
-                        "10001",
-                        bkgAccessConstraintsTitleKey,
-                        "url",
-                    )
-                },
+    override fun getAccessConstraints(): List<AccessConstraint> {
+        val title = getValueFromCodelistData("10001", bkgAccessConstraintsTitleKey)
+            ?: return super.getAccessConstraints() + AccessConstraint(
+                accessConstraintsCodelistValues,
+                emptyList(),
+            )
+
+        val comment = docData.getString("resource.accessConstraintsBkgComment")
+
+        return super.getAccessConstraints() + AccessConstraint(
+            accessConstraintsCodelistValues,
+            listOfNotNull(
+                CharacterStringModel(
+                    title,
+                    if (bkgAccessConstraintsTitleKey == "99") {
+                        "http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations"
+                    } else {
+                        getValueFromCodelistData(
+                            "10001",
+                            bkgAccessConstraintsTitleKey,
+                            "url",
+                        )
+                    },
+                ),
+                if (comment != null) CharacterStringModel(comment, null) else null,
             ),
-        ),
-    )
+        )
+    }
 
     private val accessConstraintsCodelistValues: List<String>
         get() {
