@@ -10,6 +10,8 @@ export function ProfileMapper(profileId: string) {
       return from(import("./profile-bmi"));
     case "ingrid-bast":
       return from(import("./profile-ingrid-bast"));
+    case "ingrid-bkg":
+      return from(import("./profile-ingrid-bkg"));
     case "ingrid-hmdk":
       return from(import("./profile-ingrid-hmdk"));
     case "ingrid-kommunal-st":
