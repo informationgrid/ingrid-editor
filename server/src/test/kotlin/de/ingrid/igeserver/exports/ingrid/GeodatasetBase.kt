@@ -22,6 +22,7 @@ package de.ingrid.igeserver.exports.ingrid
 import MockDocument
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
@@ -130,5 +131,5 @@ open class GeodatasetBase : ShouldSpec() {
                 jacksonObjectMapper()
                     .readTree(additionalJson.trimIndent()) as ObjectNode
             },
-        )
+        ).replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 }

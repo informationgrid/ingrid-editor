@@ -247,17 +247,4 @@ class DistributionInfo : GeodatasetBase() {
             ObjectNode::class.java,
         ) as ObjectNode,
     ).replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
-
-    private fun exportGeoDataset(additionalJson: String? = null): String = exportJsonToXML(
-        this@DistributionInfo.exporter,
-        "/export/ingrid/geo-dataset.minimal.sample.json",
-        if (additionalJson != null) {
-            jacksonObjectMapper().readValue(
-                additionalJson.trimIndent(),
-                ObjectNode::class.java,
-            ) as ObjectNode
-        } else {
-            null
-        },
-    ).replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 }
