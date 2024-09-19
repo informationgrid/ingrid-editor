@@ -110,5 +110,53 @@ class UseConstraints : GeodatasetBase() {
 
             result shouldContain USE_CONSTRAINTS_RESTRICTED_WITH_COMMENT_SOURCE
         }
+
+        should("export useConstraint with long text") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "useConstraintsBkg": { "key": "15" },
+                        "useConstraintsBkgComment": "bkg use comment",
+                        "useConstraintsBkgSource": "bkg use source"
+                   } }
+                """,
+            )
+
+            result shouldContain USE_CONSTRAINTS_WITH_LONGTEXT
+        }
+
+        should("export useConstraint with long text and no comment") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "useConstraintsBkg": { "key": "15" },
+                        "useConstraintsBkgSource": "bkg use source"
+                   } }
+                """,
+            )
+
+            result shouldContain USE_CONSTRAINTS_WITH_LONGTEXT_NO_COMMENT
+        }
+
+        should("export useConstraint with long text and no source") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "useConstraintsBkg": { "key": "15" },
+                        "useConstraintsBkgComment": "bkg use comment"
+                   } }
+                """,
+            )
+
+            result shouldContain USE_CONSTRAINTS_WITH_LONGTEXT_NO_SOURCE
+        }
+
+        should("export useConstraint with just long text") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "useConstraintsBkg": { "key": "15" }
+                   } }
+                """,
+            )
+
+            result shouldContain USE_CONSTRAINTS_WITH_JUST_LONGTEXT
+        }
     }
 }

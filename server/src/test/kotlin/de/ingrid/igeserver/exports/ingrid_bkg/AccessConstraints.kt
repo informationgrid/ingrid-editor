@@ -24,6 +24,7 @@ import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.profiles.ingrid_bkg.exporter.IngridIdfExporterBkg
 import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 import io.mockk.every
 
 class AccessConstraints : GeodatasetBase() {
@@ -43,19 +44,127 @@ class AccessConstraints : GeodatasetBase() {
 
     init {
 
-        should("export accessConstraint") {
+        should("export only accessConstraint INSPIRE") {
             val result = exportGeoDataset(
                 """{ "resource": {
-                        "accessConstraintsBkg": { "key": "10" }
+                        "accessConstraints": [{ "key": "6" }]
                    } }
                 """,
             )
 
-            result shouldContain ACCESS_CONSTRAINTS
+            result shouldContain ACCESS_CONSTRAINTS_INSPIRE
         }
 
-        // accessConstraintsBkgComment
+        should("export only accessConstraint BKG") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "accessConstraintsBkg": { "key": "2" }
+                   } }
+                """,
+            )
 
-        xshould("export accessConstraints after ingrid default ones")
+            result shouldContain ACCESS_CONSTRAINTS_ONLY_BKG
+        }
+
+        should("export only accessConstraint - template copyright") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "accessConstraintsBkg": { "key": "5" }
+                   } }
+                """,
+            )
+
+            result shouldContain ACCESS_CONSTRAINTS_BKG_TEMPLATE_COPYRIGHT
+        }
+
+        should("export only accessConstraint - template license") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "accessConstraintsBkg": { "key": "6" }
+                   } }
+                """,
+            )
+
+            result shouldContain ACCESS_CONSTRAINTS_BKG_TEMPLATE_LICENSE
+        }
+
+        should("export only accessConstraint - template copyright & license") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "accessConstraintsBkg": { "key": "7" }
+                   } }
+                """,
+            )
+
+            result shouldContain ACCESS_CONSTRAINTS_BKG_TEMPLATE_COPYRIGHTANDLICENSE
+        }
+
+        should("export only accessConstraint - template intellectualPropertyRights") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "accessConstraintsBkg": { "key": "8" }
+                   } }
+                """,
+            )
+
+            result shouldContain ACCESS_CONSTRAINTS_BKG_TEMPLATE_INTELLECTUALPROPERTYRIGHTS
+        }
+
+        should("export only accessConstraint - template restricted") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "accessConstraintsBkg": { "key": "9" }
+                   } }
+                """,
+            )
+
+            result shouldContain ACCESS_CONSTRAINTS_BKG_TEMPLATE_RESTRICTED
+        }
+
+        should("export only accessConstraint - no apply") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "accessConstraintsBkg": { "key": "1" }
+                   } }
+                """,
+            )
+
+            result shouldContain ACCESS_CONSTRAINTS_BKG_NO_APPLY
+        }
+
+        should("export accessConstraints after INSPIRE one") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "accessConstraints": [{ "key": "6" }],
+                        "accessConstraintsBkg": { "key": "1" }
+                   } }
+                """,
+            )
+
+            result shouldContain ACCESS_CONSTRAINTS_BKG_AFTER_INSPIRE
+        }
+
+        should("export accessConstraints with comments") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "accessConstraintsBkg": { "key": "1" },
+                        "accessConstraintsBkgComment": "access bkg comments"
+                   } }
+                """,
+            )
+
+            result shouldContain ACCESS_CONSTRAINTS_BKG_WITH_COMMENTS
+        }
+
+        should("not export accessConstraints when only comments") {
+            val result = exportGeoDataset(
+                """{ "resource": {
+                        "accessConstraintsBkgComment": "access bkg comments"
+                   } }
+                """,
+            )
+
+            result shouldNotContain "access bkg comments"
+        }
     }
 }
