@@ -37,6 +37,7 @@ import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
 import { firstValueFrom } from "rxjs";
 import { PublicationCheckDialogComponent } from "./ingrid/dialogs/publication-check/publication-check-dialog.component";
 import { Metadata } from "../app/models/ige-document";
+import { ConsolidateKeywordsPlugin } from "./ingrid/dialogs/consolidateKeywords/consolidate-keywords.plugin";
 
 export enum InGridDoctype {
   InGridSpecialisedTask = "InGridSpecialisedTask",
@@ -70,7 +71,7 @@ export class InGridComponent implements OnInit {
   isoView = inject(IsoViewPlugin);
   invekos = inject(InvekosPlugin);
   dialog = inject(MatDialog);
-
+  consolidateKeywords = inject(ConsolidateKeywordsPlugin);
   // docTypesEnum: InGridDoctype
 
   protected getDocTypes = () => {

@@ -18,19 +18,22 @@
  * limitations under the Licence.
  */
 import { inject, Injectable } from "@angular/core";
-import { TreeQuery } from "../../../../store/tree/tree.query";
 import { map } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
-import { DocEventsService } from "../../../../services/event/doc-events.service";
-import { FormMenuService, MenuId } from "../../../../+form/form-menu.service";
-import { ConfigService } from "../../../../services/config/config.service";
-import { FormUtils } from "../../../../+form/form.utils";
-import { FormStateService } from "../../../../+form/form-state.service";
-import { DocumentService } from "../../../../services/document/document.service";
-import { PluginService } from "../../../../services/plugin/plugin.service";
-import { Plugin } from "../../plugin";
 import { Observable } from "rxjs";
 import { ConsolidateDialogComponent } from "./consolidate-dialog/consolidate-dialog.component";
+import { TreeQuery } from "../../../../app/store/tree/tree.query";
+import { DocEventsService } from "../../../../app/services/event/doc-events.service";
+import {
+  FormMenuService,
+  MenuId,
+} from "../../../../app/+form/form-menu.service";
+import { FormStateService } from "../../../../app/+form/form-state.service";
+import { DocumentService } from "../../../../app/services/document/document.service";
+import { ConfigService } from "../../../../app/services/config/config.service";
+import { PluginService } from "../../../../app/services/plugin/plugin.service";
+import { FormUtils } from "../../../../app/+form/form.utils";
+import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 
 @Injectable({ providedIn: "root" })
 export class ConsolidateKeywordsPlugin extends Plugin {

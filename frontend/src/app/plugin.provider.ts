@@ -40,7 +40,6 @@ import { DefaultUserBehaviour } from "./+catalog/+behaviours/system/User/default
 import { ShowDocumentPermissionsHandlerPlugin } from "./+catalog/+behaviours/system/ShowDocumentPermissions/show-document-permissions-handler";
 import { FieldsToggleButtonBehaviour } from "./+catalog/+behaviours/system/FieldsToggleButton/fields-toggle-button.behaviour";
 import { ExpiredDocumentsBehaviour } from "./+catalog/+behaviours/system/expiredDocuments/expired-documents.behaviour";
-import { ConsolidateKeywordsPlugin } from "./+catalog/+behaviours/system/consolidateKeywords/consolidate-keywords.plugin";
 
 export const pluginProvider = [
   { provide: PluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -56,7 +55,6 @@ export const pluginProvider = [
   { provide: PluginToken, useClass: TagsBehaviour, multi: true },
   { provide: PluginToken, useClass: FieldsToggleButtonBehaviour, multi: true },
   { provide: PluginToken, useClass: AssignedUserBehaviour, multi: true },
-  { provide: PluginToken, useClass: ConsolidateKeywordsPlugin, multi: true },
   {
     provide: PluginToken,
     useClass: DeleteEmptyFoldersBehaviour,

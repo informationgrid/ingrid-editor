@@ -1,27 +1,27 @@
 import { Component, Inject, OnInit } from "@angular/core";
-import { DocumentService } from "../../../../../services/document/document.service";
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
   MatDialogRef,
 } from "@angular/material/dialog";
-import { UserTableComponent } from "../../../../../+user/user/user-table/user-table.component";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { ConfigService } from "../../../../../services/config/config.service";
 import { MatChip, MatChipListbox } from "@angular/material/chips";
 import { NgClass, NgForOf, NgIf } from "@angular/common";
-import { DocumentDataService } from "../../../../../services/document/document-data.service";
-import { KeywordAnalysis } from "../../../../../../profiles/ingrid/utils/keywords";
-import { ThesaurusResult } from "../../../../../../profiles/ingrid/components/thesaurus-result";
-import { CodelistQuery } from "../../../../../store/codelist/codelist.query";
-import { FormStateService } from "../../../../../+form/form-state.service";
-import { removeDuplicates } from "../../../../../shared/utils";
-import { DialogTemplateComponent } from "../../../../../shared/dialog-template/dialog-template.component";
+import { UserTableComponent } from "../../../../../app/+user/user/user-table/user-table.component";
+import { DialogTemplateComponent } from "../../../../../app/shared/dialog-template/dialog-template.component";
+import { DocumentService } from "../../../../../app/services/document/document.service";
+import { DocumentDataService } from "../../../../../app/services/document/document-data.service";
+import { CodelistQuery } from "../../../../../app/store/codelist/codelist.query";
+import { FormStateService } from "../../../../../app/+form/form-state.service";
+import { ConfigService } from "../../../../../app/services/config/config.service";
+import { KeywordAnalysis } from "../../../utils/keywords";
+import { ThesaurusResult } from "../../../components/thesaurus-result";
+import { removeDuplicates } from "../../../../../app/shared/utils";
 
 export interface ConsolidateDialogData {
   id: number;
