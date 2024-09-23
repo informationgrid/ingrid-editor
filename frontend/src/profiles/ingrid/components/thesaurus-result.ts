@@ -28,5 +28,5 @@ export interface ThesaurusResult {
   label: string;
   found: boolean;
   alreadyExists?: boolean;
-  status?: string;
+  status?: "added" | "removed" | "unchanged";
 }

@@ -21,7 +21,7 @@ import { ThesaurusResult } from "../../../../../../profiles/ingrid/components/th
 import { CodelistQuery } from "../../../../../store/codelist/codelist.query";
 import { FormStateService } from "../../../../../+form/form-state.service";
 import { removeDuplicates } from "../../../../../shared/utils";
-import { FormGroup } from "@angular/forms";
+import { DialogTemplateComponent } from "../../../../../shared/dialog-template/dialog-template.component";
 
 export interface ConsolidateDialogData {
   id: number;
@@ -50,6 +50,7 @@ class Keywords {
     NgForOf,
     NgClass,
     NgIf,
+    DialogTemplateComponent,
   ],
   standalone: true,
 })
@@ -220,10 +221,9 @@ export class ConsolidateDialogComponent implements OnInit {
     };
 
     switch (res.thesaurus) {
-      case "INSPIRE-Themen":
+      case this.keywordCategories.themes:
         this.addInspireKeyword(res);
         break;
-
       case this.keywordCategories.gemet:
       case this.keywordCategories.umthes:
       case this.keywordCategories.free:
@@ -321,6 +321,7 @@ export class ConsolidateDialogComponent implements OnInit {
         });
     });
   }
+
   private mapKeywords(keywords: ThesaurusResult[]) {
     return keywords.map((k) => ({
       id: k.value.id,
