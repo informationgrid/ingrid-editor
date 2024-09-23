@@ -80,19 +80,22 @@ class IngridLuceneExporterBkg(
 
     override fun getTransformer(data: TransformerData): Any = when (data.type) {
         IngridDocType.DOCUMENT -> {
-            IngridModelTransformerBkg(
-                TransformerConfig(
-                    data.mapper.convertValue(data.doc, IngridModel::class.java),
-                    data.catalogIdentifier,
-                    data.codelistTransformer,
-                    config,
-                    catalogService,
-                    TransformerCache(),
-                    data.doc,
-                    documentService,
-                    data.tags,
-                ),
-            )
+            getBkgTransformer(data.doc.type)
+                ?.constructors
+                ?.first()
+                ?.call(
+                    TransformerConfig(
+                        data.mapper.convertValue(data.doc, IngridModel::class.java),
+                        data.catalogIdentifier,
+                        data.codelistTransformer,
+                        config,
+                        catalogService,
+                        TransformerCache(),
+                        data.doc,
+                        documentService,
+                        data.tags,
+                    ),
+                ) ?: super.getTransformer(data)
         }
 
         else -> super.getTransformer(data)

@@ -29,8 +29,7 @@ class BkgProfile(
     override val identifier = ID
     override val title = "InGrid Katalog (BKG)"
     override val parentProfile = "ingrid"
-
-    // override val indexExportFormatID = "indexInGridIDFBkg"
+    override val indexExportFormatID = "indexInGridIDFBkg"
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         super.initCatalogCodelists(catalogId, codelistId)

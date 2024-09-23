@@ -17,18 +17,20 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_bkg.exporter
+package de.ingrid.igeserver.profiles.ingrid_bkg.exporter.transformer
 
-import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.AccessConstraint
+import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid_bkg.exporter.BkgCommonTransformer
 
-class IngridModelTransformerBkg(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
+class GeodatasetTransformerBkg(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
-    /*override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() + getBastKeywords(doc.data).keywords.mapNotNull { it.name }
+    private val bkgTransformer = BkgCommonTransformer(this)
 
-    fun getDistributorName(): String {
-        val distributor = pointOfContact.firstOrNull { it.relationType?.key == "2" } ?: return ""
-        val oldestAncestorData = distributor.ancestorAddressesIncludingSelf.first().document.data
-        return oldestAncestorData.getString("organization") ?: oldestAncestorData.getString("lastName") ?: "???"
-    }*/
+    override val useConstraintsCodelistValues: List<String> = bkgTransformer.useConstraintsCodelistValue
+
+    override val useConstraints: List<UseConstraintTemplate> = bkgTransformer.getUseConstraints()
+
+    override fun getAccessConstraints(): List<AccessConstraint> = bkgTransformer.getAccessConstraints()
 }
