@@ -36,9 +36,9 @@ import { ConsolidateDialogComponent } from "./consolidate-dialog/consolidate-dia
 export class ConsolidateKeywordsPlugin extends Plugin {
   id = "plugin.consolidate.keywords";
   name = "Schlagworte konsolidieren";
-  description = "Schlagworte konsolidieren"; // TODO
+  description = "Schlagworte konsolidieren";
   defaultActive = true;
-  forAddress = false; // TODO
+  forAddress = false;
   private readonly isPrivileged: boolean;
 
   constructor(
