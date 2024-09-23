@@ -99,7 +99,7 @@ export class ConsolidateDialogComponent implements OnInit {
 
   keywordDialogData = [];
   isLoading: boolean;
-  saveButtonClicked: boolean;
+  isSaving: boolean;
 
   ngOnInit() {
     const hasKeywords = this.initKeywords();
