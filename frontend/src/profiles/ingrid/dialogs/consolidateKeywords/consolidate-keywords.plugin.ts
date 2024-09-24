@@ -100,6 +100,7 @@ export class ConsolidateKeywordsPlugin extends Plugin {
 
       const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
         (doc) => {
+          if (doc?._type === "FOLDER") return;
           const button = {
             title: "Schlagworte konsolidieren",
             name: "consolidate-keywords",
