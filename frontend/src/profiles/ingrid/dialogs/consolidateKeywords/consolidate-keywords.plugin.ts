@@ -100,36 +100,22 @@ export class ConsolidateKeywordsPlugin extends Plugin {
 
       const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
         (doc) => {
-          if (doc?._type === "FOLDER") {
-            if (this.isActive) {
-              this.isActive = false;
-              this.formMenuService.removeMenuItem(
-                this.formMenuId,
-                "consolidate-keywords",
-              );
-            }
-            return;
-          }
-
-          if (!this.isActive) {
-            this.isActive = true;
-            const button = {
-              title: "Schlagworte konsolidieren",
-              name: "consolidate-keywords",
-              action: () =>
-                this.docEventsService.sendEvent({
-                  type: "OPEN_CONSOLIDATE_KEYWORDS_DIALOG",
-                  data: { id: doc.id },
-                }),
-            };
-            // refresh menu item
-            this.formMenuService.removeMenuItem(
-              this.formMenuId,
-              "consolidate-keywords",
-            );
-
-            this.formMenuService.addMenuItem(this.formMenuId, button);
-          }
+          if (doc?._type === "FOLDER") return;
+          const button = {
+            title: "Schlagworte konsolidieren",
+            name: "consolidate-keywords",
+            action: () =>
+              this.docEventsService.sendEvent({
+                type: "OPEN_CONSOLIDATE_KEYWORDS_DIALOG",
+                data: { id: doc.id },
+              }),
+          };
+          // refresh menu item
+          this.formMenuService.removeMenuItem(
+            this.formMenuId,
+            "consolidate-keywords",
+          );
+          this.formMenuService.addMenuItem(this.formMenuId, button);
         },
       );
 
