@@ -19,6 +19,14 @@
             "${entry.get()}"@if (!entry.isLast()),@endif
         @endfor
     ],
+    "hvd": ${data.getHvd()},
+    @if(data.getHvd())
+        "hvdCategories": [
+            @for(var entry : ForSupport.of(data.getHvdCategories()))
+                "${entry.get().getKey()}"@if (!entry.isLast()),@endif
+            @endfor
+        ],
+    @endif
     "issued": "${ model.getCreated() }",
     "modified": "${ model.getModified() }",
     @if(model.getPeriodicity() != null)
