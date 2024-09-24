@@ -66,9 +66,35 @@ export class ConsolidateKeywordsPlugin extends Plugin {
 
   registerForm() {
     super.registerForm();
-
     // only add menu item in form if user is privileged and not for address
     if (this.isPrivileged && !this.forAddress) {
+      const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
+        (doc) => {
+          if (doc?._type === "FOLDER") {
+            this.formMenuService.removeMenuItem(
+              this.formMenuId,
+              "consolidate-keywords",
+            );
+            return;
+          }
+          const button = {
+            title: "Schlagworte konsolidieren",
+            name: "consolidate-keywords",
+            action: () =>
+              this.docEventsService.sendEvent({
+                type: "OPEN_CONSOLIDATE_KEYWORDS_DIALOG",
+                data: { id: doc.id },
+              }),
+          };
+          // refresh menu item
+          this.formMenuService.removeMenuItem(
+            this.formMenuId,
+            "consolidate-keywords",
+          );
+          this.formMenuService.addMenuItem(this.formMenuId, button);
+        },
+      );
+
       const onEvent = this.docEvents
         .onEvent("OPEN_CONSOLIDATE_KEYWORDS_DIALOG")
         .subscribe(async (event) => {
@@ -97,27 +123,6 @@ export class ConsolidateKeywordsPlugin extends Plugin {
             },
           );
         });
-
-      const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
-        (doc) => {
-          if (doc?._type === "FOLDER") return;
-          const button = {
-            title: "Schlagworte konsolidieren",
-            name: "consolidate-keywords",
-            action: () =>
-              this.docEventsService.sendEvent({
-                type: "OPEN_CONSOLIDATE_KEYWORDS_DIALOG",
-                data: { id: doc.id },
-              }),
-          };
-          // refresh menu item
-          this.formMenuService.removeMenuItem(
-            this.formMenuId,
-            "consolidate-keywords",
-          );
-          this.formMenuService.addMenuItem(this.formMenuId, button);
-        },
-      );
 
       this.formSubscriptions.push(onDocLoad);
       this.formSubscriptions.push(onEvent);
