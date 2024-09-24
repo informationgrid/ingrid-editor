@@ -98,6 +98,7 @@ export class ConsolidateDialogComponent implements OnInit {
   freeKeywordsNew: ThesaurusResult[] = [];
 
   keywordDialogData = [];
+  keywordMap: any;
   isLoading: boolean;
   isSaving: boolean;
 
