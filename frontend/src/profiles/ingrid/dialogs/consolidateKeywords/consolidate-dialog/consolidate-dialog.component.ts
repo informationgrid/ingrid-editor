@@ -287,7 +287,27 @@ export class ConsolidateDialogComponent implements OnInit {
     this.isoCategoriesNew.push(isoCategory);
     this.freeKeywordsNew.push({ ...res, status: "removed" });
   }
-  saveConsolidatedKeywords() {
+
+  mapAndSaveConsolidatedKeywords() {
+    this.mapAllKeywords();
+    this.documentService
+      .save({
+        id: this.id,
+        version: this.documentWithMetadata.metadata.version,
+        data: this.doc,
+        isNewDoc: false,
+        isAddress: false,
+      })
+      .subscribe(() => {
+        this.snackBar.open("Schlagworte konsolidiert", "", {
+          panelClass: "green",
+        });
+        this.dialogRef.close("confirm");
+      });
+  }
+
+  // Map ThesaurusResult keywords to format expected by the backend
+  private mapAllKeywords() {
     this.doc.keywords.gemet = this.mapKeywords(
       this.gemetKeywordsNew.filter((k) => k.status !== "removed"),
     );
@@ -304,21 +324,6 @@ export class ConsolidateDialogComponent implements OnInit {
     this.doc.topicCategories = this.isoCategoriesNew.map((k) => ({
       key: k.value.key,
     }));
-
-    this.documentService
-      .save({
-        id: this.id,
-        version: this.documentWithMetadata.metadata.version,
-        data: this.doc,
-        isNewDoc: false,
-        isAddress: false,
-      })
-      .subscribe(() => {
-        this.snackBar.open("Schlagworte konsolidiert", "", {
-          panelClass: "green",
-        });
-        this.dialogRef.close("confirm");
-      });
   }
 
   private mapKeywords(keywords: ThesaurusResult[]) {
