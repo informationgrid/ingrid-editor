@@ -22,6 +22,11 @@ import { ConfigService } from "../../../../../app/services/config/config.service
 import { KeywordAnalysis } from "../../../utils/keywords";
 import { ThesaurusResult } from "../../../components/thesaurus-result";
 import { removeDuplicates } from "../../../../../app/shared/utils";
+import { firstValueFrom } from "rxjs";
+import {
+  DocumentWithMetadata,
+  IgeDocument,
+} from "../../../../../app/models/ige-document";
 
 export interface ConsolidateDialogData {
   id: number;
@@ -72,6 +77,8 @@ export class ConsolidateDialogComponent implements OnInit {
   id: number;
   keywords: Keywords;
   isInspireIdentified: boolean;
+  documentWithMetadata: DocumentWithMetadata;
+  doc: IgeDocument;
 
   keywordCategories = {
     gemet: "Gemet Schlagworte",
@@ -102,7 +109,11 @@ export class ConsolidateDialogComponent implements OnInit {
   isLoading: boolean;
   isSaving: boolean;
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.documentWithMetadata = await firstValueFrom(
+      this.documentDataService.load(this.id, false),
+    );
+    this.doc = this.documentWithMetadata.document;
     const hasKeywords = this.initKeywords();
     if (!hasKeywords) {
       this.isLoading = false;
@@ -277,39 +288,37 @@ export class ConsolidateDialogComponent implements OnInit {
     this.freeKeywordsNew.push({ ...res, status: "removed" });
   }
   saveConsolidatedKeywords() {
-    this.documentDataService.load(this.id, false).subscribe((doc) => {
-      doc.document.keywords.gemet = this.mapKeywords(
-        this.gemetKeywordsNew.filter((k) => k.status !== "removed"),
-      );
-      doc.document.keywords.umthes = this.mapKeywords(
-        this.umthesKeywordsNew.filter((k) => k.status !== "removed"),
-      );
-      doc.document.keywords.free = this.freeKeywordsNew
-        .filter((k) => k.status !== "removed")
-        .map((k) => ({ label: k.label }));
+    this.doc.keywords.gemet = this.mapKeywords(
+      this.gemetKeywordsNew.filter((k) => k.status !== "removed"),
+    );
+    this.doc.keywords.umthes = this.mapKeywords(
+      this.umthesKeywordsNew.filter((k) => k.status !== "removed"),
+    );
+    this.doc.keywords.free = this.freeKeywordsNew
+      .filter((k) => k.status !== "removed")
+      .map((k) => ({ label: k.label }));
 
-      doc.document.themes = this.inspireTopicsNew.map((k) => ({
-        key: k.value.key,
-      }));
-      doc.document.topicCategories = this.isoCategoriesNew.map((k) => ({
-        key: k.value.key,
-      }));
+    this.doc.themes = this.inspireTopicsNew.map((k) => ({
+      key: k.value.key,
+    }));
+    this.doc.topicCategories = this.isoCategoriesNew.map((k) => ({
+      key: k.value.key,
+    }));
 
-      this.documentService
-        .save({
-          id: this.id,
-          version: doc.metadata.version, // TODO: Do I need to increment version ??
-          data: doc.document,
-          isNewDoc: false,
-          isAddress: false,
-        })
-        .subscribe(() => {
-          this.snackBar.open("Schlagworte konsolidiert", "", {
-            panelClass: "green",
-          });
-          this.dialogRef.close("confirm");
+    this.documentService
+      .save({
+        id: this.id,
+        version: this.documentWithMetadata.metadata.version,
+        data: this.doc,
+        isNewDoc: false,
+        isAddress: false,
+      })
+      .subscribe(() => {
+        this.snackBar.open("Schlagworte konsolidiert", "", {
+          panelClass: "green",
         });
-    });
+        this.dialogRef.close("confirm");
+      });
   }
 
   private mapKeywords(keywords: ThesaurusResult[]) {
