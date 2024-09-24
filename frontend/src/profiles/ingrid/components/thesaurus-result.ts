@@ -22,8 +22,7 @@ export interface ThesaurusResult {
     | string
     | "INSPIRE-Themen"
     | "Gemet Schlagworte"
-    | "Umthes Schlagworte"
-    | "Freie Schlagworte";
+    | "Umthes Schlagworte";
   value: any;
   label: string;
   found: boolean;
