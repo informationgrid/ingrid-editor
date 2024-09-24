@@ -135,6 +135,7 @@ export class ConsolidateDialogComponent implements OnInit {
     this.gemetKeywords = this.keywords?.gemet || [];
     this.umthesKeywords = this.keywords?.umthes || [];
     this.freeKeywords = this.keywords?.free || [];
+    this.keywordMap = this.setKeywordMap();
 
     this.timedOutKeywords = [];
     this.timedOutThesauri = [];
@@ -205,21 +206,6 @@ export class ConsolidateDialogComponent implements OnInit {
       };
     }
 
-    const keywordMap = {
-      [this.keywordCategories.gemet]: {
-        original: this.gemetKeywords,
-        new: this.gemetKeywordsNew,
-      },
-      [this.keywordCategories.umthes]: {
-        original: this.umthesKeywords,
-        new: this.umthesKeywordsNew,
-      },
-      [this.keywordCategories.free]: {
-        original: this.freeKeywords,
-        new: this.freeKeywordsNew,
-      },
-    };
-
     switch (res.thesaurus) {
       case this.keywordCategories.themes:
         this.addInspireKeyword(res);
@@ -227,7 +213,7 @@ export class ConsolidateDialogComponent implements OnInit {
       case this.keywordCategories.gemet:
       case this.keywordCategories.umthes:
       case this.keywordCategories.free:
-        const keywordCategory = keywordMap[res.thesaurus];
+        const keywordCategory = this.keywordMap[res.thesaurus];
         if (!keywordCategory.original.some((k) => k.label === res.label)) {
           keywordCategory.new.push({ ...res, status: "added" });
         } else {
@@ -242,8 +228,10 @@ export class ConsolidateDialogComponent implements OnInit {
       this.keywordCategories.umthes,
       this.keywordCategories.free,
     ].forEach((thesaurus) => {
-      if (keywordMap[thesaurus].original.some((k) => k.label === res.label)) {
-        keywordMap[thesaurus].new.push({ ...res, status: "removed" });
+      if (
+        this.keywordMap[thesaurus].original.some((k) => k.label === res.label)
+      ) {
+        this.keywordMap[thesaurus].new.push({ ...res, status: "removed" });
       }
     });
 
@@ -260,6 +248,7 @@ export class ConsolidateDialogComponent implements OnInit {
   private async assignKeywords(keywords: ThesaurusResult[]): Promise<any> {
     return Promise.all(keywords.map((keyword) => this.assignKeyword(keyword)));
   }
+
   private addInspireKeyword(res: ThesaurusResult) {
     if (!this.inspireTopics.some((t) => t.key === res.value.key)) {
       this.inspireTopicsNew.push({ ...res, status: "added" });
@@ -389,5 +378,22 @@ export class ConsolidateDialogComponent implements OnInit {
         keywords: this.freeKeywordsNew,
       },
     ];
+  }
+
+  private setKeywordMap() {
+    return {
+      [this.keywordCategories.gemet]: {
+        original: this.gemetKeywords,
+        new: this.gemetKeywordsNew,
+      },
+      [this.keywordCategories.umthes]: {
+        original: this.umthesKeywords,
+        new: this.umthesKeywordsNew,
+      },
+      [this.keywordCategories.free]: {
+        original: this.freeKeywords,
+        new: this.freeKeywordsNew,
+      },
+    };
   }
 }
