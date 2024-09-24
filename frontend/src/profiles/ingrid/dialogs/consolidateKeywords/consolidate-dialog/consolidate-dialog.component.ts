@@ -365,6 +365,7 @@ export class ConsolidateDialogComponent implements OnInit {
     this.freeKeywordsNew = [];
   }
 
+  // Set data for the keyword dialog, if condition is false, the keyword category is not shown
   private setKeywordDialogData() {
     this.keywordDialogData = [
       {
