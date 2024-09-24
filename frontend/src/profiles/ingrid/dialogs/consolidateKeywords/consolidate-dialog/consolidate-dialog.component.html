@@ -5,8 +5,8 @@ konsolidieren"
     [disabled]="isLoading || isSaving"
 >
     <ng-container content>
-        @if (this.hasKeywords) {
-            @if (!isLoading) {
+        @if (!isLoading) {
+            @if (this.hasKeywords) {
                 <div class="no-selection-text">
                     Bestehende Schlagworte werden hier auf ihre Aktualität
                     geprüft. Grün hinterlegte Schlagworte werden der Liste
@@ -54,6 +54,9 @@ konsolidieren"
                         </div>
                     }
                 }
+                <div class="legend">
+                    Klicken sie auf "Übernehmen" um die Änderungen zu speichern.
+                </div>
                 @if (timedOutKeywords.length) {
                     <div class="error-box flex-row align-items-center">
                         Verbindungsprobleme bei:
@@ -63,37 +66,30 @@ konsolidieren"
                     </div>
                 }
             } @else {
-                <div class="flex-row justify-content-center align-items-center">
-                    <mat-spinner
-                        class="content-spinner"
-                        diameter="40"
-                    ></mat-spinner>
+                <div class="no-selection-text">
+                    Zurzeit sind keine Schlagworte vorhanden.
+                </div>
+                <div class="help flex-row align-items-center">
+                    <mat-icon svgIcon="info-24px"></mat-icon>
+
+                    <div class="legend">
+                        Bitte fügen Sie Schlagworte hinzu, um diese zu
+                        konsolidieren.
+                    </div>
                 </div>
             }
-            <div class="help flex-row align-items-center">
-                <mat-icon svgIcon="info-24px"></mat-icon>
-                @if (!isLoading) {
-                    <div class="legend">
-                        Klicken sie auf "Übernehmen" um die Änderungen zu
-                        speichern.
-                    </div>
-                }
-                @if (isLoading) {
-                    <div class="legend">
-                        Die Schlagworte werden analysiert. Bitte warten Sie
-                        einen Moment.
-                    </div>
-                }
-            </div>
         } @else {
-            <div class="no-selection-text">
-                Zurzeit sind keine Schlagworte vorhanden.
+            <div class="flex-row justify-content-center align-items-center">
+                <mat-spinner
+                    class="content-spinner"
+                    diameter="40"
+                ></mat-spinner>
             </div>
             <div class="help flex-row align-items-center">
                 <mat-icon svgIcon="info-24px"></mat-icon>
                 <div class="legend">
-                    Bitte fügen Sie Schlagworte hinzu, um diese zu
-                    konsolidieren.
+                    Die Schlagworte werden analysiert. Bitte warten Sie einen
+                    Moment.
                 </div>
             </div>
         }
