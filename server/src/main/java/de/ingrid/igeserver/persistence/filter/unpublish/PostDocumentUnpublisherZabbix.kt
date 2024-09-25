@@ -43,7 +43,6 @@ class PostDocumentUnpublisherZabbix(
     override fun invoke(payload: PostUnpublishPayload, context: Context): PostUnpublishPayload {
         // remove from zabbix monitoring
         if (zabbixService.activatedCatalogs.contains(context.catalogId)) {
-            log.debug(context.catalogId)
             zabbixService.deleteDocument(payload.document.uuid)
         }
 
