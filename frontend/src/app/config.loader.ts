@@ -33,8 +33,32 @@ import { Router } from "@angular/router";
 import { Catalog } from "./+catalog/services/catalog.model";
 import { firstValueFrom } from "rxjs";
 import { TranslocoService } from "@ngneat/transloco";
+import { ProfileService } from "./services/profile.service";
+import { catchError, filter, map, switchMap, take } from "rxjs/operators";
+import { ProfileMapper } from "../profiles/profile.mapper";
+import { Type } from "@angular/core";
 
 registerLocaleData(de);
+
+function loadProfile(configService: ConfigService) {
+  return new Promise<void>((resolve) => {
+    configService.$userInfo
+      .pipe(
+        filter((info) => ProfileService.userHasAnyCatalog(info)),
+        switchMap((info) => ProfileMapper(info.currentCatalog.type)),
+        map(({ ProfilePack }) => ProfilePack.getMyComponent() as Type<any>),
+        take(1),
+        catchError((error) => {
+          this.errorService.showJavascriptError(error.message, error.stack);
+          throw error;
+        }),
+      )
+      .subscribe((data) => {
+        configService.profileModule = data;
+        resolve();
+      });
+  });
+}
 
 export function ConfigLoader(
   configService: ConfigService,
@@ -116,7 +140,9 @@ export function ConfigLoader(
       await configService.load();
       await initializeKeycloakAndGetUserInfo(authFactory, configService);
       await firstValueFrom(translocoService.load("de"));
+      await loadProfile.call(this, configService);
       console.debug("FINISHED APP INIT");
+
       return await redirectToCatalogSpecificRoute(router, dialog);
     } catch (err) {
       // remove loading spinner and rethrow error

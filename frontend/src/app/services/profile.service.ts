@@ -17,17 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable, Type } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { ConfigService, UserInfo } from "./config/config.service";
 import { Doctype } from "./formular/doctype";
-import { ModalService } from "./modal/modal.service";
 import { ProfileStore } from "../store/profile/profile.store";
 import { ProfileAbstract } from "../store/profile/profile.model";
 import { ContextHelpService } from "./context-help/context-help.service";
-import { forkJoin, Observable } from "rxjs";
-import { catchError, filter, map, switchMap, take, tap } from "rxjs/operators";
+import { forkJoin } from "rxjs";
+import { tap } from "rxjs/operators";
 import { Metadata } from "../models/ige-document";
-import { ProfileMapper } from "../../profiles/profile.mapper";
 
 @Injectable({
   providedIn: "root",
@@ -48,28 +46,9 @@ export class ProfileService {
     private configService: ConfigService,
     private profileStore: ProfileStore,
     private contextHelpService: ContextHelpService,
-    private errorService: ModalService,
   ) {}
 
-  initProfile(): Observable<Type<any>> {
-    return this.configService.$userInfo.pipe(
-      filter((info) => ProfileService.userHasAnyCatalog(info)),
-      switchMap((info) => ProfileMapper(info.currentCatalog.type)),
-      map(({ ProfilePack }) => ProfileService.getComponent(ProfilePack)),
-      take(1),
-      catchError((error) => {
-        this.errorService.showJavascriptError(error.message, error.stack);
-        throw error;
-      }),
-    );
-  }
-
-  private static getComponent(ProfilePack: any) {
-    console.debug("Loaded module: ", ProfilePack);
-    return ProfilePack.getMyComponent() as Type<any>;
-  }
-
-  private static userHasAnyCatalog(info: UserInfo) {
+  static userHasAnyCatalog(info: UserInfo) {
     return (
       info?.assignedCatalogs?.length > 0 &&
       info?.currentCatalog?.type !== undefined &&
