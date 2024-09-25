@@ -1,5 +1,23 @@
 # Changelog
 
+## 7.2.3 (25.09.2024)
+
+### Bugfixes
+
+- Kopieren von Verfahren mit archivierten Dateien unvollständig (#6787)
+- Hochgeladene entpackte ZIP-Dateien beim Veröffentlichen gelöscht (#6767)
+- Abbildung Adresshierarchie mit mehreren Ebenen im Portal korrigieren (#6727)
+
+## 7.2.2 (09.08.2024)
+
+### Features
+
+- "Datenquelle" beim Export hinzufügen (#6620)
+
+### Bugfixes
+
+- Platzhalter im Suchfeld aktualisieren (#6518)
+
 ## 7.2.1 (25.07.2024)
 
 ### Bugfixes
