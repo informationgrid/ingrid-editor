@@ -48,9 +48,8 @@ function loadProfile(configService: ConfigService) {
         switchMap((info) => ProfileMapper(info.currentCatalog.type)),
         map(({ ProfilePack }) => ProfilePack.getMyComponent() as Type<any>),
         take(1),
-        catchError((error) => {
-          this.errorService.showJavascriptError(error.message, error.stack);
-          throw error;
+        catchError(() => {
+          throw new IgeError("Profile could not be loaded");
         }),
       )
       .subscribe((data) => {
@@ -140,10 +139,9 @@ export function ConfigLoader(
       await configService.load();
       await initializeKeycloakAndGetUserInfo(authFactory, configService);
       await firstValueFrom(translocoService.load("de"));
+      await redirectToCatalogSpecificRoute(router, dialog);
       await loadProfile.call(this, configService);
       console.debug("FINISHED APP INIT");
-
-      return await redirectToCatalogSpecificRoute(router, dialog);
     } catch (err) {
       // remove loading spinner and rethrow error
       document.getElementsByClassName("app-loading").item(0).innerHTML =

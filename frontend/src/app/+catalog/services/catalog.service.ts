@@ -18,7 +18,6 @@
  * limitations under the Licence.
  */
 import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
 import {
   ConfigService,
   Configuration,
@@ -44,7 +43,6 @@ export class CatalogService {
   private configuration: Configuration;
 
   constructor(
-    private router: Router,
     private dataService: CatalogDataService,
     private http: HttpClient,
     private catalogStore: CatalogStore,
