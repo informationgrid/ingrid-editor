@@ -2,7 +2,7 @@
     label="Schlagworte
 konsolidieren"
     (submit)="mapAndSaveConsolidatedKeywords(); isSaving = true"
-    [disabled]="isLoading || isSaving"
+    [disabled]="isLoading || isSaving || !hasKeywords"
 >
     <ng-container content>
         @if (!isLoading) {
