@@ -83,7 +83,6 @@ export class ConsolidateKeywordsPlugin extends Plugin {
             action: () =>
               this.docEventsService.sendEvent({
                 type: "OPEN_CONSOLIDATE_KEYWORDS_DIALOG",
-                data: { id: doc.id },
               }),
           };
           // refresh menu item
@@ -108,20 +107,18 @@ export class ConsolidateKeywordsPlugin extends Plugin {
             return;
           }
 
-          this.openConsolidateKeywordsDialog(event.data.id).subscribe(
-            async (confirmed) => {
-              if (confirmed) {
-                const handled = await FormUtils.handleDirtyForm(
-                  this.formStateService,
-                  this.documentService,
-                  this.dialog,
-                  this.forAddress,
-                );
-                if (handled)
-                  console.log("consolidate keywords for docId", event.data.id);
-              }
-            },
-          );
+          this.openConsolidateKeywordsDialog().subscribe(async (confirmed) => {
+            if (confirmed) {
+              const handled = await FormUtils.handleDirtyForm(
+                this.formStateService,
+                this.documentService,
+                this.dialog,
+                this.forAddress,
+              );
+              if (handled)
+                console.log("consolidate keywords for docId", event.data.id);
+            }
+          });
         });
 
       this.formSubscriptions.push(onDocLoad);
@@ -146,12 +143,9 @@ export class ConsolidateKeywordsPlugin extends Plugin {
   unregister() {
     super.unregister();
   }
-  openConsolidateKeywordsDialog(id: number): Observable<boolean> {
+  openConsolidateKeywordsDialog(): Observable<boolean> {
     return this.dialog
       .open(ConsolidateDialogComponent, {
-        data: {
-          id: id,
-        },
         hasBackdrop: true,
       })
       .afterClosed()

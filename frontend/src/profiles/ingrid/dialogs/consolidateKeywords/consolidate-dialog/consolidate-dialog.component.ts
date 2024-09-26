@@ -15,18 +15,13 @@ import { NgClass, NgForOf, NgIf } from "@angular/common";
 import { UserTableComponent } from "../../../../../app/+user/user/user-table/user-table.component";
 import { DialogTemplateComponent } from "../../../../../app/shared/dialog-template/dialog-template.component";
 import { DocumentService } from "../../../../../app/services/document/document.service";
-import { DocumentDataService } from "../../../../../app/services/document/document-data.service";
 import { CodelistQuery } from "../../../../../app/store/codelist/codelist.query";
 import { FormStateService } from "../../../../../app/+form/form-state.service";
 import { ConfigService } from "../../../../../app/services/config/config.service";
 import { KeywordAnalysis } from "../../../utils/keywords";
 import { ThesaurusResult } from "../../../components/thesaurus-result";
 import { removeDuplicates } from "../../../../../app/shared/utils";
-import { firstValueFrom } from "rxjs";
-import {
-  DocumentWithMetadata,
-  IgeDocument,
-} from "../../../../../app/models/ige-document";
+import { IgeDocument, Metadata } from "../../../../../app/models/ige-document";
 
 export interface ConsolidateDialogData {
   id: number;
@@ -63,22 +58,18 @@ export class ConsolidateDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ConsolidateDialogData,
     private documentService: DocumentService,
-    private documentDataService: DocumentDataService,
     private dialogRef: MatDialogRef<ConsolidateDialogComponent>,
     private snackBar: MatSnackBar,
     private codelistQuery: CodelistQuery,
     private formStateService: FormStateService,
     public configService: ConfigService,
     private keywordAnalysis: KeywordAnalysis,
-  ) {
-    this.id = data.id;
-  }
+  ) {}
 
-  id: number;
+  doc: IgeDocument;
+  metadata: Metadata;
   keywords: Keywords;
   isInspireIdentified: boolean;
-  documentWithMetadata: DocumentWithMetadata;
-  doc: IgeDocument;
 
   keywordCategories = {
     gemet: "Gemet Schlagworte",
@@ -110,10 +101,9 @@ export class ConsolidateDialogComponent implements OnInit {
   isSaving: boolean;
 
   async ngOnInit() {
-    this.documentWithMetadata = await firstValueFrom(
-      this.documentDataService.load(this.id, false),
-    );
-    this.doc = this.documentWithMetadata.document;
+    this.doc = this.formStateService.getForm().value;
+    this.metadata = this.formStateService.metadata();
+    console.log(this.metadata);
     const hasKeywords = this.initKeywords();
     if (!hasKeywords) {
       this.isLoading = false;
@@ -292,8 +282,8 @@ export class ConsolidateDialogComponent implements OnInit {
     this.mapAllKeywords();
     this.documentService
       .save({
-        id: this.id,
-        version: this.documentWithMetadata.metadata.version,
+        id: this.metadata.wrapperId,
+        version: this.metadata.version,
         data: this.doc,
         isNewDoc: false,
         isAddress: false,
