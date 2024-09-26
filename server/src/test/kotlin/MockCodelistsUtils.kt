@@ -24,6 +24,8 @@ import io.mockk.every
 fun mockCodelists(codelistHandler: CodelistHandler) {
     val codelists = CodeListService().initialCodelists
 
+    every { codelistHandler.initialCodelists } answers { codelists }
+
     every { codelistHandler.getCodelistValue(any(), any()) } answers {
         codelists
             .find { it.id == firstArg() }

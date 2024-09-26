@@ -38,4 +38,6 @@ class BkgProfile(
         catalog.settings.config.codelistFavorites = mutableMapOf("10003" to listOf("99"))
         catalogService.updateCatalog(catalog)
     }
+
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/bkg/default-mapping.json")?.readText() ?: ""
 }

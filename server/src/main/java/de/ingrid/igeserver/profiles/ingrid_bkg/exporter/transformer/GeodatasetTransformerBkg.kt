@@ -26,11 +26,16 @@ import de.ingrid.igeserver.profiles.ingrid_bkg.exporter.BkgCommonTransformer
 
 class GeodatasetTransformerBkg(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
-    private val bkgTransformer = BkgCommonTransformer(this)
+    private var bkgTransformer = BkgCommonTransformer(transformerConfig.codelists, doc)
 
-    override val useConstraintsCodelistValues: List<String> = bkgTransformer.useConstraintsCodelistValue
+    override val useAndAccessConstraintsCodelistValues: List<String> =
+        bkgTransformer.useConstraintsCodelistValue ?: super.useAndAccessConstraintsCodelistValues
 
-    override val useConstraints: List<UseConstraintTemplate> = bkgTransformer.getUseConstraints()
+    override val useConstraints: List<UseConstraintTemplate> = super.useConstraints + bkgTransformer.getUseConstraints()
 
-    override fun getAccessConstraints(): List<AccessConstraint> = bkgTransformer.getAccessConstraints()
+    override fun getAccessConstraints(): List<AccessConstraint> =
+        super.getAccessConstraints() + bkgTransformer.getAccessConstraints(super.useAndAccessConstraintsCodelistValues)
+
+    fun getAdministrativeArea(): String =
+        contacts.find { it.relationType?.key == "7" && it.administrativeArea != null }?.administrativeArea ?: ""
 }

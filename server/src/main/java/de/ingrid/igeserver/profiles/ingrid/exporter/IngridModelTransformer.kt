@@ -223,7 +223,7 @@ open class IngridModelTransformer(
         )
     } ?: emptyList()
 
-    open val useConstraintsCodelistValues: List<String> = listOf("otherRestrictions")
+    open val useAndAccessConstraintsCodelistValues: List<String> = listOf("otherRestrictions")
 
     val gridSpatialRepresentation = data.gridSpatialRepresentation
     val georectified = gridSpatialRepresentation?.georectified
@@ -539,7 +539,7 @@ open class IngridModelTransformer(
     } else {
         listOf(
             AccessConstraint(
-                listOf("otherRestrictions"),
+                useAndAccessConstraintsCodelistValues,
                 availabilityAccessConstraints,
             ),
         )

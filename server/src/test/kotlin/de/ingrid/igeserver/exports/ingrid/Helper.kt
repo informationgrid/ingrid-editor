@@ -23,12 +23,26 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.exports.convertToDocument
+import de.ingrid.igeserver.exports.prettyFormatJson
 import de.ingrid.igeserver.exports.prettyFormatXml
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.schema.SchemaUtils
 
 fun exportJsonToXML(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String {
+    val result = exportJsonToString(exporter, file, additional)
+    return prettyFormatXml(result, 4).replace("\r\n", "\n")
+}
+
+fun exportDocToXML(exporter: IgeExporter, doc: Document): String = (exporter.run(doc, "test-catalog") as String).let {
+    prettyFormatXml(it, 4).replace("\r\n", "\n")
+        .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+}.also { println(it) }
+
+fun exportJsonToJson(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String =
+    prettyFormatJson(exportJsonToString(exporter, file, additional))
+
+private fun exportJsonToString(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String {
     val input = SchemaUtils.getJsonFileContent(file)
     val doc = convertToDocument(input)
 
@@ -37,26 +51,5 @@ fun exportJsonToXML(exporter: IgeExporter, file: String, additional: ObjectNode?
         doc.catalog = Catalog().apply { identifier = "test-catalog" }
     }
 
-    val result = exporter.run(doc, "test-catalog") as String
-    return prettyFormatXml(result, 4).replace("\r\n", "\n")
-}
-
-fun exportDocToXML(exporter: IgeExporter, doc: Document): String {
-    return (exporter.run(doc, "test-catalog") as String).let {
-        prettyFormatXml(it, 4).replace("\r\n", "\n")
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
-    }.also { println(it) }
-}
-
-fun exportJsonStringToXML(exporter: IgeExporter, json: String): String {
-    val doc = convertToDocument(json)
-    val result = exporter.run(doc, "test-catalog") as String
-    return prettyFormatXml(result, 4).replace("\r\n", "\n")
-}
-
-fun exportJsonToJson(exporter: IgeExporter, file: String): String {
-    val input = SchemaUtils.getJsonFileContent(file)
-    val doc = convertToDocument(input)
-    val result = exporter.run(doc, "test-catalog") as String
-    return result
+    return exporter.run(doc, "test-catalog") as String
 }

@@ -29,12 +29,15 @@ import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.FolderModelTransformer
 import de.ingrid.igeserver.exporter.model.FolderModel
 import de.ingrid.igeserver.exports.ExportOptions
+import de.ingrid.igeserver.exports.ExportTypeInfo
+import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter.IngridDocType
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.Config
 import gg.jte.ContentType
@@ -51,10 +54,12 @@ class IngridLuceneExporter(
     val config: Config,
     val catalogService: CatalogService,
     @Lazy val documentService: DocumentService,
-) {
+) : IgeExporter {
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
+    override val typeInfo: ExportTypeInfo
+        get() = ExportTypeInfo(DocumentCategory.DATA, "", "", "", "", "", listOf("ingrid-bkg"))
 
-    fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
+    override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
         val output: TemplateOutput = JsonStringOutput()
         handleFoldersWithoutPublishedChildren(doc)
         val catalog = catalogService.getCatalogById(catalogId)

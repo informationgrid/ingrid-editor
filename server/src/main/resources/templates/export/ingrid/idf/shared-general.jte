@@ -406,7 +406,7 @@
     @if(TransformationTools.hasValue(page.getUseConstraints()))
         <gmd:resourceConstraints>
             <gmd:MD_LegalConstraints>
-                @for(String value : page.getUseConstraintsCodelistValues() )
+                @for(String value : page.getUseAndAccessConstraintsCodelistValues() )
                     <gmd:useConstraints>
                         <gmd:MD_RestrictionCode
                                 codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode"

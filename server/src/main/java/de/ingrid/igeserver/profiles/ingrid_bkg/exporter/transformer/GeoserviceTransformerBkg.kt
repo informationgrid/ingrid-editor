@@ -21,17 +21,18 @@ package de.ingrid.igeserver.profiles.ingrid_bkg.exporter.transformer
 
 import de.ingrid.igeserver.profiles.ingrid.exporter.AccessConstraint
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransformer
-import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid_bkg.exporter.BkgCommonTransformer
 
 class GeoserviceTransformerBkg(transformerConfig: TransformerConfig) : GeodataserviceModelTransformer(transformerConfig) {
 
-    private val bkgTransformer = BkgCommonTransformer(this)
+    private var bkgTransformer = BkgCommonTransformer(transformerConfig.codelists, doc)
 
-    override val useConstraintsCodelistValues: List<String> = bkgTransformer.useConstraintsCodelistValue
+    override val useAndAccessConstraintsCodelistValues: List<String> =
+        bkgTransformer.useConstraintsCodelistValue ?: super.useAndAccessConstraintsCodelistValues
 
-    override val useConstraints: List<UseConstraintTemplate> = bkgTransformer.getUseConstraints()
+    override val useConstraints: List<UseConstraintTemplate> = super.useConstraints + bkgTransformer.getUseConstraints()
 
-    override fun getAccessConstraints(): List<AccessConstraint> = bkgTransformer.getAccessConstraints()
+    override fun getAccessConstraints(): List<AccessConstraint> =
+        super.getAccessConstraints() + bkgTransformer.getAccessConstraints(super.useAndAccessConstraintsCodelistValues)
 }
