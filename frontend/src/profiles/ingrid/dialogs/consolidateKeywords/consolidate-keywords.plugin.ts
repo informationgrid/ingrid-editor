@@ -26,6 +26,7 @@ import { TreeQuery } from "../../../../app/store/tree/tree.query";
 import { DocEventsService } from "../../../../app/services/event/doc-events.service";
 import {
   FormMenuService,
+  FormularMenuItem,
   MenuId,
 } from "../../../../app/+form/form-menu.service";
 import { FormStateService } from "../../../../app/+form/form-state.service";
@@ -42,7 +43,16 @@ export class ConsolidateKeywordsPlugin extends Plugin {
   description = "Schlagworte konsolidieren";
   defaultActive = true;
   forAddress = false;
+  isPresent = false;
   private readonly isPrivileged: boolean;
+  private readonly button: FormularMenuItem = {
+    title: this.name,
+    name: "consolidate-keywords",
+    action: () =>
+      this.docEventsService.sendEvent({
+        type: "OPEN_CONSOLIDATE_KEYWORDS_DIALOG",
+      }),
+  };
 
   constructor(
     private docEvents: DocEventsService,
@@ -71,26 +81,20 @@ export class ConsolidateKeywordsPlugin extends Plugin {
       const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
         (doc) => {
           if (doc?._type === "FOLDER") {
-            this.formMenuService.removeMenuItem(
-              this.formMenuId,
-              "consolidate-keywords",
-            );
+            if (this.isPresent) {
+              this.isPresent = false;
+              this.formMenuService.removeMenuItem(
+                this.formMenuId,
+                "consolidate-keywords",
+              );
+            }
             return;
+          } else {
+            if (!this.isPresent) {
+              this.isPresent = true;
+              this.formMenuService.addMenuItem(this.formMenuId, this.button);
+            }
           }
-          const button = {
-            title: "Schlagworte konsolidieren",
-            name: "consolidate-keywords",
-            action: () =>
-              this.docEventsService.sendEvent({
-                type: "OPEN_CONSOLIDATE_KEYWORDS_DIALOG",
-              }),
-          };
-          // refresh menu item
-          this.formMenuService.removeMenuItem(
-            this.formMenuId,
-            "consolidate-keywords",
-          );
-          this.formMenuService.addMenuItem(this.formMenuId, button);
         },
       );
 
@@ -120,9 +124,8 @@ export class ConsolidateKeywordsPlugin extends Plugin {
             }
           });
         });
-
-      this.formSubscriptions.push(onDocLoad);
-      this.formSubscriptions.push(onEvent);
+      this.formSubscriptions.push(onDocLoad); // Add menu button
+      this.formSubscriptions.push(onEvent); // Open dialog
     }
   }
 
@@ -132,7 +135,7 @@ export class ConsolidateKeywordsPlugin extends Plugin {
 
   unregisterForm() {
     super.unregisterForm();
-    if (this.isActive) {
+    if (this.isPresent) {
       this.formMenuService.removeMenuItem(
         this.formMenuId,
         "consolidate-keywords",
