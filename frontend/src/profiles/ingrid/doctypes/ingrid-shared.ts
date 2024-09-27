@@ -46,9 +46,14 @@ import { BehaviourService } from "../../../app/services/behavior/behaviour.servi
 import { MatSelectChange } from "@angular/material/select";
 import { DocumentService } from "../../../app/services/document/document.service";
 import { KeywordAnalysis, KeywordSectionOptions } from "../utils/keywords";
+import {
+  MetadataOption,
+  MetadataOptionItems,
+  MetadataProps,
+} from "../../../app/formly/types/metadata-type/metadata-type.component";
 
 interface GeneralSectionOptions {
-  additionalGroup?: FormlyFieldConfig;
+  // additionalGroup?: FormlyFieldConfig;
   inspireRelevant?: boolean;
   thesaurusTopics?: boolean;
 }
@@ -124,12 +129,103 @@ export abstract class IngridShared extends BaseDoctype {
     fileReferenceFormat: "1320",
   };
 
+  metadataOptions: MetadataOption[] = [
+    {
+      label: "Datentyp",
+      typeOptions: [
+        {
+          multiple: false,
+          key: "subType",
+          items: [
+            { label: "Datensatz", value: { key: 5 } },
+            { label: "Datenserie", value: { key: 6 } },
+          ],
+        },
+      ],
+    },
+    {
+      label: "INSPIRE-relevant",
+      typeOptions: [
+        {
+          multiple: false,
+          key: "isInspireConform",
+          items: [
+            { label: "INSPIRE konform", value: true },
+            { label: "INSPIRE nicht konform", value: false },
+          ],
+        },
+        {
+          multiple: false,
+          key: "invekos",
+          items: [
+            {
+              label: "InVeKoS/IACS (GSAA)",
+              value: { key: "gsaa" },
+            },
+            {
+              label: "InVeKoS/IACS (LPIS)",
+              value: { key: "lpis" },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label: "Open Data",
+      typeOptions: [
+        <MetadataOptionItems>{
+          multiple: true,
+          items: [
+            {
+              label: "Offene Lizenz",
+              key: "isOpenData",
+              value: true,
+            },
+            {
+              label: "High-Value-Dataset",
+              key: "hvd",
+              value: true,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label: "AdV",
+      typeOptions: [
+        {
+          multiple: true,
+          items: [{ label: "kompatibel", key: "isAdVCompatible", value: true }],
+        },
+      ],
+    },
+  ];
+
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     this.thesaurusTopics = options.thesaurusTopics;
     return this.addGroupSimple(
       null,
       [
-        options.inspireRelevant || this.showAdVCompatible
+        this.addSection("Metadata", [
+          <FormlyFieldConfig>{
+            key: "my-metadata",
+            type: "metadata",
+
+            props: {
+              availableOptions: this.metadataOptions,
+            },
+          },
+        ]),
+        // since metadata-field is modifying the root, we need to have the form keys also set
+        // otherwise those values will be removed
+        { key: "isOpenData" },
+        { key: "isAdVCompatible" },
+        { key: "hvd" },
+        { key: "invekos" },
+        { key: "isInspireConform" },
+        { key: "isInspireIdentified" },
+        { key: "subType" },
+        /*options.inspireRelevant || this.showAdVCompatible
           ? this.addGroup(
               null,
               "Typ",
@@ -225,8 +321,8 @@ export abstract class IngridShared extends BaseDoctype {
                     })
                   : null,
               ].filter(Boolean),
-            ),
-        options.additionalGroup ? options.additionalGroup : null,
+            ),*/
+        // options.additionalGroup ? options.additionalGroup : null,
         this.addSection("Allgemeines", [
           this.addInput(
             "parentIdentifier",

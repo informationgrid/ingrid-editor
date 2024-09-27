@@ -85,11 +85,12 @@ export class GeoDatasetDoctype extends IngridShared {
       this.addGeneralSection({
         inspireRelevant: true,
         thesaurusTopics: true,
-        additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
+        // TODO AW: activate subType only from geodataset
+        /*additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
           required: this.geodatasetOptions.required.subType,
           options: this.getCodelistForSelect("525", "subType"),
           codelistId: "525",
-        }),
+        }),*/
       }),
       this.addKeywordsSection({
         priorityDataset: true,

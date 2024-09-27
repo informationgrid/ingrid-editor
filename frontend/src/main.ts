@@ -138,6 +138,7 @@ import {
 } from "./app/formly/input.validators";
 import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
 import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
+import { MetadataTypeComponent } from "./app/formly/types/metadata-type/metadata-type.component";
 
 if (environment.production) {
   enableProdMode();
@@ -250,6 +251,10 @@ bootstrapApplication(AppComponent, {
           {
             name: "previewImage",
             component: PreviewImageComponent,
+          },
+          {
+            name: "metadata",
+            component: MetadataTypeComponent,
           },
           /* FOR PREVIEW */
           {
