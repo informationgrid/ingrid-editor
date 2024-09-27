@@ -5,7 +5,7 @@
         <div class="flex-row small-label-width">
             <ige-form-label>{{ option.label }}</ige-form-label>
 
-            <div class="flex-row align-items-center">
+            <div class="flex-row align-items-center option-row">
                 @for (typeOption of option.typeOptions; track typeOption) {
                     @if (typeOption.key === undefined) {
                         @for (
@@ -13,18 +13,17 @@
                             track item;
                             let isLast = $last
                         ) {
-                            <mat-chip-listbox
-                                style="flex: 0 0 auto"
-                                [formControlName]="item.key"
-                                ><mat-chip-option [value]="item.value">{{
-                                    item.label
-                                }}</mat-chip-option></mat-chip-listbox
+                            <mat-chip-listbox [formControlName]="item.key"
+                                ><mat-chip-option
+                                    [value]="item.value"
+                                    (click)="handleOptionClick(item)"
+                                    >{{ item.label }}</mat-chip-option
+                                ></mat-chip-listbox
                             >
                         }
                     } @else {
                         <mat-chip-listbox
                             [multiple]="typeOption.multiple"
-                            style="flex: 0 0 auto"
                             [formControlName]="typeOption.key"
                         >
                             @for (
@@ -32,18 +31,13 @@
                                 track item;
                                 let isLast = $last
                             ) {
-                                <mat-chip-option [value]="item.value">{{
-                                    item.label
-                                }}</mat-chip-option>
+                                <mat-chip-option
+                                    [value]="item.value"
+                                    (click)="handleOptionClick(item)"
+                                    >{{ item.label }}</mat-chip-option
+                                >
                                 @if (!typeOption.multiple && !isLast) {
-                                    <span
-                                        style="
-                                            line-height: 40px;
-                                            padding-left: 8px;
-                                        "
-                                    >
-                                        oder
-                                    </span>
+                                    <span class="connector">oder</span>
                                 }
                             }
                         </mat-chip-listbox>
