@@ -49,7 +49,6 @@ import { KeywordAnalysis, KeywordSectionOptions } from "../utils/keywords";
 import {
   MetadataOption,
   MetadataOptionItems,
-  MetadataProps,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
 
 interface GeneralSectionOptions {
@@ -148,10 +147,18 @@ export abstract class IngridShared extends BaseDoctype {
       typeOptions: [
         {
           multiple: false,
-          key: "isInspireConform",
+          key: "isInspireRelevant",
           items: [
-            { label: "INSPIRE konform", value: true },
-            { label: "INSPIRE nicht konform", value: false },
+            {
+              label: "INSPIRE konform",
+              value: "conform",
+              onClick: (field) => this.handleIsInspireConformClick(field),
+            },
+            {
+              label: "INSPIRE nicht konform",
+              value: "notConform",
+              onClick: (field) => this.handleIsInspireConformClick(field),
+            },
           ],
         },
         {
@@ -161,10 +168,14 @@ export abstract class IngridShared extends BaseDoctype {
             {
               label: "InVeKoS/IACS (GSAA)",
               value: { key: "gsaa" },
+              onClick: (field) =>
+                this.handleInVeKosChange(field, this.thesaurusTopics),
             },
             {
               label: "InVeKoS/IACS (LPIS)",
               value: { key: "lpis" },
+              onClick: (field) =>
+                this.handleInVeKosChange(field, this.thesaurusTopics),
             },
           ],
         },
@@ -180,11 +191,13 @@ export abstract class IngridShared extends BaseDoctype {
               label: "Offene Lizenz",
               key: "isOpenData",
               value: true,
+              onClick: (field) => this.handleOpenDataClick(field),
             },
             {
               label: "High-Value-Dataset",
               key: "hvd",
               value: true,
+              onClick: (field) => this.handleHVDClick(field).subscribe(),
             },
           ],
         },
@@ -195,7 +208,14 @@ export abstract class IngridShared extends BaseDoctype {
       typeOptions: [
         {
           multiple: true,
-          items: [{ label: "kompatibel", key: "isAdVCompatible", value: true }],
+          items: [
+            {
+              label: "kompatibel",
+              key: "isAdVCompatible",
+              value: true,
+              onClick: (field) => this.handleAdvClick(field),
+            },
+          ],
         },
       ],
     },
@@ -216,15 +236,6 @@ export abstract class IngridShared extends BaseDoctype {
             },
           },
         ]),
-        // since metadata-field is modifying the root, we need to have the form keys also set
-        // otherwise those values will be removed
-        { key: "isOpenData" },
-        { key: "isAdVCompatible" },
-        { key: "hvd" },
-        { key: "invekos" },
-        { key: "isInspireConform" },
-        { key: "isInspireIdentified" },
-        { key: "subType" },
         /*options.inspireRelevant || this.showAdVCompatible
           ? this.addGroup(
               null,
@@ -381,7 +392,7 @@ export abstract class IngridShared extends BaseDoctype {
 
   handleActivateOpenData(field: FormlyFieldConfig): Observable<boolean> {
     const cookieId = "HIDE_OPEN_DATA_INFO";
-    const isInspire = field.model.isInspireIdentified;
+    const isInspire = field.model["my-metadata"].isInspireIdentified;
 
     function executeAction() {
       const accessConstraintsControl = field.form.get(
@@ -1800,7 +1811,7 @@ export abstract class IngridShared extends BaseDoctype {
     field: FormlyFieldConfig,
   ): Observable<boolean> {
     const cookieId = "HIDE_INSPIRE_CONFORM_INFO";
-    const isConform = field.formControl.value;
+    const isConform = field.formControl.value.isInspireRelevant === "conform";
 
     const executeAction = () => {
       if (isConform) {
@@ -1837,7 +1848,7 @@ export abstract class IngridShared extends BaseDoctype {
    * Empty adv-product list when adv checkbox was deselected
    */
   private handleAdvClick(field: FormlyFieldConfig) {
-    const isChecked = field.formControl.value;
+    const isChecked = field.formControl.value.isAdVCompatible;
     const advProductGroupsCtrl = field.form.get("advProductGroups");
     const advProductGroups = advProductGroupsCtrl.value;
     if (isChecked || !advProductGroups || advProductGroups.length === 0) return;
@@ -1915,15 +1926,16 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private handleHVDClick(field: FormlyFieldConfig) {
-    const hvdChecked = field.formControl.value;
-    const isOpenDataCtrl = field.form.get("isOpenData");
+    const hvdChecked = field.formControl.value.hvd;
+    const metadata = field.form.value["my-metadata"];
+    const isOpenData = metadata.isOpenData;
     // if hvd is checked and field is not open data, show open data dialog
-    if (hvdChecked && isOpenDataCtrl.value !== true) {
+    if (hvdChecked && !isOpenData) {
       return this.handleActivateOpenData(field).pipe(
         tap((success) =>
           success
-            ? isOpenDataCtrl.setValue(true)
-            : field.formControl.setValue(false),
+            ? field.formControl.setValue({ ...metadata, isOpenData: true })
+            : field.formControl.setValue({ ...metadata, isOpenData: false }),
         ),
       );
     } else {
@@ -1933,10 +1945,10 @@ export abstract class IngridShared extends BaseDoctype {
 
   private handleInVeKosChange(
     field: FormlyFieldConfig,
-    value: MatSelectChange,
     hasThesaurusTopics: boolean,
   ) {
-    if (value.value.key === "none") return;
+    const value = field.formControl.value.invekos;
+    if (value === "none") return;
 
     this.addInVeKoSKeyword(field, "iacs");
 
@@ -1971,20 +1983,16 @@ export abstract class IngridShared extends BaseDoctype {
           title: "Hinweis",
           message:
             "Dem Datensatz werden folgende Schlagworte hinzugefügt: <ul><li>InVeKoS: InVeKoS" +
-            (value.value.key === "gsaa"
-              ? " + GSAA"
-              : value.value.key === "lpis"
-                ? " + LPIS"
-                : "") +
+            (value === "gsaa" ? " + GSAA" : value === "lpis" ? " + LPIS" : "") +
             "</li><li>Gemet: Gemeinsame Agrarpolitik</li><li>ISO-Themenkategorie: Landwirtschaft</li><li>INSPIRE-Themen: " +
-            (value.value.key === "gsaa" ? "Bodennutzung" : "Bodenbedeckung") +
+            (value === "gsaa" ? "Bodennutzung" : "Bodenbedeckung") +
             "</li></ul>",
           cookieId: cookieId,
         },
       })
       .afterClosed()
       .subscribe((decision) => {
-        if (decision === "ok") executeAction(value.value.key);
+        if (decision === "ok") executeAction(value);
         else field.formControl.setValue({ key: "none" });
       });
   }
