@@ -657,6 +657,7 @@ open class IngridModelTransformer(
                 title = it.title,
                 description = it.description,
                 applicationProfile = codelists.getValue(fieldToCodelist.referenceFileFormat, it.format, "de"),
+                format = it.format,
                 url = getDownloadLink(model.uuid, it.link.uri),
             )
         }
@@ -675,10 +676,31 @@ open class IngridModelTransformer(
     }
 
     val getCoupledServicesForGeodataset = getIncomingReferencesProxy(true).filter { it.refType.key == "3600" }
-    val referencesWithCoupledServices: List<Reference> by lazy {
-        references + getCoupledServicesForGeodataset.map {
-            Reference(it.objectName, it.refType, it.description, it.serviceUrl, null, null)
-        }
+    val referencesWithCoupledServicesAndFileReferences: List<Reference> by lazy {
+        references.map {
+            it.urlDataType = KeyValue(codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de"), null)
+            it
+        } +
+            getCoupledServicesForGeodataset.map {
+                Reference(
+                    it.objectName,
+                    it.refType,
+                    it.description,
+                    it.serviceUrl,
+                    null,
+                    null,
+                )
+            } +
+            fileReferenceTransferOptions.map {
+                Reference(
+                    it.title ?: it.url,
+                    KeyValue("9990", null),
+                    null,
+                    it.url,
+                    null,
+                    KeyValue(it.applicationProfile, null),
+                )
+            }
     }
 
     // information system

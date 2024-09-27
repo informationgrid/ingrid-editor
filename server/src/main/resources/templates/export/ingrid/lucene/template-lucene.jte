@@ -228,18 +228,28 @@
     @endfor
     ],
     "t017_url_ref.url_link": [
-    @for(var entry : ForSupport.of(page.getReferencesWithCoupledServices()))
+    @for(var entry : ForSupport.of(page.getReferencesWithCoupledServicesAndFileReferences()))
         "${entry.get().getUrl()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "t017_url_ref.content": [
-    @for(var entry : ForSupport.of(page.getReferencesWithCoupledServices()))
+    @for(var entry : ForSupport.of(page.getReferencesWithCoupledServicesAndFileReferences()))
         "${entry.get().getTitle()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "t017_url_ref.special_ref": [
-    @for(var entry : ForSupport.of(page.getReferencesWithCoupledServices()))
+    @for(var entry : ForSupport.of(page.getReferencesWithCoupledServicesAndFileReferences()))
         "${entry.get().getType().getKey()}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
+    "t017_url_ref.datatype": [
+    @for(var entry : ForSupport.of(page.getReferencesWithCoupledServicesAndFileReferences()))
+        @if(entry.get().getUrlDataType() != null)
+            "${entry.get().getUrlDataType().getKey() }"
+        @else
+            ""
+        @endif
+        @if (!entry.isLast()),@endif
     @endfor
     ],
     "object_reference.obj_uuid": [

@@ -160,7 +160,7 @@ data class Reference(
     val explanation: String?,
     val url: String?,
     val uuidRef: String?,
-    val urlDataType: KeyValue?,
+    var urlDataType: KeyValue?,
     var uuidRefClass: String? = null,
     var uuidRefVersion: String? = null,
     var uuidRefServiceType: KeyValue? = null,
@@ -171,7 +171,7 @@ data class FileReference(
     val link: FileName,
     val title: String?,
     val description: String?,
-    var format: KeyValue?,
+    var format: KeyValue,
     var url: String?,
 )
 
@@ -180,13 +180,9 @@ data class FileReferenceTransferOption(
     val link: FileName,
     val title: String?,
     val description: String?,
-    var applicationProfile: String? = null,
-    var url: String?,
-)
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class FileFormat(
-    val key: String?,
+    var applicationProfile: String?,
+    val format: KeyValue,
+    var url: String,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
