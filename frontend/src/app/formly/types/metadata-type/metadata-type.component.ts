@@ -1,9 +1,9 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import {
   FieldTypeConfig,
+  FormlyFieldConfig,
   FormlyFieldProps,
-  FormlyFormOptions,
 } from "@ngx-formly/core";
 import { FormLabelComponent } from "../../wrapper/form-label/form-label.component";
 import { JsonPipe, NgIf } from "@angular/common";
@@ -13,6 +13,8 @@ import {
   MatChipOption,
 } from "@angular/material/chips";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { debounceTime } from "rxjs/operators";
 
 export interface MetadataProps extends FormlyFieldProps {
   availableOptions: MetadataOption[];
@@ -35,6 +37,7 @@ export interface MetadataOptionItem {
   key?: string;
   label: string;
   value: any;
+  onClick?: (field: FormlyFieldConfig) => void;
 }
 
 @Component({
@@ -56,14 +59,27 @@ export class MetadataTypeComponent
   extends FieldType<FieldTypeConfig<MetadataProps>>
   implements OnInit
 {
+  private destroyRef = inject(DestroyRef);
+
   aForm: FormGroup = null;
+  private cleanForm: any;
 
   ngOnInit(): void {
     this.initForm();
-    this.aForm.valueChanges.subscribe((data) => {
-      console.log(data);
-      this.formControl.root.patchValue(data, {});
-    });
+    this.formControl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(10))
+      .subscribe((data) => {
+        this.aForm.patchValue(
+          { ...this.cleanForm, ...data },
+          { emitEvent: false },
+        );
+      });
+    this.aForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((data) => {
+        console.log(data);
+        this.formControl.setValue(data);
+      });
   }
 
   showContextHelp(infoElement: HTMLElement) {
@@ -96,6 +112,10 @@ export class MetadataTypeComponent
     });
 
     this.aForm = new FormGroup(formDef);
-    console.log("Form", this.aForm.getRawValue());
+    this.cleanForm = this.aForm.getRawValue();
+  }
+
+  handleOptionClick(item: MetadataOptionItem) {
+    item.onClick?.(this.field);
   }
 }
