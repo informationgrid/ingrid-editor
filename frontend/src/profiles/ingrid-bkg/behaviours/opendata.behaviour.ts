@@ -28,4 +28,17 @@ export class OpendataBehaviour extends Plugin {
     "Dieses Verhalten ändert das Standardverhalten von OpenData:<ul><li>OpenData-Kategorien werden nicht angezeigt</li><li>Angabe eines Verweises vom Typ 'Download' optional</li></ul>";
   defaultActive = true;
   group = "BKG";
+
+  constructor() {
+    super();
+
+    this.fields.push({
+      key: "showOpenDataCategories",
+      type: "checkbox",
+      wrappers: [],
+      props: {
+        label: "OpenData Kategorien anzeigen",
+      },
+    });
+  }
 }

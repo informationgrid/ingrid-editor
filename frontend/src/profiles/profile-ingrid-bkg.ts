@@ -24,6 +24,7 @@ import { FormFieldHelper } from "./form-field-helper";
 import { CommonFieldsBkg } from "./ingrid-bkg/doctypes/common-fields";
 import { OpendataBehaviour } from "./ingrid-bkg/behaviours/opendata.behaviour";
 import { PluginService } from "../app/services/plugin/plugin.service";
+import { BehaviourService } from "../app/services/behavior/behaviour.service";
 
 @Component({
   template: "",
@@ -33,6 +34,7 @@ class InGridBkgComponent extends InGridComponent {
   common = inject(CommonFieldsBkg);
   pluginService = inject(PluginService);
   opendataBehaviour = inject(OpendataBehaviour);
+  behaviourService = inject(BehaviourService);
 
   constructor() {
     super();
@@ -42,23 +44,37 @@ class InGridBkgComponent extends InGridComponent {
   }
 
   private manipulateFields() {
-    [this.geoDataset, this.geoService, this.informationSystem].forEach(
-      (docType) => {
-        docType.manipulateDocumentFields = (
-          fieldConfig: FormlyFieldConfig[],
-        ) => {
+    [
+      this.specialisedTask,
+      this.geoDataset,
+      this.publication,
+      this.geoService,
+      this.project,
+      this.dataCollection,
+      this.informationSystem,
+    ].forEach((docType) => {
+      docType.manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+        if (docType !== this.specialisedTask) {
           this.addUseAndAccessConstraints(fieldConfig);
           this.removeOriginalUseConstraints(fieldConfig);
-          this.removeWktFromSpatialReferences(fieldConfig);
-
-          return fieldConfig;
-        };
-
-        if (this.opendataBehaviour.isActive) {
-          docType.options.dynamicHide.openDataCategories = "true";
-          docType.options.validate.downloadLinkWhenOpenData = false;
         }
-      },
+        this.removeWktFromSpatialReferences(fieldConfig);
+
+        return fieldConfig;
+      };
+
+      if (this.opendataBehaviour.isActive) {
+        docType.options.dynamicHide.openDataCategories =
+          this.isShowCategoriesActivated() ? "false" : "true";
+        docType.options.validate.downloadLinkWhenOpenData = false;
+      }
+    });
+  }
+
+  private isShowCategoriesActivated() {
+    return (
+      this.behaviourService.getBehaviour("plugin.bkg.opendata")?.data
+        ?.showOpenDataCategories ?? false
     );
   }
 
