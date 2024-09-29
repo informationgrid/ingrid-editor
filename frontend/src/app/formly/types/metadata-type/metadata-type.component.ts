@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import {
   FieldTypeConfig,
@@ -10,14 +10,16 @@ import { JsonPipe, NgIf } from "@angular/common";
 import {
   MatChip,
   MatChipListbox,
+  MatChipListboxChange,
   MatChipOption,
 } from "@angular/material/chips";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { debounceTime } from "rxjs/operators";
+import { debounceTime, startWith } from "rxjs/operators";
 
 export interface MetadataProps extends FormlyFieldProps {
   availableOptions: MetadataOption[];
+  disabledOptions: { [key: string]: boolean };
   externalLabel: string;
   hasContextHelp: boolean;
 }
@@ -30,13 +32,17 @@ export interface MetadataOption {
 export interface MetadataOptionItems {
   key?: string;
   multiple: boolean;
+  hidden?: boolean;
+  hide?: (field: FormlyFieldConfig) => boolean;
   items: MetadataOptionItem[];
+  onChange?: (field: FormlyFieldConfig, value: any) => void;
 }
 
 export interface MetadataOptionItem {
   key?: string;
   label: string;
   value: any;
+  hide?: boolean;
   onClick?: (field: FormlyFieldConfig) => void;
 }
 
@@ -64,15 +70,25 @@ export class MetadataTypeComponent
   aForm: FormGroup = null;
   private cleanForm: any;
 
+  displayedOptions = signal<MetadataOption[]>([]);
+
   ngOnInit(): void {
+    this.displayedOptions.set(this.props.availableOptions);
     this.initForm();
     this.formControl.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(10))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        startWith(this.formControl.value),
+        debounceTime(10),
+      )
       .subscribe((data) => {
         this.aForm.patchValue(
           { ...this.cleanForm, ...data },
           { emitEvent: false },
         );
+        let options = this.props.availableOptions;
+        options[1].typeOptions[1].hidden = !data.isInspireIdentified;
+        this.displayedOptions.set(options);
       });
     this.aForm.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -112,10 +128,33 @@ export class MetadataTypeComponent
     });
 
     this.aForm = new FormGroup(formDef);
-    this.cleanForm = this.aForm.getRawValue();
+    const initialValue = this.aForm.getRawValue();
+    MetadataTypeComponent.removeNullOrEmptyFields(initialValue);
+    this.formControl.setValue(initialValue);
+    this.cleanForm = initialValue;
+  }
+
+  /**
+   * Replace null or empty fields with undefined in order to remove them from the resulting form value.
+   * @param obj
+   */
+  private static removeNullOrEmptyFields(obj: any) {
+    for (const f in obj) {
+      let p = obj[f];
+      if (p === null || p === "") {
+        obj[f] = undefined;
+      } else if (typeof p === "object" && p !== null) {
+        this.removeNullOrEmptyFields(p);
+      }
+    }
   }
 
   handleOptionClick(item: MetadataOptionItem) {
     item.onClick?.(this.field);
+  }
+
+  handleChange(typeOption: MetadataOptionItems, $event: MatChipListboxChange) {
+    console.log("option changed", $event);
+    typeOption.onChange?.(this.field, $event.value);
   }
 }
