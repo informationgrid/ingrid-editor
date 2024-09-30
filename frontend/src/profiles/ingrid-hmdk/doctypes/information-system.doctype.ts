@@ -21,7 +21,6 @@ import { inject, Injectable } from "@angular/core";
 import { InformationSystemDoctype } from "../../ingrid/doctypes/information-system.doctype";
 import { SharedHmdk } from "./shared-hmdk";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -44,12 +43,8 @@ export class InformationSystemDoctypeHMDK extends InformationSystemDoctype {
     return this.sharedHmdk.hmdkHandleDeactivateOpenData(field);
   }
 
-  handleActivateInspireIdentified(
-    field: FormlyFieldConfig,
-  ): Observable<boolean> {
-    return this.sharedHmdk.hmdkHandleActivateInspireIdentified(
-      field,
-      super.handleActivateInspireIdentified(field),
-    );
+  handleActivateInspireIdentified(field: FormlyFieldConfig) {
+    super.handleActivateInspireIdentified(field);
+    this.sharedHmdk.hmdkHandleActivateInspireIdentified(field);
   }
 }

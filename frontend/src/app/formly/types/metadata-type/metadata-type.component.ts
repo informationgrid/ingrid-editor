@@ -43,7 +43,7 @@ export interface MetadataOptionItem {
   label: string;
   value: any;
   hide?: boolean;
-  onClick?: (field: FormlyFieldConfig) => void;
+  onClick?: (field: FormlyFieldConfig, previousValue: any) => void;
 }
 
 @Component({
@@ -71,6 +71,7 @@ export class MetadataTypeComponent
   private cleanForm: any;
 
   displayedOptions = signal<MetadataOption[]>([]);
+  private previousValue: any;
 
   ngOnInit(): void {
     this.displayedOptions.set(this.props.availableOptions);
@@ -81,13 +82,15 @@ export class MetadataTypeComponent
         startWith(this.formControl.value),
         debounceTime(10),
       )
-      .subscribe((data) => {
+      .subscribe((value) => {
+        const data = value ?? {};
         this.aForm.patchValue(
           { ...this.cleanForm, ...data },
           { emitEvent: false },
         );
         let options = this.props.availableOptions;
-        options[1].typeOptions[1].hidden = !data.isInspireIdentified;
+        if (options[1].typeOptions.length > 1)
+          options[1].typeOptions[1].hidden = !data.isInspireIdentified;
         this.displayedOptions.set(options);
       });
     this.aForm.valueChanges
@@ -150,11 +153,12 @@ export class MetadataTypeComponent
   }
 
   handleOptionClick(item: MetadataOptionItem) {
-    item.onClick?.(this.field);
+    item.onClick?.(this.field, this.previousValue);
   }
 
   handleChange(typeOption: MetadataOptionItems, $event: MatChipListboxChange) {
     console.log("option changed", $event);
+    this.previousValue = this.formControl.value;
     typeOption.onChange?.(this.field, $event.value);
   }
 }

@@ -43,11 +43,9 @@ import { ThesaurusReportComponent } from "../components/thesaurus-report.compone
 import { ThesaurusResult } from "../components/thesaurus-result";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
-import { MatSelectChange } from "@angular/material/select";
 import { DocumentService } from "../../../app/services/document/document.service";
 import { KeywordAnalysis, KeywordSectionOptions } from "../utils/keywords";
 import {
-  MetadataOption,
   MetadataOptionItems,
   MetadataProps,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
@@ -130,119 +128,130 @@ export abstract class IngridShared extends BaseDoctype {
     fileReferenceFormat: "1320",
   };
 
-  metadataOptions = () => [
-    {
-      label: "Datentyp",
-      typeOptions: [
-        {
-          multiple: false,
-          key: "subType",
-          items: [
-            { label: "Datensatz", value: { key: 5 } },
-            { label: "Datenserie", value: { key: 6 } },
-          ],
-        },
-      ],
-    },
-    {
-      label: "INSPIRE-relevant",
-      typeOptions: [
-        {
-          multiple: false,
-          key: "isInspireIdentified",
-          onChange: (field, value) => {
-            console.log("isInspireRelevant changed", field.formControl.value);
-            field.props.disabledOptions.invekos = value === undefined;
+  metadataOptions = () =>
+    [
+      {
+        label: "Datentyp",
+        typeOptions: [
+          {
+            multiple: false,
+            key: "subType",
+            items: [
+              { label: "Datensatz", value: { key: 5 } },
+              { label: "Datenserie", value: { key: 6 } },
+            ],
           },
-          items: [
-            {
-              label: "INSPIRE konform",
-              value: "conform",
-              onClick: (field) => this.handleIsInspireConformClick(field),
+        ],
+      },
+      {
+        label: "INSPIRE-relevant",
+        typeOptions: [
+          {
+            multiple: false,
+            key: "isInspireIdentified",
+            onChange: (field, value) => {
+              console.log(
+                "isInspireIdentified changed",
+                field.formControl.value,
+              );
+              field.props.disabledOptions.invekos = value === undefined;
             },
-            {
-              label: "INSPIRE nicht konform",
-              value: "notConform",
-              onClick: (field) => this.handleIsInspireConformClick(field),
-            },
-          ],
-        },
-        this.showInVeKoSField
-          ? {
-              multiple: false,
-              key: "invekos",
-              hide: (field: FormlyFieldConfig) =>
-                !field.formControl.value.isInspireIdentified,
-              items: [
-                {
-                  label: "InVeKoS/IACS (GSAA)",
-                  value: { key: "gsaa" },
-                  onClick: (field) =>
-                    this.handleInVeKosChange(field, this.thesaurusTopics),
-                },
-                {
-                  label: "InVeKoS/IACS (LPIS)",
-                  value: { key: "lpis" },
-                  onClick: (field) =>
-                    this.handleInVeKosChange(field, this.thesaurusTopics),
-                },
-                {
-                  label: "InVeKoS/IACS (None)",
-                  value: { key: "none" },
-                  hide: true,
-                  onClick: (field) =>
-                    this.handleInVeKosChange(field, this.thesaurusTopics),
-                },
-              ],
-            }
-          : null,
-      ].filter(Boolean),
-    },
-    {
-      label: "Open Data",
-      typeOptions: [
-        <MetadataOptionItems>{
-          multiple: true,
-          items: [
-            {
-              label: "Offene Lizenz",
-              key: "isOpenData",
-              value: true,
-              onClick: (field) => this.handleOpenDataClick(field),
-            },
-            {
-              label: "High-Value-Dataset",
-              key: "hvd",
-              value: true,
-              onClick: (field) => this.handleHVDClick(field).subscribe(),
-            },
-          ],
-        },
-      ],
-    },
-    {
-      label: "AdV",
-      typeOptions: [
-        {
-          multiple: true,
-          items: [
-            {
-              label: "kompatibel",
-              key: "isAdVCompatible",
-              value: true,
-              onClick: (field) => {
-                // field.props.availableOptions[0].typeOptions[0].items[0].hide =
-                //   true;
-                field.props.disabledOptions.subType =
-                  field.formControl.value.isAdVCompatible;
-                this.handleAdvClick(field);
+            items: [
+              {
+                label: "INSPIRE konform",
+                value: "conform",
+                onClick: (field, previousValue) =>
+                  this.handleIsInspireConformClick(
+                    field,
+                    previousValue,
+                  ).subscribe(),
               },
-            },
-          ],
-        },
-      ],
-    },
-  ];
+              {
+                label: "INSPIRE nicht konform",
+                value: "notConform",
+                onClick: (field, previousValue) =>
+                  this.handleIsInspireConformClick(
+                    field,
+                    previousValue,
+                  ).subscribe(),
+              },
+            ],
+          },
+          this.showInVeKoSField
+            ? {
+                multiple: false,
+                key: "invekos",
+                hide: (field: FormlyFieldConfig) =>
+                  !field.formControl.value.isInspireIdentified,
+                items: [
+                  {
+                    label: "InVeKoS/IACS (GSAA)",
+                    value: { key: "gsaa" },
+                    onClick: (field) =>
+                      this.handleInVeKosChange(field, this.thesaurusTopics),
+                  },
+                  {
+                    label: "InVeKoS/IACS (LPIS)",
+                    value: { key: "lpis" },
+                    onClick: (field) =>
+                      this.handleInVeKosChange(field, this.thesaurusTopics),
+                  },
+                  {
+                    label: "InVeKoS/IACS (None)",
+                    value: { key: "none" },
+                    hide: true,
+                    onClick: (field) =>
+                      this.handleInVeKosChange(field, this.thesaurusTopics),
+                  },
+                ],
+              }
+            : null,
+        ].filter(Boolean),
+      },
+      {
+        label: "Open Data",
+        typeOptions: [
+          <MetadataOptionItems>{
+            multiple: true,
+            items: [
+              {
+                label: "Offene Lizenz",
+                key: "isOpenData",
+                value: true,
+                onClick: (field) => this.handleOpenDataClick(field),
+              },
+              this.showHVD
+                ? {
+                    label: "High-Value-Dataset",
+                    key: "hvd",
+                    value: true,
+                    onClick: (field) => this.handleHVDClick(field).subscribe(),
+                  }
+                : null,
+            ].filter(Boolean),
+          },
+        ],
+      },
+      this.showAdVCompatible
+        ? {
+            label: "AdV",
+            typeOptions: [
+              {
+                multiple: true,
+                items: [
+                  {
+                    label: "kompatibel",
+                    key: "isAdVCompatible",
+                    value: true,
+                    onClick: (field: FormlyFieldConfig) =>
+                      this.handleAdvClick(field),
+                  },
+                ],
+              },
+            ],
+          }
+        : null,
+    ].filter(Boolean);
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     this.thesaurusTopics = options.thesaurusTopics;
@@ -416,17 +425,14 @@ export abstract class IngridShared extends BaseDoctype {
 
   handleActivateOpenData(field: FormlyFieldConfig): Observable<boolean> {
     const cookieId = "HIDE_OPEN_DATA_INFO";
-    const isInspire = field.model["my-metadata"].isInspireIdentified;
+    const value = field.formControl.value;
+    const isInspire = value?.isInspireIdentified;
 
     function executeAction() {
       const accessConstraintsControl = field.form.get(
         "resource.accessConstraints",
       );
-      if (isInspire) {
-        accessConstraintsControl.setValue([{ key: "1" }]);
-      } else {
-        accessConstraintsControl.setValue([]);
-      }
+      accessConstraintsControl.setValue(isInspire ? [{ key: "1" }] : []);
     }
 
     if (this.cookieService.getCookie(cookieId) === "true") {
@@ -450,10 +456,10 @@ export abstract class IngridShared extends BaseDoctype {
         map((decision) => {
           if (decision === "ok") {
             executeAction();
-          } else {
-            field.formControl.setValue(false);
+            return true;
           }
-          return decision === "ok";
+          field.formControl.setValue({ ...value, isOpenData: true });
+          return false;
         }),
       );
   }
@@ -475,18 +481,21 @@ export abstract class IngridShared extends BaseDoctype {
       .afterClosed()
       .pipe(
         map((decision) => {
-          if (decision != "ok") {
-            field.formControl.setValue(true);
-          } else {
-            if (this.showHVD) field.form.get("hvd").setValue(false);
+          const value = field.formControl.value;
+          if (decision === "ok") {
+            if (this.showHVD) {
+              field.formControl.setValue({ ...value, hvd: false });
+            }
+            return true;
           }
-          return decision === "ok";
+          field.formControl.setValue({ ...value, isOpenData: true });
+          return false;
         }),
       );
   }
 
   private handleOpenDataClick(field: FormlyFieldConfig) {
-    const isChecked = field.formControl.value;
+    const isChecked = field.formControl.value.isOpenData;
     if (!isChecked) {
       this.handleDeactivateOpenData(field).subscribe();
     } else {
@@ -1337,7 +1346,7 @@ export abstract class IngridShared extends BaseDoctype {
                     return (
                       !model ||
                       !this.isGeoDataset ||
-                      model?.["my-metadata"].isInspireIdentified ===
+                      model?.["my-metadata"]?.isInspireIdentified ===
                         "conform" ||
                       !this.conformityExists(ctrl, "12", "1")
                     );
@@ -1691,53 +1700,40 @@ export abstract class IngridShared extends BaseDoctype {
     ];
   }
 
-  private handleInspireIdentifiedClick(field: FormlyFieldConfig) {
-    const checked = field.formControl.value;
-    if (checked) {
-      this.handleActivateInspireIdentified(field).subscribe();
-    } else {
-      this.handleDeactivateInspireIdentified(field).subscribe();
+  handleActivateInspireIdentified(field: FormlyFieldConfig) {
+    const isOpenData = field.formControl.value.isOpenData === true;
+    /*    const cookieId = "HIDE_INSPIRE_INFO";
+
+    const executeAction = () => {*/
+    // field.formControl.setValue({...field.formControl.value, isInspireIdentified: "conform"});
+
+    if (this.defaultKeySpatialScope) {
+      field.form.get("spatialScope").setValue({
+        key: this.defaultKeySpatialScope,
+      });
     }
-  }
 
-  handleActivateInspireIdentified(
-    field: FormlyFieldConfig,
-  ): Observable<boolean> {
-    const cookieId = "HIDE_INSPIRE_INFO";
-    const isOpenData = field.form.get("isOpenData").value === true;
-
-    const executeAction = () => {
-      field.form.get("isInspireConform")?.setValue(true);
-
-      if (this.defaultKeySpatialScope) {
-        field.form.get("spatialScope").setValue({
-          key: this.defaultKeySpatialScope,
-        });
+    if (this.isGeoService) {
+      if (isOpenData) {
+        field.form.get("resource.accessConstraints").setValue([{ key: "1" }]);
       }
 
-      if (this.isGeoService) {
-        if (isOpenData) {
-          field.form.get("resource.accessConstraints").setValue([{ key: "1" }]);
-        }
-
-        this.addConformanceEntry(field, "10", "1");
-      } else if (this.isGeoDataset) {
-        this.addConformanceEntry(field, "12", "1");
-      }
-    };
+      this.addConformanceEntry(field, "10", "1");
+    } else if (this.isGeoDataset) {
+      this.addConformanceEntry(field, "12", "1");
+    }
+    /*};
 
     if (this.cookieService.getCookie(cookieId) === "true") {
       executeAction();
       return of(true);
     }
 
-    const message = this.inspireChangeMessage;
-
     return this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
           title: "Hinweis",
-          message: message,
+          message: this.inspireChangeMessage,
           cookieId: cookieId,
         },
       })
@@ -1745,34 +1741,32 @@ export abstract class IngridShared extends BaseDoctype {
       .pipe(
         map((decision) => {
           if (decision === "ok") executeAction();
-          else field.formControl.setValue(false);
+          else field.formControl.setValue({...field.formControl.value, isInspireIdentified: });
           return decision === "ok";
         }),
-      );
+      );*/
   }
 
-  handleDeactivateInspireIdentified(
-    field: FormlyFieldConfig,
-  ): Observable<boolean> {
-    const cookieId = "HIDE_INSPIRE_DEACTIVATE_INFO";
+  handleDeactivateInspireIdentified(field: FormlyFieldConfig) {
     const isOpenData = field.form.get("isOpenData").value === true;
     const specificationToRemove = this.isGeoService ? "10" : "12";
+    /*    const cookieId = "HIDE_INSPIRE_DEACTIVATE_INFO";
 
-    const executeAction = () => {
-      if (isOpenData) field.form.get("resource.accessConstraints").setValue([]);
+    const executeAction = () => {*/
+    if (isOpenData) field.form.get("resource.accessConstraints").setValue([]);
 
-      const conformanceResultCtrl = field.form.get("conformanceResult");
-      // only set conformance value when field is available (#6535)
-      if (conformanceResultCtrl) {
-        conformanceResultCtrl.setValue(
-          (conformanceResultCtrl.value ?? []).filter(
-            (item) => item.specification?.key !== specificationToRemove,
-          ),
-        );
-      }
-    };
+    const conformanceResultCtrl = field.form.get("conformanceResult");
+    // only set conformance value when field is available (#6535)
+    if (conformanceResultCtrl) {
+      conformanceResultCtrl.setValue(
+        (conformanceResultCtrl.value ?? []).filter(
+          (item) => item.specification?.key !== specificationToRemove,
+        ),
+      );
+    }
+    // };
 
-    if (this.cookieService.getCookie(cookieId) === "true") {
+    /*    if (this.cookieService.getCookie(cookieId) === "true") {
       executeAction();
       return of(true);
     }
@@ -1794,7 +1788,7 @@ export abstract class IngridShared extends BaseDoctype {
           else field.formControl.setValue(true);
           return decision === "ok";
         }),
-      );
+      );*/
   }
 
   private conformityExists(
@@ -1836,11 +1830,18 @@ export abstract class IngridShared extends BaseDoctype {
 
   private handleIsInspireConformClick(
     field: FormlyFieldConfig,
+    previousValue: any = undefined,
   ): Observable<boolean> {
     const cookieId = "HIDE_INSPIRE_CONFORM_INFO";
-    const isConform = field.formControl.value.isInspireIdentified === "conform";
+    const inspireIdentified = field.formControl.value.isInspireIdentified;
+    const isConform = inspireIdentified === "conform";
 
     const executeAction = () => {
+      if (previousValue?.isInspireIdentified === undefined)
+        this.handleActivateInspireIdentified(field);
+      else if (inspireIdentified === undefined)
+        this.handleDeactivateInspireIdentified(field);
+
       if (isConform) {
         this.addConformanceEntry(field, "12", "1");
       } else {
@@ -1857,15 +1858,24 @@ export abstract class IngridShared extends BaseDoctype {
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
           title: "Hinweis",
-          message: this.inspireChangeMessage,
+          message:
+            inspireIdentified === undefined
+              ? this.inspireDeleteMessage
+              : this.inspireChangeMessage,
           cookieId: cookieId,
         },
       })
       .afterClosed()
       .pipe(
+        tap((value) => console.log("dialog closed", value)),
         map((decision) => {
+          debugger;
           if (decision === "ok") executeAction();
-          else field.formControl.setValue(!isConform);
+          else
+            field.formControl.setValue({
+              ...field.formControl.value,
+              isInspireIdentified: previousValue?.isInspireIdentified,
+            });
           return decision === "ok";
         }),
       );
@@ -1954,7 +1964,7 @@ export abstract class IngridShared extends BaseDoctype {
 
   private handleHVDClick(field: FormlyFieldConfig) {
     const hvdChecked = field.formControl.value.hvd;
-    const metadata = field.form.value["my-metadata"];
+    const metadata = field.formControl.value;
     const isOpenData = metadata.isOpenData;
     // if hvd is checked and field is not open data, show open data dialog
     if (hvdChecked && !isOpenData) {

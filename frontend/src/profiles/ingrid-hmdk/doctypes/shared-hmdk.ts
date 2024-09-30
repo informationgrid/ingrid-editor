@@ -292,18 +292,13 @@ export class SharedHmdk {
     return of(true);
   }
 
-  hmdkHandleActivateInspireIdentified(
-    field: FormlyFieldConfig,
-    previous: Observable<boolean>,
-  ) {
-    return this.wrap(() => {
-      // if openData or publicationHmbTG is set access constraint "Es gelten keine Zugriffsbeschränkungen"
-      if (
-        field.model.resource &&
-        (field.model.isOpenData || field.model.publicationHmbTG)
-      )
-        field.form.get("resource.accessConstraints").setValue([{ key: "1" }]);
-    }, previous);
+  hmdkHandleActivateInspireIdentified(field: FormlyFieldConfig) {
+    // if openData or publicationHmbTG is set access constraint "Es gelten keine Zugriffsbeschränkungen"
+    if (
+      field.model.resource &&
+      (field.model.isOpenData || field.model.publicationHmbTG)
+    )
+      field.form.get("resource.accessConstraints").setValue([{ key: "1" }]);
   }
 
   wrap(executeFunction: () => void, previous: Observable<boolean>) {
