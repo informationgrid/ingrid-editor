@@ -375,7 +375,7 @@ export class TreeComponent implements OnInit {
 
       // parent node seems to be nested deeper
       if (parentNodeIndex === -1) {
-        console.log(
+        console.debug(
           "Parent not found, expanding tree nodes: ",
           updateInfo.path,
         );
@@ -537,7 +537,7 @@ export class TreeComponent implements OnInit {
   private waitFor(elementFunction, callback, count = 3) {
     const queryResult = elementFunction();
     if (!queryResult && count !== 0) {
-      console.log("Waiting for tree container element", count);
+      console.debug("Waiting for tree container element", count);
       setTimeout(() => this.waitFor(elementFunction, callback, --count), 500);
       return;
     }

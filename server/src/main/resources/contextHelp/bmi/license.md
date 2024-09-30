@@ -1,7 +1,7 @@
 ---
 # ID des GUI Elements
 id: license
-docType: BmiDoc
+docType: OpenDataDoc
 profile: bmi
 ---
 

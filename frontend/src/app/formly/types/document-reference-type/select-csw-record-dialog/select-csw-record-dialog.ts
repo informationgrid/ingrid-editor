@@ -131,7 +131,6 @@ export class SelectCswRecordDialog implements OnInit {
       .analyzeGetRecordUrl(url)
       .pipe(catchError((err) => this.handleError(err)))
       .subscribe((response: GetRecordAnalysis) => {
-        console.log(response);
         this.analysis = response;
         this.phase = response === null ? "invalid" : "valid";
         if (response !== null) {

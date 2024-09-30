@@ -100,14 +100,6 @@ export class MessagesManagementComponent implements OnInit {
   fields = messagesFields;
   model: any;
 
-  save() {
-    // this.configService.saveIBusConfig(this.form.value.ibus).subscribe();
-  }
-
-  editMessage(_id: any) {
-    console.log(_id);
-  }
-
   removeMessage(_id: any) {
     this.dialog
       .open(ConfirmDialogComponent, {
@@ -134,34 +126,31 @@ export class MessagesManagementComponent implements OnInit {
   }
 
   fetchMessages() {
-    this.messageService
-      .getAllMessagesForAdmin()
-      .pipe(tap((m) => console.log(m)))
-      .subscribe((messages) => {
-        this.messages = messages;
-        this.model = messages.map((m) => ({
-          text: m.message.text,
-          validUntil: m._validUntil,
-        }));
-        this.dataSourceAllCatalog.data = null;
-        this.dataSourceCurrentCatalog.data = null;
-        let [allCatalog$, currentCatalog$] = partition(
-          messages,
-          (value, index) => value.catalog == null,
-        );
+    this.messageService.getAllMessagesForAdmin().subscribe((messages) => {
+      this.messages = messages;
+      this.model = messages.map((m) => ({
+        text: m.message.text,
+        validUntil: m._validUntil,
+      }));
+      this.dataSourceAllCatalog.data = null;
+      this.dataSourceCurrentCatalog.data = null;
+      let [allCatalog$, currentCatalog$] = partition(
+        messages,
+        (value, index) => value.catalog == null,
+      );
 
-        allCatalog$.subscribe((value) => {
-          this.dataSourceAllCatalog.data = [
-            ...this.dataSourceAllCatalog.data,
-            value,
-          ];
-        });
-        currentCatalog$.subscribe((value) => {
-          this.dataSourceCurrentCatalog.data = [
-            ...this.dataSourceCurrentCatalog.data,
-            value,
-          ];
-        });
+      allCatalog$.subscribe((value) => {
+        this.dataSourceAllCatalog.data = [
+          ...this.dataSourceAllCatalog.data,
+          value,
+        ];
       });
+      currentCatalog$.subscribe((value) => {
+        this.dataSourceCurrentCatalog.data = [
+          ...this.dataSourceCurrentCatalog.data,
+          value,
+        ];
+      });
+    });
   }
 }

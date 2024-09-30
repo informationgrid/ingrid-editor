@@ -21,11 +21,8 @@ package de.ingrid.igeserver.profiles.bmi.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.codelists.CodeListService
 import de.ingrid.igeserver.model.KeyValue
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
@@ -56,66 +53,19 @@ data class AddressModel(
         }
     }
 
-    init {
-        // TODO: add functionality later (#)
-        /*if (address.inheritAddress) {
-            address = getAddressInformationFromParent(parent)
-        }*/
-    }
-
-    /**
-     *  Get all ancestors of address including itself.
-     *  Addresses with the flag hideAddress are ignored,
-     *  but only if they have a parent themselves.
-     *  @return List of ancestors
-     */
-    fun getAncestorAddressesIncludingSelf(id: Int?, catalogIdent: String): MutableList<AddressModel> {
-        if (id == null) return mutableListOf()
-
-        val doc = documentService!!.getWrapperById(id)
-        val publishedDoc = documentService!!.getLastPublishedDocument(catalogIdent, doc.uuid)
-        if (publishedDoc == null || publishedDoc.type == "FOLDER") {
-            return emptyList<AddressModel>().toMutableList()
-        }
-
-        val convertedDoc = addInternalFields(publishedDoc, doc)
-
-        return if (doc.parent != null) {
-            val ancestors = getAncestorAddressesIncludingSelf(doc.parent!!.id!!, catalogIdent)
-            // ignore hideAddress if address has no ancestors
-            if (convertedDoc.hideAddress != true || ancestors.isEmpty()) ancestors.add(convertedDoc)
-            ancestors
-        } else {
-            mutableListOf(convertedDoc)
-        }
-    }
-
-    private fun addInternalFields(publishedParent: Document, wrapper: DocumentWrapper): AddressModel {
-        val visibleAddress = publishedParent.data.apply {
-            put("_id", wrapper.id)
-            put("_uuid", publishedParent.uuid)
-            put("_created", publishedParent.created.toString())
-            put("_modified", publishedParent.modified.toString())
-            put("_parent", wrapper.parent?.id)
-        }
-
-        return jacksonObjectMapper().convertValue(visibleAddress, AddressModel::class.java)
-    }
-
-/*    @JsonProperty("_parent")
-    private fun setParent(value: Int?) {
-        if (value != null) {
-            val parentAddress = documentService?.getWrapperByDocumentId(value)
-            parentUuid = parentAddress?.uuid
-            parentName = parentAddress?.published?.title
-        }
-    }*/
-
-    fun getNamePresentation() = organization ?: "$lastName, $firstName"
     val telephone: String? get() = contactType("1")
     val fax: String? get() = contactType("2")
     val email: String? get() = contactType("3")
     val homepage: String? get() = contactType("4")
+
+    val dcatType: String? get() = when (type) {
+        "2" -> "maintainer"
+        "6" -> "originator"
+        "7" -> "contactPoint"
+        "10" -> "publisher"
+        "11" -> "creator"
+        else -> null
+    }
 
     private fun contactType(type: String): String? = contact
         .firstOrNull { it.type?.key == type }

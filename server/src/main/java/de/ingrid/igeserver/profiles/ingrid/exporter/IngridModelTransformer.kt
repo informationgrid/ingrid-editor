@@ -35,7 +35,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.CoupledResource
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileName
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileReference
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileReferenceTransferOption
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.GraphicOverview
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
@@ -50,6 +50,7 @@ import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.checkPublicationTags
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
@@ -648,13 +649,18 @@ open class IngridModelTransformer(
             .map { applyRefInfos(it) }
     }
 
-    private val fileReferences = data.fileReferences ?: emptyList()
-    val fileReferencesWithUrl = addUrlToFileReferences(fileReferences, model.uuid)
-    private fun addUrlToFileReferences(listofFileReferences: List<FileReference>?, datasetUuid: String): List<FileReference>? {
-        listofFileReferences?.forEach {
-            it.url = getDownloadLink(datasetUuid, it.link.uri)
+    val fileReferenceTransferOptions: List<FileReferenceTransferOption> by lazy {
+        val fileReferences = data.fileReferences ?: emptyList()
+        fileReferences.map {
+            FileReferenceTransferOption(
+                link = it.link,
+                title = it.title,
+                description = it.description,
+                applicationProfile = codelists.getValue(fieldToCodelist.referenceFileFormat, it.format, "de"),
+                format = it.format,
+                url = getDownloadLink(model.uuid, it.link.uri),
+            )
         }
-        return listofFileReferences
     }
 
     private fun applyRefInfos(it: Reference): Reference {
@@ -670,10 +676,31 @@ open class IngridModelTransformer(
     }
 
     val getCoupledServicesForGeodataset = getIncomingReferencesProxy(true).filter { it.refType.key == "3600" }
-    val referencesWithCoupledServices: List<Reference> by lazy {
-        references + getCoupledServicesForGeodataset.map {
-            Reference(it.objectName, it.refType, it.description, it.serviceUrl, null, null)
-        }
+    val referencesWithCoupledServicesAndFileReferences: List<Reference> by lazy {
+        references.map {
+            it.urlDataType = KeyValue(codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de"), null)
+            it
+        } +
+            getCoupledServicesForGeodataset.map {
+                Reference(
+                    it.objectName,
+                    it.refType,
+                    it.description,
+                    it.serviceUrl,
+                    null,
+                    null,
+                )
+            } +
+            fileReferenceTransferOptions.map {
+                Reference(
+                    it.title ?: it.url,
+                    KeyValue("9990", null),
+                    null,
+                    it.url,
+                    null,
+                    KeyValue(it.applicationProfile, null),
+                )
+            }
     }
 
     // information system
@@ -755,7 +782,7 @@ open class IngridModelTransformer(
 
         // filter out addresses with wrong tags
         if (lastPublishedDoc != null) {
-            kotlin.runCatching { documentService.checkPublicationTags(documentService.getWrapperById(lastPublishedDoc.wrapperId!!).tags, tags) }
+            kotlin.runCatching { checkPublicationTags(documentService.getWrapperById(lastPublishedDoc.wrapperId!!).tags, tags) }
                 .onFailure { return null }
         }
 

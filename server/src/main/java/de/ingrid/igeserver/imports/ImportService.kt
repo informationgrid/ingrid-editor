@@ -96,7 +96,7 @@ class ImportService(
                         if (fileContent[0] is ArrayNode) {
                             val publishedVersion = fileContent[0][0]
                             val draftVersion = fileContent[0][1]
-                            listOfNotNull(
+                            val result = mutableListOf(
                                 if (!publishedVersion.isNull) {
                                     analyzeDoc(
                                         catalogId,
@@ -119,6 +119,16 @@ class ImportService(
                                     null
                                 },
                             )
+
+                            // handle remaining items as references
+                            if (fileContent.size() > 1) {
+                                fileContent.forEachIndexed { index1, fileContent1 ->
+                                    if (index1 != 0) {
+                                        result.add(analyzeDoc(catalogId, fileContent1, true, true))
+                                    }
+                                }
+                            }
+                            result
                         } else {
                             fileContent.map { analyzeDoc(catalogId, it) }
                         }
@@ -126,6 +136,7 @@ class ImportService(
                         listOf(analyzeDoc(catalogId, fileContent))
                     }
                 }
+                .filterNotNull()
                 .distinctBy { it.document.uuid }
                 .let { prepareForImport(importers, it) }
         }

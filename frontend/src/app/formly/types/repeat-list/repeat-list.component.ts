@@ -18,10 +18,10 @@
  * limitations under the Licence.
  */
 import {
-  ChangeDetectorRef,
   Component,
   ElementRef,
   OnInit,
+  signal,
   TemplateRef,
   ViewChild,
 } from "@angular/core";
@@ -189,6 +189,8 @@ export class RepeatListComponent
     };
   };
 
+  items = signal<any[]>([]);
+
   filteredOptions: Observable<SelectOptionUi[]>;
   parameterOptions: SelectOptionUi[];
   initialParameterOptions: SelectOptionUi[];
@@ -204,13 +206,16 @@ export class RepeatListComponent
 
   constructor(
     private snack: MatSnackBar,
-    private cdr: ChangeDetectorRef,
     private codelistQuery: CodelistQuery,
   ) {
     super();
   }
 
   ngOnInit(): void {
+    this.formControl.valueChanges
+      .pipe(untilDestroyed(this), startWith(this.formControl.value))
+      .subscribe((data) => this.items.set(data ?? []));
+
     if (this.props.asSelect) {
       this.type = "select";
       if (this.props.showSearch) {
@@ -239,7 +244,6 @@ export class RepeatListComponent
           filter((data) => data !== undefined),
           // take(1),
           tap((data) => this.initInputListener(data)),
-          tap(() => this.cdr.detectChanges()),
         )
         .subscribe();
     } else {
@@ -304,7 +308,6 @@ export class RepeatListComponent
         filter((value) => value !== undefined && value !== null),
         map((value) => this._filter(value)),
         tap((value) => this._markSelected(value)),
-        tap(() => this.cdr.detectChanges()),
       );
 
       if (this.type !== "select" && this.type !== "autocomplete") {
@@ -408,7 +411,6 @@ export class RepeatListComponent
     this.searchSub = this.props.restCall(value).subscribe((result: any) => {
       this.searchResult.next(result);
     });
-    this.cdr.detectChanges();
   }
 
   private _markSelected(value: SelectOptionUi[]): void {

@@ -32,6 +32,7 @@ import { MatAutocomplete } from "@angular/material/autocomplete";
 import { MatOptgroup, MatOption } from "@angular/material/core";
 import { MatIcon } from "@angular/material/icon";
 import { DocumentListItemComponent } from "../../shared/document-list-item/document-list-item.component";
+import { escapeRegExp } from "../../shared/utils";
 
 @UntilDestroy()
 @Component({
@@ -118,7 +119,7 @@ export class QuickSearchComponent implements OnInit {
   ): DocumentAbstract[] {
     return hits.map((hit) => {
       hit.title = hit.title.replace(
-        new RegExp(textHighlight, "ig"),
+        new RegExp(escapeRegExp(textHighlight), "ig"),
         (match) => `<span class="highlight">${match}</span>`,
       );
 

@@ -24,6 +24,7 @@ import { UploadService } from "../../../app/shared/upload/upload.service";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { map } from "rxjs/operators";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
+import { of } from "rxjs";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
 
@@ -36,6 +37,8 @@ export class OpenDataDoctype extends BaseDoctype {
   label = "Open Data Dokument";
 
   iconClass = "Fachaufgabe";
+
+  showHVD: boolean = false;
 
   private uploadService = inject(UploadService);
   private configService = inject(ConfigService);
@@ -56,12 +59,12 @@ export class OpenDataDoctype extends BaseDoctype {
         }),
         this.addAddressCard("addresses", "Adressen", {
           required: true,
-          allowedTypes: ["2", "6", "7", "11", "12"],
+          allowedTypes: ["2", "6", "7", "10", "11"],
           validators: {
             needPublisher: {
               expression: (ctrl) =>
                 ctrl.value
-                  ? ctrl.value.some((row) => row.type.key === "12")
+                  ? ctrl.value.some((row) => row.type.key === "10")
                   : false,
               message:
                 'Fehler: Es muss eine Adresse als "veröffentlichende Stelle" eingetragen sein.',
@@ -69,7 +72,7 @@ export class OpenDataDoctype extends BaseDoctype {
             onePublisher: {
               expression: (ctrl) =>
                 ctrl.value
-                  ? ctrl.value.filter((row) => row.type.key === "12").length < 2
+                  ? ctrl.value.filter((row) => row.type.key === "10").length < 2
                   : true,
               message:
                 "Fehler: Es darf nur eine Adresse als veröffentlichende Stelle angegeben werden",
@@ -88,6 +91,22 @@ export class OpenDataDoctype extends BaseDoctype {
           required: true,
           options: this.getCodelistForSelect("6400", "openDataCategories"),
           codelistId: "6400",
+        }),
+        this.addCheckbox("hvd", "High-Value-Dataset (HVD)", {
+          className: "flex-1",
+          click: (field: FormlyFieldConfig) =>
+            this.handleHVDClick(field).subscribe(),
+        }),
+        this.addRepeatList("hvdCategories", "HVD-Kategorien", {
+          view: "chip",
+          showSearch: true,
+          asSelect: true,
+          expressions: {
+            hide: (field: FormlyFieldConfig) => field.model.hvd !== true,
+          },
+          options: this.getCodelistForSelect("20008", null),
+          codelistId: "20008",
+          required: true,
         }),
         this.addRepeatDistributionDetailList("distributions", "Ressourcen", {
           required: true,
@@ -270,4 +289,9 @@ export class OpenDataDoctype extends BaseDoctype {
         }),
       ]),
     ];
+
+  private handleHVDClick(field: FormlyFieldConfig) {
+    this.showHVD = field.formControl.value;
+    return of(field.formControl.value);
+  }
 }

@@ -130,7 +130,7 @@ export class EventService {
       (item) => item.result === IgeEventResultType.SUCCESS,
     );
     if (!isSuccessful) {
-      console.log(
+      console.warn(
         "One subscriber prevented to run original method for: " + type,
         responses,
       );

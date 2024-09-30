@@ -13,9 +13,9 @@
             (chosenFiles)="updateChosenFiles($event)"
             (removeFile)="removeUploadedFile($event)"
             (complete)="handleUploadComplete()"
-            [enableFileUploadOverride]="enableFileUploadOverride"
-            [enableFileUploadReuse]="enableFileUploadReuse"
-            [enableFileUploadRename]="enableFileUploadRename"
+            [enableFileUploadOverride]="enableFileUploadOverride()"
+            [enableFileUploadReuse]="enableFileUploadReuse()"
+            [enableFileUploadRename]="enableFileUploadRename()"
         ></ige-file-upload>
 
         @if (hasExtractZipOption) {

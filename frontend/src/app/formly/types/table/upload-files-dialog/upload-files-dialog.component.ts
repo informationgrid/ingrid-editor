@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import {
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit,
+  signal,
+  WritableSignal,
+} from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -68,9 +75,9 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   extractZipFiles = false;
   extractInProgress = false;
   infoText;
-  enableFileUploadOverride: boolean;
-  enableFileUploadReuse: boolean;
-  enableFileUploadRename: boolean;
+  enableFileUploadOverride: WritableSignal<boolean> = signal(true);
+  enableFileUploadReuse: WritableSignal<boolean> = signal(true);
+  enableFileUploadRename: WritableSignal<boolean> = signal(true);
   refreshTimer$: number = null;
 
   constructor(
@@ -99,15 +106,15 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
     this.allowedUploadTypes = data.allowedUploadTypes;
     this.hasExtractZipOption = data.hasExtractZipOption;
     this.infoText = data.infoText;
-    this.enableFileUploadOverride = data.enableFileUploadOverride;
-    this.enableFileUploadReuse = data.enableFileUploadReuse;
-    this.enableFileUploadRename = data.enableFileUploadRename;
+    this.enableFileUploadOverride.set(data.enableFileUploadOverride ?? true);
+    this.enableFileUploadReuse.set(data.enableFileUploadReuse ?? true);
+    this.enableFileUploadRename.set(data.enableFileUploadRename ?? true);
   }
 
   ngOnInit(): void {
     // refresh token to in this dialog to prevent auto-save, since this might lead to
     // a removal of uploaded files (#6386)
-    this.refreshTimer$ = setInterval(() => {
+    this.refreshTimer$ = window.setInterval(() => {
       return this.authFactory.get().refreshToken();
     }, 60000);
   }
@@ -119,7 +126,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   }
 
   removeUploadedFile(fileId: string) {
-    console.log("uploaded files will not be removed for now due to a bug");
+    console.warn("uploaded files will not be removed for now due to a bug");
     /*const fileNotReferenced = this.fileExistsInTable(fileId);
     if (!fileNotReferenced) {
       this.uploadService.deleteUploadedFile(this.docUuid, fileId);

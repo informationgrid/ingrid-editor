@@ -195,9 +195,9 @@ export abstract class SaveBase extends Plugin {
         tap((data) =>
           // @ts-ignore
           this.documentService.postSaveActions({
-            data: data.documentWithMetadata,
             isNewDoc: false,
             isAddress: address,
+            dataWithMetadata: data,
           }),
         ),
       )

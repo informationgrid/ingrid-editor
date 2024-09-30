@@ -124,7 +124,6 @@ export class AddressTypeComponent
       },
     ];
     this.removeDuplicates(newValue);
-    this.updateFormControl(newValue);
   }
 
   async addAddress() {
@@ -144,7 +143,6 @@ export class AddressTypeComponent
           type: data.type,
         });
         this.removeDuplicates(copy);
-        this.updateFormControl(copy);
       },
     );
   }
@@ -206,8 +204,8 @@ export class AddressTypeComponent
     );
     if (unique.length !== values.length) {
       this.snack.open("Die Adresse ist bereits vorhanden");
-      this.updateFormControl(unique);
     }
+    this.updateFormControl(unique);
   }
 
   private async callEditDialog(

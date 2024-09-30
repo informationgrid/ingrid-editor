@@ -32,7 +32,7 @@ import { arrayUpdate } from "@datorama/akita";
   template: "",
   standalone: true,
 })
-class OpenDataComponent {
+export class OpenDataComponent {
   // TODO: bmiChange = (inject(BmiDoctype).codelistIdOpenData = "6400");
   constructor(
     service: ProfileService,
@@ -50,7 +50,6 @@ class OpenDataComponent {
     service.registerProfiles(types);
 
     reportsService.setFilter((route) => route.path != "url-check");
-
     // rename codelist entry (should be done in codelist repo!?)
     codelistQuery
       .selectEntity("505")
@@ -59,11 +58,11 @@ class OpenDataComponent {
         take(1),
       )
       .subscribe((data) => {
-        const contact = data.entries.filter((item) => item.id === "12")[0];
+        const contact = data.entries.filter((item) => item.id === "10")[0];
         const clonedContact = JSON.parse(JSON.stringify(contact));
         clonedContact.fields.de = "Veröffentlichende Stelle";
         codelistStore.update("505", ({ entries }) => ({
-          entries: arrayUpdate(entries, "12", clonedContact),
+          entries: arrayUpdate(entries, "10", clonedContact),
         }));
       });
   }

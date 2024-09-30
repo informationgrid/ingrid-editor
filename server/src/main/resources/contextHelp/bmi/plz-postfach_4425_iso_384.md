@@ -1,7 +1,7 @@
 ---
 # ID des GUI Elements
 id: zip-po-box
-docType: BmiAddressDoc
+docType: OpenDataAddressDoc
 profile: bmi
 
 # title, used as window title

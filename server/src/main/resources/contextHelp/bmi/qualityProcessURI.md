@@ -1,7 +1,7 @@
 ---
 # ID des GUI Elements
 id: qualityProcessURI
-docType: BmiDoc
+docType: OpenDataDoc
 profile: bmi
 ---
 

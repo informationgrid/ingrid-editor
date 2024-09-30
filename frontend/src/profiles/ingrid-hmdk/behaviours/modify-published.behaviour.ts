@@ -100,7 +100,6 @@ export class ModifyPublishedBehaviour extends Plugin {
     const publishedDocs = docs.filter((doc) => doc._state !== "W");
 
     const publishedHmbTGTitles = await this.getHmbTGDocTitles(publishedDocs);
-    console.log(publishedHmbTGTitles);
 
     if (publishedHmbTGTitles.length) {
       this.dialog

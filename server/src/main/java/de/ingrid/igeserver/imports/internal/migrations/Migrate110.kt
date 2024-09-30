@@ -54,11 +54,9 @@ class Migrate110 {
             return Migrate110Response(documents, addressRefs)
         }
 
-        private fun getAddresses(document: JsonNode, profile: String): ArrayNode? {
-            return when (profile) {
-                "mcloud" -> (document.get("addresses") as ArrayNode?)
-                else -> (document.get("pointOfContact") as ArrayNode?)
-            }
+        private fun getAddresses(document: JsonNode, profile: String): ArrayNode? = when (profile) {
+            "mcloud" -> (document.get("addresses") as ArrayNode?)
+            else -> (document.get("pointOfContact") as ArrayNode?)
         }
 
         private fun removeMetadata(it: JsonNode?): JsonNode {
@@ -71,6 +69,10 @@ class Migrate110 {
             it.remove("_contentModifiedBy")
             it.remove("_id")
             it.remove("_tags")
+            it.remove("_version")
+            it.remove("hasOnlySubtreeWritePermission")
+            it.remove("hasWritePermission")
+            it.remove("_state")
             return it
         }
     }

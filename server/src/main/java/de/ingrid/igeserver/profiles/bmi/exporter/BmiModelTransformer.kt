@@ -23,6 +23,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.AddressRefModel
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.bmi.exporter.model.AddressModel
@@ -71,6 +72,7 @@ open class BmiModelTransformer(
     val data = model.data
 
     var addresses: List<AddressModel> = emptyList()
+    var themes: List<String> = emptyList()
 
     fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime?): String =
         if (date == null) "" else formatter.format(Date.from(date.toInstant()))
@@ -79,7 +81,10 @@ open class BmiModelTransformer(
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
 
         addresses = data.addresses?.map { toAddressModel(it) } ?: emptyList()
+        themes = data.DCATThemes?.map { toCodelistData("6400", it) }?.filterNotNull() ?: emptyList()
     }
+
+    private fun toCodelistData(codelist: String, entry: KeyValue): String? = codelists.getData(codelist, entry.key)
 
     private fun toAddressModel(it: AddressRefModel) =
         jacksonObjectMapper().convertValue(

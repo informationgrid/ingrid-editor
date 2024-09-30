@@ -121,6 +121,7 @@ export abstract class IngridShared extends BaseDoctype {
   codelistIds = {
     distributionFormat: "1320",
     urlDataType: "1320",
+    fileReferenceFormat: "1320",
   };
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
@@ -1439,6 +1440,7 @@ export abstract class IngridShared extends BaseDoctype {
         required: true,
         wrappers: ["inline-help", "form-field"],
         hasInlineContextHelp: true,
+        updateOn: "change",
       }),
       this.addGroupSimple(
         null,

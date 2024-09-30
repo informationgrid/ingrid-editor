@@ -411,11 +411,12 @@ export class FormFieldHelper {
       props: {
         externalLabel: label,
         required: options?.required,
+        // TODO: put those options in an options-object since they are used in nested components
         supportUpload: options?.supportUpload ?? true,
         supportLink: options?.supportLink ?? true,
-        enableFileUploadOverride: options?.enableFileUploadOverride ?? true,
-        enableFileUploadReuse: options?.enableFileUploadReuse ?? true,
-        enableFileUploadRename: options?.enableFileUploadRename ?? true,
+        enableFileUploadOverride: options?.enableFileUploadOverride,
+        enableFileUploadReuse: options?.enableFileUploadReuse,
+        enableFileUploadRename: options?.enableFileUploadRename,
         jsonTemplate: options?.jsonTemplate,
         backendUrl: options.backendUrl,
         infoText: options?.infoText,

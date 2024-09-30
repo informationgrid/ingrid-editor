@@ -9,7 +9,7 @@
 }
 
 <mat-accordion [multi]="!formControl.enabled">
-    @if (model[key + ""]?.length) {
+    @if (items().length > 0) {
         <mat-list
             cdkDropList
             cdkDropListOrientation="vertical"
@@ -18,7 +18,7 @@
             [attr.aria-label]="$any(props)?.ariaLabel"
         >
             <mat-list-item
-                *ngFor="let item of model[$any(key)]; let i = index"
+                *ngFor="let item of items(); let i = index"
                 cdkDrag
                 [cdkDragDisabled]="formControl.disabled"
                 [class.clickable]="formControl.enabled"
@@ -38,14 +38,14 @@
                                     >drag_indicator
                                 </mat-icon>
                             }
-                            {{ model[key][i].title }}
+                            {{ item.title }}
                         </mat-panel-title>
                         <mat-panel-description>
                             <div class="flex-1 flex-col align-items-start">
-                                @if (model[key][i].link.asLink) {
+                                @if (item.link.asLink) {
                                     <a
                                         class="url no-text-transform icon-in-table"
-                                        [href]="model[key][i].link.uri"
+                                        [href]="item.link.uri"
                                         (click)="$event.stopPropagation()"
                                         (keydown)="$event.stopPropagation()"
                                         target="_blank"
@@ -56,21 +56,17 @@
                                             src="assets/icons/external_link.svg"
                                             alt="Link"
                                         />
-                                        {{ model[key][i].link.uri }}</a
+                                        {{ item.link.uri }}</a
                                     >
                                 }
-                                @if (!model[key][i].link.asLink) {
+                                @if (!item.link.asLink) {
                                     <a
                                         class="url no-text-transform icon-in-table"
-                                        [href]="
-                                            getDownloadURL(
-                                                model[key][i].link.uri
-                                            )
-                                        "
+                                        [href]="getDownloadURL(item.link.uri)"
                                         (click)="
                                             handleCellClick(
                                                 i,
-                                                model[key][i].link,
+                                                item.link,
                                                 $event
                                             );
                                             $event.stopPropagation()
@@ -84,7 +80,7 @@
                                             src="assets/icons/download.svg"
                                             alt="Herunterladen"
                                         />
-                                        {{ model[key][i].link.uri }}</a
+                                        {{ item.link.uri }}</a
                                     >
                                 }
                             </div>
@@ -144,24 +140,34 @@
                         </mat-panel-description>
                     </mat-expansion-panel-header>
                     <div class="flex-1 flex-col align-items-start">
-                        @if (model[key][i].description) {
+                        @if (item.description) {
                             <div class="explanation">
-                                {{ model[key][i].description }}
+                                {{ item.description }}
                             </div>
                         }
-                        @if (model[key][i].format?.key) {
+                        @if (item.format) {
                             <div>
                                 <div class="type">
-                                    Format: {{ model[key][i].format?.key }}
+                                    Format:
+                                    @if (item.format?.key) {
+                                        {{
+                                            item.format?.key
+                                                | codelist
+                                                    : props.codelistIdForFileReferenceFormats
+                                                | async
+                                        }}
+                                    } @else {
+                                        {{ item.format?.value }}
+                                    }
                                 </div>
                             </div>
                         }
-                        @if (model[key][i].languages?.length > 0) {
+                        @if (item.languages?.length > 0) {
                             <div>
                                 <div class="type">
                                     Sprachen:
                                     @for (
-                                        language of model[key][i].languages;
+                                        language of item.languages;
                                         track language
                                     ) {
                                         <span>
@@ -175,37 +181,37 @@
                                 </div>
                             </div>
                         }
-                        @if (model[key][i].modified) {
+                        @if (item.modified) {
                             <div>
                                 <div class="type">
                                     Zuletzt Bearbeitet:
-                                    {{ getDateString(model[key][i].modified) }}
+                                    {{ getDateString(item.modified) }}
                                 </div>
                             </div>
                         }
                         <div>
-                            @if (model[key][i].license?.key) {
+                            @if (item.license?.key) {
                                 <a
                                     class="url no-text-transform icon-in-table"
-                                    [href]="model[key][i].license?.key"
+                                    [href]="item.license?.key"
                                     target="_blank"
                                 >
                                     {{
-                                        model[key][i].license?.key
+                                        item.license?.key
                                             | codelist: "20004"
                                             | async
                                     }}
                                 </a>
                             }
-                            @if (model[key][i].byClause) {
+                            @if (item.byClause) {
                                 Namensnennung:
-                                {{ model[key][i].byClause }}
+                                {{ item.byClause }}
                             }
                         </div>
-                        @if (model[key][i].availability?.key) {
+                        @if (item.availability?.key) {
                             <div>
                                 {{
-                                    model[key][i].availability?.key
+                                    item.availability?.key
                                         | codelist: "20005"
                                         | async
                                 }}

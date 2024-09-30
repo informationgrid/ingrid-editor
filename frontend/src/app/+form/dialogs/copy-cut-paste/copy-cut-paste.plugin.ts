@@ -294,7 +294,7 @@ export class CopyCutPastePlugin extends Plugin {
     const filtered = selection.filter(
       (id) => !this.isChildOfSelectedParent(id, selection),
     );
-    console.log("Filtered datasets without children", filtered);
+    console.debug("Filtered datasets without children", filtered);
     return filtered;
   }
 

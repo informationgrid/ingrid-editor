@@ -171,7 +171,6 @@ export class GeoServiceDoctype extends IngridShared {
                   const model = field.options.formState.mainModel;
                   return (
                     !model ||
-                    model._type !== "InGridGeoService" ||
                     model.service?.type?.key !== "2" ||
                     field.model?.some((item) => item?.name?.key === "1")
                   );

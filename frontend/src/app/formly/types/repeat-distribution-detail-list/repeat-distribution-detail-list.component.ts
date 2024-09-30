@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import {
   FieldTypeConfig,
   FormlyFieldConfig,
@@ -46,12 +46,13 @@ import {
   LinkInfo,
   UploadFilesDialogComponent,
 } from "../table/upload-files-dialog/upload-files-dialog.component";
-import { filter } from "rxjs/operators";
+import { filter, startWith } from "rxjs/operators";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
 import { FormStateService } from "../../../+form/form-state.service";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import { CodelistPipe } from "../../../directives/codelist.pipe";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
 interface RepeatDistributionDetailListProps extends FormlyFieldProps {
   supportLink?: boolean;
@@ -63,8 +64,10 @@ interface RepeatDistributionDetailListProps extends FormlyFieldProps {
   infoText: string;
   backendUrl: string;
   fields: FormlyFieldConfig[];
+  codelistIdForFileReferenceFormats: string;
 }
 
+@UntilDestroy()
 @Component({
   selector: "ige-repeat-distribution-detail-list",
   templateUrl: "./repeat-distribution-detail-list.component.html",
@@ -95,7 +98,16 @@ export class RepeatDistributionDetailListComponent
   implements OnInit
 {
   showMore = {};
-  batchMode = false;
+
+  setCodelistIdForFileReferenceFormats() {
+    let codelistIdForFileReferenceFormats = this.field.props.fields.filter(
+      (field) => field.key == "format",
+    )[0]?.props?.codelistId;
+    this.field.props.codelistIdForFileReferenceFormats =
+      codelistIdForFileReferenceFormats;
+  }
+
+  items = signal<any[]>([]);
 
   constructor(
     private dialog: MatDialog,
@@ -104,10 +116,11 @@ export class RepeatDistributionDetailListComponent
     super();
   }
 
-  ngOnInit(): void {}
-
-  addItem() {
-    this.openDialog(null);
+  ngOnInit(): void {
+    this.setCodelistIdForFileReferenceFormats();
+    this.formControl.valueChanges
+      .pipe(untilDestroyed(this), startWith(this.formControl.value))
+      .subscribe((data) => this.items.set(data ?? []));
   }
 
   editItem(index: number) {
@@ -150,7 +163,7 @@ export class RepeatDistributionDetailListComponent
       ?.key?.toString();
   }
 
-  private getDownloadURL(uri: string) {
+  getDownloadURL(uri: string) {
     return (
       this.field.props.backendUrl +
       "upload/" +
@@ -160,7 +173,7 @@ export class RepeatDistributionDetailListComponent
     );
   }
 
-  private getDateString(datetime: string): string {
+  getDateString(datetime: string): string {
     return new Date(datetime).toLocaleDateString();
   }
 
@@ -187,10 +200,6 @@ export class RepeatDistributionDetailListComponent
     return template;
   }
 
-  private addLinkInfoToDatasource(link: any) {
-    this.model[this.key + ""].push(link);
-  }
-
   private isNotInTable(file: LinkInfo) {
     const uploadKey = this.getUploadFieldKey();
     return (
@@ -203,7 +212,6 @@ export class RepeatDistributionDetailListComponent
   }
 
   openDialog(index?: number) {
-    console.log(index);
     this.dialog
       .open(FormDialogComponent, {
         width: "90vw",
@@ -258,18 +266,15 @@ export class RepeatDistributionDetailListComponent
   }
 
   handleCellClick(index: number, element, $event: MouseEvent) {
-    //if (!this.props.supportUpload) return;
+    if (element.asLink) return;
 
-    const uploadKey = this.getUploadFieldKey();
-    if (!element.asLink) {
-      const options = this.props.fields[2].props;
-      if (options.onClick) {
-        options.onClick(
-          this.formStateService.metadata().uuid,
-          element.uri,
-          $event,
-        );
-      }
+    const options = this.props.fields[2].props;
+    if (options.onClick) {
+      options.onClick(
+        this.formStateService.metadata().uuid,
+        element.uri,
+        $event,
+      );
     }
   }
 }

@@ -1,7 +1,7 @@
 ---
 # ID des GUI Elements
 id: landingPage
-docType: BmiDoc
+docType: OpenDataDoc
 profile: bmi
 ---
 

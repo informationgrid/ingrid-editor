@@ -3102,27 +3102,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ngx-formly/core@npm:6.3.6":
-  version: 6.3.6
-  resolution: "@ngx-formly/core@npm:6.3.6"
+"@ngx-formly/core@npm:6.3.7":
+  version: 6.3.7
+  resolution: "@ngx-formly/core@npm:6.3.7"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
     "@angular/forms": ">=13.2.0"
     rxjs: ^6.5.3 || ^7.0.0
-  checksum: 10c0/7bb31ae80245e9873f93e084cd86b55d40889465912ed3d4905b7481c74e63dc8ac4516ba788c7093aacfa7667d2417655252af199769e93660bf4163261d499
+  checksum: 10c0/ec302e65a55a527af4003acc5b8412e87c4190d2b9968c6f08475ace71ec975bca46c8e455a0164e1e72f0017f9159d724bf415a5e1b74205e041e1433cdd505
   languageName: node
   linkType: hard
 
-"@ngx-formly/material@npm:6.3.6":
-  version: 6.3.6
-  resolution: "@ngx-formly/material@npm:6.3.6"
+"@ngx-formly/material@npm:6.3.7":
+  version: 6.3.7
+  resolution: "@ngx-formly/material@npm:6.3.7"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
     "@angular/material": ">=13.0.0"
-    "@ngx-formly/core": 6.3.6
-  checksum: 10c0/c86f7c5e9fef3da86d228fa0830f4da2eb2d25c0a09a30b5d86fd374810875ab1fd679fa1ed1bd93f3d414094d533329d58e43160482360b9b2c79e314a3d444
+    "@ngx-formly/core": 6.3.7
+  checksum: 10c0/197f289a512e5e7dddb4cfb36041ee2d6ef280bfd3d80b2e4900aa5dcb9876909cc4d6f5b9473b3d149e1fffbe46e92e9561d07d4e8beda3bf54806cd4e01f19
   languageName: node
   linkType: hard
 
@@ -7878,8 +7878,8 @@ __metadata:
     "@ngneat/spectator": "npm:^16.0.0"
     "@ngneat/transloco": "npm:6.0.4"
     "@ngneat/until-destroy": "npm:^10.0.0"
-    "@ngx-formly/core": "npm:6.3.6"
-    "@ngx-formly/material": "npm:6.3.6"
+    "@ngx-formly/core": "npm:6.3.7"
+    "@ngx-formly/material": "npm:6.3.7"
     "@stomp/rx-stomp": "npm:^2.0.0"
     "@stomp/stompjs": "npm:^7.0.0"
     "@terraformer/wkt": "npm:^2.2.1"
@@ -7897,7 +7897,7 @@ __metadata:
     jasmine-core: "npm:^5.2.0"
     jasmine-reporters: "npm:^2.5.2"
     jasmine-spec-reporter: "npm:~7.0.0"
-    karma: "npm:~6.4.3"
+    karma: "npm:~6.4.4"
     karma-chrome-launcher: "npm:~3.2.0"
     karma-cli: "npm:~2.0.0"
     karma-coverage-istanbul-reporter: "npm:~3.0.3"
@@ -8943,9 +8943,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"karma@npm:~6.4.3":
-  version: 6.4.3
-  resolution: "karma@npm:6.4.3"
+"karma@npm:~6.4.4":
+  version: 6.4.4
+  resolution: "karma@npm:6.4.4"
   dependencies:
     "@colors/colors": "npm:1.5.0"
     body-parser: "npm:^1.19.0"
@@ -8973,7 +8973,7 @@ __metadata:
     yargs: "npm:^16.1.1"
   bin:
     karma: bin/karma
-  checksum: 10c0/dc9710600c69265fce24a91312a136396acef969b72aac05e342724a4223a799cd3676a20f73a4beda797908b7f534fa95c8228bd79fd5c54682020c626e4fdd
+  checksum: 10c0/1658c4b7396c0edf6f048289182e075b561902e02992e1a3eb72f56f67090ff0c7ad7c91ab099e88a790c60f9500c5a6f974d75f1769e3ea2dfccda52876ec0b
   languageName: node
   linkType: hard
 
