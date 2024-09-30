@@ -103,13 +103,12 @@ export class ConsolidateDialogComponent implements OnInit {
   async ngOnInit() {
     this.doc = this.formStateService.getForm().value;
     this.metadata = this.formStateService.metadata();
-    console.log(this.metadata);
     const hasKeywords = this.initKeywords();
     if (!hasKeywords) {
       this.isLoading = false;
       return;
     }
-    this.consolidateKeywords();
+    await this.consolidateKeywords();
   }
 
   private initKeywords() {
@@ -147,6 +146,8 @@ export class ConsolidateDialogComponent implements OnInit {
 
   protected async consolidateKeywords() {
     this.isLoading = true;
+    this.timedOutKeywords = [];
+    this.timedOutThesauri = [];
     this.inspireTopics.forEach((theme) => this.handleInspireTopics(theme));
     this.isoCategories.forEach((category) =>
       this.handleIsoCategories(category),
