@@ -89,11 +89,11 @@ export class ConsolidateKeywordsPlugin extends Plugin {
               );
             }
             return;
-          } else {
-            if (!this.isPresent) {
-              this.isPresent = true;
-              this.formMenuService.addMenuItem(this.formMenuId, this.button);
-            }
+          }
+
+          if (!this.isPresent) {
+            this.isPresent = true;
+            this.formMenuService.addMenuItem(this.formMenuId, this.button);
           }
         },
       );
@@ -141,11 +141,13 @@ export class ConsolidateKeywordsPlugin extends Plugin {
         "consolidate-keywords",
       );
     }
+    this.isPresent = false;
   }
 
   unregister() {
     super.unregister();
   }
+
   openConsolidateKeywordsDialog(): Observable<boolean> {
     return this.dialog
       .open(ConsolidateDialogComponent, {
