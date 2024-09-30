@@ -1364,9 +1364,10 @@ export abstract class IngridShared extends BaseDoctype {
           downloadLinkWhenOpenData: {
             expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
               !field.form.value.isOpenData ||
-              ctrl.value?.some((row) => row.type?.key === "9990"), // Datendownload
+              ctrl.value?.some((row) => row.type?.key === "9990") || // one reference of type "Datendownload"
+              (field.form.value.fileReferences?.[0] ? true : false), // or one item in "Dateien"
             message:
-              "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
+              "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
           },
           requiredFieldsInItems: {
             expression: (ctrl: FormControl) =>
