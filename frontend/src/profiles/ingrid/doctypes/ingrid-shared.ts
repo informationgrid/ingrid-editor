@@ -46,6 +46,7 @@ import { BehaviourService } from "../../../app/services/behavior/behaviour.servi
 import { MatSelectChange } from "@angular/material/select";
 import { DocumentService } from "../../../app/services/document/document.service";
 import { KeywordAnalysis, KeywordSectionOptions } from "../utils/keywords";
+import { UploadService } from "../../../app/shared/upload/upload.service";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -71,6 +72,7 @@ export abstract class IngridShared extends BaseDoctype {
   private behaviourService = inject(BehaviourService);
   private documentService = inject(DocumentService);
   private keywordAnalysis = inject(KeywordAnalysis);
+  private uploadService = inject(UploadService);
 
   options = {
     dynamicRequired: {
@@ -1362,9 +1364,10 @@ export abstract class IngridShared extends BaseDoctype {
           downloadLinkWhenOpenData: {
             expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
               !field.form.value.isOpenData ||
-              ctrl.value?.some((row) => row.type?.key === "9990"), // Datendownload
+              ctrl.value?.some((row) => row.type?.key === "9990") || // one reference of type "Datendownload"
+              (field.form.value.fileReferences?.[0] ? true : false), // or one item in "Dateien"
             message:
-              "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
+              "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
           },
           requiredFieldsInItems: {
             expression: (ctrl: FormControl) =>
@@ -1378,6 +1381,90 @@ export abstract class IngridShared extends BaseDoctype {
               ),
             message:
               "Es müssen alle Pflichtfelder in den Verweisen ausgefüllt sein",
+          },
+        },
+      }),
+    ]);
+  }
+
+  addFileReferences() {
+    return this.addSection("Dateien", [
+      this.addRepeatDistributionDetailList("fileReferences", "Dateien", {
+        required: false,
+        supportLink: false,
+        enableFileUploadOverride: false,
+        enableFileUploadReuse: false,
+        backendUrl: this.configService.getConfiguration().backendUrl,
+        infoText:
+          "Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten.",
+        jsonTemplate: {
+          format: { key: null },
+          title: "",
+          description: "",
+        },
+        fields: [
+          this.addGroupSimple(null, [
+            { key: "_title" },
+            this.addInputInline("title", "Titel", {
+              contextHelpId: "distribution_title",
+              hasInlineContextHelp: true,
+              wrappers: ["inline-help", "form-field"],
+            }),
+            {
+              key: "link",
+              type: "upload",
+              label: "Link",
+              class: "flex-2",
+              wrappers: ["form-field", "inline-help"],
+              props: {
+                label: "Link",
+                appearance: "outline",
+                required: true,
+                hasInlineContextHelp: true,
+                contextHelpId: "distribution_upload",
+                validators: {
+                  validation: ["url"],
+                },
+                onClick: (docUuid, uri, $event) => {
+                  this.uploadService.downloadFile(docUuid, uri, $event);
+                },
+              },
+              expressions: {
+                "props.label": (field) =>
+                  field.formControl.value?.asLink
+                    ? "URL (Link)"
+                    : "Dateiname (Upload)",
+              },
+            },
+            this.addAutoCompleteInline("format", "Format", {
+              required: true,
+              options: this.getCodelistForSelect(
+                this.codelistIds.fileReferenceFormat,
+                "fileReferenceFormat",
+              ),
+              codelistId: this.codelistIds.fileReferenceFormat,
+              wrappers: ["inline-help", "form-field"],
+              hasInlineContextHelp: true,
+            }),
+            this.addTextAreaInline("description", "Beschreibung", "ingrid", {
+              wrappers: ["form-field", "inline-help"],
+              hasInlineContextHelp: true,
+              contextHelpId: "distribution_description",
+            }),
+          ]),
+        ],
+        validators: {
+          requiredFormat: {
+            expression: (ctrl) => {
+              if (!ctrl.value || ctrl.value.length === 0) {
+                return true;
+              }
+              return ctrl.value?.every(
+                (entry) => entry?.format?.key || entry?.format.value,
+              );
+            },
+            message:
+              "Fehler: Es muss für jedes Dokument ein Format angegeben werden (Dokument bearbeiten).",
           },
         },
       }),
