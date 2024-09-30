@@ -35,6 +35,7 @@ import { ConfigService } from "../../../../app/services/config/config.service";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
 import { FormUtils } from "../../../../app/+form/form.utils";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
+import { DocumentAbstract } from "../../../../app/store/document/document.model";
 
 @Injectable({ providedIn: "root" })
 export class ConsolidateKeywordsPlugin extends Plugin {
@@ -43,7 +44,9 @@ export class ConsolidateKeywordsPlugin extends Plugin {
   description = "Schlagworte konsolidieren";
   defaultActive = true;
   forAddress = false;
-  isPresent = false;
+
+  formMenuId: MenuId = "dataset";
+  private isPresent = false;
   private readonly isPrivileged: boolean;
   private readonly button: FormularMenuItem = {
     title: this.name,
@@ -67,66 +70,65 @@ export class ConsolidateKeywordsPlugin extends Plugin {
     super();
     inject(PluginService).registerPlugin(this);
 
-    let role = configService.$userInfo.getValue().role;
     this.isPrivileged =
-      role === "ige-super-admin" || role === "cat-admin" || role === "md-admin";
+      configService.hasCatAdminRights() || configService.hasMdAdminRights();
   }
-
-  formMenuId: MenuId = "dataset";
 
   registerForm() {
     super.registerForm();
     // only add menu item in form if user is privileged and not for address
     if (this.isPrivileged && !this.forAddress) {
       const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
-        (doc) => {
-          if (doc?._type === "FOLDER") {
-            if (this.isPresent) {
-              this.isPresent = false;
-              this.formMenuService.removeMenuItem(
-                this.formMenuId,
-                "consolidate-keywords",
-              );
-            }
-            return;
-          }
-
-          if (!this.isPresent) {
-            this.isPresent = true;
-            this.formMenuService.addMenuItem(this.formMenuId, this.button);
-          }
-        },
+        (doc) => this.handleMenuItem(doc),
       );
 
       const onEvent = this.docEvents
         .onEvent("OPEN_CONSOLIDATE_KEYWORDS_DIALOG")
-        .subscribe(async (event) => {
-          const handled = await FormUtils.handleDirtyForm(
-            this.formStateService,
-            this.documentService,
-            this.dialog,
-            false,
-          );
-          if (!handled) {
-            return;
-          }
-
-          this.openConsolidateKeywordsDialog().subscribe(async (confirmed) => {
-            if (confirmed) {
-              const handled = await FormUtils.handleDirtyForm(
-                this.formStateService,
-                this.documentService,
-                this.dialog,
-                this.forAddress,
-              );
-              if (handled)
-                console.log("consolidate keywords for docId", event.data.id);
-            }
-          });
-        });
+        .subscribe(async () => await this.handleConsolidateKeywordsAction());
       this.formSubscriptions.push(onDocLoad); // Add menu button
       this.formSubscriptions.push(onEvent); // Open dialog
     }
+  }
+
+  private handleMenuItem(doc: DocumentAbstract) {
+    if (doc?._type === "FOLDER") {
+      if (this.isPresent) {
+        this.isPresent = false;
+        this.formMenuService.removeMenuItem(
+          this.formMenuId,
+          "consolidate-keywords",
+        );
+      }
+      return;
+    }
+
+    if (!this.isPresent) {
+      this.isPresent = true;
+      this.formMenuService.addMenuItem(this.formMenuId, this.button);
+    }
+  }
+
+  private async handleConsolidateKeywordsAction() {
+    const handled = await FormUtils.handleDirtyForm(
+      this.formStateService,
+      this.documentService,
+      this.dialog,
+      false,
+    );
+    if (!handled) {
+      return;
+    }
+
+    this.openConsolidateKeywordsDialog().subscribe(async (confirmed) => {
+      if (confirmed) {
+        await FormUtils.handleDirtyForm(
+          this.formStateService,
+          this.documentService,
+          this.dialog,
+          this.forAddress,
+        );
+      }
+    });
   }
 
   register() {

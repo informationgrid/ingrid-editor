@@ -7,11 +7,6 @@ konsolidieren"
     <ng-container content>
         @if (!isLoading) {
             @if (this.hasKeywords) {
-                <div class="no-selection-text">
-                    Bestehende Schlagworte werden hier auf ihre Aktualität
-                    geprüft. Grün hinterlegte Schlagworte werden der Liste
-                    hinzugefügt. Rot hinterlegte Schlagworte werden entfernt.
-                </div>
                 @for (keywordType of keywordDialogData; track keywordType) {
                     @if (keywordType.condition) {
                         <div
@@ -57,8 +52,11 @@ konsolidieren"
                 <div class="help flex-row align-items-center">
                     <mat-icon svgIcon="info-24px"></mat-icon>
                     <div class="legend">
-                        Klicken sie auf "Übernehmen" um die Änderungen zu
-                        speichern.
+                        <div>
+                            Grün hinterlegte Schlagworte werden der Liste
+                            hinzugefügt.
+                        </div>
+                        <div>Rot hinterlegte Schlagworte werden entfernt.</div>
                     </div>
                 </div>
                 @if (timedOutKeywords.length) {
@@ -70,17 +68,7 @@ konsolidieren"
                     </div>
                 }
             } @else {
-                <div class="no-selection-text">
-                    Zurzeit sind keine Schlagworte vorhanden.
-                </div>
-                <div class="help flex-row align-items-center">
-                    <mat-icon svgIcon="info-24px"></mat-icon>
-
-                    <div class="legend">
-                        Bitte fügen Sie Schlagworte hinzu, um diese zu
-                        konsolidieren.
-                    </div>
-                </div>
+                <div>In diesem Datensatz sind keine Schlagworte vorhanden.</div>
             }
         } @else {
             <div class="flex-row justify-content-center align-items-center">
