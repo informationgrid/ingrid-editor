@@ -743,7 +743,6 @@ export abstract class IngridShared extends BaseDoctype {
     field.formControl.enable();
     field.formControl.setValue("");
   }
-
   private informUserAboutThesaurusAnalysis(res: Awaited<ThesaurusResult>[]) {
     this.snack.openFromComponent(ThesaurusReportComponent, {
       duration: 20000,

@@ -19,13 +19,14 @@
  */
 import { ThesaurusResult } from "../components/thesaurus-result";
 import { HttpClient } from "@angular/common/http";
-import { firstValueFrom } from "rxjs";
+import { firstValueFrom, throwError, timeout } from "rxjs";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { inject, Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IgeError } from "../../../app/models/ige-error";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { catchError } from "rxjs/operators";
 
 export interface KeywordSectionOptions {
   priorityDataset?: boolean;
@@ -166,7 +167,22 @@ export class KeywordAnalysis {
     }
   }
 
-  private async assignKeyword(item: string, checkThemes: boolean) {
+  private mapThesaurusToLabel(thesaurus: string): string {
+    switch (thesaurus) {
+      case "gemet":
+        return "Gemet Schlagworte";
+      case "umthes":
+        return "Umthes Schlagworte";
+      case "free":
+        return "Freie Schlagworte";
+      case "themes":
+        return "INSPIRE-Themen";
+      default:
+        throw new IgeError(`Model not supported: ${thesaurus}`);
+    }
+  }
+
+  async assignKeyword(item: string, checkThemes: boolean) {
     if (checkThemes) {
       const resultTheme = this.checkInThemes(item);
       if (resultTheme.found) return resultTheme;
@@ -177,10 +193,10 @@ export class KeywordAnalysis {
 
     const umthesResult = await this.checkInThesaurus(item, "umthes");
     if (umthesResult.found) return umthesResult;
-    else return this.addFreeKeyword(item);
+    return this.addFreeKeyword(item);
   }
 
-  private checkInThemes(item: string): ThesaurusResult {
+  checkInThemes(item: string): ThesaurusResult {
     const id = this.codelistQuery.getCodelistEntryByValue("6100", item, "de")
       ?.id;
     return {
@@ -200,19 +216,36 @@ export class KeywordAnalysis {
     };
   }
 
-  private async checkInThesaurus(
+  async checkInThesaurus(
     item: string,
     thesaurus: string,
+    timeoutDuration = 20000,
   ): Promise<ThesaurusResult> {
+    const thesaurusName = this.mapThesaurusToLabel(thesaurus);
+
     const response = await firstValueFrom(
-      this.http.get<any[]>(
-        `${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(
-          item,
-        )}&type=EXACT`,
-      ),
+      this.http
+        .get<any[]>(
+          `${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(
+            item,
+          )}&type=EXACT`,
+        )
+        .pipe(
+          timeout(timeoutDuration),
+          catchError((err) => {
+            if (err.name === "TimeoutError") {
+              throw {
+                message: `${thesaurus} + " request timed out for " + '${item}'`,
+                label: item,
+                thesaurus: thesaurus,
+                found: false,
+              };
+            }
+            return throwError(() => err);
+          }),
+        ),
     );
-    const thesaurusName =
-      thesaurus === "gemet" ? "Gemet Schlagworte" : "Umthes Schlagworte";
+
     if (response.length > 0) {
       return {
         thesaurus: thesaurusName,
@@ -221,6 +254,12 @@ export class KeywordAnalysis {
         label: response[0].label,
       };
     }
-    return { thesaurus: thesaurusName, found: false, value: null, label: item };
+
+    return {
+      thesaurus: thesaurusName,
+      found: false,
+      value: null,
+      label: item,
+    };
   }
 }
