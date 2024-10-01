@@ -12,10 +12,11 @@ import {
   MatChipListbox,
   MatChipListboxChange,
   MatChipOption,
+  MatChipSelectionChange,
 } from "@angular/material/chips";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { debounceTime, startWith } from "rxjs/operators";
+import { debounceTime, distinctUntilChanged, startWith } from "rxjs/operators";
 
 export interface MetadataProps extends FormlyFieldProps {
   availableOptions: MetadataOption[];
@@ -86,18 +87,26 @@ export class MetadataTypeComponent
         const data = value ?? {};
         this.aForm.patchValue(
           { ...this.cleanForm, ...data },
-          { emitEvent: false },
+          {},
+          // { emitEvent: false },
         );
-        let options = this.props.availableOptions;
-        if (options[1].typeOptions.length > 1)
-          options[1].typeOptions[1].hidden = !data.isInspireIdentified;
-        this.displayedOptions.set(options);
+
+        // typeOption.onChange?.(this.field, $event.value);
+        // let options = this.props.availableOptions;
+        // if (options[1].typeOptions.length > 1)
+        // options[1].typeOptions[1].hidden = !data.isInspireIdentified;
+        // this.displayedOptions.set(options);
       });
     this.aForm.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      )
       .subscribe((data) => {
         console.log(data);
+        this.previousValue = this.formControl.value;
         this.formControl.setValue(data);
+        this.props.change(this.field, this.previousValue);
       });
   }
 
@@ -160,5 +169,17 @@ export class MetadataTypeComponent
     console.log("option changed", $event);
     this.previousValue = this.formControl.value;
     typeOption.onChange?.(this.field, $event.value);
+  }
+
+  handleOptionChange(
+    typeOption: MetadataOptionItems,
+    $event: MatChipSelectionChange,
+  ) {
+    console.log(
+      "single option changed aForm",
+      this.aForm.value[typeOption.key],
+    );
+    // this.previousValue = this.formControl.value;
+    // typeOption.onChange?.(this.field, $event.value);
   }
 }

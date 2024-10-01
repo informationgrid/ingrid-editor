@@ -34,36 +34,35 @@
                                 [multiple]="typeOption.multiple"
                                 [hideSingleSelectionIndicator]="true"
                                 [formControlName]="typeOption.key"
-                                (change)="handleChange(typeOption, $event)"
                             >
                                 @for (
                                     item of typeOption.items;
                                     track item;
                                     let isLast = $last
                                 ) {
-                                    <!--                                @if (!item.hide) {-->
-                                    <mat-chip-option
-                                        [value]="item.value"
-                                        [disabled]="
-                                            props.disabledOptions[
-                                                typeOption.key
-                                            ]
-                                        "
-                                        (click)="handleOptionClick(item)"
-                                        >{{ item.label }}</mat-chip-option
-                                    >
-                                    @if (!typeOption.multiple && !isLast) {
-                                        <span
-                                            class="connector"
-                                            [class.comment]="
+                                    @if (!item.hide) {
+                                        <mat-chip-option
+                                            [value]="item.value"
+                                            [disabled]="
                                                 props.disabledOptions[
                                                     typeOption.key
                                                 ]
                                             "
-                                            >oder</span
+                                            (click)="handleOptionClick(item)"
+                                            >{{ item.label }}</mat-chip-option
                                         >
+                                        @if (!typeOption.multiple && !isLast) {
+                                            <span
+                                                class="connector"
+                                                [class.comment]="
+                                                    props.disabledOptions[
+                                                        typeOption.key
+                                                    ]
+                                                "
+                                                >oder</span
+                                            >
+                                        }
                                     }
-                                    <!--                                }-->
                                 }
                             </mat-chip-listbox>
                         }

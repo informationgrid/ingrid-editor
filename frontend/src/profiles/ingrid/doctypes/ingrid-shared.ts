@@ -136,6 +136,7 @@ export abstract class IngridShared extends BaseDoctype {
           {
             multiple: false,
             key: "subType",
+            // required: true,
             items: [
               { label: "Datensatz", value: { key: 5 } },
               { label: "Datenserie", value: { key: 6 } },
@@ -154,7 +155,8 @@ export abstract class IngridShared extends BaseDoctype {
                 "isInspireIdentified changed",
                 field.formControl.value,
               );
-              field.props.disabledOptions.invekos = value === undefined;
+              field.props.availableOptions[1].typeOptions[1].hidden =
+                value === undefined;
             },
             items: this.showInspireConform
               ? [
@@ -201,13 +203,6 @@ export abstract class IngridShared extends BaseDoctype {
                   {
                     label: "InVeKoS/IACS (LPIS)",
                     value: { key: "lpis" },
-                    onClick: (field) =>
-                      this.handleInVeKosChange(field, this.thesaurusTopics),
-                  },
-                  {
-                    label: "InVeKoS/IACS (None)",
-                    value: { key: "none" },
-                    hide: true,
                     onClick: (field) =>
                       this.handleInVeKosChange(field, this.thesaurusTopics),
                   },
@@ -274,6 +269,20 @@ export abstract class IngridShared extends BaseDoctype {
             props: <MetadataProps>{
               availableOptions: this.metadataOptions(),
               disabledOptions: {},
+              change: (field, previousValue) => {
+                const data = field.formControl.value;
+                if (
+                  !data.isInspireIdentified &&
+                  previousValue?.isInspireIdentified !== undefined
+                ) {
+                  field.formControl.setValue({ ...data, invekos: undefined });
+                }
+                console.log(data);
+                if (field.props?.availableOptions?.[1]?.typeOptions?.[1]) {
+                  field.props.availableOptions[1].typeOptions[1].hidden =
+                    !data.isInspireIdentified;
+                }
+              },
             },
           },
         ]),
@@ -739,7 +748,7 @@ export abstract class IngridShared extends BaseDoctype {
                 expressions: {
                   "props.required": this.options.dynamicRequired.spatialScope,
                   className: "field.props.required ? '' : 'optional'",
-                  hide: "!formState.mainModel?.['my-metadata']?.isInspireIdentified",
+                  hide: "field.model['my-metadata']?.isInspireIdentified === undefined",
                 },
               },
             )
@@ -1716,9 +1725,12 @@ export abstract class IngridShared extends BaseDoctype {
     // field.formControl.setValue({...field.formControl.value, isInspireIdentified: "conform"});
 
     if (this.defaultKeySpatialScope) {
-      field.form.get("spatialScope").setValue({
-        key: this.defaultKeySpatialScope,
+      setTimeout(() => {
+        field.form.get("spatialScope").setValue({
+          key: this.defaultKeySpatialScope,
+        });
       });
+      // field.model.spatialScope = { key: this.defaultKeySpatialScope };
     }
 
     if (this.isGeoService) {
@@ -1756,7 +1768,7 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   handleDeactivateInspireIdentified(field: FormlyFieldConfig) {
-    const isOpenData = field.form.get("isOpenData").value === true;
+    const isOpenData = field.formControl.value.isOpenData === true;
     const specificationToRemove = this.isGeoService ? "10" : "12";
     /*    const cookieId = "HIDE_INSPIRE_DEACTIVATE_INFO";
 
@@ -1875,7 +1887,6 @@ export abstract class IngridShared extends BaseDoctype {
       })
       .afterClosed()
       .pipe(
-        tap((value) => console.log("dialog closed", value)),
         map((decision) => {
           debugger;
           if (decision === "ok") executeAction();
@@ -1980,7 +1991,7 @@ export abstract class IngridShared extends BaseDoctype {
         tap((success) =>
           success
             ? field.formControl.setValue({ ...metadata, isOpenData: true })
-            : field.formControl.setValue({ ...metadata, isOpenData: false }),
+            : field.formControl.setValue({ ...metadata, hvd: false }),
         ),
       );
     } else {
@@ -1992,7 +2003,7 @@ export abstract class IngridShared extends BaseDoctype {
     field: FormlyFieldConfig,
     hasThesaurusTopics: boolean,
   ) {
-    const value = field.formControl.value.invekos;
+    const value = field.formControl.value.invekos?.key ?? "none";
     if (value === "none") return;
 
     this.addInVeKoSKeyword(field, "iacs");
@@ -2022,6 +2033,12 @@ export abstract class IngridShared extends BaseDoctype {
     };
 
     const cookieId = "HIDE_INVEKOS_INFO";
+
+    if (this.cookieService.getCookie(cookieId) === "true") {
+      executeAction(value);
+      return of(true);
+    }
+
     this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
