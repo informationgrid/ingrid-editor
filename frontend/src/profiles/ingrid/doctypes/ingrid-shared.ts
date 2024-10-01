@@ -156,26 +156,34 @@ export abstract class IngridShared extends BaseDoctype {
               );
               field.props.disabledOptions.invekos = value === undefined;
             },
-            items: [
-              {
-                label: "INSPIRE konform",
-                value: "conform",
-                onClick: (field, previousValue) =>
-                  this.handleIsInspireConformClick(
-                    field,
-                    previousValue,
-                  ).subscribe(),
-              },
-              {
-                label: "INSPIRE nicht konform",
-                value: "notConform",
-                onClick: (field, previousValue) =>
-                  this.handleIsInspireConformClick(
-                    field,
-                    previousValue,
-                  ).subscribe(),
-              },
-            ],
+            items: this.showInspireConform
+              ? [
+                  {
+                    label: "INSPIRE konform",
+                    value: "conform",
+                    onClick: (field, previousValue) =>
+                      this.handleIsInspireConformClick(
+                        field,
+                        previousValue,
+                      ).subscribe(),
+                  },
+                  {
+                    label: "INSPIRE nicht konform",
+                    value: "notConform",
+                    onClick: (field, previousValue) =>
+                      this.handleIsInspireConformClick(
+                        field,
+                        previousValue,
+                      ).subscribe(),
+                  },
+                ]
+              : [
+                  {
+                    label: "Ja",
+                    value: "relevant",
+                    // onClick: (field) => this.handleOpenDataClick(field),
+                  },
+                ],
           },
           this.showInVeKoSField
             ? {
