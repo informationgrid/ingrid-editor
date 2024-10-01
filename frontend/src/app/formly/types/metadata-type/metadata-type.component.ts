@@ -25,6 +25,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { debounceTime, distinctUntilChanged, startWith } from "rxjs/operators";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { TranslocoDirective } from "@ngneat/transloco";
+import { MetadataTypeShortComponent } from "./metadata-type-short/metadata-type-short.component";
 
 export interface MetadataProps extends FormlyFieldProps {
   availableOptions: MetadataOption[];
@@ -69,6 +70,7 @@ export interface MetadataOptionItem {
     JsonPipe,
     FormErrorComponent,
     TranslocoDirective,
+    MetadataTypeShortComponent,
   ],
   templateUrl: "./metadata-type.component.html",
   styleUrl: "./metadata-type.component.scss",
@@ -84,6 +86,8 @@ export class MetadataTypeComponent
 
   displayedOptions = signal<MetadataOption[]>([]);
   private previousValue: any;
+  showShortVersion = signal<boolean>(true);
+  selectedOptions = signal<string[]>([]);
 
   ngOnInit(): void {
     this.displayedOptions.set(this.props.availableOptions);
@@ -108,6 +112,9 @@ export class MetadataTypeComponent
         this.previousValue = this.formControl.value;
         this.formControl.setValue(data);
         this.props.change(this.field, this.previousValue);
+        this.selectedOptions.set(
+          Object.keys(data).filter((key) => data[key] !== undefined),
+        );
       });
 
     this.formControl.addValidators(

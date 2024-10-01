@@ -1,5 +1,9 @@
-{{ aForm.getRawValue() | json }} showError: {{ showError }}
 <div [attr.data-cy]="key" [formGroup]="aForm" *transloco="let t">
+    @if (showShortVersion()) {
+        <ige-metadata-type-short
+            [options]="selectedOptions()"
+        ></ige-metadata-type-short>
+    }
     @for (option of displayedOptions(); track option) {
         <div class="flex-row small-label-width">
             <ige-form-label [class.required]="option.required">
