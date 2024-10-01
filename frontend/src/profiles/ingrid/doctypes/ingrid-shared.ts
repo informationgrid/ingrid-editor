@@ -78,7 +78,7 @@ export abstract class IngridShared extends BaseDoctype {
   options = {
     dynamicRequired: {
       accessConstraints:
-        "formState.mainModel?.['my-metadata']?.isInspireIdentified",
+        "formState.mainModel?.['my-metadata']?.isInspireIdentified !== undefined",
       openDataCategories: undefined,
       spatialReferences: undefined,
       spatialSystems: undefined,
@@ -132,11 +132,11 @@ export abstract class IngridShared extends BaseDoctype {
     [
       {
         label: "Datentyp",
+        required: true,
         typeOptions: [
           {
             multiple: false,
             key: "subType",
-            // required: true,
             items: [
               { label: "Datensatz", value: { key: 5 } },
               { label: "Datenserie", value: { key: 6 } },
@@ -475,7 +475,7 @@ export abstract class IngridShared extends BaseDoctype {
             executeAction();
             return true;
           }
-          field.formControl.setValue({ ...value, isOpenData: true });
+          field.formControl.setValue({ ...value, isOpenData: false });
           return false;
         }),
       );
@@ -628,7 +628,7 @@ export abstract class IngridShared extends BaseDoctype {
               codelistId: "6100",
               expressions: {
                 "props.required":
-                  "formState.mainModel?.['my-metadata']?.isInspireIdentified",
+                  "formState.mainModel?.['my-metadata']?.isInspireIdentified !== undefined",
                 className: "field.props.required ? '' : 'optional'",
                 hide: "!formState.mainModel?.['my-metadata']?.isInspireIdentified",
               },
@@ -1261,7 +1261,7 @@ export abstract class IngridShared extends BaseDoctype {
               supportUpload: false,
               expressions: {
                 "props.required":
-                  "formState.mainModel?.['my-metadata']?.isInspireIdentified",
+                  "formState.mainModel?.['my-metadata']?.isInspireIdentified !== undefined",
                 className: "field.props.required ? '' : 'optional'",
               },
               dialog: ConformityDialogComponent,

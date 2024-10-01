@@ -14,9 +14,17 @@ import {
   MatChipOption,
   MatChipSelectionChange,
 } from "@angular/material/chips";
-import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+} from "@angular/forms";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { debounceTime, distinctUntilChanged, startWith } from "rxjs/operators";
+import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
+import { TranslocoDirective } from "@ngneat/transloco";
 
 export interface MetadataProps extends FormlyFieldProps {
   availableOptions: MetadataOption[];
@@ -27,6 +35,7 @@ export interface MetadataProps extends FormlyFieldProps {
 
 export interface MetadataOption {
   label: string;
+  required?: boolean;
   typeOptions: MetadataOptionItems[];
 }
 
@@ -58,6 +67,8 @@ export interface MetadataOptionItem {
     MatChipOption,
     ReactiveFormsModule,
     JsonPipe,
+    FormErrorComponent,
+    TranslocoDirective,
   ],
   templateUrl: "./metadata-type.component.html",
   styleUrl: "./metadata-type.component.scss",
@@ -85,17 +96,7 @@ export class MetadataTypeComponent
       )
       .subscribe((value) => {
         const data = value ?? {};
-        this.aForm.patchValue(
-          { ...this.cleanForm, ...data },
-          {},
-          // { emitEvent: false },
-        );
-
-        // typeOption.onChange?.(this.field, $event.value);
-        // let options = this.props.availableOptions;
-        // if (options[1].typeOptions.length > 1)
-        // options[1].typeOptions[1].hidden = !data.isInspireIdentified;
-        // this.displayedOptions.set(options);
+        this.aForm.patchValue({ ...this.cleanForm, ...data }, {});
       });
     this.aForm.valueChanges
       .pipe(
@@ -108,6 +109,13 @@ export class MetadataTypeComponent
         this.formControl.setValue(data);
         this.props.change(this.field, this.previousValue);
       });
+
+    this.formControl.addValidators(
+      (control: AbstractControl): ValidationErrors | null => {
+        if (this.aForm.invalid) return { required: true };
+        return null;
+      },
+    );
   }
 
   showContextHelp(infoElement: HTMLElement) {

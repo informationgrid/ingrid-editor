@@ -1,24 +1,21 @@
-{{ aForm.getRawValue() | json }}
-
-<div [attr.data-cy]="key" [formGroup]="aForm">
+{{ aForm.getRawValue() | json }} showError: {{ showError }}
+<div [attr.data-cy]="key" [formGroup]="aForm" *transloco="let t">
     @for (option of displayedOptions(); track option) {
         <div class="flex-row small-label-width">
-            <ige-form-label>{{ option.label }}</ige-form-label>
+            <ige-form-label [class.required]="option.required">
+                {{ option.label }}<span *ngIf="option.required">*</span>
+            </ige-form-label>
 
             <div class="flex-row align-items-center option-row">
                 @for (typeOption of option.typeOptions; track typeOption) {
                     @if (!typeOption.hidden) {
                         @if (typeOption.key === undefined) {
-                            @for (
-                                item of typeOption.items;
-                                track item;
-                                let isLast = $last
-                            ) {
+                            @for (item of typeOption.items; track item) {
                                 {{ item.hide }}
                                 <mat-chip-listbox
                                     [formControlName]="item.key"
                                     [hideSingleSelectionIndicator]="true"
-                                    [required]="true"
+                                    [required]="false"
                                     ><mat-chip-option
                                         [value]="item.value"
                                         [disabled]="
@@ -30,6 +27,13 @@
                                 >
                             }
                         } @else {
+                            @if (
+                                showError && aForm.get(typeOption.key).invalid
+                            ) {
+                                <ige-form-error>
+                                    {{ t("form.validationMessages.required") }}
+                                </ige-form-error>
+                            }
                             <mat-chip-listbox
                                 [multiple]="typeOption.multiple"
                                 [hideSingleSelectionIndicator]="true"

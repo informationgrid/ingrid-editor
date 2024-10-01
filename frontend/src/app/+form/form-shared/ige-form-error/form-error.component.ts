@@ -26,8 +26,6 @@ import { Component, Input, OnInit } from "@angular/core";
   standalone: true,
 })
 export class FormErrorComponent implements OnInit {
-  @Input() message: string;
-
   // accessibility
   @Input() ariaLabel: string;
 
