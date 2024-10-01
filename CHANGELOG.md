@@ -1,5 +1,38 @@
 # Changelog
 
+## 7.3.0 (01.10.2024)
+
+### Features
+
+- Synchronisation mit UVP Monitoring nachdem eine Veröffentlichung zurückgezogen wurde (#6768)
+- IGE-NG Einführung ktlint check (#6750)
+- URL Prüfung bei "Identifikator der Datenquelle" (#6715)
+- "Datenquelle" beim Export hinzufügen (#6620)
+
+### Bugfixes
+
+- Fehler bei der Suche nach speziellen Zeichen (#6855)
+- Schlagwort wird visuell nicht hinzugefügt (#6827)
+- 'Verweise' dialog does not update the submit state on data change (#6826)
+- Adding a new document to 'Dokumente' section does not appear immediately (#6824)
+- A referenced address with same responsible cannot be added more than one time to the document (#6816)
+- Kopieren von Verfahren mit archivierten Dateien unvollständig (#6787)
+- Aktualisierung des Status der Adressreferenzen (#6780)
+- Anzeige von "amtsinternen" MD bei den "Datenbezügen" einer Adresse (#6774)
+- Hochgeladene entpackte ZIP-Dateien beim Veröffentlichen gelöscht (#6767)
+- Import und export page ist nicht erreichbar für users mit gruppen ohne Folders bei den berechtigten Daten oder Adressen (#6752)
+- Falscher Tooltip bei Adressen-Icons (#6747)
+- Drag and Drop mehrzeilig verbessern (#6728)
+- Abbildung Adresshierarchie mit mehreren Ebenen im Portal korrigieren (#6727)
+- Error on publishing data collection document (#6717)
+- 'Verweise' section is not updated after adding an entry and has wrong title in the dialog (#6691)
+- Anzeige-Fehler bei den Verweisen (#6683)
+- Fehler bei ISO-Schema-Validierung mit GDI Testsuite (#6660)
+- Identifikator der Datenquelle wird fälschlicherweise automatisch erzeugt (#6641)
+- Search using spatial title gives error (#6635)
+- Fehler wenn Favorit bei "INSPIRE - priority data set" (#6579)
+- Raumbezüge vom WMS 1.1.1 getCapabilities (#6566)
+
 ## 7.2.0 (08.07.2024)
 
 ### Features

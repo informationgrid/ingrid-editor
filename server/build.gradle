@@ -155,7 +155,7 @@ dependencies {
     implementation "org.hibernate.orm:hibernate-core"
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.5'
 
-    implementation 'de.ingrid:ingrid-codelist-service:7.1.0'
+    implementation "de.ingrid:ingrid-codelist-service:7.3.0"
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.15.0'
     implementation 'org.apache.commons:commons-text:1.12.0'
@@ -389,3 +389,26 @@ spotless {
         licenseHeaderFile(file('../LICENSE')).updateYearWithLatest(true)
     }
 }
+
+tasks.register('checkForSnapshots', {
+    doLast {
+        def snapshots = new ArrayList()
+        def projectConfigurations = project.configurations.findAll { true }
+
+        projectConfigurations.each {
+            if (it.isCanBeResolved()) {
+                it.resolvedConfiguration.resolvedArtifacts.each {
+                    if (it.moduleVersion.id.version.endsWith('-SNAPSHOT')) {
+                        snapshots.add(it)
+                    }
+                }
+            }
+        }
+        if (!snapshots.isEmpty()) {
+            throw new GradleException("Please get rid of snapshots for following dependencies before releasing $snapshots")
+        } else {
+            println "No snapshot dependencies found!"
+        }
+    }
+})
+
