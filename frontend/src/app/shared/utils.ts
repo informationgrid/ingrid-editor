@@ -850,10 +850,3 @@ export class JsonDiffMerge {
     return node;
   }
 }
-
-export function removeDuplicates(arr: any[], uniqueKey: string) {
-  return arr.filter(
-    (item, index, self) =>
-      index === self.findIndex((t) => t[uniqueKey] === item[uniqueKey]),
-  );
-}

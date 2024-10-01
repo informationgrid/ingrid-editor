@@ -19,13 +19,12 @@
  */
 export interface ThesaurusResult {
   thesaurus:
-    | string
     | "INSPIRE-Themen"
     | "Gemet Schlagworte"
-    | "Umthes Schlagworte";
+    | "Umthes Schlagworte"
+    | "Freie Schlagworte";
   value: any;
   label: string;
   found: boolean;
   alreadyExists?: boolean;
-  status?: "added" | "removed" | "unchanged";
 }
