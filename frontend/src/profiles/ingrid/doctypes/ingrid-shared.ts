@@ -138,8 +138,8 @@ export abstract class IngridShared extends BaseDoctype {
             multiple: false,
             key: "subType",
             items: [
-              { label: "Datensatz", value: { key: 5 } },
-              { label: "Datenserie", value: { key: 6 } },
+              { label: "Datensatz", value: { key: "5" } },
+              { label: "Datenserie", value: { key: "6" } },
             ],
           },
         ],
@@ -181,7 +181,7 @@ export abstract class IngridShared extends BaseDoctype {
                 ]
               : [
                   {
-                    label: "Ja",
+                    label: "INSPIRE",
                     value: "relevant",
                     // onClick: (field) => this.handleOpenDataClick(field),
                   },
@@ -630,7 +630,7 @@ export abstract class IngridShared extends BaseDoctype {
                 "props.required":
                   "formState.mainModel?.['my-metadata']?.isInspireIdentified !== undefined",
                 className: "field.props.required ? '' : 'optional'",
-                hide: "!formState.mainModel?.['my-metadata']?.isInspireIdentified",
+                hide: "formState.mainModel?.['my-metadata']?.isInspireIdentified === undefined",
               },
               change: (field, $event) =>
                 options.thesaurusTopics &&
@@ -732,7 +732,7 @@ export abstract class IngridShared extends BaseDoctype {
                 options: this.getPriorityDatasets(),
                 codelistId: "6350",
                 expressions: {
-                  hide: "!formState.mainModel?.['my-metadata']?.isInspireIdentified",
+                  hide: "formState.mainModel?.['my-metadata']?.isInspireIdentified === undefined",
                 },
               },
             )

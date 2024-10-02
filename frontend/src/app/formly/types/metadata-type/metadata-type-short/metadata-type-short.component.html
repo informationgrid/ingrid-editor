@@ -1,0 +1,16 @@
+<div class="flex-row gap-12">
+    <mat-chip-set>
+        @for (option of options(); track option) {
+            @for (typeOption of option.typeOptions; track typeOption) {
+                @for (item of typeOption.items; track item) {
+                    @if (
+                        value()[typeOption.key] === item.value ||
+                        value()[item.key] === item.value
+                    ) {
+                        <mat-chip>{{ item.label }}</mat-chip>
+                    }
+                }
+            }
+        }
+    </mat-chip-set>
+</div>

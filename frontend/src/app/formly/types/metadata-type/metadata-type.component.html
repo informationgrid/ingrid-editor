@@ -1,82 +1,112 @@
 <div [attr.data-cy]="key" [formGroup]="aForm" *transloco="let t">
-    @if (showShortVersion()) {
-        <ige-metadata-type-short
-            [options]="selectedOptions()"
-        ></ige-metadata-type-short>
-    }
-    @for (option of displayedOptions(); track option) {
-        <div class="flex-row small-label-width">
-            <ige-form-label [class.required]="option.required">
-                {{ option.label }}<span *ngIf="option.required">*</span>
-            </ige-form-label>
+    @if (showShort) {
+        <div class="flex-row gap-12">
+            <ige-metadata-type-short
+                [options]="displayedOptions()"
+                [value]="aForm.value"
+            ></ige-metadata-type-short>
+            <button mat-stroked-button (click)="showShort = false">
+                <mat-icon>edit</mat-icon>
+                <span class="btn-title">Bearbeiten</span>
+            </button>
+        </div>
+    } @else {
+        @for (option of displayedOptions(); track option) {
+            <div class="flex-row small-label-width">
+                <ige-form-label [class.required]="option.required">
+                    {{ option.label }}<span *ngIf="option.required">*</span>
+                </ige-form-label>
 
-            <div class="flex-row align-items-center option-row">
-                @for (typeOption of option.typeOptions; track typeOption) {
-                    @if (!typeOption.hidden) {
-                        @if (typeOption.key === undefined) {
-                            @for (item of typeOption.items; track item) {
-                                {{ item.hide }}
-                                <mat-chip-listbox
-                                    [formControlName]="item.key"
-                                    [hideSingleSelectionIndicator]="true"
-                                    [required]="false"
-                                    ><mat-chip-option
-                                        [value]="item.value"
-                                        [disabled]="
-                                            props.disabledOptions[item.key]
-                                        "
-                                        (click)="handleOptionClick(item)"
-                                        >{{ item.label }}</mat-chip-option
-                                    ></mat-chip-listbox
-                                >
-                            }
-                        } @else {
-                            @if (
-                                showError && aForm.get(typeOption.key).invalid
-                            ) {
-                                <ige-form-error>
-                                    {{ t("form.validationMessages.required") }}
-                                </ige-form-error>
-                            }
-                            <mat-chip-listbox
-                                [multiple]="typeOption.multiple"
-                                [hideSingleSelectionIndicator]="true"
-                                [formControlName]="typeOption.key"
-                            >
-                                @for (
-                                    item of typeOption.items;
-                                    track item;
-                                    let isLast = $last
-                                ) {
-                                    @if (!item.hide) {
-                                        <mat-chip-option
+                <div class="flex-row align-items-center option-row">
+                    @for (typeOption of option.typeOptions; track typeOption) {
+                        @if (!typeOption.hidden) {
+                            @if (typeOption.key === undefined) {
+                                @for (item of typeOption.items; track item) {
+                                    <mat-chip-listbox
+                                        [formControlName]="item.key"
+                                        [hideSingleSelectionIndicator]="true"
+                                        [required]="false"
+                                        ><mat-chip-option
                                             [value]="item.value"
                                             [disabled]="
-                                                props.disabledOptions[
-                                                    typeOption.key
-                                                ]
+                                                props.disabledOptions[item.key]
                                             "
                                             (click)="handleOptionClick(item)"
                                             >{{ item.label }}</mat-chip-option
-                                        >
-                                        @if (!typeOption.multiple && !isLast) {
-                                            <span
-                                                class="connector"
-                                                [class.comment]="
+                                        ></mat-chip-listbox
+                                    >
+                                }
+                            } @else {
+                                @if (
+                                    showError &&
+                                    aForm.get(typeOption.key).invalid
+                                ) {
+                                    <ige-form-error>
+                                        {{
+                                            t(
+                                                "form.validationMessages.required"
+                                            )
+                                        }}
+                                    </ige-form-error>
+                                }
+                                <mat-chip-listbox
+                                    [multiple]="typeOption.multiple"
+                                    [hideSingleSelectionIndicator]="true"
+                                    [formControlName]="typeOption.key"
+                                    [compareWith]="compareChips"
+                                >
+                                    @for (
+                                        item of typeOption.items;
+                                        track item;
+                                        let isLast = $last
+                                    ) {
+                                        @if (!item.hide) {
+                                            <mat-chip-option
+                                                [value]="item.value"
+                                                [disabled]="
                                                     props.disabledOptions[
                                                         typeOption.key
                                                     ]
                                                 "
-                                                >oder</span
+                                                (click)="
+                                                    handleOptionClick(item)
+                                                "
+                                                >{{
+                                                    item.label
+                                                }}</mat-chip-option
                                             >
+                                            @if (
+                                                !typeOption.multiple && !isLast
+                                            ) {
+                                                <span
+                                                    class="connector"
+                                                    [class.comment]="
+                                                        props.disabledOptions[
+                                                            typeOption.key
+                                                        ]
+                                                    "
+                                                    >oder</span
+                                                >
+                                            }
                                         }
                                     }
-                                }
-                            </mat-chip-listbox>
+                                </mat-chip-listbox>
+                            }
                         }
                     }
-                }
+                </div>
             </div>
-        </div>
+        }
+        @if (hasOptionsSelected) {
+            <div class="flex-row">
+                <ige-form-label class="small-label-width"></ige-form-label>
+                <div>
+                    <button mat-stroked-button (click)="showShort = true">
+                        <mat-icon>check</mat-icon>
+                        <span class="btn-title">Nur markierte anzeigen</span>
+                    </button>
+                </div>
+            </div>
+        }
     }
 </div>

@@ -10,9 +10,7 @@ import { JsonPipe, NgIf } from "@angular/common";
 import {
   MatChip,
   MatChipListbox,
-  MatChipListboxChange,
   MatChipOption,
-  MatChipSelectionChange,
 } from "@angular/material/chips";
 import {
   AbstractControl,
@@ -26,6 +24,8 @@ import { debounceTime, distinctUntilChanged, startWith } from "rxjs/operators";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { TranslocoDirective } from "@ngneat/transloco";
 import { MetadataTypeShortComponent } from "./metadata-type-short/metadata-type-short.component";
+import { MatButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
 
 export interface MetadataProps extends FormlyFieldProps {
   availableOptions: MetadataOption[];
@@ -71,6 +71,8 @@ export interface MetadataOptionItem {
     FormErrorComponent,
     TranslocoDirective,
     MetadataTypeShortComponent,
+    MatButton,
+    MatIcon,
   ],
   templateUrl: "./metadata-type.component.html",
   styleUrl: "./metadata-type.component.scss",
@@ -86,8 +88,12 @@ export class MetadataTypeComponent
 
   displayedOptions = signal<MetadataOption[]>([]);
   private previousValue: any;
-  showShortVersion = signal<boolean>(true);
-  selectedOptions = signal<string[]>([]);
+  showShort: boolean = true;
+  hasOptionsSelected: boolean;
+
+  compareChips(chip1: any, chip2: any): boolean {
+    return chip1 && chip2 ? chip1.key === chip2.key : chip1 === chip2;
+  }
 
   ngOnInit(): void {
     this.displayedOptions.set(this.props.availableOptions);
@@ -101,6 +107,10 @@ export class MetadataTypeComponent
       .subscribe((value) => {
         const data = value ?? {};
         this.aForm.patchValue({ ...this.cleanForm, ...data }, {});
+        this.displayedOptions.set([...this.props.availableOptions]);
+        // show short version only when at least one option was chosen
+        if (!this.hasValue(data)) this.showShort = false;
+        this.hasOptionsSelected = this.hasValue(data);
       });
     this.aForm.valueChanges
       .pipe(
@@ -110,11 +120,10 @@ export class MetadataTypeComponent
       .subscribe((data) => {
         console.log(data);
         this.previousValue = this.formControl.value;
+        // this.formControl.setValue(data, { emitEvent: false });
+        // this.formControl.setValue(data, { onlySelf: true });
         this.formControl.setValue(data);
         this.props.change(this.field, this.previousValue);
-        this.selectedOptions.set(
-          Object.keys(data).filter((key) => data[key] !== undefined),
-        );
       });
 
     this.formControl.addValidators(
@@ -123,6 +132,10 @@ export class MetadataTypeComponent
         return null;
       },
     );
+  }
+
+  private hasValue(data) {
+    return Object.values(data).some((value) => value);
   }
 
   showContextHelp(infoElement: HTMLElement) {
@@ -177,24 +190,7 @@ export class MetadataTypeComponent
   }
 
   handleOptionClick(item: MetadataOptionItem) {
+    this.formControl.markAsDirty();
     item.onClick?.(this.field, this.previousValue);
-  }
-
-  handleChange(typeOption: MetadataOptionItems, $event: MatChipListboxChange) {
-    console.log("option changed", $event);
-    this.previousValue = this.formControl.value;
-    typeOption.onChange?.(this.field, $event.value);
-  }
-
-  handleOptionChange(
-    typeOption: MetadataOptionItems,
-    $event: MatChipSelectionChange,
-  ) {
-    console.log(
-      "single option changed aForm",
-      this.aForm.value[typeOption.key],
-    );
-    // this.previousValue = this.formControl.value;
-    // typeOption.onChange?.(this.field, $event.value);
   }
 }
