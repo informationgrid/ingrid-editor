@@ -6,7 +6,7 @@ import {
   FormlyFieldProps,
 } from "@ngx-formly/core";
 import { FormLabelComponent } from "../../wrapper/form-label/form-label.component";
-import { JsonPipe, NgIf } from "@angular/common";
+import { AsyncPipe, JsonPipe, NgIf } from "@angular/common";
 import {
   MatChip,
   MatChipListbox,
@@ -26,6 +26,7 @@ import { TranslocoDirective } from "@ngneat/transloco";
 import { MetadataTypeShortComponent } from "./metadata-type-short/metadata-type-short.component";
 import { MatButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
+import { Observable } from "rxjs";
 
 export interface MetadataProps extends FormlyFieldProps {
   availableOptions: MetadataOption[];
@@ -45,7 +46,8 @@ export interface MetadataOptionItems {
   multiple: boolean;
   hidden?: boolean;
   hide?: (field: FormlyFieldConfig) => boolean;
-  items: MetadataOptionItem[];
+  items?: MetadataOptionItem[];
+  asyncItems?: Observable<MetadataOptionItem[]>;
   onChange?: (field: FormlyFieldConfig, value: any) => void;
 }
 
@@ -73,6 +75,7 @@ export interface MetadataOptionItem {
     MetadataTypeShortComponent,
     MatButton,
     MatIcon,
+    AsyncPipe,
   ],
   templateUrl: "./metadata-type.component.html",
   styleUrl: "./metadata-type.component.scss",

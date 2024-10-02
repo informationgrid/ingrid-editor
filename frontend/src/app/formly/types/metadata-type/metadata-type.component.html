@@ -30,7 +30,11 @@
                     @for (typeOption of option.typeOptions; track typeOption) {
                         @if (!typeOption.hidden) {
                             @if (typeOption.key === undefined) {
-                                @for (item of typeOption.items; track item) {
+                                @for (
+                                    item of typeOption.items ??
+                                        (typeOption.asyncItems | async);
+                                    track item
+                                ) {
                                     <mat-chip-listbox
                                         [formControlName]="item.key"
                                         [hideSingleSelectionIndicator]="true"
@@ -65,7 +69,8 @@
                                     [compareWith]="compareChips"
                                 >
                                     @for (
-                                        item of typeOption.items;
+                                        item of typeOption.items ??
+                                            (typeOption.asyncItems | async);
                                         track item;
                                         let isLast = $last
                                     ) {
