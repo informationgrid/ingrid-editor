@@ -128,22 +128,8 @@ export abstract class IngridShared extends BaseDoctype {
     fileReferenceFormat: "1320",
   };
 
-  metadataOptions = () =>
-    [
-      {
-        label: "Datentyp",
-        required: true,
-        typeOptions: [
-          {
-            multiple: false,
-            key: "subType",
-            items: [
-              { label: "Datensatz", value: { key: "5" } },
-              { label: "Datenserie", value: { key: "6" } },
-            ],
-          },
-        ],
-      },
+  protected metadataOptions() {
+    return [
       {
         label: "INSPIRE-relevant",
         typeOptions: [
@@ -151,10 +137,6 @@ export abstract class IngridShared extends BaseDoctype {
             multiple: false,
             key: "isInspireIdentified",
             onChange: (field, value) => {
-              console.log(
-                "isInspireIdentified changed",
-                field.formControl.value,
-              );
               field.props.availableOptions[1].typeOptions[1].hidden =
                 value === undefined;
             },
@@ -255,6 +237,7 @@ export abstract class IngridShared extends BaseDoctype {
           }
         : null,
     ].filter(Boolean);
+  }
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     this.thesaurusTopics = options.thesaurusTopics;

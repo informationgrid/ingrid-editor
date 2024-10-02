@@ -26,6 +26,7 @@ import { generateUUID } from "../../../app/services/utils";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { map } from "rxjs/operators";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
+import { MetadataOptionItem } from "../../../app/formly/types/metadata-type/metadata-type.component";
 
 @Injectable({
   providedIn: "root",
@@ -77,6 +78,32 @@ export class GeoDatasetDoctype extends IngridShared {
     this.options.dynamicRequired.spatialScope =
       "formState.mainModel?.isInspireIdentified";
   }
+
+  metadataOptions = () => {
+    return [
+      {
+        label: "Datentyp",
+        required: true,
+        typeOptions: [
+          {
+            multiple: false,
+            key: "subType",
+            asyncItems: this.getCodelistForSelect("525", "subType").pipe(
+              map((items) => {
+                return items.map((item) => {
+                  return <MetadataOptionItem>{
+                    label: item.label,
+                    value: { key: item.value },
+                  };
+                });
+              }),
+            ),
+          },
+        ],
+      },
+      ...super.metadataOptions(),
+    ];
+  };
 
   documentFields = () => {
     this.handleInVeKoSBehaviour();
