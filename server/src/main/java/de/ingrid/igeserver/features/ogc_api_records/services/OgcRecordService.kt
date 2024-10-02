@@ -48,6 +48,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportResult
 import de.ingrid.igeserver.services.ExportService
+import de.ingrid.igeserver.utils.getString
 import org.keycloak.util.JsonSerialization
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -580,5 +581,17 @@ class OgcRecordService(
         }
 
         return xmlNodeToString(doc)
+    }
+
+    @Transactional
+    fun moveRecords(collectionId: String, data: String) {
+        val moveTasks = jacksonObjectMapper().readValue(data, JsonNode::class.java)
+        for (action in moveTasks) {
+            val recordId = action.getString("recordId") ?: throw ClientException.withReason("Moving record to folder failed: Missing recordId.")
+            val folderId = action.getString("folderId")
+            val recordWrapperId = (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)).id ?: throw ClientException.withReason("Moving record to folder failed: Record not found.")
+            val folderWrapperId = if (folderId == "" || folderId == null) null else (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, folderId)).id
+            documentService.updateParent(collectionId, recordWrapperId, folderWrapperId)
+        }
     }
 }
