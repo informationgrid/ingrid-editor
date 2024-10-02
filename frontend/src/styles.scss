@@ -616,6 +616,10 @@ ige-one-column-wrapper formly-group {
   gap: 6px;
 }
 
+.gap-8 {
+  gap: 8px;
+}
+
 .gap-12 {
   gap: 12px;
 }
@@ -1380,4 +1384,18 @@ table.big-font {
 .longtext-no-wrap {
   white-space: nowrap; /* Prevent text from wrapping */
   overflow: hidden; /* Hide any overflow text */
+}
+
+.rectangular-chips mat-chip-option,
+.rectangular-chips mat-chip {
+  border-radius: 4px;
+
+  &.mat-mdc-chip-selected {
+    background-color: #eef7fe !important;
+    box-shadow: 0 0 0 1px #7ea9ca;
+
+    .mdc-evolution-chip__text-label {
+      color: #000000 !important;
+    }
+  }
 }

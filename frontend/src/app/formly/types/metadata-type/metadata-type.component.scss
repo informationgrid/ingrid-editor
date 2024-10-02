@@ -1,6 +1,7 @@
 .option-row {
   gap: 16px;
   overflow: auto;
+  padding-left: 1px; // needed for box-shadow of chips
 }
 
 mat-chip-listbox {
@@ -10,4 +11,8 @@ mat-chip-listbox {
 .connector {
   line-height: 40px;
   padding-left: 8px;
+}
+
+ige-metadata-type-short + button {
+  margin: 2px 0;
 }

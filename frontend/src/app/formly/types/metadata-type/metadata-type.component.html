@@ -1,11 +1,20 @@
-<div [attr.data-cy]="key" [formGroup]="aForm" *transloco="let t">
+<div
+    [attr.data-cy]="key"
+    [formGroup]="aForm"
+    *transloco="let t"
+    class="rectangular-chips"
+>
     @if (showShort) {
-        <div class="flex-row gap-12">
+        <div class="flex-row gap-8">
             <ige-metadata-type-short
                 [options]="displayedOptions()"
                 [value]="aForm.value"
             ></ige-metadata-type-short>
-            <button mat-stroked-button (click)="showShort = false">
+            <button
+                mat-stroked-button
+                color="primary"
+                (click)="showShort = false"
+            >
                 <mat-icon>edit</mat-icon>
                 <span class="btn-title">Bearbeiten</span>
             </button>
@@ -101,7 +110,11 @@
             <div class="flex-row">
                 <ige-form-label class="small-label-width"></ige-form-label>
                 <div>
-                    <button mat-stroked-button (click)="showShort = true">
+                    <button
+                        mat-stroked-button
+                        color="primary"
+                        (click)="showShort = true"
+                    >
                         <mat-icon>check</mat-icon>
                         <span class="btn-title">Nur markierte anzeigen</span>
                     </button>
