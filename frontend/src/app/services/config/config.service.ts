@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { Injectable, Type } from "@angular/core";
 import { ConfigDataService } from "./config-data.service";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { Catalog } from "../../+catalog/services/catalog.model";
@@ -136,6 +136,7 @@ export class ConfigService {
   private isAdministrator = false;
   private isSuperAdministrator = false;
   private _hasRootWritePermission = false;
+  profileModule: Type<any>;
 
   constructor(
     private http: HttpClient,

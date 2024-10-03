@@ -1,7 +1,7 @@
 ---
 # ID des GUI Elements
 id: street
-docType: BmiAddressDoc
+docType: OpenDataAddressDoc
 profile: bmi
 
 ---

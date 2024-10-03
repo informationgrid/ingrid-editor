@@ -140,6 +140,12 @@
     "theme": {
       "type": "keyword"
     },
+    "hvd": {
+      "type": "boolean"
+    },
+    "hvdCategories": {
+      "type": "keyword"
+    },
     "issued": {
       "type": "date"
     },

@@ -96,6 +96,7 @@ export class DataCollectionDoctype extends IngridShared {
       this.addAdditionalInformationSection({ extraInfoLangData: true }),
       this.addAvailabilitySection(),
       this.addLinksSection(),
+      this.addFileReferences(),
     ];
 
     return this.manipulateDocumentFields(fields);

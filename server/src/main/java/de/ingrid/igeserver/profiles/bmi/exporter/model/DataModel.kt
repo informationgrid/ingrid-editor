@@ -29,6 +29,8 @@ data class DataModel(
     val description: String?,
     val landingPage: String?,
     val DCATThemes: List<KeyValue>?,
+    val hvd: Boolean?,
+    val hvdCategories: List<KeyValue>?,
     val addresses: List<AddressRefModel>?,
     val qualityProcessURI: String?,
     val legalBasis: String?,

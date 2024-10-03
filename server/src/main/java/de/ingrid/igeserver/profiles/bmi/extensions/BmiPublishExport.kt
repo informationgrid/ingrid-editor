@@ -49,8 +49,8 @@ class BmiPublishExport(
 
         try {
             when (docType) {
-                "BmiDoc" -> indexBmiDoc(context, docId)
-                "BmiAddressDoc" -> indexReferencesBmiDocs(context, docId)
+                "OpenDataDoc" -> indexBmiDoc(context, docId)
+                "OpenDataAddressDoc" -> indexReferencesBmiDocs(context, docId)
                 else -> return payload
             }
         } catch (ex: Exception) {

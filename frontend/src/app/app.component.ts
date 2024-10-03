@@ -82,7 +82,7 @@ export class AppComponent implements OnInit {
     private router: Router,
     private transloco: TranslocoService,
   ) {
-    this.loadProfile();
+    this.initProfile();
 
     this.loadIcons();
 
@@ -132,10 +132,8 @@ export class AppComponent implements OnInit {
     );
   }
 
-  private loadProfile() {
-    this.profileService.initProfile().subscribe((componentType) => {
-      this.viewContainerRef.createComponent(componentType);
-    });
+  private initProfile() {
+    this.viewContainerRef.createComponent(this.configService.profileModule);
   }
 
   @HostListener("click")

@@ -287,3 +287,12 @@ val codelist20007 = mapOf(
     "DEU" to "Deutsch",
     "ENG" to "Englisch",
 )
+
+val codelist20008 = mapOf(
+    "c_ac64a52d" to "Georaum",
+    "c_dd313021" to "Erdbeobachtung und Umwelt",
+    "c_164e0bf5" to "Meteorologie",
+    "c_e1da4e07" to "Statistik",
+    "c_a9135398" to "Unternehmen und Eigentümerschaft von Unternehmen",
+    "c_b79e35eb" to "Mobilität",
+)

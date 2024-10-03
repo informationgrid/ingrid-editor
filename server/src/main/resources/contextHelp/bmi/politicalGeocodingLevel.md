@@ -1,7 +1,7 @@
 ---
 # ID des GUI Elements
 id: politicalGeocodingLevel
-docType: BmiDoc
+docType: OpenDataDoc
 profile: bmi
 ---
 

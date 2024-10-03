@@ -21,6 +21,17 @@ import { TemplateRef } from "@angular/core";
 import { isObservable } from "rxjs";
 import { AbstractControl } from "@angular/forms";
 
+/**
+ * Escapes a string to be used in a regular expression
+ *
+ * TODO can be replaced by native implementation once https://github.com/tc39/proposal-regex-escaping is merged
+ *
+ * @param str The string to escape
+ * @returns The escaped string
+ */
+export const escapeRegExp = (str: string) =>
+  str.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
+
 export const groupBy = <T, K extends keyof any>(arr: T[], key: (i: T) => K) =>
   arr.reduce(
     (groups, item) => {
@@ -837,20 +848,5 @@ export class JsonDiffMerge {
     }
 
     return node;
-  }
-
-  newGuid() {
-    var guid = "00000000-0000-0000-0000-000000000000";
-    try {
-      guid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-        /[xy]/g,
-        function (c) {
-          var r = (Math.random() * 16) | 0,
-            v = c == "x" ? r : (r & 0x3) | 0x8; // jshint ignore:line
-          return v.toString(16);
-        },
-      );
-    } catch (e) {}
-    return guid;
   }
 }

@@ -33,11 +33,11 @@ import {
 import { Router } from "@angular/router";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocumentService } from "../../../services/document/document.service";
-import { debounceTime, map, startWith } from "rxjs/operators";
+import { catchError, debounceTime, map, startWith } from "rxjs/operators";
 import { DocumentState, IgeDocument } from "../../../models/ige-document";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { TreeQuery } from "../../../store/tree/tree.query";
-import { firstValueFrom } from "rxjs";
+import { firstValueFrom, of } from "rxjs";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { MatIcon } from "@angular/material/icon";
 import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
@@ -233,6 +233,19 @@ export class DocumentReferenceTypeComponent
             doc.documentWithMetadata,
             item.layerNames,
           );
+        }),
+        catchError((error) => {
+          console.error(`UUID not found: ${item.uuid}`, error);
+          // throw new IgeError(`Kopplung zu Daten nicht gefunden: ${item.uuid}`);
+          return of(<DocumentReference>{
+            title: `???`,
+            uuid: item.uuid,
+            type: "",
+            icon: "Geodatensatz",
+            layerNames: null,
+            isExternalRef: false,
+            state: "W",
+          });
         }),
       ),
     );

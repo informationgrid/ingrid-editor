@@ -1,7 +1,7 @@
 ---
 # ID des GUI Elements
 id: description
-docType: BmiDoc
+docType: OpenDataDoc
 profile: bmi
 
 ---

@@ -10,5 +10,9 @@
   "dashboard": {
     "welcome": "Willkommen beim Open-Data Editor",
     "application": "Open-Data"
+  },
+  "docType": {
+    "OpenDataDoc": "Datensatz",
+    "OpenDataAddressDoc": "Adresse"
   }
 }

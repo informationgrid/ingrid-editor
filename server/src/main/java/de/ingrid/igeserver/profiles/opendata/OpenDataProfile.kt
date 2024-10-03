@@ -138,6 +138,17 @@ class OpenDataProfile(
                 }
             }
         }
+        val codelist20008 = Codelist().apply {
+            identifier = "20008"
+            catalog = catalogRef
+            name = "HVD-Kategorie"
+            description = "Liste der HVD-Kategorie"
+            data = jacksonObjectMapper().createArrayNode().apply {
+                codelist20008.forEach { (key, value) ->
+                    add(toCodelistEntry(key, value))
+                }
+            }
+        }
 
         when (codelistId) {
 //            "505" -> codelistHandler.removeAndAddCodelist(catalogId, codelist505)
@@ -148,6 +159,7 @@ class OpenDataProfile(
             "20005" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20005)
             "20006" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20006)
             "20007" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20007)
+            "20008" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20008)
             null -> {
 //                codelistHandler.removeAndAddCodelist(catalogId, codelist505)
 //                codelistRepo.save(codelist505)
@@ -163,6 +175,8 @@ class OpenDataProfile(
                 codelistRepo.save(codelist20006)
                 codelistHandler.removeAndAddCodelist(catalogId, codelist20007)
                 codelistRepo.save(codelist20007)
+                codelistHandler.removeAndAddCodelist(catalogId, codelist20008)
+                codelistRepo.save(codelist20008)
             }
 
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")
