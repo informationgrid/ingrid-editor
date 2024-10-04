@@ -1,7 +1,9 @@
 package de.ingrid.igeserver.profiles.ingrid_bkg
 
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
+import de.ingrid.igeserver.profiles.ingrid_bkg.importer.ISOImportBkg
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CatalogService
@@ -20,6 +22,8 @@ class BkgProfile(
     dateService: DateService,
     openDataCategory: OpenDataCategory,
     @Lazy private val catalogService: CatalogService,
+    isoImport: ISOImport,
+    isoImportBkg: ISOImportBkg,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -30,6 +34,10 @@ class BkgProfile(
     override val title = "InGrid Katalog (BKG)"
     override val parentProfile = "ingrid"
     override val indexExportFormatID = "indexInGridIDFBkg"
+
+    init {
+        isoImport.profileMapper[ID] = isoImportBkg
+    }
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         super.initCatalogCodelists(catalogId, codelistId)
