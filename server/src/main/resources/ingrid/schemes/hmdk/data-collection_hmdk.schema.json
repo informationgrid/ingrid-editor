@@ -41,6 +41,7 @@
         "methodText": true,
         "orderInfo": true,
         "openDataCategories": true,
+        "fileReferences": true,
         "publicationHmbTG": {
           "type": ["null", "boolean"]
         },

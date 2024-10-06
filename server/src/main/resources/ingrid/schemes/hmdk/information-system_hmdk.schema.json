@@ -10,13 +10,13 @@
         }
       ],
       "properties": {
-        "isAdVCompatible":  true,
+        "isAdVCompatible": true,
         "isOpenData": true,
-        "isInspireIdentified":  true,
+        "isInspireIdentified": true,
         "_uuid": true,
-        "_type":  true,
+        "_type": true,
         "title": true,
-        "description":  true,
+        "description": true,
         "alternateTitle": true,
         "serviceType": true,
         "serviceUrls": true,
@@ -46,6 +46,7 @@
         "orderInfo": true,
         "distribution": true,
         "openDataCategories": true,
+        "fileReferences": true,
         "publicationHmbTG": {
           "type": ["null", "boolean"]
         },

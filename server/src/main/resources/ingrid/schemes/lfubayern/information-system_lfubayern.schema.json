@@ -47,6 +47,7 @@
         "orderInfo": true,
         "distribution": true,
         "openDataCategories": true,
+        "fileReferences": true,
         "dataSetURI": {
           "type": ["null", "string"]
         },
