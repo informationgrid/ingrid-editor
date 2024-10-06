@@ -1,5 +1,11 @@
 # Changelog
 
+## 7.3.1 (06.10.2024)
+
+### Bugfixes
+
+- JSON-Schema Fehler in einigen Profilen für neues Feld "Dateien" (#6885)
+
 ## 7.3.0 (01.10.2024)
 
 ### Features
