@@ -629,7 +629,7 @@ export abstract class IngridShared extends BaseDoctype {
             })
           : null,
         this.addGroupSimple("keywords", [
-          this.addRepeatList("gemet", "Gemet Schlagworte", {
+          this.addRepeatList("gemet", "Gemet-Schlagworte", {
             view: "chip",
             className: "optional",
             placeholder: "Im Gemet suchen",
@@ -662,7 +662,7 @@ export abstract class IngridShared extends BaseDoctype {
               }),
             },
           }),
-          this.addRepeatList("umthes", "Umthes Schlagworte", {
+          this.addRepeatList("umthes", "Umthes-Schlagworte", {
             view: "chip",
             className: "optional",
             placeholder: "Im Umweltthesaurus suchen",
