@@ -181,11 +181,8 @@ export class KeywordAnalysis {
   }
 
   private checkInThemes(item: string): ThesaurusResult {
-    const id = this.codelistQuery.getCodelistEntryByValue(
-      "6100",
-      item,
-      "de",
-    )?.id;
+    const id = this.codelistQuery.getCodelistEntryByValue("6100", item, "de")
+      ?.id;
     return {
       thesaurus: "INSPIRE-Themen",
       found: id !== undefined,
