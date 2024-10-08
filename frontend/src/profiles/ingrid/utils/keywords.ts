@@ -153,9 +153,9 @@ export class KeywordAnalysis {
 
   private mapThesaurusToModel(item: ThesaurusResult): string {
     switch (item.thesaurus) {
-      case "Gemet Schlagworte":
+      case "Gemet-Schlagworte":
         return "keywords.gemet";
-      case "Umthes Schlagworte":
+      case "Umthes-Schlagworte":
         return "keywords.umthes";
       case "Freie Schlagworte":
         return "keywords.free";
@@ -212,7 +212,7 @@ export class KeywordAnalysis {
       ),
     );
     const thesaurusName =
-      thesaurus === "gemet" ? "Gemet Schlagworte" : "Umthes Schlagworte";
+      thesaurus === "gemet" ? "Gemet-Schlagworte" : "Umthes-Schlagworte";
     if (response.length > 0) {
       return {
         thesaurus: thesaurusName,

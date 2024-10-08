@@ -174,7 +174,7 @@ export class GeoDatasetDoctype extends IngridShared {
         }),
         this.addGroup(
           "gridSpatialRepresentation",
-          "Raster/Gridformat",
+          "Raster-/Gridformat",
           [
             this.addSelectInline("type", "Typ", {
               defaultValue: { key: "basis" },
