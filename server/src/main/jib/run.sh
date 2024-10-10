@@ -11,6 +11,10 @@ echo "Adapt index.html to match context path"
 sed -i -r "s@href=\"/\"@href=\"$CONTEXT_PATH/\"@" /app/resources/static/index.html
 sed -i -r "s@contextPath\": \"/\"@contextPath\": \"$CONTEXT_PATH/\"@" /app/resources/static/assets/config.json
 
+if [[ -n "${UMAMI_URL}" ]]; then
+  sed -i "/<head>/a\  <script defer src=\"$UMAMI_URL\" data-website-id=\"$UMAMI_ID\"></script>" /app/resources/static/index.html
+fi
+
 if [[ -n "${BROKER_URL}" ]]; then
   sed -i -r "s@brokerUrl\":.*@brokerUrl\": \"$BROKER_URL\",@" /app/resources/static/assets/config.json
 fi

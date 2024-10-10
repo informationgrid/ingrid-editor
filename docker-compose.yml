@@ -83,6 +83,16 @@ services:
     networks:
       - ige-ng-network
 
+  umami:
+    image: docker.umami.is/umami-software/umami:postgresql-latest
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://admin:admin@db:5432/umami
+    ports:
+      - "3000:3000"
+    networks:
+      - ige-ng-network
+
 networks:
   ige-ng-network:
     driver: "bridge"
