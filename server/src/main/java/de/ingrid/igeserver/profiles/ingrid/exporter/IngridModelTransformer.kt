@@ -766,7 +766,7 @@ open class IngridModelTransformer(
             data.pointOfContact?.filter { addressIsDistributor(it) }?.mapNotNull { toAddressModelTransformer(it) }
                 ?: emptyList()
 
-        atomDownloadURL = catalog.settings.config.atomDownloadUrl + model.uuid
+        atomDownloadURL = (catalog.settings.config.atomDownloadUrl ?: "") + model.uuid
 
         operations = data.service.operations?.map {
             DisplayOperation(
