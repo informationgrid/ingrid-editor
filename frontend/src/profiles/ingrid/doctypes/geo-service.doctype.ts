@@ -48,7 +48,7 @@ export class GeoServiceDoctype extends IngridShared {
 
   geoServiceOptions = {
     required: {
-      operations: false,
+      operations: true,
       classification: true,
     },
   };
@@ -167,20 +167,6 @@ export class GeoServiceDoctype extends IngridShared {
                 },
               }),
             ],
-            validators: {
-              getCapabilityForWMS: {
-                expression: (_ctrl: any, field: FormlyFieldConfig) => {
-                  const model = field.options.formState.mainModel;
-                  return (
-                    !model ||
-                    model.service?.type?.key !== "2" ||
-                    field.model?.some((item) => item?.name?.key === "1")
-                  );
-                },
-                message:
-                  "Für Darstellungsdienste muss eine GetCapabilities-Operation angegeben sein",
-              },
-            },
           }),
           this.addGroup(
             null,

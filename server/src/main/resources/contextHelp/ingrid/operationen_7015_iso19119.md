@@ -4,18 +4,17 @@ id: operations
 docType: InGridGeoService
 profile: ingrid
 
-
 # title, used as window title
 title: Operationen
 ---
 
 # Operationen
 
-Angabe von Operationen bezüglich Webdiensten wie getMap, getCapabilities und getFeatureInfo
+Mindestens die Angabe des Operationsaufrufs `getCapabilities` bzw. einer gleichwertigen Zugangs-URL zum Dienst ist erforderlich.
 
 # ISO Abbildung
 
-Das Feld wird in ISO 19119 beschrieben. Es existiert keine deutsche Übersetzung. 
+Das Feld wird in ISO 19119 beschrieben. Es existiert keine deutsche Übersetzung.
 
 ## Abbildung ISO 19139 XML
 
@@ -30,5 +29,5 @@ Das Feld wird in ISO 19119 beschrieben. Es existiert keine deutsche Übersetzung
       </srv:containsOperations>
     </srv:SV_ServiceIdentification>
   </identificationInfo>
-</MD_Metadata>  
+</MD_Metadata>
 ```

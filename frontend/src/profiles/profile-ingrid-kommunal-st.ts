@@ -32,7 +32,6 @@ class InGridKommunalStComponent extends InGridComponent {
   }
 
   private modifyFormFieldConfiguration() {
-    this.geoService.geoServiceOptions.required.operations = true;
     this.geoService.geoServiceOptions.required.classification = false;
 
     this.geoDataset.geodatasetOptions.required.statement = false;
