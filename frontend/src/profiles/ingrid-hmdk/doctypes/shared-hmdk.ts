@@ -76,7 +76,7 @@ export class SharedHmdk {
       // equals "Herausgeber"
       !(field.model.isOpenData || field.model.publicationHmbTG) ||
       (ctrl.value
-        ? ctrl.value.some((address) => address.type?.key === "10")
+        ? ctrl.value.some((address: any) => address.type?.key === "10")
         : false),
     message: "Es muss mindestens einen 'Herausgeber' geben.",
   };
@@ -84,7 +84,7 @@ export class SharedHmdk {
   downloadLinkWhenHmbtg = {
     expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
       !field.model.publicationHmbTG ||
-      ctrl.value?.some((row) => row.type?.key === "9990"), // Datendownload
+      ctrl.value?.some((row: any) => row.type?.key === "9990"), // Datendownload
     message:
       "Bei aktivierter 'Veröffentlichung gemäß HmbgTG'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
   };
@@ -136,7 +136,7 @@ export class SharedHmdk {
     const cookieId = "HIDE_HMBTG_INFO";
     const id = this.formStateService.metadata().wrapperId;
 
-    function executeAction(that) {
+    function executeAction(that: any) {
       // if inspire set access constraint "keine" else empty
       field.form
         .get("resource.accessConstraints")
@@ -277,7 +277,7 @@ export class SharedHmdk {
     // remove "keine" from access constraints
     const accessConstraintsCtrl = field.form.get("resource.accessConstraints");
     accessConstraintsCtrl.setValue(
-      accessConstraintsCtrl.value.filter((entry) => entry.key !== "1"),
+      accessConstraintsCtrl.value.filter((entry: any) => entry.key !== "1"),
     );
 
     // remove license set when open data was clicked
