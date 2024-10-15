@@ -23,6 +23,7 @@ import de.ingrid.igeserver.exporter.model.FolderModel
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
+import org.apache.commons.codec.digest.DigestUtils
 
 class FolderModelTransformer(
     val model: FolderModel,
@@ -41,4 +42,6 @@ class FolderModelTransformer(
     val category = documentService?.getWrapperById(model.id)?.category
 
     val nextParent = documentService!!.getParentWrapper(model.id)?.uuid
+
+    fun getSortHash(): String = DigestUtils.sha1Hex(model.title)
 }

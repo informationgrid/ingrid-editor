@@ -56,6 +56,7 @@ import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
+import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.kotlin.util.suffixIfNot
 import org.unbescape.json.JsonEscape
 import java.text.SimpleDateFormat
@@ -1044,6 +1045,8 @@ open class IngridModelTransformer(
     private fun isCapabilitiesEntry(op: Operation): Boolean = op.name?.key == "1" || op.name?.value == "GetCapabilities"
 
     open val mapLinkUrl: String? = null
+
+    fun getSortHash(): String = DigestUtils.sha1Hex(model.title)
 }
 
 enum class CoordinateType { Lat1, Lat2, Lon1, Lon2 }
