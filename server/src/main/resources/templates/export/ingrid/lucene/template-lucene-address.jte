@@ -25,6 +25,7 @@
         "dsc_ecs_address",
         "IDF_1.0"
     ],
+    "sort_hash": "${page.getSortHash()}",
     "boost": 0.1,
     "children.address_node.addr_uuid": [
     @for(var entry : ForSupport.of(page.getSubordinatedParties()))

@@ -29,6 +29,7 @@ import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.igeserver.utils.mapToKeyValue
 import de.ingrid.mdek.upload.Config
+import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.dao.EmptyResultDataAccessException
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
@@ -260,6 +261,8 @@ open class AddressModelTransformer(
     private fun contactType(type: String): String? = displayAddress.data.get("contact")
         ?.firstOrNull { it.get("type")?.getString("key") == type }
         ?.getString("connection")
+
+    fun getSortHash(): String = DigestUtils.sha1Hex(title)
 }
 
 data class ObjectReference(
