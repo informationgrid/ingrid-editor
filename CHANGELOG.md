@@ -1,5 +1,12 @@
 # Changelog
 
+## 7.3.2 (16.10.2024)
+
+### Bugfixes
+
+- Adressreferenzen werden als gelöscht angezeigt (#6901)
+- Sortierung ohne Suchbegriff bevorteilt die Ergebnisse aus Hamburg (#6888)
+
 ## 7.3.1 (06.10.2024)
 
 ### Bugfixes
