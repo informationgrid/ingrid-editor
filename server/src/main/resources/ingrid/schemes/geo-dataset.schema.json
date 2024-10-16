@@ -213,7 +213,7 @@
               "properties": {
                 "source": {
                   "type": "object",
-                  "additionalProperties": false,
+                  "additionalProperties": true,
                   "properties": {
                     "processStep": {
                       "type": "object",
