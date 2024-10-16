@@ -24,6 +24,7 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
@@ -34,6 +35,8 @@ import java.security.Principal
 @RestController
 @RequestMapping("/api/codelist")
 class CodelistApiController : CodelistApi {
+
+    private val log = logger()
 
     @Autowired
     private lateinit var handler: CodelistHandler
@@ -52,9 +55,13 @@ class CodelistApiController : CodelistApi {
     }
 
     override fun getCatalogCodelists(principal: Principal): ResponseEntity<List<CodeList>> {
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-
-        val findAll = handler.getCatalogCodelists(catalogId)
+        val findAll = try {
+            val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+            handler.getCatalogCodelists(catalogId)
+        } catch (e: Exception) {
+            log.warn("Error fetching catalog for ${principal.name}")
+            emptyList()
+        }
 
         return ResponseEntity.ok(findAll)
     }

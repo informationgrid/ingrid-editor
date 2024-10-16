@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import {
   ActivatedRoute,
   RouterLink,
@@ -26,6 +26,9 @@ import {
 } from "@angular/router";
 import { SessionService, Tab } from "../services/session.service";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
+import { map } from "rxjs/operators";
+import { ProfileService } from "../services/profile.service";
+import { ConfigService } from "../services/config/config.service";
 
 @Component({
   selector: "settings",
@@ -43,10 +46,19 @@ import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 })
 export class SettingsComponent implements OnInit {
   tabs: Tab[];
+  userHasCatalog = signal<boolean>(false);
 
-  constructor(sessionService: SessionService, activeRoute: ActivatedRoute) {
+  constructor(
+    sessionService: SessionService,
+    activeRoute: ActivatedRoute,
+    private configService: ConfigService,
+  ) {
     this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.configService.$userInfo
+      .pipe(map((info) => ProfileService.userHasAnyCatalog(info)))
+      .subscribe((isAssigned) => this.userHasCatalog.set(isAssigned));
+  }
 }

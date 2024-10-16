@@ -4,10 +4,11 @@
     }
     <mat-drawer-container class="flex-1" [autosize]="true">
         <!-- Left drawer -->
-        <mat-drawer mode="side" [opened]="true" disableClose>
-            <ige-side-menu></ige-side-menu>
-        </mat-drawer>
-
+        @if (userHasCatalog()) {
+            <mat-drawer mode="side" [opened]="true" disableClose>
+                <ige-side-menu></ige-side-menu>
+            </mat-drawer>
+        }
         <!-- Right content -->
         <mat-drawer-content>
             <ige-main-header (onLogout)="isLoggingout = true"></ige-main-header>

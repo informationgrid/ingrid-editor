@@ -42,6 +42,14 @@ registerLocaleData(de);
 
 function loadProfile(configService: ConfigService) {
   return new Promise<void>((resolve) => {
+    const hasCatalogAssigned = ProfileService.userHasAnyCatalog(
+      configService.$userInfo.value,
+    );
+    if (!hasCatalogAssigned) {
+      resolve();
+      return;
+    }
+
     configService.$userInfo
       .pipe(
         filter((info) => ProfileService.userHasAnyCatalog(info)),
@@ -116,6 +124,11 @@ export function ConfigLoader(
             null,
           ),
         ).then(() => configService.getCurrentUserInfo());
+        return;
+      }
+
+      if (catalogId === undefined) {
+        await router.navigate([`${ConfigService.catalogId}/dashboard`]);
         return;
       }
 

@@ -73,6 +73,7 @@ export const routes: Routes = [
           import("./+reports/lazy-reports.routing").then(
             (m) => m.LazyReportsRouting,
           ),
+        canActivate: [AuthGuard],
         data: {
           onlyAdmin: true,
           icon: "Reports",
