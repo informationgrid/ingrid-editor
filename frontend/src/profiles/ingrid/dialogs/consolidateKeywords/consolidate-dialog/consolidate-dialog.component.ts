@@ -118,19 +118,20 @@ export class ConsolidateDialogComponent implements OnInit {
     const form = this.formStateService.getForm();
     this.keywords = form.get("keywords").value;
 
-    this.hasKeywords = Object.values(this.keywords).some(
-      (keywords) => keywords.length > 0,
-    );
-
-    if (!this.hasKeywords) {
-      return false;
-    }
-
     this.isInspireIdentified = form.get("isInspireIdentified")?.value;
     this.inspireTopics = this.isInspireIdentified
       ? form.get("themes").value
       : []; // INSPIRE-Themen
     this.isoCategories = form.get("topicCategories")?.value || []; // ISO-Themenkategorie
+
+    this.hasKeywords =
+      Object.values(this.keywords).some((keywords) => keywords.length > 0) ||
+      this.inspireTopics.length > 0;
+
+    if (!this.hasKeywords) {
+      return false;
+    }
+
     this.keywords = form.get("keywords")?.value;
 
     this.gemetKeywords = this.keywords?.gemet || [];
