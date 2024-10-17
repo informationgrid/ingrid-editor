@@ -126,7 +126,7 @@ export class ConsolidateDialogComponent implements OnInit {
       return false;
     }
 
-    this.isInspireIdentified = form.get("isInspireIdentified").value;
+    this.isInspireIdentified = form.get("isInspireIdentified")?.value;
     this.inspireTopics = this.isInspireIdentified
       ? form.get("themes").value
       : []; // INSPIRE-Themen
