@@ -126,7 +126,8 @@ export class ConsolidateDialogComponent implements OnInit {
 
     this.hasKeywords =
       Object.values(this.keywords).some((keywords) => keywords.length > 0) ||
-      this.inspireTopics.length > 0;
+      this.inspireTopics.length > 0 ||
+      this.isoCategories.length > 0;
 
     if (!this.hasKeywords) {
       return false;
