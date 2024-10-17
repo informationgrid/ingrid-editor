@@ -79,7 +79,7 @@ class OgcDistributionsApiController(
         principal: Authentication,
         @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
-        @Parameter(description = "## distribution ID \n\n The Identifier of the distribution.") @RequestParam(value = "uri", required = true) distributionId: String,
+        @Parameter(description = "## Filename as distribution ID \n\n The filename is the identifier of the distribution.") @RequestParam(value = "filename", required = true) distributionId: String,
     ): ResponseEntity<String> {
         val userID = principal.name
         ogcDistributionsService.handleDeleteDistribution(principal, userID, collectionId, recordId, distributionId)

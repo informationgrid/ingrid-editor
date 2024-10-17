@@ -48,6 +48,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportResult
 import de.ingrid.igeserver.services.ExportService
+import de.ingrid.igeserver.utils.getString
 import org.keycloak.util.JsonSerialization
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -580,5 +581,26 @@ class OgcRecordService(
         }
 
         return xmlNodeToString(doc)
+    }
+
+    @Transactional
+    fun moveRecords(collectionId: String, data: String) {
+        val moveTasks = jacksonObjectMapper().readValue(data, JsonNode::class.java)
+        for (action in moveTasks) {
+            val recordId = action.getString("recordId") ?: throw ClientException.withReason("Failed to move records to folder: Missing recordId.")
+            val folderId = action.getString("folderId")
+            val recordWrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
+            val folderWrapper = if (folderId == "" || folderId == null) null else documentService.getWrapperByCatalogAndDocumentUuid(collectionId, folderId)
+            val folderWrapperId = if (folderWrapper == null) {
+                null
+            } else if (folderWrapper.type != "FOLDER") {
+                throw ClientException.withReason("Failed to move records to folder: folderId '$folderId' is of type '${folderWrapper.type}'. The folderId must represent a FOLDER.")
+            } else if (folderWrapper.category != recordWrapper.category) {
+                throw ClientException.withReason("Failed to move records to folder: folderId '$folderId' has category '${folderWrapper.category}' and recordId '$recordId' has category '${recordWrapper.category}'.")
+            } else {
+                folderWrapper.id
+            }
+            documentService.updateParent(collectionId, recordWrapper.id!!, folderWrapperId)
+        }
     }
 }
