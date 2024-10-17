@@ -228,7 +228,7 @@ export class ConsolidateDialogComponent implements OnInit {
 
     switch (res.thesaurus) {
       case this.keywordCategories.themes:
-        this.addInspireKeyword(res, this.metadata.docType);
+        this.addInspireKeyword(res, docType);
         break;
       case this.keywordCategories.gemet:
       case this.keywordCategories.umthes:
