@@ -194,7 +194,7 @@ export class ConsolidateDialogComponent implements OnInit {
     let res: ThesaurusResult;
     if (
       this.isInspireIdentified &&
-      (docType == "IngridGeoService" || docType == "IngridGeoDataset")
+      (docType == "InGridGeoService" || docType == "InGridGeoDataset")
     ) {
       res = this.keywordAnalysis.checkInThemes(
         keyword.label.charAt(0).toUpperCase() +
@@ -278,7 +278,7 @@ export class ConsolidateDialogComponent implements OnInit {
     this.freeKeywordsNew.push({ ...res, status: "removed" });
 
     // Add connected INSPIRE topic category if docType is IngridGeoDataset
-    if (docType === "IngridGeoDataset") {
+    if (docType === "InGridGeoDataset") {
       const isoKey = KeywordAnalysis.inspireToIsoMapping[res.value.key]; // INSPIRE topic key
       const isoCategoryCodeListEntry = this.codelistQuery.getCodelistEntryByKey(
         "527",
