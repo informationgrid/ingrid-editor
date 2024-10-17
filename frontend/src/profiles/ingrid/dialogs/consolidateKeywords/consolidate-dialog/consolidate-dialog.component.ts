@@ -188,7 +188,22 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   private async assignKeyword(keyword: ThesaurusResult) {
+    const docType = this.metadata.docType;
     let res: ThesaurusResult;
+    if (
+      this.isInspireIdentified &&
+      (docType == "IngridGeoService" || docType == "IngridGeoDataset")
+    ) {
+      res = this.keywordAnalysis.checkInThemes(
+        keyword.label.charAt(0).toUpperCase() +
+          keyword.label.slice(1).toLowerCase(),
+      );
+      if (res.found) {
+        this.addInspireKeyword(res, docType);
+        return;
+      }
+    }
+
     try {
       res = await this.keywordAnalysis.assignKeyword(
         keyword.label,
@@ -211,7 +226,7 @@ export class ConsolidateDialogComponent implements OnInit {
 
     switch (res.thesaurus) {
       case this.keywordCategories.themes:
-        this.addInspireKeyword(res);
+        this.addInspireKeyword(res, this.metadata.docType);
         break;
       case this.keywordCategories.gemet:
       case this.keywordCategories.umthes:
@@ -252,31 +267,32 @@ export class ConsolidateDialogComponent implements OnInit {
     return Promise.all(keywords.map((keyword) => this.assignKeyword(keyword)));
   }
 
-  private addInspireKeyword(res: ThesaurusResult) {
+  private addInspireKeyword(res: ThesaurusResult, docType: string) {
     if (!this.inspireTopics.some((t) => t.key === res.value.key)) {
       this.inspireTopicsNew.push({ ...res, status: "added" });
     } else {
       this.inspireTopicsNew.push({ ...res, status: "unchanged" });
     }
-
-    // Add connected INSPIRE topic category
-    const isoKey = KeywordAnalysis.inspireToIsoMapping[res.value.key]; // INSPIRE topic key
-    const isoCategoryCodeListEntry = this.codelistQuery.getCodelistEntryByKey(
-      "527",
-      isoKey,
-    );
-    const isoCategory: ThesaurusResult = {
-      found: true,
-      value: { key: isoKey },
-      label: isoCategoryCodeListEntry.fields["de"],
-      thesaurus: "INSPIRE-Themen",
-      status: this.isoCategories.some((t) => t.key === isoKey)
-        ? "unchanged"
-        : "added",
-    };
-
-    this.isoCategoriesNew.push(isoCategory);
     this.freeKeywordsNew.push({ ...res, status: "removed" });
+
+    // Add connected INSPIRE topic category if docType is IngridGeoDataset
+    if (docType === "IngridGeoDataset") {
+      const isoKey = KeywordAnalysis.inspireToIsoMapping[res.value.key]; // INSPIRE topic key
+      const isoCategoryCodeListEntry = this.codelistQuery.getCodelistEntryByKey(
+        "527",
+        isoKey,
+      );
+      const isoCategory: ThesaurusResult = {
+        found: true,
+        value: { key: isoKey },
+        label: isoCategoryCodeListEntry.fields["de"],
+        thesaurus: "INSPIRE-Themen",
+        status: this.isoCategories.some((t) => t.key === isoKey)
+          ? "unchanged"
+          : "added",
+      };
+      this.isoCategoriesNew.push(isoCategory);
+    }
   }
 
   mapAndSaveConsolidatedKeywords() {
