@@ -1510,14 +1510,13 @@ export abstract class IngridShared extends BaseDoctype {
         options: this.getCodelistForSelect("2000", "type").pipe(
           map((data) => {
             const mappedDoctype = this.mapDocumentTypeToClass(this.id);
-            return data.filter((item) => {
-              return (
+            return data.filter(
+              (item) =>
                 this.codelistQuery
                   .getCodelistEntryByKey("2000", item.value)
-                  .data?.split(",")
-                  ?.indexOf(mappedDoctype) !== -1
-              );
-            });
+                  ?.data?.split(",")
+                  ?.indexOf(mappedDoctype) !== -1,
+            );
           }),
         ),
         codelistId: "2000",
