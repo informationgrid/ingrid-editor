@@ -3102,27 +3102,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ngx-formly/core@npm:6.3.7":
-  version: 6.3.7
-  resolution: "@ngx-formly/core@npm:6.3.7"
+"@ngx-formly/core@npm:6.3.8":
+  version: 6.3.8
+  resolution: "@ngx-formly/core@npm:6.3.8"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
     "@angular/forms": ">=13.2.0"
     rxjs: ^6.5.3 || ^7.0.0
-  checksum: 10c0/ec302e65a55a527af4003acc5b8412e87c4190d2b9968c6f08475ace71ec975bca46c8e455a0164e1e72f0017f9159d724bf415a5e1b74205e041e1433cdd505
+  checksum: 10c0/8a457ad58f5d037180b0907a58b6922b68f2cd84a81c50ed1075fa25b19ffc3fcf1b18b58119a44ca5262cefde826631e2bbd981bd7f92e03f3d438b9a18e630
   languageName: node
   linkType: hard
 
-"@ngx-formly/material@npm:6.3.7":
-  version: 6.3.7
-  resolution: "@ngx-formly/material@npm:6.3.7"
+"@ngx-formly/material@npm:6.3.8":
+  version: 6.3.8
+  resolution: "@ngx-formly/material@npm:6.3.8"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
     "@angular/material": ">=13.0.0"
-    "@ngx-formly/core": 6.3.7
-  checksum: 10c0/197f289a512e5e7dddb4cfb36041ee2d6ef280bfd3d80b2e4900aa5dcb9876909cc4d6f5b9473b3d149e1fffbe46e92e9561d07d4e8beda3bf54806cd4e01f19
+    "@ngx-formly/core": 6.3.8
+  checksum: 10c0/1f4f025b0fdbf6b890007c89ab0d50536064d98db929e061b8fbf60b211cc18fc3425065133964ff8611ef7fad3c74eaf7fdca3bbc9e3eb829a6700f9f878a95
   languageName: node
   linkType: hard
 
@@ -7878,8 +7878,8 @@ __metadata:
     "@ngneat/spectator": "npm:^16.0.0"
     "@ngneat/transloco": "npm:6.0.4"
     "@ngneat/until-destroy": "npm:^10.0.0"
-    "@ngx-formly/core": "npm:6.3.7"
-    "@ngx-formly/material": "npm:6.3.7"
+    "@ngx-formly/core": "npm:6.3.8"
+    "@ngx-formly/material": "npm:6.3.8"
     "@stomp/rx-stomp": "npm:^2.0.0"
     "@stomp/stompjs": "npm:^7.0.0"
     "@terraformer/wkt": "npm:^2.2.1"
@@ -7911,7 +7911,7 @@ __metadata:
     lint-staged: "npm:^15.2.7"
     material-design-icons-iconfont: "npm:^6.7.0"
     ngx-mat-select-search: "npm:^7.0.6"
-    prettier: "npm:3.1.1"
+    prettier: "npm:3.3.3"
     rxjs: "npm:^7.8.1"
     source-map-explorer: "npm:^2.5.3"
     stop-only: "npm:^3.3.2"
@@ -10952,12 +10952,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.1.1":
-  version: 3.1.1
-  resolution: "prettier@npm:3.1.1"
+"prettier@npm:3.3.3":
+  version: 3.3.3
+  resolution: "prettier@npm:3.3.3"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10c0/facc944ba20e194ff4db765e830ffbcb642803381f0d2033ed397e79904fa4ccc877dc25ad68f42d36985c01d051c990ca1b905fb83d2d7d65fe69e4386fa1a3
+  checksum: 10c0/b85828b08e7505716324e4245549b9205c0cacb25342a030ba8885aba2039a115dbcf75a0b7ca3b37bc9d101ee61fab8113fc69ca3359f2a226f1ecc07ad2e26
   languageName: node
   linkType: hard
 

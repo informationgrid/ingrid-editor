@@ -287,17 +287,12 @@ export abstract class IngridShared extends BaseDoctype {
 
   handleActivateOpenData(field: FormlyFieldConfig): Observable<boolean> {
     const cookieId = "HIDE_OPEN_DATA_INFO";
-    const isInspire = field.model.isInspireIdentified;
 
     function executeAction() {
       const accessConstraintsControl = field.form.get(
         "resource.accessConstraints",
       );
-      if (isInspire) {
-        accessConstraintsControl.setValue([{ key: "1" }]);
-      } else {
-        accessConstraintsControl.setValue([]);
-      }
+      accessConstraintsControl.setValue([{ key: "1" }]);
     }
 
     if (this.cookieService.getCookie(cookieId) === "true") {
@@ -305,9 +300,13 @@ export abstract class IngridShared extends BaseDoctype {
       return of(true);
     }
 
-    const message =
-      "Wird diese Auswahl gewählt, so:" +
-      ' <ul><li>werden alle Zugriffsbeschränkungen entfernt</li>  <li>wird die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li><li>wird dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li></ul> ';
+    const message = `
+      Wird diese Auswahl gewählt, so:
+      <ul>
+        <li>wird "Es gelten keine Zugriffsbeschränkungen" zu den Zugriffsbeschränkungen hinzugefügt</li>
+        <li>wird die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li>
+        <li>wird dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li>
+      </ul>`;
     return this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{

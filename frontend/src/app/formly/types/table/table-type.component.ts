@@ -328,17 +328,16 @@ export class TableTypeComponent
 
     this.props.columns
       .filter((column) => column.props?.formatter)
-      .forEach(
-        (column) =>
-          value?.forEach((row, index) => {
-            this.formattedCell.push({});
-            this.formattedCell[index][column.key] = column.props.formatter(
-              value[index][column.key],
-              this.form,
-              value[index],
-              column,
-            );
-          }),
+      .forEach((column) =>
+        value?.forEach((row, index) => {
+          this.formattedCell.push({});
+          this.formattedCell[index][column.key] = column.props.formatter(
+            value[index][column.key],
+            this.form,
+            value[index],
+            column,
+          );
+        }),
       );
   }
 
