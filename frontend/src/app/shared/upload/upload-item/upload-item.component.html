@@ -1,36 +1,37 @@
+@let currentFile = file();
 <div class="main">
-    @if (file.transfer.progress < 1) {
+    @if (currentFile.transfer.progress < 1) {
         <mat-spinner diameter="24"></mat-spinner>
     }
-    @if (file.error === null) {
+    @if (currentFile.error === null) {
         <mat-icon class="green" svgIcon="baseline-check-24px"></mat-icon>
     }
-    @if (file.error) {
+    @if (currentFile.error) {
         <mat-icon class="error-color">error_outline</mat-icon>
     }
     <div>
-        <div>{{ file.transfer.name }}</div>
+        <div>{{ currentFile.transfer.name }}</div>
         <div class="comment">
-            {{ file.transfer.size | size }}
-            @if (file.transfer.progress < 1) {
+            {{ currentFile.transfer.size | size }}
+            @if (currentFile.transfer.progress < 1) {
                 <span
                     >({{
-                        file.transfer.progress * 100 | number: ".1-1"
+                        currentFile.transfer.progress * 100 | number: ".1-1"
                     }}%)</span
                 >
             }
         </div>
-        @if (file.error) {
+        @if (currentFile.error) {
             <div class="error-color">
-                {{ file.error.message }}
+                {{ currentFile.error.message }}
             </div>
         }
     </div>
 
     <div class="flex-1"></div>
 
-    @if (!showOnlyProgress) {
-        @if (file.transfer.complete) {
+    @if (!showOnlyProgress()) {
+        @if (currentFile.transfer.complete) {
             <button
                 data-cy="btn-remove"
                 mat-icon-button
@@ -42,29 +43,31 @@
         } @else {
             <button
                 mat-icon-button
-                (click)="file.transfer.paused ? resume() : pause()"
+                (click)="currentFile.transfer.paused ? resume() : pause()"
                 [attr.aria-label]="
-                    file.transfer.paused
+                    currentFile.transfer.paused
                         ? 'Hochladen fortsetzen'
                         : 'Hochladen pausieren'
                 "
             >
                 <mat-icon class="gray">{{
-                    file.transfer.paused ? "not_started" : "pause"
+                    currentFile.transfer.paused ? "not_started" : "pause"
                 }}</mat-icon>
             </button>
         }
     }
 </div>
 
-@if (file.transfer.progress < 1) {
-    <mat-progress-bar [value]="file.transfer.progress * 100"></mat-progress-bar>
+@if (currentFile.transfer.progress < 1) {
+    <mat-progress-bar
+        [value]="currentFile.transfer.progress * 100"
+    ></mat-progress-bar>
 }
 
-@if (file.error) {
+@if (currentFile.error) {
     <div class="flex-col">
         <div class="flex-1 align-self-end">
-            @if (file.error.status === 409) {
+            @if (currentFile.error.status === 409) {
                 @if (enableFileUploadOverride()) {
                     <button mat-button color="primary" (click)="overwrite()">
                         Überschreiben
@@ -79,7 +82,7 @@
                     <button
                         mat-button
                         color="primary"
-                        (click)="useExisting.next(file.transfer)"
+                        (click)="useExisting.emit(currentFile.transfer)"
                     >
                         Existierende verwenden
                     </button>
