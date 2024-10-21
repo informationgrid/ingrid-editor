@@ -1213,6 +1213,19 @@ export abstract class IngridShared extends BaseDoctype {
                   message:
                     "Die Konformität 'VERORDNUNG (EG) Nr. 1089/2010...' muss vorhanden sein und der Wert darf nicht 'konform' sein",
                 },
+                uniqueConformity: {
+                  expression: (_, field: FormlyFieldConfig) => {
+                    const value = field.formControl.value;
+                    const specs: string[] =
+                      value?.map(
+                        (item: any) =>
+                          item.isInspire +
+                          (item.specification.key ?? item.specification.value),
+                      ) ?? [];
+                    return specs.length === new Set(specs).size;
+                  },
+                  message: "Jede Spezifikation darf nur einmal auftreten",
+                },
               },
             })
           : null,
