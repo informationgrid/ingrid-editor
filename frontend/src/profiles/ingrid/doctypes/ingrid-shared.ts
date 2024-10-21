@@ -515,7 +515,7 @@ export abstract class IngridShared extends BaseDoctype {
               },
             })
           : null,
-        this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
+        this.addRepeatList("openDataCategories", "OpenData-Kategorien", {
           view: "chip",
           asSelect: true,
           showSearch: true,
