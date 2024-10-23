@@ -175,8 +175,6 @@ export abstract class IngridShared extends BaseDoctype {
             ? {
                 multiple: false,
                 key: "invekos",
-                hide: (field: FormlyFieldConfig) =>
-                  !field.formControl.value.isInspireIdentified,
                 items: [
                   {
                     label: "InVeKoS/IACS (GSAA)",
@@ -262,11 +260,15 @@ export abstract class IngridShared extends BaseDoctype {
                 ) {
                   field.formControl.setValue({ ...data, invekos: undefined });
                 }
-                console.log(data);
-                if (field.props?.availableOptions?.[1]?.typeOptions?.[1]) {
-                  field.props.availableOptions[1].typeOptions[1].hidden =
-                    !data.isInspireIdentified;
-                }
+                // hide options here, since we don't use real formly fields inside
+                // metadata-component, so we can't use hide-property
+                field.props?.availableOptions?.forEach((option) => {
+                  const invekosField = option?.typeOptions?.find(
+                    (typeOption) => typeOption.key === "invekos",
+                  );
+                  if (invekosField)
+                    invekosField.hidden = !data.isInspireIdentified;
+                });
               },
             },
           },
@@ -462,7 +464,10 @@ export abstract class IngridShared extends BaseDoctype {
             executeAction();
             return true;
           }
-          field.formControl.setValue({ ...value, isOpenData: false });
+          field.formControl.setValue({
+            ...field.formControl.value,
+            isOpenData: false,
+          });
           return false;
         }),
       );
@@ -1814,7 +1819,6 @@ export abstract class IngridShared extends BaseDoctype {
           key: this.defaultKeySpatialScope,
         });
       });
-      // field.model.spatialScope = { key: this.defaultKeySpatialScope };
     }
 
     if (this.isGeoService) {
@@ -1823,32 +1827,7 @@ export abstract class IngridShared extends BaseDoctype {
       }
 
       this.addConformanceEntry(field, "10", "1");
-    } else if (this.isGeoDataset) {
-      this.addConformanceEntry(field, "12", "1");
     }
-    /*};
-
-    if (this.cookieService.getCookie(cookieId) === "true") {
-      executeAction();
-      return of(true);
-    }
-
-    return this.dialog
-      .open(ConfirmDialogComponent, {
-        data: <ConfirmDialogData>{
-          title: "Hinweis",
-          message: this.inspireChangeMessage,
-          cookieId: cookieId,
-        },
-      })
-      .afterClosed()
-      .pipe(
-        map((decision) => {
-          if (decision === "ok") executeAction();
-          else field.formControl.setValue({...field.formControl.value, isInspireIdentified: });
-          return decision === "ok";
-        }),
-      );*/
   }
 
   handleDeactivateInspireIdentified(field: FormlyFieldConfig) {
@@ -1868,31 +1847,6 @@ export abstract class IngridShared extends BaseDoctype {
         ),
       );
     }
-    // };
-
-    /*    if (this.cookieService.getCookie(cookieId) === "true") {
-      executeAction();
-      return of(true);
-    }
-
-    const message = this.inspireDeleteMessage;
-
-    return this.dialog
-      .open(ConfirmDialogComponent, {
-        data: <ConfirmDialogData>{
-          title: "Hinweis",
-          message: message,
-          cookieId: cookieId,
-        },
-      })
-      .afterClosed()
-      .pipe(
-        map((decision) => {
-          if (decision === "ok") executeAction();
-          else field.formControl.setValue(true);
-          return decision === "ok";
-        }),
-      );*/
   }
 
   private conformityExists(
@@ -1972,7 +1926,6 @@ export abstract class IngridShared extends BaseDoctype {
       .afterClosed()
       .pipe(
         map((decision) => {
-          debugger;
           if (decision === "ok") executeAction();
           else
             field.formControl.setValue({
