@@ -101,7 +101,11 @@ export class MetadataTypeComponent
   hasOptionsSelected: boolean;
 
   compareChips(chip1: any, chip2: any): boolean {
-    return chip1 && chip2 ? chip1.key === chip2.key : chip1 === chip2;
+    return chip1 && chip2
+      ? chip1.key !== undefined
+        ? chip1.key === chip2.key
+        : chip1 === chip2
+      : chip1 === chip2;
   }
 
   ngOnInit(): void {
