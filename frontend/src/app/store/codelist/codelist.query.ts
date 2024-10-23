@@ -49,10 +49,11 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
     defaultValue?: string,
   ) {
     const codelist = this.getCodelist(codelistId);
-    const entryFields = codelist.entries.find((entry) => entry.id === entryKey)
-      ?.fields;
+    const entryFields = codelist.entries.find(
+      (entry) => entry.id === entryKey,
+    )?.fields;
 
-    return entryFields ? entryFields["de"] : defaultValue ?? "";
+    return entryFields ? entryFields["de"] : (defaultValue ?? "");
   }
 
   getCodelistEntryByKey(codelistId: string, entryKey: string): CodelistEntry {

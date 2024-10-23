@@ -1,12 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "GeoServiceBast#1.0.0",
-  "$ref": "#/definitions/GeoServiceBast",
+  "$id": "GeoDatasetLubw#1.0.0",
+  "$ref": "#/definitions/GeoDatasetLubw",
   "definitions": {
-    "GeoServiceBast": {
+    "GeoDatasetLubw": {
       "allOf": [
         {
-          "$ref": "../geo-service.schema.json#/definitions/GeoService"
+          "$ref": "../geo-dataset.schema.json#/definitions/GeoDataset"
         }
       ],
       "properties": {
@@ -36,12 +36,51 @@
         "featureCatalogueDescription": true,
         "extraInfo": true,
         "metadata": true,
+        "resource": true,
         "keywords": true,
         "digitalTransferOptions": true,
         "distribution": true,
         "dataset": true,
         "dataQuality": true,
-        "dataQualityInfo": true,
+        "dataQualityInfo": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "lineage": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "source": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "processStep": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "description": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "../../../general.schema.json#/definitions/KeyValue"
+                          }
+                        }
+                      }
+                    },
+                    "descriptions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "../../../general.schema.json#/definitions/KeyValue"
+                      }
+                    },
+                    "environmentDescription": {
+                      "type": ["null", "string"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "absoluteExternalPositionalAccuracy": true,
         "priorityDatasets": true,
         "invekos": true,
@@ -59,33 +98,8 @@
         "title": true,
         "_uuid": true,
         "_type": true,
-        "projectNumber": {
+        "oac": {
           "type": ["null", "string"]
-        },
-        "projectTitle": {
-          "type": ["null", "string"]
-        },
-        "supplementalInformation": {
-          "type": ["null", "string"]
-        },
-        "resource": {
-          "type": "object",
-          "additionalProperties": false,
-          "allOf": [
-            {
-              "$ref": "../refs/general.schema.json#/definitions/resource"
-            }
-          ],
-          "properties": {
-            "purpose": true,
-            "specificUsage": true,
-            "accessConstraints": true,
-            "useConstraints": true,
-            "useLimitation": true,
-            "useConstraintsComments": {
-              "type": ["null", "string"]
-            }
-          }
         }
       },
       "additionalProperties": false

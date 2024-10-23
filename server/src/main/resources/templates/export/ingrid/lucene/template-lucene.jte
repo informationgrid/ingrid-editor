@@ -45,6 +45,7 @@
         "IDF_1.0"
     ],
     "isfolder": "false",
+    "sort_hash": "${page.getSortHash()}",
     "lang": "de",
     "boost": 1,
     "children.object_node.obj_uuid": [],

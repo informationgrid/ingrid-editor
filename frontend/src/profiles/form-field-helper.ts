@@ -455,7 +455,7 @@ export class FormFieldHelper {
       type: "repeat",
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
-      defaultValue: options?.required ? options?.defaultValue ?? [{}] : null,
+      defaultValue: options?.required ? (options?.defaultValue ?? [{}]) : null,
       props: {
         externalLabel: label,
         required: options?.required,

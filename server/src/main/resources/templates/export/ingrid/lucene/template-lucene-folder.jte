@@ -29,6 +29,7 @@
     @endif
         "IDF_1.0"
     ],
+    "sort_hash": "${page.getSortHash()}",
     "boost": 0.1,
 
     "title": "${page.getModel().getTitle()}",

@@ -55,6 +55,7 @@
         "conformanceResult": true,
         "gridSpatialRepresentation": true,
         "openDataCategories": true,
+        "fileReferences": true,
         "title": true,
         "_uuid": true,
         "_type": true,

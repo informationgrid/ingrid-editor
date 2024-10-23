@@ -185,7 +185,7 @@
                                     {
                                         width: props.columns[
                                             batchMode ? i - 1 : i
-                                        ].width
+                                        ].width,
                                     };
                                     as flex
                                 ) {
@@ -225,9 +225,9 @@
                                         <span
                                             [innerHTML]="
                                                 formattedCell[rowIndex]
-                                                    ? formattedCell[rowIndex][
+                                                    ? (formattedCell[rowIndex][
                                                           column
-                                                      ] ?? element[column]
+                                                      ] ?? element[column])
                                                     : element[column]
                                             "
                                             (click)="

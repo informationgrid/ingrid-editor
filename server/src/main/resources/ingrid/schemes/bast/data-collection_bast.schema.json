@@ -151,6 +151,12 @@
           "items": {
             "$ref": "../../../general.schema.json#/definitions/KeyValue"
           }
+        },
+        "fileReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "../../../general.schema.json#/definitions/FileReference"
+          }
         }
       },
       "required": [

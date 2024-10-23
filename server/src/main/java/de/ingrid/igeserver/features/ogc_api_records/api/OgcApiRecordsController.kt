@@ -501,4 +501,25 @@ class OgcApiRecordsController(
 
         return ResponseEntity.ok().headers(responseHeaders).body(records)
     }
+
+    @PostMapping(value = ["/collections/{collectionId}/items/actions/move"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
+    @Operation(tags = ["OGC/Records/Actions"], summary = "Relocate/move record(s) to folder ID.", hidden = false)
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Successful operation."),
+            ApiResponse(responseCode = "400", description = "Invalid input"),
+            ApiResponse(responseCode = "404", description = "Not found"),
+        ],
+    )
+    fun actionMoveRecords(
+        @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
+        @RequestHeader allHeaders: Map<String, String>,
+        principal: Authentication,
+        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
+        @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: String,
+    ): ResponseEntity<JsonNode> {
+        apiValidationService.validateCollection(collectionId)
+        ogcRecordService.moveRecords(collectionId, data)
+        return ResponseEntity.ok().build()
+    }
 }

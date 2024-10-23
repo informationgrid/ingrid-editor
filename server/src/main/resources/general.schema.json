@@ -209,6 +209,39 @@
       },
       "required": ["connection", "type"],
       "title": "Contact"
+    },
+    "FileReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": ["string", "null"]
+        },
+        "link": {
+          "asLink": {
+            "type": "boolean"
+          },
+          "value": {
+            "type": ["string", "null"]
+          },
+          "uri": {
+            "type": ["string", "null"]
+          },
+          "lastModified": {
+            "type": ["string", "null"]
+          },
+          "sizeInBytes": {
+            "type": "integer"
+          }
+        },
+        "format": {
+          "$ref": "#/definitions/KeyValue"
+        },
+        "description": {
+          "type": ["string", "null"]
+        }
+      },
+      "title": "FileReference"
     }
   }
 }

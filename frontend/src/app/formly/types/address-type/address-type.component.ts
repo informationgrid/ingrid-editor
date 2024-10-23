@@ -272,7 +272,12 @@ export class AddressTypeComponent
   private getPlaceholderAddresses(length: number): ResolvedAddressWithType[] {
     const placeholder: ResolvedAddressWithType[] = [];
     for (let i = 0; i < length; i++) {
-      placeholder.push({ type: null, address: null, error: null });
+      placeholder.push({
+        type: null,
+        address: null,
+        error: null,
+        isPlaceholder: true,
+      });
     }
     return placeholder;
   }

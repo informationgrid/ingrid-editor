@@ -20,8 +20,8 @@
 export interface ThesaurusResult {
   thesaurus:
     | "INSPIRE-Themen"
-    | "Gemet Schlagworte"
-    | "Umthes Schlagworte"
+    | "Gemet-Schlagworte"
+    | "Umthes-Schlagworte"
     | "Freie Schlagworte";
   value: any;
   label: string;

@@ -49,6 +49,7 @@ export interface ResolvedAddressWithType {
   type: BackendOption;
   address: DocumentWithMetadata;
   error?: String;
+  isPlaceholder?: boolean;
 }
 
 @Component({
@@ -106,6 +107,8 @@ export class AddressCardComponent implements OnInit {
 
   ngOnInit(): void {
     const theAddress = this.address();
+    if (theAddress.isPlaceholder) return;
+
     if (!theAddress.address) {
       console.error("Address reference is null!");
       this.content = {

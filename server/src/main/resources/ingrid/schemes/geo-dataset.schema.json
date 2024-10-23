@@ -213,7 +213,7 @@
               "properties": {
                 "source": {
                   "type": "object",
-                  "additionalProperties": false,
+                  "additionalProperties": true,
                   "properties": {
                     "processStep": {
                       "type": "object",
@@ -400,6 +400,12 @@
           "type": "array",
           "items": {
             "$ref": "../../general.schema.json#/definitions/KeyValue"
+          }
+        },
+        "fileReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "../../general.schema.json#/definitions/FileReference"
           }
         }
       },

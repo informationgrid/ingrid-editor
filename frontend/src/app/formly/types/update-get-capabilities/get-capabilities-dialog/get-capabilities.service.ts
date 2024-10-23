@@ -139,10 +139,10 @@ export class GetCapabilitiesService {
         case "INSPIRE-Themen":
           model.themes.push(item.value);
           break;
-        case "Gemet Schlagworte":
+        case "Gemet-Schlagworte":
           model.keywords.gemet.push(item.value);
           break;
-        case "Umthes Schlagworte":
+        case "Umthes-Schlagworte":
           model.keywords.umthes.push(item.value);
           break;
         case "Freie Schlagworte":

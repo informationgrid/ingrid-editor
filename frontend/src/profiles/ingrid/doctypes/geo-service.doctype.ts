@@ -48,7 +48,7 @@ export class GeoServiceDoctype extends IngridShared {
 
   geoServiceOptions = {
     required: {
-      operations: false,
+      operations: true,
       classification: true,
     },
   };
@@ -122,7 +122,8 @@ export class GeoServiceDoctype extends IngridShared {
                   contextHelpId: "serviceType",
                   wrappers: ["inline-help", "form-field"],
                   hooks: {
-                    onInit: (field) => this.handleServiceTypeChange(field),
+                    onInit: (field: FormlyFieldConfig) =>
+                      this.handleServiceTypeChange(field),
                   },
                 }),
                 this.addRepeatListInline("version", "Version des Dienstes", {
@@ -140,7 +141,8 @@ export class GeoServiceDoctype extends IngridShared {
                   "Als ATOM-Download Dienst bereitstellen",
                   {
                     className: "optional",
-                    click: (field) => this.showAtomFeedInfo(field),
+                    click: (field: FormlyFieldConfig) =>
+                      this.showAtomFeedInfo(field),
                     expressions: {
                       hide: "formState.mainModel?.service?.type?.key !== '3'",
                     },
@@ -165,20 +167,6 @@ export class GeoServiceDoctype extends IngridShared {
                 },
               }),
             ],
-            validators: {
-              getCapabilityForWMS: {
-                expression: (ctrl, field) => {
-                  const model = field.options.formState.mainModel;
-                  return (
-                    !model ||
-                    model.service?.type?.key !== "2" ||
-                    field.model?.some((item) => item?.name?.key === "1")
-                  );
-                },
-                message:
-                  "Für Darstellungsdienste muss eine GetCapabilities-Operation angegeben sein",
-              },
-            },
           }),
           this.addGroup(
             null,
@@ -284,7 +272,7 @@ export class GeoServiceDoctype extends IngridShared {
     });
   }
 
-  private handleServiceTypeChange(field) {
+  private handleServiceTypeChange(field: FormlyFieldConfig) {
     return field.formControl.valueChanges.pipe(
       filter((value) => value != null),
       distinctUntilKeyChanged("key"),
@@ -333,7 +321,7 @@ export class GeoServiceDoctype extends IngridShared {
     versionProps.options = value;
   }
 
-  private showAtomFeedInfo(field) {
+  private showAtomFeedInfo(field: FormlyFieldConfig) {
     if (!field.model.isAtomDownload) return;
 
     const cookieId = "HIDE_ATOM_FEED_INFO";

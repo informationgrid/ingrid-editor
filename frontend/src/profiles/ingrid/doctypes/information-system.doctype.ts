@@ -111,6 +111,7 @@ export class InformationSystemDoctype extends IngridShared {
       this.addAdditionalInformationSection({ extraInfoLangData: true }),
       this.addAvailabilitySection(),
       this.addLinksSection(),
+      this.addFileReferences(),
     ];
 
     return this.manipulateDocumentFields(fields);
