@@ -6,7 +6,7 @@ import {
   FormlyFieldProps,
 } from "@ngx-formly/core";
 import { FormLabelComponent } from "../../wrapper/form-label/form-label.component";
-import { AsyncPipe, JsonPipe, NgIf } from "@angular/common";
+import { AsyncPipe, NgIf } from "@angular/common";
 import {
   MatChip,
   MatChipListbox,
@@ -24,9 +24,12 @@ import { debounceTime, distinctUntilChanged, startWith } from "rxjs/operators";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { TranslocoDirective } from "@ngneat/transloco";
 import { MetadataTypeShortComponent } from "./metadata-type-short/metadata-type-short.component";
-import { MatButton } from "@angular/material/button";
+import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 import { Observable } from "rxjs";
+import { ContextHelpService } from "../../../services/context-help/context-help.service";
+import { FormStateService } from "../../../+form/form-state.service";
+import { ConfigService } from "../../../services/config/config.service";
 
 export interface MetadataProps extends FormlyFieldProps {
   availableOptions: MetadataOption[];
@@ -69,13 +72,13 @@ export interface MetadataOptionItem {
     MatChip,
     MatChipOption,
     ReactiveFormsModule,
-    JsonPipe,
     FormErrorComponent,
     TranslocoDirective,
     MetadataTypeShortComponent,
     MatButton,
     MatIcon,
     AsyncPipe,
+    MatIconButton,
   ],
   templateUrl: "./metadata-type.component.html",
   styleUrl: "./metadata-type.component.scss",
@@ -84,6 +87,9 @@ export class MetadataTypeComponent
   extends FieldType<FieldTypeConfig<MetadataProps>>
   implements OnInit
 {
+  private contextHelpService = inject(ContextHelpService);
+  private formStateService = inject(FormStateService);
+  private configService = inject(ConfigService);
   private destroyRef = inject(DestroyRef);
 
   aForm: FormGroup = null;
@@ -141,16 +147,15 @@ export class MetadataTypeComponent
     return Object.values(data).some((value) => value);
   }
 
-  showContextHelp(infoElement: HTMLElement) {
-    /*
+  showContextHelp(event: MouseEvent, field: MetadataOptionItem) {
+    event.stopImmediatePropagation();
     this.contextHelpService.showContextHelp(
-      this.profile,
+      this.configService.$userInfo.value.currentCatalog.type,
       this.formStateService.metadata().docType,
-      this.fieldId,
-      this.props.externalLabel,
-      infoElement,
+      field.key,
+      field.label,
+      event.target as HTMLElement,
     );
-*/
   }
 
   private initForm() {

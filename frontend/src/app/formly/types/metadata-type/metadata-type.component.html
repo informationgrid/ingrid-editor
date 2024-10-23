@@ -45,9 +45,27 @@
                                                 props.disabledOptions[item.key]
                                             "
                                             (click)="handleOptionClick(item)"
-                                            >{{ item.label }}</mat-chip-option
-                                        ></mat-chip-listbox
-                                    >
+                                        >
+                                            <div
+                                                class="flex-row align-items-center gap-8"
+                                            >
+                                                {{ item.label }}
+                                                <button
+                                                    class="small-icon-button"
+                                                    mat-icon-button
+                                                    (click)="
+                                                        showContextHelp(
+                                                            $event,
+                                                            item
+                                                        )
+                                                    "
+                                                >
+                                                    <mat-icon
+                                                        svgIcon="info-24px"
+                                                    ></mat-icon>
+                                                </button>
+                                            </div> </mat-chip-option
+                                    ></mat-chip-listbox>
                                 }
                             } @else {
                                 @if (

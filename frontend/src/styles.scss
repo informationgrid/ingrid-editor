@@ -1399,3 +1399,22 @@ table.big-font {
     }
   }
 }
+
+.small-icon-button {
+  width: 20px !important;
+  height: 20px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .mat-mdc-button-touch-target {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
