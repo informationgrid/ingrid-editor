@@ -15,7 +15,9 @@
       "_contentModifiedBy": "Mike Cat-Miller",
       "_id": null,
       "dataset": {
-        "languages": ["150"]
+        "languages": [
+          "150"
+        ]
       },
       "lineage": {
         "statement": "Grundlage test"
@@ -82,6 +84,7 @@
       },
       "qualities": [],
       "identifier": "44f911ee-afcb-44c1-b6db-2783e93863f2",
+      "isOpenData": false,
       "references": [],
       "resolution": [],
       "dataQuality": {
@@ -180,6 +183,7 @@
           }
         }
       },
+      "isAdVCompatible": false,
       "topicCategories": [
         {
           "key": "4"
@@ -187,6 +191,7 @@
       ],
       "advProductGroups": [],
       "graphicOverviews": [],
+      "isInspireIdentified": false,
       "digitalTransferOptions": [],
       "maintenanceInformation": {
         "maintenanceAndUpdateFrequency": null,
