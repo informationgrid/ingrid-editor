@@ -38,7 +38,7 @@ class Migrate120 {
             return documents
         }
 
-        private fun getPropertiesOfDocument(doc: ObjectNode): JsonNode = jacksonObjectMapper().createObjectNode().apply {
+        fun getPropertiesOfDocument(doc: ObjectNode): JsonNode = jacksonObjectMapper().createObjectNode().apply {
             val isOpenData = doc.remove("isOpenData")
             val isAdVCompatible = doc.remove("isAdVCompatible")
             val isInspireIdentified = doc.remove("isInspireIdentified")
