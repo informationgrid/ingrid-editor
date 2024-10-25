@@ -528,7 +528,7 @@
         "subType": {
           "key": "5"
         },
-        "hvd": true
+        "isHvd": true
       }
     }
   ]

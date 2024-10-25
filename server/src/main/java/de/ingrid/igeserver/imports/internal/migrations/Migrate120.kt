@@ -64,7 +64,7 @@ class Migrate120 {
                 }
             }
             if (subType?.isNull == false) set<JsonNode>("subType", subType)
-            if (hvd?.booleanValue() == true) set<JsonNode>("hvd", hvd)
+            if (hvd?.booleanValue() == true) set<JsonNode>("isHvd", hvd)
         }
     }
 }

@@ -97,6 +97,8 @@ data class InGridDocumentProperties(
     val isInspireIdentified: InspireType?,
     val isOpenData: Boolean?,
     val isAdVCompatible: Boolean?,
+//    val isHvd: Boolean?,
+//    val invekos: KeyValue?,
     val subType: KeyValue?,
 )
 

@@ -208,7 +208,7 @@ export abstract class IngridShared extends BaseDoctype {
               this.showHVD
                 ? {
                     label: "High-Value-Dataset",
-                    key: "hvd",
+                    key: "isHvd",
                     value: true,
                     onClick: (field) => this.handleHVDClick(field).subscribe(),
                   }

@@ -288,7 +288,7 @@ export class SharedHmdk {
 
     // remove all categories
     field.form.get("openDataCategories").setValue([]);
-    if (field.model.hvd) field.form.get("hvd").setValue(false);
+    if (field.model.hvd) field.form.get("isHvd").setValue(false);
     return of(true);
   }
 
