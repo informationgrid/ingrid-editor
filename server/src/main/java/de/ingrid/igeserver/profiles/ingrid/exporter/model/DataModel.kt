@@ -20,6 +20,8 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.exporter.model.SpatialModel
@@ -55,9 +57,7 @@ data class DataModel(
     val themes: List<KeyValue>?,
     val keywords: Keywords?,
     val dataset: Dataset?,
-    val isAdVCompatible: Boolean?,
-    val isOpenData: Boolean?,
-    val isInspireIdentified: Boolean?,
+    @JsonProperty("my-metadata") val myMetadata: InGridDocumentProperties?,
     val openDataCategories: List<KeyValue>?,
     val priorityDatasets: List<KeyValue>?,
     val invekosKeywords: List<KeyValue>?,
@@ -91,8 +91,20 @@ data class DataModel(
     val lineage: Lineage?,
     val service: Service = Service(),
     val spatialScope: KeyValue?,
+)
+
+data class InGridDocumentProperties(
+    val isInspireIdentified: InspireType?,
+    val isOpenData: Boolean?,
+    val isAdVCompatible: Boolean?,
     val subType: KeyValue?,
 )
+
+enum class InspireType(@get:JsonValue val value: String) {
+    RELEVANT("relevant"),
+    CONFORM("conform"),
+    NOT_CONFORM("notConform"),
+}
 
 data class VectorSpatialRepresentation(
     val topologyLevel: KeyValue?,

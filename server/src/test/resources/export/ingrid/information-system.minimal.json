@@ -2,6 +2,10 @@
   "_uuid": "4e52691b-92b2-4f22-bd13-6ba43edf4ab6",
   "_type": "InGridInformationSystem",
   "title": "info-system",
+  "my-metadata": {
+    "isOpenData": false,
+    "isAdVCompatible": false
+  },
   "dataset": { "languages": [] },
   "spatial": {
     "references": [
@@ -35,7 +39,6 @@
     "resourceDateType": null
   },
   "extraInfo": { "legalBasicsDescriptions": [] },
-  "isOpenData": false,
   "references": [],
   "description": "some more description",
   "serviceType": null,
@@ -44,9 +47,7 @@
     { "ref": "1f570220-d292-4fd5-8595-e2e088d2f410", "type": { "key": "7" } }
   ],
   "serviceVersion": [],
-  "isAdVCompatible": false,
   "advProductGroups": [],
-  "isInspireIdentified": false,
   "digitalTransferOptions": [],
   "maintenanceInformation": {
     "maintenanceAndUpdateFrequency": null,

@@ -11,9 +11,11 @@
   "_contentModifiedBy": "Max Muster",
   "_version": 15,
   "data": {
-    "isInspireIdentified": true,
-    "isAdVCompatible": true,
-    "isOpenData": true,
+    "my-metadata": {
+      "isInspireIdentified": "conform",
+      "isAdVCompatible": true,
+      "isOpenData": true
+    },
     "parentIdentifier": "Identifikator des übergeordneten Metadatensatzes",
     "graphicOverviews": [
       {

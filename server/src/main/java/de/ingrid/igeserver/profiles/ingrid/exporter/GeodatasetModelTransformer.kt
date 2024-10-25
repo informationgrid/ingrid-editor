@@ -23,16 +23,15 @@ import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
 
-open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
-    IngridModelTransformer(transformerConfig) {
+open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
-    private val isSeries = model.data.subType?.key == "6"
+    private val isSeries = model.data.myMetadata?.subType?.key == "6"
 
     override val hierarchyLevel = if (isSeries) "series" else "dataset"
     override val hierarchyLevelName: String? = if (isSeries) "series" else null
 
     val featureCatalogueDescription = model.data.featureCatalogueDescription
-    val isAdVCompatible = model.data.isAdVCompatible ?: false
+    val isAdVCompatible = model.data.myMetadata?.isAdVCompatible ?: false
     val featureTypes =
         model.data.featureCatalogueDescription?.featureTypes?.map { codelists.getValue("", it) } ?: emptyList()
     val citations = model.data.featureCatalogueDescription?.citation ?: emptyList()
@@ -143,11 +142,9 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
         }
     }
 
-    fun mapConformanceResultTitle(result: ConformanceResult): String? {
-        return when (result.isInspire) {
-            true -> codelists.getValue("6005", result.specification, "iso") ?: codelists.getValue("6005", result.specification, "de")
-            else -> codelists.getCatalogCodelistValue("6006", result.specification)
-        }
+    fun mapConformanceResultTitle(result: ConformanceResult): String? = when (result.isInspire) {
+        true -> codelists.getValue("6005", result.specification, "iso") ?: codelists.getValue("6005", result.specification, "de")
+        else -> codelists.getCatalogCodelistValue("6006", result.specification)
     }
 
     private val unknownValueUnit = "<gmd:valueUnit gco:nilReason=\"unknown\"/>"
@@ -230,18 +227,17 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
         }
     }
 
-    fun getDisplayableQuality(quality: Quality): DisplayableQuality {
-        return DisplayableQuality(
-            nameOfMeasure = codelists.getValue(
-                qualitytypeCodelistMap.getOrDefault(quality._type, ""), quality.measureType,
-            ) ?: "",
-            tagName = qualitytypeTagnameMap.getOrDefault(quality._type, ""),
-            measureIdentification = getMeasureIdentification(quality._type, quality.measureType?.key),
-            measureDescription = quality.parameter,
-            value = quality.value.toString(),
-            unitDefinition = getUnitDefinition(quality._type, quality.measureType?.key ?: "-1"),
-        )
-    }
+    fun getDisplayableQuality(quality: Quality): DisplayableQuality = DisplayableQuality(
+        nameOfMeasure = codelists.getValue(
+            qualitytypeCodelistMap.getOrDefault(quality._type, ""),
+            quality.measureType,
+        ) ?: "",
+        tagName = qualitytypeTagnameMap.getOrDefault(quality._type, ""),
+        measureIdentification = getMeasureIdentification(quality._type, quality.measureType?.key),
+        measureDescription = quality.parameter,
+        value = quality.value.toString(),
+        unitDefinition = getUnitDefinition(quality._type, quality.measureType?.key ?: "-1"),
+    )
 
     val qualities = model.data.qualities?.map { getDisplayableQuality(it) } ?: emptyList()
 

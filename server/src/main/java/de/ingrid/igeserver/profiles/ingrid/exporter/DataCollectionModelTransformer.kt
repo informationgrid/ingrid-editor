@@ -23,7 +23,7 @@ open class DataCollectionModelTransformer(transformerConfig: TransformerConfig) 
 
     override val hierarchyLevelName = "database"
 
-    val isAdVCompatible = data.isAdVCompatible ?: false
+    val isAdVCompatible = data.myMetadata?.isAdVCompatible ?: false
     val databaseContent =
         data.databaseContent?.map { content -> content.parameter + content.moreInfo?.let { " ($it)" } } ?: emptyList()
     val categoryCatalog = data.categoryCatalog ?: emptyList()

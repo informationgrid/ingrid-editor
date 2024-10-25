@@ -2,6 +2,10 @@
   "_uuid": "22dcecc1-3eb0-4fa0-839f-14ad4392a7be",
   "title": "geodatendienst_test",
   "_type": "InGridGeoService",
+  "my-metadata": {
+    "isOpenData": false,
+    "isAdVCompatible": false
+  },
   "themes": [],
   "service": {
     "type": { "key": "1" },
@@ -48,7 +52,6 @@
     "resourceDateType": null
   },
   "extraInfo": { "legalBasicsDescriptions": [] },
-  "isOpenData": false,
   "references": [],
   "description": "descr",
   "distribution": { "format": [] },
@@ -56,10 +59,8 @@
   "pointOfContact": [
     { "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4", "type": { "key": "3" } }
   ],
-  "isAdVCompatible": false,
   "advProductGroups": [],
   "priorityDatasets": [],
-  "isInspireIdentified": false,
   "digitalTransferOptions": [],
   "maintenanceInformation": {
     "maintenanceAndUpdateFrequency": null,

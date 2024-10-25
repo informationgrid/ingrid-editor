@@ -4,9 +4,13 @@
     "_uuid": "3fce9549-eb69-43bc-9304-b3d0cde76394",
     "_parent": null,
     "_type": "InGridGeoDataset",
-    "isInspireIdentified": false,
-    "isAdVCompatible": false,
-    "isOpenData": false,
+    "my-metadata": {
+      "isAdVCompatible": false,
+      "isOpenData": false,
+      "subType": {
+        "key": "5"
+      }
+    },
     "description": "Beschreibung",
     "alternateTitle": "",
     "parentIdentifier": "",
@@ -123,9 +127,6 @@
       }
     ],
     "invekosKeywords": [],
-    "subType": {
-      "key": "5"
-    },
     "metadata": {
       "language": {
         "key": "150"
@@ -172,7 +173,6 @@
     "dataset": {
       "languages": ["150"]
     },
-    "isInspireConform": false,
     "vectorSpatialRepresentation": [],
     "fees": "It's for free!",
     "supplementalInformation": "internal comments",

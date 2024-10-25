@@ -11,11 +11,12 @@
   "_version": 5,
   "_state": "P",
   "data": {
-    "isInspireIdentified": false,
-    "isAdVCompatible": true,
-    "isOpenData": false,
-    "subType": {
-      "key": "5"
+    "my-metadata": {
+      "isAdVCompatible": true,
+      "isOpenData": false,
+      "subType": {
+        "key": "5"
+      }
     },
     "description": "Feld von Beschreibung",
     "graphicOverviews": [],

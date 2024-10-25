@@ -2,6 +2,11 @@
   "_uuid": "5369ad60-938f-4325-b041-25dacfc14705",
   "title": "geodataset_min",
   "_type": "InGridGeoDataset",
+  "my-metadata": {
+    "isOpenData": false,
+    "isAdVCompatible": false,
+    "subType": { "key": "5" }
+  },
   "themes": [],
   "dataset": { "languages": [] },
   "lineage": { "statement": "basics" },
@@ -21,7 +26,6 @@
     "spatialSystems": [{ "key": "25833" }],
     "verticalExtent": { "unitOfMeasure": null }
   },
-  "subType": { "key": "5" },
   "keywords": {
     "free": []
   },
@@ -43,7 +47,6 @@
   "extraInfo": { "legalBasicsDescriptions": [] },
   "qualities": [],
   "identifier": "identifier",
-  "isOpenData": false,
   "references": [],
   "resolution": [],
   "dataQuality": { "completenessOmission": {} },
@@ -56,11 +59,9 @@
   "dataQualityInfo": {
     "lineage": { "source": { "processStep": {}, "descriptions": [] } }
   },
-  "isAdVCompatible": false,
   "topicCategories": [{ "key": "7" }],
   "advProductGroups": [],
   "priorityDatasets": [],
-  "isInspireIdentified": false,
   "digitalTransferOptions": [],
   "maintenanceInformation": {
     "maintenanceAndUpdateFrequency": null,

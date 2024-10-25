@@ -2,6 +2,9 @@
   "_uuid": "a0d1ad6d-4237-4b6e-b0be-cfd072510531",
   "_type": "InGridDataCollection",
   "title": "abab",
+  "my-metadata": {
+    "isAdVCompatible": true
+  },
   "dataset": { "languages": ["123"] },
   "spatial": {
     "references": [
@@ -49,7 +52,6 @@
   },
   "extraInfo": { "legalBasicsDescriptions": [{ "key": "60" }] },
   "orderInfo": "order",
-  "isOpenData": false,
   "methodText": "ghjk",
   "references": [
     {
@@ -74,7 +76,6 @@
     }
   ],
   "databaseContent": [{ "moreInfo": "sdfg", "parameter": "rewq" }],
-  "isAdVCompatible": true,
   "advProductGroups": [{ "key": "2" }],
   "graphicOverviews": [
     {

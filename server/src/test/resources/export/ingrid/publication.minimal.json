@@ -35,14 +35,12 @@
     "resourceDateType": null
   },
   "extraInfo": { "legalBasicsDescriptions": [] },
-  "isOpenData": false,
   "references": [],
   "description": "random description",
   "publication": {},
   "pointOfContact": [
     { "ref": "83f92167-6606-4182-948c-5747ad608b80", "type": { "key": "7" } }
   ],
-  "isAdVCompatible": false,
   "advProductGroups": [],
   "digitalTransferOptions": [],
   "maintenanceInformation": {

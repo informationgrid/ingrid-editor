@@ -8,9 +8,12 @@
 @param Content additionalLineageSource = null
 
 {
-    @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource)
+    @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource, @`
+        ,
+        @if(model.isInspireIdentified())"isInspireIdentified": "notConform",@endif
+        "subType": @template.imports.ingrid.partial.key-value(item = model.getSubtype())
+    `)
     "invekosKeywords": @template.imports.ingrid.partial.key-values(list = model.getInVeKoSKeywords()),
-    "subType": @template.imports.ingrid.partial.key-value(item = model.getSubtype()),
     "metadata": {
         "language": @template.imports.ingrid.partial.key-value(item = model.getLanguage()),
         "characterSet": @template.imports.ingrid.partial.key-value(item = model.getCharacterSet())
@@ -92,7 +95,6 @@
         @endfor
         ]
     },
-    "isInspireConform": false,
     "vectorSpatialRepresentation": [
     @for(var vector : ForSupport.of(model.getVectorSpatialRepresentation()))
         {
