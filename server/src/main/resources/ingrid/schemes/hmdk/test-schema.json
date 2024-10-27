@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://example.com/schemas/ingrid/schemes/hmdk/test",
+  "type": "object",
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "properties": {
+        "group": {
+          "type": "object"
+        }
+      }
+    },
+    {
+      "$ref": "test-schema-base.json"
+    }
+  ],
+  "required": ["childprop"],
+  "properties": {
+    "childprop": {
+      "type": "string"
+    }
+  }
+}

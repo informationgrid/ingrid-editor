@@ -20,12 +20,16 @@
 package de.ingrid.igeserver.persistence.filter.publish
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.networknt.schema.InputFormat
+import com.networknt.schema.JsonSchema
+import com.networknt.schema.JsonSchemaFactory
+import com.networknt.schema.SpecVersion.VersionFlag
+import com.networknt.schema.ValidationMessage
+import com.networknt.schema.serialization.JsonNodeReader
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
-import net.pwall.json.schema.JSONSchema
-import net.pwall.json.schema.output.BasicOutput
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
 import org.unbescape.json.JsonEscape
@@ -74,34 +78,39 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
         return json.toString().substringBeforeLast("}") + extraFields + "}"
     }
 
-    fun validate(schemaFile: String, json: String): BasicOutput? {
+    fun validate(schemaFile: String, json: String): Set<ValidationMessage> {
         val resource = PreJsonSchemaValidator::class.java.getResource(schemaFile)
 
         if (resource == null) {
             log.error("JSON-Schema not found: $schemaFile")
-            return null
+            return emptySet()
         }
 
-        val schema = JSONSchema.parseFile(resource.file)
-        val output = schema.validateBasic(json)
-        log.debug("Document valid: ${output.valid}")
-        output.errors?.forEach {
-            log.error("${it.error} - ${it.instanceLocation}")
+        val factory = JsonSchemaFactory.getInstance(
+            VersionFlag.V202012,
+        ) { builder: JsonSchemaFactory.Builder ->
+            builder.jsonNodeReader(JsonNodeReader.builder().locationAware().build())
+            builder.schemaMappers { schemaMappers ->
+                schemaMappers.mapPrefix(
+                    "https://example.com/schemas/",
+                    "classpath:/",
+                )
+            }
+        }
+//        val config = SchemaValidatorsConfig.builder().build()
+        val schema1: JsonSchema = factory.getSchema(resource.toURI())
+
+        val assertions: Set<ValidationMessage> = schema1.validate(json, InputFormat.JSON) { executionContext ->
+            // By default since Draft 2019-09 the format keyword only generates annotations and not assertions
+            executionContext.executionConfig.formatAssertionsEnabled = true
         }
 
-        if (!output.valid) {
+        if (assertions.isNotEmpty()) {
             // map to prevent leaking of information about server in absoluteKeywordLocation (#5772)
-            val error = output.errors?.map { JsonErrorEntry(it.error, removePathPrefix(it.absoluteKeywordLocation ?: it.instanceLocation)) }
+            log.error("JSON-Schema validation errors: ${assertions.joinToString { it.message }}")
+            val error = assertions.map { JsonErrorEntry(it.error, it.instanceLocation.toString()) }
             throw ValidationException.withReason(error)
         }
-
-        return output
-    }
-
-    private fun removePathPrefix(path: String): String {
-        // example: file:/path/to/schema.json#/definitions/definitionName
-        val location = path.substringAfterLast("#")
-        val fileName = path.substringBeforeLast("#").substringAfterLast("/")
-        return "$fileName#$location"
+        return assertions
     }
 }

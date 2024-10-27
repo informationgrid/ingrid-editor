@@ -31,13 +31,13 @@ class InGridGeoServiceSchema : AnnotationSpec() {
     fun minimal() {
         val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.minimal.json")
         val result = SchemaUtils.validate(json, schema)
-        result.valid shouldBe true
+        result.size shouldBe 0
     }
 
     @Test
     fun maximal() {
         val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.maximal.json")
         val result = SchemaUtils.validate(json, schema)
-        result.valid shouldBe true
+        result.size shouldBe 0
     }
 }
