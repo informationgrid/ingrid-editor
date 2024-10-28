@@ -149,8 +149,8 @@ export class ConsolidateDialogComponent implements OnInit {
     this.timedOutKeywords = [];
     this.timedOutThesauri = [];
 
-    await this.keywordAnalysis
-      .analyzeKeywords(
+    try {
+      const analyzedKeywords = await this.keywordAnalysis.analyzeKeywords(
         [
           ...this.gemetKeywords,
           ...this.umthesKeywords,
@@ -158,29 +158,30 @@ export class ConsolidateDialogComponent implements OnInit {
           ...this.getInspireLabels(),
         ].map((keyword) => keyword.label),
         this.isInspireIdentified,
-      )
-      .then((res) => {
-        this.updateKeywords(res);
-        this.addAllKeywordStatuses();
-        this.keepKeywordsFoundWithDifferentLabel();
-        this.sortKeywordsByStatus();
-        this.removeAllDuplicateKeywords();
-        this.setKeywordDialogData();
-        this.isLoading = false;
-      });
+      );
+
+      this.categorizeKeywords(analyzedKeywords);
+      this.addAllKeywordStatuses();
+      this.keepKeywordsFoundWithDifferentLabel();
+      this.sortKeywordsByStatus();
+      this.removeAllDuplicateKeywords();
+      this.setKeywordDialogData();
+    } finally {
+      this.isLoading = false;
+    }
   }
 
-  private updateKeywords(res) {
-    this.gemetKeywordsNew = res.filter(
+  private categorizeKeywords(analyzedKeywords) {
+    this.gemetKeywordsNew = analyzedKeywords.filter(
       (keyword) => keyword.thesaurus === this.keywordCategories.gemet,
     );
-    this.umthesKeywordsNew = res.filter(
+    this.umthesKeywordsNew = analyzedKeywords.filter(
       (keyword) => keyword.thesaurus === this.keywordCategories.umthes,
     );
-    this.freeKeywordsNew = res.filter(
+    this.freeKeywordsNew = analyzedKeywords.filter(
       (keyword) => keyword.thesaurus === this.keywordCategories.free,
     );
-    this.inspireTopicsNew = res.filter(
+    this.inspireTopicsNew = analyzedKeywords.filter(
       (keyword) => keyword.thesaurus === this.keywordCategories.themes,
     );
   }
@@ -206,13 +207,10 @@ export class ConsolidateDialogComponent implements OnInit {
     addStatuses(this.umthesKeywordsNew, this.umthesKeywords);
     addStatuses(this.freeKeywordsNew, this.freeKeywords);
 
-    addStatuses(
-      this.inspireTopicsNew,
-      // Special handling getting label from codelist id's
-      this.getInspireLabels(),
-    );
+    addStatuses(this.inspireTopicsNew, this.getInspireLabels());
   }
 
+  // Special handling getting label from codelist id's
   private getInspireLabels() {
     return this.inspireTopics.map((keyword) => ({
       label: this.codelistQuery.getCodelistEntryByKey("6100", keyword.key)
@@ -363,11 +361,6 @@ export class ConsolidateDialogComponent implements OnInit {
         label: "INSPIRE Themen",
         condition: this.inspireTopicsNew.length,
         keywords: this.inspireTopicsNew,
-      },
-      {
-        label: "ISO-Themenkategorie",
-        condition: this.isoCategoriesNew.length,
-        keywords: this.isoCategoriesNew,
       },
       {
         label: "Gemet Schlagworte",
