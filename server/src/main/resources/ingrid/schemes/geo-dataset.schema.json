@@ -7,5 +7,11 @@
       "$ref": "geo-dataset-base.schema.json"
     }
   ],
+  "properties": {
+    "resource": {
+      "$ref": "refs/general.schema.json#/definitions/resource",
+      "unevaluatedProperties": false
+    }
+  },
   "unevaluatedProperties": false
 }

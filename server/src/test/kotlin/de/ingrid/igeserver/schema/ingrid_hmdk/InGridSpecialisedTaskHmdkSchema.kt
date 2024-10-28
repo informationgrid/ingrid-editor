@@ -19,43 +19,25 @@
  */
 package de.ingrid.igeserver.schema.ingrid
 
-import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.schema.SchemaUtils
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 
-class InGridGeoDataset : AnnotationSpec() {
+class InGridSpecialisedTaskHmdkSchema : AnnotationSpec() {
 
-    private val schema = "/ingrid/schemes/geo-dataset.schema.json"
+    private val schema = "/ingrid/schemes/hmdk/specialised-task_hmdk.schema.json"
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.json")
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/specialized-task.minimal.json").replaceFirst(
+            "{",
+            """ { "publicationHmbTG": true, "informationHmbTG": [{"key": "1"}], "isOpenData": true, "openDataCategories": [], """,
+        )
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
-    }
-
-    @Test
-    fun maximal() {
-        val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.maximal.json")
-        val result = SchemaUtils.validate(json, schema)
-        result.size shouldBe 0
-    }
-
-    @Test
-    fun negativeTestResourceField() {
-        val exception = shouldThrow<ValidationException> {
-            val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
-                "\"resource\": {",
-                """ "resource": { "purposeX": "my purpose (should not be allowed)", """,
-            )
-            SchemaUtils.validate(json, schema)
-        }
-        (exception.data?.get("error") as List<*>).size shouldBe 1
     }
 
     @Test
     fun negativeTest() =
-        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/ingrid/geo-dataset.minimal.json")
+        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/ingrid/specialized-task.minimal.json")
 }

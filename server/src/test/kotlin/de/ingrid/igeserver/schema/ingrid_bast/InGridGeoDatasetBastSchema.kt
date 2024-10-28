@@ -17,42 +17,29 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.schema.ingrid
+package de.ingrid.igeserver.schema.ingrid_bast
 
-import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.schema.SchemaUtils
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 
-class InGridGeoDataset : AnnotationSpec() {
+class InGridGeoDatasetBastSchema : AnnotationSpec() {
 
-    private val schema = "/ingrid/schemes/geo-dataset.schema.json"
+    private val schema = "/ingrid/schemes/bast/geo-dataset_bast.schema.json"
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.json")
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
+            "{",
+            """
+            { "projectNumber": "my project number", "projectTitle": "my project title", "supplementalInformation": "info", 
+        """,
+        ).replaceFirst(
+            "\"resource\": {",
+            """ "resource": { "useConstraintsComments": "my useConstraintsComments", """,
+        )
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
-    }
-
-    @Test
-    fun maximal() {
-        val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.maximal.json")
-        val result = SchemaUtils.validate(json, schema)
-        result.size shouldBe 0
-    }
-
-    @Test
-    fun negativeTestResourceField() {
-        val exception = shouldThrow<ValidationException> {
-            val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
-                "\"resource\": {",
-                """ "resource": { "purposeX": "my purpose (should not be allowed)", """,
-            )
-            SchemaUtils.validate(json, schema)
-        }
-        (exception.data?.get("error") as List<*>).size shouldBe 1
     }
 
     @Test

@@ -1,0 +1,119 @@
+{
+  "_uuid": "cb054900-0205-4847-9d27-1391c07ac149",
+  "_type": "OpenDataDoc",
+  "title": "Anlagen zur Lagerung und Behandlung von Elektronikschrott (Opendata)",
+  "description": "Anlagen zur Lagerung und Behandlung von Elektronikschrott",
+  "landingPage": "https://piveau.io/set/data/https-opendata-muenchen-de-dataset-abfall_elektronik_opendata",
+  "addresses": [
+    {
+      "ref": "bb42efb2-ecc8-40b0-bc13-7e7e1cae0342",
+      "type": {
+        "key": "7"
+      }
+    },
+    {
+      "ref": "361312c4-f02d-498d-aa5f-6f146eabae42",
+      "type": {
+        "key": "12"
+      }
+    }
+  ],
+  "keywords": [
+    "digitaler-zwilling-münchen",
+    "infomapaccessservice",
+    "opendata",
+    "umweltschutz"
+  ],
+  "DCATThemes": [
+    {
+      "key": "5"
+    }
+  ],
+  "distributions": [
+    {
+      "link": {
+        "uri": "https://piveau.io/set/distribution/d2724433-e1f4-405a-9bb8-5563a976e676",
+        "value": "https://piveau.io/set/distribution/d2724433-e1f4-405a-9bb8-5563a976e676",
+        "asLink": true
+      },
+      "title": "WMS (GetCapabilities)",
+      "format": {
+        "key": "WMS_SRVC"
+      },
+      "license": {
+        "key": "http://dcat-ap.de/def/licenses/dl-by-de/2.0"
+      },
+      "byClause": "",
+      "modified": "2024-06-16T22:00:00.000Z",
+      "languages": [],
+      "description": "",
+      "availability": null
+    },
+    {
+      "link": {
+        "uri": "https://piveau.io/set/distribution/ffbc1b1e-1e49-4fda-9a43-22caf8bfd869",
+        "value": "https://piveau.io/set/distribution/ffbc1b1e-1e49-4fda-9a43-22caf8bfd869",
+        "asLink": true
+      },
+      "title": "Metadaten (XML)",
+      "format": {
+        "key": "XML"
+      },
+      "license": {
+        "key": "http://dcat-ap.de/def/licenses/dl-by-de/2.0"
+      },
+      "byClause": "",
+      "modified": "2024-06-16T22:00:00.000Z",
+      "languages": [],
+      "description": "",
+      "availability": null
+    },
+    {
+      "link": {
+        "uri": "anlagen-zur-lagerung-und-behandlung-von-elektronikschrott-opendata.rdf",
+        "value": "anlagen-zur-lagerung-und-behandlung-von-elektronikschrott-opendata.rdf",
+        "asLink": false,
+        "lastModified": "2024-07-16T14:40:36.508Z"
+      },
+      "title": "Link zu den Metadaten im Format RDF/XML",
+      "format": {
+        "key": "RDF"
+      },
+      "license": {
+        "key": "http://dcat-ap.de/def/licenses/dl-by-de/2.0"
+      },
+      "byClause": "",
+      "modified": "2024-06-16T22:00:00.000Z",
+      "languages": [],
+      "description": "",
+      "availability": null
+    }
+  ],
+  "legalBasis": "Rechtsgrundlage",
+  "qualityProcessURI": "Quali URI",
+  "spatial": [
+    {
+      "ars": "091620000000",
+      "type": "free",
+      "title": "München, Bayern, Deutschland (administrative)",
+      "value": {
+        "lat1": 48.0616244,
+        "lat2": 48.2481162,
+        "lon1": 11.360777,
+        "lon2": 11.7229099
+      }
+    }
+  ],
+  "politicalGeocodingLevel": {
+    "key": "european"
+  },
+  "temporal": {
+    "rangeType": {
+      "key": "at"
+    },
+    "timeSpanDate": "2024-10-13T22:00:00.000Z"
+  },
+  "periodicity": {
+    "key": "11"
+  }
+}

@@ -36,9 +36,7 @@ class SchemaUtils {
             val json = getJsonFileContent(jsonFile)
                 .replaceFirst("{", """{ "anotherField": "should not be allowed",""")
 
-            val exception = shouldThrow<ValidationException> {
-                SchemaUtils.validate(json, schema)
-            }
+            val exception = shouldThrow<ValidationException> { validate(json, schema) }
             (exception.data?.get("error") as List<*>).size shouldBe 1
         }
     }
