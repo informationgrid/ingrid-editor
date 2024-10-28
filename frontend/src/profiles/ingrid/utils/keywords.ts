@@ -209,7 +209,7 @@ export class KeywordAnalysis {
       thesaurus: "INSPIRE-Themen",
       found: id !== undefined,
       value: id !== undefined ? { key: id } : null,
-      label: item,
+      label: label,
     };
   }
 
