@@ -92,7 +92,7 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
             builder.jsonNodeReader(JsonNodeReader.builder().locationAware().build())
             builder.schemaMappers { schemaMappers ->
                 schemaMappers.mapPrefix(
-                    "https://example.com/schemas/",
+                    "https://wemove.com/schemas/",
                     "classpath:/",
                 )
             }

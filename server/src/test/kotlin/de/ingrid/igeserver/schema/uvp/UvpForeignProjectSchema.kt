@@ -64,4 +64,8 @@ class UvpForeignProjectSchema : AnnotationSpec() {
 //            requiredErrors shouldBe requiredFields
         }
     }
+
+    @Test
+    fun negativeTest() =
+        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/uvp/foreign-project.minimal.json")
 }

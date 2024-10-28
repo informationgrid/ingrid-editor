@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/schemas/ingrid/schemes/projectBase",
+  "$id": "https://wemove.com/schemas/ingrid/schemes/projectBase",
   "type": "object",
   "properties": {
     "isAdVCompatible": {

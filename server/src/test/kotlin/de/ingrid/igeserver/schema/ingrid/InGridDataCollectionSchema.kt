@@ -40,4 +40,8 @@ class InGridDataCollectionSchema : AnnotationSpec() {
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
+
+    @Test
+    fun negativeTest() =
+        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/ingrid/data-collection.minimal.json")
 }

@@ -57,4 +57,8 @@ class McloudSchemaAddress : AnnotationSpec() {
 //            requiredErrors shouldBe requiredFields
         }
     }
+
+    @Test
+    fun negativeTest() =
+        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/mcloud/mcloud-address.minimal.json")
 }

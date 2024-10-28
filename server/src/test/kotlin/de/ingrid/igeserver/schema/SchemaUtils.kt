@@ -19,13 +19,27 @@
  */
 package de.ingrid.igeserver.schema
 
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.persistence.filter.publish.PreJsonSchemaValidator
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.shouldBe
 
 class SchemaUtils {
 
     companion object {
         fun validate(json: String, schema: String) = PreJsonSchemaValidator().validate(schema, json)
 
-        fun getJsonFileContent(file: String) = this::class.java.getResource(file)!!.readText(Charsets.UTF_8).replace("\r\n", "\n")
+        fun getJsonFileContent(file: String) =
+            this::class.java.getResource(file)!!.readText(Charsets.UTF_8).replace("\r\n", "\n")
+
+        fun createNegativeTestByAddingInvalidField(schema: String, jsonFile: String) {
+            val json = getJsonFileContent(jsonFile)
+                .replaceFirst("{", """{ "anotherField": "should not be allowed",""")
+
+            val exception = shouldThrow<ValidationException> {
+                SchemaUtils.validate(json, schema)
+            }
+            (exception.data?.get("error") as List<*>).size shouldBe 1
+        }
     }
 }

@@ -99,4 +99,8 @@ class UvpApprovalProcedureSchema : AnnotationSpec() {
 //            requiredErrors shouldBe requiredFields
         }
     }
+
+    @Test
+    fun negativeTest() =
+        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/uvp/approval-procedure.minimal.json")
 }

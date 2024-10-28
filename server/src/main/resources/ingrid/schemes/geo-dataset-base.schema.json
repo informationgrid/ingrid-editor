@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/schemas/ingrid/schemes/geoDatasetBase",
+  "$id": "https://wemove.com/schemas/ingrid/schemes/geoDatasetBase",
   "definitions": {
     "coupledResources": {
       "type": "array",
@@ -185,6 +185,9 @@
     },
     "_uuid": {
       "type": "string"
+    },
+    "_type": {
+      "const": "InGridGeoDataset"
     },
     "title": {
       "type": "string"

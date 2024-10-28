@@ -66,4 +66,8 @@ class UvpSpatialAndLineSchema : AnnotationSpec() {
 //            requiredErrors shouldBe requiredFields
         }
     }
+
+    @Test
+    fun negativeTest() =
+        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/uvp/spatial-planning-procedure.minimal.json")
 }

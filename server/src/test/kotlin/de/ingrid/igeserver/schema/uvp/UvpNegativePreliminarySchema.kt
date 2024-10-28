@@ -67,4 +67,8 @@ class UvpNegativePreliminarySchema : AnnotationSpec() {
 //            requiredErrors shouldBe requiredFields
         }
     }
+
+    @Test
+    fun negativeTest() =
+        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/uvp/negative-preliminary.minimal.json")
 }
