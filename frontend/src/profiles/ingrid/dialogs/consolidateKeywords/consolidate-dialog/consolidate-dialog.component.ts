@@ -20,7 +20,7 @@ import { FormStateService } from "../../../../../app/+form/form-state.service";
 import { ConfigService } from "../../../../../app/services/config/config.service";
 import { KeywordAnalysis } from "../../../utils/keywords";
 import { ThesaurusResult } from "../../../components/thesaurus-result";
-import { removeDuplicates } from "../../../../../app/shared/utils";
+import { removeDuplicatesByValue } from "../../../../../app/shared/utils";
 import { IgeDocument, Metadata } from "../../../../../app/models/ige-document";
 
 export interface ConsolidateDialogData {
@@ -150,145 +150,75 @@ export class ConsolidateDialogComponent implements OnInit {
     this.isLoading = true;
     this.timedOutKeywords = [];
     this.timedOutThesauri = [];
-    this.inspireTopics.forEach((theme) => this.handleInspireTopics(theme));
-    this.isoCategories.forEach((category) =>
-      this.handleIsoCategories(category),
+
+    await this.keywordAnalysis
+      .analyzeKeywords(
+        [
+          ...this.gemetKeywords,
+          ...this.umthesKeywords,
+          ...this.freeKeywords,
+          ...this.inspireTopics.map((keyword) => ({
+            label: this.codelistQuery.getCodelistEntryByKey("6100", keyword.key)
+              .fields["de"],
+          })),
+        ].map((keyword) => keyword.label),
+        this.isInspireIdentified,
+      )
+      .then((res) => {
+        this.updateKeywords(res);
+        this.addAllKeywordStatuses();
+
+        this.sortKeywordsByStatus();
+        this.removeAllDuplicateKeywords();
+        this.setKeywordDialogData();
+        this.isLoading = false;
+      });
+  }
+
+  private updateKeywords(res) {
+    this.gemetKeywordsNew = res.filter(
+      (keyword) => keyword.thesaurus === this.keywordCategories.gemet,
     );
-
-    await this.assignKeywords([
-      ...this.gemetKeywords,
-      ...this.umthesKeywords,
-      ...this.freeKeywords,
-    ]).then(() => {
-      this.sortKeywordsByStatus();
-      this.removeDuplicateKeywords();
-      this.setKeywordDialogData();
-      this.isLoading = false;
-    });
-  }
-
-  private handleInspireTopics(theme: { key: string }) {
-    const res = this.keywordAnalysis.checkInThemes(
-      this.codelistQuery.getCodelistEntryByKey("6100", theme.key).fields["de"],
+    this.umthesKeywordsNew = res.filter(
+      (keyword) => keyword.thesaurus === this.keywordCategories.umthes,
     );
-    if (res.found) {
-      this.inspireTopicsNew.push({ ...res, status: "unchanged" });
-    } else {
-    }
+    this.freeKeywordsNew = res.filter(
+      (keyword) => keyword.thesaurus === this.keywordCategories.free,
+    );
+    this.inspireTopicsNew = res.filter(
+      (keyword) => keyword.thesaurus === this.keywordCategories.themes,
+    );
   }
 
-  private handleIsoCategories(topic: { key: string }) {
-    this.isoCategoriesNew.push({
-      found: true,
-      value: { key: topic.key },
-      label: this.codelistQuery.getCodelistEntryByKey("527", topic.key).fields[
-        "de"
-      ],
-      thesaurus: "INSPIRE-Themen",
-      status: "unchanged",
-    });
-  }
-
-  private async assignKeyword(keyword: ThesaurusResult) {
-    const docType = this.metadata.docType;
-    let res: ThesaurusResult;
-    if (
-      this.isInspireIdentified &&
-      (docType == "InGridGeoService" || docType == "InGridGeoDataset")
-    ) {
-      res = this.keywordAnalysis.checkInThemes(keyword.label);
-      if (res.found) {
-        this.addInspireKeyword(res, docType);
-        return;
-      }
-    }
-
-    try {
-      res = await this.keywordAnalysis.assignKeyword(keyword.label, false);
-    } catch (e) {
-      // Thesaurus response time out
-      console.error(e.message);
-      if (!this.timedOutThesauri.includes(e.thesaurus)) {
-        this.timedOutThesauri.push(e.thesaurus);
-      }
-      this.timedOutKeywords.push(keyword.label);
-      res = {
-        thesaurus: this.keywordCategories.free,
-        value: keyword.value,
-        label: keyword.label,
-        found: false,
-      };
-    }
-
-    switch (res.thesaurus) {
-      case this.keywordCategories.themes:
-        this.addInspireKeyword(res, docType);
-        break;
-      case this.keywordCategories.gemet:
-      case this.keywordCategories.umthes:
-      case this.keywordCategories.free:
-        const keywordCategory = this.keywordMap[res.thesaurus];
-        if (!keywordCategory.original.some((k) => k.label === res.label)) {
-          keywordCategory.new.push({ ...res, status: "added" });
-        } else {
-          keywordCategory.new.push({ ...res, status: "unchanged" });
+  private addAllKeywordStatuses() {
+    const addStatuses = (newKeywords, oldKeywords) => {
+      // newKeywords not in oldKeywords as "added"
+      newKeywords.forEach((keyword) => {
+        if (!oldKeywords.some((k) => k.label === keyword.label)) {
+          keyword.status = "added";
         }
-        break;
-    }
+      });
 
-    // Add removed status if keyword is found in other thesaurus
-    [
-      this.keywordCategories.gemet,
-      this.keywordCategories.umthes,
-      this.keywordCategories.free,
-    ].forEach((thesaurus) => {
-      if (
-        this.keywordMap[thesaurus].original.some((k) => k.label === res.label)
-      ) {
-        this.keywordMap[thesaurus].new.push({ ...res, status: "removed" });
-      }
-    });
+      // oldKeywords not in newKeywords as "removed"
+      oldKeywords.forEach((keyword) => {
+        if (!newKeywords.some((k) => k.label === keyword.label)) {
+          newKeywords.push({ ...keyword, status: "removed" });
+        }
+      });
+    };
 
-    // Case when keyword is found with different label in thesaurus (Kita -> Kindertagesstätte)
-    if (keyword.label !== res.label) {
-      this.freeKeywordsNew.push({ ...keyword, status: "unchanged" });
-    } else {
-      if (this.freeKeywords.some((k) => k.label === res.label)) {
-        this.freeKeywordsNew.push({ ...res, status: "removed" });
-      }
-    }
-  }
+    addStatuses(this.gemetKeywordsNew, this.gemetKeywords);
+    addStatuses(this.umthesKeywordsNew, this.umthesKeywords);
+    addStatuses(this.freeKeywordsNew, this.freeKeywords);
 
-  private async assignKeywords(keywords: ThesaurusResult[]): Promise<any> {
-    return Promise.all(keywords.map((keyword) => this.assignKeyword(keyword)));
-  }
-
-  private addInspireKeyword(res: ThesaurusResult, docType: string) {
-    if (!this.inspireTopics.some((t) => t.key === res.value.key)) {
-      this.inspireTopicsNew.push({ ...res, status: "added" });
-    } else {
-      this.inspireTopicsNew.push({ ...res, status: "unchanged" });
-    }
-    this.freeKeywordsNew.push({ ...res, status: "removed" });
-
-    // Add connected INSPIRE topic category if docType is IngridGeoDataset
-    if (docType === "InGridGeoDataset") {
-      const isoKey = KeywordAnalysis.inspireToIsoMapping[res.value.key]; // INSPIRE topic key
-      const isoCategoryCodeListEntry = this.codelistQuery.getCodelistEntryByKey(
-        "527",
-        isoKey,
-      );
-      const isoCategory: ThesaurusResult = {
-        found: true,
-        value: { key: isoKey },
-        label: isoCategoryCodeListEntry.fields["de"],
-        thesaurus: "INSPIRE-Themen",
-        status: this.isoCategories.some((t) => t.key === isoKey)
-          ? "unchanged"
-          : "added",
-      };
-      this.isoCategoriesNew.push(isoCategory);
-    }
+    addStatuses(
+      this.inspireTopicsNew,
+      // Special handling getting label from codelist id's
+      this.inspireTopics.map((keyword) => ({
+        label: this.codelistQuery.getCodelistEntryByKey("6100", keyword.key)
+          .fields["de"],
+      })),
+    );
   }
 
   mapAndSaveConsolidatedKeywords() {
@@ -352,12 +282,41 @@ export class ConsolidateDialogComponent implements OnInit {
     this.freeKeywordsNew = this.sortByStatus(this.freeKeywordsNew);
   }
 
-  private removeDuplicateKeywords() {
-    this.inspireTopicsNew = removeDuplicates(this.inspireTopicsNew, "label");
-    this.isoCategoriesNew = removeDuplicates(this.isoCategoriesNew, "label");
-    this.gemetKeywordsNew = removeDuplicates(this.gemetKeywordsNew, "label");
-    this.umthesKeywordsNew = removeDuplicates(this.umthesKeywordsNew, "label");
-    this.freeKeywordsNew = removeDuplicates(this.freeKeywordsNew, "label");
+  private removeAllDuplicateKeywords() {
+    // Remove duplicate keywords inside the same thesaurus
+    this.inspireTopicsNew = removeDuplicatesByValue(
+      this.inspireTopicsNew,
+      "label",
+    );
+    this.isoCategoriesNew = removeDuplicatesByValue(
+      this.isoCategoriesNew,
+      "label",
+    );
+    this.gemetKeywordsNew = removeDuplicatesByValue(
+      this.gemetKeywordsNew,
+      "label",
+    );
+    this.umthesKeywordsNew = removeDuplicatesByValue(
+      this.umthesKeywordsNew,
+      "label",
+    );
+    this.freeKeywordsNew = removeDuplicatesByValue(
+      this.freeKeywordsNew,
+      "label",
+    );
+    // Remove duplicate keywords between thesauri to preserve hierarchy (Gemet > Umthes > Free)
+    this.umthesKeywordsNew = this.removeDuplicateKeywordsBetweenArrays(
+      this.umthesKeywordsNew,
+      this.gemetKeywordsNew,
+    );
+    this.freeKeywordsNew = this.removeDuplicateKeywordsBetweenArrays(
+      this.freeKeywordsNew,
+      this.gemetKeywordsNew,
+    );
+    this.freeKeywordsNew = this.removeDuplicateKeywordsBetweenArrays(
+      this.freeKeywordsNew,
+      this.umthesKeywordsNew,
+    );
   }
 
   private resetNewKeywords() {
@@ -372,12 +331,12 @@ export class ConsolidateDialogComponent implements OnInit {
     this.keywordDialogData = [
       {
         label: "INSPIRE Themen",
-        condition: this.isInspireIdentified && this.inspireTopicsNew.length,
+        condition: this.inspireTopicsNew.length,
         keywords: this.inspireTopicsNew,
       },
       {
         label: "ISO-Themenkategorie",
-        condition: this.isInspireIdentified && this.isoCategoriesNew.length,
+        condition: this.isoCategoriesNew.length,
         keywords: this.isoCategoriesNew,
       },
       {
@@ -413,5 +372,20 @@ export class ConsolidateDialogComponent implements OnInit {
         new: this.freeKeywordsNew,
       },
     };
+  }
+
+  private removeDuplicateKeywordsBetweenArrays(
+    arr1: any[],
+    arr2: any[],
+  ): any[] {
+    return arr1.filter(
+      (keyword1) =>
+        !arr2.some(
+          (keyword2) =>
+            keyword1.status !== "removed" &&
+            keyword2.status !== "removed" &&
+            keyword1.label.toLowerCase() === keyword2.label.toLowerCase(),
+        ),
+    );
   }
 }

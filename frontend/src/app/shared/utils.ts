@@ -851,7 +851,8 @@ export class JsonDiffMerge {
   }
 }
 
-export function removeDuplicates(arr: any[], uniqueKey: string) {
+// Takes an array of objects and returns a new array with only the unique objects based on a specific key
+export function removeDuplicatesByValue(arr: any[], uniqueKey: string) {
   return arr.filter(
     (item, index, self) =>
       index === self.findIndex((t) => t[uniqueKey] === item[uniqueKey]),
