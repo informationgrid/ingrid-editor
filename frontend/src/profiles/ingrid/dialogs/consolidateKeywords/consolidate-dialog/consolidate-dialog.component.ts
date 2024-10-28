@@ -96,7 +96,6 @@ export class ConsolidateDialogComponent implements OnInit {
   freeKeywordsNew: ThesaurusResult[] = [];
 
   keywordDialogData = [];
-  keywordMap: any;
   isLoading: boolean;
   isSaving: boolean;
 
@@ -138,7 +137,6 @@ export class ConsolidateDialogComponent implements OnInit {
     this.gemetKeywords = this.keywords?.gemet || [];
     this.umthesKeywords = this.keywords?.umthes || [];
     this.freeKeywords = this.keywords?.free || [];
-    this.keywordMap = this.setKeywordMap();
 
     this.timedOutKeywords = [];
     this.timedOutThesauri = [];
@@ -355,23 +353,6 @@ export class ConsolidateDialogComponent implements OnInit {
         keywords: this.freeKeywordsNew,
       },
     ];
-  }
-
-  private setKeywordMap() {
-    return {
-      [this.keywordCategories.gemet]: {
-        original: this.gemetKeywords,
-        new: this.gemetKeywordsNew,
-      },
-      [this.keywordCategories.umthes]: {
-        original: this.umthesKeywords,
-        new: this.umthesKeywordsNew,
-      },
-      [this.keywordCategories.free]: {
-        original: this.freeKeywords,
-        new: this.freeKeywordsNew,
-      },
-    };
   }
 
   private removeDuplicateKeywordsBetweenArrays(
