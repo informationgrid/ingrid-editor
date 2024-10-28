@@ -155,17 +155,14 @@ export class ConsolidateDialogComponent implements OnInit {
           ...this.gemetKeywords,
           ...this.umthesKeywords,
           ...this.freeKeywords,
-          ...this.inspireTopics.map((keyword) => ({
-            label: this.codelistQuery.getCodelistEntryByKey("6100", keyword.key)
-              .fields["de"],
-          })),
+          ...this.getInspireLabels(),
         ].map((keyword) => keyword.label),
         this.isInspireIdentified,
       )
       .then((res) => {
         this.updateKeywords(res);
         this.addAllKeywordStatuses();
-
+        this.keepKeywordsFoundWithDifferentLabel();
         this.sortKeywordsByStatus();
         this.removeAllDuplicateKeywords();
         this.setKeywordDialogData();
@@ -212,11 +209,46 @@ export class ConsolidateDialogComponent implements OnInit {
     addStatuses(
       this.inspireTopicsNew,
       // Special handling getting label from codelist id's
-      this.inspireTopics.map((keyword) => ({
-        label: this.codelistQuery.getCodelistEntryByKey("6100", keyword.key)
-          .fields["de"],
-      })),
+      this.getInspireLabels(),
     );
+  }
+
+  private getInspireLabels() {
+    return this.inspireTopics.map((keyword) => ({
+      label: this.codelistQuery.getCodelistEntryByKey("6100", keyword.key)
+        .fields["de"],
+    }));
+  }
+
+  // Keep keywords that were found with a different label in another thesaurus e.g. Kita -> Kindertagesstätte
+  private keepKeywordsFoundWithDifferentLabel() {
+    this.freeKeywords.map((keyword) => {
+      if (
+        !this.umthesKeywordsNew.some(
+          (k) => k.label.toLowerCase() === keyword.label.toLowerCase(),
+        )
+      ) {
+        this.freeKeywordsNew.push({ ...keyword });
+      }
+    });
+    this.freeKeywords.map((keyword) => {
+      if (
+        !this.gemetKeywordsNew.some(
+          (k) => k.label.toLowerCase() === keyword.label.toLowerCase(),
+        )
+      ) {
+        this.freeKeywordsNew.push({ ...keyword });
+      }
+    });
+    this.umthesKeywords.map((keyword) => {
+      if (
+        !this.gemetKeywordsNew.some(
+          (k) => k.label.toLowerCase() === keyword.label.toLowerCase(),
+        )
+      ) {
+        this.umthesKeywordsNew.push({ ...keyword });
+      }
+    });
   }
 
   mapAndSaveConsolidatedKeywords() {
