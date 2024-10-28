@@ -271,6 +271,12 @@ tasks.withType(KotlinCompile).configureEach {
     }
 }
 
+// disable kapt for tests since it leads to an error due to analyzing test sources
+tasks.matching { it.name.startsWith("kaptGenerateStubsTestKotlin") }.configureEach {
+    enabled = false
+}
+
+
 tasks.register('updateGitHooks', Copy) {
     mustRunAfter("generateGitProperties")
     from '../scripts/pre-commit'
