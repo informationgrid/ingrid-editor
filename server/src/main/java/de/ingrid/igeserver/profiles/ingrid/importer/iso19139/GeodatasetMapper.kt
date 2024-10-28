@@ -182,7 +182,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         return KeyValue(cellGeometryId)
     }
 
-    private fun getAxesDimProperties(properties: List<AxisDimensionProperty>): List<AxesDimProperty> = properties.map {
+    private fun getAxesDimProperties(properties: List<AxisDimensionProperty>?): List<AxesDimProperty> = properties?.map {
         val nameValue = it.mdDimension?.dimensionName?.mdDimensionNameTypeCode?.codeListValue
         val nameId = codeListService.getCodeListEntryId("514", nameValue, "iso")
         AxesDimProperty(
@@ -190,7 +190,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             it.mdDimension?.dimensionSize?.value ?: 0,
             it.mdDimension?.resolution?.scale?.value ?: 0f,
         )
-    }
+    } ?: emptyList()
 
     data class GridSpatialRepresentation(
         val type: KeyValue?,

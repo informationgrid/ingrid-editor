@@ -304,6 +304,7 @@ data class MDVectorSpatialRepresentation(
 data class MDGridSpatialRepresentation(
     val numberOfDimensions: MDInteger,
     val axisDimensionProperties: List<AxisDimensionProperty>,
+    val axisDimensionProperties: List<AxisDimensionProperty>?,
     val cellGeometry: CellGeometry,
     val transformationParameterAvailability: MDBoolean,
 )
