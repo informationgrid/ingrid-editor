@@ -120,7 +120,7 @@ export class ConsolidateDialogComponent implements OnInit {
 
     this.isInspireIdentified = form.get("isInspireIdentified")?.value;
     this.inspireTopics = this.isInspireIdentified
-      ? form.get("themes").value
+      ? form.get("themes")?.value || []
       : []; // INSPIRE-Themen
     this.isoCategories = form.get("topicCategories")?.value || []; // ISO-Themenkategorie
 
@@ -204,10 +204,7 @@ export class ConsolidateDialogComponent implements OnInit {
     }
 
     try {
-      res = await this.keywordAnalysis.assignKeyword(
-        keyword.label,
-        this.isInspireIdentified,
-      );
+      res = await this.keywordAnalysis.assignKeyword(keyword.label, false);
     } catch (e) {
       // Thesaurus response time out
       console.error(e.message);
