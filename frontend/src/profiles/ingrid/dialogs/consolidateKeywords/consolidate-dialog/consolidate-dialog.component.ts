@@ -196,10 +196,7 @@ export class ConsolidateDialogComponent implements OnInit {
       this.isInspireIdentified &&
       (docType == "InGridGeoService" || docType == "InGridGeoDataset")
     ) {
-      res = this.keywordAnalysis.checkInThemes(
-        keyword.label.charAt(0).toUpperCase() +
-          keyword.label.slice(1).toLowerCase(),
-      );
+      res = this.keywordAnalysis.checkInThemes(keyword.label);
       if (res.found) {
         this.addInspireKeyword(res, docType);
         return;
