@@ -1,5 +1,6 @@
 import gg.jte.ContentType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 
 import java.nio.file.Paths
 
@@ -32,6 +33,7 @@ plugins {
     id "gg.jte.gradle" version "$jte_version"
     id "org.hibernate.orm" version "6.5.2.Final"
     id "org.jlleitschuh.gradle.ktlint" version "12.1.1"
+    id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
 }
 
 repositories {
@@ -114,6 +116,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    modules {
+        module("org.springframework.boot:spring-boot-starter-logging") {
+            replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
+        }
+    }
+//    annotationProcessor 'org.apache.logging.log4j:log4j-core'
+    kapt("org.apache.logging.log4j:log4j-core")
 
     // spring properties metadata
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
@@ -366,6 +375,10 @@ if (hasProperty('buildDockerImage')) {
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+}
+
+tasks.withType(KaptGenerateStubsTask).configureEach {
+    dependsOn 'generateJte'
 }
 
 def isNonStable = { String version ->

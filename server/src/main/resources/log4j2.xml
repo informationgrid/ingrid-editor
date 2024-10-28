@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN" monitorInterval="30"
-               packages="de.ingrid.igeserver.persistence.postgresql"
->
+<Configuration status="WARN" monitorInterval="30">
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%5level [%d{yyyy-MM-dd HH:mm:ss}] .(%40.40F:%L) - %m%n" />
