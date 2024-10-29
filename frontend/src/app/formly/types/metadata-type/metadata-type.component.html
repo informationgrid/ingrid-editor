@@ -41,6 +41,7 @@
                                         [required]="false"
                                         ><mat-chip-option
                                             [value]="item.value"
+                                            [attr.data-cy]="item.key"
                                             [disabled]="
                                                 props.disabledOptions[item.key]
                                             "
@@ -99,6 +100,12 @@
                                                     props.disabledOptions[
                                                         typeOption.key
                                                     ]
+                                                "
+                                                [attr.data-cy]="
+                                                    typeOption.key +
+                                                    '_' +
+                                                    (item.value.key ??
+                                                        item.value)
                                                 "
                                                 (click)="
                                                     handleOptionClick(item)
