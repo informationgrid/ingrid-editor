@@ -32,7 +32,7 @@ class Migrate120 {
                 documents.get(type)?.let { docVersion ->
                     docVersion as ObjectNode
                     val migratedData = getPropertiesOfDocument(docVersion)
-                    docVersion.set<JsonNode>("my-metadata", migratedData)
+                    docVersion.set<JsonNode>("properties", migratedData)
                 }
             }
             return documents

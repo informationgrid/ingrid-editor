@@ -57,7 +57,7 @@ data class DataModel(
     val themes: List<KeyValue>?,
     val keywords: Keywords?,
     val dataset: Dataset?,
-    @JsonProperty("my-metadata") val myMetadata: InGridDocumentProperties?,
+    @JsonProperty("properties") val properties: InGridDocumentProperties?,
     val openDataCategories: List<KeyValue>?,
     val priorityDatasets: List<KeyValue>?,
     val invekosKeywords: List<KeyValue>?,

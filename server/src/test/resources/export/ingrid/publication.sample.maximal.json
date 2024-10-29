@@ -11,7 +11,7 @@
   "_version": 25,
   "_state": "P",
   "data": {
-    "my-metadata": {
+    "properties": {
       "isOpenData": true
     },
     "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",

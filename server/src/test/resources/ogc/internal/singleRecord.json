@@ -10,7 +10,7 @@
     "_modifiedBy": "Mike Cat-Miller",
     "_contentModifiedBy": "Mike Cat-Miller",
     "_id": null,
-    "my-metadata": {
+    "properties": {
       "isInspireIdentified": "conform",
       "isOpenData": true,
       "isAdVCompatible": true,
@@ -576,7 +576,7 @@
     "_modifiedBy": "Mike Cat-Miller",
     "_contentModifiedBy": "Mike Cat-Miller",
     "_id": null,
-    "my-metadata": {
+    "properties": {
       "isInspireIdentified": "conform",
       "isOpenData": true,
       "isAdVCompatible": true,

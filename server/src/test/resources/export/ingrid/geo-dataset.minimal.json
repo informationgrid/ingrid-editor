@@ -2,7 +2,7 @@
   "_uuid": "5369ad60-938f-4325-b041-25dacfc14705",
   "title": "geodataset_min",
   "_type": "InGridGeoDataset",
-  "my-metadata": {
+  "properties": {
     "isOpenData": false,
     "isAdVCompatible": false,
     "subType": { "key": "5" }

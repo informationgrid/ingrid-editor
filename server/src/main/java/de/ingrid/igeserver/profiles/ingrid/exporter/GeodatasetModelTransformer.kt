@@ -25,13 +25,13 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
 
 open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
-    private val isSeries = model.data.myMetadata?.subType?.key == "6"
+    private val isSeries = model.data.properties?.subType?.key == "6"
 
     override val hierarchyLevel = if (isSeries) "series" else "dataset"
     override val hierarchyLevelName: String? = if (isSeries) "series" else null
 
     val featureCatalogueDescription = model.data.featureCatalogueDescription
-    val isAdVCompatible = model.data.myMetadata?.isAdVCompatible ?: false
+    val isAdVCompatible = model.data.properties?.isAdVCompatible ?: false
     val featureTypes =
         model.data.featureCatalogueDescription?.featureTypes?.map { codelists.getValue("", it) } ?: emptyList()
     val citations = model.data.featureCatalogueDescription?.citation ?: emptyList()

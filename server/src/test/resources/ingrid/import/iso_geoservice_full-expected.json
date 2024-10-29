@@ -4,7 +4,7 @@
     "_uuid": "D9EE3448-8224-4B08-926B-B9E5EDE360FC",
     "_parent": "my-specified-parent",
     "_type": "InGridGeoService",
-    "my-metadata": {
+    "properties": {
       "isInspireIdentified": "relevant",
       "isAdVCompatible": false,
       "isOpenData": true

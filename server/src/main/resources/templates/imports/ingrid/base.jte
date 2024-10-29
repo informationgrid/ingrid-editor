@@ -11,7 +11,7 @@
 "_uuid": "${model.getUuid()}",
 "_parent": @if(model.getParentUuid() == null) null @else "${model.getParentUuid()}"@endif,
 "_type": "${model.getType()}",
-"my-metadata": {
+"properties": {
     "isAdVCompatible": ${model.isAdVCompatible()},
     "isOpenData": ${model.isOpenData()}${additionalProperties}
 },

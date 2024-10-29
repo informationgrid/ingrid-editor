@@ -80,7 +80,7 @@ export abstract class IngridShared extends BaseDoctype {
   options = {
     dynamicRequired: {
       accessConstraints:
-        "formState.mainModel?.['my-metadata']?.isInspireIdentified !== undefined",
+        "formState.mainModel?.properties?.isInspireIdentified !== undefined",
       openDataCategories: undefined,
       spatialReferences: undefined,
       spatialSystems: undefined,
@@ -88,7 +88,7 @@ export abstract class IngridShared extends BaseDoctype {
       spatialScope: undefined,
     },
     dynamicHide: {
-      openDataCategories: "!formState.mainModel?.['my-metadata']?.isOpenData",
+      openDataCategories: "!formState.mainModel?.properties?.isOpenData",
     },
     required: {
       freeKeywords: false,
@@ -246,7 +246,7 @@ export abstract class IngridShared extends BaseDoctype {
       [
         this.addSection("Metadata", [
           <FormlyFieldConfig>{
-            key: "my-metadata",
+            key: "properties",
             type: "metadata",
 
             props: <MetadataProps>{
@@ -493,7 +493,7 @@ export abstract class IngridShared extends BaseDoctype {
           const value = field.formControl.value;
           if (decision === "ok") {
             if (this.showHVD) {
-              field.formControl.setValue({ ...value, hvd: false });
+              field.formControl.setValue({ ...value, isHvd: false });
             }
             return true;
           }
@@ -540,7 +540,7 @@ export abstract class IngridShared extends BaseDoctype {
               showSearch: true,
               defaultValue: [],
               expressions: {
-                hide: "!formState.mainModel?.['my-metadata']?.isInspireIdentified",
+                hide: "!formState.mainModel?.properties?.isInspireIdentified",
               },
               options: [
                 {
@@ -620,9 +620,9 @@ export abstract class IngridShared extends BaseDoctype {
               codelistId: "6100",
               expressions: {
                 "props.required":
-                  "formState.mainModel?.['my-metadata']?.isInspireIdentified !== undefined",
+                  "formState.mainModel?.properties?.isInspireIdentified !== undefined",
                 className: "field.props.required ? '' : 'optional'",
-                hide: "formState.mainModel?.['my-metadata']?.isInspireIdentified === undefined",
+                hide: "formState.mainModel?.properties?.isInspireIdentified === undefined",
               },
               change: (field, $event) =>
                 options.thesaurusTopics &&
@@ -681,7 +681,7 @@ export abstract class IngridShared extends BaseDoctype {
               showSearch: true,
               asSelect: true,
               expressions: {
-                hide: (field: FormlyFieldConfig) => field.model.hvd !== true,
+                hide: "field.model.properties?.isHvd !== true",
               },
               options: [
                 {
@@ -724,7 +724,7 @@ export abstract class IngridShared extends BaseDoctype {
                 options: this.getPriorityDatasets(),
                 codelistId: "6350",
                 expressions: {
-                  hide: "formState.mainModel?.['my-metadata']?.isInspireIdentified === undefined",
+                  hide: "formState.mainModel?.properties?.isInspireIdentified === undefined",
                 },
               },
             )
@@ -740,7 +740,7 @@ export abstract class IngridShared extends BaseDoctype {
                 expressions: {
                   "props.required": this.options.dynamicRequired.spatialScope,
                   className: "field.props.required ? '' : 'optional'",
-                  hide: "field.model['my-metadata']?.isInspireIdentified === undefined",
+                  hide: "field.model.properties?.isInspireIdentified === undefined",
                 },
               },
             )
@@ -880,7 +880,7 @@ export abstract class IngridShared extends BaseDoctype {
     const formState = field.options.formState;
     const checkThemes =
       options.inspireTopics &&
-      formState.mainModel?.["my-metadata"]?.isInspireIdentified;
+      formState.mainModel?.["properties"]?.isInspireIdentified;
     const response = await this.keywordAnalysis.analyzeKeywords(
       value.split(","),
       checkThemes,
@@ -1253,7 +1253,7 @@ export abstract class IngridShared extends BaseDoctype {
               supportUpload: false,
               expressions: {
                 "props.required":
-                  "formState.mainModel?.['my-metadata']?.isInspireIdentified !== undefined",
+                  "formState.mainModel?.properties?.isInspireIdentified !== undefined",
                 className: "field.props.required ? '' : 'optional'",
               },
               dialog: ConformityDialogComponent,
@@ -1355,7 +1355,7 @@ export abstract class IngridShared extends BaseDoctype {
                     return (
                       !model ||
                       !this.isGeoDataset ||
-                      model?.["my-metadata"]?.isInspireIdentified ===
+                      model?.["properties"]?.isInspireIdentified ===
                         "conform" ||
                       !this.conformityExists(ctrl, "12", "1")
                     );
@@ -2019,7 +2019,7 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private handleHVDClick(field: FormlyFieldConfig) {
-    const hvdChecked = field.formControl.value.hvd;
+    const hvdChecked = field.formControl.value.isHvd;
     const metadata = field.formControl.value;
     const isOpenData = metadata.isOpenData;
     // if hvd is checked and field is not open data, show open data dialog
@@ -2028,7 +2028,7 @@ export abstract class IngridShared extends BaseDoctype {
         tap((success) =>
           success
             ? field.formControl.setValue({ ...metadata, isOpenData: true })
-            : field.formControl.setValue({ ...metadata, hvd: false }),
+            : field.formControl.setValue({ ...metadata, isHvd: false }),
         ),
       );
     } else {

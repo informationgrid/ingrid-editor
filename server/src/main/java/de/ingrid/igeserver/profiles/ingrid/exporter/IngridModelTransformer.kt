@@ -354,7 +354,7 @@ open class IngridModelTransformer(
 
     open fun getFreeKeywords(): Thesaurus {
         // if openData checkbox is checked, and keyword not already added, add "opendata"
-        if (data.myMetadata?.isOpenData == true && freeKeywordsThesaurus.keywords.none { it.name == "opendata" }) {
+        if (data.properties?.isOpenData == true && freeKeywordsThesaurus.keywords.none { it.name == "opendata" }) {
             freeKeywordsThesaurus.keywords += listOf(KeywordIso("opendata"))
         }
         return freeKeywordsThesaurus
@@ -471,9 +471,9 @@ open class IngridModelTransformer(
     private fun mapHVDKeyword(key: String): String = hvdKeywordMapping[key] ?: key
 
     val advCompatibleKeyword =
-        if (data.myMetadata?.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()
+        if (data.properties?.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()
     val inspireRelevantKeyword =
-        if (data.myMetadata?.isInspireIdentified != null) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
+        if (data.properties?.isInspireIdentified != null) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
 
     open fun getKeywordsAsList(): List<String> {
         val allKeywords = listOf(

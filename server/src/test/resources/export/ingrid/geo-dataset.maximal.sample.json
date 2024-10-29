@@ -12,7 +12,7 @@
   "_state": "P",
   "data": {
     "_parent": 1238,
-    "my-metadata": {
+    "properties": {
       "isInspireIdentified": "conform",
       "isAdVCompatible": true,
       "isOpenData": true,

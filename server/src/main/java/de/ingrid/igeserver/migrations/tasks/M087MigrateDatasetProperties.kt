@@ -27,7 +27,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
-import org.apache.jena.vocabulary.VOID.documents
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -73,7 +72,7 @@ class M087MigrateDatasetProperties : MigrationBase("0.87") {
                 documents.forEach {
                     it as Document
                     val properties = Migrate120.getPropertiesOfDocument(it.data)
-                    it.data.set<JsonNode>("my-metadata", properties)
+                    it.data.set<JsonNode>("properties", properties)
                     log.info("Migrated doc with dbID ${it.id}")
 //                        docRepo.save(it)
                 }

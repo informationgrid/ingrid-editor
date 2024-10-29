@@ -2,7 +2,7 @@
   "_uuid": "22dcecc1-3eb0-4fa0-839f-14ad4392a7be",
   "title": "geodatendienst_test",
   "_type": "InGridGeoService",
-  "my-metadata": {
+  "properties": {
     "isOpenData": false,
     "isAdVCompatible": false
   },

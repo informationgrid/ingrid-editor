@@ -253,7 +253,7 @@
       "title": "open data UND inspire",
       "_uuid": "cf8a837e-f673-4d80-badf-62df5a007850",
       "_type": "InGridGeoDataset",
-      "my-metadata": {
+      "properties": {
         "isOpenData": true,
         "isInspireIdentified": "conform",
         "invekos": {
@@ -521,7 +521,7 @@
       "title": "open data UND inspire",
       "_uuid": "cf8a837e-f673-4d80-badf-62df5a007850",
       "_type": "InGridGeoDataset",
-      "my-metadata": {
+      "properties": {
         "isOpenData": true,
         "isAdVCompatible": true,
         "isInspireIdentified": "conform",

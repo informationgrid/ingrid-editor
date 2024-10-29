@@ -11,7 +11,7 @@
   "_version": 5,
   "_state": "P",
   "data": {
-    "my-metadata": {
+    "properties": {
       "isAdVCompatible": true,
       "isOpenData": false,
       "subType": {

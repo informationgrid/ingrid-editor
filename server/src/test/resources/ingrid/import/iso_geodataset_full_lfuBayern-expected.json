@@ -4,7 +4,7 @@
     "_uuid": "3fce9549-eb69-43bc-9304-b3d0cde76394",
     "_parent": null,
     "_type": "InGridGeoDataset",
-    "my-metadata": {
+    "properties": {
       "isAdVCompatible": false,
       "isOpenData": false,
       "subType": {

@@ -2,7 +2,7 @@
   "_uuid": "212cebd4-abb4-4d2d-b3f7-da790186aa96",
   "title": "geodienst_max",
   "_type": "InGridGeoService",
-  "my-metadata": {
+  "properties": {
     "isOpenData": false,
     "isAdVCompatible": true
   },
