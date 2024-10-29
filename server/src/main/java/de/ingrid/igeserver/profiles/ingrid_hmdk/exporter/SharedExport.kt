@@ -44,7 +44,7 @@ fun amendHMDKDescriptiveKeywords(
     codelists: CodelistTransformer,
     previousKeywords: List<Thesaurus>,
 ): List<Thesaurus> {
-    val publicationHmbTG = docData.getBoolean("publicationHmbTG") ?: false
+    val publicationHmbTG = docData.getBoolean("properties.publicationHmbTG") ?: false
     val informationHmbTG = docData.get("informationHmbTG")
         ?.mapNotNull { it.mapToKeyValue() }
         ?.map { KeyValue(it.key, codelists.getCatalogCodelistValue("informationsgegenstand", it)) }

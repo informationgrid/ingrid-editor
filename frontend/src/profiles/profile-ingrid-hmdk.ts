@@ -79,7 +79,7 @@ class InGridHMDKComponent extends InGridComponent {
       } else {
         docType.options.dynamicHide.openDataCategories = undefined;
         docType.options.dynamicRequired.openDataCategories =
-          "formState.mainModel?.isOpenData || formState.mainModel?.publicationHmbTG";
+          "formState.mainModel?.properties?.isOpenData || formState.mainModel?.properties?.publicationHmbTG";
       }
     });
   }

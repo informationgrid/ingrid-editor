@@ -5,9 +5,11 @@
 @param Content contentInfo = null
 @param Content additionalKeywords = null
 @param Content additionalResource = null
+@param Content additionalProperties = null
 {
     @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource, @`
         @if(model.isInspireIdentified()), "isInspireIdentified": "relevant"@endif
+        ${additionalProperties}
     `)
     "metadata": {
         "language": @template.imports.ingrid.partial.key-value(item = model.getLanguage())

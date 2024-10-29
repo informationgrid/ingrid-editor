@@ -136,7 +136,7 @@ export class MetadataTypeComponent
         // this.formControl.setValue(data, { emitEvent: false });
         // this.formControl.setValue(data, { onlySelf: true });
         this.formControl.setValue(data);
-        this.props.change(this.field, this.previousValue);
+        this.props?.change?.(this.field, this.previousValue);
       });
 
     this.formControl.addValidators(

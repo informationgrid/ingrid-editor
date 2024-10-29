@@ -23,10 +23,12 @@ import { inject, Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { generateUUID } from "../../../app/services/utils";
-import { UploadService } from "../../../app/shared/upload/upload.service";
 import { map } from "rxjs/operators";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
-import { MetadataOptionItem } from "../../../app/formly/types/metadata-type/metadata-type.component";
+import {
+  MetadataOption,
+  MetadataOptionItem,
+} from "../../../app/formly/types/metadata-type/metadata-type.component";
 
 @Injectable({
   providedIn: "root",
@@ -78,7 +80,7 @@ export class GeoDatasetDoctype extends IngridShared {
       "formState.mainModel?.isInspireIdentified";
   }
 
-  metadataOptions = () => {
+  protected metadataOptions(): MetadataOption[] {
     return [
       {
         label: "Datentyp",
@@ -102,7 +104,7 @@ export class GeoDatasetDoctype extends IngridShared {
       },
       ...super.metadataOptions(),
     ];
-  };
+  }
 
   documentFields = () => {
     this.handleInVeKoSBehaviour();

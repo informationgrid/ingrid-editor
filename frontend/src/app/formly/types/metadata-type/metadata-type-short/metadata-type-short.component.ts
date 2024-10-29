@@ -37,9 +37,11 @@ export class MetadataTypeShortComponent {
         const genericItems = typeOption.asyncItems ?? of(typeOption.items);
         return genericItems.pipe(
           mergeMap((item) => {
-            return item
-              .map((item) => this.filterSelected(data, typeOption, item))
-              .filter((item) => item !== null);
+            return (
+              item
+                ?.map((item) => this.filterSelected(data, typeOption, item))
+                ?.filter((item) => item !== null) ?? []
+            );
           }),
         );
       });

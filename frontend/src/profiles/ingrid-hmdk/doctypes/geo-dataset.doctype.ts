@@ -28,6 +28,14 @@ import { SharedHmdk } from "./shared-hmdk";
 export class GeoDatasetDoctypeHMDK extends GeoDatasetDoctype {
   private sharedHmdk = inject(SharedHmdk);
 
+  metadataOptions() {
+    const options = super.metadataOptions();
+    options
+      .find((item) => item.label === "Open Data")
+      .typeOptions[0].items.push(this.sharedHmdk.metadataOptions(this));
+    return options;
+  }
+
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     return this.sharedHmdk.manipulateDocumentFields(this, fieldConfig);
   };

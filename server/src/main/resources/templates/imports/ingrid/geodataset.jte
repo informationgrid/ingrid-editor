@@ -6,12 +6,12 @@
 @param Content additionalKeywords = null
 @param Content additionalResource = null
 @param Content additionalLineageSource = null
-
+@param Content additionalProperties = null
 {
     @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource, @`
         ,
         @if(model.isInspireIdentified())"isInspireIdentified": "notConform",@endif
-        "subType": @template.imports.ingrid.partial.key-value(item = model.getSubtype())
+        "subType": @template.imports.ingrid.partial.key-value(item = model.getSubtype())${additionalProperties}
     `)
     "invekosKeywords": @template.imports.ingrid.partial.key-values(list = model.getInVeKoSKeywords()),
     "metadata": {

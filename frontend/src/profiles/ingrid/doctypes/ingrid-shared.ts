@@ -46,6 +46,7 @@ import { BehaviourService } from "../../../app/services/behavior/behaviour.servi
 import { DocumentService } from "../../../app/services/document/document.service";
 import { KeywordAnalysis, KeywordSectionOptions } from "../utils/keywords";
 import {
+  MetadataOption,
   MetadataOptionItems,
   MetadataProps,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
@@ -130,7 +131,7 @@ export abstract class IngridShared extends BaseDoctype {
     fileReferenceFormat: "1320",
   };
 
-  protected metadataOptions() {
+  protected metadataOptions(): MetadataOption[] {
     return [
       {
         label: "INSPIRE-relevant",
