@@ -116,7 +116,9 @@
         @endfor
         ],
         "transformationParameterAvailability": ${gridSpatial.getTransformationParameterAvailability()},
+        @if (gridSpatial.getNumberOfDimensions() != null)
         "numberOfDimensions": ${gridSpatial.getNumberOfDimensions()},
+        @endif
         "cellGeometry": @template.imports.ingrid.partial.key-value(item = gridSpatial.getCellGeometry())
         @if (gridSpatial.getType() != null && gridSpatial.getType().getKey().equals("rectified"))
         , "georectified": {
