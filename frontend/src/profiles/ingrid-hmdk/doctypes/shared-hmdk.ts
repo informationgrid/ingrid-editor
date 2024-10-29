@@ -140,7 +140,7 @@ export class SharedHmdk {
       // if inspire set access constraint "keine" else empty
       field.form
         .get("resource.accessConstraints")
-        .setValue(
+        ?.setValue(
           field.model.isInspireIdentified === true ? [{ key: "1" }] : [],
         );
 
@@ -261,7 +261,7 @@ export class SharedHmdk {
 
       // if inspire set access constraint "keine"
       if (field.model.isInspireIdentified)
-        field.form.get("resource.accessConstraints").setValue([{ key: "1" }]);
+        field.form.get("resource.accessConstraints")?.setValue([{ key: "1" }]);
 
       this.tagsService
         .updatePublicationType(
@@ -302,7 +302,7 @@ export class SharedHmdk {
         field.model.resource &&
         (field.model.isOpenData || field.model.publicationHmbTG)
       )
-        field.form.get("resource.accessConstraints").setValue([{ key: "1" }]);
+        field.form.get("resource.accessConstraints")?.setValue([{ key: "1" }]);
     }, previous);
   }
 
