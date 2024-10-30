@@ -93,6 +93,8 @@ data class DataModel(
     val spatialScope: KeyValue?,
 )
 
+// allow other properties needed in sub-profiles
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class InGridDocumentProperties(
     val isInspireIdentified: InspireType?,
     val isOpenData: Boolean?,
