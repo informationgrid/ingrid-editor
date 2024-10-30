@@ -134,7 +134,7 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     // JSON schema validation
-    implementation 'net.pwall.json:json-kotlin-schema:0.50'
+    implementation 'com.networknt:json-schema-validator:1.5.2'
 
     // Keycloak
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
