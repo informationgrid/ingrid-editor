@@ -1,4 +1,4 @@
-import { Component, computed, input, Signal } from "@angular/core";
+import { Component, computed, inject, input, Signal } from "@angular/core";
 import { MatChipListbox, MatChipOption } from "@angular/material/chips";
 import {
   MetadataOption,
@@ -8,8 +8,12 @@ import {
 import { MatButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 import { AsyncPipe, JsonPipe } from "@angular/common";
-import { mergeMap } from "rxjs/operators";
+import { map, mergeMap } from "rxjs/operators";
 import { Observable, of } from "rxjs";
+import {
+  CodelistService,
+  SelectOptionUi,
+} from "../../../../services/codelist/codelist.service";
 
 @Component({
   selector: "ige-metadata-type-short",
@@ -29,12 +33,20 @@ export class MetadataTypeShortComponent {
   options = input.required<MetadataOption[]>();
   value = input.required<any>();
 
+  private codelistService = inject(CodelistService);
+
   filteredOptions: Signal<Observable<string>[]> = computed(() => {
     const data = this.value();
     return this.options()
       .flatMap((option) => option.typeOptions)
       .flatMap((typeOption) => {
-        const genericItems = typeOption.asyncItems ?? of(typeOption.items);
+        const codelistObs = typeOption.codelistId
+          ? this.codelistService
+              .observe(typeOption.codelistId)
+              .pipe(map((items) => this.mapToMetadataOptionItems(items)))
+          : null;
+        const genericItems =
+          typeOption.asyncItems ?? codelistObs ?? of(typeOption.items);
         return genericItems.pipe(
           mergeMap((item) => {
             return (
@@ -46,6 +58,15 @@ export class MetadataTypeShortComponent {
         );
       });
   });
+
+  private mapToMetadataOptionItems(items: SelectOptionUi[]) {
+    return items.map((item) => {
+      return <MetadataOptionItem>{
+        label: item.label,
+        value: { key: item.value },
+      };
+    });
+  }
 
   private filterSelected(
     data: any,

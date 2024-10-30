@@ -89,6 +89,9 @@ export class GeoDatasetDoctype extends IngridShared {
           {
             multiple: false,
             key: "subType",
+            codelistId: "525",
+            // TODO: try to only use codelistId, since codelist mapping also happens
+            //       in metadata-type-short component, where it's needed for print preview
             asyncItems: this.getCodelistForSelect("525", "subType").pipe(
               map((items) => {
                 return items.map((item) => {

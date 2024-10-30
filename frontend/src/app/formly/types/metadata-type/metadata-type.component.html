@@ -4,20 +4,22 @@
     *transloco="let t"
     class="rectangular-chips"
 >
-    @if (showShort) {
+    @if (showShort || formState.disabled) {
         <div class="flex-row gap-8">
             <ige-metadata-type-short
                 [options]="displayedOptions()"
                 [value]="aForm.value"
             ></ige-metadata-type-short>
-            <button
-                mat-stroked-button
-                color="primary"
-                (click)="showShort = false"
-            >
-                <mat-icon>edit</mat-icon>
-                <span class="btn-title">Bearbeiten</span>
-            </button>
+            @if (!formState.disabled && formControl.enabled) {
+                <button
+                    mat-stroked-button
+                    color="primary"
+                    (click)="showShort = false"
+                >
+                    <mat-icon>edit</mat-icon>
+                    <span class="btn-title">Bearbeiten</span>
+                </button>
+            }
         </div>
     } @else {
         @for (option of displayedOptions(); track option) {

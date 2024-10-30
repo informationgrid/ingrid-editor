@@ -30,6 +30,7 @@ import { Observable } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FormStateService } from "../../../+form/form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
+import { removeNullOrEmptyFields } from "../../../shared/utils";
 
 export interface MetadataProps extends FormlyFieldProps {
   availableOptions: MetadataOption[];
@@ -50,6 +51,7 @@ export interface MetadataOptionItems {
   hidden?: boolean;
   hide?: (field: FormlyFieldConfig) => boolean;
   items?: MetadataOptionItem[];
+  codelistId?: string; // only needed for preview
   asyncItems?: Observable<MetadataOptionItem[]>;
   onChange?: (field: FormlyFieldConfig, value: any) => void;
 }
@@ -131,23 +133,20 @@ export class MetadataTypeComponent
         distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
       )
       .subscribe((data) => {
-        console.log(data);
         this.previousValue = this.formControl.value;
-        // this.formControl.setValue(data, { emitEvent: false });
-        // this.formControl.setValue(data, { onlySelf: true });
         this.formControl.setValue(data);
         this.props?.change?.(this.field, this.previousValue);
       });
 
     this.formControl.addValidators(
-      (control: AbstractControl): ValidationErrors | null => {
+      (_control: AbstractControl): ValidationErrors | null => {
         if (this.aForm.invalid) return { required: true };
         return null;
       },
     );
   }
 
-  private hasValue(data) {
+  private hasValue(data: any) {
     return Object.values(data).some((value) => value);
   }
 
@@ -181,24 +180,9 @@ export class MetadataTypeComponent
 
     this.aForm = new FormGroup(formDef);
     const initialValue = this.aForm.getRawValue();
-    MetadataTypeComponent.removeNullOrEmptyFields(initialValue);
-    this.formControl.setValue(initialValue);
+    removeNullOrEmptyFields(initialValue);
+    this.formControl.setValue({ ...initialValue, ...this.formControl.value });
     this.cleanForm = initialValue;
-  }
-
-  /**
-   * Replace null or empty fields with undefined in order to remove them from the resulting form value.
-   * @param obj
-   */
-  private static removeNullOrEmptyFields(obj: any) {
-    for (const f in obj) {
-      let p = obj[f];
-      if (p === null || p === "") {
-        obj[f] = undefined;
-      } else if (typeof p === "object" && p !== null) {
-        this.removeNullOrEmptyFields(p);
-      }
-    }
   }
 
   handleOptionClick(item: MetadataOptionItem) {
