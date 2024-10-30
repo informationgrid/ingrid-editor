@@ -3,11 +3,14 @@
   "$id": "https://wemove.com/schemas/ingrid/schemes/dataCollectionBase",
   "type": "object",
   "properties": {
-    "isAdVCompatible": {
-      "type": ["null", "boolean"]
-    },
-    "isOpenData": {
-      "type": ["null", "boolean"]
+    "properties": {
+      "type": "object",
+      "unevaluatedProperties": false,
+      "properties": {
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        }
+      }
     },
     "_uuid": {
       "type": "string"

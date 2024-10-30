@@ -61,6 +61,7 @@ export class GeoDatasetDoctype extends IngridShared {
     },
   };
 
+  showInspireRelevant = true;
   showInspireConform = true;
   showHVD = true;
   showAdVCompatible = true;
@@ -114,7 +115,6 @@ export class GeoDatasetDoctype extends IngridShared {
 
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection({
-        inspireRelevant: true,
         thesaurusTopics: true,
         // TODO AW: activate subType only from geodataset
         /*additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {

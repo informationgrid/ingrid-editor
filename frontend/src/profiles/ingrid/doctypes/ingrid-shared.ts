@@ -53,8 +53,6 @@ import {
 import { UploadService } from "../../../app/shared/upload/upload.service";
 
 interface GeneralSectionOptions {
-  // additionalGroup?: FormlyFieldConfig;
-  inspireRelevant?: boolean;
   thesaurusTopics?: boolean;
 }
 
@@ -113,6 +111,7 @@ export abstract class IngridShared extends BaseDoctype {
     "ACHTUNG: Der Eintrag in Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird gelöscht.";
 
   showInVeKoSField: boolean = false;
+  showInspireRelevant: boolean = false;
   showInspireConform: boolean = false;
   showHVD: boolean = false;
   showAdVCompatible: boolean = false;
@@ -133,91 +132,96 @@ export abstract class IngridShared extends BaseDoctype {
 
   protected metadataOptions(): MetadataOption[] {
     return [
-      {
-        label: "INSPIRE-relevant",
-        typeOptions: [
-          {
-            multiple: false,
-            key: "isInspireIdentified",
-            onChange: (field, value) => {
-              field.props.availableOptions[1].typeOptions[1].hidden =
-                value === undefined;
-            },
-            items: this.showInspireConform
-              ? [
-                  {
-                    label: "INSPIRE konform",
-                    value: "conform",
-                    onClick: (field, previousValue) =>
-                      this.handleIsInspireConformClick(
-                        field,
-                        previousValue,
-                      ).subscribe(),
-                  },
-                  {
-                    label: "INSPIRE nicht konform",
-                    value: "notConform",
-                    onClick: (field, previousValue) =>
-                      this.handleIsInspireConformClick(
-                        field,
-                        previousValue,
-                      ).subscribe(),
-                  },
-                ]
-              : [
-                  {
-                    label: "INSPIRE",
-                    value: "relevant",
-                    // onClick: (field) => this.handleOpenDataClick(field),
-                  },
-                ],
-          },
-          this.showInVeKoSField
-            ? {
-                multiple: false,
-                key: "invekos",
-                items: [
-                  {
-                    label: "InVeKoS/IACS (GSAA)",
-                    value: { key: "gsaa" },
-                    onClick: (field) =>
-                      this.handleInVeKosChange(field, this.thesaurusTopics),
-                  },
-                  {
-                    label: "InVeKoS/IACS (LPIS)",
-                    value: { key: "lpis" },
-                    onClick: (field) =>
-                      this.handleInVeKosChange(field, this.thesaurusTopics),
-                  },
-                ],
-              }
-            : null,
-        ].filter(Boolean),
-      },
-      {
-        label: "Open Data",
-        typeOptions: [
-          <MetadataOptionItems>{
-            multiple: true,
-            items: [
+      this.showInspireRelevant
+        ? {
+            label: "INSPIRE-relevant",
+            typeOptions: [
               {
-                label: "Offene Lizenz",
-                key: "isOpenData",
-                value: true,
-                onClick: (field) => this.handleOpenDataClick(field),
+                multiple: false,
+                key: "isInspireIdentified",
+                onChange: (field, value) => {
+                  field.props.availableOptions[1].typeOptions[1].hidden =
+                    value === undefined;
+                },
+                items: this.showInspireConform
+                  ? [
+                      {
+                        label: "INSPIRE konform",
+                        value: "conform",
+                        onClick: (field, previousValue) =>
+                          this.handleIsInspireConformClick(
+                            field,
+                            previousValue,
+                          ).subscribe(),
+                      },
+                      {
+                        label: "INSPIRE nicht konform",
+                        value: "notConform",
+                        onClick: (field, previousValue) =>
+                          this.handleIsInspireConformClick(
+                            field,
+                            previousValue,
+                          ).subscribe(),
+                      },
+                    ]
+                  : [
+                      {
+                        label: "INSPIRE",
+                        value: "relevant",
+                        // onClick: (field) => this.handleOpenDataClick(field),
+                      },
+                    ],
               },
-              this.showHVD
+              this.showInVeKoSField
                 ? {
-                    label: "High-Value-Dataset",
-                    key: "isHvd",
-                    value: true,
-                    onClick: (field) => this.handleHVDClick(field).subscribe(),
+                    multiple: false,
+                    key: "invekos",
+                    items: [
+                      {
+                        label: "InVeKoS/IACS (GSAA)",
+                        value: { key: "gsaa" },
+                        onClick: (field) =>
+                          this.handleInVeKosChange(field, this.thesaurusTopics),
+                      },
+                      {
+                        label: "InVeKoS/IACS (LPIS)",
+                        value: { key: "lpis" },
+                        onClick: (field) =>
+                          this.handleInVeKosChange(field, this.thesaurusTopics),
+                      },
+                    ],
                   }
                 : null,
             ].filter(Boolean),
+          }
+        : null,
+      this.options.hide.openData
+        ? null
+        : {
+            label: "Open Data",
+            typeOptions: [
+              <MetadataOptionItems>{
+                multiple: true,
+                items: [
+                  {
+                    label: "Offene Lizenz",
+                    key: "isOpenData",
+                    value: true,
+                    onClick: (field) => this.handleOpenDataClick(field),
+                  },
+                  this.showHVD
+                    ? {
+                        label: "High-Value-Dataset",
+                        key: "isHvd",
+                        value: true,
+                        onClick: (field) =>
+                          this.handleHVDClick(field).subscribe(),
+                      }
+                    : null,
+                ].filter(Boolean),
+              },
+            ],
           },
-        ],
-      },
       this.showAdVCompatible
         ? {
             label: "AdV",
@@ -242,38 +246,44 @@ export abstract class IngridShared extends BaseDoctype {
 
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     this.thesaurusTopics = options.thesaurusTopics;
+    const availableOptions = this.metadataOptions();
     return this.addGroupSimple(
       null,
       [
-        this.addSection("Metadata", [
-          <FormlyFieldConfig>{
-            key: "properties",
-            type: "metadata",
+        availableOptions.length > 0
+          ? this.addSection("Metadata", [
+              <FormlyFieldConfig>{
+                key: "properties",
+                type: "metadata",
 
-            props: <MetadataProps>{
-              availableOptions: this.metadataOptions(),
-              disabledOptions: {},
-              change: (field, previousValue) => {
-                const data = field.formControl.value;
-                if (
-                  !data.isInspireIdentified &&
-                  previousValue?.isInspireIdentified !== undefined
-                ) {
-                  field.formControl.setValue({ ...data, invekos: undefined });
-                }
-                // hide options here, since we don't use real formly fields inside
-                // metadata-component, so we can't use hide-property
-                field.props?.availableOptions?.forEach((option) => {
-                  const invekosField = option?.typeOptions?.find(
-                    (typeOption) => typeOption.key === "invekos",
-                  );
-                  if (invekosField)
-                    invekosField.hidden = !data.isInspireIdentified;
-                });
+                props: <MetadataProps>{
+                  availableOptions: availableOptions,
+                  disabledOptions: {},
+                  change: (field, previousValue) => {
+                    const data = field.formControl.value;
+                    if (
+                      !data.isInspireIdentified &&
+                      previousValue?.isInspireIdentified !== undefined
+                    ) {
+                      field.formControl.setValue({
+                        ...data,
+                        invekos: undefined,
+                      });
+                    }
+                    // hide options here, since we don't use real formly fields inside
+                    // metadata-component, so we can't use hide-property
+                    field.props?.availableOptions?.forEach((option) => {
+                      const invekosField = option?.typeOptions?.find(
+                        (typeOption) => typeOption.key === "invekos",
+                      );
+                      if (invekosField)
+                        invekosField.hidden = !data.isInspireIdentified;
+                    });
+                  },
+                },
               },
-            },
-          },
-        ]),
+            ])
+          : null,
         /*options.inspireRelevant || this.showAdVCompatible
           ? this.addGroup(
               null,
@@ -1824,9 +1834,7 @@ export abstract class IngridShared extends BaseDoctype {
 
     if (this.isGeoService) {
       if (isOpenData) {
-          field.form
-            .get("resource.accessConstraints")
-            ?.setValue([{ key: "1" }]);
+        field.form.get("resource.accessConstraints")?.setValue([{ key: "1" }]);
       }
 
       this.addConformanceEntry(field, "10", "1");

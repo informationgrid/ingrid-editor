@@ -3,9 +3,6 @@
   "$id": "https://wemove.com/schemas/ingrid/schemes/specialisedTaskBase",
   "type": "object",
   "properties": {
-    "isAdVCompatible": {
-      "type": ["null", "boolean"]
-    },
     "_uuid": {
       "type": "string"
     },
@@ -30,9 +27,6 @@
         "$ref": "../../general.schema.json#/definitions/PointOfContact"
       },
       "minItems": 1
-    },
-    "advProductGroups": {
-      "$ref": "refs/general.schema.json#/definitions/advProductGroups"
     },
     "themes": {
       "$ref": "refs/general.schema.json#/definitions/themes"

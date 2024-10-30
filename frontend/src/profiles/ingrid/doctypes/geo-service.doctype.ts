@@ -41,6 +41,7 @@ export class GeoServiceDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
+  showInspireRelevant = true;
   showAdVCompatible = true;
   showAdVProductGroup = true;
   showLayernamesForCoupledResources = false;
@@ -91,9 +92,7 @@ export class GeoServiceDoctype extends IngridShared {
             },
           }
         : null,
-      this.addGeneralSection({
-        inspireRelevant: true,
-      }),
+      this.addGeneralSection(),
       this.addKeywordsSection({
         priorityDataset: true,
         spatialScope: true,
