@@ -1,9 +1,9 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "definitions": {
     "KeyValue": {
       "type": "object",
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "properties": {
         "key": {
           "type": ["string", "null"]
@@ -16,7 +16,7 @@
     },
     "PointOfContact": {
       "type": "object",
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "properties": {
         "ref": {
           "type": "string"
@@ -32,14 +32,14 @@
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
+        "unevaluatedProperties": false,
         "properties": {
           "title": {
             "type": "string"
           },
           "fileName": {
             "type": "object",
-            "additionalProperties": false,
+            "unevaluatedProperties": false,
             "properties": {
               "uri": {
                 "type": "string"
@@ -63,7 +63,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
+        "unevaluatedProperties": false,
         "properties": {
           "referenceDate": {
             "type": "string",
@@ -80,7 +80,7 @@
     },
     "Spatial": {
       "type": "object",
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "properties": {
         "references": {
           "type": "array",
@@ -99,7 +99,7 @@
         },
         "verticalExtent": {
           "type": "object",
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "properties": {
             "Datum": {
               "anyOf": [
@@ -134,7 +134,7 @@
     },
     "Date": {
       "type": "object",
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "properties": {
         "start": {
           "type": "string",
@@ -150,7 +150,6 @@
     },
     "resource": {
       "type": "object",
-      "additionalProperties": true,
       "properties": {
         "purpose": {
           "type": "string"
@@ -179,7 +178,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
+        "unevaluatedProperties": false,
         "properties": {
           "title": {
             "$ref": "#/definitions/KeyValue"
@@ -197,7 +196,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
+        "unevaluatedProperties": false,
         "properties": {
           "name": {
             "anyOf": [
@@ -216,7 +215,7 @@
             "anyOf": [
               {
                 "type": "object",
-                "additionalProperties": false,
+                "unevaluatedProperties": false,
                 "properties": {
                   "value": {
                     "type": ["null", "number"]
@@ -236,13 +235,13 @@
     },
     "distribution": {
       "type": "object",
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "properties": {
         "format": {
           "type": "array",
           "items": {
             "type": "object",
-            "additionalProperties": false,
+            "unevaluatedProperties": false,
             "properties": {
               "name": {
                 "$ref": "#/definitions/KeyValue"
@@ -265,7 +264,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
+        "unevaluatedProperties": false,
         "properties": {
           "denominator": {
             "type": ["number", "null"]
@@ -283,7 +282,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
+        "unevaluatedProperties": false,
         "properties": {
           "moreInfo": {
             "type": "string"
@@ -298,7 +297,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
+        "unevaluatedProperties": false,
         "properties": {
           "date": {
             "anyOf": [
@@ -322,7 +321,7 @@
     },
     "extraInfo": {
       "type": "object",
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "properties": {
         "legalBasicsDescriptions": {
           "type": "array",
@@ -334,7 +333,7 @@
     },
     "dataset": {
       "type": "object",
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "properties": {
         "languages": {
           "type": "array",
@@ -346,7 +345,7 @@
     },
     "metadata": {
       "type": "object",
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "properties": {
         "language": {
           "$ref": "#/definitions/KeyValue"
@@ -380,7 +379,7 @@
     },
     "temporal": {
       "type": "object",
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "properties": {
         "events": {
           "$ref": "#/definitions/events"
@@ -430,7 +429,7 @@
           "anyOf": [
             {
               "type": "object",
-              "additionalProperties": false,
+              "unevaluatedProperties": false,
               "properties": {
                 "end": {
                   "type": ["string", "null"],
@@ -452,13 +451,13 @@
     },
     "keywords": {
       "type": "object",
-      "additionalProperties": true,
+      "unevaluatedProperties": true,
       "properties": {
         "free": {
           "type": "array",
           "items": {
             "type": "object",
-            "additionalProperties": false,
+            "unevaluatedProperties": false,
             "properties": {
               "label": {
                 "type": "string"
@@ -478,7 +477,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
+        "unevaluatedProperties": false,
         "properties": {
           "id": {
             "type": "string"
@@ -508,7 +507,7 @@
     },
     "maintenanceInformation": {
       "type": "object",
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "properties": {
         "description": {
           "type": "string"
@@ -546,7 +545,7 @@
         "type": "object",
         "oneOf": [
           {
-            "additionalProperties": false,
+            "unevaluatedProperties": false,
             "properties": {
               "type": {
                 "$ref": "#/definitions/KeyValue"
@@ -578,7 +577,7 @@
             "required": ["type", "title", "url"]
           },
           {
-            "additionalProperties": false,
+            "unevaluatedProperties": false,
             "properties": {
               "type": {
                 "$ref": "#/definitions/KeyValue"

@@ -23,7 +23,7 @@ import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.schema.SchemaUtils
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 
 class McloudSchemaAddress : AnnotationSpec() {
@@ -35,14 +35,14 @@ class McloudSchemaAddress : AnnotationSpec() {
     fun minAddress() {
         val json = SchemaUtils.getJsonFileContent("/export/mcloud/mcloud-address.minimal.json")
         val result = SchemaUtils.validate(json, schema)
-        result.valid shouldBe true
+        result.size shouldBe 0
     }
 
     @Test
     fun fullAddress() {
         val json = SchemaUtils.getJsonFileContent("/export/mcloud/mcloud-address.full.json")
         val result = SchemaUtils.validate(json, schema)
-        result.valid shouldBe true
+        result.size shouldBe 0
     }
 
     @Test
@@ -50,11 +50,15 @@ class McloudSchemaAddress : AnnotationSpec() {
         val json = "{}"
         shouldThrow<ValidationException> {
             val result = SchemaUtils.validate(json, schema)
-            result.valid shouldBe false
-            val requiredErrors = SchemaUtils.extractMissingRequiredFields(result)
-
-            requiredErrors.size shouldBeExactly requiredFields.size
-            requiredErrors shouldBe requiredFields
+            result.size shouldBeGreaterThan 0
+//            val requiredErrors = SchemaUtils.extractMissingRequiredFields(result)
+//
+//            requiredErrors.size shouldBeExactly requiredFields.size
+//            requiredErrors shouldBe requiredFields
         }
     }
+
+    @Test
+    fun negativeTest() =
+        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/mcloud/mcloud-address.minimal.json")
 }

@@ -435,7 +435,7 @@ export abstract class IngridShared extends BaseDoctype {
       const accessConstraintsControl = field.form.get(
         "resource.accessConstraints",
       );
-      accessConstraintsControl.setValue([{ key: "1" }]);
+      accessConstraintsControl?.setValue([{ key: "1" }]);
     }
 
     if (this.cookieService.getCookie(cookieId) === "true") {
@@ -1824,7 +1824,9 @@ export abstract class IngridShared extends BaseDoctype {
 
     if (this.isGeoService) {
       if (isOpenData) {
-        field.form.get("resource.accessConstraints").setValue([{ key: "1" }]);
+          field.form
+            .get("resource.accessConstraints")
+            ?.setValue([{ key: "1" }]);
       }
 
       this.addConformanceEntry(field, "10", "1");

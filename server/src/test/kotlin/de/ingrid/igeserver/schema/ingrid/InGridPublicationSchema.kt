@@ -31,13 +31,17 @@ class InGridPublicationSchema : AnnotationSpec() {
     fun minimal() {
         val json = SchemaUtils.getJsonFileContent("/export/ingrid/publication.minimal.json")
         val result = SchemaUtils.validate(json, schema)
-        result.valid shouldBe true
+        result.size shouldBe 0
     }
 
     @Test
     fun maximal() {
         val json = SchemaUtils.getJsonFileContent("/export/ingrid/publication.maximal.json")
         val result = SchemaUtils.validate(json, schema)
-        result.valid shouldBe true
+        result.size shouldBe 0
     }
+
+    @Test
+    fun negativeTest() =
+        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/ingrid/publication.minimal.json")
 }
