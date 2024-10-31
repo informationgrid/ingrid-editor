@@ -221,7 +221,7 @@ export class SharedHmdk {
       field.form.get("openDataCategories").setValue([]);
       // remove all "Informationsgegenstände" (set to "ohne Veröffentlichungspflicht" if open data)
       field.form.get("informationHmbTG")?.setValue(
-        field.model.isOpenData
+        field.model.properties?.isOpenData
           ? [
               {
                 key: "hmbtg_20_ohne_veroeffentlichungspflicht",

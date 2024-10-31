@@ -15,6 +15,11 @@ import {
   SelectOptionUi,
 } from "../../../../services/codelist/codelist.service";
 
+interface PropertyItem {
+  id: string;
+  label: string;
+}
+
 @Component({
   selector: "ige-metadata-type-short",
   standalone: true,
@@ -35,7 +40,7 @@ export class MetadataTypeShortComponent {
 
   private codelistService = inject(CodelistService);
 
-  filteredOptions: Signal<Observable<string>[]> = computed(() => {
+  filteredOptions: Signal<Observable<PropertyItem>[]> = computed(() => {
     const data = this.value();
     return this.options()
       .flatMap((option) => option.typeOptions)
@@ -72,12 +77,14 @@ export class MetadataTypeShortComponent {
     data: any,
     typeOption: MetadataOptionItems,
     item: MetadataOptionItem,
-  ) {
+  ): PropertyItem {
     const primitiveMatch =
       data[typeOption.key] === item.value || data[item.key] === item.value;
     const objectMatch = (data[typeOption.key]?.key ?? "?") === item.value?.key;
     if (primitiveMatch || objectMatch) {
-      return item.label;
+      const id =
+        item.key ?? typeOption.key + "_" + (item.value.key ?? item.value);
+      return { id: id, label: item.label };
     }
     return null;
   }

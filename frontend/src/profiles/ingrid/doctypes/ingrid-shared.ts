@@ -168,7 +168,15 @@ export abstract class IngridShared extends BaseDoctype {
                       {
                         label: "INSPIRE",
                         value: "relevant",
-                        // onClick: (field) => this.handleOpenDataClick(field),
+                        onClick: (field) =>
+                          field.formControl.value.isInspireIdentified ===
+                          "relevant"
+                            ? this.handleActivateInspireIdentifiedFromGeoservice(
+                                field,
+                              ).subscribe()
+                            : this.handleDeactivateInspireIdentifiedFromGeoservice(
+                                field,
+                              ).subscribe(),
                       },
                     ],
               },
@@ -416,7 +424,7 @@ export abstract class IngridShared extends BaseDoctype {
               atLeastOnePointOfContactWhenAdV: {
                 expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
                   // equals "Ansprechpartner"
-                  !field.model.isAdVCompatible ||
+                  !field.model.properties?.isAdVCompatible ||
                   (ctrl.value
                     ? ctrl.value.some((address) => address.type?.key === "7")
                     : false),
@@ -460,28 +468,19 @@ export abstract class IngridShared extends BaseDoctype {
         <li>wird die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li>
         <li>wird dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li>
       </ul>`;
-    return this.dialog
-      .open(ConfirmDialogComponent, {
-        data: <ConfirmDialogData>{
-          title: "Hinweis",
-          message: message,
-          cookieId: cookieId,
-        },
-      })
-      .afterClosed()
-      .pipe(
-        map((decision) => {
-          if (decision === "ok") {
-            executeAction();
-            return true;
-          }
-          field.formControl.setValue({
-            ...field.formControl.value,
-            isOpenData: false,
-          });
-          return false;
-        }),
-      );
+    return this.showConfirmDialog(message, cookieId).pipe(
+      map((decision) => {
+        if (decision === "ok") {
+          executeAction();
+          return true;
+        }
+        field.formControl.setValue({
+          ...field.formControl.value,
+          isOpenData: false,
+        });
+        return false;
+      }),
+    );
   }
 
   handleDeactivateOpenData(field: FormlyFieldConfig): Observable<boolean> {
@@ -490,28 +489,19 @@ export abstract class IngridShared extends BaseDoctype {
 
     const message =
       'Wird dieses Auswahl gewählt, so wird die Opendata-Kategorie unter "Verschlagwortung" entfernt.';
-    return this.dialog
-      .open(ConfirmDialogComponent, {
-        data: <ConfirmDialogData>{
-          title: "Hinweis",
-          message: message,
-          cookieId: cookieId,
-        },
-      })
-      .afterClosed()
-      .pipe(
-        map((decision) => {
-          const value = field.formControl.value;
-          if (decision === "ok") {
-            if (this.showHVD) {
-              field.formControl.setValue({ ...value, isHvd: false });
-            }
-            return true;
+    return this.showConfirmDialog(message, cookieId).pipe(
+      map((decision) => {
+        const value = field.formControl.value;
+        if (decision === "ok") {
+          if (this.showHVD) {
+            field.formControl.setValue({ ...value, isHvd: false });
           }
-          field.formControl.setValue({ ...value, isOpenData: true });
-          return false;
-        }),
-      );
+          return true;
+        }
+        field.formControl.setValue({ ...value, isOpenData: true });
+        return false;
+      }),
+    );
   }
 
   private handleOpenDataClick(field: FormlyFieldConfig) {
@@ -539,7 +529,8 @@ export abstract class IngridShared extends BaseDoctype {
               ),
               codelistId: "8010",
               expressions: {
-                "props.required": "formState.mainModel?.isAdVCompatible",
+                "props.required":
+                  "formState.mainModel?.properties?.isAdVCompatible",
                 className: "field.props.required ? '' : 'optional'",
               },
             })
@@ -1532,7 +1523,7 @@ export abstract class IngridShared extends BaseDoctype {
         validators: {
           downloadLinkWhenOpenData: {
             expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
-              !field.form.value.isOpenData ||
+              !field.form.value.properties?.isOpenData ||
               ctrl.value?.some((row) => row.type?.key === "9990") || // one reference of type "Datendownload"
               (field.form.value.fileReferences?.[0] ? true : false), // or one item in "Dateien"
             message:
@@ -1811,12 +1802,73 @@ export abstract class IngridShared extends BaseDoctype {
     ];
   }
 
+  handleActivateInspireIdentifiedFromGeoservice(
+    field: FormlyFieldConfig,
+  ): Observable<boolean> {
+    const cookieId = "HIDE_INSPIRE_INFO";
+
+    if (this.cookieService.getCookie(cookieId) === "true") {
+      this.handleActivateInspireIdentified(field);
+      return of(true);
+    }
+
+    const message = this.inspireChangeMessage;
+
+    return this.showConfirmDialog(message, cookieId).pipe(
+      map((decision) => {
+        if (decision === "ok") this.handleActivateInspireIdentified(field);
+        else
+          field.formControl.setValue({
+            ...field.formControl.value,
+            isInspireIdentified: undefined,
+          });
+        return decision === "ok";
+      }),
+    );
+  }
+
+  private showConfirmDialog(
+    message: string,
+    cookieId: string,
+  ): Observable<string> {
+    return this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          title: "Hinweis",
+          message: message,
+          cookieId: cookieId,
+        },
+      })
+      .afterClosed();
+  }
+
+  handleDeactivateInspireIdentifiedFromGeoservice(
+    field: FormlyFieldConfig,
+  ): Observable<boolean> {
+    const cookieId = "HIDE_INSPIRE_DEACTIVATE_INFO";
+
+    if (this.cookieService.getCookie(cookieId) === "true") {
+      this.handleDeactivateInspireIdentified(field);
+      return of(true);
+    }
+
+    const message = this.inspireDeleteMessage;
+
+    return this.showConfirmDialog(message, cookieId).pipe(
+      map((decision) => {
+        if (decision === "ok") this.handleDeactivateInspireIdentified(field);
+        else
+          field.formControl.setValue({
+            ...field.formControl.value,
+            isInspireIdentified: "relevant",
+          });
+        return decision === "ok";
+      }),
+    );
+  }
+
   handleActivateInspireIdentified(field: FormlyFieldConfig) {
     const isOpenData = field.formControl.value.isOpenData === true;
-    /*    const cookieId = "HIDE_INSPIRE_INFO";
-
-    const executeAction = () => {*/
-    // field.formControl.setValue({...field.formControl.value, isInspireIdentified: "conform"});
 
     if (this.defaultKeySpatialScope) {
       setTimeout(() => {
@@ -1838,9 +1890,6 @@ export abstract class IngridShared extends BaseDoctype {
   handleDeactivateInspireIdentified(field: FormlyFieldConfig) {
     const isOpenData = field.formControl.value.isOpenData === true;
     const specificationToRemove = this.isGeoService ? "10" : "12";
-    /*    const cookieId = "HIDE_INSPIRE_DEACTIVATE_INFO";
-
-    const executeAction = () => {*/
     if (isOpenData) field.form.get("resource.accessConstraints").setValue([]);
 
     const conformanceResultCtrl = field.form.get("conformanceResult");
@@ -1917,29 +1966,21 @@ export abstract class IngridShared extends BaseDoctype {
       return of(true);
     }
 
-    return this.dialog
-      .open(ConfirmDialogComponent, {
-        data: <ConfirmDialogData>{
-          title: "Hinweis",
-          message:
-            inspireIdentified === undefined
-              ? this.inspireDeleteMessage
-              : this.inspireChangeMessage,
-          cookieId: cookieId,
-        },
-      })
-      .afterClosed()
-      .pipe(
-        map((decision) => {
-          if (decision === "ok") executeAction();
-          else
-            field.formControl.setValue({
-              ...field.formControl.value,
-              isInspireIdentified: previousValue?.isInspireIdentified,
-            });
-          return decision === "ok";
-        }),
-      );
+    const message =
+      inspireIdentified === undefined
+        ? this.inspireDeleteMessage
+        : this.inspireChangeMessage;
+    return this.showConfirmDialog(message, cookieId).pipe(
+      map((decision) => {
+        if (decision === "ok") executeAction();
+        else
+          field.formControl.setValue({
+            ...field.formControl.value,
+            isInspireIdentified: previousValue?.isInspireIdentified,
+          });
+        return decision === "ok";
+      }),
+    );
   }
 
   /**
@@ -2081,24 +2122,18 @@ export abstract class IngridShared extends BaseDoctype {
       return of(true);
     }
 
-    this.dialog
-      .open(ConfirmDialogComponent, {
-        data: <ConfirmDialogData>{
-          title: "Hinweis",
-          message:
-            "Dem Datensatz werden folgende Schlagworte hinzugefügt: <ul><li>InVeKoS: InVeKoS" +
-            (value === "gsaa" ? " + GSAA" : value === "lpis" ? " + LPIS" : "") +
-            "</li><li>Gemet: Gemeinsame Agrarpolitik</li><li>ISO-Themenkategorie: Landwirtschaft</li><li>INSPIRE-Themen: " +
-            (value === "gsaa" ? "Bodennutzung" : "Bodenbedeckung") +
-            "</li></ul>",
-          cookieId: cookieId,
-        },
-      })
-      .afterClosed()
-      .subscribe((decision) => {
-        if (decision === "ok") executeAction(value);
-        else field.formControl.setValue({ key: "none" });
-      });
+    this.showConfirmDialog(
+      `Dem Datensatz werden folgende Schlagworte hinzugefügt:
+        <ul>
+          <li>InVeKoS: InVeKoS${value === "gsaa" ? " + GSAA" : value === "lpis" ? " + LPIS" : ""}</li>
+          <li>Gemet: Gemeinsame Agrarpolitik</li><li>ISO-Themenkategorie: Landwirtschaft</li>
+          <li>INSPIRE-Themen: ${value === "gsaa" ? "Bodennutzung" : "Bodenbedeckung"}</li>
+        </ul>`,
+      cookieId,
+    ).subscribe((decision) => {
+      if (decision === "ok") executeAction(value);
+      else field.formControl.setValue({ key: "none" });
+    });
   }
 
   private addInspireTopic(
