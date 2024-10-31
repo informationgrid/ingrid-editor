@@ -1322,7 +1322,7 @@ export abstract class IngridShared extends BaseDoctype {
                     return (
                       !model ||
                       !this.isGeoService ||
-                      !model.isInspireConform ||
+                      model.properties?.isInspireIdentified !== "conform" ||
                       this.conformityExists(ctrl, "10", "1")
                     );
                   },
@@ -1335,7 +1335,7 @@ export abstract class IngridShared extends BaseDoctype {
                     return (
                       !model ||
                       !this.isGeoDataset ||
-                      !model.isInspireConform ||
+                      model.properties?.isInspireIdentified !== "conform" ||
                       this.conformityExists(ctrl, "12", "1")
                     );
                   },

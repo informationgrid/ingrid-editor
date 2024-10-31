@@ -176,7 +176,8 @@ export class GeoDatasetDoctype extends IngridShared {
             ),
             codelistId: "526",
             expressions: {
-              "props.required": "formState.mainModel?.isInspireConform",
+              "props.required":
+                "formState.mainModel?.properties?.isInspireIdentified === 'conform'",
               className: "field.props.required ? '' : 'optional'",
             },
           },

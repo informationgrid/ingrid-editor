@@ -71,7 +71,7 @@ class M087MigrateDatasetProperties : MigrationBase("0.87") {
 
                 documents.forEach {
                     it as Document
-                    val properties = Migrate120.getPropertiesOfDocument(it.data)
+                    val properties = Migrate120.getPropertiesOfDocument(it.data, it.type)
                     it.data.set<JsonNode>("properties", properties)
                     log.info("Migrated doc with dbID ${it.id}")
 //                        docRepo.save(it)

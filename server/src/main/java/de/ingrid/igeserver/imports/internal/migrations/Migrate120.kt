@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.utils.getString
+import org.apache.jena.vocabulary.RDFSyntax.doc
 
 class Migrate120 {
 
@@ -31,14 +32,14 @@ class Migrate120 {
             listOf("draft", "published").forEach { type ->
                 documents.get(type)?.let { docVersion ->
                     docVersion as ObjectNode
-                    val migratedData = getPropertiesOfDocument(docVersion)
+                    val migratedData = getPropertiesOfDocument(docVersion, docVersion.getString("_type")!!)
                     docVersion.set<JsonNode>("properties", migratedData)
                 }
             }
             return documents
         }
 
-        fun getPropertiesOfDocument(doc: ObjectNode): JsonNode = jacksonObjectMapper().createObjectNode().apply {
+        fun getPropertiesOfDocument(doc: ObjectNode, docType: String): JsonNode = jacksonObjectMapper().createObjectNode().apply {
             val isOpenData = doc.remove("isOpenData")
             val isAdVCompatible = doc.remove("isAdVCompatible")
             val isInspireIdentified = doc.remove("isInspireIdentified")
@@ -49,7 +50,7 @@ class Migrate120 {
             if (isOpenData?.booleanValue() == true) set<JsonNode>("isOpenData", isOpenData)
             if (isAdVCompatible?.booleanValue() == true) set<JsonNode>("isAdVCompatible", isAdVCompatible)
             if (isInspireIdentified?.booleanValue() == true) {
-                if (doc.getString("_type") == "InGridGeoDataset") {
+                if (docType == "InGridGeoDataset") {
                     if (isInspireConform?.isNull == true || !isInspireConform.booleanValue()) {
                         put("isInspireIdentified", "notConform")
                     } else {

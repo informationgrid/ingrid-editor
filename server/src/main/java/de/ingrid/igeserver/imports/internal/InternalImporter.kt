@@ -57,6 +57,7 @@ class InternalImporter : IgeImporter {
         val profile = json.getString("_profile")!!
         if (version == "1.0.0") {
             val response = Migrate110.migrate(documents, profile)
+            version = "1.1.0"
             documents = response.documents
             additionalReferences = response.references
         }
