@@ -129,8 +129,7 @@
             }
           }
         }
-      },
-      "required": ["references", "spatialSystems"]
+      }
     },
     "Date": {
       "type": "object",

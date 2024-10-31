@@ -195,12 +195,23 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   }
 */
 
-  private addCodelistDefaultValues(fields: FormlyFieldConfig[]) {
+  private addCodelistDefaultValues(
+    fields: FormlyFieldConfig[],
+    prefix: string = "",
+  ) {
     fields.forEach((field) => {
       if (field.fieldGroup) {
         this.addCodelistDefaultValues(field.fieldGroup);
       }
-      let codelistField = this.fieldWithCodelistMap.get(field.key as string);
+      if (field.fieldArray?.["fieldGroup"]) {
+        this.addCodelistDefaultValues(
+          field.fieldArray["fieldGroup"],
+          (field.key as string) + ".",
+        );
+      }
+      let codelistField = this.fieldWithCodelistMap.get(
+        (prefix + field.key) as string,
+      );
       if (codelistField !== undefined) {
         this.codelistQuery
           .selectEntity(codelistField)

@@ -397,6 +397,9 @@
         "$ref": "../../general.schema.json#/definitions/KeyValue"
       }
     },
+    "hvd": {
+      "type": ["null", "boolean"]
+    },
     "hvdCategories": {
       "type": "array",
       "items": {
