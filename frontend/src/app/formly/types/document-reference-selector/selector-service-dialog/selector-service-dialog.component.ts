@@ -1,0 +1,98 @@
+import { Component, Inject } from "@angular/core";
+import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { FormGroup } from "@angular/forms";
+import { Subject } from "rxjs";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { TreeQuery } from "../../../../store/tree/tree.query";
+import { TreeNode } from "../../../../store/tree/tree-node.model";
+import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
+import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
+
+export interface SelectDatasetData {
+  currentRefs: string[];
+  activeRef?: string;
+  layerNames?: string[];
+  showLayernames: boolean;
+  removeButton?: boolean;
+  onlyInternalReferences?: boolean;
+  allowMultiSelect?: boolean;
+  docTypeFilter?: string[];
+  titleOfDocumentSelectorDialog?: string;
+}
+
+export interface SelectServiceResponse {
+  title: string;
+  uuid: string;
+  state: string;
+  type: string;
+  layerNames: string[];
+  icon: string;
+}
+
+@Component({
+  templateUrl: "./selector-service-dialog.component.html",
+  styleUrl: "./selector-service-dialog.component.scss",
+  imports: [DialogTemplateComponent, TreeComponent, FormlyModule],
+  // selector: "ige-selector-service-dialog",
+  standalone: true,
+})
+export class SelectorServiceDialogComponent {
+  selectedNode: number = null;
+  field: FormlyFieldConfig[] = [
+    {
+      key: "layerNames",
+      type: "repeatList",
+    },
+  ];
+  form = new FormGroup<any>({});
+  model = { layerNames: [] };
+  initialNode = new Subject<number>();
+  label: String = "Dokument auswählen";
+  docTypeFilter = [];
+  public showLayernames = false;
+
+  constructor(
+    private dlgRef: MatDialogRef<any>,
+    private tree: TreeQuery,
+    @Inject(MAT_DIALOG_DATA) private data: SelectDatasetData,
+  ) {
+    if (data.activeRef) {
+      setTimeout(() => {
+        const node = tree.getByUuid(data.activeRef);
+        this.initialNode.next(parseInt(node.id.toString()));
+      });
+    }
+    this.model.layerNames = data.layerNames ?? [];
+    this.showLayernames = data.showLayernames;
+    this.docTypeFilter = data.docTypeFilter;
+    this.label = data.titleOfDocumentSelectorDialog;
+  }
+
+  enableDesiredDocuments() {
+    return (node: TreeNode) => {
+      return (
+        (this.docTypeFilter.length &&
+          !this.docTypeFilter.includes(node.type)) ||
+        this.data.currentRefs.indexOf(node._uuid) !== -1
+      );
+    };
+  }
+
+  submit() {
+    const entity = this.tree.getEntity(this.selectedNode);
+    console.log("entity:", entity);
+    let response: SelectServiceResponse = {
+      title: entity.title,
+      state: entity._state,
+      uuid: entity._uuid,
+      type: entity._type,
+      layerNames: this.form.value.layerNames,
+      icon: entity.icon,
+    };
+    this.dlgRef.close(response);
+  }
+
+  selectDatasets(node: number[]) {
+    this.selectedNode = node[0];
+  }
+}

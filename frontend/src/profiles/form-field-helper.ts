@@ -312,6 +312,34 @@ export class FormFieldHelper {
     };
   }
 
+  addDocumentCard(id: string, label: string) {
+    return <FormlyFieldConfig>{
+      key: id,
+      type: "documentReferenceSelector",
+      className: "flex-1",
+      props: {
+        label: "Datensatzverweise",
+        showLayernames: false,
+        allowRedirectToDocument: false,
+        allowMultiSelect: false,
+        titleOfDocumentSelectorDialog: "Internen Verweis auswählen",
+        docTypeFilter: [
+          "InGridGeoDataset",
+          "InGridGeoService",
+          // "InGridDataCollection",
+        ],
+      },
+      expressions: {
+        // "props.removeButton": (field: FormlyFieldConfig): boolean => {
+        //   return field.formControl?.value[0];
+        // },
+        "props.required":
+          "formState.mainModel?.service?.couplingType?.key === 'tight'",
+        className: "field.props.required ? '' : 'optional'",
+      },
+    };
+  }
+
   /**
    * @deprecated use addRepeatList
    */
@@ -455,7 +483,7 @@ export class FormFieldHelper {
       type: "repeat",
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
-      defaultValue: options?.required ? (options?.defaultValue ?? [{}]) : null,
+      defaultValue: options?.required ? options?.defaultValue ?? [{}] : null,
       props: {
         externalLabel: label,
         required: options?.required,
