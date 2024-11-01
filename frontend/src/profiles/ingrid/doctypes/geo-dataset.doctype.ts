@@ -76,9 +76,9 @@ export class GeoDatasetDoctype extends IngridShared {
     this.options.required.useConstraints = true;
     this.options.required.extraInfoLangData = true;
     this.options.dynamicRequired.dataFormat =
-      "formState.mainModel?.isInspireIdentified";
+      "formState.mainModel?.properties?.isInspireIdentified";
     this.options.dynamicRequired.spatialScope =
-      "formState.mainModel?.isInspireIdentified";
+      "formState.mainModel?.properties?.isInspireIdentified";
   }
 
   protected metadataOptions(): MetadataOption[] {

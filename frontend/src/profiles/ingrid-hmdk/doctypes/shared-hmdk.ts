@@ -156,7 +156,9 @@ export class SharedHmdk {
       field.form
         .get("resource.accessConstraints")
         ?.setValue(
-          field.model.isInspireIdentified === true ? [{ key: "1" }] : [],
+          field.model.properties?.isInspireIdentified !== undefined
+            ? [{ key: "1" }]
+            : [],
         );
 
       // set Anwendungseinschränkungen to "Datenlizenz Deutschland Namensnennung"
@@ -275,7 +277,7 @@ export class SharedHmdk {
       }
 
       // if inspire set access constraint "keine"
-      if (field.model.isInspireIdentified)
+      if (field.model.properties?.isInspireIdentified !== undefined)
         field.form.get("resource.accessConstraints")?.setValue([{ key: "1" }]);
 
       this.tagsService

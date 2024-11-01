@@ -41,7 +41,7 @@
                                     <mat-chip-listbox
                                         [formControlName]="item.key"
                                         [hideSingleSelectionIndicator]="true"
-                                        [required]="false"
+                                        [required]="option.required"
                                         ><mat-chip-option
                                             [value]="item.value"
                                             [attr.data-cy]="item.key"
@@ -88,6 +88,7 @@
                                     [multiple]="typeOption.multiple"
                                     [hideSingleSelectionIndicator]="true"
                                     [formControlName]="typeOption.key"
+                                    [required]="option.required"
                                     [compareWith]="compareChips"
                                 >
                                     @for (
