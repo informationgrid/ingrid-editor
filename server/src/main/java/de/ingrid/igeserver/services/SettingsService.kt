@@ -21,10 +21,7 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.WithId
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
 import de.ingrid.igeserver.repository.SettingsRepository
 import de.ingrid.utils.PlugDescription
 import org.springframework.stereotype.Service
@@ -46,6 +43,11 @@ class SettingsService(
         val iBusJson = repoSettings.findByKey("elasticsearch")?.value ?: return emptyList()
 
         return jacksonObjectMapper().convertValue(iBusJson, object : TypeReference<List<ElasticConfig>>() {})
+    }
+    fun getCSWTConfig(): List<CSWTConfig> {
+        val cswtJson = repoSettings.findByKey("cswt")?.value ?: return emptyList()
+
+        return jacksonObjectMapper().convertValue(cswtJson, object : TypeReference<List<CSWTConfig>>() {})
     }
 
     fun getConnectionConfig(id: String): WithId? {
@@ -78,6 +80,12 @@ class SettingsService(
         addIdIfNeeded(config)
         this.updateItem("elasticsearch", config)
     }
+
+    fun setCSWTConfig(config: List<CSWTConfig>) {
+        addIdIfNeeded(config)
+        this.updateItem("cswt", config)
+    }
+
 
     fun getPlugDescription(partner: String?, provider: String?, plugId: String?, forAddress: Boolean, name: String): PlugDescription {
         val pd = PlugDescription().apply {
