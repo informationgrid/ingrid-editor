@@ -1,0 +1,8 @@
+@if (assessment) {
+    <div class="flex-row">
+        <div class="assessment {{ assessment.rating | lowercase }}">
+            <span class="score">{{ assessment.score }}</span>
+            <span class="rating">{{ assessment.rating }}</span>
+        </div>
+    </div>
+}

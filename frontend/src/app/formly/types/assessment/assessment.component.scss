@@ -1,0 +1,61 @@
+@import "src/variables";
+
+.assessment {
+  display: flex;
+  gap: 8px;
+  margin: 8px;
+  padding: 8px;
+  border: solid 1px #161243;
+  border-radius: 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.score {
+  padding: 8px;
+  min-width: 18px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.rating {
+  margin: auto;
+}
+
+.exzellent {
+  background: $ige-check-color;
+  color: #fff;
+  .score {
+    background: #fff;
+    color: $ige-check-color;
+  }
+}
+
+.gut {
+  background: greenyellow;
+  color: $ige-secondary;
+  .score {
+    background: $ige-secondary;
+    color: greenyellow;
+  }
+}
+
+.ausreichend {
+  background: orange;
+  color: $ige-secondary;
+  .score {
+    background: $ige-secondary;
+    color: orange;
+  }
+}
+
+.mangelhaft {
+  background: $error-color;
+  color: #fff;
+  .score {
+    background: #fff;
+    color: $error-color;
+  }
+}
