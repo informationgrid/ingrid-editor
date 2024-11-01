@@ -50,6 +50,7 @@ import { UploadService } from "../../../app/shared/upload/upload.service";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
+  showAssessment?: boolean;
   inspireRelevant?: boolean;
   thesaurusTopics?: boolean;
 }
@@ -131,6 +132,11 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addGroupSimple(
       null,
       [
+        options.showAssessment
+          ? this.addAssessmentLabel("assessment", "Bewertung", {
+            className: "optional",
+          })
+          : null,
         options.inspireRelevant || this.showAdVCompatible
           ? this.addGroup(
               null,

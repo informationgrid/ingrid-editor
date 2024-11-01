@@ -709,6 +709,20 @@ export class FormFieldHelper {
     };
   }
 
+  addAssessmentLabel(id, label, options?) {
+    const expressions = this.initExpressions(options?.expressions);
+    return {
+      key: id,
+      type: "assessmentLabel",
+      wrappers: options?.wrappers ?? ["panel"],
+      expressions: expressions,
+      props: {
+        required: false,
+        externalLabel: label,
+      },
+    };
+  }
+
   addSpatial(id, label, options?) {
     const expressions = this.initExpressions(options?.expressions);
     return {

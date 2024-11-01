@@ -125,6 +125,7 @@ import { ReferencedDocumentsTypeComponent } from "./app/formly/types/referenced-
 import { DocumentReferenceTypeComponent } from "./app/formly/types/document-reference-type/document-reference-type.component";
 import { UpdateGetCapabilitiesComponent } from "./app/formly/types/update-get-capabilities/update-get-capabilities.component";
 import { PreviewImageComponent } from "./app/formly/types/preview-image/preview-image.component";
+import { AssessmentComponent } from "./app/formly/types/assessment/assessment.component";
 import { PrintTypeComponent } from "./app/formly/types/print/print-type.component";
 import {
   ElasticsearchAliasValidator,
@@ -250,6 +251,10 @@ bootstrapApplication(AppComponent, {
           {
             name: "previewImage",
             component: PreviewImageComponent,
+          },
+          {
+            name: "assessmentLabel",
+            component: AssessmentComponent,
           },
           /* FOR PREVIEW */
           {
