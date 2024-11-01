@@ -580,7 +580,8 @@ export abstract class IngridShared extends BaseDoctype {
                 invekos: {
                   expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
                     const invekosValue =
-                      field.options.formState.mainModel?.invekos?.key;
+                      field.options.formState.mainModel?.properties?.invekos
+                        ?.key;
                     if (!invekosValue || invekosValue === "none") return true;
 
                     const hasKeyword = (keyword: string) =>
@@ -640,7 +641,8 @@ export abstract class IngridShared extends BaseDoctype {
                       field: FormlyFieldConfig,
                     ) => {
                       const invekosValue =
-                        field.options.formState.mainModel?.invekos?.key;
+                        field.options.formState.mainModel?.properties?.invekos
+                          ?.key;
                       if (invekosValue !== "gsaa") return true;
 
                       return ctrl.value?.some((item) => item.key === "304");
@@ -653,7 +655,8 @@ export abstract class IngridShared extends BaseDoctype {
                       field: FormlyFieldConfig,
                     ) => {
                       const invekosValue =
-                        field.options.formState.mainModel?.invekos?.key;
+                        field.options.formState.mainModel?.properties?.invekos
+                          ?.key;
                       if (invekosValue !== "lpis") return true;
 
                       return ctrl.value?.some((item) => item.key === "202");
@@ -765,7 +768,8 @@ export abstract class IngridShared extends BaseDoctype {
                       field: FormlyFieldConfig,
                     ) => {
                       const invekosValue =
-                        field.options.formState.mainModel?.invekos?.key;
+                        field.options.formState.mainModel?.properties?.invekos
+                          ?.key;
                       if (invekosValue !== "gsaa" && invekosValue !== "lpis")
                         return true;
 
@@ -798,7 +802,8 @@ export abstract class IngridShared extends BaseDoctype {
                 invekos: {
                   expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
                     const invekosValue =
-                      field.options.formState.mainModel?.invekos?.key;
+                      field.options.formState.mainModel?.properties?.invekos
+                        ?.key;
                     if (invekosValue !== "gsaa" && invekosValue !== "lpis")
                       return true;
 
@@ -1072,7 +1077,7 @@ export abstract class IngridShared extends BaseDoctype {
               invekos: {
                 expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
                   const invekosValue =
-                    field.options.formState.mainModel?.invekos?.key;
+                    field.options.formState.mainModel?.properties?.invekos?.key;
                   if (invekosValue !== "gsaa" && invekosValue !== "lpis")
                     return true;
 
@@ -1949,15 +1954,16 @@ export abstract class IngridShared extends BaseDoctype {
     const isConform = inspireIdentified === "conform";
 
     const executeAction = () => {
-      if (previousValue?.isInspireIdentified === undefined)
+      if (previousValue?.isInspireIdentified === undefined) {
         this.handleActivateInspireIdentified(field);
-      else if (inspireIdentified === undefined)
-        this.handleDeactivateInspireIdentified(field);
 
-      if (isConform) {
-        this.addConformanceEntry(field, "12", "1");
-      } else {
-        this.addConformanceEntry(field, "12", "2");
+        if (isConform) {
+          this.addConformanceEntry(field, "12", "1");
+        } else {
+          this.addConformanceEntry(field, "12", "2");
+        }
+      } else if (inspireIdentified === undefined) {
+        this.handleDeactivateInspireIdentified(field);
       }
     };
 
