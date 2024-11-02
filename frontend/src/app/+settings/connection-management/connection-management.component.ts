@@ -29,8 +29,8 @@ import { FormGroup } from "@angular/forms";
 import { ConnectionForm } from "./formly-fields";
 import {
   ConfigService,
-  ConnectionInfo,
   Connections,
+  GeneralConnectionInfo,
 } from "../../services/config/config.service";
 import { tap } from "rxjs/operators";
 
@@ -93,7 +93,7 @@ export class ConnectionManagementComponent implements OnInit {
     });
   }
 
-  private checkConnectionState(configs: ConnectionInfo[]) {
+  private checkConnectionState(configs: GeneralConnectionInfo[]) {
     this.connectionSubscriptions?.forEach((item) => item.unsubscribe());
 
     const connectionStates: ConnectionStateInfo[] = configs.map((config) => {
