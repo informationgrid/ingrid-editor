@@ -1877,10 +1877,8 @@ export abstract class IngridShared extends BaseDoctype {
     const isOpenData = field.formControl.value.isOpenData === true;
 
     if (this.defaultKeySpatialScope) {
-      setTimeout(() => {
-        field.form.get("spatialScope").setValue({
-          key: this.defaultKeySpatialScope,
-        });
+      field.form.get("spatialScope")?.setValue({
+        key: this.defaultKeySpatialScope,
       });
     }
 
