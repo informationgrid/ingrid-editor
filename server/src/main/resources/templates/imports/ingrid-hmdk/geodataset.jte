@@ -3,6 +3,7 @@
 
 @template.imports.ingrid.geodataset(model = model, contentInfo = @`
     ,
-    "publicationHmbTG": ${model.getPublicationHmbTG()},
     "informationHmbTG": @template.imports.ingrid.partial.key-values(list = model.getInformationHmbTG())
+`, additionalProperties = @`
+    , "publicationHmbTG": ${model.getPublicationHmbTG()}
 `)

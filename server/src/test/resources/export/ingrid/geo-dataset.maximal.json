@@ -2,6 +2,11 @@
   "_uuid": "5369ad60-938f-4325-b041-25dacfc14709",
   "title": "geodataset-test",
   "_type": "InGridGeoDataset",
+  "properties": {
+    "isOpenData": false,
+    "isAdVCompatible": true,
+    "subType": { "key": "5" }
+  },
   "themes": [{ "key": "317" }],
   "dataset": { "languages": ["134"] },
   "lineage": { "statement": "basis" },
@@ -31,7 +36,6 @@
       "unitOfMeasure": { "key": "4" }
     }
   },
-  "subType": { "key": "5" },
   "keywords": {
     "free": [{ "label": "optional" }]
   },
@@ -68,7 +72,6 @@
     }
   ],
   "identifier": "identifier of data source",
-  "isOpenData": false,
   "references": [
     {
       "url": "data-download.com",
@@ -101,7 +104,6 @@
       }
     }
   },
-  "isAdVCompatible": true,
   "topicCategories": [{ "key": "2" }],
   "advProductGroups": [{ "key": "13" }],
   "graphicOverviews": [
@@ -125,7 +127,6 @@
       "publicationDate": "2009-12-15"
     }
   ],
-  "isInspireIdentified": false,
   "digitalTransferOptions": [
     {
       "name": { "key": "900006" },

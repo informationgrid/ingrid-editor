@@ -2,10 +2,6 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/dataCollection",
   "type": "object",
-  "allOf": [
-    {
-      "$ref": "data-collection-base.schema.json"
-    }
-  ],
+  "$ref": "data-collection-base.schema.json",
   "unevaluatedProperties": false
 }

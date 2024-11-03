@@ -57,14 +57,20 @@
   },
   "type": "object",
   "properties": {
-    "isAdVCompatible": {
-      "type": ["null", "boolean"]
-    },
-    "isOpenData": {
-      "type": ["null", "boolean"]
-    },
-    "isInspireIdentified": {
-      "type": ["null", "boolean"]
+    "properties": {
+      "type": "object",
+      "unevaluatedProperties": false,
+      "properties": {
+        "isAdVCompatible": {
+          "type": ["null", "boolean"]
+        },
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        },
+        "isInspireIdentified": {
+          "type": ["null", "string"]
+        }
+      }
     },
     "_uuid": {
       "type": "string"

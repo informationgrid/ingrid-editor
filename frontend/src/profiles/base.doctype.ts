@@ -163,7 +163,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         if (field.wrappers && field.wrappers.indexOf("inline-help") !== -1) {
           field.props.hasInlineContextHelp = true;
         }
-        if (!field.props.hasInlineContextHelp) {
+        if (field.props && !field.props.hasInlineContextHelp) {
           field.props.hasContextHelp = true;
         }
       } else if (

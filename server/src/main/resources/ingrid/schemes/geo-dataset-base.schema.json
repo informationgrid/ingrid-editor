@@ -141,27 +141,41 @@
   },
   "type": "object",
   "properties": {
-    "isAdVCompatible": {
-      "type": ["null", "boolean"]
-    },
-    "isOpenData": {
-      "type": ["null", "boolean"]
-    },
-    "isInspireIdentified": {
-      "type": ["null", "boolean"]
-    },
-    "isInspireConform": {
-      "type": ["null", "boolean"]
-    },
-    "subType": {
-      "anyOf": [
-        {
-          "$ref": "../../general.schema.json#/definitions/KeyValue"
+    "properties": {
+      "type": "object",
+      "unevaluatedProperties": false,
+      "properties": {
+        "isAdVCompatible": {
+          "type": ["null", "boolean"]
         },
-        {
-          "type": "null"
+        "isHvd": {
+          "type": ["null", "boolean"]
+        },
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        },
+        "isInspireIdentified": {
+          "type": ["null", "string"]
+        },
+        "subType": {
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "invekos": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            }
+          }
         }
-      ]
+      }
     },
     "identifier": {
       "type": "string"
@@ -375,14 +389,6 @@
       "type": "array",
       "items": {
         "$ref": "../../general.schema.json#/definitions/KeyValue"
-      }
-    },
-    "invekos": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "$ref": "../../general.schema.json#/definitions/KeyValue"
-        }
       }
     },
     "invekosKeywords": {
