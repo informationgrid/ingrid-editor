@@ -474,12 +474,16 @@ export abstract class IngridShared extends BaseDoctype {
                 className: "field.props.required ? '' : 'optional'",
                 hide: "!formState.mainModel?.isInspireIdentified",
               },
-              change: (field, $event) =>
+              change: (field: FormlyFieldConfig, $event) =>
                 options.thesaurusTopics &&
-                this.keywordAnalysis.updateIsoCategory($event, field),
-              remove: (field, $event) =>
+                this.keywordAnalysis.updateIsoCategory($event, field.form),
+              remove: (field: FormlyFieldConfig, $event) =>
                 options.thesaurusTopics &&
-                this.keywordAnalysis.updateIsoCategory($event, field, true),
+                this.keywordAnalysis.updateIsoCategory(
+                  $event,
+                  field.form,
+                  true,
+                ),
               validators: {
                 ...(this.showInVeKoSField && {
                   invekos_gsaa: {
@@ -736,7 +740,11 @@ export abstract class IngridShared extends BaseDoctype {
     );
 
     if (response.length > 0) {
-      this.keywordAnalysis.updateForm(response, field, this.thesaurusTopics);
+      this.keywordAnalysis.updateForm(
+        response,
+        field.form,
+        this.thesaurusTopics,
+      );
       this.informUserAboutThesaurusAnalysis(response);
     }
 
@@ -1903,7 +1911,7 @@ export abstract class IngridShared extends BaseDoctype {
       const itemTheme = { key: id };
       themesCtrl.setValue([...themesCtrl.value, itemTheme]);
       if (hasThesaurusTopics) {
-        this.keywordAnalysis.updateIsoCategory(itemTheme, fieldConfig);
+        this.keywordAnalysis.updateIsoCategory(itemTheme, fieldConfig.form);
       }
     }
   }

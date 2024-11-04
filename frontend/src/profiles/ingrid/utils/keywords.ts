@@ -24,9 +24,9 @@ import { ConfigService } from "../../../app/services/config/config.service";
 import { inject, Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IgeError } from "../../../app/models/ige-error";
-import { FormlyFieldConfig } from "@ngx-formly/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { catchError } from "rxjs/operators";
+import { FormArray, FormGroup } from "@angular/forms";
 
 export interface KeywordSectionOptions {
   priorityDataset?: boolean;
@@ -87,14 +87,14 @@ export class KeywordAnalysis {
 
   updateForm(
     data: ThesaurusResult[],
-    field: FormlyFieldConfig,
+    form: FormGroup | FormArray,
     thesaurusTopics: boolean,
   ) {
     data.forEach((item) => {
-      if (!this.keywordExists(item, field)) {
-        this.addKeyword(item, field);
+      if (!this.keywordExists(item, form)) {
+        this.addKeyword(item, form);
         if (item.thesaurus === "INSPIRE-Themen" && thesaurusTopics) {
-          this.updateIsoCategory(item.value, field);
+          this.updateIsoCategory(item.value, form);
         }
       }
     });
@@ -102,14 +102,15 @@ export class KeywordAnalysis {
 
   updateIsoCategory(
     item: any,
-    fieldConfig: FormlyFieldConfig,
+    form: FormGroup | FormArray,
+    // fieldConfig: FormlyFieldConfig,
     doRemove: boolean = false,
   ) {
     const isoKey = KeywordAnalysis.inspireToIsoMapping[item.key];
     if (!isoKey) return;
 
     // check if exists and add if not
-    const topicsCtrl = fieldConfig.form.get("topicCategories");
+    const topicsCtrl = form.get("topicCategories");
     const alreadyExists = topicsCtrl.value.some(
       (topic: any) => topic.key === isoKey,
     );
@@ -133,11 +134,8 @@ export class KeywordAnalysis {
     }
   }
 
-  keywordExists(
-    item: ThesaurusResult,
-    fieldConfig: FormlyFieldConfig,
-  ): boolean {
-    const thesaurusCtrl = fieldConfig.form.get(this.mapThesaurusToModel(item));
+  keywordExists(item: ThesaurusResult, form: FormGroup | FormArray): boolean {
+    const thesaurusCtrl = form.get(this.mapThesaurusToModel(item));
     return thesaurusCtrl.value?.some((keyword: any) => {
       if (item.thesaurus === "INSPIRE-Themen") {
         return keyword.key === item.value.key;
@@ -147,8 +145,8 @@ export class KeywordAnalysis {
     });
   }
 
-  addKeyword(item: ThesaurusResult, fieldConfig: FormlyFieldConfig) {
-    const thesaurusCtrl = fieldConfig.form.get(this.mapThesaurusToModel(item));
+  addKeyword(item: ThesaurusResult, form: FormGroup | FormArray) {
+    const thesaurusCtrl = form.get(this.mapThesaurusToModel(item));
     thesaurusCtrl.setValue([...thesaurusCtrl.value, item.value]);
   }
 

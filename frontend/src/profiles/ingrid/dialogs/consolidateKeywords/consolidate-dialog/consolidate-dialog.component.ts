@@ -9,12 +9,10 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
-import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatChip, MatChipListbox } from "@angular/material/chips";
 import { NgClass, NgForOf, NgIf } from "@angular/common";
 import { UserTableComponent } from "../../../../../app/+user/user/user-table/user-table.component";
 import { DialogTemplateComponent } from "../../../../../app/shared/dialog-template/dialog-template.component";
-import { DocumentService } from "../../../../../app/services/document/document.service";
 import { CodelistQuery } from "../../../../../app/store/codelist/codelist.query";
 import { FormStateService } from "../../../../../app/+form/form-state.service";
 import { ConfigService } from "../../../../../app/services/config/config.service";
@@ -22,6 +20,7 @@ import { KeywordAnalysis } from "../../../utils/keywords";
 import { ThesaurusResult } from "../../../components/thesaurus-result";
 import { removeDuplicatesByValue } from "../../../../../app/shared/utils";
 import { IgeDocument, Metadata } from "../../../../../app/models/ige-document";
+import { UntypedFormGroup } from "@angular/forms";
 
 export interface ConsolidateDialogData {
   id: number;
@@ -57,9 +56,7 @@ class Keywords {
 export class ConsolidateDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ConsolidateDialogData,
-    private documentService: DocumentService,
     private dialogRef: MatDialogRef<ConsolidateDialogComponent>,
-    private snackBar: MatSnackBar,
     private codelistQuery: CodelistQuery,
     private formStateService: FormStateService,
     public configService: ConfigService,
@@ -67,6 +64,7 @@ export class ConsolidateDialogComponent implements OnInit {
   ) {}
 
   doc: IgeDocument;
+  form: UntypedFormGroup;
   metadata: Metadata;
   keywords: Keywords;
   isInspireIdentified: boolean;
@@ -80,11 +78,11 @@ export class ConsolidateDialogComponent implements OnInit {
 
   hasKeywords: boolean;
 
-  inspireTopics: any[];
-  isoCategories: any[];
-  gemetKeywords: any[];
-  umthesKeywords: any[];
-  freeKeywords: any[];
+  inspireTopics: any[] = [];
+  isoCategories: any[] = [];
+  gemetKeywords: any[] = [];
+  umthesKeywords: any[] = [];
+  freeKeywords: any[] = [];
 
   timedOutKeywords: string[] = [];
   timedOutThesauri: string[] = [];
@@ -94,6 +92,28 @@ export class ConsolidateDialogComponent implements OnInit {
   gemetKeywordsNew: ThesaurusResult[] = [];
   umthesKeywordsNew: ThesaurusResult[] = [];
   freeKeywordsNew: ThesaurusResult[] = [];
+
+  keywordHierarchy = [
+    this.inspireTopicsNew,
+    this.gemetKeywordsNew,
+    this.umthesKeywordsNew,
+    this.freeKeywordsNew,
+  ];
+
+  keywordMapping = {
+    original: {
+      [this.keywordCategories.gemet]: this.gemetKeywords,
+      [this.keywordCategories.umthes]: this.umthesKeywords,
+      [this.keywordCategories.free]: this.freeKeywords,
+      [this.keywordCategories.themes]: this.inspireTopics,
+    },
+    new: {
+      [this.keywordCategories.gemet]: this.gemetKeywordsNew,
+      [this.keywordCategories.umthes]: this.umthesKeywordsNew,
+      [this.keywordCategories.free]: this.freeKeywordsNew,
+      [this.keywordCategories.themes]: this.inspireTopicsNew,
+    },
+  };
 
   keywordDialogData = [];
   isLoading: boolean;
@@ -114,14 +134,14 @@ export class ConsolidateDialogComponent implements OnInit {
     this.isLoading = true;
     this.resetNewKeywords();
 
-    const form = this.formStateService.getForm();
-    this.keywords = form.get("keywords").value;
+    this.form = this.formStateService.getForm();
+    this.keywords = this.form.get("keywords").value;
 
-    this.isInspireIdentified = form.get("isInspireIdentified")?.value;
+    this.isInspireIdentified = this.form.get("isInspireIdentified")?.value;
     this.inspireTopics = this.isInspireIdentified
-      ? form.get("themes")?.value || []
+      ? this.form.get("themes")?.value || []
       : []; // INSPIRE-Themen
-    this.isoCategories = form.get("topicCategories")?.value || []; // ISO-Themenkategorie
+    this.isoCategories = this.form.get("topicCategories")?.value || []; // ISO-Themenkategorie
 
     this.hasKeywords =
       Object.values(this.keywords).some((keywords) => keywords.length > 0) ||
@@ -132,7 +152,7 @@ export class ConsolidateDialogComponent implements OnInit {
       return false;
     }
 
-    this.keywords = form.get("keywords")?.value;
+    this.keywords = this.form.get("keywords")?.value;
 
     this.gemetKeywords = this.keywords?.gemet || [];
     this.umthesKeywords = this.keywords?.umthes || [];
@@ -150,7 +170,7 @@ export class ConsolidateDialogComponent implements OnInit {
     this.timedOutThesauri = [];
 
     try {
-      const analyzedKeywords = await this.keywordAnalysis.analyzeKeywords(
+      let analyzedKeywords = await this.keywordAnalysis.analyzeKeywords(
         [
           ...this.gemetKeywords,
           ...this.umthesKeywords,
@@ -159,6 +179,7 @@ export class ConsolidateDialogComponent implements OnInit {
         ].map((keyword) => keyword.label),
         this.isInspireIdentified,
       );
+      analyzedKeywords = removeDuplicatesByValue(analyzedKeywords, "label");
 
       this.categorizeKeywords(analyzedKeywords);
       this.addAllKeywordStatuses();
@@ -166,12 +187,13 @@ export class ConsolidateDialogComponent implements OnInit {
       this.sortKeywordsByStatus();
       this.removeAllDuplicateKeywords();
       this.setKeywordDialogData();
+      console.log(this.umthesKeywordsNew);
     } finally {
       this.isLoading = false;
     }
   }
 
-  private categorizeKeywords(analyzedKeywords) {
+  private categorizeKeywords(analyzedKeywords: any[]) {
     this.gemetKeywordsNew = analyzedKeywords.filter(
       (keyword) => keyword.thesaurus === this.keywordCategories.gemet,
     );
@@ -187,7 +209,7 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   private addAllKeywordStatuses() {
-    const addStatuses = (newKeywords, oldKeywords) => {
+    const addStatuses = (newKeywords: any[], oldKeywords: any[]) => {
       // newKeywords not in oldKeywords as "added"
       newKeywords.forEach((keyword) => {
         if (!oldKeywords.some((k) => k.label === keyword.label)) {
@@ -206,7 +228,6 @@ export class ConsolidateDialogComponent implements OnInit {
     addStatuses(this.gemetKeywordsNew, this.gemetKeywords);
     addStatuses(this.umthesKeywordsNew, this.umthesKeywords);
     addStatuses(this.freeKeywordsNew, this.freeKeywords);
-
     addStatuses(this.inspireTopicsNew, this.getInspireLabels());
   }
 
@@ -222,53 +243,47 @@ export class ConsolidateDialogComponent implements OnInit {
   private keepKeywordsFoundWithDifferentLabel() {
     this.freeKeywords.map((keyword) => {
       if (
-        !this.umthesKeywordsNew.some(
-          (k) => k.label.toLowerCase() === keyword.label.toLowerCase(),
-        )
+        ![
+          ...this.umthesKeywordsNew,
+          ...this.gemetKeywordsNew,
+          ...this.inspireTopicsNew,
+        ].some((k) => k.label.toLowerCase() === keyword.label.toLowerCase())
       ) {
-        this.freeKeywordsNew.push({ ...keyword });
-      }
-    });
-    this.freeKeywords.map((keyword) => {
-      if (
-        !this.gemetKeywordsNew.some(
-          (k) => k.label.toLowerCase() === keyword.label.toLowerCase(),
-        )
-      ) {
-        this.freeKeywordsNew.push({ ...keyword });
+        this.freeKeywordsNew.push({ ...keyword, status: "unchanged" });
       }
     });
     this.umthesKeywords.map((keyword) => {
       if (
         !this.gemetKeywordsNew.some(
-          (k) => k.label.toLowerCase() === keyword.label.toLowerCase(),
+          (k) =>
+            k.label.toLowerCase() === keyword.label.toLowerCase() &&
+            !this.umthesKeywordsNew.some(
+              (k) => k.label.toLowerCase() === keyword.label.toLowerCase(),
+            ),
         )
       ) {
-        this.umthesKeywordsNew.push({ ...keyword });
+        this.umthesKeywordsNew.push({
+          found: true,
+          label: keyword.label,
+          thesaurus: keyword.thesaurus,
+          value: keyword,
+          status: "unchanged",
+        });
       }
     });
   }
 
-  mapAndSaveConsolidatedKeywords() {
+  mapAndAcceptConsolidatedKeywords() {
     this.mapAllKeywords();
-    this.documentService
-      .save({
-        id: this.metadata.wrapperId,
-        version: this.metadata.version,
-        data: this.doc,
-        isNewDoc: false,
-        isAddress: false,
-      })
-      .subscribe(() => {
-        this.snackBar.open("Schlagworte konsolidiert", "", {
-          panelClass: "green",
-        });
-        this.dialogRef.close("confirm");
-      });
+    this.form.get("keywords").setValue(this.doc.keywords);
+    this.form.get("themes").setValue(this.doc.themes);
+    this.dialogRef.close("confirm");
   }
 
   // Map ThesaurusResult keywords to format expected by the backend
   private mapAllKeywords() {
+    console.log(this.gemetKeywordsNew);
+    console.log(this.umthesKeywordsNew);
     this.doc.keywords.gemet = this.mapKeywords(
       this.gemetKeywordsNew.filter((k) => k.status !== "removed"),
     );
@@ -280,9 +295,6 @@ export class ConsolidateDialogComponent implements OnInit {
       .map((k) => ({ label: k.label }));
 
     this.doc.themes = this.inspireTopicsNew.map((k) => ({
-      key: k.value.key,
-    }));
-    this.doc.topicCategories = this.isoCategoriesNew.map((k) => ({
       key: k.value.key,
     }));
   }
@@ -297,7 +309,7 @@ export class ConsolidateDialogComponent implements OnInit {
 
   private sortByStatus(keywords: ThesaurusResult[]) {
     return keywords.sort((a, b) => {
-      const order = { unchanged: 0, undefined: 0, "": 0, added: 1, removed: 2 };
+      const order = { unchanged: 0, "": 0, added: 1, removed: 2, undefined: 3 };
       return order[a.status] - order[b.status];
     });
   }
