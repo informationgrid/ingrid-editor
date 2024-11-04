@@ -12,7 +12,7 @@ import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/fo
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
 import { MatIcon } from "@angular/material/icon";
-import { MatIconButton } from "@angular/material/button";
+import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import {
@@ -21,6 +21,8 @@ import {
   SelectServiceResponse,
 } from "./selector-service-dialog/selector-service-dialog.component";
 import { FieldType } from "@ngx-formly/material";
+import { ConfigService } from "../../../services/config/config.service";
+import { DocumentReference } from "../document-reference-type/document-reference-type.component";
 
 interface Reference {
   layerNames: string[];
@@ -57,6 +59,7 @@ interface UrlReference extends Reference {
     MatMenuTrigger,
     MatProgressSpinner,
     MatMenuItem,
+    MatButton,
   ],
 })
 export class DocumentReferenceSelectorComponent
@@ -65,6 +68,7 @@ export class DocumentReferenceSelectorComponent
 {
   myModel: (SelectedDocumentReference | UrlReference)[];
   allowMultiSelect = false;
+  allowRedirectToDocument = false;
   titleOfDocumentSelectorDialog: "Dokument auswählen";
   refreshing = true;
 
@@ -90,6 +94,7 @@ export class DocumentReferenceSelectorComponent
 
   private async buildModel() {
     this.allowMultiSelect = this.props.allowMultiSelect;
+    this.allowRedirectToDocument = this.props.allowRedirectToDocument;
     this.refreshing = true;
     this.titleOfDocumentSelectorDialog =
       this.props.titleOfDocumentSelectorDialog;
@@ -129,7 +134,7 @@ export class DocumentReferenceSelectorComponent
     const data: SelectDatasetData = {
       currentRefs: this.getRefUuids().filter((item, idx) => idx !== index),
       activeRef: index >= 0 ? this.getRefUuids()[index] : null,
-      // layerNames: index >= 0 ? this.formControl.value[index].layerNames : [],
+      layerNames: index >= 0 ? this.formControl.value[index].layerNames : [],
       showLayernames: this.props.showLayernames,
       allowMultiSelect: this.props.allowMultiSelect,
       docTypeFilter: this.props.docTypeFilter,
@@ -246,5 +251,18 @@ export class DocumentReferenceSelectorComponent
     event.stopImmediatePropagation();
     this.myModel.splice(index, 1);
     this.props.change?.(this.field, event);
+  }
+
+  async openReference(item: DocumentReference | UrlReference) {
+    if (this.formControl.disabled) return;
+
+    if (item.isExternalRef) {
+      window.open((<UrlReference>item).url, "_blank");
+    } else {
+      return this.router.navigate([
+        `${ConfigService.catalogId}/form`,
+        { id: (<DocumentReference>item).uuid },
+      ]);
+    }
   }
 }

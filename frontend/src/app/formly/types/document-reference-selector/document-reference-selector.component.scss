@@ -1,0 +1,46 @@
+@import "src/variables";
+
+.ref-selector-container {
+  min-height: 50px;
+  margin-bottom: 12px;
+}
+
+.item {
+  padding: 5px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  ul {
+    margin: 5px;
+    color: $ige-comment-color;
+  }
+
+  .title {
+    display: flex;
+    align-items: center;
+
+    ige-document-icon {
+      margin-right: 6px;
+    }
+
+    mat-icon {
+      margin-right: 6px;
+      min-width: 24px;
+    }
+  }
+
+  .remove-icon {
+    opacity: 0.4;
+
+    &:hover,
+    &:focus {
+      opacity: 1;
+    }
+  }
+}
+
+ige-add-button {
+  display: block;
+  margin: 3px 0 22px;
+}

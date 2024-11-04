@@ -4,73 +4,79 @@
     </ige-form-error>
 }
 
-@for (item of myModel; track item; let i = $index) {
-    <div
-        class="item"
-        tabindex="0"
-        role="listitem"
-        [attr.aria-label]="item.title"
-    >
-        <div>
-            <!--            class="clickable"-->
-            <!--            (click)="openReference(item)"-->
-            <!--            (keyup.enter)="openReference(item)"-->
-            <!--        >-->
-            <div class="title">
-                @if (item.isExternalRef) {
-                    <mat-icon svgIcon="download-link"></mat-icon>
-                } @else {
-                    <ige-document-icon [doc]="item"></ige-document-icon>
-                }
-                <span>{{ item.title ?? "???" }}</span>
-            </div>
-            @if (props.showLayernames) {
-                <ul>
-                    @for (name of item.layerNames; track name) {
-                        <li>{{ name }}</li>
+<div class="ref-selector-container">
+    @for (item of myModel; track item; let i = $index) {
+        <div
+            class="item"
+            tabindex="0"
+            role="listitem"
+            [attr.aria-label]="item.title"
+        >
+            <div
+                [class]="allowRedirectToDocument ? 'clickable' : ''"
+                (click)="allowRedirectToDocument ? openReference(item) : null"
+                (keyup.enter)="
+                    allowRedirectToDocument ? openReference(item) : null
+                "
+            >
+                <div class="title">
+                    @if (item.isExternalRef) {
+                        <mat-icon svgIcon="download-link"></mat-icon>
+                    } @else {
+                        <ige-document-icon [doc]="item"></ige-document-icon>
                     }
-                </ul>
+                    <span>{{ item.title ?? "???" }}</span>
+                </div>
+                @if (props.showLayernames) {
+                    <ul>
+                        @for (name of item.layerNames; track name) {
+                            <li>{{ name }}</li>
+                        }
+                    </ul>
+                }
+            </div>
+            @if (formControl.enabled) {
+                <button
+                    mat-icon-button
+                    type="button"
+                    class="remove-icon"
+                    [matMenuTriggerFor]="moreActionsMenu"
+                >
+                    <mat-icon svgIcon="Mehr"></mat-icon>
+                </button>
+                <mat-menu #moreActionsMenu="matMenu">
+                    <button
+                        data-cy="action-edit"
+                        mat-menu-item
+                        (click)="editItem(i, item.isExternalRef)"
+                        [attr.aria-description]="item.title + ' bearbeiten'"
+                    >
+                        Bearbeiten
+                    </button>
+                    <button
+                        [attr.data-cy]="'action-delete'"
+                        mat-menu-item
+                        (click)="removeItem(i, $event)"
+                        [attr.aria-description]="item.title + ' entfernen'"
+                    >
+                        Entfernen
+                    </button>
+                </mat-menu>
             }
         </div>
-        @if (formControl.enabled) {
-            <button
-                mat-icon-button
-                type="button"
-                class="remove-icon"
-                [matMenuTriggerFor]="moreActionsMenu"
-            >
-                <mat-icon svgIcon="Mehr"></mat-icon>
-            </button>
-            <mat-menu #moreActionsMenu="matMenu">
-                <button
-                    data-cy="action-edit"
-                    mat-menu-item
-                    (click)="editItem(i, item.isExternalRef)"
-                    [attr.aria-description]="item.title + ' bearbeiten'"
-                >
-                    Bearbeiten
-                </button>
-                <button
-                    [attr.data-cy]="'action-delete'"
-                    mat-menu-item
-                    (click)="removeItem(i, $event)"
-                    [attr.aria-description]="item.title + ' entfernen'"
-                >
-                    Entfernen
-                </button>
-            </mat-menu>
-        }
-    </div>
-}
+    }
 
-<!--{{ formControl.value | json }}-->
+    @if (refreshing) {
+        <mat-spinner diameter="30"></mat-spinner>
+    }
 
-@if (refreshing) {
-    <mat-spinner diameter="30"></mat-spinner>
-}
-
-<!--@if (!allowMultiSelect && myModel?.length == 0) {-->
-<button mat-menu-item (click)="showInternalRefDialog()">
-    {{ titleOfDocumentSelectorDialog }}
-</button>
-<!--}-->
+    @if (!allowMultiSelect && !myModel?.[0]) {
+        <button mat-button color="primary" (click)="showInternalRefDialog()">
+            {{ titleOfDocumentSelectorDialog }}
+        </button>
+    } @else {
+        <button mat-button color="primary" (click)="showInternalRefDialog()">
+            {{ titleOfDocumentSelectorDialog }}
+        </button>
+    }
+</div>

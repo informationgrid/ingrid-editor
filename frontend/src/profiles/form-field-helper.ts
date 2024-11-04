@@ -312,31 +312,13 @@ export class FormFieldHelper {
     };
   }
 
-  addDocumentCard(id: string, label: string) {
+  addDocumentCard(key: string, options?) {
     return <FormlyFieldConfig>{
-      key: id,
+      key: key,
       type: "documentReferenceSelector",
       className: "flex-1",
-      props: {
-        label: "Datensatzverweise",
-        showLayernames: false,
-        allowRedirectToDocument: false,
-        allowMultiSelect: false,
-        titleOfDocumentSelectorDialog: "Internen Verweis auswählen",
-        docTypeFilter: [
-          "InGridGeoDataset",
-          "InGridGeoService",
-          // "InGridDataCollection",
-        ],
-      },
-      expressions: {
-        // "props.removeButton": (field: FormlyFieldConfig): boolean => {
-        //   return field.formControl?.value[0];
-        // },
-        "props.required":
-          "formState.mainModel?.service?.couplingType?.key === 'tight'",
-        className: "field.props.required ? '' : 'optional'",
-      },
+      props: { ...options },
+      expressions: options.expressions,
     };
   }
 
