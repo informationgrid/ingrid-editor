@@ -187,7 +187,6 @@ export class ConsolidateDialogComponent implements OnInit {
       this.sortKeywordsByStatus();
       this.removeAllDuplicateKeywords();
       this.setKeywordDialogData();
-      console.log(this.umthesKeywordsNew);
     } finally {
       this.isLoading = false;
     }
@@ -357,6 +356,8 @@ export class ConsolidateDialogComponent implements OnInit {
       this.freeKeywordsNew,
       this.umthesKeywordsNew,
     );
+    // Change status of duplicate keywords to "removed" case-insensitively
+    this.markDuplicatesAsRemoved(this.freeKeywordsNew);
   }
 
   private resetNewKeywords() {
@@ -405,5 +406,21 @@ export class ConsolidateDialogComponent implements OnInit {
             keyword1.label.toLowerCase() === keyword2.label.toLowerCase(),
         ),
     );
+  }
+  // Iterates over the array and marks duplicates as removed except the first one
+  private markDuplicatesAsRemoved(arr: any[]) {
+    const seenLabels = new Set<string>();
+
+    arr.forEach((item) => {
+      const labelLowerCase = item.label.toLowerCase();
+
+      if (seenLabels.has(labelLowerCase)) {
+        item.status = "removed";
+      } else {
+        seenLabels.add(labelLowerCase);
+      }
+    });
+
+    return arr;
   }
 }
