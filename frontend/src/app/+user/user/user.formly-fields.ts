@@ -21,6 +21,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { of } from "rxjs";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import { Group } from "../../models/user-group";
+// @ts-ignore
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
 
 export const getUserFormFields = (
