@@ -139,6 +139,7 @@ import {
 } from "./app/formly/input.validators";
 import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
 import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
+import { RadioOptionsComponent } from "./app/formly/types/radio-options/radio-options.component";
 
 if (environment.production) {
   enableProdMode();
@@ -247,6 +248,10 @@ bootstrapApplication(AppComponent, {
           {
             name: "documentReferenceSelector",
             component: DocumentReferenceSelectorComponent,
+          },
+          {
+            name: "radioOptions",
+            component: RadioOptionsComponent,
           },
           {
             name: "updateGetCapabilities",

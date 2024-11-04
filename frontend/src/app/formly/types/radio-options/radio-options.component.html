@@ -1,0 +1,10 @@
+<mat-radio-group [(ngModel)]="selectedValue" aria-label="Option auswählen">
+    <mat-radio-button
+        *ngFor="let option of radioOptions; let i = index"
+        (click)="selectOption(option)"
+        color="primary"
+        value="{{ option.key }}"
+    >
+        {{ option.title }}
+    </mat-radio-button>
+</mat-radio-group>
