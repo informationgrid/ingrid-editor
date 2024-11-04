@@ -70,11 +70,7 @@
         <mat-spinner diameter="30"></mat-spinner>
     }
 
-    @if (!allowMultiSelect && !myModel?.[0]) {
-        <button mat-button color="primary" (click)="showInternalRefDialog()">
-            {{ titleOfDocumentSelectorDialog }}
-        </button>
-    } @else {
+    @if (allowMultiSelect || (!allowMultiSelect && !myModel?.[0])) {
         <button mat-button color="primary" (click)="showInternalRefDialog()">
             {{ titleOfDocumentSelectorDialog }}
         </button>

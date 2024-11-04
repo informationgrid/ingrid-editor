@@ -125,7 +125,6 @@ export class DocumentReferenceSelectorComponent
         this.myModel.push(item);
       }
     }
-    console.log("length:", this.myModel);
     this.refreshing = false;
     this.cdr.detectChanges();
   }
@@ -147,7 +146,6 @@ export class DocumentReferenceSelectorComponent
       })
       .afterClosed()
       .subscribe((item: SelectServiceResponse) => {
-        console.log("item:", item);
         if (!item) return;
         if (this.allowMultiSelect) {
           this.updateValue(
@@ -217,7 +215,6 @@ export class DocumentReferenceSelectorComponent
     doc: IgeDocument,
     layerNames: string[],
   ): SelectedDocumentReference {
-    console.log("map", doc);
     return {
       uuid: doc?._uuid,
       isExternalRef: false,

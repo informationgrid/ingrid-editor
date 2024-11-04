@@ -80,7 +80,6 @@ export class SelectorServiceDialogComponent {
 
   submit() {
     const entity = this.tree.getEntity(this.selectedNode);
-    console.log("entity:", entity);
     let response: SelectServiceResponse = {
       title: entity.title,
       state: entity._state,
