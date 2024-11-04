@@ -1,14 +1,16 @@
 services:
 
   keycloak:
-    image: docker-registry.wemove.com/keycloak:26.0.2-1
+    image: docker-registry.wemove.com/keycloak:26.0.5-1
     restart: unless-stopped
     environment:
       - SIMPLE_SECURITY=true
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
       - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
-      - KC_HOSTNAME=http://localhost:8080
+      - KC_HOSTNAME=https://localhost:8443
       - KC_HTTP_ENABLED=true
+      - KC_HTTPS_KEY_STORE_FILE=/opt/keycloak/keystore/keycloak.jks
+      - KC_HTTPS_KEY_STORE_PASSWORD=password123
       - KC_DB=postgres
       - KC_DB_URL_HOST=db
       - KC_DB_USERNAME=admin
@@ -23,7 +25,9 @@ services:
       - IGE_SUPER_USER_LASTNAME=User
       - IGE_SUPER_USER_EMAIL=super@user.test
     ports:
-      - "8080:8080"
+      - "8443:8443"
+    volumes:
+      - ./keycloak.jks:/opt/keycloak/keystore/keycloak.jks
     networks:
       - ige-ng-network
 

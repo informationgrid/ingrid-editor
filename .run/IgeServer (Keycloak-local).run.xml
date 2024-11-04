@@ -1,0 +1,20 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="IgeServer (Keycloak-local)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="mcloud,elasticsearch,keycloak,test,ingrid,uvp,bmi" />
+    <option name="ENABLE_JMX_AGENT" value="false" />
+    <envs>
+      <env name="KEYCLOAK_URL" value="https://localhost:8443" />
+      <env name="SHOW_SWAGGER_UI" value="true" />
+      <env name="KEYCLOAK_BACKEND_USER" value="ige" />
+      <env name="KEYCLOAK_BACKEND_USER_PASSWORD" value="ige" />
+    </envs>
+    <module name="ige-ng.server.main" />
+    <option name="SHORTEN_COMMAND_LINE" value="MANIFEST" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="de.ingrid.igeserver.IgeServerKt" />
+    <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
+    <option name="VM_PARAMETERS" value="-Djavax.net.ssl.trustStore=./keycloak.jks -Djavax.net.ssl.trustStorePassword=password123" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
