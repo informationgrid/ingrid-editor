@@ -58,6 +58,7 @@
   "references": [
     {
       "url": "https://this-reference.com/here",
+      "referenceType": "url",
       "type": { "key": "9999" },
       "title": "unspecific reference",
       "explanation": "reference information"

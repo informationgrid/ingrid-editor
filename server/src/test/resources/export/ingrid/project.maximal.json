@@ -57,6 +57,7 @@
   "references": [
     {
       "url": "https://some-download.com/some",
+      "referenceType": "url",
       "type": { "key": "9990" },
       "title": "download",
       "explanation": "some more infos"
