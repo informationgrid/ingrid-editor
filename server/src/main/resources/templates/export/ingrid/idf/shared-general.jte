@@ -495,11 +495,6 @@
             <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="${language}" />
         </gmd:language>
     @endfor
-    @if(TransformationTools.hasValue(page.getSystemEnvironment()))
-        <gmd:environmentDescription>
-            <gco:CharacterString>${page.getSystemEnvironment()}</gco:CharacterString>
-        </gmd:environmentDescription>
-    @endif
     @if(TransformationTools.hasValue(page.getDatasetCharacterSet()))
         <gmd:characterSet>
             <gmd:MD_CharacterSetCode
@@ -522,6 +517,11 @@
             <gco:CharacterString>${version}</gco:CharacterString>
         </srv:serviceTypeVersion>
     @endfor
+    @if(TransformationTools.hasValue(page.getSystemEnvironment()))
+        <gmd:environmentDescription>
+            <gco:CharacterString>${page.getSystemEnvironment()}</gco:CharacterString>
+        </gmd:environmentDescription>
+    @endif
     <${page.getExtentType()}>
     <gmd:EX_Extent>
         @if(TransformationTools.hasValue(spatial.getDescription()))
