@@ -1390,7 +1390,8 @@ export abstract class IngridShared extends BaseDoctype {
                 (row) =>
                   row.type &&
                   row.title?.length > 0 &&
-                  (row.url?.length > 0 || row.uuidRef?.length > 0),
+                  ((row.url?.length > 0 && row.uuidRef == null) ||
+                    (row.url == null && row.uuidRef?.length > 0)),
               ),
             message:
               "Es müssen alle Pflichtfelder in den Verweisen ausgefüllt sein",
