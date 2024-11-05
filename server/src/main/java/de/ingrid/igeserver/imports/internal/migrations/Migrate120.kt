@@ -51,7 +51,7 @@ class Migrate120 {
             if (isAdVCompatible?.booleanValue() == true) set<JsonNode>("isAdVCompatible", isAdVCompatible)
             if (isInspireIdentified?.booleanValue() == true) {
                 if (docType == "InGridGeoDataset") {
-                    if (isInspireConform?.isNull == true || !isInspireConform.booleanValue()) {
+                    if (isInspireConform == null || isInspireConform.isNull || !isInspireConform.booleanValue()) {
                         put("isInspireIdentified", "notConform")
                     } else {
                         put("isInspireIdentified", "conform")
