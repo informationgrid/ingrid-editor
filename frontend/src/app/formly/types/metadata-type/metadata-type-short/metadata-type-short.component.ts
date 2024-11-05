@@ -8,7 +8,7 @@ import {
 import { MatButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 import { AsyncPipe, JsonPipe } from "@angular/common";
-import { map, mergeMap } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 import {
   CodelistService,
@@ -40,11 +40,11 @@ export class MetadataTypeShortComponent {
 
   private codelistService = inject(CodelistService);
 
-  filteredOptions: Signal<Observable<PropertyItem>[]> = computed(() => {
+  filteredOptions: Signal<Observable<PropertyItem[]>[]> = computed(() => {
     const data = this.value();
     return this.options()
       .flatMap((option) => option.typeOptions)
-      .flatMap((typeOption) => {
+      .map((typeOption) => {
         const codelistObs = typeOption.codelistId
           ? this.codelistService
               .observe(typeOption.codelistId)
@@ -53,7 +53,7 @@ export class MetadataTypeShortComponent {
         const genericItems =
           typeOption.asyncItems ?? codelistObs ?? of(typeOption.items);
         return genericItems.pipe(
-          mergeMap((item) => {
+          map((item) => {
             return (
               item
                 ?.map((item) => this.filterSelected(data, typeOption, item))
