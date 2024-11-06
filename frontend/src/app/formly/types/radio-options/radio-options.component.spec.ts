@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { UiMultiToggleComponent } from "./radio-options.component";
+import { RadioOptionsComponent } from "./radio-options.component";
 
 describe("UiMultiToggleComponent", () => {
-  let component: UiMultiToggleComponent;
-  let fixture: ComponentFixture<UiMultiToggleComponent>;
+  let component: RadioOptionsComponent;
+  let fixture: ComponentFixture<RadioOptionsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UiMultiToggleComponent],
+      imports: [RadioOptionsComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(UiMultiToggleComponent);
+    fixture = TestBed.createComponent(RadioOptionsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
