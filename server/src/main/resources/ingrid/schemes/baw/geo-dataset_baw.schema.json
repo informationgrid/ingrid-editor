@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "GeoDatasetBaw",
+  "$ref": "../geo-dataset-base.schema.json",
+  "properties": {
+    "orderTitle":  {
+      "type": "string"
+    },
+    "orderNumber": {
+      "type": "string"
+    },
+    "bawKeywords": {
+      "type": "array",
+      "items": {
+        "$ref": "../../../general.schema.json#/definitions/KeyValue"
+      }
+    },
+    "process": {
+      "type": ["null", "string"]
+    },
+    "dimensionality":  {
+      "type": ["null", "string"]
+    },
+    "simulationPlaceholder": {
+      "type": ["null", "string"]
+    }
+  },
+  "unevaluatedProperties": false
+}
