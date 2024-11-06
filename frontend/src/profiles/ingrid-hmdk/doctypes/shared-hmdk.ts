@@ -261,7 +261,10 @@ export class SharedHmdk {
     previous: Observable<boolean>,
   ) {
     return this.wrap(() => {
-      field.form.get("properties.publicationHmbTG").setValue(true);
+      field.formControl.setValue({
+        ...field.formControl.value,
+        publicationHmbTG: true,
+      });
       if (field.model.resource !== undefined) {
         field.model.resource.useConstraints = [
           {
