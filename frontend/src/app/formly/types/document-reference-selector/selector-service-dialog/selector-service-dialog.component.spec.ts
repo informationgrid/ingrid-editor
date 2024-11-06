@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { SelectorServiceDialogComponent } from './selector-service-dialog.component';
+import { SelectorServiceDialogComponent } from "./selector-service-dialog.component";
 
-describe('SelectorServiceDialogComponent', () => {
+describe("SelectorServiceDialogComponent", () => {
   let component: SelectorServiceDialogComponent;
   let fixture: ComponentFixture<SelectorServiceDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SelectorServiceDialogComponent]
-    })
-    .compileComponents();
+      imports: [SelectorServiceDialogComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SelectorServiceDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });
