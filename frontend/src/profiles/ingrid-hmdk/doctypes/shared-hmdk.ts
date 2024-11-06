@@ -139,7 +139,7 @@ export class SharedHmdk {
     doc: IngridShared,
     field: FormlyFieldConfig,
   ) {
-    const checked = field.formControl.value;
+    const checked = field.formControl.value?.publicationHmbTG;
     if (checked) {
       this.handleActivateHmbTG(doc, field);
     } else {
