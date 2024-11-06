@@ -218,6 +218,7 @@ export abstract class IngridShared extends BaseDoctype {
                     label: "Offene Lizenz",
                     key: "isOpenData",
                     value: true,
+                    contextHelpKey: "isOpenData",
                     onClick: (field) => this.handleOpenDataClick(field),
                   },
                   this.showHVD
@@ -225,6 +226,7 @@ export abstract class IngridShared extends BaseDoctype {
                         label: "High-Value-Dataset",
                         key: "isHvd",
                         value: true,
+                        contextHelpKey: "isHvd",
                         onClick: (field) =>
                           this.handleHVDClick(field).subscribe(),
                       }
@@ -244,6 +246,7 @@ export abstract class IngridShared extends BaseDoctype {
                     label: "kompatibel",
                     key: "isAdVCompatible",
                     value: true,
+                    contextHelpKey: "isAdVCompatible",
                     onClick: (field: FormlyFieldConfig) =>
                       this.handleAdvClick(field),
                   },
