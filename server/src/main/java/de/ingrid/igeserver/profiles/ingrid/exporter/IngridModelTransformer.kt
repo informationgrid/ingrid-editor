@@ -861,7 +861,16 @@ open class IngridModelTransformer(
 
     private fun getExternalCoupledResources(): List<ServiceUrl> = model.data.service.coupledResources
         ?.filter { it.isExternalRef }
-        ?.map { ServiceUrl(it.title ?: "", it.url ?: throw ServerException.withReason("External coupled resource URL is NULL"), null) } ?: emptyList()
+        ?.map {
+            ServiceUrl(
+                it.title ?: "",
+                it.url ?: throw ServerException.withReason("External coupled resource URL is NULL"),
+                null,
+                applicationProfile = "coupled",
+                // = "Gekoppelte Daten"/"Coupled Data"
+                attachedToField = AttachedField("2000", "3600", codelists.getValue("2000", KeyValue("3600", null))!!),
+            )
+        } ?: emptyList()
 
     private fun getIncomingReferencesProxy(excludeSubordinate: Boolean = false): List<CrossReference> {
         if (incomingReferencesCache == null) {
