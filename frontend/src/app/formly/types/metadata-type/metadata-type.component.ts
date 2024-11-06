@@ -6,7 +6,7 @@ import {
   FormlyFieldProps,
 } from "@ngx-formly/core";
 import { FormLabelComponent } from "../../wrapper/form-label/form-label.component";
-import { AsyncPipe, NgIf } from "@angular/common";
+import { AsyncPipe, NgIf, NgTemplateOutlet } from "@angular/common";
 import {
   MatChip,
   MatChipListbox,
@@ -43,6 +43,7 @@ export interface MetadataOption {
   label: string;
   required?: boolean;
   typeOptions: MetadataOptionItems[];
+  contextHelpKey?: string;
 }
 
 export interface MetadataOptionItems {
@@ -60,6 +61,7 @@ export interface MetadataOptionItem {
   key?: string;
   label: string;
   value: any;
+  contextHelpKey?: string;
   hide?: boolean;
   onClick?: (field: FormlyFieldConfig, previousValue: any) => void;
 }
@@ -81,6 +83,7 @@ export interface MetadataOptionItem {
     MatIcon,
     AsyncPipe,
     MatIconButton,
+    NgTemplateOutlet,
   ],
   templateUrl: "./metadata-type.component.html",
   styleUrl: "./metadata-type.component.scss",
@@ -150,14 +153,18 @@ export class MetadataTypeComponent
     return Object.values(data).some((value) => value);
   }
 
-  showContextHelp(event: MouseEvent, field: MetadataOptionItem) {
+  showInlineContextHelp(event: MouseEvent, key: string, label: string) {
     event.stopImmediatePropagation();
+    this.showContextHelp(event.target as HTMLElement, key, label);
+  }
+
+  showContextHelp(event: HTMLElement, key: string, label: string) {
     this.contextHelpService.showContextHelp(
       this.configService.$userInfo.value.currentCatalog.type,
       this.formStateService.metadata().docType,
-      field.key,
-      field.label,
-      event.target as HTMLElement,
+      key,
+      label,
+      event,
     );
   }
 

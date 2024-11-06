@@ -133,8 +133,9 @@ export abstract class IngridShared extends BaseDoctype {
   protected metadataOptions(): MetadataOption[] {
     return [
       this.showInspireRelevant
-        ? {
+        ? <MetadataOption>{
             label: "INSPIRE-relevant",
+            contextHelpKey: "isInspireIdentified",
             typeOptions: [
               {
                 multiple: false,
@@ -181,19 +182,21 @@ export abstract class IngridShared extends BaseDoctype {
                     ],
               },
               this.showInVeKoSField
-                ? {
+                ? <MetadataOptionItems>{
                     multiple: false,
                     key: "invekos",
                     items: [
                       {
                         label: "InVeKoS/IACS (GSAA)",
                         value: { key: "gsaa" },
+                        contextHelpKey: "invekos",
                         onClick: (field) =>
                           this.handleInVeKosChange(field, this.thesaurusTopics),
                       },
                       {
                         label: "InVeKoS/IACS (LPIS)",
                         value: { key: "lpis" },
+                        contextHelpKey: "invekos",
                         onClick: (field) =>
                           this.handleInVeKosChange(field, this.thesaurusTopics),
                       },

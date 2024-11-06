@@ -24,8 +24,21 @@
         </div>
     } @else {
         @for (option of displayedOptions(); track option) {
-            <div class="flex-row small-label-width">
-                <ige-form-label [class.required]="option.required">
+            <div
+                class="flex-row small-label-width"
+                [class.hasContextHelp]="option.contextHelpKey !== undefined"
+            >
+                <ige-form-label
+                    [hasContextHelp]="option.contextHelpKey !== undefined"
+                    (contextHelp)="
+                        showContextHelp(
+                            $event,
+                            option.contextHelpKey,
+                            option.label
+                        )
+                    "
+                    [class.required]="option.required"
+                >
                     {{ option.label }}<span *ngIf="option.required">*</span>
                 </ige-form-label>
 
@@ -42,7 +55,8 @@
                                         [formControlName]="item.key"
                                         [hideSingleSelectionIndicator]="true"
                                         [required]="option.required"
-                                        ><mat-chip-option
+                                    >
+                                        <mat-chip-option
                                             [value]="item.value"
                                             [attr.data-cy]="item.key"
                                             [disabled]="
@@ -50,26 +64,16 @@
                                             "
                                             (click)="handleOptionClick(item)"
                                         >
-                                            <div
-                                                class="flex-row align-items-center gap-8"
-                                            >
-                                                {{ item.label }}
-                                                <button
-                                                    class="small-icon-button"
-                                                    mat-icon-button
-                                                    (click)="
-                                                        showContextHelp(
-                                                            $event,
-                                                            item
-                                                        )
-                                                    "
-                                                >
-                                                    <mat-icon
-                                                        svgIcon="info-24px"
-                                                    ></mat-icon>
-                                                </button>
-                                            </div> </mat-chip-option
-                                    ></mat-chip-listbox>
+                                            <ng-container
+                                                [ngTemplateOutlet]="
+                                                    inlineContextHelp
+                                                "
+                                                [ngTemplateOutletContext]="{
+                                                    item: item,
+                                                }"
+                                            ></ng-container>
+                                        </mat-chip-option>
+                                    </mat-chip-listbox>
                                 }
                             } @else {
                                 @if (
@@ -114,10 +118,16 @@
                                                 (click)="
                                                     handleOptionClick(item)
                                                 "
-                                                >{{
-                                                    item.label
-                                                }}</mat-chip-option
                                             >
+                                                <ng-container
+                                                    [ngTemplateOutlet]="
+                                                        inlineContextHelp
+                                                    "
+                                                    [ngTemplateOutletContext]="{
+                                                        item: item,
+                                                    }"
+                                                ></ng-container>
+                                            </mat-chip-option>
                                             @if (
                                                 !typeOption.multiple && !isLast
                                             ) {
@@ -157,3 +167,24 @@
         }
     }
 </div>
+
+<ng-template #inlineContextHelp let-item="item">
+    <div class="flex-row align-items-center gap-8">
+        {{ item.label }}
+        @if (item.contextHelpKey || item.key) {
+            <button
+                class="small-icon-button"
+                mat-icon-button
+                (click)="
+                    showInlineContextHelp(
+                        $event,
+                        item.contextHelpKey || item.key,
+                        item.label
+                    )
+                "
+            >
+                <mat-icon svgIcon="info-24px"></mat-icon>
+            </button>
+        }
+    </div>
+</ng-template>

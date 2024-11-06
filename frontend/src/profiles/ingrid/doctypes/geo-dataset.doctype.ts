@@ -85,6 +85,7 @@ export class GeoDatasetDoctype extends IngridShared {
     return [
       {
         label: "Datentyp",
+        contextHelpKey: "subType",
         required: this.geodatasetOptions.required.subType,
         typeOptions: [
           {
