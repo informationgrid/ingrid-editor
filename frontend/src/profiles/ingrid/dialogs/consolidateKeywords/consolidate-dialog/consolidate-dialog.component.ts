@@ -185,7 +185,7 @@ export class ConsolidateDialogComponent implements OnInit {
       analyzedKeywords = removeDuplicatesByValue(analyzedKeywords, "label");
       this.categorizeKeywords(analyzedKeywords);
       this.addAllKeywordStatuses();
-      this.keepKeywordsFoundWithDifferentLabel();
+      this.keepKeywordsFoundWithAlternativeLabel();
       this.sortKeywordsByStatus();
       this.removeAllDuplicateKeywords();
       this.setKeywordDialogData();
@@ -241,7 +241,7 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   // Keep keywords that were found with a different label in another thesaurus e.g. Kita -> Kindertagesstätte
-  private keepKeywordsFoundWithDifferentLabel() {
+  private keepKeywordsFoundWithAlternativeLabel() {
     this.freeKeywords.map((keyword) => {
       if (
         ![
