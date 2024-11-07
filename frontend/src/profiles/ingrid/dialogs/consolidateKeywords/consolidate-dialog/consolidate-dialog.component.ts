@@ -252,7 +252,9 @@ export class ConsolidateDialogComponent implements OnInit {
           (k) =>
             k.label.toLowerCase() === keyword.label.toLowerCase() &&
             !this.freeKeywordsNew.some(
-              (k) => k.label.toLowerCase() === keyword.label.toLowerCase(),
+              (k) =>
+                k.label.toLowerCase() === keyword.label.toLowerCase() &&
+                k.status !== "removed",
             ),
         )
       ) {
