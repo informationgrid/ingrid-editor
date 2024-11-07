@@ -210,7 +210,11 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   private addAllKeywordStatuses() {
-    const addStatuses = (newKeywords: any[], oldKeywords: any[]) => {
+    const addStatuses = (
+      newKeywords: ThesaurusResult[],
+      oldKeywords: any[],
+      thesaurus: ThesaurusResult["thesaurus"],
+    ) => {
       // newKeywords not in oldKeywords as "added"
       newKeywords.forEach((keyword) => {
         if (!oldKeywords.some((k) => k.label === keyword.label)) {
@@ -221,15 +225,37 @@ export class ConsolidateDialogComponent implements OnInit {
       // oldKeywords not in newKeywords as "removed"
       oldKeywords.forEach((keyword) => {
         if (!newKeywords.some((k) => k.label === keyword.label)) {
-          newKeywords.push({ ...keyword, status: "removed" });
+          newKeywords.push({
+            found: false,
+            label: keyword.label,
+            value: keyword,
+            thesaurus: thesaurus,
+            status: "removed",
+          });
         }
       });
     };
 
-    addStatuses(this.gemetKeywordsNew, this.gemetKeywords);
-    addStatuses(this.umthesKeywordsNew, this.umthesKeywords);
-    addStatuses(this.freeKeywordsNew, this.freeKeywords);
-    addStatuses(this.inspireTopicsNew, this.getInspireLabels());
+    addStatuses(
+      this.gemetKeywordsNew,
+      this.gemetKeywords,
+      this.keywordCategories.gemet,
+    );
+    addStatuses(
+      this.umthesKeywordsNew,
+      this.umthesKeywords,
+      this.keywordCategories.umthes,
+    );
+    addStatuses(
+      this.freeKeywordsNew,
+      this.freeKeywords,
+      this.keywordCategories.free,
+    );
+    addStatuses(
+      this.inspireTopicsNew,
+      this.getInspireLabels(),
+      this.keywordCategories.themes,
+    );
   }
 
   // Special handling getting label from codelist id's
@@ -261,7 +287,7 @@ export class ConsolidateDialogComponent implements OnInit {
         this.freeKeywordsNew.push({
           found: true,
           label: keyword.label,
-          thesaurus: "Freie Schlagworte",
+          thesaurus: this.keywordCategories.free,
           value: keyword,
           status: "unchanged",
         });
@@ -273,7 +299,9 @@ export class ConsolidateDialogComponent implements OnInit {
           (k) =>
             k.label.toLowerCase() === keyword.label.toLowerCase() &&
             !this.umthesKeywordsNew.some(
-              (k) => k.label.toLowerCase() === keyword.label.toLowerCase(),
+              (k2) =>
+                k2.label.toLowerCase() === keyword.label.toLowerCase() &&
+                k2.status !== "removed",
             ),
         )
       ) {
@@ -295,7 +323,7 @@ export class ConsolidateDialogComponent implements OnInit {
         ...this.umthesKeywordsNew,
         ...this.freeKeywordsNew,
         ...this.inspireTopicsNew,
-      ].filter((k) => k.status !== "removed"),
+      ],
       this.form,
       this.canHaveIsoCategories,
     );
@@ -404,8 +432,23 @@ export class ConsolidateDialogComponent implements OnInit {
     );
   }
 
+  private removeDuplicateKeywordsWithHierarchy(
+    thesauriResults: ThesaurusResult[][],
+  ): void {
+    for (let i = 0; i < thesauriResults.length; i++) {
+      for (let j = i + 1; j < thesauriResults.length; j++) {
+        const filteredArray = this.removeDuplicateKeywordsBetweenArrays(
+          thesauriResults[j],
+          thesauriResults[i],
+        );
+        thesauriResults[j].length = 0; // Clear the original array
+        thesauriResults[j].push(...filteredArray); // Push the modified content back into the original array
+      }
+    }
+  }
+
   // Iterates over the array and marks duplicates as removed except the first one
-  private markDuplicatesAsRemoved(arr: any[]) {
+  private markDuplicatesAsRemoved(arr: ThesaurusResult[]) {
     const seenLabels = new Set<string>();
 
     arr.forEach((item) => {

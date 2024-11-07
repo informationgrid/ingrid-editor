@@ -90,11 +90,17 @@ export class KeywordAnalysis {
     form: FormGroup | FormArray,
     thesaurusTopics: boolean,
   ) {
-    data.forEach((item) => {
+    data.forEach((item: ThesaurusResult) => {
       if (!this.keywordExists(item, form)) {
         this.addKeyword(item, form);
         if (item.thesaurus === "INSPIRE-Themen" && thesaurusTopics) {
           this.updateIsoCategory(item.value, form);
+        }
+      }
+      if (item.status === "removed") {
+        this.removeKeyword(item, form);
+        if (item.thesaurus === "INSPIRE-Themen" && thesaurusTopics) {
+          this.updateIsoCategory(item.value, form, true);
         }
       }
     });
@@ -148,6 +154,15 @@ export class KeywordAnalysis {
   addKeyword(item: ThesaurusResult, form: FormGroup | FormArray) {
     const thesaurusCtrl = form.get(this.mapThesaurusToModel(item));
     thesaurusCtrl.setValue([...thesaurusCtrl.value, item.value]);
+  }
+
+  removeKeyword(item: ThesaurusResult, form: FormGroup | FormArray) {
+    const thesaurusCtrl = form.get(this.mapThesaurusToModel(item));
+    thesaurusCtrl.setValue(
+      thesaurusCtrl.value.filter(
+        (keyword: any) => keyword.label !== item.value.label,
+      ),
+    );
   }
 
   private mapThesaurusToModel(item: ThesaurusResult): string {
