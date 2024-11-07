@@ -1,5 +1,17 @@
 # Changelog
 
+## 7.3.3 (07.11.2024)
+
+
+### Bugfixes
+
+* 138 Datensätze sind nicht schemavalide (#6996)
+* OAC-Suche funktioniert nicht mehr (#6977)
+* PORTAL: CSV-Download funktioniert nicht mehr (#6961)
+* Schemavalidierung bei Testsuite GDI-DE schlägt fehl (#6922)
+* Fehler im Verweise-Dialog, wenn Favoriten für "Typ" gesetzt sind (#6913)
+* Geodatensatz nicht schemakonform aufgrund von Polygon_ID, Fehlermeldung bei Harvesting (#6896)
+    
 ## 7.3.2 (16.10.2024)
 
 ### Bugfixes
