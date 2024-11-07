@@ -347,6 +347,11 @@ export class ConsolidateDialogComponent implements OnInit {
 
   private removeAllDuplicateKeywords() {
     // Remove duplicate keywords inside the same thesaurus
+
+    // this.keywordHierarchy.forEach((keywords: ThesaurusResult[], index) => {
+    //   this.keywordHierarchy[index] = removeDuplicatesByValue(keywords, "label");
+    // });
+
     this.inspireTopicsNew = removeDuplicatesByValue(
       this.inspireTopicsNew,
       "label",
@@ -367,19 +372,8 @@ export class ConsolidateDialogComponent implements OnInit {
       this.freeKeywordsNew,
       "label",
     );
-    // Remove duplicate keywords between thesauri to preserve hierarchy (Gemet > Umthes > Free)
-    this.umthesKeywordsNew = this.removeDuplicateKeywordsBetweenArrays(
-      this.umthesKeywordsNew,
-      this.gemetKeywordsNew,
-    );
-    this.freeKeywordsNew = this.removeDuplicateKeywordsBetweenArrays(
-      this.freeKeywordsNew,
-      this.gemetKeywordsNew,
-    );
-    this.freeKeywordsNew = this.removeDuplicateKeywordsBetweenArrays(
-      this.freeKeywordsNew,
-      this.umthesKeywordsNew,
-    );
+
+    this.removeDuplicateKeywordsWithHierarchy(this.keywordHierarchy);
     // Change status of duplicate keywords to "removed" case-insensitively
     this.markDuplicatesAsRemoved(this.freeKeywordsNew);
   }
@@ -417,9 +411,10 @@ export class ConsolidateDialogComponent implements OnInit {
     ];
   }
 
+  // Remove duplicate keywords between thesauri to preserve hierarchy (Gemet > Umthes > Free)
   private removeDuplicateKeywordsBetweenArrays(
-    arr1: any[],
-    arr2: any[],
+    arr1: ThesaurusResult[],
+    arr2: ThesaurusResult[],
   ): any[] {
     return arr1.filter(
       (keyword1) =>
