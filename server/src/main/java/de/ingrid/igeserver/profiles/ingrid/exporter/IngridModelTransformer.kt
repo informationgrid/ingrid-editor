@@ -1027,6 +1027,7 @@ open class IngridModelTransformer(
     fun hasDistributionInfo(): Boolean = digitalTransferOptions.isNotEmpty() ||
         distributionFormats.isNotEmpty() ||
         hasDistributorInfo() ||
+        orderInfoContact.isNotEmpty() ||
         !data.references.isNullOrEmpty() ||
         !data.fileReferences.isNullOrEmpty() ||
         isAtomDownload ||
