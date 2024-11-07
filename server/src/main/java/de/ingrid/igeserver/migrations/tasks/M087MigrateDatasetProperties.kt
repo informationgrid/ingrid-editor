@@ -24,7 +24,6 @@ import de.ingrid.igeserver.imports.internal.migrations.Migrate120
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
@@ -46,9 +45,6 @@ class M087MigrateDatasetProperties : MigrationBase("0.87") {
     @Autowired
     private lateinit var transactionManager: PlatformTransactionManager
 
-    @Autowired
-    private lateinit var docRepo: DocumentRepository
-
     override fun exec() {
         // do everything in postExec
     }
@@ -60,7 +56,7 @@ class M087MigrateDatasetProperties : MigrationBase("0.87") {
         ClosableTransaction(transactionManager).use {
             setAdminAuthentication("Migration", "Task")
 
-            val docTypesToMigrate = """("InGridGeoDataset","InGridDataCollection","InGridGeoService","InGridInformationSystem","InGridLiterature","InGridProject","InGridSpecialisedTask")"""
+            val docTypesToMigrate = """("InGridGeoDataset","InGridDataCollection","InGridGeoService","InGridInformationSystem","InGridPublication","InGridProject","InGridSpecialisedTask")"""
 
             do {
                 log.info("Handling page $page")
@@ -74,7 +70,6 @@ class M087MigrateDatasetProperties : MigrationBase("0.87") {
                     val properties = Migrate120.getPropertiesOfDocument(it.data, it.type)
                     it.data.set<JsonNode>("properties", properties)
                     log.info("Migrated doc with dbID ${it.id}")
-//                        docRepo.save(it)
                 }
                 page++
             } while (documents.size == pageSize)
