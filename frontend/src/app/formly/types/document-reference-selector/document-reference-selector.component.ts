@@ -124,9 +124,7 @@ export class DocumentReferenceSelectorComponent
       }
       this.myModel = await Promise.all(
         (this.formControl.value as any[]).map(async (item: any) => {
-          return item.isExternalRef
-            ? this.mapInternalRef(item) //this.mapExternalRef(item)
-            : this.mapInternalRef(item);
+          return this.mapInternalRef(item);
         }),
       );
     } else {
@@ -215,7 +213,6 @@ export class DocumentReferenceSelectorComponent
         }),
         catchError((error) => {
           console.error(`UUID not found: ${item.uuid}`, error);
-          // throw new IgeError(`Kopplung zu Daten nicht gefunden: ${item.uuid}`);
           return of(<SelectedDocumentReference>{
             title: `???`,
             uuid: item.uuid,
@@ -258,8 +255,6 @@ export class DocumentReferenceSelectorComponent
   }
 
   editItem(index: number, isExternalRef: boolean) {
-    // if (isExternalRef) this.showExternalRefDialog(index);
-    // else
     this.showInternalRefDialog(index);
   }
 
