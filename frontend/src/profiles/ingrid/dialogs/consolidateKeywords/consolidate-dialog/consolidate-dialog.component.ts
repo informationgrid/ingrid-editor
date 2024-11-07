@@ -281,8 +281,6 @@ export class ConsolidateDialogComponent implements OnInit {
 
   // Map ThesaurusResult keywords to format expected by the backend
   private mapAllKeywords() {
-    console.log(this.gemetKeywordsNew);
-    console.log(this.umthesKeywordsNew);
     this.doc.keywords.gemet = this.mapKeywords(
       this.gemetKeywordsNew.filter((k) => k.status !== "removed"),
     );
