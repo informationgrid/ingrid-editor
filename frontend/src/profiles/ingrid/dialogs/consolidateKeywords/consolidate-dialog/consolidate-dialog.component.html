@@ -1,7 +1,7 @@
 <ige-dialog-template
     label="Schlagworte
 konsolidieren"
-    (submit)="mapAndAcceptConsolidatedKeywords(); isSaving = true"
+    (submit)="acceptConsolidatedKeywords(); isSaving = true"
     [disabled]="isLoading || isSaving || !hasKeywords"
 >
     <ng-container content>

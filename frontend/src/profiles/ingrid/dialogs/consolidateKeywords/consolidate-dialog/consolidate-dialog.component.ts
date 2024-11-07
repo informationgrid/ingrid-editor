@@ -77,6 +77,7 @@ export class ConsolidateDialogComponent implements OnInit {
   };
 
   hasKeywords: boolean;
+  canHaveIsoCategories: boolean;
 
   inspireTopics: any[] = [];
   isoCategories: any[] = [];
@@ -141,6 +142,8 @@ export class ConsolidateDialogComponent implements OnInit {
     this.inspireTopics = this.isInspireIdentified
       ? this.form.get("themes")?.value || []
       : []; // INSPIRE-Themen
+    this.canHaveIsoCategories =
+      this.isInspireIdentified && this.form.get("topicCategories") !== null;
     this.isoCategories = this.form.get("topicCategories")?.value || []; // ISO-Themenkategorie
 
     this.hasKeywords =
@@ -180,7 +183,6 @@ export class ConsolidateDialogComponent implements OnInit {
         this.isInspireIdentified,
       );
       analyzedKeywords = removeDuplicatesByValue(analyzedKeywords, "label");
-
       this.categorizeKeywords(analyzedKeywords);
       this.addAllKeywordStatuses();
       this.keepKeywordsFoundWithDifferentLabel();
@@ -246,9 +248,21 @@ export class ConsolidateDialogComponent implements OnInit {
           ...this.umthesKeywordsNew,
           ...this.gemetKeywordsNew,
           ...this.inspireTopicsNew,
-        ].some((k) => k.label.toLowerCase() === keyword.label.toLowerCase())
+        ].some(
+          (k) =>
+            k.label.toLowerCase() === keyword.label.toLowerCase() &&
+            !this.freeKeywordsNew.some(
+              (k) => k.label.toLowerCase() === keyword.label.toLowerCase(),
+            ),
+        )
       ) {
-        this.freeKeywordsNew.push({ ...keyword, status: "unchanged" });
+        this.freeKeywordsNew.push({
+          found: true,
+          label: keyword.label,
+          thesaurus: "Freie Schlagworte",
+          value: keyword,
+          status: "unchanged",
+        });
       }
     });
     this.umthesKeywords.map((keyword) => {
@@ -272,36 +286,18 @@ export class ConsolidateDialogComponent implements OnInit {
     });
   }
 
-  mapAndAcceptConsolidatedKeywords() {
-    this.mapAllKeywords();
-    this.form.get("keywords").setValue(this.doc.keywords);
-    this.form.get("themes").setValue(this.doc.themes);
+  acceptConsolidatedKeywords() {
+    this.keywordAnalysis.updateForm(
+      [
+        ...this.gemetKeywordsNew,
+        ...this.umthesKeywordsNew,
+        ...this.freeKeywordsNew,
+        ...this.inspireTopicsNew,
+      ].filter((k) => k.status !== "removed"),
+      this.form,
+      this.canHaveIsoCategories,
+    );
     this.dialogRef.close("confirm");
-  }
-
-  // Map ThesaurusResult keywords to format expected by the backend
-  private mapAllKeywords() {
-    this.doc.keywords.gemet = this.mapKeywords(
-      this.gemetKeywordsNew.filter((k) => k.status !== "removed"),
-    );
-    this.doc.keywords.umthes = this.mapKeywords(
-      this.umthesKeywordsNew.filter((k) => k.status !== "removed"),
-    );
-    this.doc.keywords.free = this.freeKeywordsNew
-      .filter((k) => k.status !== "removed")
-      .map((k) => ({ label: k.label }));
-
-    this.doc.themes = this.inspireTopicsNew.map((k) => ({
-      key: k.value.key,
-    }));
-  }
-
-  private mapKeywords(keywords: ThesaurusResult[]) {
-    return keywords.map((k) => ({
-      id: k.value.id,
-      label: k.value.label,
-      alternativeLabel: k.value.alternativeLabel || null,
-    }));
   }
 
   private sortByStatus(keywords: ThesaurusResult[]) {
@@ -405,6 +401,7 @@ export class ConsolidateDialogComponent implements OnInit {
         ),
     );
   }
+
   // Iterates over the array and marks duplicates as removed except the first one
   private markDuplicatesAsRemoved(arr: any[]) {
     const seenLabels = new Set<string>();
