@@ -23,8 +23,6 @@ import { inject, Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { generateUUID } from "../../../app/services/utils";
-import { UploadService } from "../../../app/shared/upload/upload.service";
-import { map } from "rxjs/operators";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 
 @Injectable({
@@ -376,10 +374,91 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [
             this.addGroupSimple("source", [
-              this.addRepeatList("descriptions", "Datengrundlage", {
-                className: "optional flex-1",
-                asAutocomplete: true,
-              }),
+              this.addRepeatDataOriginList(
+                "descriptions",
+                "Datengrundlage/Herkunft",
+                {
+                  fields: [
+                    this.addTextArea("value", "Freie Eingabe", this.id, {
+                      required: this.geodatasetOptions.required.statement,
+                      expressions: {
+                        "props.required":
+                          this.geodatasetOptions.dynamicRequired.statement,
+                      },
+                    }),
+                  ],
+                  titleField: "",
+                  dialogOptions: [
+                    {
+                      key: "freeDescription",
+                      value: "Freie Eingabe",
+                      fields: [
+                        this.addInputInline("value", "Beschreibung", {
+                          required: true,
+                          wrappers: ["inline-help", "form-field"],
+                          hasInlineContextHelp: true,
+                          updateOn: "change",
+                        }),
+                        this.addInputInline("value", "Titel", {
+                          required: true,
+                          wrappers: ["inline-help", "form-field"],
+                          hasInlineContextHelp: true,
+                          updateOn: "change",
+                        }),
+                        this.addInputInline("value", "Identifikator", {
+                          required: true,
+                          wrappers: ["inline-help", "form-field"],
+                          hasInlineContextHelp: true,
+                          updateOn: "change",
+                        }),
+                      ],
+                    },
+                    {
+                      key: "internalDataOrigin",
+                      value: "Geodatensatz auswählen",
+                      fields: [
+                        this.addInputInline("value", "Beschreibung", {
+                          required: true,
+                          wrappers: ["inline-help", "form-field"],
+                          hasInlineContextHelp: true,
+                          updateOn: "change",
+                        }),
+                        this.addDocumentCard("uuidRef", {
+                          docTypeFilter: [],
+                          label: "Datensatzverweis",
+                          allowRedirectToDocument: false,
+                          allowMultiSelect: false,
+                          titleOfDocumentSelectorDialog:
+                            "Internen Verweis hinzufügen",
+                        }),
+                      ],
+                    },
+                    {
+                      key: "externalDataOrigin",
+                      value: "Externe Referenz angeben",
+                      fields: [
+                        this.addInputInline("value", "Beschreibung", {
+                          required: true,
+                          wrappers: ["inline-help", "form-field"],
+                          hasInlineContextHelp: true,
+                          updateOn: "change",
+                        }),
+                        this.addInputInline("value", "Externer Datensatz", {
+                          required: true,
+                          wrappers: ["inline-help", "form-field"],
+                          hasInlineContextHelp: true,
+                          updateOn: "change",
+                          placeholder: "https://...",
+                          validators: {
+                            validation: ["url"],
+                          },
+                        }),
+                      ],
+                    },
+                  ],
+                },
+              ),
+
               this.addGroupSimple("processStep", [
                 this.addRepeatList("description", "Herstellungsprozess", {
                   className: "optional flex-1",
