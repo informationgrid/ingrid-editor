@@ -46,7 +46,9 @@ class Migrate120 {
             val subType = doc.remove("subType")
             val isInspireConform = doc.remove("isInspireConform")
             val hvd = doc.remove("hvd")
+            val publicationHmbTG = doc.remove("publicationHmbTG")
 
+            if (publicationHmbTG?.booleanValue() == true) set<JsonNode>("publicationHmbTG", publicationHmbTG)
             if (isOpenData?.booleanValue() == true) set<JsonNode>("isOpenData", isOpenData)
             if (isAdVCompatible?.booleanValue() == true) set<JsonNode>("isAdVCompatible", isAdVCompatible)
             if (isInspireIdentified?.booleanValue() == true) {
