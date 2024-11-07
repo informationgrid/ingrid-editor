@@ -302,7 +302,7 @@ export class ConsolidateDialogComponent implements OnInit {
     return keywords.map((k) => ({
       id: k.value.id,
       label: k.value.label,
-      alternateLabel: k.value.alternativeLabel || null,
+      alternativeLabel: k.value.alternativeLabel || null,
     }));
   }
 
