@@ -106,15 +106,9 @@ class IngridLuceneExporterBkg(
         catalog: Catalog,
         options: ExportOptions,
     ): Pair<String, Map<String, Any>> = when (doc.type) {
-        "InGridSpecialisedTask",
         "InGridGeoDataset",
-        "InGridGeoService",
-        "InGridDataCollection",
-        "InGridProject",
-        "InGridInformationSystem",
-        "InGridPublication",
         -> Pair(
-            "export/ingrid-bkg/lucene/template-lucene-bkg.jte",
+            "export/ingrid-bkg/lucene/template-lucene-geodataset-bkg.jte",
             getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
         )
 
