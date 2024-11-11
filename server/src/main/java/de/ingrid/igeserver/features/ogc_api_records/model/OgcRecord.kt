@@ -74,9 +74,7 @@ data class LimitAndOffset(
     val queryOffset: Int,
 )
 
-data class Bbox(
-    val lowerLeftLongitude: Float,
-    val lowerLeftLatitude: Float,
-    val upperRightLongitude: Float,
-    val uppperRightLatitude: Float,
+data class MoveRecordsDTO(
+    val recordId: String,
+    val folderId: String?,
 )

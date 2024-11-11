@@ -37,6 +37,7 @@ import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExp
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.features.ogc_api_records.model.LimitAndOffset
 import de.ingrid.igeserver.features.ogc_api_records.model.Link
+import de.ingrid.igeserver.features.ogc_api_records.model.MoveRecordsDTO
 import de.ingrid.igeserver.features.ogc_api_records.model.RecordCollection
 import de.ingrid.igeserver.features.ogc_api_records.model.RecordsResponse
 import de.ingrid.igeserver.imports.ImportService
@@ -48,7 +49,6 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportResult
 import de.ingrid.igeserver.services.ExportService
-import de.ingrid.igeserver.utils.getString
 import org.keycloak.util.JsonSerialization
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -584,11 +584,11 @@ class OgcRecordService(
     }
 
     @Transactional
-    fun moveRecords(collectionId: String, data: String) {
-        val moveTasks = jacksonObjectMapper().readValue(data, JsonNode::class.java)
-        for (action in moveTasks) {
-            val recordId = action.getString("recordId") ?: throw ClientException.withReason("Failed to move records to folder: Missing recordId.")
-            val folderId = action.getString("folderId")
+    fun moveRecords(collectionId: String, data: List<MoveRecordsDTO>) {
+        for (moveAction in data) {
+            if (moveAction.recordId.isBlank()) throw ClientException.withReason("Failed to move records to folder: Missing recordId.")
+            val recordId = moveAction.recordId
+            val folderId = moveAction.folderId
             val recordWrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
             val folderWrapper = if (folderId == "" || folderId == null) null else documentService.getWrapperByCatalogAndDocumentUuid(collectionId, folderId)
             val folderWrapperId = if (folderWrapper == null) {
