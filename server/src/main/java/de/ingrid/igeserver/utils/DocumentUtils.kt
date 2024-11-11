@@ -50,7 +50,6 @@ fun prepareDocumentWithMetadata(
     val metadata = DocMetadata(
         docData.wrapper.countChildren > 0,
         docData.wrapper.parent?.id,
-        docData.wrapper.parent?.type == "FOLDER",
         docData.document.createdByUser != null,
         docData.document.contentModifiedByUser != null,
         docData.wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME),
