@@ -42,7 +42,13 @@
         </div>
 
         @if (error) {
-            <div>{{ error }}</div>
+            <mat-error>
+                <div>Es trat ein Fehler auf: {{ error }}</div>
+                <div>
+                    Bitte geben Sie eine vollständige URL ein, die zu einer
+                    Capabilities XML führt.
+                </div>
+            </mat-error>
         }
 
         @if (report) {
