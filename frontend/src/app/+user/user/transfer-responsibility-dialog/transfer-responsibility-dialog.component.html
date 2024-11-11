@@ -28,6 +28,13 @@
                 (onUserSelect)="selectedUser = $event"
                 tableType="simple"
             ></user-table>
+            <div class="help flex-row align-items-center">
+                <mat-icon svgIcon="info-24px"></mat-icon>
+                <div class="legend">
+                    Bitte übertragen Sie die Verantwortung auf einen anderen
+                    Benutzer mit denselben Gruppen (Berechtigungen).
+                </div>
+            </div>
         </mat-dialog-content>
     } @else {
         <mat-spinner class="content-spinner" diameter="40"></mat-spinner>
