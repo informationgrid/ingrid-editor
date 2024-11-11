@@ -101,7 +101,7 @@ export class PersonDoctype extends AddressShared {
             expressions: {
               hide: () => {
                 const metadata = this.formStateService.metadata();
-                return !metadata.parentId || metadata.parentIsFolder;
+                return !metadata.parentId;
               },
             },
           }),
