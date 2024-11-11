@@ -49,6 +49,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportResult
 import de.ingrid.igeserver.services.ExportService
+import de.ingrid.igeserver.utils.getBoolean
 import org.keycloak.util.JsonSerialization
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -216,19 +217,14 @@ class OgcRecordService(
             var jsonData: JsonNode = jacksonObjectMapper().readValue(docData, JsonNode::class.java)
             // wrap data in array if single dataset without array
             jsonData = if (jsonData[0] == null) jacksonObjectMapper().createArrayNode().add(jsonData) else jsonData
-            // check json format
-            val jsonFormat = if (jsonData[0].get("properties") == null) "internal" else "geojson"
-
             for (doc in jsonData) {
-                if (jsonFormat == "internal") {
-                    val internalDoc = internalExporter.addExportWrapper(collectionId, doc, null)
-                    documents.add(internalDoc.toString())
+                val document = if (jsonData[0].getBoolean("isGeojson") == true) {
+                    doc.get("properties")
+                } else {
+                    doc
                 }
-                if (jsonFormat == "geojson") {
-                    val relevantNode = doc.get("properties")
-                    val geoJsonDoc = internalExporter.addExportWrapper(collectionId, relevantNode, null)
-                    documents.add(geoJsonDoc.toString())
-                }
+                val docWithWrapper = internalExporter.addExportWrapper(collectionId, document, null)
+                documents.add(docWithWrapper.toString())
             }
         }
         return documents

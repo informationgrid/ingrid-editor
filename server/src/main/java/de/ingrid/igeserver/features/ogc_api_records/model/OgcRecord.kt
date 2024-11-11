@@ -41,6 +41,7 @@ data class RecordCollection(
 
 data class Record(
     val id: JsonNode,
+    val isGeojson: Boolean?,
     val conformsTo: List<String>?,
     val type: String,
     val time: RecordTime?,
