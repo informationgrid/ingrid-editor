@@ -920,11 +920,6 @@ ige-context-help .mat-mdc-dialog-content {
 }
 
 // Icons
-/*.infoIcon {
-  .mat-icon svg rect {
-    fill: $ige-secondary;
-  }
-}*/
 
 mat-icon.mark-color .coloring {
   fill: $ige-check-color;
@@ -1215,12 +1210,15 @@ mat-icon.wide-icon-26px {
   span {
     padding: 10px 0;
   }
+}
+.infoIcon {
+  background-color: white;
+  margin-right: 15px;
+  height: 24px;
+  border-radius: 50%;
 
-  .infoIcon {
-    background-color: white;
-    margin-right: 15px;
-    height: 24px;
-    border-radius: 50%;
+  &.gray {
+    background-color: $ige-background;
   }
 }
 
