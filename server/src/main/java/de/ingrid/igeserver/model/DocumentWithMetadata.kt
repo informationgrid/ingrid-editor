@@ -30,7 +30,6 @@ data class DocumentWithMetadata(
 data class DocMetadata(
     val hasChildren: Boolean,
     val parentId: Int?,
-    val parentIsFolder: Boolean,
     // TODO: next two fields not really necessary, since they can be simply evaluated from doc
     val createdUserExists: Boolean,
     val modifiedUserExists: Boolean,
