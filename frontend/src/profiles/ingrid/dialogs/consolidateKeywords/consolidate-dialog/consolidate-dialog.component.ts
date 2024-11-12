@@ -314,8 +314,8 @@ export class ConsolidateDialogComponent implements OnInit {
       this.keywordHierarchyMap.set(thesaurus, [oldKeywords, editedKeywords]);
     }
 
-    this.removeDuplicateKeywordsWithHierarchy(this.keywordHierarchy);
     // Change status of duplicate keywords to "removed" case-insensitively
+    this.removeDuplicateKeywordsWithHierarchy(this.keywordHierarchy);
   }
 
   private resetNewKeywords() {
