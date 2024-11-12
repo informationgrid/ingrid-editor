@@ -279,11 +279,6 @@ export class ConsolidateDialogComponent implements OnInit {
       this.form,
       this.canHaveIsoCategories,
     );
-    const isDirty = keywords.some((keyword) => keyword.status !== "unchanged");
-    if (isDirty) {
-      this.form.markAsDirty();
-    }
-
     this.dialogRef.close("confirm");
   }
 

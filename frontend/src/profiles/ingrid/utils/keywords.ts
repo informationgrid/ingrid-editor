@@ -90,20 +90,23 @@ export class KeywordAnalysis {
     form: FormGroup | FormArray,
     thesaurusTopics: boolean,
   ) {
+    let dirtyForm = false;
     data.forEach((item: ThesaurusResult) => {
+      const isInspireTopic = item.thesaurus === "INSPIRE-Themen";
       if (!this.keywordExists(item, form)) {
         this.addKeyword(item, form);
-        if (item.thesaurus === "INSPIRE-Themen" && thesaurusTopics) {
+        if (isInspireTopic && thesaurusTopics)
           this.updateIsoCategory(item.value, form);
-        }
+        dirtyForm = true;
       }
-      if (item.status === "removed") {
+      if (item.status === "removed" && this.keywordExists(item, form)) {
         this.removeKeyword(item, form);
-        if (item.thesaurus === "INSPIRE-Themen" && thesaurusTopics) {
+        if (isInspireTopic && thesaurusTopics)
           this.updateIsoCategory(item.value, form, true);
-        }
+        dirtyForm = true;
       }
     });
+    if (dirtyForm) form.markAsDirty();
   }
 
   updateIsoCategory(
