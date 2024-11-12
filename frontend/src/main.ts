@@ -139,6 +139,8 @@ import {
 import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
 import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
 import { MetadataTypeComponent } from "./app/formly/types/metadata-type/metadata-type.component";
+import { MatDatepickerIntl } from "@angular/material/datepicker";
+import { GermanDateIntl } from "./app/services/german-date.intl";
 
 if (environment.production) {
   enableProdMode();
@@ -389,6 +391,10 @@ bootstrapApplication(AppComponent, {
     {
       provide: DateAdapter,
       useClass: GermanDateAdapter,
+    },
+    {
+      provide: MatDatepickerIntl,
+      useClass: GermanDateIntl,
     },
     // add authorization header to all requests
     {
