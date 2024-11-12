@@ -309,13 +309,10 @@ export class ConsolidateDialogComponent implements OnInit {
   private removeAllDuplicateKeywords() {
     for (let [thesaurus, [oldKeywords, newKeywords]] of this
       .keywordHierarchyMap) {
-      let editedKeywords = removeDuplicatesByValue(newKeywords, "label");
-      editedKeywords = this.markDuplicatesAsRemoved(newKeywords);
+      // Remove duplicates case-insensitively
+      const editedKeywords = this.markDuplicatesAsRemoved(newKeywords);
       this.keywordHierarchyMap.set(thesaurus, [oldKeywords, editedKeywords]);
     }
-
-    // Change status of duplicate keywords to "removed" case-insensitively
-    this.removeDuplicateKeywordsWithHierarchy(this.keywordHierarchy);
   }
 
   private resetNewKeywords() {
