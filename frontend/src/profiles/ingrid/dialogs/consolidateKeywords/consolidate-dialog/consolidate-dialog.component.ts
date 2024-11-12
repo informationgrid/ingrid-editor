@@ -93,13 +93,6 @@ export class ConsolidateDialogComponent implements OnInit {
   gemetKeywordsNew: ThesaurusResult[] = [];
   umthesKeywordsNew: ThesaurusResult[] = [];
   freeKeywordsNew: ThesaurusResult[] = [];
-
-  keywordHierarchy = [
-    this.inspireTopicsNew,
-    this.gemetKeywordsNew,
-    this.umthesKeywordsNew,
-    this.freeKeywordsNew,
-  ];
   keywordHierarchyMap: Map<string, ThesaurusResult[][]>;
 
   keywordDialogData = [];
@@ -197,8 +190,7 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   private categorizeKeywords(analyzedKeywords: any[]) {
-    for (let [thesaurus, [oldKeywords, newKeywords]] of this
-      .keywordHierarchyMap) {
+    for (let [thesaurus, [oldKeywords, _]] of this.keywordHierarchyMap) {
       this.keywordHierarchyMap.set(thesaurus, [
         oldKeywords,
         analyzedKeywords.filter((keyword) => keyword.thesaurus === thesaurus),
@@ -356,37 +348,6 @@ export class ConsolidateDialogComponent implements OnInit {
         keywords: this.keywordHierarchyMap.get(this.keywordCategories.free)[1],
       },
     ];
-  }
-
-  // Remove duplicate keywords between thesauri to preserve hierarchy (Gemet > Umthes > Free)
-  private removeDuplicateKeywordsBetweenArrays(
-    arr1: ThesaurusResult[],
-    arr2: ThesaurusResult[],
-  ): any[] {
-    return arr1.filter(
-      (keyword1) =>
-        !arr2.some(
-          (keyword2) =>
-            keyword1.status !== "removed" &&
-            keyword2.status !== "removed" &&
-            keyword1.label.toLowerCase() === keyword2.label.toLowerCase(),
-        ),
-    );
-  }
-
-  private removeDuplicateKeywordsWithHierarchy(
-    thesauriResults: ThesaurusResult[][],
-  ): void {
-    for (let i = 0; i < thesauriResults.length; i++) {
-      for (let j = i + 1; j < thesauriResults.length; j++) {
-        const filteredArray = this.removeDuplicateKeywordsBetweenArrays(
-          thesauriResults[j],
-          thesauriResults[i],
-        );
-        thesauriResults[j].length = 0; // Clear the original array
-        thesauriResults[j].push(...filteredArray); // Push the modified content back into the original array
-      }
-    }
   }
 
   // Iterates over the array and marks duplicates as removed except the first one
