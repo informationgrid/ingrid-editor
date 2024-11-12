@@ -271,13 +271,19 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   acceptConsolidatedKeywords() {
+    const keywords = Array.from(this.keywordHierarchyMap.values()).flatMap(
+      ([, keywords]) => keywords,
+    );
     this.keywordAnalysis.updateForm(
-      Array.from(this.keywordHierarchyMap.values()).flatMap(
-        ([, keywords]) => keywords,
-      ),
+      keywords,
       this.form,
       this.canHaveIsoCategories,
     );
+    const isDirty = keywords.some((keyword) => keyword.status !== "unchanged");
+    if (isDirty) {
+      this.form.markAsDirty();
+    }
+
     this.dialogRef.close("confirm");
   }
 
