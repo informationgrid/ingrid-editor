@@ -40,6 +40,7 @@ as-split-area {
 
   .page-title {
     margin-top: 0;
+    margin-bottom: 0;
     padding-bottom: 12px;
     font-size: 34px;
     letter-spacing: 0.25px;
@@ -120,10 +121,15 @@ mat-toolbar-row {
 }
 
 h1 {
-  padding-left: 12px;
   font-size: 2em;
   line-height: 44px;
   font-weight: 400;
+}
+
+h2 {
+  margin: unset;
+  font-size: 24px;
+  font-weight: normal;
 }
 
 ngx-skeleton-loader {

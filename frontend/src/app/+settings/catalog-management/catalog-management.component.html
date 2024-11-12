@@ -19,7 +19,7 @@
     </div>
 
     <div main-content>
-        <div class="section-title">Aktiver Katalog</div>
+        <h2 class="section-title">Aktiver Katalog</h2>
         <div class="flex-row" style="padding-bottom: 48px">
             @if (activeCatalog | async; as catalog) {
                 <div class="catalog-wrapper">
@@ -31,7 +31,7 @@
             }
         </div>
 
-        <div class="section-title">Weitere Kataloge</div>
+        <h2 class="section-title">Weitere Kataloge</h2>
         <div class="flex-row flex-wrap gap-36">
             @for (
                 cat of nonActiveCatalogs | async;

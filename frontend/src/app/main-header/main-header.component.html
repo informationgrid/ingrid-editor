@@ -10,7 +10,7 @@
             ><strong>{{ t("application") }}</strong> EDITOR
             <strong>{{ t("application-suffix") }}</strong></span
         >
-        <h1 class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</h1>
+        <div class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</div>
 
         <div class="center-header flex-grow">
             @if (timeout$ | async; as timer) {
