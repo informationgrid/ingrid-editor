@@ -109,7 +109,6 @@ export class KeywordAnalysis {
   updateIsoCategory(
     item: any,
     form: FormGroup | FormArray,
-    // fieldConfig: FormlyFieldConfig,
     doRemove: boolean = false,
   ) {
     const isoKey = KeywordAnalysis.inspireToIsoMapping[item.key];
