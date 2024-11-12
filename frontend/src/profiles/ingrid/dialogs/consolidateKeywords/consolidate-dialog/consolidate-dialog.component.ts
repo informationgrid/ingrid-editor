@@ -280,12 +280,9 @@ export class ConsolidateDialogComponent implements OnInit {
 
   acceptConsolidatedKeywords() {
     this.keywordAnalysis.updateForm(
-      [
-        ...this.gemetKeywordsNew,
-        ...this.umthesKeywordsNew,
-        ...this.freeKeywordsNew,
-        ...this.inspireTopicsNew,
-      ],
+      Array.from(this.keywordHierarchyMap.values()).flatMap(
+        ([, keywords]) => keywords,
+      ),
       this.form,
       this.canHaveIsoCategories,
     );
