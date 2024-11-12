@@ -100,21 +100,7 @@ export class ConsolidateDialogComponent implements OnInit {
     this.umthesKeywordsNew,
     this.freeKeywordsNew,
   ];
-
-  keywordMapping = {
-    original: {
-      [this.keywordCategories.gemet]: this.gemetKeywords,
-      [this.keywordCategories.umthes]: this.umthesKeywords,
-      [this.keywordCategories.free]: this.freeKeywords,
-      [this.keywordCategories.themes]: this.inspireTopics,
-    },
-    new: {
-      [this.keywordCategories.gemet]: this.gemetKeywordsNew,
-      [this.keywordCategories.umthes]: this.umthesKeywordsNew,
-      [this.keywordCategories.free]: this.freeKeywordsNew,
-      [this.keywordCategories.themes]: this.inspireTopicsNew,
-    },
-  };
+  keywordHierarchyMap: Map<string, ThesaurusResult[][]>;
 
   keywordDialogData = [];
   isLoading: boolean;
@@ -164,6 +150,22 @@ export class ConsolidateDialogComponent implements OnInit {
     this.timedOutKeywords = [];
     this.timedOutThesauri = [];
 
+    this.keywordHierarchyMap = new Map([
+      [
+        this.keywordCategories.themes,
+        [this.inspireTopics, this.inspireTopicsNew],
+      ],
+      [
+        this.keywordCategories.gemet,
+        [this.gemetKeywords, this.gemetKeywordsNew],
+      ],
+      [
+        this.keywordCategories.umthes,
+        [this.umthesKeywords, this.umthesKeywordsNew],
+      ],
+      [this.keywordCategories.free, [this.freeKeywords, this.freeKeywordsNew]],
+    ]);
+
     return true;
   }
 
@@ -195,67 +197,54 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   private categorizeKeywords(analyzedKeywords: any[]) {
-    this.gemetKeywordsNew = analyzedKeywords.filter(
-      (keyword) => keyword.thesaurus === this.keywordCategories.gemet,
-    );
-    this.umthesKeywordsNew = analyzedKeywords.filter(
-      (keyword) => keyword.thesaurus === this.keywordCategories.umthes,
-    );
-    this.freeKeywordsNew = analyzedKeywords.filter(
-      (keyword) => keyword.thesaurus === this.keywordCategories.free,
-    );
-    this.inspireTopicsNew = analyzedKeywords.filter(
-      (keyword) => keyword.thesaurus === this.keywordCategories.themes,
-    );
+    for (let [thesaurus, [oldKeywords, newKeywords]] of this
+      .keywordHierarchyMap) {
+      this.keywordHierarchyMap.set(thesaurus, [
+        oldKeywords,
+        analyzedKeywords.filter((keyword) => keyword.thesaurus === thesaurus),
+      ]);
+    }
+  }
+
+  private addKeywordStatuses(
+    oldKeywords: ThesaurusResult[],
+    newKeywords: ThesaurusResult[],
+    thesaurus: ThesaurusResult["thesaurus"],
+  ) {
+    const results: ThesaurusResult[] = [];
+    newKeywords.forEach((keyword) => {
+      if (!oldKeywords.some((k) => k.label === keyword.label)) {
+        results.push({ ...keyword, status: "added" });
+      } else {
+        results.push({ ...keyword, status: "unchanged" });
+      }
+    });
+    // oldKeywords not in newKeywords as "removed"
+    oldKeywords.forEach((keyword) => {
+      if (!newKeywords.some((k) => k.label === keyword.label)) {
+        results.push({
+          found: false,
+          label: keyword.label,
+          value: keyword,
+          thesaurus: thesaurus,
+          status: "removed",
+        });
+      }
+    });
+
+    return results;
   }
 
   private addAllKeywordStatuses() {
-    const addStatuses = (
-      newKeywords: ThesaurusResult[],
-      oldKeywords: any[],
-      thesaurus: ThesaurusResult["thesaurus"],
-    ) => {
-      // newKeywords not in oldKeywords as "added"
-      newKeywords.forEach((keyword) => {
-        if (!oldKeywords.some((k) => k.label === keyword.label)) {
-          keyword.status = "added";
-        }
-      });
-
-      // oldKeywords not in newKeywords as "removed"
-      oldKeywords.forEach((keyword) => {
-        if (!newKeywords.some((k) => k.label === keyword.label)) {
-          newKeywords.push({
-            found: false,
-            label: keyword.label,
-            value: keyword,
-            thesaurus: thesaurus,
-            status: "removed",
-          });
-        }
-      });
-    };
-
-    addStatuses(
-      this.gemetKeywordsNew,
-      this.gemetKeywords,
-      this.keywordCategories.gemet,
-    );
-    addStatuses(
-      this.umthesKeywordsNew,
-      this.umthesKeywords,
-      this.keywordCategories.umthes,
-    );
-    addStatuses(
-      this.freeKeywordsNew,
-      this.freeKeywords,
-      this.keywordCategories.free,
-    );
-    addStatuses(
-      this.inspireTopicsNew,
-      this.getInspireLabels(),
-      this.keywordCategories.themes,
-    );
+    for (let [thesaurus, [oldKeywords, newKeywords]] of this
+      .keywordHierarchyMap) {
+      const results = this.addKeywordStatuses(
+        oldKeywords,
+        newKeywords,
+        thesaurus,
+      );
+      this.keywordHierarchyMap.set(thesaurus, [oldKeywords, results]);
+    }
   }
 
   // Special handling getting label from codelist id's
@@ -266,54 +255,27 @@ export class ConsolidateDialogComponent implements OnInit {
     }));
   }
 
-  // Keep keywords that were found with a different label in another thesaurus e.g. Kita -> Kindertagesstätte
   private keepKeywordsFoundWithAlternativeLabel() {
-    this.freeKeywords.map((keyword) => {
-      if (
-        ![
-          ...this.umthesKeywordsNew,
-          ...this.gemetKeywordsNew,
-          ...this.inspireTopicsNew,
-        ].some(
-          (k) =>
-            k.label.toLowerCase() === keyword.label.toLowerCase() &&
-            !this.freeKeywordsNew.some(
-              (k) =>
-                k.label.toLowerCase() === keyword.label.toLowerCase() &&
-                k.status !== "removed",
-            ),
-        )
-      ) {
-        this.freeKeywordsNew.push({
-          found: true,
-          label: keyword.label,
-          thesaurus: this.keywordCategories.free,
-          value: keyword,
-          status: "unchanged",
-        });
-      }
-    });
-    this.umthesKeywords.map((keyword) => {
-      if (
-        !this.gemetKeywordsNew.some(
-          (k) =>
-            k.label.toLowerCase() === keyword.label.toLowerCase() &&
-            !this.umthesKeywordsNew.some(
-              (k2) =>
-                k2.label.toLowerCase() === keyword.label.toLowerCase() &&
-                k2.status !== "removed",
-            ),
-        )
-      ) {
-        this.umthesKeywordsNew.push({
-          found: true,
-          label: keyword.label,
-          thesaurus: keyword.thesaurus,
-          value: keyword,
-          status: "unchanged",
-        });
-      }
-    });
+    const otherThesauriNewKeywords: ThesaurusResult[] = [];
+    for (let [thesaurus, [oldKeywords, newKeywords]] of this
+      .keywordHierarchyMap) {
+      const keywords = newKeywords;
+      oldKeywords.map((keyword) => {
+        const wasFoundInOtherThesauri = !otherThesauriNewKeywords.some(
+          (k) => k.label.toLowerCase() === keyword.label.toLowerCase(),
+        );
+        const wasNotRemoved = newKeywords.some(
+          (k2) =>
+            k2.label.toLowerCase() === keyword.label.toLowerCase() &&
+            k2.status === "removed",
+        );
+        if (wasFoundInOtherThesauri && wasNotRemoved) {
+          keywords.find((k) => k.label === keyword.label).status = "unchanged";
+        }
+      });
+      this.keywordHierarchyMap.set(thesaurus, [oldKeywords, keywords]);
+      otherThesauriNewKeywords.push(...newKeywords);
+    }
   }
 
   acceptConsolidatedKeywords() {
@@ -338,44 +300,25 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   private sortKeywordsByStatus() {
-    this.inspireTopicsNew = this.sortByStatus(this.inspireTopicsNew);
-    this.isoCategoriesNew = this.sortByStatus(this.isoCategoriesNew);
-    this.gemetKeywordsNew = this.sortByStatus(this.gemetKeywordsNew);
-    this.umthesKeywordsNew = this.sortByStatus(this.umthesKeywordsNew);
-    this.freeKeywordsNew = this.sortByStatus(this.freeKeywordsNew);
+    for (let [thesaurus, [oldKeywords, newKeywords]] of this
+      .keywordHierarchyMap) {
+      this.keywordHierarchyMap.set(thesaurus, [
+        oldKeywords,
+        this.sortByStatus(newKeywords),
+      ]);
+    }
   }
 
   private removeAllDuplicateKeywords() {
-    // Remove duplicate keywords inside the same thesaurus
-
-    // this.keywordHierarchy.forEach((keywords: ThesaurusResult[], index) => {
-    //   this.keywordHierarchy[index] = removeDuplicatesByValue(keywords, "label");
-    // });
-
-    this.inspireTopicsNew = removeDuplicatesByValue(
-      this.inspireTopicsNew,
-      "label",
-    );
-    this.isoCategoriesNew = removeDuplicatesByValue(
-      this.isoCategoriesNew,
-      "label",
-    );
-    this.gemetKeywordsNew = removeDuplicatesByValue(
-      this.gemetKeywordsNew,
-      "label",
-    );
-    this.umthesKeywordsNew = removeDuplicatesByValue(
-      this.umthesKeywordsNew,
-      "label",
-    );
-    this.freeKeywordsNew = removeDuplicatesByValue(
-      this.freeKeywordsNew,
-      "label",
-    );
+    for (let [thesaurus, [oldKeywords, newKeywords]] of this
+      .keywordHierarchyMap) {
+      let editedKeywords = removeDuplicatesByValue(newKeywords, "label");
+      editedKeywords = this.markDuplicatesAsRemoved(newKeywords);
+      this.keywordHierarchyMap.set(thesaurus, [oldKeywords, editedKeywords]);
+    }
 
     this.removeDuplicateKeywordsWithHierarchy(this.keywordHierarchy);
     // Change status of duplicate keywords to "removed" case-insensitively
-    this.markDuplicatesAsRemoved(this.freeKeywordsNew);
   }
 
   private resetNewKeywords() {
@@ -390,23 +333,33 @@ export class ConsolidateDialogComponent implements OnInit {
     this.keywordDialogData = [
       {
         label: "INSPIRE Themen",
-        condition: this.inspireTopicsNew.length,
-        keywords: this.inspireTopicsNew,
+        condition: this.keywordHierarchyMap.get(
+          this.keywordCategories.themes,
+        )[1].length,
+        keywords: this.keywordHierarchyMap.get(
+          this.keywordCategories.themes,
+        )[1],
       },
       {
         label: "Gemet Schlagworte",
-        condition: this.gemetKeywordsNew.length,
-        keywords: this.gemetKeywordsNew,
+        condition: this.keywordHierarchyMap.get(this.keywordCategories.gemet)[1]
+          .length,
+        keywords: this.keywordHierarchyMap.get(this.keywordCategories.gemet)[1],
       },
       {
         label: "Umthes Schlagworte",
-        condition: this.umthesKeywordsNew.length,
-        keywords: this.umthesKeywordsNew,
+        condition: this.keywordHierarchyMap.get(
+          this.keywordCategories.umthes,
+        )[1].length,
+        keywords: this.keywordHierarchyMap.get(
+          this.keywordCategories.umthes,
+        )[1],
       },
       {
         label: "Freie Schlagworte",
-        condition: this.freeKeywordsNew.length,
-        keywords: this.freeKeywordsNew,
+        condition: this.keywordHierarchyMap.get(this.keywordCategories.free)[1]
+          .length,
+        keywords: this.keywordHierarchyMap.get(this.keywordCategories.free)[1],
       },
     ];
   }
