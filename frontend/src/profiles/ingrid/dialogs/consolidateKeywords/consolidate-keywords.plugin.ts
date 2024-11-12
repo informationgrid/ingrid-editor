@@ -29,11 +29,8 @@ import {
   FormularMenuItem,
   MenuId,
 } from "../../../../app/+form/form-menu.service";
-import { FormStateService } from "../../../../app/+form/form-state.service";
-import { DocumentService } from "../../../../app/services/document/document.service";
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
-import { FormUtils } from "../../../../app/+form/form.utils";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { DocumentAbstract } from "../../../../app/store/document/document.model";
 
@@ -62,8 +59,6 @@ export class ConsolidateKeywordsPlugin extends Plugin {
     private docEventsService: DocEventsService,
     private documentTreeQuery: TreeQuery,
     private formMenuService: FormMenuService,
-    private formStateService: FormStateService,
-    private documentService: DocumentService,
     configService: ConfigService,
     private dialog: MatDialog,
   ) {
@@ -84,7 +79,7 @@ export class ConsolidateKeywordsPlugin extends Plugin {
 
       const onEvent = this.docEvents
         .onEvent("OPEN_CONSOLIDATE_KEYWORDS_DIALOG")
-        .subscribe(async () => await this.handleConsolidateKeywordsAction());
+        .subscribe(async () => this.openConsolidateKeywordsDialog());
       this.formSubscriptions.push(onDocLoad); // Add menu button
       this.formSubscriptions.push(onEvent); // Open dialog
     }
@@ -106,29 +101,6 @@ export class ConsolidateKeywordsPlugin extends Plugin {
       this.isPresent = true;
       this.formMenuService.addMenuItem(this.formMenuId, this.button);
     }
-  }
-
-  private async handleConsolidateKeywordsAction() {
-    const handled = await FormUtils.handleDirtyForm(
-      this.formStateService,
-      this.documentService,
-      this.dialog,
-      false,
-    );
-    if (!handled) {
-      return;
-    }
-
-    this.openConsolidateKeywordsDialog().subscribe(async (confirmed) => {
-      if (confirmed) {
-        await FormUtils.handleDirtyForm(
-          this.formStateService,
-          this.documentService,
-          this.dialog,
-          this.forAddress,
-        );
-      }
-    });
   }
 
   register() {
