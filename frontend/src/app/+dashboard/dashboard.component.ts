@@ -108,9 +108,7 @@ export class DashboardComponent implements OnInit {
 
   createNewDocument() {
     this.dialog.open(CreateNodeComponent, {
-      minWidth: 500,
       maxWidth: 600,
-      minHeight: 400,
       disableClose: true,
       hasBackdrop: true,
       data: {
@@ -123,9 +121,7 @@ export class DashboardComponent implements OnInit {
 
   createNewAddress() {
     this.dialog.open(CreateNodeComponent, {
-      minWidth: 500,
       maxWidth: 600,
-      minHeight: 400,
       disableClose: true,
       hasBackdrop: true,
       data: {
@@ -158,9 +154,7 @@ export class DashboardComponent implements OnInit {
 
   createNewFolder() {
     this.dialog.open(CreateNodeComponent, {
-      minWidth: 500,
       maxWidth: 600,
-      minHeight: 400,
       disableClose: true,
       hasBackdrop: true,
       data: {

@@ -109,12 +109,21 @@ export class ContextHelpService {
     helpText$: Observable<string>,
     infoElement?: HTMLElement,
   ) {
-    const dialogPosition: DialogPosition = infoElement
+    let dialogPosition: DialogPosition = infoElement
       ? {
           left: ContextHelpService.getLeftPosition(infoElement),
           top: ContextHelpService.getTopPosition(infoElement),
         }
       : null;
+
+    // If any position is under 0 meaning outside the window,
+    // the dialog will be centered for accessibility.
+    if (
+      parseInt(dialogPosition?.left) < 0 ||
+      parseInt(dialogPosition?.top) < 0
+    ) {
+      dialogPosition = null;
+    }
 
     this.currentDialog?.close();
 

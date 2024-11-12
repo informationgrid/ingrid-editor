@@ -424,6 +424,8 @@ bootstrapApplication(AppComponent, {
         panelClass: "mat-dialog-override",
         hasBackdrop: true,
         maxWidth: "min(950px, 90vw)",
+        minWidth: "min(500px, 100%)",
+        minHeight: "min(0px, 100%)",
         role: "dialog",
         autoFocus: "dialog",
         restoreFocus: true,

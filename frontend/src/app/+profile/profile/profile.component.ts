@@ -128,7 +128,7 @@ export class ProfileComponent implements OnInit {
           lastName: this.userInfo$.value.lastName,
         },
         hasBackdrop: true,
-        minWidth: 400,
+        minWidth: "min(400px, 100%)",
       })
       .afterClosed()
       .pipe(filter((modified) => modified))
