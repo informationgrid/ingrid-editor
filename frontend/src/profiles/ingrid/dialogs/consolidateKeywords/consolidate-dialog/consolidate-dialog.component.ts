@@ -320,32 +320,22 @@ export class ConsolidateDialogComponent implements OnInit {
     this.keywordDialogData = [
       {
         label: "INSPIRE Themen",
-        condition: this.keywordHierarchyMap.get(
-          this.keywordCategories.themes,
-        )[1].length,
         keywords: this.keywordHierarchyMap.get(
           this.keywordCategories.themes,
         )[1],
       },
       {
         label: "Gemet Schlagworte",
-        condition: this.keywordHierarchyMap.get(this.keywordCategories.gemet)[1]
-          .length,
         keywords: this.keywordHierarchyMap.get(this.keywordCategories.gemet)[1],
       },
       {
         label: "Umthes Schlagworte",
-        condition: this.keywordHierarchyMap.get(
-          this.keywordCategories.umthes,
-        )[1].length,
         keywords: this.keywordHierarchyMap.get(
           this.keywordCategories.umthes,
         )[1],
       },
       {
         label: "Freie Schlagworte",
-        condition: this.keywordHierarchyMap.get(this.keywordCategories.free)[1]
-          .length,
         keywords: this.keywordHierarchyMap.get(this.keywordCategories.free)[1],
       },
     ];

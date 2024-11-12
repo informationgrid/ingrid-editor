@@ -8,7 +8,7 @@ konsolidieren"
         @if (!isLoading) {
             @if (this.hasKeywords) {
                 @for (keywordType of keywordDialogData; track keywordType) {
-                    @if (keywordType.condition) {
+                    @if (keywordType.keywords.length) {
                         <div
                             class="keyword-section flex-row"
                             [attr.aria-label]="keywordType.label"
