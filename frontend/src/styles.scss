@@ -1416,3 +1416,16 @@ table.big-font {
     height: 20px !important;
   }
 }
+
+.dynamic-height-list-item {
+  .mat-mdc-list-item {
+    height: auto !important;
+  }
+
+  .mdc-list-item__primary-text::before,
+  .mdc-list-item__content::after {
+    content: "";
+    height: 10px !important;
+    display: block !important;
+  }
+}
