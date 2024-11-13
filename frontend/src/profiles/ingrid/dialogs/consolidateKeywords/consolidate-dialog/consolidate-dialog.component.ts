@@ -173,7 +173,9 @@ export class ConsolidateDialogComponent implements OnInit {
           ...this.gemetKeywords,
           ...this.umthesKeywords,
           ...this.freeKeywords,
-          ...this.getInspireLabels(),
+          ...this.inspireTopics.map((keyword) =>
+            this.getInspireLabel(keyword.key),
+          ),
         ].map((keyword) => keyword.label),
         this.isInspireIdentified,
       );
@@ -203,26 +205,48 @@ export class ConsolidateDialogComponent implements OnInit {
     newKeywords: ThesaurusResult[],
     thesaurus: ThesaurusResult["thesaurus"],
   ) {
-    const results: ThesaurusResult[] = [];
-    newKeywords.forEach((keyword) => {
-      if (!oldKeywords.some((k) => k.label === keyword.label)) {
-        results.push({ ...keyword, status: "added" });
-      } else {
-        results.push({ ...keyword, status: "unchanged" });
-      }
-    });
-    // oldKeywords not in newKeywords as "removed"
-    oldKeywords.forEach((keyword) => {
-      if (!newKeywords.some((k) => k.label === keyword.label)) {
-        results.push({
-          found: false,
-          label: keyword.label,
-          value: keyword,
-          thesaurus: thesaurus,
-          status: "removed",
-        });
-      }
-    });
+    const results: any[] = [];
+    const isInspire = thesaurus === this.keywordCategories.themes;
+    if (isInspire) {
+      newKeywords.forEach((keyword) => {
+        if (!oldKeywords.some((k) => k["key"] === keyword.value.key)) {
+          results.push({ ...keyword, status: "added" });
+        } else {
+          results.push({ ...keyword, status: "unchanged" });
+        }
+      });
+      oldKeywords.forEach((keyword) => {
+        if (!newKeywords.some((k) => k.value.key === keyword["key"])) {
+          results.push({
+            found: false,
+            label: this.getInspireLabel(keyword["key"]).label,
+            value: { key: keyword["key"] },
+            thesaurus: thesaurus,
+            status: "removed",
+          });
+        }
+      });
+    } else {
+      newKeywords.forEach((keyword) => {
+        if (!oldKeywords.some((k) => k.label === keyword.label)) {
+          results.push({ ...keyword, status: "added" });
+        } else {
+          results.push({ ...keyword, status: "unchanged" });
+        }
+      });
+      // oldKeywords not in newKeywords as "removed"
+      oldKeywords.forEach((keyword) => {
+        if (!newKeywords.some((k) => k.label === keyword.label)) {
+          results.push({
+            found: false,
+            label: keyword.label,
+            value: keyword,
+            thesaurus: thesaurus,
+            status: "removed",
+          });
+        }
+      });
+    }
 
     return results;
   }
@@ -247,10 +271,19 @@ export class ConsolidateDialogComponent implements OnInit {
     }));
   }
 
+  private getInspireLabel(key: string) {
+    return {
+      label: this.codelistQuery.getCodelistEntryByKey("6100", key).fields["de"],
+    };
+  }
+
   private keepKeywordsFoundWithAlternativeLabel() {
     const otherThesauriNewKeywords: ThesaurusResult[] = [];
     for (let [thesaurus, [oldKeywords, newKeywords]] of this
       .keywordHierarchyMap) {
+      if (thesaurus === this.keywordCategories.themes) {
+        continue;
+      }
       const keywords = newKeywords;
       oldKeywords.map((keyword) => {
         const wasFoundInOtherThesauri = !otherThesauriNewKeywords.some(
@@ -302,6 +335,9 @@ export class ConsolidateDialogComponent implements OnInit {
   private removeAllDuplicateKeywords() {
     for (let [thesaurus, [oldKeywords, newKeywords]] of this
       .keywordHierarchyMap) {
+      if (thesaurus === this.keywordCategories.themes) {
+        continue;
+      }
       // Remove duplicates case-insensitively
       const editedKeywords = this.markDuplicatesAsRemoved(newKeywords);
       this.keywordHierarchyMap.set(thesaurus, [oldKeywords, editedKeywords]);
@@ -344,7 +380,6 @@ export class ConsolidateDialogComponent implements OnInit {
   // Iterates over the array and marks duplicates as removed except the first one
   private markDuplicatesAsRemoved(arr: ThesaurusResult[]) {
     const seenLabels = new Set<string>();
-
     arr.forEach((item) => {
       const labelLowerCase = item.label.toLowerCase();
 
