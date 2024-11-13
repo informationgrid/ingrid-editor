@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable, Type } from "@angular/core";
+import { inject, Injectable, Type } from "@angular/core";
 import { ConfigDataService } from "./config-data.service";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { Catalog } from "../../+catalog/services/catalog.model";
@@ -27,7 +27,7 @@ import { HttpClient } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { catchError, map, tap } from "rxjs/operators";
 import { BehaviourFormatBackend } from "../behavior/behaviour.service";
-import { CodelistStore } from "../../store/codelist/codelist.store";
+import { GeneralStore } from "../../store/general.store";
 
 export class Configuration {
   constructor(
@@ -116,6 +116,8 @@ export interface ConnectionInfoElastic {
   providedIn: "root",
 })
 export class ConfigService {
+  private generalStore = inject(GeneralStore);
+
   public static catalogId: string;
 
   public static backendApiUrl: string;
@@ -141,7 +143,6 @@ export class ConfigService {
   constructor(
     private http: HttpClient,
     private snackbar: MatSnackBar,
-    private codelistStore: CodelistStore,
   ) {
     this.dataService = new ConfigDataService(http);
   }
@@ -164,10 +165,9 @@ export class ConfigService {
       throw new IgeError("Could not get current user");
     }
     ConfigService.catalogId = userInfo.currentCatalog.id;
-    this.codelistStore.update(() => ({
-      favorites:
-        userInfo.currentCatalog.settings?.config?.codelistFavorites ?? {},
-    }));
+    this.generalStore.updateFavorites(
+      userInfo.currentCatalog.settings?.config?.codelistFavorites ?? {},
+    );
     this.isSuperAdministrator = userInfo.role === "ige-super-admin";
     this.isAdministrator =
       this.isSuperAdministrator || userInfo.role === "cat-admin";

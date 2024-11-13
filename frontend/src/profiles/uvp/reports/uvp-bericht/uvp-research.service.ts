@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { filter } from "rxjs/operators";
 import { HttpClient, HttpParams } from "@angular/common/http";
@@ -26,9 +26,9 @@ import {
   Configuration,
 } from "../../../../app/services/config/config.service";
 import { CodelistService } from "../../../../app/services/codelist/codelist.service";
-import { CodelistQuery } from "../../../../app/store/codelist/codelist.query";
 import { Codelist } from "../../../../app/store/codelist/codelist.model";
 import { BehaviourService } from "../../../../app/services/behavior/behaviour.service";
+import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
 
 export class UvpReport {
   eiaStatistic: any;
@@ -64,6 +64,7 @@ export class ActivityItem {
   providedIn: "root",
 })
 export class UvpResearchService {
+  private codelistStore = inject(CodelistStore);
   private configuration: Configuration;
   private eiaNumbersCodelist: Codelist;
 
@@ -73,7 +74,6 @@ export class UvpResearchService {
     private http: HttpClient,
     configService: ConfigService,
     private codelistService: CodelistService,
-    private codelistQuery: CodelistQuery,
     private behaviourService: BehaviourService,
   ) {
     this.configuration = configService.getConfiguration();
@@ -179,8 +179,7 @@ export class UvpResearchService {
       this.behaviourService.getBehaviour("plugin.uvp.eia-number")?.data
         ?.uvpCodelist ?? 9000;
 
-    this.codelistQuery
-      .selectEntity(uvpNumber)
+    this.codelistStore.entityMap[uvpNumber]
       .pipe(filter((id) => id !== undefined))
       .subscribe((id) => {
         this.eiaNumbersCodelist = id;

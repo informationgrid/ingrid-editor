@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
 import { FieldArrayType } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -34,7 +34,6 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime, map, startWith } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import {
   CodelistService,
   SelectOption,
@@ -69,6 +68,8 @@ import { MatIconButton } from "@angular/material/button";
 import { MatSelect } from "@angular/material/select";
 import { AsyncPipe } from "@angular/common";
 import { CodelistPipe } from "../../../directives/codelist.pipe";
+import { CodelistStore } from "../../../store/codelist/codelist.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
@@ -103,6 +104,7 @@ import { CodelistPipe } from "../../../directives/codelist.pipe";
   ],
 })
 export class RepeatChipComponent extends FieldArrayType implements OnInit {
+  private codelistStore = inject(CodelistStore);
   inputControl = new UntypedFormControl();
 
   type: "simple" | "codelist" | "object" = "simple";
@@ -117,7 +119,6 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     private http: HttpClient,
     private snack: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    private codelistQuery: CodelistQuery,
   ) {
     super();
 
@@ -130,9 +131,10 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     if (this.props.codelistId) {
       this.type = "codelist";
       this.props.labelField = "label";
-      this.codelistOptions = this.codelistQuery
-        .selectEntity(this.props.codelistId)
-        .pipe(map((codelist) => CodelistService.mapToSelect(codelist)));
+      this.codelistOptions = toObservable(this.codelistStore.entityMap).pipe(
+        map((item) => item[this.props.codelistId]),
+        map((codelist) => CodelistService.mapToSelect(codelist)),
+      );
     } else if (this.props.restCall) {
       this.type = "object";
       this.inputControl.valueChanges

@@ -19,7 +19,6 @@
  */
 import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent, InGridDoctype } from "./profile-ingrid";
-import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CommonFieldsLfuBayern } from "./ingrid-lfubayern/doctypes/common-fields";
 import { AnonymousAddressPlugin } from "./ingrid-lfubayern/behaviours/anonymous-address.plugin";
@@ -30,7 +29,6 @@ import { PluginService } from "../app/services/plugin/plugin.service";
   standalone: true,
 })
 class InGridLFUBayernComponent extends InGridComponent {
-  codelistQuery = inject(CodelistQuery);
   common = inject(CommonFieldsLfuBayern);
   pluginService = inject(PluginService);
   anonymousAddressPlugin = inject(AnonymousAddressPlugin);

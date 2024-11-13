@@ -3086,6 +3086,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ngrx/signals@npm:18.1.1":
+  version: 18.1.1
+  resolution: "@ngrx/signals@npm:18.1.1"
+  dependencies:
+    tslib: "npm:^2.3.0"
+  peerDependencies:
+    "@angular/core": ^18.0.0
+    rxjs: ^6.5.3 || ^7.4.0
+  peerDependenciesMeta:
+    rxjs:
+      optional: true
+  checksum: 10c0/901331f6dd3ca4c159ef17aea952fe2552ce2f27b9071f3e0ed6edb4377ff442c0240b9a0a76cce6b5032637564bfcb0615d97c888bff0ce74a69613e92ba375
+  languageName: node
+  linkType: hard
+
 "@ngtools/webpack@npm:18.2.1":
   version: 18.2.1
   resolution: "@ngtools/webpack@npm:18.2.1"
@@ -7878,6 +7893,7 @@ __metadata:
     "@ngneat/spectator": "npm:^16.0.0"
     "@ngneat/transloco": "npm:6.0.4"
     "@ngneat/until-destroy": "npm:^10.0.0"
+    "@ngrx/signals": "npm:18.1.1"
     "@ngx-formly/core": "npm:6.3.8"
     "@ngx-formly/material": "npm:6.3.8"
     "@stomp/rx-stomp": "npm:^2.0.0"

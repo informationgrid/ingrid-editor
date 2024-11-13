@@ -21,6 +21,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   Inject,
   OnDestroy,
   OnInit,
@@ -31,7 +32,6 @@ import { DocumentAbstract } from "../../../../store/document/document.model";
 import { BehaviorSubject, Observable } from "rxjs";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
-import { CodelistQuery } from "../../../../store/codelist/codelist.query";
 import {
   CodelistService,
   SelectOption,
@@ -61,6 +61,8 @@ import { MatIcon } from "@angular/material/icon";
 import { CdkScrollable } from "@angular/cdk/scrolling";
 import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
+import { CodelistStore } from "../../../../store/codelist/codelist.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 export interface ChooseAddressDialogData {
   address: ResolvedAddressWithType;
@@ -96,6 +98,7 @@ export interface ChooseAddressResponse {
   ],
 })
 export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
+  private codelistStore = inject(CodelistStore);
   @ViewChild(MatSelect) recentAddressSelect: MatSelect;
   selection = signal<DocumentAbstract>(null);
   selectedType: string;
@@ -115,7 +118,6 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   constructor(
     private addressTreeQuery: AddressTreeQuery,
     @Inject(MAT_DIALOG_DATA) private data: ChooseAddressDialogData,
-    private codelistQuery: CodelistQuery,
     private codelistService: CodelistService,
     private sessionQuery: SessionQuery,
     private documentService: DocumentService,
@@ -125,10 +127,10 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.codelistService.byId("505");
-    this.codelistQuery
-      .selectEntity("505")
+    toObservable(this.codelistStore.entityMap)
       .pipe(
         untilDestroyed(this),
+        map((item) => item["505"]),
         map((codelist) => CodelistService.mapToSelect(codelist)),
         map((items) => this.filterByAllowedTypes(items)),
         tap((items) => this.preselectIfOnlyOneType(items)),

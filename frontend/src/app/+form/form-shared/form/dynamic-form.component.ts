@@ -23,6 +23,7 @@ import {
   Component,
   ElementRef,
   HostListener,
+  inject,
   Input,
   OnDestroy,
   OnInit,
@@ -71,7 +72,6 @@ import { FormStateService } from "../../form-state.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../services/event/doc-events.service";
-import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { TranslocoService } from "@ngneat/transloco";
@@ -85,6 +85,8 @@ import { FormInfoComponent } from "../../form-info/form-info.component";
 import { QuickNavbarComponent } from "./quick-navbar/quick-navbar.component";
 import { FolderDashboardComponent } from "../folder/folder-dashboard.component";
 import { AsyncPipe, JsonPipe } from "@angular/common";
+import { GeneralStore } from "../../../store/general.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
@@ -110,6 +112,8 @@ import { AsyncPipe, JsonPipe } from "@angular/common";
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() address = false;
+
+  private generalStore = inject(GeneralStore);
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
   @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
@@ -166,6 +170,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   numberOfErrors = 0;
   private errorCounterSubscription: Subscription;
 
+  private waitForCodelistsLoaded$ = toObservable(
+    this.generalStore.codelistsLoaded,
+  );
+
   constructor(
     private formularService: FormularService,
     private formToolbarService: FormToolbarService,
@@ -178,7 +186,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private addressTreeQuery: AddressTreeQuery,
     private session: SessionQuery,
     private profileQuery: ProfileQuery,
-    private codelistQuery: CodelistQuery,
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog,
@@ -211,9 +218,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // wait for profile and codelists to be loaded before opening first dataset
     combineLatest([
       this.profileQuery.selectLoading().pipe(filter((isLoading) => !isLoading)),
-      this.codelistQuery
-        .selectLoading()
-        .pipe(filter((isLoading) => !isLoading)),
+      this.waitForCodelistsLoaded$.pipe(
+        filter((isLoaded) => isLoaded === true),
+      ),
       merge(
         this.route.params.pipe(map((param) => param.id)),
         this.documentService.reload$.pipe(

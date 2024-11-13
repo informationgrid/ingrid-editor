@@ -930,7 +930,7 @@ export abstract class IngridShared extends BaseDoctype {
     if (connectedInspireTheme) {
       const topicCategoriesCtrl = field.form.get("topicCategories");
       topicCategoriesCtrl.setValue([...topicCategoriesCtrl.value, event]);
-      const inspireThemeValue = this.codelistQuery.getCodelistEntryValueByKey(
+      const inspireThemeValue = this.codelistStore.getCodelistEntryValueByKey(
         "6100",
         connectedInspireTheme.key,
       );
@@ -1683,7 +1683,7 @@ export abstract class IngridShared extends BaseDoctype {
             const mappedDoctype = this.mapDocumentTypeToClass(this.id);
             return data.filter(
               (item) =>
-                this.codelistQuery
+                this.codelistStore
                   .getCodelistEntryByKey("2000", item.value)
                   ?.data?.split(",")
                   ?.indexOf(mappedDoctype) !== -1,
@@ -1928,7 +1928,7 @@ export abstract class IngridShared extends BaseDoctype {
     specificationKey: string,
     passKey: string,
   ) {
-    const publicationDate = this.codelistQuery.getCodelistEntryByKey(
+    const publicationDate = this.codelistStore.getCodelistEntryByKey(
       "6005",
       specificationKey,
     )?.data;

@@ -17,11 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { CodelistService } from "../../services/codelist/codelist.service";
 import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
 import { delay, filter, map, startWith, tap } from "rxjs/operators";
-import { CodelistQuery } from "../../store/codelist/codelist.query";
 import { MatDialog } from "@angular/material/dialog";
 import { UpdateCodelistComponent } from "./update-codelist/update-codelist.component";
 import {
@@ -51,6 +50,8 @@ import { CodelistPresenterComponent } from "../../shared/codelist-presenter/code
 import { MatIcon } from "@angular/material/icon";
 import { MatDivider } from "@angular/material/divider";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { CodelistStore } from "../../store/codelist/codelist.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
@@ -77,11 +78,13 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
   standalone: true,
 })
 export class CatalogCodelistsComponent implements OnInit {
-  private codelists = this.codelistQuery.selectAll().pipe(
+  private codelistStore = inject(CodelistStore);
+
+  private codelists = toObservable(this.codelistStore.entities).pipe(
     map((codelists) => codelists.sort((a, b) => a.name.localeCompare(b.name))),
     delay(0), // set initial value in next rendering cycle!
     tap((options) => (this.codelistsValue = options)),
-    tap((options) => {
+    tap(() => {
       this.activateRememberedCodelist();
       this.setInitialValue();
     }),
@@ -102,7 +105,6 @@ export class CatalogCodelistsComponent implements OnInit {
 
   constructor(
     private codelistService: CodelistService,
-    private codelistQuery: CodelistQuery,
     private _snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {}
@@ -194,7 +196,7 @@ export class CatalogCodelistsComponent implements OnInit {
     this.descriptionCtrl.setValue(this.selectedCodelist.description, {
       emitEvent: false,
     });
-    this.favorites = this.codelistQuery.getFavorite(option.id);
+    this.favorites = this.codelistService.getFavorite(option.id);
     this.favoriteIds = this.favorites.map((f) => f.id);
   }
 
