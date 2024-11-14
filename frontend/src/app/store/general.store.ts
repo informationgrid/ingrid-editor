@@ -1,5 +1,8 @@
 import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
 import { Query } from "./query/query.model";
+import { DocumentAbstract } from "./document/document.model";
+import { UpdateDatasetInfo } from "../models/update-dataset-info.model";
+import { ShortTreeNode } from "../+form/sidebars/tree/tree.types";
 
 type GeneralState = {
   favorites: { [x: string]: string[] };
@@ -7,6 +10,11 @@ type GeneralState = {
   profilesLoaded: boolean;
   activeGroup: number;
   activeQuery: Query;
+  openedAddress: DocumentAbstract;
+  openedDocument: DocumentAbstract;
+  datasetsChanged: UpdateDatasetInfo;
+  explicitActiveNode: ShortTreeNode;
+  activeTreeNodes: number[];
 };
 
 const initialState: GeneralState = {
@@ -15,6 +23,11 @@ const initialState: GeneralState = {
   profilesLoaded: false,
   activeGroup: null,
   activeQuery: null,
+  openedAddress: null,
+  openedDocument: null,
+  datasetsChanged: null,
+  explicitActiveNode: null,
+  activeTreeNodes: [],
 };
 
 export const GeneralStore = signalStore(
@@ -35,6 +48,18 @@ export const GeneralStore = signalStore(
     },
     setActiveQuery(query: Query): void {
       patchState(store, (_state) => ({ activeQuery: query }));
+    },
+    setExplicitActiveNode(node: ShortTreeNode): void {
+      patchState(store, (_state) => ({ explicitActiveNode: node }));
+    },
+    setActiveTreeNodes(docIds: number[]): void {
+      patchState(store, (_state) => ({ activeTreeNodes: docIds }));
+    },
+    setOpenedDocument(doc: DocumentAbstract): void {
+      patchState(store, (_state) => ({ openedDocument: doc }));
+    },
+    setOpenedAddress(address: DocumentAbstract): void {
+      patchState(store, (_state) => ({ openedAddress: address }));
     },
   })),
 );

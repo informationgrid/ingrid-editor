@@ -19,8 +19,6 @@
  */
 import { inject, Injectable } from "@angular/core";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
-import { TreeStore } from "../../../../store/tree/tree.store";
-import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
 import { DocumentService } from "../../../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -34,6 +32,7 @@ import { FormUtils } from "../../../../+form/form.utils";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 import { TagsService } from "./tags.service";
+import { GeneralStore } from "../../../../store/general.store";
 
 @Injectable()
 export class TagsBehaviour extends Plugin {
@@ -44,11 +43,11 @@ export class TagsBehaviour extends Plugin {
     "Jedem Dokument kann ein oder mehrere Tags zugewiesen werden. Derzeit wird es nur verwendet, um einen Datensatz für die Indizierung zu markieren (Internet, Intranet, amtsintern)";
   eventAddTags = "ADD_TAGS";
 
+  private generalStore = inject(GeneralStore);
+
   constructor(
     private formMenuService: FormMenuService,
     private docEvents: DocEventsService,
-    private treeStore: TreeStore,
-    private addressTreeStore: AddressTreeStore,
     private documentService: DocumentService,
     private dialog: MatDialog,
     private formStateService: FormStateService,
@@ -88,8 +87,9 @@ export class TagsBehaviour extends Plugin {
   }
 
   private async showTagsDialog() {
-    const store = this.forAddress ? this.addressTreeStore : this.treeStore;
-    const currentDocument = store.getValue().openedDocument;
+    const currentDocument = this.forAddress
+      ? this.generalStore.openedAddress()
+      : this.generalStore.openedDocument();
     const helpText = this.forAddress
       ? "Eine Adresse darf in ihrem Veröffentlichungsrecht nicht weiter eingeschränkt sein als die Datensätze, in denen sie referenziert wird. Bitte prüfen Sie das Veröffentlichungsrecht der Datensätze."
       : "Bitte stellen Sie bei einer Veränderung des Veröffentlichungsrechts sicher, dass auch alle Referenzen das passende Veröffentlichungsrecht besitzen.";

@@ -17,9 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { EntityStore, StoreConfig } from "@datorama/akita";
-import { TreeState } from "../tree/tree.state";
+import { patchState, signalStore, withMethods } from "@ngrx/signals";
+import { setAllEntities, withEntities } from "@ngrx/signals/entities";
+import { DocumentAbstract } from "../document/document.model";
+import { Query } from "../query/query.model";
 
 const initialState = {
   active: [],
@@ -31,10 +32,12 @@ const initialState = {
   needsReload: false,
 };
 
-@Injectable({ providedIn: "root" })
-@StoreConfig({ name: "address-tree" })
-export class AddressTreeStore extends EntityStore<TreeState> {
-  constructor() {
-    super(initialState);
-  }
-}
+export const AddressTreeStore = signalStore(
+  { providedIn: "root" },
+  withEntities<DocumentAbstract>(),
+  withMethods((store) => ({
+    set(docs: DocumentAbstract[]): void {
+      patchState(store, setAllEntities(docs));
+    },
+  })),
+);

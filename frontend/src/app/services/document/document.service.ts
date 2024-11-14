@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { ModalService } from "../modal/modal.service";
 import { UpdateType } from "../../models/update-type.enum";
 import {
@@ -40,7 +40,6 @@ import { DocumentWithMetadata, IgeDocument } from "../../models/ige-document";
 import { DocumentDataService } from "./document-data.service";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { TreeStore } from "../../store/tree/tree.store";
-import { applyTransaction, HashMap, transaction } from "@datorama/akita";
 import { FormMessageService } from "../form-message.service";
 import { ProfileService } from "../profile.service";
 import { SessionStore } from "../../store/session.store";
@@ -48,7 +47,6 @@ import { HttpClient } from "@angular/common/http";
 import { ConfigService, Configuration } from "../config/config.service";
 import { SearchResult } from "../../models/search-result.model";
 import { ServerSearchResult } from "../../models/server-search-result.model";
-import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { StatisticResponse } from "../../models/statistic.model";
 import { SessionQuery } from "../../store/session.query";
 import { PathResponse } from "../../models/path-response";
@@ -63,6 +61,8 @@ import { TagRequest } from "../../models/tag-request.model";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { CatalogService } from "../../+catalog/services/catalog.service";
 import { isExpired } from "../utils";
+import { GeneralStore } from "../../store/general.store";
+import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -75,6 +75,8 @@ export interface ReloadData {
   providedIn: "root",
 })
 export class DocumentService {
+  private generalStore = inject(GeneralStore);
+  private addressTreeStore = inject(AddressTreeStore);
   // TODO: check usefulness
   documentOperationFinished$ = new Subject<any>();
   publishState$ = new BehaviorSubject<boolean>(false);
@@ -94,7 +96,6 @@ export class DocumentService {
     private sessionStore: SessionStore,
     private sessionQuery: SessionQuery,
     private treeStore: TreeStore,
-    private addressTreeStore: AddressTreeStore,
     private researchService: ResearchService,
     private translocoService: TranslocoService,
     private docEvents: DocEventsService,
@@ -313,16 +314,23 @@ export class DocumentService {
     address: boolean,
     keepOpenedDocument = false,
   ) {
-    const store = address ? this.addressTreeStore : this.treeStore;
+    /*
+    const store = address
+      ? this.generalStore.openedAddress
+      : this.generalStore.openedDocument;
+*/
 
-    applyTransaction(() => {
-      setTimeout(() => store.setActive(doc ? [doc.id] : []), 0);
-      if (!keepOpenedDocument) {
-        return store.update({
-          openedDocument: doc,
-        });
+    setTimeout(
+      () => this.generalStore.setActiveTreeNodes(doc ? [doc.id as number] : []),
+      0,
+    );
+    if (!keepOpenedDocument) {
+      if (address) {
+        this.generalStore.setOpenedAddress(doc);
+      } else {
+        this.generalStore.setOpenedDocument(doc);
       }
-    });
+    }
   }
 
   save(saveOptions: SaveOptions): Observable<DocumentWithMetadata> {
