@@ -353,28 +353,12 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   private setKeywordDialogData() {
-    this.keywordDialogData = [
-      {
-        label: "INSPIRE Themen",
-        keywords: this.keywordHierarchyMap.get(
-          this.keywordCategories.themes,
-        )[1],
-      },
-      {
-        label: "Gemet Schlagworte",
-        keywords: this.keywordHierarchyMap.get(this.keywordCategories.gemet)[1],
-      },
-      {
-        label: "Umthes Schlagworte",
-        keywords: this.keywordHierarchyMap.get(
-          this.keywordCategories.umthes,
-        )[1],
-      },
-      {
-        label: "Freie Schlagworte",
-        keywords: this.keywordHierarchyMap.get(this.keywordCategories.free)[1],
-      },
-    ];
+    this.keywordDialogData = Array.from(this.keywordHierarchyMap.keys()).map(
+      (thesaurus) => ({
+        label: thesaurus,
+        keywords: this.keywordHierarchyMap.get(thesaurus)[1],
+      }),
+    );
   }
 
   // Iterates over the array and marks duplicates as removed except the first one
