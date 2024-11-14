@@ -163,8 +163,19 @@ export class ConsolidateDialogComponent implements OnInit {
           ),
         ].map((keyword) => keyword.label),
         this.isInspireIdentified,
+        true,
       );
       analyzedKeywords = removeDuplicatesByValue(analyzedKeywords, "label");
+
+      analyzedKeywords
+        .filter((keyword) => !keyword.found)
+        .forEach((keyword) => {
+          this.timedOutKeywords.push(keyword.label);
+          this.timedOutThesauri.push(keyword.thesaurus);
+        });
+      this.timedOutThesauri = Array.from(new Set(this.timedOutThesauri));
+      analyzedKeywords = analyzedKeywords.filter((keyword) => keyword.found);
+
       this.categorizeKeywords(analyzedKeywords);
       this.addAllKeywordStatuses();
       this.keepKeywordsFoundWithAlternativeLabel();

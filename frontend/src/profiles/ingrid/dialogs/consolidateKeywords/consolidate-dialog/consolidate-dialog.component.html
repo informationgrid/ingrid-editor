@@ -62,8 +62,8 @@ konsolidieren"
                 @if (timedOutKeywords.length) {
                     <div class="error-box flex-row align-items-center">
                         Verbindungsprobleme bei:
-                        {{ timedOutThesauri.join(", ") }}. Folgende Schlagworte
-                        werden den Freien Schlagworten zugeordnet:
+                        {{ timedOutThesauri.join(", ") }}<br />Folgende
+                        Schlagworte werden den Freien Schlagworten zugeordnet:
                         {{ timedOutKeywords.join(", ") }}
                     </div>
                 }

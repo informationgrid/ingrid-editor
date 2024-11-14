@@ -76,12 +76,19 @@ export class KeywordAnalysis {
     "321": "5",
   };
 
-  async analyzeKeywords(values: string[], checkThemes: boolean) {
+  async analyzeKeywords(
+    values: string[],
+    checkThemes: boolean,
+    consolidation: boolean = false,
+  ) {
     return await Promise.all(
       values
         .map((item: string) => item.trim())
         .filter((item: string) => item.length > 0)
-        .map(async (item) => await this.assignKeyword(item, checkThemes)),
+        .map(
+          async (item) =>
+            await this.assignKeyword(item, checkThemes, consolidation),
+        ),
     );
   }
 
@@ -197,17 +204,30 @@ export class KeywordAnalysis {
     }
   }
 
-  async assignKeyword(item: string, checkThemes: boolean) {
+  async assignKeyword(
+    item: string,
+    checkThemes: boolean,
+    consolidation: boolean,
+  ): Promise<ThesaurusResult> {
     if (checkThemes) {
       const resultTheme = this.checkInThemes(item);
       if (resultTheme.found) return resultTheme;
     }
-
-    const gemetResult = await this.checkInThesaurus(item, "gemet");
-    if (gemetResult.found) return gemetResult;
-
-    const umthesResult = await this.checkInThesaurus(item, "umthes");
-    if (umthesResult.found) return umthesResult;
+    for (const thesaurus of ["gemet", "umthes"]) {
+      try {
+        const thesaurusResult = await this.checkInThesaurus(item, thesaurus);
+        if (thesaurusResult.found) return thesaurusResult;
+      } catch (error) {
+        if (consolidation) {
+          return {
+            found: false,
+            value: { label: item },
+            label: item,
+            thesaurus: thesaurus,
+          };
+        }
+      }
+    }
     return this.addFreeKeyword(item);
   }
 
@@ -252,15 +272,11 @@ export class KeywordAnalysis {
           )}&type=EXACT`,
         )
         .pipe(
-          timeout(timeoutDuration),
+          timeout(timeoutDuration), // Set the timeout for the HTTP request
           catchError((err) => {
+            // Handle timeout error or other errors
             if (err.name === "TimeoutError") {
-              throw {
-                message: `${thesaurus} + " request timed out for " + '${item}'`,
-                label: item,
-                thesaurus: thesaurus,
-                found: false,
-              };
+              return throwError(() => new Error("Request timed out"));
             }
             return throwError(() => err);
           }),
