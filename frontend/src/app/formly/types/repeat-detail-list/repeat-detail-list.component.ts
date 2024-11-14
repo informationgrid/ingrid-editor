@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  signal,
+} from "@angular/core";
 import {
   FieldTypeConfig,
   FormlyFieldConfig,
@@ -46,12 +51,37 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
 import { CodelistPipe } from "../../../directives/codelist.pipe";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { debounceTime, map } from "rxjs/operators";
 
 interface RepeatDetailListProps extends FormlyFieldProps {
   titleField: string;
   fields: FormlyFieldConfig[];
+  _types?: AddButtonOptions[];
+  itemPreviewFields: ItemPreviewFields;
 }
 
+export interface AddButtonOptions {
+  key: string;
+  value: string;
+}
+
+export interface ItemPreviewFields {
+  category?:
+    | { value: string; link: string }
+    | ((item: any) => { value: string; link: string });
+  title?:
+    | { value: string; link: string }
+    | ((item: any) => { value: string; link: string });
+  subtitle?:
+    | { value: string; link: string }
+    | ((item: any) => { value: string; link: string });
+  description?:
+    | { value: string; link: string }
+    | ((item: any) => { value: string; link: string });
+}
+
+@UntilDestroy()
 @Component({
   selector: "ige-repeat-detail-list",
   templateUrl: "./repeat-detail-list.component.html",
@@ -76,39 +106,73 @@ interface RepeatDetailListProps extends FormlyFieldProps {
     CodelistPipe,
   ],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RepeatDetailListComponent
   extends FieldType<FieldTypeConfig<RepeatDetailListProps>>
   implements OnInit
 {
-  constructor(
-    private dialog: MatDialog,
-    private cdr: ChangeDetectorRef,
-  ) {
+  constructor(private dialog: MatDialog) {
     super();
   }
 
-  ngOnInit(): void {}
+  previewItems = signal<ItemPreviewFields[]>([]);
 
-  addItem() {
-    this.openDialog(null);
+  ngOnInit(): void {
+    this.formControl.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        debounceTime(0),
+        map((items) => this.mapItemPreviewFields(items)),
+      )
+      .subscribe((items) => this.previewItems.set(items));
+  }
+
+  private mapItemPreviewFields(items): ItemPreviewFields[] {
+    return items.map((item) => {
+      return {
+        category: this.getItemPreview("category", item),
+        title: this.getItemPreview("title", item),
+        subtitle: this.getItemPreview("subtitle", item),
+        description: this.getItemPreview("description", item),
+      };
+    });
+  }
+
+  getItemPreview(previewField, item): { value: string; link: string } {
+    return typeof this.props.itemPreviewFields?.[previewField] == "function"
+      ? this.props.itemPreviewFields?.[previewField]?.(item)
+      : {
+          value: item[this.props.itemPreviewFields?.[previewField]?.["value"]],
+          link: item[this.props.itemPreviewFields?.[previewField]?.["link"]],
+        };
+  }
+
+  addItem(type: string) {
+    this.openDialog(type, null);
   }
 
   editItem(index: number) {
-    this.openDialog(index);
+    this.openDialog(null, index);
   }
 
-  private openDialog(index?: number) {
+  private openDialog(type?: string, index?: number) {
     const existingModel =
       index == null
         ? null
         : JSON.parse(JSON.stringify(this.model[this.field.key + ""][index]));
+    const dialogType: FormlyFieldConfig = {
+      key: "_type",
+      type: "input",
+      defaultValue: type ?? this.props.fields["_type"],
+      className: "hide",
+    };
     this.dialog
       .open(FormDialogComponent, {
         width: "90vw",
         maxWidth: "950px",
         data: <FormDialogData>{
-          fields: this.props.fields,
+          fields: [...this.props.fields, dialogType],
           model: existingModel,
         },
       })
@@ -117,7 +181,6 @@ export class RepeatDetailListComponent
         if (response) {
           this.replaceItem(index, response);
         }
-        this.cdr.detectChanges();
       });
   }
 

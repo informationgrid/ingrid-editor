@@ -23,14 +23,11 @@ import { inject, Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { generateUUID } from "../../../app/services/utils";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 
 @Injectable({
   providedIn: "root",
 })
 export class GeoDatasetDoctype extends IngridShared {
-  protected codelistQuery = inject(CodelistQuery);
-
   id = "InGridGeoDataset";
 
   label = "Geodatensatz";
@@ -374,91 +371,183 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [
             this.addGroupSimple("source", [
-              this.addRepeatDataOriginList(
+              this.addRepeatDetailList(
                 "descriptions",
                 "Datengrundlage/Herkunft",
                 {
-                  fields: [
-                    this.addTextArea("value", "Freie Eingabe", this.id, {
-                      required: this.geodatasetOptions.required.statement,
-                      expressions: {
-                        "props.required":
-                          this.geodatasetOptions.dynamicRequired.statement,
-                      },
-                    }),
-                  ],
-                  titleField: "",
-                  dialogOptions: [
-                    {
-                      key: "freeDescription",
-                      value: "Freie Eingabe",
-                      fields: [
-                        this.addInputInline("value", "Beschreibung", {
-                          required: true,
-                          wrappers: ["inline-help", "form-field"],
-                          hasInlineContextHelp: true,
-                          updateOn: "change",
-                        }),
-                        this.addInputInline("value", "Titel", {
-                          required: true,
-                          wrappers: ["inline-help", "form-field"],
-                          hasInlineContextHelp: true,
-                          updateOn: "change",
-                        }),
-                        this.addInputInline("value", "Identifikator", {
-                          required: true,
-                          wrappers: ["inline-help", "form-field"],
-                          hasInlineContextHelp: true,
-                          updateOn: "change",
-                        }),
-                      ],
+                  required: true,
+                  itemPreviewFields: {
+                    category: (item) => {
+                      const value =
+                        item["_type"] == "freeDescription"
+                          ? "Freitextliche Beschreibung"
+                          : item["_type"] == "internalDataOrigin"
+                            ? "Geodatensatz"
+                            : item["_type"] == "externalDataOrigin"
+                              ? "Externe Referenz"
+                              : "Kategorie";
+                      return { value, link: null };
                     },
+                    title: (item) => {
+                      const value =
+                        item["_type"] == "freeDescription"
+                          ? item["title"]
+                          : item["_type"] == "internalDataOrigin"
+                            ? item["uuidRef"]
+                            : item["_type"] == "externalDataOrigin"
+                              ? item["title"]
+                                ? item["title"] + "\n\n" + item["url"]
+                                : item["url"]
+                              : "";
+                      return { value, link: item["url"] };
+                    },
+                    subtitle: (item) => {
+                      const codelistKey = item["dateType"]?.["key"] ?? null;
+                      let value: string = item["date"]
+                        ? new Date(item["date"]).toLocaleDateString("de-DE")
+                        : "";
+                      if (codelistKey != null) {
+                        this.codelistPipe
+                          .transform(codelistKey, "502")
+                          .subscribe((codelist) => {
+                            console.log("entry", codelist);
+                            value += " - " + codelist;
+                          });
+                      }
+                      return { value, link: null };
+                    },
+                    description: { value: "value", link: null },
+                  },
+                  _types: [
                     {
                       key: "internalDataOrigin",
                       value: "Geodatensatz auswählen",
-                      fields: [
-                        this.addInputInline("value", "Beschreibung", {
-                          required: true,
-                          wrappers: ["inline-help", "form-field"],
-                          hasInlineContextHelp: true,
-                          updateOn: "change",
-                        }),
-                        this.addDocumentCard("uuidRef", {
-                          docTypeFilter: [],
-                          label: "Datensatzverweis",
-                          allowRedirectToDocument: false,
-                          allowMultiSelect: false,
-                          titleOfDocumentSelectorDialog:
-                            "Internen Verweis hinzufügen",
-                        }),
-                      ],
                     },
                     {
                       key: "externalDataOrigin",
                       value: "Externe Referenz angeben",
-                      fields: [
-                        this.addInputInline("value", "Beschreibung", {
-                          required: true,
+                    },
+                    {
+                      key: "freeDescription",
+                      value: "Freitextliche Beschreibung",
+                    },
+                  ],
+                  fields: [
+                    this.addTextAreaInline("value", "Beschreibung", null, {
+                      required: true,
+                      wrappers: ["inline-help", "form-field"],
+                      hasInlineContextHelp: true,
+                    }),
+                    this.addDocumentCard("uuidRef", {
+                      required: true,
+                      docTypeFilter: ["InGridGeoDataset"],
+                      label: "Geodatensatz auswählen",
+                      allowRedirectToDocument: false,
+                      allowMultiSelect: false,
+                      titleOfDocumentSelectorDialog: "Geodatensatz auswählen",
+                      expressions: {
+                        hide: (field: FormlyFieldConfig) => {
+                          return field.form.value._type != "internalDataOrigin";
+                        },
+                      },
+                    }),
+                    this.addGroupSimple(
+                      null,
+                      [
+                        this.addInputInline("url", "URL", {
                           wrappers: ["inline-help", "form-field"],
+                          className: "flex-3",
                           hasInlineContextHelp: true,
                           updateOn: "change",
-                        }),
-                        this.addInputInline("value", "Externer Datensatz", {
-                          required: true,
-                          wrappers: ["inline-help", "form-field"],
-                          hasInlineContextHelp: true,
-                          updateOn: "change",
-                          placeholder: "https://...",
                           validators: {
                             validation: ["url"],
                           },
+                          expressions: {
+                            hide: (field: FormlyFieldConfig) => {
+                              return (
+                                field.form.value._type != "externalDataOrigin"
+                              );
+                            },
+                            "props.required": (field: FormlyFieldConfig) => {
+                              return (
+                                field.form.value._type == "externalDataOrigin"
+                              );
+                            },
+                          },
+                          validation: {
+                            messages: {
+                              required:
+                                "URL oder Datensatzverweis muss ausgefüllt sein",
+                            },
+                          },
                         }),
                       ],
-                    },
+                      { fieldGroupClassName: "flex-row gap-12" },
+                    ),
+                    this.addInputInline("title", "Titel", {
+                      wrappers: ["inline-help", "form-field"],
+                      hasInlineContextHelp: true,
+                      updateOn: "change",
+                      expressions: {
+                        // hide: (field: FormlyFieldConfig) => {
+                        //   return field.form.value._type == "internalDataOrigin";
+                        // },
+                        "props.required": (field: FormlyFieldConfig) =>
+                          !!field.form.value.identifier ||
+                          !!field.form.value.date ||
+                          !!field.form.value.dateType,
+                      },
+                    }),
+                    this.addInputInline("identifier", "Identifikator", {
+                      wrappers: ["inline-help", "form-field"],
+                      hasInlineContextHelp: true,
+                      updateOn: "change",
+                      expressions: {
+                        // hide: (field: FormlyFieldConfig) => {
+                        //   return field.form.value._type == "internalDataOrigin";
+                        // },
+                        "props.required": (field: FormlyFieldConfig) =>
+                          !!field.form.value.title ||
+                          !!field.form.value.date ||
+                          !!field.form.value.dateType,
+                      },
+                    }),
+                    this.addGroupSimple(
+                      null,
+                      [
+                        this.addDatepickerInline("date", null, {
+                          // className: "flex-2",
+                          fieldLabel: "Datum",
+                          wrappers: ["inline-help", "form-field"],
+                          expressions: {
+                            "props.required": (field: FormlyFieldConfig) =>
+                              !!field.form.value.title ||
+                              !!field.form.value.identifier ||
+                              !!field.form.value.dateType,
+                          },
+                        }),
+                        this.addSelect("dateType", null, {
+                          showSearch: true,
+                          fieldLabel: "Typ",
+                          wrappers: ["inline-help", "form-field"],
+                          className: "flex-3",
+                          options: this.getCodelistForSelect("502", "type"),
+                          codelistId: "502",
+                          expressions: {
+                            "props.required": (field: FormlyFieldConfig) =>
+                              !!field.form.value.title ||
+                              !!field.form.value.identifier ||
+                              !!field.form.value.date,
+                          },
+                        }),
+                      ],
+                      {
+                        fieldGroupClassName: "flex-row gap-12",
+                      },
+                    ),
                   ],
                 },
               ),
-
               this.addGroupSimple("processStep", [
                 this.addRepeatList("description", "Herstellungsprozess", {
                   className: "optional flex-1",

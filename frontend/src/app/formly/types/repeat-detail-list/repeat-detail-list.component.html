@@ -23,37 +23,63 @@
                     </mat-icon>
                 }
                 <div class="flex-1 flex-col align-items-start">
-                    @if (
-                        props.fields?.[0]?.fieldGroup?.[1]?.props?.codelistId
-                    ) {
-                        <div class="type">
-                            {{
-                                (model[field.key][i].type?.key
-                                    | codelist
-                                        : props.fields?.[0]?.fieldGroup?.[1]
-                                              ?.props?.codelistId
-                                    | async) ?? model[field.key][i].type?.value
-                            }}
-                        </div>
-                    } @else {
-                        <div class="type">
-                            {{ model[field.key][i].type }}
-                        </div>
-                    }
+                    <span class="category">
+                        @if (this.previewItems()[i]?.category.link) {
+                            <a
+                                class="url no-text-transform"
+                                [href]="this.previewItems()[i]?.category.link"
+                                target="_blank"
+                            >
+                                {{ this.previewItems()[i]?.category.value }}
+                            </a>
+                        } @else {
+                            {{ this.previewItems()[i]?.category.value }}
+                        }
+                    </span>
+
                     <div class="title">
-                        {{ model[field.key][i][props.titleField ?? "title"] }}
+                        @if (this.previewItems()[i]?.title.link) {
+                            <a
+                                class="url no-text-transform"
+                                [href]="this.previewItems()[i]?.title.link"
+                                target="_blank"
+                            >
+                                {{ this.previewItems()[i]?.title.value }}
+                            </a>
+                        } @else {
+                            {{ this.previewItems()[i]?.title.value }}
+                        }
                     </div>
-                    <a
-                        class="url no-text-transform"
-                        [href]="model[field.key][i].url"
-                        target="_blank"
-                        >{{ model[field.key][i].url }}</a
-                    >
-                    @if (model[field.key][i].explanation) {
-                        <div class="explanation">
-                            {{ model[field.key][i].explanation }}
-                        </div>
-                    }
+
+                    <div class="subtitle">
+                        @if (this.previewItems()[i]?.subtitle.link) {
+                            <a
+                                class="url no-text-transform"
+                                [href]="this.previewItems()[i]?.subtitle.link"
+                                target="_blank"
+                            >
+                                {{ this.previewItems()[i]?.subtitle.value }}
+                            </a>
+                        } @else {
+                            {{ this.previewItems()[i]?.subtitle.value }}
+                        }
+                    </div>
+
+                    <div class="description">
+                        @if (this.previewItems()[i]?.description.link) {
+                            <a
+                                class="url no-text-transform"
+                                [href]="
+                                    this.previewItems()[i]?.description.link
+                                "
+                                target="_blank"
+                            >
+                                {{ this.previewItems()[i]?.description.value }}
+                            </a>
+                        } @else {
+                            {{ this.previewItems()[i]?.description.value }}
+                        }
+                    </div>
                 </div>
                 @if (formControl.enabled) {
                     <button
@@ -81,7 +107,8 @@
 
 @if (formControl.enabled) {
     <ige-add-button
-        (add)="addItem()"
+        (add)="addItem($event)"
+        [options]="props._types"
         [showRequiredError]="
             showError && formControl.invalid && formControl.errors?.required
         "

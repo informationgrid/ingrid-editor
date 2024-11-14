@@ -47,6 +47,8 @@ import { MatSelectChange } from "@angular/material/select";
 import { DocumentService } from "../../../app/services/document/document.service";
 import { KeywordAnalysis, KeywordSectionOptions } from "../utils/keywords";
 import { UploadService } from "../../../app/shared/upload/upload.service";
+import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
+import { CodelistPipe } from "../../../app/directives/codelist.pipe";
 
 interface GeneralSectionOptions {
   additionalGroup?: FormlyFieldConfig;
@@ -73,6 +75,18 @@ export abstract class IngridShared extends BaseDoctype {
   private documentService = inject(DocumentService);
   private keywordAnalysis = inject(KeywordAnalysis);
   private uploadService = inject(UploadService);
+
+  protected codelistQuery = inject(CodelistQuery);
+  protected codelistService = inject(CodelistService);
+  codelistPipe: CodelistPipe;
+
+  constructor() {
+    super();
+    this.codelistPipe = new CodelistPipe(
+      this.codelistQuery,
+      this.codelistService,
+    );
+  }
 
   options = {
     dynamicRequired: {
@@ -1373,6 +1387,25 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection("Verweise", [
       this.addRepeatDetailList("references", "Verweise", {
         fields: [this.urlRefFields()],
+        itemPreviewFields: {
+          category: (item) => {
+            const codelistKey = item["type"]?.["key"] ?? null;
+            let value;
+            if (codelistKey != null) {
+              const cat = this.codelistPipe
+                .transform(codelistKey, "2000")
+                .subscribe((codelist) => {
+                  console.log("entry", codelist);
+                  value = codelist;
+                });
+            }
+            console.log("verweise cat:", value);
+            return { value, link: null };
+          },
+          title: { value: "title", link: null },
+          subtitle: { value: "url", link: "url" },
+          description: { value: "explanation", link: null },
+        },
         validators: {
           downloadLinkWhenOpenData: {
             expression: (ctrl: FormControl, field: FormlyFieldConfig) =>

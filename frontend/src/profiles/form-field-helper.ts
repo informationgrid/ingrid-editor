@@ -25,6 +25,10 @@ import { inject } from "@angular/core";
 import { TranslocoService } from "@ngneat/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 import { RepeatDataOriginListProps } from "../app/formly/types/repeat-data-origin-list/repeat-data-origin-list.component";
+import {
+  AddButtonOptions,
+  ItemPreviewFields,
+} from "../app/formly/types/repeat-detail-list/repeat-detail-list.component";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -86,6 +90,8 @@ export interface RepeatOptions extends Options {
 export interface RepeatDetailListOptions extends Options {
   backendUrl?: string;
   fields?: FormlyFieldConfig[];
+  _types?: AddButtonOptions[];
+  itemPreviewFields?: ItemPreviewFields;
   validators?: { [x: string]: { expression: any; message: string } | string[] };
   titleField?: string;
   infoText?: string;
@@ -415,6 +421,8 @@ export class FormFieldHelper {
         required: options?.required,
         titleField: options?.titleField,
         fields: options?.fields,
+        _types: options?._types,
+        itemPreviewFields: options?.itemPreviewFields,
       },
       expressions: expressions,
       validators: options?.validators,

@@ -6,26 +6,34 @@ ige-add-button {
 }
 
 .cdk-drag {
-  background: $ige-background;
+  background: white;
+  border: 2px solid $ige-background;
+  border-radius: 6px;
+  margin-bottom: 4px;
 }
 
 .mat-mdc-list-item {
   height: auto;
   padding: 6px;
-  border-bottom: 2px solid #fff;
 
   .type {
     font-size: 14px;
   }
 
-  .title {
+  .category {
+    border-bottom: 2px solid $ige-background;
+  }
+
+  .title,
+  .url {
     font-size: 16px;
     font-weight: 500;
   }
 
   .url,
   .title,
-  .explanation {
+  .subtitle,
+  .description {
     white-space: normal;
     overflow: hidden;
     overflow-wrap: anywhere;
@@ -33,12 +41,16 @@ ige-add-button {
     -webkit-box-orient: vertical;
   }
 
+  .description {
+    opacity: 0.6;
+  }
+
   .url {
     -webkit-line-clamp: 1;
   }
 
   .title,
-  .explanation {
+  .description {
     -webkit-line-clamp: 2;
   }
 }
