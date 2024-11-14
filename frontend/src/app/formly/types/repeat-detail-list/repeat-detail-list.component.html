@@ -9,99 +9,98 @@
         cdkDropListOrientation="vertical"
         (cdkDropListDropped)="drop($event)"
     >
-        <mat-list-item
-            *ngFor="let item of model[$any(field.key)]; let i = index"
-            cdkDrag
-            [cdkDragDisabled]="formControl.disabled"
-            [class.clickable]="formControl.enabled"
-            [class.draggable]="formControl.enabled"
-        >
-            <div class="flex-row gap-6">
-                @if (formControl.enabled) {
-                    <mat-icon cdkDragHandle matTooltip="Sortieren"
-                        >drag_indicator
-                    </mat-icon>
-                }
-                <div class="flex-1 flex-col align-items-start">
-                    <span class="category">
-                        @if (this.previewItems()[i]?.category.link) {
-                            <a
-                                class="url no-text-transform"
-                                [href]="this.previewItems()[i]?.category.link"
-                                target="_blank"
-                            >
-                                {{ this.previewItems()[i]?.category.value }}
-                            </a>
-                        } @else {
-                            {{ this.previewItems()[i]?.category.value }}
-                        }
-                    </span>
+        @for (item of this.previewItems(); track item; let index = $index) {
+            <mat-list-item
+                cdkDrag
+                [cdkDragDisabled]="formControl.disabled"
+                [class.clickable]="formControl.enabled"
+                [class.draggable]="formControl.enabled"
+            >
+                <div class="flex-row gap-6">
+                    @if (formControl.enabled) {
+                        <mat-icon cdkDragHandle matTooltip="Sortieren"
+                            >drag_indicator
+                        </mat-icon>
+                    }
+                    <div class="flex-1 flex-col align-items-start">
+                        <span class="category">
+                            @if (item?.category.link) {
+                                <a
+                                    class="url no-text-transform"
+                                    [href]="item?.category.link"
+                                    target="_blank"
+                                >
+                                    {{ item?.category.value }}
+                                </a>
+                            } @else {
+                                {{ item?.category.value }}
+                            }
+                        </span>
 
-                    <div class="title">
-                        @if (this.previewItems()[i]?.title.link) {
-                            <a
-                                class="url no-text-transform"
-                                [href]="this.previewItems()[i]?.title.link"
-                                target="_blank"
-                            >
-                                {{ this.previewItems()[i]?.title.value }}
-                            </a>
-                        } @else {
-                            {{ this.previewItems()[i]?.title.value }}
-                        }
-                    </div>
+                        <div class="title">
+                            @if (item?.title.link) {
+                                <a
+                                    class="url no-text-transform"
+                                    [href]="item?.title.link"
+                                    target="_blank"
+                                >
+                                    {{ item?.title.value }}
+                                </a>
+                            } @else {
+                                {{ item?.title.value }}
+                            }
+                        </div>
 
-                    <div class="subtitle">
-                        @if (this.previewItems()[i]?.subtitle.link) {
-                            <a
-                                class="url no-text-transform"
-                                [href]="this.previewItems()[i]?.subtitle.link"
-                                target="_blank"
-                            >
-                                {{ this.previewItems()[i]?.subtitle.value }}
-                            </a>
-                        } @else {
-                            {{ this.previewItems()[i]?.subtitle.value }}
-                        }
-                    </div>
+                        <div class="subtitle">
+                            @if (item?.subtitle.link) {
+                                <a
+                                    class="url no-text-transform"
+                                    [href]="item?.subtitle.link"
+                                    target="_blank"
+                                >
+                                    {{ item?.subtitle.value }}
+                                </a>
+                            } @else {
+                                {{ item?.subtitle.value }}
+                            }
+                        </div>
 
-                    <div class="description">
-                        @if (this.previewItems()[i]?.description.link) {
-                            <a
-                                class="url no-text-transform"
-                                [href]="
-                                    this.previewItems()[i]?.description.link
-                                "
-                                target="_blank"
-                            >
-                                {{ this.previewItems()[i]?.description.value }}
-                            </a>
-                        } @else {
-                            {{ this.previewItems()[i]?.description.value }}
-                        }
+                        <div class="description">
+                            @if (item?.description.link) {
+                                <a
+                                    class="url no-text-transform"
+                                    [href]="item?.description.link"
+                                    target="_blank"
+                                >
+                                    {{ item?.description.value }}
+                                </a>
+                            } @else {
+                                {{ item?.description.value }}
+                            }
+                        </div>
                     </div>
+                    @if (formControl.enabled) {
+                        <button
+                            mat-icon-button
+                            type="button"
+                            class="menu-button"
+                            matTooltip="Bearbeiten"
+                            [matMenuTriggerFor]="menu"
+                        >
+                            <mat-icon svgIcon="Mehr"></mat-icon>
+                        </button>
+                    }
+                    <mat-menu #menu>
+                        <button mat-menu-item (click)="editItem(index)">
+                            Bearbeiten
+                        </button>
+                        <button mat-menu-item (click)="removeItem(index)">
+                            Entfernen
+                        </button>
+                    </mat-menu>
                 </div>
-                @if (formControl.enabled) {
-                    <button
-                        mat-icon-button
-                        type="button"
-                        class="menu-button"
-                        matTooltip="Bearbeiten"
-                        [matMenuTriggerFor]="menu"
-                    >
-                        <mat-icon svgIcon="Mehr"></mat-icon>
-                    </button>
-                }
-                <mat-menu #menu>
-                    <button mat-menu-item (click)="editItem(i)">
-                        Bearbeiten
-                    </button>
-                    <button mat-menu-item (click)="removeItem(i)">
-                        Entfernen
-                    </button>
-                </mat-menu>
-            </div>
-        </mat-list-item>
+            </mat-list-item>
+        }
     </mat-list>
 }
 
