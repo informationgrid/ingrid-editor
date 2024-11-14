@@ -24,11 +24,8 @@ import { HttpClient } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { TranslocoService } from "@ngneat/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
-import { RepeatDataOriginListProps } from "../app/formly/types/repeat-data-origin-list/repeat-data-origin-list.component";
-import {
-  AddButtonOptions,
-  ItemPreviewFields,
-} from "../app/formly/types/repeat-detail-list/repeat-detail-list.component";
+import { ItemPreviewFields } from "../app/formly/types/repeat-detail-list/repeat-detail-list.component";
+import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -456,26 +453,6 @@ export class FormFieldHelper {
       },
       expressions: expressions,
       validators: options?.validators,
-    };
-  }
-
-  addRepeatDataOriginList(
-    id,
-    label,
-    options?: RepeatDataOriginListProps,
-  ): FormlyFieldConfig {
-    return {
-      key: id,
-      type: "repeatDataOriginList",
-      wrappers: options?.wrappers ?? ["panel"],
-      className: options?.className,
-      props: {
-        externalLabel: label,
-        required: options?.required,
-        titleField: options?.titleField,
-        fields: options?.fields,
-        dialogOptions: options?.dialogOptions,
-      },
     };
   }
 

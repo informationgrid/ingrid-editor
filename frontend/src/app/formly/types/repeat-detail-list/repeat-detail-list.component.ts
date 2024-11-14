@@ -50,7 +50,10 @@ import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/fo
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
 import { CodelistPipe } from "../../../directives/codelist.pipe";
-import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
+import {
+  AddButtonComponent,
+  AddButtonOptions,
+} from "../../../shared/add-button/add-button.component";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime, map } from "rxjs/operators";
 
@@ -59,11 +62,6 @@ interface RepeatDetailListProps extends FormlyFieldProps {
   fields: FormlyFieldConfig[];
   _types?: AddButtonOptions[];
   itemPreviewFields: ItemPreviewFields;
-}
-
-export interface AddButtonOptions {
-  key: string;
-  value: string;
 }
 
 export interface ItemPreviewFields {

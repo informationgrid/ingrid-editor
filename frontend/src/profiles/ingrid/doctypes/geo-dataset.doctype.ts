@@ -422,14 +422,17 @@ export class GeoDatasetDoctype extends IngridShared {
                     {
                       key: "internalDataOrigin",
                       value: "Geodatensatz auswählen",
+                      icon: "Geodatensatz",
                     },
                     {
                       key: "externalDataOrigin",
                       value: "Externe Referenz angeben",
+                      icon: "upload",
                     },
                     {
                       key: "freeDescription",
                       value: "Freitextliche Beschreibung",
+                      icon: "cursor-edit",
                     },
                   ],
                   fields: [
