@@ -380,12 +380,12 @@ export class GeoDatasetDoctype extends IngridShared {
                     category: (item) => {
                       const value =
                         item["_type"] == "freeDescription"
-                          ? "Freitextliche Beschreibung"
+                          ? "Freitextliche Beschreibung – " + item["identifier"]
                           : item["_type"] == "internalDataOrigin"
-                            ? "Geodatensatz"
+                            ? "Geodatensatz – " + item["uuidRef"]
                             : item["_type"] == "externalDataOrigin"
-                              ? "Externe Referenz"
-                              : "Kategorie";
+                              ? "Externe Referenz – " + item["url"]
+                              : "";
                       return { value, link: null };
                     },
                     title: (item) => {
@@ -393,11 +393,9 @@ export class GeoDatasetDoctype extends IngridShared {
                         item["_type"] == "freeDescription"
                           ? item["title"]
                           : item["_type"] == "internalDataOrigin"
-                            ? item["uuidRef"]
+                            ? (item["title"] ?? item["uuidRef"])
                             : item["_type"] == "externalDataOrigin"
-                              ? item["title"]
-                                ? item["title"] + "\n\n" + item["url"]
-                                : item["url"]
+                              ? (item["title"] ?? item["url"])
                               : "";
                       return { value, link: item["url"] };
                     },
