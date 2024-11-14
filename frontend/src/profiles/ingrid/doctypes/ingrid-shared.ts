@@ -1395,11 +1395,9 @@ export abstract class IngridShared extends BaseDoctype {
               const cat = this.codelistPipe
                 .transform(codelistKey, "2000")
                 .subscribe((codelist) => {
-                  console.log("entry", codelist);
                   value = codelist;
                 });
             }
-            console.log("verweise cat:", value);
             return { value, link: null };
           },
           title: { value: "title", link: null },

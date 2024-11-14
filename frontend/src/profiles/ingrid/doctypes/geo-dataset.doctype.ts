@@ -408,7 +408,6 @@ export class GeoDatasetDoctype extends IngridShared {
                         this.codelistPipe
                           .transform(codelistKey, "502")
                           .subscribe((codelist) => {
-                            console.log("entry", codelist);
                             value += " - " + codelist;
                           });
                       }

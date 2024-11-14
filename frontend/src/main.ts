@@ -140,7 +140,6 @@ import {
 import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
 import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
 import { RadioOptionsComponent } from "./app/formly/types/radio-options/radio-options.component";
-import { RepeatDataOriginListComponent } from "./app/formly/types/repeat-data-origin-list/repeat-data-origin-list.component";
 
 if (environment.production) {
   enableProdMode();
@@ -213,10 +212,6 @@ bootstrapApplication(AppComponent, {
           {
             name: "repeatDistributionDetailList",
             component: RepeatDistributionDetailListComponent,
-          },
-          {
-            name: "repeatDataOriginList",
-            component: RepeatDataOriginListComponent,
           },
           {
             name: "repeatChip",
