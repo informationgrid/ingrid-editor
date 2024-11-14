@@ -17,26 +17,28 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { EntityState, EntityStore, StoreConfig } from "@datorama/akita";
+import { patchState, signalStore, withMethods } from "@ngrx/signals";
+import { addEntity, withEntities } from "@ngrx/signals/entities";
 import { ContextHelpAbstract } from "./context-help.model";
 
-export interface ContexthelpState extends EntityState<ContextHelpAbstract> {}
-
-@Injectable({ providedIn: "root" })
-@StoreConfig({ name: "contexthelp" })
-export class ContextHelpStore extends EntityStore<
-  ContexthelpState,
-  ContextHelpAbstract
-> {
-  constructor() {
-    super();
-  }
-
-  akitaPreAddEntity(x: Readonly<ContextHelpAbstract>): ContextHelpAbstract {
-    return {
-      ...x,
-      id: [x.profile, x.docType, x.fieldId].join("_"),
-    };
-  }
-}
+export const ContextHelpStore = signalStore(
+  { providedIn: "root" },
+  withEntities<ContextHelpAbstract>(),
+  withMethods((store) => ({
+    add(help: ContextHelpAbstract): void {
+      const id = this._getId(help.profile, help.docType, help.fieldId);
+      patchState(store, addEntity({ ...help, id: id }));
+    },
+    get(
+      profile: string,
+      docType: string,
+      fieldId: string,
+    ): ContextHelpAbstract {
+      const id = this._getId(profile, docType, fieldId);
+      return store.entityMap()[id];
+    },
+    _getId(profile: string, docType: string, fieldId: string): string {
+      return [profile, docType, fieldId].join("_");
+    },
+  })),
+);

@@ -17,13 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { ConfigService, Configuration } from "../config/config.service";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { SessionStore } from "../../store/session.store";
-import { ContextHelpStore } from "../../store/context-help/context-help.store";
-import { ContextHelpQuery } from "../../store/context-help/context-help.query";
-import { Observable, of } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { ContextHelpComponent } from "../../shared/context-help/context-help.component";
 import {
@@ -32,11 +29,15 @@ import {
   MatDialogRef,
 } from "@angular/material/dialog";
 import { ContextHelpAbstract } from "../../store/context-help/context-help.model";
+import { ContextHelpStore } from "../../store/context-help/context-help.store";
+import { Observable, of } from "rxjs";
 
 @Injectable({
   providedIn: "root",
 })
 export class ContextHelpService {
+  private contextHelpStore = inject(ContextHelpStore);
+
   private static contextDialogHeight = 400;
   private static contextDialogMaxHeight = 600;
   private static contextDialogWidth = 500;
@@ -76,8 +77,6 @@ export class ContextHelpService {
     public dialog: MatDialog,
     private http: HttpClient,
     configService: ConfigService,
-    private contextHelpQuery: ContextHelpQuery,
-    private contextHelpStore: ContextHelpStore,
   ) {
     this.configuration = configService.getConfiguration();
   }
@@ -86,11 +85,7 @@ export class ContextHelpService {
     profile: string,
     docType: string,
   ): Observable<string[]> {
-    return this.getIdsFromBackend(profile, docType).pipe(
-      tap((helpfieldIds) =>
-        this.addHelpToStore(profile, docType, helpfieldIds),
-      ),
-    );
+    return this.getIdsFromBackend(profile, docType);
   }
 
   showContextHelp(
@@ -139,29 +134,15 @@ export class ContextHelpService {
     });
   }
 
-  private addHelpToStore(
-    profile: string,
-    docType: string,
-    helpfieldIds: string[],
-  ) {
-    helpfieldIds.forEach((fieldId) =>
-      this.contextHelpStore.add({ docType, profile, fieldId }),
-    );
-  }
-
   private getContextHelpText(
     profile: string,
     docType: string,
     fieldId: string,
   ): Observable<string> {
-    const contextHelp = this.contextHelpQuery.getContextHelp(
-      profile,
-      docType,
-      fieldId,
-    );
+    const contextHelp = this.contextHelpStore.get(profile, docType, fieldId);
     if (contextHelp === undefined || !contextHelp.helpText) {
       return this.getHelptextFromBackend(profile, docType, fieldId).pipe(
-        tap((help) => this.contextHelpStore.update(help)),
+        tap((help) => this.contextHelpStore.add(help)),
         map((help) => help.helpText),
       );
     }
