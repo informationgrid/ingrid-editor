@@ -88,11 +88,6 @@ export class ConsolidateDialogComponent implements OnInit {
   timedOutKeywords: string[] = [];
   timedOutThesauri: string[] = [];
 
-  inspireTopicsNew: ThesaurusResult[] = [];
-  isoCategoriesNew: ThesaurusResult[] = [];
-  gemetKeywordsNew: ThesaurusResult[] = [];
-  umthesKeywordsNew: ThesaurusResult[] = [];
-  freeKeywordsNew: ThesaurusResult[] = [];
   keywordHierarchyMap: Map<string, ThesaurusResult[][]>;
 
   keywordDialogData = [];
@@ -112,7 +107,6 @@ export class ConsolidateDialogComponent implements OnInit {
 
   private initKeywords() {
     this.isLoading = true;
-    this.resetNewKeywords();
 
     this.form = this.formStateService.getForm();
     this.keywords = this.form.get("keywords").value;
@@ -144,19 +138,10 @@ export class ConsolidateDialogComponent implements OnInit {
     this.timedOutThesauri = [];
 
     this.keywordHierarchyMap = new Map([
-      [
-        this.keywordCategories.themes,
-        [this.inspireTopics, this.inspireTopicsNew],
-      ],
-      [
-        this.keywordCategories.gemet,
-        [this.gemetKeywords, this.gemetKeywordsNew],
-      ],
-      [
-        this.keywordCategories.umthes,
-        [this.umthesKeywords, this.umthesKeywordsNew],
-      ],
-      [this.keywordCategories.free, [this.freeKeywords, this.freeKeywordsNew]],
+      [this.keywordCategories.themes, [this.inspireTopics, []]],
+      [this.keywordCategories.gemet, [this.gemetKeywords, []]],
+      [this.keywordCategories.umthes, [this.umthesKeywords, []]],
+      [this.keywordCategories.free, [this.freeKeywords, []]],
     ]);
 
     return true;
@@ -263,14 +248,6 @@ export class ConsolidateDialogComponent implements OnInit {
     }
   }
 
-  // Special handling getting label from codelist id's
-  private getInspireLabels() {
-    return this.inspireTopics.map((keyword) => ({
-      label: this.codelistQuery.getCodelistEntryByKey("6100", keyword.key)
-        .fields["de"],
-    }));
-  }
-
   private getInspireLabel(key: string) {
     return {
       label: this.codelistQuery.getCodelistEntryByKey("6100", key).fields["de"],
@@ -342,14 +319,6 @@ export class ConsolidateDialogComponent implements OnInit {
       const editedKeywords = this.markDuplicatesAsRemoved(newKeywords);
       this.keywordHierarchyMap.set(thesaurus, [oldKeywords, editedKeywords]);
     }
-  }
-
-  private resetNewKeywords() {
-    this.inspireTopicsNew = [];
-    this.isoCategoriesNew = [];
-    this.gemetKeywordsNew = [];
-    this.umthesKeywordsNew = [];
-    this.freeKeywordsNew = [];
   }
 
   private setKeywordDialogData() {
