@@ -3,7 +3,7 @@
         <div class="user-management-header">
             <div class="page-title">
                 Gruppen (<span data-cy="groups-count">{{
-                    (groups | async)?.length
+                    groups()?.length
                 }}</span
                 >)
             </div>
@@ -52,9 +52,9 @@
         >
             <groups-table
                 [query]="query.value"
-                [groups]="groups | async"
+                [groups]="groups()"
                 [userGroupNames]="userGroupNames"
-                [selectedGroup]="groupQuery.selectActiveId()"
+                [selectedGroup]="activeGroup()"
                 (onGroupSelect)="groupService.setActive($event.id)"
                 (onDelete)="deleteGroup($event)"
             ></groups-table>
@@ -67,7 +67,7 @@
             class="split-pane-content-secondary container-fluid flex-row"
         >
             @if (!isLoading) {
-                @if (selectedGroup) {
+                @if (selectedGroup()) {
                     <form
                         [formGroup]="form"
                         class="detail-role flex-col gap-12"
@@ -105,16 +105,16 @@
                             <mat-menu #groupMoreMenu="matMenu">
                                 <button
                                     mat-menu-item
-                                    (click)="showGroupUsers(selectedGroup.id)"
+                                    (click)="showGroupUsers(selectedGroup().id)"
                                 >
                                     Benutzer anzeigen
                                 </button>
                                 <button
                                     [disabled]="
-                                        selectedGroup.currentUserIsMember
+                                        selectedGroup().currentUserIsMember
                                     "
                                     mat-menu-item
-                                    (click)="deleteGroup(selectedGroup.id)"
+                                    (click)="deleteGroup(selectedGroup().id)"
                                 >
                                     Löschen
                                 </button>
@@ -122,9 +122,9 @@
                         </div>
                         <group-header-more
                             [showMore]="this.showMore"
-                            [group]="selectedGroup"
+                            [group]="selectedGroup()"
                         ></group-header-more>
-                        @if (selectedGroup.currentUserIsMember) {
+                        @if (selectedGroup().currentUserIsMember) {
                             <div class="no-fields-selected-notice warn">
                                 <div class="infoIcon">
                                     <mat-icon
@@ -158,7 +158,7 @@
                             ></textarea>
                         </mat-form-field>
                         <ige-permissions
-                            [disabled]="selectedGroup.currentUserIsMember"
+                            [disabled]="selectedGroup().currentUserIsMember"
                             [showRootReadSlider]="
                                 userHasRootReadPermission ||
                                 userHasRootWritePermission
@@ -182,7 +182,7 @@
                         ></user-table>
                     </form>
                 } @else {
-                    @if ((groups | async)?.length > 0) {
+                    @if (groups()?.length > 0) {
                         <div
                             class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
                         >
@@ -198,7 +198,7 @@
                             </div>
                         </div>
                     }
-                    @if ((groups | async)?.length === 0) {
+                    @if (groups()?.length === 0) {
                         <div
                             class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
                         >

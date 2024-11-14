@@ -22,7 +22,9 @@ import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 import {
   AfterViewInit,
   Component,
+  computed,
   effect,
+  inject,
   OnInit,
   signal,
 } from "@angular/core";
@@ -43,7 +45,6 @@ import { UserManagementService } from "../user-management.service";
 import { SessionQuery } from "../../store/session.query";
 import { ConfigService } from "../../services/config/config.service";
 import { Router } from "@angular/router";
-import { GroupQuery } from "../../store/group/group.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {
   FormMenuService,
@@ -59,6 +60,8 @@ import { UserTableComponent } from "./user-table/user-table.component";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { HeaderMoreComponent } from "./header-more/header-more.component";
+import { GroupStore } from "../../store/group/group.store";
+import { GeneralStore } from "../../store/general.store";
 
 @UntilDestroy()
 @Component({
@@ -86,6 +89,9 @@ import { HeaderMoreComponent } from "./header-more/header-more.component";
   providers: [UserManagementService],
 })
 export class UserComponent implements OnInit, AfterViewInit {
+  private groupStore = inject(GroupStore);
+  private generalStore = inject(GeneralStore);
+
   users = this.userService.users$;
   form = new UntypedFormGroup({});
   menuItems: FormularMenuItem[];
@@ -94,29 +100,33 @@ export class UserComponent implements OnInit, AfterViewInit {
   loadedUser = signal<User>(null);
   showMore = signal<boolean>(false);
   isLoading = signal<boolean>(false);
-  formlyFieldConfig: FormlyFieldConfig[];
   tableWidth: number;
   query = new FormControl<string>("");
   private previousSelectedUser: User = null;
+
+  userTitle = computed<string>(() => {
+    const user = this.userService.selectedUser$();
+    return user ? `${user.firstName} ${user.lastName}` : "Kein Titel";
+  });
+
+  formlyFieldConfig = computed<FormlyFieldConfig[]>(() => {
+    return this.userService.getUserFormFields(
+      this.groupStore.entities(),
+      this.groupSelectCallback,
+      this.roleChangeCallback,
+    );
+  });
 
   constructor(
     private dialog: MatDialog,
     public userService: UserService,
     private groupService: GroupService,
-    private groupQuery: GroupQuery,
     private router: Router,
     public userManagementService: UserManagementService,
     private formMenuService: FormMenuService,
     private session: SessionQuery,
     private snackBar: MatSnackBar,
   ) {
-    this.groupQuery.selectAll().subscribe((groups) => {
-      this.formlyFieldConfig = this.userService.getUserFormFields(
-        groups,
-        this.groupSelectCallback,
-        this.roleChangeCallback,
-      );
-    });
     this.tableWidth = this.session.getValue().ui.userTableWidth;
 
     effect(
@@ -148,7 +158,7 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   groupSelectCallback = (groupIdString: string) => {
     const groupId = +groupIdString;
-    const doReload = this.groupQuery.getActiveId() === groupId;
+    const doReload = this.generalStore.activeGroup() === groupId;
     this.groupService.getGroup(groupId).subscribe(() => {
       this.groupService.setActive(groupId);
       this.router.navigate([`${ConfigService.catalogId}/manage/group`]);

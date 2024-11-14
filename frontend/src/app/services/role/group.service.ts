@@ -17,26 +17,29 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { EventEmitter, Injectable } from "@angular/core";
+import { EventEmitter, inject, Injectable } from "@angular/core";
 import { FrontendGroup, Group, UserResponse } from "../../models/user-group";
 import { Observable } from "rxjs";
 import { GroupDataService } from "./group-data.service";
 import { map, tap } from "rxjs/operators";
 import { FrontendUser, User } from "../../+user/user";
-import { GroupStore } from "../../store/group/group.store";
 import { ConfigService } from "../config/config.service";
+import { GroupStore } from "../../store/group/group.store";
+import { GeneralStore } from "../../store/general.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class GroupService {
+  private groupStore = inject(GroupStore);
+  private generalStore = inject(GeneralStore);
+
   // selectedGroup$: BehaviorSubject<Group>;
   forceReload$ = new EventEmitter<void>();
 
   constructor(
     private configService: ConfigService,
     private dataService: GroupDataService,
-    private groupStore: GroupStore,
   ) {
     // this.selectedGroup$ = new BehaviorSubject<Group>(null);
   }
@@ -75,7 +78,7 @@ export class GroupService {
   updateGroup(group: Group): Observable<any> {
     return this.dataService
       .saveGroup(group)
-      .pipe(tap((response) => this.groupStore.update(group.id, response)));
+      .pipe(tap((response) => this.groupStore.update(response)));
   }
 
   createGroup(group: Group): Observable<Group> {
@@ -88,7 +91,7 @@ export class GroupService {
   deleteGroup(id: number): Observable<any> {
     return this.dataService
       .deleteGroup(id)
-      .pipe(tap(this.groupStore.remove(id)));
+      .pipe(tap(() => this.groupStore.remove(id)));
   }
 
   getUsersOfGroup(id: number): Observable<FrontendUser[]> {
@@ -114,6 +117,6 @@ export class GroupService {
   }
 
   setActive(id: number) {
-    this.groupStore.setActive(id);
+    this.generalStore.setActiveGroup(id);
   }
 }

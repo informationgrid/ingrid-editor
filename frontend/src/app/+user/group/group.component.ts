@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, OnInit } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  computed,
+  effect,
+  inject,
+  OnInit,
+} from "@angular/core";
 import { GroupService } from "../../services/role/group.service";
 import { Group } from "../../models/user-group";
 import { Observable, of } from "rxjs";
@@ -44,7 +51,6 @@ import { SessionQuery } from "../../store/session.query";
 import { ConfigService } from "../../services/config/config.service";
 import { UserService } from "../../services/user/user.service";
 import { Router } from "@angular/router";
-import { GroupQuery } from "../../store/group/group.query";
 import { MatToolbar, MatToolbarRow } from "@angular/material/toolbar";
 import { SearchInputComponent } from "../../shared/search-input/search-input.component";
 import { MatButton, MatIconButton } from "@angular/material/button";
@@ -60,7 +66,8 @@ import { PermissionsComponent } from "../permissions/permissions.component";
 import { MatDivider } from "@angular/material/divider";
 import { UserTableComponent } from "../user/user-table/user-table.component";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
-import { AsyncPipe } from "@angular/common";
+import { GroupStore } from "../../store/group/group.store";
+import { GeneralStore } from "../../store/general.store";
 
 @UntilDestroy()
 @Component({
@@ -91,14 +98,15 @@ import { AsyncPipe } from "@angular/common";
     MatDivider,
     UserTableComponent,
     MatProgressSpinner,
-    AsyncPipe,
   ],
   providers: [UserManagementService],
 })
 export class GroupComponent implements OnInit, AfterViewInit {
-  groups = this.groupQuery
-    .selectAll()
-    .pipe(tap((response) => (this._groups = response)));
+  private groupStore = inject(GroupStore);
+  private generalStore = inject(GeneralStore);
+
+  activeGroup = this.generalStore.activeGroup;
+  groups = this.groupStore.entities;
   userGroupNames: string[];
 
   userInfo$ = this.configService.$userInfo;
@@ -107,14 +115,16 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   form: UntypedFormGroup;
 
-  selectedGroup: Group;
   isLoading = false;
   showMore = false;
   tableWidth: number;
   groupUsers: User[];
   query = new FormControl<string>("");
-  private _groups: Group[];
   private previousGroupId: number;
+
+  selectedGroup = computed<Group>(() => {
+    return this.groupStore.entityMap()[this.activeGroup()];
+  });
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -125,10 +135,17 @@ export class GroupComponent implements OnInit, AfterViewInit {
     public userService: UserService,
     private router: Router,
     private session: SessionQuery,
-    public groupQuery: GroupQuery,
     private snackBar: MatSnackBar,
   ) {
     this.tableWidth = this.session.getValue().ui.userTableWidth;
+
+    effect(() => {
+      const activeGroup = this.activeGroup();
+      if (activeGroup !== null && this.previousGroupId !== activeGroup) {
+        this.loadGroup(activeGroup);
+        this.loadGroupUsers(activeGroup);
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -146,16 +163,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
     this.groupService.forceReload$
       .pipe(untilDestroyed(this))
       .subscribe(() => this.loadGroup(this.previousGroupId));
-
-    this.groupQuery
-      .selectActiveId()
-      .pipe(untilDestroyed(this))
-      .subscribe((activeId) => {
-        this.selectedGroup = this.groupQuery.getEntity(activeId);
-        if (activeId !== null && this.previousGroupId !== activeId) {
-          this.loadGroup(activeId);
-        }
-      });
 
     this.userInfo$.pipe(untilDestroyed(this)).subscribe((info) => {
       this.userGroupNames = info.groups;
@@ -189,9 +196,9 @@ export class GroupComponent implements OnInit, AfterViewInit {
         this.groupService
           .getGroup(id)
           .subscribe((fetchedGroup) => this.updateGroupOnPage(fetchedGroup));
-      } else {
+      } /* else {
         this.groupService.setActive(this.previousGroupId);
-      }
+      }*/
     });
   }
 
@@ -199,12 +206,12 @@ export class GroupComponent implements OnInit, AfterViewInit {
     if (!group.permissions) {
       group.permissions = new Permissions();
     }
-    this.selectedGroup = group;
+    // this.selectedGroup = group;
     this.form.reset(group);
     this.form.markAsPristine();
     if (!group.currentUserIsMember) this.form.enable();
     this.isLoading = false;
-    this.loadGroupUsers(group.id);
+    // this.loadGroupUsers(group.id);
     this.groupService.setActive(group.id);
   }
 
@@ -212,8 +219,8 @@ export class GroupComponent implements OnInit, AfterViewInit {
     this.form.markAsPristine();
     this.form.enable();
     this.isLoading = false;
-    this.loadGroupUsers(group.id);
-    this.loadGroup(this.groupQuery.getActiveId());
+    // this.loadGroupUsers(group.id);
+    // this.loadGroup(this.generalStore.activeGroup());
     this.groupService.setActive(group.id);
   }
 
@@ -237,7 +244,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   async deleteGroup(id: number) {
     this.groupService.getUsersOfGroup(id).subscribe((users) => {
-      const group = this._groups.find((group) => group.id === id);
+      const group = this.groups().find((group) => group.id === id);
       const data = GroupComponent.createDeleteDialogData(users, group);
 
       this.dialog
@@ -249,7 +256,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
           if (result) {
             this.groupService
               .deleteGroup(id)
-              .pipe(filter(() => id === this.groupQuery.getActiveId()))
+              .pipe(filter(() => id === this.activeGroup()))
               .subscribe(() => {
                 this.groupService.setActive(null);
               });
@@ -283,9 +290,10 @@ export class GroupComponent implements OnInit, AfterViewInit {
   forbiddenNameValidator(): ValidatorFn {
     return (control: AbstractControl) => {
       const forbidden =
-        this._groups?.filter(
+        this.groups()?.filter(
           (group) =>
-            group.name === control.value && group.id !== this.selectedGroup?.id,
+            group.name === control.value &&
+            group.id !== this.selectedGroup()?.id,
         )?.length > 0;
 
       return forbidden ? { forbiddenName: { value: control.value } } : null;

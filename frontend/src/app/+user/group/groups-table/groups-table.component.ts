@@ -20,7 +20,9 @@
 import {
   AfterViewInit,
   Component,
+  effect,
   EventEmitter,
+  input,
   Input,
   OnInit,
   Output,
@@ -43,7 +45,7 @@ import {
 import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Group } from "../../../models/user-group";
-import { firstValueFrom, Observable } from "rxjs";
+import { firstValueFrom } from "rxjs";
 import { filter } from "rxjs/operators";
 import { GeneralTable } from "../../general.table";
 import { GroupService } from "../../../services/role/group.service";
@@ -100,7 +102,7 @@ export class GroupsTableComponent
     this.dataSource.filter = filter;
   }
 
-  @Input() selectedGroup: Observable<number>;
+  selectedGroup = input<number>();
   @Input() userGroupNames: string[];
 
   @Output() onGroupSelect = new EventEmitter<Group>();
@@ -132,16 +134,17 @@ export class GroupsTableComponent
         .toLowerCase();
       return searchIn.includes(filterValue.trim().toLowerCase());
     };
-  }
 
-  ngOnInit() {
-    this.selectedGroup
-      .pipe(filter((groupId) => this.selection.selected[0]?.id !== groupId))
-      .subscribe((groupId) => {
+    effect(() => {
+      const groupId = this.selectedGroup();
+      if (this.selection.selected[0]?.id !== groupId) {
         this.setSelectionToItem(groupId, "id");
         this.updatePaginator(groupId, "id");
-      });
+      }
+    });
   }
+
+  ngOnInit() {}
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;

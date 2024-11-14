@@ -3,11 +3,13 @@ import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
 type GeneralState = {
   favorites: { [x: string]: string[] };
   codelistsLoaded: boolean;
+  activeGroup: number;
 };
 
 const initialState: GeneralState = {
   favorites: {},
   codelistsLoaded: false,
+  activeGroup: null,
 };
 
 export const GeneralStore = signalStore(
@@ -19,6 +21,9 @@ export const GeneralStore = signalStore(
     },
     updateFavorites(favorites): void {
       patchState(store, (_state) => ({ favorites: favorites }));
+    },
+    setActiveGroup(id: number): void {
+      patchState(store, (_state) => ({ activeGroup: id }));
     },
   })),
 );
