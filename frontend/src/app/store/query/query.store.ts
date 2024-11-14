@@ -17,15 +17,22 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import {
-  ActiveState,
-  EntityState,
-  EntityStore,
-  StoreConfig,
-} from "@datorama/akita";
+import { ActiveState, EntityState } from "@datorama/akita";
 import { Query } from "./query.model";
 import { FacetUpdate } from "../../+research/+facets/facets.component";
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withMethods,
+} from "@ngrx/signals";
+import {
+  addEntity,
+  removeEntity,
+  setAllEntities,
+  withEntities,
+} from "@ngrx/signals/entities";
+import { computed } from "@angular/core";
 
 export interface QueryState extends EntityState<Query>, ActiveState {
   ui: {
@@ -59,10 +66,26 @@ export function createInitialState(): QueryState {
   };
 }
 
-@Injectable({ providedIn: "root" })
-@StoreConfig({ name: "query" })
-export class QueryStore extends EntityStore<QueryState, Query> {
-  constructor() {
-    super(createInitialState());
-  }
-}
+export const QueryStore = signalStore(
+  { providedIn: "root" },
+  withEntities<Query>(),
+  withComputed((store) => ({
+    userQueries: computed(() => {
+      return store.entities().filter((entity) => !entity.isCatalogQuery);
+    }),
+    catalogQueries: computed(() => {
+      return store.entities().filter((entity) => entity.isCatalogQuery);
+    }),
+  })),
+  withMethods((store) => ({
+    set(queries: Query[]): void {
+      patchState(store, setAllEntities(queries));
+    },
+    add(query: Query): void {
+      patchState(store, addEntity(query));
+    },
+    remove(id: string): void {
+      patchState(store, removeEntity(id));
+    },
+  })),
+);

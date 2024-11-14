@@ -17,8 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
-import { QueryQuery } from "../../store/query/query.query";
+import { Component, inject, OnInit } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter, finalize, map } from "rxjs/operators";
 import { ResearchResponse, ResearchService } from "../research.service";
@@ -37,6 +36,8 @@ import { MatButton } from "@angular/material/button";
 import { MatInput } from "@angular/material/input";
 import { MatFormField } from "@angular/material/form-field";
 import { ResultTableComponent } from "../result-table/result-table.component";
+import { GeneralStore } from "../../store/general.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
@@ -54,6 +55,8 @@ import { ResultTableComponent } from "../result-table/result-table.component";
   ],
 })
 export class TabSqlComponent implements OnInit {
+  private generalStore = inject(GeneralStore);
+
   sql = new UntypedFormControl("");
   request = new FormControl<string>("");
 
@@ -66,8 +69,9 @@ export class TabSqlComponent implements OnInit {
     this.config.hasSuperAdminRights() &&
     (this.config.getConfiguration().featureFlags.openAISearch ?? false);
 
+  private activeQuery = toObservable(this.generalStore.activeQuery);
+
   constructor(
-    private queryQuery: QueryQuery,
     private researchService: ResearchService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -75,8 +79,7 @@ export class TabSqlComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.queryQuery
-      .selectActive()
+    this.activeQuery
       .pipe(
         untilDestroyed(this),
         filter((a) => a && a.type === "sql"),

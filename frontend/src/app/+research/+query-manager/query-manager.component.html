@@ -9,10 +9,7 @@
                 data-cy="card-saved-queries"
                 role="list"
             >
-                @for (
-                    query of type.queries | async;
-                    track getIdentifier($index, query)
-                ) {
+                @for (query of type.queries(); track query.id) {
                     <div
                         tabindex="0"
                         role="listitem"
