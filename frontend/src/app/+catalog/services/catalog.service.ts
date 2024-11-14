@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import {
   ConfigService,
   Configuration,
@@ -40,12 +40,13 @@ export interface Profile {
   providedIn: "root",
 })
 export class CatalogService {
+  private catalogStore = inject(CatalogStore);
+
   private configuration: Configuration;
 
   constructor(
     private dataService: CatalogDataService,
     private http: HttpClient,
-    private catalogStore: CatalogStore,
     private snackbar: MatSnackBar,
     configService: ConfigService,
   ) {
@@ -139,12 +140,7 @@ export class CatalogService {
   }
 
   private addStatisticToStore(catalogId: string, statistic: any) {
-    this.catalogStore.update(catalogId, (state) => {
-      return {
-        ...state,
-        ...statistic,
-      };
-    });
+    this.catalogStore.update(catalogId, statistic);
   }
 
   static mapCatalog(catalog: any): Catalog {

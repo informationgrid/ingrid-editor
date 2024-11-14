@@ -2,7 +2,7 @@
     <div left-side>Auf dieser Seite können die Kataloge verwaltet werden.</div>
 
     <div main-header class="flex-col justify-content-start align-items-stretch">
-        @if (profiles) {
+        @if (profiles()) {
             <div>
                 <ige-add-button
                     buttonType="flat"
@@ -21,7 +21,7 @@
     <div main-content>
         <div class="section-title">Aktiver Katalog</div>
         <div class="flex-row" style="padding-bottom: 48px">
-            @if (activeCatalog | async; as catalog) {
+            @if (activeCatalog(); as catalog) {
                 <div class="catalog-wrapper">
                     <ng-container
                         [ngTemplateOutlet]="catContent"
@@ -33,10 +33,7 @@
 
         <div class="section-title">Weitere Kataloge</div>
         <div class="flex-row flex-wrap gap-36">
-            @for (
-                cat of nonActiveCatalogs | async;
-                track trackByCatalogId($index, cat)
-            ) {
+            @for (cat of nonActiveCatalogs(); track cat.id) {
                 <div class="catalog-wrapper">
                     <ng-container
                         [ngTemplateOutlet]="catContent"
