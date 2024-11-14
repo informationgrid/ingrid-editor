@@ -30,13 +30,14 @@ import { DocumentAbstract } from "../../../../store/document/document.model";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
 import { ProfileAbstract } from "../../../../store/profile/profile.model";
 import { filter, map, take, tap } from "rxjs/operators";
-import { ProfileQuery } from "../../../../store/profile/profile.query";
 import { ProfileService } from "../../../../services/profile.service";
 import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
 import { MatError, MatFormField } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../../directives/focus.directive";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
+import { ProfileStore } from "../../../../store/profile/profile.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "ige-document-template",
@@ -61,7 +62,7 @@ export class DocumentTemplateComponent implements OnInit {
   create = output<void>();
 
   private translocoService = inject(TranslocoService);
-  private profileQuery = inject(ProfileQuery);
+  private profileStore = inject(ProfileStore);
   private profileService = inject(ProfileService);
 
   documentTypes: DocumentAbstract[];
@@ -69,11 +70,13 @@ export class DocumentTemplateComponent implements OnInit {
     null,
   );
 
+  private profileEntities$ = toObservable(this.profileStore.entities);
+
   ngOnInit(): void {
     if (this.isFolder()) {
       this.setDocType({ id: "FOLDER" } as DocumentAbstract);
     } else {
-      this.initializeDocumentTypes(this.profileQuery.documentProfiles);
+      this.initializeDocumentTypes(this.profileEntities$);
     }
   }
 

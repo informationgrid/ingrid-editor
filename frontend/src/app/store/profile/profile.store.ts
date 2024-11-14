@@ -17,9 +17,21 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { EntityState, EntityStore, StoreConfig } from "@datorama/akita";
+import { EntityState } from "@datorama/akita";
 import { ProfileAbstract } from "./profile.model";
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withMethods,
+} from "@ngrx/signals";
+import {
+  setAllEntities,
+  updateEntity,
+  withEntities,
+} from "@ngrx/signals/entities";
+import { Group } from "../../models/user-group";
+import { computed } from "@angular/core";
 
 type FormHeaderInfoField = "status" | "type" | "created" | "modified";
 
@@ -39,10 +51,22 @@ export function createProfile(params: Partial<ProfileAbstract>) {
   }) as ProfileAbstract;
 }
 
-@Injectable({ providedIn: "root" })
-@StoreConfig({ name: "profile" })
-export class ProfileStore extends EntityStore<ProfileState, ProfileAbstract> {
-  constructor() {
-    super(createProfile(null));
-  }
-}
+export const ProfileStore = signalStore(
+  { providedIn: "root" },
+  withEntities<ProfileAbstract>(),
+  withComputed((store) => ({
+    addressProfiles: computed(() => {
+      return store
+        .entities()
+        .filter((entity) => entity.isAddressProfile && entity.id !== "FOLDER");
+    }),
+  })),
+  withMethods((store) => ({
+    set(profiles: ProfileAbstract[]): void {
+      patchState(store, setAllEntities(profiles));
+    } /*
+      update(profile: ProfileAbstract): void {
+        patchState(store, updateEntity({ id: group.id, changes: profile }));
+      }*/,
+  })),
+);

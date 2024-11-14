@@ -64,7 +64,6 @@ import {
   Observable,
   Subscription,
 } from "rxjs";
-import { ProfileQuery } from "../../../store/profile/profile.query";
 import { Behaviour } from "../../../services/behavior/behaviour";
 import { TreeService } from "../../sidebars/tree/tree.service";
 import { ValidationError } from "../../../store/session.store";
@@ -87,6 +86,8 @@ import { FolderDashboardComponent } from "../folder/folder-dashboard.component";
 import { AsyncPipe, JsonPipe } from "@angular/common";
 import { GeneralStore } from "../../../store/general.store";
 import { toObservable } from "@angular/core/rxjs-interop";
+import { ProfileStore } from "../../../store/profile/profile.store";
+import { ProfileService } from "../../../services/profile.service";
 
 @UntilDestroy()
 @Component({
@@ -114,6 +115,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() address = false;
 
   private generalStore = inject(GeneralStore);
+  private profileStore = inject(ProfileStore);
+  private profileService = inject(ProfileService);
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
   @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
@@ -173,6 +176,9 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private waitForCodelistsLoaded$ = toObservable(
     this.generalStore.codelistsLoaded,
   );
+  private waitForProfilesLoaded$ = toObservable(
+    this.generalStore.profilesLoaded,
+  );
 
   constructor(
     private formularService: FormularService,
@@ -185,7 +191,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private treeQuery: TreeQuery,
     private addressTreeQuery: AddressTreeQuery,
     private session: SessionQuery,
-    private profileQuery: ProfileQuery,
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog,
@@ -217,7 +222,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // wait for profile and codelists to be loaded before opening first dataset
     combineLatest([
-      this.profileQuery.selectLoading().pipe(filter((isLoading) => !isLoading)),
+      this.waitForProfilesLoaded$.pipe(filter((isLoaded) => isLoaded === true)),
       this.waitForCodelistsLoaded$.pipe(
         filter((isLoaded) => isLoaded === true),
       ),
@@ -525,7 +530,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.formularService.getSectionsFromProfile(this.fields);
     this.hasOptionalFields =
-      this.profileQuery.getProfile(profile).hasOptionalFields;
+      this.profileService.getProfile(profile).hasOptionalFields;
   }
 
   /**

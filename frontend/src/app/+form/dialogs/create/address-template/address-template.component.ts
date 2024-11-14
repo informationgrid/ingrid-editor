@@ -36,7 +36,6 @@ import {
 } from "@angular/forms";
 import { ProfileAbstract } from "../../../../store/profile/profile.model";
 import { filter, map, tap } from "rxjs/operators";
-import { ProfileQuery } from "../../../../store/profile/profile.query";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DocBehavioursService } from "../../../../services/event/doc-behaviours.service";
 import { ProfileService } from "../../../../services/profile.service";
@@ -45,6 +44,8 @@ import { MatFormField } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../../directives/focus.directive";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
+import { ProfileStore } from "../../../../store/profile/profile.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 interface AddressDocumentAbstract extends DocumentAbstract {
   addressType: "person" | "organization";
@@ -66,6 +67,8 @@ interface AddressDocumentAbstract extends DocumentAbstract {
   ],
 })
 export class AddressTemplateComponent implements OnInit {
+  private profileStore = inject(ProfileStore);
+
   @Input() form: UntypedFormGroup;
   parent = input<number>();
 
@@ -81,15 +84,16 @@ export class AddressTemplateComponent implements OnInit {
 
   documentTypes = signal<AddressDocumentAbstract[]>([]);
 
+  private addressProfiles$ = toObservable(this.profileStore.addressProfiles);
+
   constructor(
-    private profileQuery: ProfileQuery,
     private docBehaviours: DocBehavioursService,
     private profileService: ProfileService,
   ) {}
 
   ngOnInit(): void {
     this.initializeDocumentTypes(
-      this.profileQuery.addressProfiles,
+      this.addressProfiles$,
       this.parent(),
     ).subscribe((value) => this.documentTypes.set(value));
   }

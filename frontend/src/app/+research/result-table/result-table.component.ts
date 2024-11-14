@@ -47,8 +47,6 @@ import {
   SelectOption,
   SelectOptionUi,
 } from "../../services/codelist/codelist.service";
-import { ProfileService } from "../../services/profile.service";
-import { ProfileQuery } from "../../store/profile/profile.query";
 import { IgeDocument } from "../../models/ige-document";
 import { Router } from "@angular/router";
 import {
@@ -154,8 +152,6 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
 
   constructor(
     private router: Router,
-    private profileService: ProfileService,
-    private profileQuery: ProfileQuery,
     private documentService: DocumentService,
     private dialog: MatDialog,
     private exportService: ExportService,
