@@ -71,14 +71,12 @@ class OgcGeoJsonExporter(
         return convertToJsonNode(record)
     }
 
-    private fun getPublished(catalogId: String, uuid: String): JsonNode? {
-        return try {
-            val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
-            getRawJsonFromDocument(document)
-        } catch (ex: Exception) {
-            // allow to export only draft versions
-            null
-        }
+    private fun getPublished(catalogId: String, uuid: String): JsonNode? = try {
+        val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
+        getRawJsonFromDocument(document)
+    } catch (ex: Exception) {
+        // allow to export only draft versions
+        null
     }
 
     private fun addExportWrapper(uuid: String, publishedVersion: JsonNode?, draftVersion: JsonNode?): Record {
@@ -92,6 +90,7 @@ class OgcGeoJsonExporter(
 
         return Record(
             id = jacksonObjectMapper().createObjectNode().textNode(uuid),
+            isGeojson = true,
             conformsTo = null,
             type = "Feature",
             time,
@@ -111,7 +110,5 @@ class OgcGeoJsonExporter(
         return node
     }
 
-    override fun toString(exportedObject: Any): String {
-        return exportedObject as String
-    }
+    override fun toString(exportedObject: Any): String = exportedObject as String
 }

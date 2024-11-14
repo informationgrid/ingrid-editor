@@ -4,14 +4,14 @@
             Suche
             <mat-spinner [diameter]="24"></mat-spinner>
         } @else {
-            <span>
+            <h2>
                 <span data-cy="total-hits">{{ totalHits }}</span>
                 @if (totalHits === 1) {
                     Ergebnis gefunden
                 } @else {
                     Ergebnisse gefunden
                 }
-            </span>
+            </h2>
         }
     </div>
     <div class="result-buttons">

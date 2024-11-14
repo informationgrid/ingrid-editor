@@ -124,7 +124,7 @@ export class DocumentReferenceTypeComponent
     };
     this.dialog
       .open(SelectGeoDatasetDialog, {
-        minWidth: 400,
+        minWidth: "min(400px, 100%)",
         data: data,
       })
       .afterClosed()
@@ -152,7 +152,7 @@ export class DocumentReferenceTypeComponent
     this.dialog
       .open(SelectCswRecordDialog, {
         data: data,
-        minWidth: 400,
+        minWidth: "min(400px, 100%)",
       })
       .afterClosed()
       .subscribe((item: SelectCswRecordResponse) => {

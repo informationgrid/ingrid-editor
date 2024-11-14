@@ -130,7 +130,7 @@ export class RepeatDistributionDetailListComponent
   showUploadFilesDialog() {
     this.dialog
       .open(UploadFilesDialogComponent, {
-        minWidth: 700,
+        minWidth: "min(700px, 100%)",
         data: {
           currentItems: this.model[this.key + ""],
           uploadFieldKey: this.getUploadFieldKey(),

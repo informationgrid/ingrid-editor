@@ -272,7 +272,9 @@ tasks.withType(KotlinCompile).configureEach {
 }
 
 // disable kapt for tests since it leads to an error due to analyzing test sources
-tasks.matching { it.name.startsWith("kaptGenerateStubsTestKotlin") }.configureEach {
+// also disable completely because it takes too much time
+// instead just generate Log4j2Plugins.dat and copy it to resources folder
+tasks.matching { it.name.startsWith("kapt") }.configureEach {
     enabled = false
 }
 

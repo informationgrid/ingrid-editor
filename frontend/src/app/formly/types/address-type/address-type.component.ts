@@ -221,7 +221,6 @@ export class AddressTypeComponent
     if (foundAddresses) {
       return this.dialog
         .open(ChooseAddressDialogComponent, {
-          minWidth: 500,
           data: <ChooseAddressDialogData>{
             address: address,
             allowedTypes: this.props.allowedTypes,

@@ -135,9 +135,7 @@ export class CreateFolderPlugin extends Plugin {
 
   showDialog(parentDocId: string) {
     this.dialog.open(CreateNodeComponent, {
-      minWidth: 500,
       maxWidth: 600,
-      minHeight: 500,
       disableClose: false,
       hasBackdrop: true,
       data: {
