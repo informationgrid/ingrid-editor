@@ -19,17 +19,15 @@
  */
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
+  computed,
+  inject,
   Input,
   OnInit,
 } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { IgeDocument } from "../../models/ige-document";
-import { TreeQuery } from "../../store/tree/tree.query";
-import { tap } from "rxjs/operators";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { ShortTreeNode } from "../sidebars/tree/tree.types";
 import { Router } from "@angular/router";
 import { TranslocoService } from "@ngneat/transloco";
@@ -38,6 +36,9 @@ import { FormStateService } from "../form-state.service";
 import { BreadcrumbComponent } from "./breadcrumb/breadcrumb.component";
 import { PublishPendingComponent } from "./publish-pending/publish-pending.component";
 import { HeaderTitleRowComponent } from "./header-title-row/header-title-row.component";
+import { GeneralStore } from "../../store/general.store";
+import { TreeStore } from "../../store/tree/tree.store";
+import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 
 @UntilDestroy()
 @Component({
@@ -63,17 +64,23 @@ export class FormInfoComponent implements OnInit {
   @Input() forAddress = false;
   @Input() disableTitleEdit = false;
 
-  path: ShortTreeNode[] = [];
+  private generalStore = inject(GeneralStore);
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
+
+  path = computed<ShortTreeNode[]>(() => {
+    if (this.forAddress) {
+      return this.generalStore.breadcrumb().address.slice(0, -1);
+    } else {
+      return this.generalStore.breadcrumb().document.slice(0, -1);
+    }
+  });
 
   rootName: string;
   metadata = this.formStateService.metadata;
-  private query: AddressTreeQuery | TreeQuery;
 
   constructor(
     private router: Router,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
-    private cdr: ChangeDetectorRef,
     private translocoService: TranslocoService,
     private formStateService: FormStateService,
   ) {}
@@ -81,26 +88,19 @@ export class FormInfoComponent implements OnInit {
   ngOnInit() {
     if (this.forAddress) {
       this.rootName = this.translocoService.translate("menu.address");
-      this.query = this.addressTreeQuery;
     } else {
       this.rootName = this.translocoService.translate("menu.form");
-      this.query = this.treeQuery;
     }
-
-    this.query.breadcrumb$
-      .pipe(
-        untilDestroyed(this),
-        tap((path) => (this.path = path.slice(0, -1))),
-        tap(() => this.cdr.markForCheck()),
-      )
-      .subscribe();
   }
 
   async scrollToTreeNode(nodeId: number) {
     const route: any[] = [
       ConfigService.catalogId + (this.forAddress ? "/address" : "/form"),
     ];
-    if (nodeId) route.push({ id: this.query.getEntity(nodeId)._uuid });
+    const store = this.forAddress
+      ? this.addressTreeStore
+      : this.documentTreeStore;
+    if (nodeId) route.push({ id: store.entityMap()[nodeId]._uuid });
     return this.router.navigate(route);
   }
 }

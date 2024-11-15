@@ -17,12 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { TreeNode } from "../../../store/tree/tree-node.model";
-import { TreeStore } from "../../../store/tree/tree.store";
-import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 import { ShortTreeNode } from "./tree.types";
-import { transaction } from "@datorama/akita";
+import { GeneralStore } from "../../../store/general.store";
+import { UiStore } from "../../../store/ui.store";
 
 export type TreeSortFn = (a: TreeNode, b: TreeNode) => number;
 
@@ -30,6 +29,9 @@ export type TreeSortFn = (a: TreeNode, b: TreeNode) => number;
   providedIn: "root",
 })
 export class TreeService {
+  private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
+
   private alternativeSortFunction: TreeSortFn = null;
 
   private sortNodesByFolderFirst = (a: TreeNode, b: TreeNode) => {
@@ -47,10 +49,7 @@ export class TreeService {
     }
   };
 
-  constructor(
-    private treeStore: TreeStore,
-    private addressTreeStore: AddressTreeStore,
-  ) {}
+  constructor() {}
 
   registerTreeSortFunction(treeSortFn: TreeSortFn) {
     if (treeSortFn !== null && this.alternativeSortFunction !== null) {
@@ -71,32 +70,24 @@ export class TreeService {
    * @param isAddress
    * @param id
    */
-  @transaction()
   selectTreeNode(isAddress: boolean, id: number) {
-    const store = isAddress ? this.addressTreeStore : this.treeStore;
-
-    store.update({
-      explicitActiveNode: new ShortTreeNode(id, "?"),
-    });
+    console.log("tree select node", id);
+    this.generalStore.setExplicitActiveNode(
+      new ShortTreeNode(id, "?"),
+      isAddress,
+    );
     if (id === null) {
-      store.update({
-        breadcrumb: [],
-      });
+      this.generalStore.setBreadCrumb([], isAddress);
     }
   }
 
   updateScrollPositionInStore(isAddress: boolean, top) {
-    const store = isAddress ? this.addressTreeStore : this.treeStore;
-
-    store.update({
-      scrollPosition: top,
-    });
+    this.uiStore.setScrollPosition(top);
   }
 
   isReloadNeededWithReset(isAddress: boolean): boolean {
-    const store = isAddress ? this.addressTreeStore : this.treeStore;
-    const needsReload = store.getValue().needsReload;
-    if (needsReload) store.update({ needsReload: false });
+    const needsReload = this.generalStore.getNeedsReload(isAddress);
+    if (needsReload) this.generalStore.setNeedsReload(isAddress, false);
     return needsReload;
   }
 }

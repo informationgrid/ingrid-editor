@@ -20,19 +20,19 @@
 import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
-import { TreeQuery } from "../../../store/tree/tree.query";
 import { CreateNodeComponent, CreateOptions } from "./create-node.component";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { filter, take } from "rxjs/operators";
 import { FormUtils } from "../../form.utils";
 import { DocumentService } from "../../../services/document/document.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { FormStateService } from "../../form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { TranslocoService } from "@ngneat/transloco";
+import { GeneralStore } from "../../../store/general.store";
+import { TreeStore } from "../../../store/tree/tree.store";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 @UntilDestroy()
 @Injectable()
@@ -44,6 +44,10 @@ export class CreateFolderPlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
+  private generalStore = inject(GeneralStore);
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
+
   eventCreateFolderId = "CREATE_FOLDER";
 
   private isAdmin = this.config.hasCatAdminRights();
@@ -52,8 +56,6 @@ export class CreateFolderPlugin extends Plugin {
     private config: ConfigService,
     private formToolbarService: FormToolbarService,
     private docEvents: DocEventsService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
     private formStateService: FormStateService,
     private dialog: MatDialog,
@@ -95,8 +97,7 @@ export class CreateFolderPlugin extends Plugin {
     // show dialog where user can choose name of the folder and location
     // it can be created under the root node or another folder
     // TODO: parent node determination is the same as in new-doc plugin
-    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
-    const selectedDoc = query.getOpenedDocument();
+    const selectedDoc = this.generalStore.getOpenedDocument(this.forAddress);
 
     // wait for entity in store, otherwise it could happen that the tree is being
     // loaded while we clicked on the create node button. In this case the function
@@ -113,21 +114,16 @@ export class CreateFolderPlugin extends Plugin {
         return;
       }
 
-      query
-        .selectEntity(selectedDoc.id)
-        .pipe(
-          untilDestroyed(this),
-          filter((entity) => entity !== undefined),
-          take(1),
-        )
-        .subscribe((entity) => {
-          let parentDocId = null;
-          const folder = query.getFirstParentFolder(selectedDoc.id.toString());
-          if (folder !== null) {
-            parentDocId = folder.id;
-          }
-          this.showDialog(parentDocId);
-        });
+      const store = this.forAddress
+        ? this.addressTreeStore
+        : this.documentTreeStore;
+
+      let parentDocId = null;
+      const folder = store.getFirstParentFolder(selectedDoc.id as number);
+      if (folder !== null) {
+        parentDocId = folder.id;
+      }
+      this.showDialog(parentDocId);
     } else {
       this.showDialog(null);
     }

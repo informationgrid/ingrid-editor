@@ -28,11 +28,14 @@ import { BehaviorSubject, of } from "rxjs";
 import { filter, map, mergeMap, toArray } from "rxjs/operators";
 import { GroupStore } from "../store/group/group.store";
 import { ProfileStore } from "../store/profile/profile.store";
+import { GeneralStore } from "../store/general.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class FormularService {
+  private generalStore = inject(GeneralStore);
+
   data = {};
 
   currentProfile: string;
@@ -44,7 +47,6 @@ export class FormularService {
 
   constructor(
     private profiles: ProfileService,
-    private treeStore: TreeStore,
     private sessionStore: SessionStore,
   ) {}
 
@@ -80,7 +82,7 @@ export class FormularService {
   }
 
   setSelectedDocuments(docs: DocumentAbstract[]) {
-    this.treeStore.setActive(docs.map((d) => d.id));
+    this.generalStore.setActiveTreeNodes(docs.map((d) => d.id as number));
   }
 
   updateSidebarWidth(size: number) {

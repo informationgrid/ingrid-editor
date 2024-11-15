@@ -22,6 +22,7 @@ import {
   Component,
   effect,
   ElementRef,
+  inject,
   Inject,
   OnInit,
   signal,
@@ -40,8 +41,6 @@ import {
   MatDialogTitle,
 } from "@angular/material/dialog";
 import { tap } from "rxjs/operators";
-import { TreeQuery } from "../../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { Router } from "@angular/router";
 import {
   ReactiveFormsModule,
@@ -60,13 +59,15 @@ import { TreeNode } from "../../../store/tree/tree-node.model";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { MatTab, MatTabGroup } from "@angular/material/tabs";
 import { DocumentTemplateComponent } from "./document-template/document-template.component";
 import { NgTemplateOutlet } from "@angular/common";
 import { AddressTemplateComponent } from "./address-template/address-template.component";
 import { DestinationSelectionComponent } from "./destination-selection/destination-selection.component";
 import { BreadcrumbComponent } from "../../form-info/breadcrumb/breadcrumb.component";
+import { GeneralStore } from "../../../store/general.store";
+import { TreeStore } from "../../../store/tree/tree.store";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 export interface CreateOptions {
   parent: string;
@@ -87,7 +88,6 @@ export interface CreateOptions {
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     MatTabGroup,
     MatTab,
@@ -103,6 +103,10 @@ export interface CreateOptions {
   ],
 })
 export class CreateNodeComponent implements OnInit {
+  private generalStore = inject(GeneralStore);
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
+
   @ViewChild("contextNodeContainer") container: ElementRef;
   title = "Neuen Ordner anlegen";
   parent: number = null;
@@ -117,13 +121,10 @@ export class CreateNodeComponent implements OnInit {
   pathWithWritePermission = signal<boolean>(false);
   alreadySubmitted = false;
 
-  private query: TreeQuery | AddressTreeQuery;
   docTypeChoice = signal<string>(null);
 
   constructor(
     private config: ConfigService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     private router: Router,
     private fb: UntypedFormBuilder,
     private documentService: DocumentService,
@@ -171,8 +172,6 @@ export class CreateNodeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
-
     if (this.isFolder() || !this.forAddress) {
       this.initializeForDocumentsAndFolders();
     } else {
@@ -184,9 +183,8 @@ export class CreateNodeComponent implements OnInit {
       .subscribe((value) => this.docTypeChoice.set(value.choice));
 
     // set initial path to current position
-    this.query.breadcrumb$
-      .pipe(untilDestroyed(this))
-      .subscribe((path) => this.mapPath(path));
+    if (this.forAddress) this.mapPath(this.generalStore.breadcrumb().address);
+    else this.mapPath(this.generalStore.breadcrumb().document);
   }
 
   async handleCreate() {
@@ -252,7 +250,7 @@ export class CreateNodeComponent implements OnInit {
     if (path.length === 0) return [];
 
     const lastNode = path.pop();
-    const entity = this.query.getEntity(lastNode.id);
+    const entity = this.getStore().entityMap()[lastNode.id];
     // if entity could not be found because user has no read permission on parent node
     // then we cannot give any permission to the currently selected path
     if (!entity) return [];
@@ -270,6 +268,10 @@ export class CreateNodeComponent implements OnInit {
       return this.getPathAllowedToAdd(path);
     }
     return [...path, lastNode];
+  }
+
+  private getStore() {
+    return this.forAddress ? this.addressTreeStore : this.documentTreeStore;
   }
 
   private initializeForDocumentsAndFolders() {

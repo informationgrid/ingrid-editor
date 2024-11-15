@@ -13,8 +13,18 @@ type GeneralState = {
   openedAddress: DocumentAbstract;
   openedDocument: DocumentAbstract;
   datasetsChanged: UpdateDatasetInfo;
+  addressesChanged: UpdateDatasetInfo;
   explicitActiveNode: ShortTreeNode;
+  explicitActiveNodeAddress: ShortTreeNode;
   activeTreeNodes: number[];
+  activeAddressTreeNodes: number[];
+  isDocumentLoading: boolean;
+  breadcrumb: {
+    document: ShortTreeNode[];
+    address: ShortTreeNode[];
+  };
+  needsDocumentReload: boolean;
+  needsAddressReload: boolean;
 };
 
 const initialState: GeneralState = {
@@ -26,8 +36,18 @@ const initialState: GeneralState = {
   openedAddress: null,
   openedDocument: null,
   datasetsChanged: null,
+  addressesChanged: null,
   explicitActiveNode: null,
+  explicitActiveNodeAddress: null,
   activeTreeNodes: [],
+  activeAddressTreeNodes: [],
+  isDocumentLoading: false,
+  breadcrumb: {
+    document: [],
+    address: [],
+  },
+  needsDocumentReload: false,
+  needsAddressReload: false,
 };
 
 export const GeneralStore = signalStore(
@@ -49,8 +69,14 @@ export const GeneralStore = signalStore(
     setActiveQuery(query: Query): void {
       patchState(store, (_state) => ({ activeQuery: query }));
     },
-    setExplicitActiveNode(node: ShortTreeNode): void {
-      patchState(store, (_state) => ({ explicitActiveNode: node }));
+    getExplicitActiveNode(isAddress: boolean): ShortTreeNode {
+      if (isAddress) return store.explicitActiveNodeAddress();
+      else return store.explicitActiveNode();
+    },
+    setExplicitActiveNode(node: ShortTreeNode, isAddress: boolean): void {
+      console.log("store setExplicitActiveNode", node);
+      if (isAddress) patchState(store, { explicitActiveNodeAddress: node });
+      else patchState(store, { explicitActiveNode: node });
     },
     setActiveTreeNodes(docIds: number[]): void {
       patchState(store, (_state) => ({ activeTreeNodes: docIds }));
@@ -60,6 +86,40 @@ export const GeneralStore = signalStore(
     },
     setOpenedAddress(address: DocumentAbstract): void {
       patchState(store, (_state) => ({ openedAddress: address }));
+    },
+    getOpenedDocument(isAddress: boolean): DocumentAbstract {
+      return isAddress ? store.openedAddress() : store.openedDocument();
+    },
+    setDatasetsChanged(info: UpdateDatasetInfo, isAddress: boolean): void {
+      if (isAddress)
+        patchState(store, (_state) => ({ addressesChanged: info }));
+      else patchState(store, (_state) => ({ datasetsChanged: info }));
+    },
+    getDatasetsChanged(forAddress: boolean): UpdateDatasetInfo {
+      if (forAddress) return store.addressesChanged();
+      else return store.datasetsChanged();
+    },
+    setDocumentLoading(value: boolean): void {
+      patchState(store, { isDocumentLoading: value });
+    },
+    setBreadCrumb(path: ShortTreeNode[], isAddress: boolean) {
+      if (isAddress)
+        patchState(store, (state) => ({
+          breadcrumb: { ...state.breadcrumb, address: path },
+        }));
+      else
+        patchState(store, (state) => ({
+          breadcrumb: { ...state.breadcrumb, document: path },
+        }));
+    },
+    getNeedsReload(forAddress: boolean): boolean {
+      if (forAddress) return store.needsAddressReload();
+      else return store.needsDocumentReload();
+    },
+    setNeedsReload(forAddress: boolean, value: boolean): void {
+      if (forAddress)
+        patchState(store, (_state) => ({ needsAddressReload: value }));
+      else patchState(store, (_state) => ({ needsDocumentReload: value }));
     },
   })),
 );

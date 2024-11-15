@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { filter } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
@@ -27,10 +27,13 @@ import {
 } from "./replace-address-dialog/replace-address-dialog.component";
 import { ConfigService } from "../../../../services/config/config.service";
 import { Observable } from "rxjs";
-import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { FormMenuService } from "../../../../+form/form-menu.service";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
+import { GeneralStore } from "../../../../store/general.store";
+import { TreeStore } from "../../../../store/tree/tree.store";
+import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
+import { DocumentAbstract } from "../../../../store/document/document.model";
 
 @Injectable()
 export class DeleteReferenceHandlerPlugin extends Plugin {
@@ -42,10 +45,12 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
   defaultActive = true;
   forAddress = true;
 
+  private generalStore = inject(GeneralStore);
+  private addressTreeStore = inject(AddressTreeStore);
+
   constructor(
     private docEvents: DocEventsService,
     private dialog: MatDialog,
-    private tree: AddressTreeQuery,
     private docEventsService: DocEventsService,
     private formMenuService: FormMenuService,
     configService: ConfigService,
@@ -54,6 +59,9 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
 
     if (configService.hasCatAdminRights()) {
       inject(PluginService).registerPlugin(this);
+      effect(() => {
+        this.handleDocumentLoad(this.generalStore.getOpenedDocument(true));
+      });
     } else {
       console.debug(
         "DeleteReferenceHandlerPlugin not registered because it's only available for catalog administrators and above.",
@@ -68,7 +76,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
       .onError(this.forAddress)
       .pipe(filter((error) => error.errorCode === "IS_REFERENCED_ERROR"))
       .subscribe((error) => {
-        const selectedNodes = this.tree.getActive();
+        const selectedNodes = this.generalStore.activeTreeNodes();
 
         // only supported when one address was selected so far
         if (selectedNodes.length > 1) {
@@ -76,8 +84,9 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
         }
 
         error.response.handled = true;
+        const doc = this.addressTreeStore.entityMap()[selectedNodes[0]];
 
-        this.showDialog(selectedNodes[0]._uuid)
+        this.showDialog(doc._uuid)
           .pipe(filter((response) => response))
           .subscribe(() => this.docEvents.sendEvent({ type: "DELETE" }));
       });
@@ -90,23 +99,22 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
       });
 
     this.subscriptions.push(subscription, onEvent);
+  }
 
-    const onDocChange = this.tree.openedDocument$.subscribe((doc) => {
-      // refresh menu item
-      this.formMenuService.removeMenuItem("address", "replace-address");
-      if (doc && doc._type !== "FOLDER") {
-        this.formMenuService.addMenuItem("address", {
-          title: "Adresse ersetzen",
-          name: "replace-address",
-          action: () =>
-            this.docEventsService.sendEvent({
-              type: "REPLACE_ADDRESS",
-              data: { uuid: doc._uuid },
-            }),
-        });
-      }
-    });
-    this.subscriptions.push(onDocChange);
+  private handleDocumentLoad(doc: DocumentAbstract) {
+    // refresh menu item
+    this.formMenuService.removeMenuItem("address", "replace-address");
+    if (doc && doc._type !== "FOLDER") {
+      this.formMenuService.addMenuItem("address", {
+        title: "Adresse ersetzen",
+        name: "replace-address",
+        action: () =>
+          this.docEventsService.sendEvent({
+            type: "REPLACE_ADDRESS",
+            data: { uuid: doc._uuid },
+          }),
+      });
+    }
   }
 
   private showDialog(source: string, showInfo = true): Observable<any> {

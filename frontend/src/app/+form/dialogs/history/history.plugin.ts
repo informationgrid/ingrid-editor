@@ -23,9 +23,7 @@ import {
   Separator,
   ToolbarItem,
 } from "../../form-shared/toolbar/form-toolbar.service";
-import { TreeQuery } from "../../../store/tree/tree.query";
 import { DocumentAbstract } from "../../../store/document/document.model";
-import { TreeStore } from "../../../store/tree/tree.store";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { Router } from "@angular/router";
 import { UpdateType } from "../../../models/update-type.enum";
@@ -68,8 +66,6 @@ export class HistoryPlugin extends Plugin {
   constructor(
     private router: Router,
     private formToolbarService: FormToolbarService,
-    private docTreeStore: TreeStore,
-    private docTreeQuery: TreeQuery,
     private docEvents: DocEventsService,
     private documentService: DocumentService,
     private formStateService: FormStateService,
@@ -84,7 +80,7 @@ export class HistoryPlugin extends Plugin {
       }
     });
     effect(() => {
-      const info = this.generalStore.datasetsChanged();
+      const info = this.generalStore.getDatasetsChanged(this.forAddress);
       if (info?.type === UpdateType.Delete) {
         this.removeDeletedDocsFromStack(info.data);
       }
@@ -268,8 +264,10 @@ export class HistoryPlugin extends Plugin {
     ]);
     if (navigated) {
       this.ignoreNextPush = true;
+      console.log("Set from history plugin");
       this.generalStore.setExplicitActiveNode(
         new ShortTreeNode(<number>item.id, item.title),
+        this.forAddress,
       );
     }
     return navigated;

@@ -31,7 +31,6 @@ import {
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { BehaviorSubject, Observable } from "rxjs";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
-import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import {
   CodelistService,
   SelectOption,
@@ -63,6 +62,7 @@ import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
 import { CodelistStore } from "../../../../store/codelist/codelist.store";
 import { toObservable } from "@angular/core/rxjs-interop";
+import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
 
 export interface ChooseAddressDialogData {
   address: ResolvedAddressWithType;
@@ -89,7 +89,6 @@ export interface ChooseAddressResponse {
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     TreeComponent,
     DocumentListItemComponent,
@@ -99,6 +98,7 @@ export interface ChooseAddressResponse {
 })
 export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   private codelistStore = inject(CodelistStore);
+  private addressTreeStore = inject(AddressTreeStore);
   @ViewChild(MatSelect) recentAddressSelect: MatSelect;
   selection = signal<DocumentAbstract>(null);
   selectedType: string;
@@ -116,7 +116,6 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private addressTreeQuery: AddressTreeQuery,
     @Inject(MAT_DIALOG_DATA) private data: ChooseAddressDialogData,
     private codelistService: CodelistService,
     private sessionQuery: SessionQuery,
@@ -168,7 +167,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   }
 
   updateAddressTree(addressId: number) {
-    this.selection.set(this.addressTreeQuery.getEntity(addressId));
+    this.selection.set(this.addressTreeStore.entityMap[addressId]);
   }
 
   getResult(): void {

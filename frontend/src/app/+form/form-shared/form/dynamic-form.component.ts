@@ -21,12 +21,14 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
+  effect,
   ElementRef,
   HostListener,
   inject,
   Input,
   OnDestroy,
   OnInit,
+  signal,
   ViewChild,
 } from "@angular/core";
 import {
@@ -46,7 +48,6 @@ import {
   IgeDocument,
 } from "../../../models/ige-document";
 import { FormUtils } from "../../form.utils";
-import { TreeQuery } from "../../../store/tree/tree.query";
 import {
   FormlyFieldConfig,
   FormlyFormOptions,
@@ -56,7 +57,6 @@ import { SessionQuery } from "../../../store/session.query";
 import { FormularService } from "../../formular.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { catchError, debounceTime, filter, map, tap } from "rxjs/operators";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import {
   combineLatest,
   fromEvent,
@@ -86,8 +86,8 @@ import { FolderDashboardComponent } from "../folder/folder-dashboard.component";
 import { AsyncPipe, JsonPipe } from "@angular/common";
 import { GeneralStore } from "../../../store/general.store";
 import { toObservable } from "@angular/core/rxjs-interop";
-import { ProfileStore } from "../../../store/profile/profile.store";
 import { ProfileService } from "../../../services/profile.service";
+import { UiStore } from "../../../store/ui.store";
 
 @UntilDestroy()
 @Component({
@@ -115,8 +115,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() address = false;
 
   private generalStore = inject(GeneralStore);
-  private profileStore = inject(ProfileStore);
   private profileService = inject(ProfileService);
+  private uiStore = inject(UiStore);
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
   @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
@@ -163,7 +163,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   hasOptionalFields = false;
 
-  private query: TreeQuery | AddressTreeQuery;
   isLoading = true;
   showJson = false;
   private readonly: boolean;
@@ -172,6 +171,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   isStickyHeader = false;
   numberOfErrors = 0;
   private errorCounterSubscription: Subscription;
+  private afterInit = signal<boolean>(false);
 
   private waitForCodelistsLoaded$ = toObservable(
     this.generalStore.codelistsLoaded,
@@ -188,8 +188,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private messageService: FormMessageService,
     public formStateService: FormStateService,
     private treeService: TreeService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     private session: SessionQuery,
     private router: Router,
     private route: ActivatedRoute,
@@ -199,6 +197,32 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private translocoService: TranslocoService,
   ) {
     this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
+
+    effect(() => {
+      this.isLoading = this.generalStore.isDocumentLoading();
+    });
+
+    effect(
+      () => {
+        // execute only ofter init, otherwise initial loading of dataset will not work
+        if (!this.afterInit()) return;
+        const activeNode = this.generalStore.getExplicitActiveNode(
+          this.address,
+        );
+        if (activeNode === null) {
+          // when clicking on root node in breadcrumb we need to set opened document to null
+          // otherwise the last one will be loaded again
+          this.documentService.updateOpenedDocumentInTreestore(
+            null,
+            this.address,
+          );
+          this.router.navigate([
+            ConfigService.catalogId + (this.address ? "/address" : "/form"),
+          ]);
+        }
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   ngOnDestroy() {
@@ -209,17 +233,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-    if (this.address) {
-      this.query = this.addressTreeQuery;
-    } else {
-      this.query = this.treeQuery;
-    }
-
-    this.query
-      .select("isDocLoading")
-      .pipe(untilDestroyed(this))
-      .subscribe((state) => (this.isLoading = state));
-
     // wait for profile and codelists to be loaded before opening first dataset
     combineLatest([
       this.waitForProfilesLoaded$.pipe(filter((isLoaded) => isLoaded === true)),
@@ -257,22 +270,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.form._updateTreeValidity({ emitEvent: true });
         }
       });
-
-    const showFormDashboard$ = this.query.explicitActiveNode$.pipe(
-      untilDestroyed(this),
-      filter(
-        (node) => node !== undefined && (node === null || node.id === null),
-      ),
-    );
-
-    showFormDashboard$.subscribe(() => {
-      // when clicking on root node in breadcrumb we need to set opened document to null
-      // otherwise the last one will be loaded again
-      this.documentService.updateOpenedDocumentInTreestore(null, this.address);
-      this.router.navigate([
-        ConfigService.catalogId + (this.address ? "/address" : "/form"),
-      ]);
-    });
 
     this.handleJsonViewPlugin();
 
@@ -452,7 +449,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private updateScrollPosition() {
     // form might not be available on first visit
     setTimeout(() => (this.scrollForm.nativeElement.scrollTop = 0));
-    const scrollPosition = this.query.getValue().scrollPosition;
+    const scrollPosition = this.uiStore.scrollPosition();
     if (scrollPosition !== 0) {
       setTimeout(
         () => (this.scrollForm.nativeElement.scrollTop = scrollPosition),
@@ -506,7 +503,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.formInfoModel = { ...this.model };
 
-      this.documentService.setDocLoadingState(false, this.address);
+      this.documentService.setDocLoadingState(false);
     } catch (ex) {
       console.error(ex);
       this.modalService.showJavascriptError(ex);

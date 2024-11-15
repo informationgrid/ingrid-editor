@@ -18,9 +18,8 @@
  * limitations under the Licence.
  */
 import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
-import { TreeQuery } from "../../../app/store/tree/tree.query";
 import { FormMenuService, MenuId } from "../../../app/+form/form-menu.service";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { filter } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -30,6 +29,8 @@ import {
 import { DocumentAbstract } from "../../../app/store/document/document.model";
 import { TagsService } from "../../../app/+catalog/+behaviours/system/tags/tags.service";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
+import { GeneralStore } from "../../../app/store/general.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @Injectable({ providedIn: "root" })
 export class PublishNegativeAssessmentBehaviour extends Plugin {
@@ -43,8 +44,10 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
   group = "UVP";
   formMenuId: MenuId = "dataset";
 
+  private generalStore = inject(GeneralStore);
+  private openedDocument$ = toObservable(this.generalStore.openedDocument);
+
   constructor(
-    private documentTreeQuery: TreeQuery,
     private formMenuService: FormMenuService,
     private dialog: MatDialog,
     private tagsService: TagsService,
@@ -78,7 +81,7 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
         ?.data?.controlledByDataset ?? false;
     if (!isActive) return;
 
-    const onDocLoad = this.documentTreeQuery.openedDocument$
+    const onDocLoad = this.openedDocument$
       .pipe(filter((doc) => doc !== null))
       .subscribe((doc) => {
         const button = {

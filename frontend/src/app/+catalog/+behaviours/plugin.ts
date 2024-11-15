@@ -19,6 +19,7 @@
  */
 import { Subscription } from "rxjs";
 import { FormlyFieldConfig } from "@ngx-formly/core";
+import { signal } from "@angular/core";
 
 export abstract class Plugin {
   abstract id: string;
@@ -36,6 +37,8 @@ export abstract class Plugin {
   data?: any;
   hideInAddress = false;
 
+  protected formRegistered = signal<boolean>(false);
+
   register(): void {
     console.debug("Register Plugin: ", this.name);
     this.isActive = true;
@@ -43,6 +46,7 @@ export abstract class Plugin {
 
   registerForm(): void {
     console.debug("Register Form-Plugin: ", this.name);
+    this.formRegistered.set(true);
   }
 
   unregister(): void {
@@ -57,6 +61,7 @@ export abstract class Plugin {
       console.debug("Unregister Form-Plugin: ", this.name);
       this.formSubscriptions.forEach((sub) => sub.unsubscribe());
       this.formSubscriptions = [];
+      this.formRegistered.set(false);
     }
   }
 

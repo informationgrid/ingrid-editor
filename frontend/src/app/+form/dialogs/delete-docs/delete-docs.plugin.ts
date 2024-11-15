@@ -17,19 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
-import { TreeQuery } from "../../../store/tree/tree.query";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { DocumentService } from "../../../services/document/document.service";
 import { Router } from "@angular/router";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { EventService, IgeEvent } from "../../../services/event/event.service";
-import { filter, take, tap } from "rxjs/operators";
+import { filter, tap } from "rxjs/operators";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { Observable } from "rxjs";
 import { DocEventsService } from "../../../services/event/doc-events.service";
@@ -37,6 +35,9 @@ import { ConfigService } from "../../../services/config/config.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { FormStateService } from "../../form-state.service";
+import { GeneralStore } from "../../../store/general.store";
+import { TreeStore } from "../../../store/tree/tree.store";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 @Injectable()
 export class DeleteDocsPlugin extends Plugin {
@@ -48,13 +49,13 @@ export class DeleteDocsPlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
-  private tree: TreeQuery | AddressTreeQuery;
+  private generalStore = inject(GeneralStore);
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
 
   constructor(
     private formToolbarService: FormToolbarService,
     private docEvents: DocEventsService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
     private router: Router,
     private eventService: EventService,
@@ -63,12 +64,19 @@ export class DeleteDocsPlugin extends Plugin {
   ) {
     super();
     inject(PluginService).registerPlugin(this);
+
+    effect(() => {
+      const actives = this.generalStore.activeTreeNodes();
+      const docs = actives.map((item) => this.getStore().entityMap()[item]);
+      this.formToolbarService.setButtonState(
+        "toolBtnRemove",
+        docs?.length > 0 && !docs?.find((doc) => !doc.hasWritePermission),
+      );
+    });
   }
 
   registerForm() {
     super.registerForm();
-
-    this.setupFields();
 
     this.formToolbarService.addButton({
       id: "toolBtnRemove",
@@ -79,38 +87,25 @@ export class DeleteDocsPlugin extends Plugin {
       active: false,
     });
 
+    const store = this.getStore();
     this.formSubscriptions.push(
       this.docEvents.onEvent("DELETE").subscribe(() => {
         // TODO: this strategy is used in several toolbar plugins to prevent too early execution
         //       when opening page and hitting a toolbar button
-        this.tree
-          .selectActive()
-          .pipe(
-            filter((entity) => entity !== undefined),
-            take(1),
-          )
-          .subscribe((docs) => {
-            this.eventService
-              .sendEventAndContinueOnSuccess(IgeEvent.DELETE, docs)
-              .subscribe(() => this.showDeleteDialog(docs));
-          });
-      }),
-
-      this.tree.selectActive().subscribe((data) => {
-        this.formToolbarService.setButtonState(
-          "toolBtnRemove",
-          data?.length > 0 && !data?.find((doc) => !doc.hasWritePermission),
-        );
+        const docs = this.generalStore
+          .activeTreeNodes()
+          .map((item) => store.entityMap()[item]);
+        if (docs.length > 0) {
+          this.eventService
+            .sendEventAndContinueOnSuccess(IgeEvent.DELETE, docs)
+            .subscribe(() => this.showDeleteDialog(docs));
+        }
       }),
     );
   }
 
-  private setupFields() {
-    if (this.forAddress) {
-      this.tree = this.addressTreeQuery;
-    } else {
-      this.tree = this.treeQuery;
-    }
+  private getStore() {
+    return this.forAddress ? this.addressTreeStore : this.documentTreeStore;
   }
 
   showDeleteDialog(docs: DocumentAbstract[]) {
@@ -147,7 +142,8 @@ export class DeleteDocsPlugin extends Plugin {
 
     const parent = currentDoc._parent;
 
-    const parentEntity = this.tree.getEntity(parent);
+    const store = this.getStore();
+    const parentEntity = store.entityMap()[parent];
 
     const commands: any[] = [
       ConfigService.catalogId + (this.forAddress ? "/address" : "/form"),
@@ -163,7 +159,7 @@ export class DeleteDocsPlugin extends Plugin {
 
   private deleteDocs(docs: DocumentAbstract[]): Observable<void> {
     const docIdsToDelete = docs.map((doc) => <number>doc.id);
-    const currentDoc = this.tree.getOpenedDocument();
+    const currentDoc = this.generalStore.getOpenedDocument(this.forAddress);
 
     return this.documentService.delete(docIdsToDelete, this.forAddress).pipe(
       // TODO: handle update in plugin!?

@@ -52,6 +52,7 @@ export class SidebarComponent implements OnInit {
 
   @Output() dropped = new EventEmitter();
 
+  private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);
   private generalStore = inject(GeneralStore);
   private uiStore = inject(UiStore);
@@ -65,12 +66,13 @@ export class SidebarComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private formStateService: FormStateService,
-    private docTreeStore: TreeStore,
   ) {
     effect(() => {
-      this.activeTreeNode.next(
-        this.generalStore.explicitActiveNode()?.id ?? null,
-      );
+      const active = this.address
+        ? this.generalStore.explicitActiveNodeAddress()
+        : this.generalStore.explicitActiveNode();
+      // console.log("Sidebar effect", actives);
+      this.activeTreeNode.next(active?.id ?? null);
     });
   }
 
@@ -146,7 +148,7 @@ export class SidebarComponent implements OnInit {
   }
 
   private getTreeStore() {
-    return this.address ? this.addressTreeStore : this.docTreeStore;
+    return this.address ? this.addressTreeStore : this.documentTreeStore;
   }
 
   private getOpenedDocument(): DocumentAbstract {

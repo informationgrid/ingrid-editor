@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { MatDialog } from "@angular/material/dialog";
 import { PermissionsDialogComponent } from "./permissions-dialog/permissions-dialog.component";
@@ -26,11 +26,10 @@ import { UserService } from "../../../../services/user/user.service";
 import { Router } from "@angular/router";
 import { UserWithDocPermission } from "../../../../+user/user";
 import { FormMenuService } from "../../../../+form/form-menu.service";
-import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
-import { TreeQuery } from "../../../../store/tree/tree.query";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
+import { GeneralStore } from "../../../../store/general.store";
 
 @Injectable()
 export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
@@ -40,6 +39,8 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
     "Administratoren können die Zugriffsberechtigungen für Dokumente und Adressen anzeigen";
   defaultActive = true;
 
+  private generalStore = inject(GeneralStore);
+
   constructor(
     private docEvents: DocEventsService,
     private dialog: MatDialog,
@@ -47,12 +48,17 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
     private docEventsService: DocEventsService,
     private configService: ConfigService,
     private formMenuService: FormMenuService,
-    private addressTreeQuery: AddressTreeQuery,
-    private documentTreeQuery: TreeQuery,
     private router: Router,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
+
+    effect(() => {
+      this.updateShowRightsButton(this.generalStore.openedDocument(), false);
+    });
+    effect(() => {
+      this.updateShowRightsButton(this.generalStore.openedAddress(), true);
+    });
   }
 
   unregister() {
@@ -73,14 +79,6 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
           this.showDialog(event.data.id);
         });
       this.subscriptions.push(onEvent);
-
-      const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
-        (doc) => this.updateShowRightsButton(doc, false),
-      );
-      const onDocLoadAdress = this.addressTreeQuery.openedDocument$.subscribe(
-        (doc) => this.updateShowRightsButton(doc, true),
-      );
-      this.subscriptions.push(onDocLoad, onDocLoadAdress);
     }
   }
 

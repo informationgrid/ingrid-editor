@@ -31,7 +31,7 @@ import { FormStateService } from "../../form-state.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { tap } from "rxjs/operators";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
-import { inject } from "@angular/core";
+import { effect, inject } from "@angular/core";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 
 export abstract class SaveBase extends Plugin {

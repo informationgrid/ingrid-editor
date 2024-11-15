@@ -32,10 +32,12 @@ import { ConfigService } from "../../../../app/services/config/config.service";
 import { Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { GetCapabilitiesAnalysis } from "../../../../app/formly/types/update-get-capabilities/get-capabilities-dialog/get-capabilities.model";
-import { TreeQuery } from "../../../../app/store/tree/tree.query";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
 import { DocumentAbstract } from "../../../../app/store/document/document.model";
+import { TreeStore } from "../../../../app/store/tree/tree.store";
+import { toObservable } from "@angular/core/rxjs-interop";
+import { GeneralStore } from "../../../../app/store/general.store";
 
 @Injectable({
   providedIn: "root",
@@ -59,8 +61,11 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   private documentService = inject(DocumentService);
   private router = inject(Router);
   private snack = inject(MatSnackBar);
-  private treeQuery = inject(TreeQuery);
+  private treeStore = inject(TreeStore);
+  private generalStore = inject(GeneralStore);
   private configService = inject(ConfigService);
+
+  private activeNode$ = toObservable(this.generalStore.activeTreeNodes);
 
   constructor() {
     super();
@@ -84,18 +89,17 @@ export class GetCapabilititesWizardPlugin extends Plugin {
       .subscribe(() => this.openWizard());
 
     if (!this.configService.hasWriteRootPermission()) {
-      const treeQuerySubscription = this.treeQuery
-        .selectActive()
-        .subscribe(async (data) => {
-          if (
-            data.length !== 1 ||
-            this.treeQuery.getEntity(data[0]._parent) === null
-          ) {
-            this.formToolbarService.setButtonState(this.buttonId, false);
-          } else {
-            this.formToolbarService.setButtonState(this.buttonId, true);
-          }
-        });
+      const treeQuerySubscription = this.activeNode$.subscribe(async (data) => {
+        const parentId = this.treeStore.entityMap()[data[0]]._parent;
+        if (
+          data.length !== 1 ||
+          this.treeStore.entityMap()[parentId] === null
+        ) {
+          this.formToolbarService.setButtonState(this.buttonId, false);
+        } else {
+          this.formToolbarService.setButtonState(this.buttonId, true);
+        }
+      });
       this.formSubscriptions.push(treeQuerySubscription);
     }
 
@@ -121,7 +125,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
       null,
       { duration: 30000 },
     );
-    const doc = this.treeQuery.getOpenedDocument();
+    const doc = this.generalStore.getOpenedDocument(false);
     const parentFolder =
       doc === null
         ? null
@@ -157,7 +161,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   }
 
   private getFirstParentFolderId(doc: DocumentAbstract) {
-    const result = this.treeQuery.getFirstParentFolder(doc.id + "")?.id;
+    const result = this.treeStore.getFirstParentFolder(doc.id as number)?.id;
     if (result === undefined) return null;
     return +result;
   }

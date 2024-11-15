@@ -17,19 +17,18 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Inject, Injectable } from "@angular/core";
+import { effect, inject, Inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { DocumentService } from "../../../services/document/document.service";
-import { TreeQuery } from "../../../store/tree/tree.query";
 import { IgeDocument } from "../../../models/ige-document";
 import { MatDialog } from "@angular/material/dialog";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { catchError, finalize } from "rxjs/operators";
 import { SaveBase } from "./save.base";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { DOCUMENT } from "@angular/common";
 import { IgeError } from "../../../models/ige-error";
 import { PluginService } from "../../../services/plugin/plugin.service";
+import { GeneralStore } from "../../../store/general.store";
 
 @Injectable()
 export class SavePlugin extends SaveBase {
@@ -39,25 +38,39 @@ export class SavePlugin extends SaveBase {
   group = "Toolbar";
   defaultActive = true;
   hide = true;
-  private tree: TreeQuery | AddressTreeQuery;
+
+  private generalStore = inject(GeneralStore);
 
   constructor(
     public formToolbarService: FormToolbarService,
     private docEvents: DocEventsService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     public dialog: MatDialog,
     public documentService: DocumentService,
     @Inject(DOCUMENT) private _document: Document,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
+
+    effect(() => {
+      if (!this.formRegistered) return;
+      console.log(this.forAddress);
+      console.log(
+        "save plugin",
+        this.generalStore.getOpenedDocument(this.forAddress),
+      );
+    });
+    effect(() => {
+      if (!this.formRegistered) return;
+      const doc = this.generalStore.getOpenedDocument(this.forAddress);
+      this.formToolbarService.setButtonState(
+        "toolBtnSave",
+        doc !== null && doc._pendingDate == null && doc.hasWritePermission,
+      );
+    });
   }
 
   registerForm() {
     super.registerForm();
-
-    this.setupTree();
 
     // add button to toolbar for publish action
     this.formToolbarService.addButton({
@@ -81,30 +94,7 @@ export class SavePlugin extends SaveBase {
         }
       });
 
-    // react on document selection
-    const treeSubscription = this.tree.openedDocument$.subscribe(
-      (openedDoc) => {
-        this.formToolbarService.setButtonState(
-          "toolBtnSave",
-          openedDoc !== null &&
-            openedDoc._pendingDate == null &&
-            openedDoc.hasWritePermission,
-        );
-
-        // do not allow to modify form if multiple nodes have been selected in tree
-        // openedDoc !== null ? this.form.enable() : this.form.disable();
-      },
-    );
-
-    this.formSubscriptions.push(toolbarEventSubscription, treeSubscription);
-  }
-
-  private setupTree() {
-    if (this.forAddress) {
-      this.tree = this.addressTreeQuery;
-    } else {
-      this.tree = this.treeQuery;
-    }
+    this.formSubscriptions.push(toolbarEventSubscription);
   }
 
   saveWithData(formData: IgeDocument) {

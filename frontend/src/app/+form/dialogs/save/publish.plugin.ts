@@ -17,13 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
-import { TreeQuery } from "../../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { of, Subscription } from "rxjs";
+import { of } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
@@ -40,6 +38,10 @@ import { IgeError } from "../../../models/ige-error";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { TranslocoService } from "@ngneat/transloco";
 import { ProfileService } from "../../../services/profile.service";
+import { GeneralStore } from "../../../store/general.store";
+import { DocumentAbstract } from "../../../store/document/document.model";
+import { TreeStore } from "../../../store/tree/tree.store";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
@@ -55,15 +57,15 @@ export class PublishPlugin extends SaveBase {
   eventPlanPublishId = "PLAN";
   eventUnpublishId = "UNPUBLISH";
   eventValidate = "VALIDATE";
-  private tree: TreeQuery | AddressTreeQuery;
 
   private profileService = inject(ProfileService);
+  private generalStore = inject(GeneralStore);
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
 
   constructor(
     public formToolbarService: FormToolbarService,
     private modalService: ModalService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     public dialog: MatDialog,
     public documentService: DocumentService,
     private docEvents: DocEventsService,
@@ -81,12 +83,15 @@ export class PublishPlugin extends SaveBase {
     });
 
     inject(PluginService).registerPlugin(this);
+
+    effect(() => {
+      const doc = this.generalStore.getOpenedDocument(this.forAddress);
+      this.handleDocumentChange(doc);
+    });
   }
 
   registerForm() {
     super.registerForm();
-
-    this.setupTree();
 
     this.addToolbarButtons();
 
@@ -107,21 +112,7 @@ export class PublishPlugin extends SaveBase {
         .subscribe(() => this.validateDataset()),
     ];
 
-    // add behaviour to set active states for toolbar buttons
-    const behaviourSubscription = this.addBehaviour();
-
-    this.formSubscriptions.push(
-      ...toolbarEventSubscription,
-      behaviourSubscription,
-    );
-  }
-
-  private setupTree() {
-    if (this.forAddress) {
-      this.tree = this.addressTreeQuery;
-    } else {
-      this.tree = this.treeQuery;
-    }
+    this.formSubscriptions.push(...toolbarEventSubscription);
   }
 
   private addToolbarButtons() {
@@ -362,27 +353,25 @@ export class PublishPlugin extends SaveBase {
   /**
    * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
    */
-  private addBehaviour(): Subscription {
-    return this.tree.openedDocument$.subscribe((loadedDocument) => {
-      this.formToolbarService.setButtonState(
-        "toolBtnPublish",
-        loadedDocument !== null &&
-          loadedDocument._pendingDate == null &&
-          loadedDocument._type !== "FOLDER" &&
-          loadedDocument.hasWritePermission,
-      );
-      this.formToolbarService.setMenuItemStateOfButton(
-        "toolBtnPublish",
-        this.eventRevertId,
-        loadedDocument !== null && loadedDocument._state === "PW",
-      );
-      this.formToolbarService.setMenuItemStateOfButton(
-        "toolBtnPublish",
-        this.eventUnpublishId,
-        loadedDocument !== null &&
-          (loadedDocument._state === "PW" || loadedDocument._state === "P"),
-      );
-    });
+  private handleDocumentChange(loadedDocument: DocumentAbstract): void {
+    this.formToolbarService.setButtonState(
+      "toolBtnPublish",
+      loadedDocument !== null &&
+        loadedDocument._pendingDate == null &&
+        loadedDocument._type !== "FOLDER" &&
+        loadedDocument.hasWritePermission,
+    );
+    this.formToolbarService.setMenuItemStateOfButton(
+      "toolBtnPublish",
+      this.eventRevertId,
+      loadedDocument !== null && loadedDocument._state === "PW",
+    );
+    this.formToolbarService.setMenuItemStateOfButton(
+      "toolBtnPublish",
+      this.eventUnpublishId,
+      loadedDocument !== null &&
+        (loadedDocument._state === "PW" || loadedDocument._state === "P"),
+    );
   }
 
   private unpublish(id: number) {
@@ -391,7 +380,10 @@ export class PublishPlugin extends SaveBase {
 
   private checkForAllParentsPublished() {
     const id: number = this.getMetadata().wrapperId;
-    return this.tree
+    const store = this.forAddress
+      ? this.addressTreeStore
+      : this.documentTreeStore;
+    return store
       .getParents(id)
       .every((entity) => entity._type === "FOLDER" || entity._state === "P");
   }

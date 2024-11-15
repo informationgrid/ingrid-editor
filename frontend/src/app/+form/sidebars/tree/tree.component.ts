@@ -312,16 +312,6 @@ export class TreeComponent implements OnInit {
     );
   }
 
-  /**
-   * Improve rendering speed so that we only render modified nodes.
-   * @param index
-   * @param item
-   */
-
-  /*trackByNodeId(index, item: TreeNode) {
-    return item._id;
-  }*/
-
   private handleUpdate(updateInfo: UpdateDatasetInfo) {
     // disable multi selection mode after a tree operation
     this.selection.multiSelectionModeEnabled.set(false);

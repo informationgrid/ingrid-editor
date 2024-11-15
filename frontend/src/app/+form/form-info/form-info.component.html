@@ -1,7 +1,7 @@
 <div class="form-info-bar">
     <div class="form-info-bar-inner">
         <ige-breadcrumb
-            [path]="path"
+            [path]="path()"
             [rootName]="rootName"
             [selectable]="true"
             (select)="scrollToTreeNode($event)"

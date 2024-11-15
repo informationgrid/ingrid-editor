@@ -17,15 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
-import { TreeQuery } from "../../../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
+import { effect, inject, Injectable } from "@angular/core";
 import {
   FormToolbarService,
   ToolbarItem,
 } from "../../../../+form/form-shared/toolbar/form-toolbar.service";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
+import { UiStore } from "../../../../store/ui.store";
 
 @Injectable({
   providedIn: "root",
@@ -38,29 +37,22 @@ export class TreeModeToolbarBehaviour extends Plugin {
   defaultActive = true;
   hide = true;
 
+  private uiStore = inject(UiStore);
+
   private activeToolbarItemsInMultiSelect = ["toolBtnCopy", "toolBtnRemove"];
   private previousState: { id: string; active: boolean }[];
-  private query: TreeQuery | AddressTreeQuery;
 
-  constructor(
-    private treeQuery: TreeQuery,
-    private toolbarService: FormToolbarService,
-    private addressTreeQuery: AddressTreeQuery,
-  ) {
+  constructor(private toolbarService: FormToolbarService) {
     super();
     inject(PluginService).registerPlugin(this);
+
+    effect(() => {
+      this.handleMode(this.uiStore.multiSelectMode());
+    });
   }
 
   registerForm() {
     super.registerForm();
-
-    this.query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
-
-    const subscription = this.query.multiSelectMode$.subscribe(
-      (multiSelectMode) => this.handleMode(multiSelectMode),
-    );
-
-    this.formSubscriptions.push(subscription);
   }
 
   private handleMode(multiSelectMode: boolean) {
