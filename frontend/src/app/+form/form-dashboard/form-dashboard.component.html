@@ -10,7 +10,7 @@
     ></dashboard-docs-header>
 }
 
-@if ((childDocs$ | async)?.length > 0) {
+@if (childDocs?.length > 0) {
     <div class="flex-row">
         <ige-card-box
             class="flex-1"
@@ -18,7 +18,7 @@
             data-cy="card-latest-docs"
         >
             <ige-document-list-item
-                [docs]="childDocs$"
+                [docs]="childDocs()"
                 [hideDate]="false"
                 [removeSelectionAfter]="true"
                 (select)="openDocument($event._uuid)"
@@ -27,7 +27,7 @@
     </div>
 }
 
-@if ((childDocs$ | async)?.length === 0) {
+@if (childDocs?.length === 0) {
     <div class="banner text-center">
         <div class="circle-wrapper">
             <mat-icon svgIcon="image-banner-dataset"></mat-icon>

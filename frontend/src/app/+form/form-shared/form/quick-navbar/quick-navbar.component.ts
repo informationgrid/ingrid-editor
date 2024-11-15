@@ -20,8 +20,6 @@
 import { Component, inject, Input } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { IgeDocument } from "../../../../models/ige-document";
-import { SessionQuery } from "../../../../store/session.query";
-import { SessionStore } from "../../../../store/session.store";
 import { FormStateService } from "../../../form-state.service";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { DocumentIconComponent } from "../../../../shared/document-icon/document-icon.component";
@@ -29,7 +27,7 @@ import { HeaderNavigationComponent } from "../../../form-info/header-navigation/
 import { FormMessageComponent } from "../../../form-info/form-message/form-message.component";
 import { ErrorPanelComponent } from "../error-panel/error-panel.component";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
-import { AsyncPipe } from "@angular/common";
+import { UiStore } from "../../../../store/ui.store";
 
 @UntilDestroy()
 @Component({
@@ -43,7 +41,6 @@ import { AsyncPipe } from "@angular/common";
     FormMessageComponent,
     ErrorPanelComponent,
     MatSlideToggle,
-    AsyncPipe,
   ],
 })
 export class QuickNavbarComponent {
@@ -63,29 +60,19 @@ export class QuickNavbarComponent {
     };
   }
 
+  private uiStore = inject(UiStore);
+
   private formStateService = inject(FormStateService);
   doc: DocumentAbstract;
 
-  optionalButtonState = this.session.select(
-    (state) => state.ui.toggleFieldsButtonShowAll,
-  );
+  optionalButtonState = this.uiStore.toggleFieldsButtonShowAll;
 
   addTitleToTooltip = (tooltip: string): string =>
     tooltip + ": " + this.doc.title;
 
-  constructor(
-    private session: SessionQuery,
-    private sessionStore: SessionStore,
-  ) {}
+  constructor() {}
 
   updateToggleButtonState(checked: boolean) {
-    this.sessionStore.update((state) => {
-      return {
-        ui: {
-          ...state.ui,
-          toggleFieldsButtonShowAll: checked,
-        },
-      };
-    });
+    this.uiStore.setToggleFieldsButtonShowAll(checked);
   }
 }

@@ -17,33 +17,27 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable, signal } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
-import { SessionStore } from "../store/session.store";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { transaction } from "@datorama/akita";
 import { Metadata } from "../models/ige-document";
+import { UiStore } from "../store/ui.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class FormStateService {
+  private uiStore = inject(UiStore);
   private form: UntypedFormGroup;
   private _metadata = signal<Metadata>(null);
   metadata = this._metadata.asReadonly();
-  private textareaElementsRows: any = {};
+  private textareaElementsRows = this.uiStore.textAreaHeights;
   private readonly lineHeight = 24;
 
   private resizeObserver = new ResizeObserver((entries) =>
     this.storeTextareaElementsHeight(entries),
   );
-
-  constructor(private sessionStore: SessionStore) {
-    // get text area height state from browser store
-    this.textareaElementsRows = {
-      ...this.sessionStore.getValue().ui.textAreaHeights,
-    };
-  }
 
   updateForm(form: UntypedFormGroup) {
     this.form = form;
@@ -78,15 +72,7 @@ export class FormStateService {
       let styleHeight = (<HTMLTextAreaElement>entry.target).style.height;
       if (styleHeight !== "") {
         const rows = Math.round(height / this.lineHeight);
-        this.textareaElementsRows[entry.target.id] =
-          rows <= 3 ? undefined : rows;
-
-        this.sessionStore.update((state) => ({
-          ui: {
-            ...state.ui,
-            textAreaHeights: this.textareaElementsRows,
-          },
-        }));
+        this.uiStore.setTextAreaHeights(rows <= 3 ? undefined : rows);
       }
     });
   }

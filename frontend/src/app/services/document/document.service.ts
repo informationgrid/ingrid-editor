@@ -42,13 +42,11 @@ import { DocumentAbstract } from "../../store/document/document.model";
 import { TreeStore } from "../../store/tree/tree.store";
 import { FormMessageService } from "../form-message.service";
 import { ProfileService } from "../profile.service";
-import { SessionStore } from "../../store/session.store";
 import { HttpClient } from "@angular/common/http";
 import { ConfigService, Configuration } from "../config/config.service";
 import { SearchResult } from "../../models/search-result.model";
 import { ServerSearchResult } from "../../models/server-search-result.model";
 import { StatisticResponse } from "../../models/statistic.model";
-import { SessionQuery } from "../../store/session.query";
 import { PathResponse } from "../../models/path-response";
 import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
 import {
@@ -94,8 +92,6 @@ export class DocumentService {
     private catalogService: CatalogService,
     private messageService: FormMessageService,
     private profileService: ProfileService,
-    private sessionStore: SessionStore,
-    private sessionQuery: SessionQuery,
     private researchService: ResearchService,
     private translocoService: TranslocoService,
     private docEvents: DocEventsService,
@@ -149,7 +145,7 @@ export class DocumentService {
       )
       .pipe(
         map((result) => this.mapSearchResults(result)),
-        tap((docs) => this.sessionStore.update({ latestDocuments: docs.hits })),
+        tap((docs) => this.generalStore.setLatestDocuments(docs.hits)),
       )
       .subscribe();
   }
@@ -176,9 +172,7 @@ export class DocumentService {
       )
       .pipe(
         map((result) => this.mapSearchResults(result)),
-        tap((docs) =>
-          this.sessionStore.update({ latestPublishedDocuments: docs.hits }),
-        ),
+        tap((docs) => this.generalStore.setLatestPublishedDocuments(docs.hits)),
       )
       .subscribe();
   }
@@ -239,9 +233,7 @@ export class DocumentService {
             );
           return this.mapSearchResponseToDocumentAbstracts(combined);
         }),
-        tap((docs) =>
-          this.sessionStore.update({ oldestExpiredDocuments: docs }),
-        ),
+        tap((docs) => this.generalStore.setOldestExpiredDocuments(docs)),
       )
       .subscribe();
   }
@@ -260,7 +252,7 @@ export class DocumentService {
       )
       .pipe(
         map((result) => this.mapSearchResults(result)),
-        tap((docs) => this.sessionStore.update({ latestAddresses: docs.hits })),
+        tap((docs) => this.generalStore.setLatestAddresses(docs.hits)),
       )
       .subscribe();
   }
@@ -805,7 +797,7 @@ export class DocumentService {
   }
 
   public addToRecentAddresses(address: DocumentAbstract) {
-    const recentAddresses = this.sessionQuery.recentAddresses;
+    const recentAddresses = this.generalStore.recentAddresses();
 
     let addresses = recentAddresses[ConfigService.catalogId]?.slice() ?? [];
     addresses = addresses.filter((addr) => addr.id !== address.id);
@@ -816,25 +808,21 @@ export class DocumentService {
       addresses = addresses.slice(0, 5);
     }
 
-    this.sessionStore.update({
-      recentAddresses: {
-        ...recentAddresses,
-        [ConfigService.catalogId]: addresses,
-      },
+    this.generalStore.setRecentAddresses({
+      ...recentAddresses,
+      [ConfigService.catalogId]: addresses,
     });
   }
 
   public removeFromRecentAddresses(id: string) {
-    const recentAddresses = this.sessionQuery.recentAddresses;
+    const recentAddresses = this.generalStore.recentAddresses();
 
     let addresses = recentAddresses[ConfigService.catalogId]?.slice() ?? [];
     addresses = addresses.filter((address) => address.id !== id);
 
-    this.sessionStore.update({
-      recentAddresses: {
-        ...recentAddresses,
-        [ConfigService.catalogId]: addresses,
-      },
+    this.generalStore.setRecentAddresses({
+      ...recentAddresses,
+      [ConfigService.catalogId]: addresses,
     });
   }
 

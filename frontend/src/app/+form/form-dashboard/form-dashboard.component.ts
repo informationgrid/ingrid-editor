@@ -17,12 +17,18 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, effect, inject, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  effect,
+  inject,
+  Input,
+  OnInit,
+  Signal,
+} from "@angular/core";
 import { Observable } from "rxjs";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../services/document/document.service";
-import { SessionQuery } from "../../store/session.query";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { DashboardAddressHeaderComponent } from "./dashboard-address-header/dashboard-address-header.component";
@@ -55,7 +61,7 @@ export class FormDashboardComponent implements OnInit {
 
   private generalStore = inject(GeneralStore);
 
-  childDocs$: Observable<DocumentAbstract[]>;
+  childDocs: Signal<DocumentAbstract[]>;
   canCreateDatasets: boolean;
   canCreateAddress: boolean;
   canImport: boolean;
@@ -63,7 +69,6 @@ export class FormDashboardComponent implements OnInit {
   constructor(
     configService: ConfigService,
     private router: Router,
-    private sessionQuery: SessionQuery,
     private docService: DocumentService,
   ) {
     // TODO switch to user specific query
@@ -82,9 +87,9 @@ export class FormDashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.childDocs$ = this.address
-      ? this.sessionQuery.latestAddresses$
-      : this.sessionQuery.latestDocuments$;
+    this.childDocs = this.address
+      ? this.generalStore.latestAddresses
+      : this.generalStore.latestDocuments;
   }
 
   openDocument(uuid: string) {

@@ -46,7 +46,7 @@
     <as-split (dragEnd)="this.userManagementService.rememberTableWidth($event)">
         <!-- GROUP LIST -->
         <as-split-area
-            [size]="tableWidth"
+            [size]="tableWidth()"
             id="sidebarRoles"
             class="split-pane-content-primary container"
         >
@@ -62,7 +62,7 @@
 
         <!-- GROUP DETAIL -->
         <as-split-area
-            [size]="100 - tableWidth"
+            [size]="100 - tableWidth()"
             id="formRoles"
             class="split-pane-content-secondary container-fluid flex-row"
         >

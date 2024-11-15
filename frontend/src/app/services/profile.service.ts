@@ -140,7 +140,7 @@ export class ProfileService {
     this.generalStore.setProfilesLoaded();
   }
 
-  updateUIProfileStore(data: UiState) {
-    this.uiStore.setHideFormHeaderInfos(data.hideFormHeaderInfos);
+  updateUIProfileStore(hideFormHeaderInfos: string[]) {
+    this.uiStore.setHideFormHeaderInfos(hideFormHeaderInfos);
   }
 }

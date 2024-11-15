@@ -21,6 +21,7 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
+  computed,
   effect,
   ElementRef,
   HostListener,
@@ -53,7 +54,6 @@ import {
   FormlyFormOptions,
   FormlyModule,
 } from "@ngx-formly/core";
-import { SessionQuery } from "../../../store/session.query";
 import { FormularService } from "../../formular.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { catchError, debounceTime, filter, map, tap } from "rxjs/operators";
@@ -66,7 +66,6 @@ import {
 } from "rxjs";
 import { Behaviour } from "../../../services/behavior/behaviour";
 import { TreeService } from "../../sidebars/tree/tree.service";
-import { ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatDialog } from "@angular/material/dialog";
@@ -155,21 +154,19 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   paddingWithHeader: string;
 
-  showValidationErrors = false;
-
-  showAllFields = this.session.select(
-    (state) => state.ui.toggleFieldsButtonShowAll,
-  );
+  showAllFields = this.uiStore.toggleFieldsButtonShowAll;
 
   hasOptionalFields = false;
 
   isLoading = true;
-  showJson = false;
+  showJson = this.uiStore.showJSONView;
+
   private readonly: boolean;
   private loadSubscription: Subscription[] = [];
   showBlocker = false;
   isStickyHeader = false;
   numberOfErrors = 0;
+  showValidationErrors = false;
   private errorCounterSubscription: Subscription;
   private afterInit = signal<boolean>(false);
 
@@ -188,7 +185,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private messageService: FormMessageService,
     public formStateService: FormStateService,
     private treeService: TreeService,
-    private session: SessionQuery,
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog,
@@ -196,7 +192,21 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private translocoService: TranslocoService,
   ) {
-    this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
+    this.sidebarWidth = this.uiStore.sidebarWidth();
+
+    effect(() => {
+      const serverValidationErrors = this.generalStore.serverValidationErrors();
+      if (serverValidationErrors.length > 0) {
+        serverValidationErrors.forEach((error) => {
+          console.error("Received server side validation error", error);
+          const message = this.translocoService.translate(
+            `form.validationMessages.${error.errorCode}`,
+          );
+          this.form.get(error.name)?.setErrors([{ message: message }]);
+        });
+        this.numberOfErrors = serverValidationErrors.length;
+      }
+    });
 
     effect(() => {
       this.isLoading = this.generalStore.isDocumentLoading();
@@ -269,39 +279,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           // @ts-ignore
           this.form._updateTreeValidity({ emitEvent: true });
         }
-      });
-
-    this.handleJsonViewPlugin();
-
-    this.handleServerSideValidationErrors();
-  }
-
-  private handleJsonViewPlugin() {
-    this.session.showJSONView$
-      .pipe(untilDestroyed(this))
-      .subscribe((show) => (this.showJson = show));
-  }
-
-  private handleServerSideValidationErrors() {
-    // handle server validation errors
-    // 1) wait for server publish validation errors
-    // 2) set error on control
-
-    this.session.selectServerValidationErrors$
-      .pipe(
-        untilDestroyed(this),
-        filter((errors) => errors.length > 0),
-      )
-      .subscribe((errors: ValidationError[]) => {
-        this.showValidationErrors = true;
-        errors.forEach((error) => {
-          console.error("Received server side validation error", error);
-          const message = this.translocoService.translate(
-            `form.validationMessages.${error.errorCode}`,
-          );
-          this.form.get(error.name)?.setErrors([{ message: message }]);
-        });
-        this.numberOfErrors = errors.length;
       });
   }
 

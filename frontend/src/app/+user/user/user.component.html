@@ -46,7 +46,7 @@
     </div>
     <as-split (dragEnd)="this.userManagementService.rememberTableWidth($event)">
         <as-split-area
-            [size]="tableWidth"
+            [size]="tableWidth()"
             id="sidebarUser"
             class="split-pane-content-primary container"
         >
@@ -58,7 +58,7 @@
             ></user-table>
         </as-split-area>
         <as-split-area
-            [size]="100 - tableWidth"
+            [size]="100 - tableWidth()"
             id="formUser"
             class="split-pane-content-secondary container-fluid flex-row"
         >

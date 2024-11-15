@@ -24,6 +24,7 @@ import {
   effect,
   inject,
   OnInit,
+  Signal,
 } from "@angular/core";
 import { GroupService } from "../../services/role/group.service";
 import { Group } from "../../models/user-group";
@@ -47,7 +48,6 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { NewGroupDialogComponent } from "./new-group-dialog/new-group-dialog.component";
 import { UserManagementService } from "../user-management.service";
-import { SessionQuery } from "../../store/session.query";
 import { ConfigService } from "../../services/config/config.service";
 import { UserService } from "../../services/user/user.service";
 import { Router } from "@angular/router";
@@ -68,6 +68,7 @@ import { UserTableComponent } from "../user/user-table/user-table.component";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { GroupStore } from "../../store/group/group.store";
 import { GeneralStore } from "../../store/general.store";
+import { UiStore } from "../../store/ui.store";
 
 @UntilDestroy()
 @Component({
@@ -101,9 +102,10 @@ import { GeneralStore } from "../../store/general.store";
   ],
   providers: [UserManagementService],
 })
-export class GroupComponent implements OnInit, AfterViewInit {
+export class GroupComponent implements OnInit {
   private groupStore = inject(GroupStore);
   private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
 
   activeGroup = this.generalStore.activeGroup;
   groups = this.groupStore.entities;
@@ -117,7 +119,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   isLoading = false;
   showMore = false;
-  tableWidth: number;
+  tableWidth: Signal<number> = this.uiStore.userTableWidth;
   groupUsers: User[];
   query = new FormControl<string>("");
   private previousGroupId: number;
@@ -134,11 +136,8 @@ export class GroupComponent implements OnInit, AfterViewInit {
     public userManagementService: UserManagementService,
     public userService: UserService,
     private router: Router,
-    private session: SessionQuery,
     private snackBar: MatSnackBar,
   ) {
-    this.tableWidth = this.session.getValue().ui.userTableWidth;
-
     effect(() => {
       const activeGroup = this.activeGroup();
       if (activeGroup !== null && this.previousGroupId !== activeGroup) {
@@ -146,10 +145,6 @@ export class GroupComponent implements OnInit, AfterViewInit {
         this.loadGroupUsers(activeGroup);
       }
     });
-  }
-
-  ngAfterViewInit(): void {
-    this.tableWidth = this.session.getValue().ui.userTableWidth;
   }
 
   ngOnInit() {

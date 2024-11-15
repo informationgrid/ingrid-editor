@@ -59,7 +59,6 @@ export class PublishPlugin extends SaveBase {
   eventValidate = "VALIDATE";
 
   private profileService = inject(ProfileService);
-  private generalStore = inject(GeneralStore);
   private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 

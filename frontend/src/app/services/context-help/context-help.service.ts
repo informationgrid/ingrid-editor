@@ -20,7 +20,6 @@
 import { inject, Injectable } from "@angular/core";
 import { ConfigService, Configuration } from "../config/config.service";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { SessionStore } from "../../store/session.store";
 import { map, tap } from "rxjs/operators";
 import { ContextHelpComponent } from "../../shared/context-help/context-help.component";
 import {
@@ -73,7 +72,6 @@ export class ContextHelpService {
   }
 
   constructor(
-    private sessionStore: SessionStore,
     public dialog: MatDialog,
     private http: HttpClient,
     configService: ConfigService,

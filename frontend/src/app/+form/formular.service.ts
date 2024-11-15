@@ -21,20 +21,18 @@ import { inject, Injectable, Signal } from "@angular/core";
 import { DocumentAbstract } from "../store/document/document.model";
 import { Doctype } from "../services/formular/doctype";
 import { ProfileService } from "../services/profile.service";
-import { TreeStore } from "../store/tree/tree.store";
-import { SessionStore } from "../store/session.store";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BehaviorSubject, of } from "rxjs";
 import { filter, map, mergeMap, toArray } from "rxjs/operators";
-import { GroupStore } from "../store/group/group.store";
-import { ProfileStore } from "../store/profile/profile.store";
 import { GeneralStore } from "../store/general.store";
+import { UiStore } from "../store/ui.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class FormularService {
   private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
 
   data = {};
 
@@ -45,10 +43,7 @@ export class FormularService {
   sections$ = new BehaviorSubject<string[]>([]);
   private profileSections: string[] = [];
 
-  constructor(
-    private profiles: ProfileService,
-    private sessionStore: SessionStore,
-  ) {}
+  constructor(private profiles: ProfileService) {}
 
   getFields(profile: string): FormlyFieldConfig[] {
     let fields: FormlyFieldConfig[];
@@ -89,12 +84,7 @@ export class FormularService {
   }
 
   updateSidebarWidth(size: number) {
-    this.sessionStore.update((state) => ({
-      ui: {
-        ...state.ui,
-        sidebarWidth: size,
-      },
-    }));
+    this.uiStore.setSidebarWidth(size);
   }
 
   getSectionsFromProfile(profile: FormlyFieldConfig[]): void {

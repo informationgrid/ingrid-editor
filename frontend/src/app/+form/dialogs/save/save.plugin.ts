@@ -39,8 +39,6 @@ export class SavePlugin extends SaveBase {
   defaultActive = true;
   hide = true;
 
-  private generalStore = inject(GeneralStore);
-
   constructor(
     public formToolbarService: FormToolbarService,
     private docEvents: DocEventsService,

@@ -13,7 +13,7 @@
         <h1 class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</h1>
 
         <div class="center-header flex-grow">
-            @if (timeout$ | async; as timer) {
+            @if (timeout(); as timer) {
                 <ige-session-timeout-info
                     [timeout]="timer"
                     [class.show]="timer < 300"

@@ -17,12 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { SessionStore } from "../store/session.store";
-import { SessionQuery } from "../store/session.query";
-import { Observable } from "rxjs";
+import { inject, Injectable } from "@angular/core";
 import { ActivatedRouteSnapshot } from "@angular/router";
 import { ConfigService } from "./config/config.service";
+import { UiStore } from "../store/ui.store";
 
 // the values must match with the actual route!
 export type TabPage = "research" | "manage" | "importExport" | "catalogs";
@@ -37,32 +35,18 @@ export interface Tab {
   providedIn: "root",
 })
 export class SessionService {
-  constructor(
-    private sessionStore: SessionStore,
-    private sessionQuery: SessionQuery,
-    private configService: ConfigService,
-  ) {}
+  private uiStore = inject(UiStore);
+  constructor(private configService: ConfigService) {}
 
   updateCurrentTab(page: TabPage, tabIndex: string) {
-    this.sessionStore.update((state) => {
-      const newTabState = {};
-      newTabState[page] = tabIndex;
-      return {
-        ...state,
-        ui: {
-          ...state.ui,
-          currentTab: {
-            ...state.ui.currentTab,
-            ...newTabState,
-          },
-        },
-      };
-    });
+    const newTabState = {};
+    newTabState[page] = tabIndex;
+    this.uiStore.updateCurrentTab(newTabState);
   }
 
-  observeTabChange(page: TabPage): Observable<string> {
-    return this.sessionQuery.select((state) => state.ui.currentTab[page]);
-  }
+  /*observeTabChange(page: TabPage): Observable<string> {
+    return this.uiStore.select((state) => state.ui.currentTab[page]);
+  }*/
 
   /*getCurrentTab(page: TabPage): number {
     return this.sessionQuery.getValue().ui.currentTab[page];

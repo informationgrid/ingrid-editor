@@ -20,12 +20,12 @@
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 
 import {
-  AfterViewInit,
   Component,
   computed,
   effect,
   inject,
   OnInit,
+  Signal,
   signal,
 } from "@angular/core";
 import { UserService } from "../../services/user/user.service";
@@ -42,7 +42,6 @@ import {
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { finalize, map, tap } from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
-import { SessionQuery } from "../../store/session.query";
 import { ConfigService } from "../../services/config/config.service";
 import { Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -62,6 +61,7 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { HeaderMoreComponent } from "./header-more/header-more.component";
 import { GroupStore } from "../../store/group/group.store";
 import { GeneralStore } from "../../store/general.store";
+import { UiStore } from "../../store/ui.store";
 
 @UntilDestroy()
 @Component({
@@ -88,9 +88,10 @@ import { GeneralStore } from "../../store/general.store";
   ],
   providers: [UserManagementService],
 })
-export class UserComponent implements OnInit, AfterViewInit {
+export class UserComponent implements OnInit {
   private groupStore = inject(GroupStore);
   private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
 
   users = this.userService.users$;
   form = new UntypedFormGroup({});
@@ -100,7 +101,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   loadedUser = signal<User>(null);
   showMore = signal<boolean>(false);
   isLoading = signal<boolean>(false);
-  tableWidth: number;
+  tableWidth: Signal<number> = this.uiStore.userTableWidth;
   query = new FormControl<string>("");
   private previousSelectedUser: User = null;
 
@@ -124,11 +125,8 @@ export class UserComponent implements OnInit, AfterViewInit {
     private router: Router,
     public userManagementService: UserManagementService,
     private formMenuService: FormMenuService,
-    private session: SessionQuery,
     private snackBar: MatSnackBar,
   ) {
-    this.tableWidth = this.session.getValue().ui.userTableWidth;
-
     effect(
       () => {
         const user = this.userService.selectedUser$();
@@ -141,10 +139,6 @@ export class UserComponent implements OnInit, AfterViewInit {
       },
       { allowSignalWrites: true },
     );
-  }
-
-  ngAfterViewInit(): void {
-    this.tableWidth = this.session.getValue().ui.userTableWidth;
   }
 
   ngOnInit() {

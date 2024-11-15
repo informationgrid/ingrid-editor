@@ -4,6 +4,11 @@ import { DocumentAbstract } from "./document/document.model";
 import { UpdateDatasetInfo } from "../models/update-dataset-info.model";
 import { ShortTreeNode } from "../+form/sidebars/tree/tree.types";
 
+export interface ValidationError {
+  name: string;
+  errorCode: string;
+}
+
 type GeneralState = {
   favorites: { [x: string]: string[] };
   codelistsLoaded: boolean;
@@ -25,6 +30,13 @@ type GeneralState = {
   };
   needsDocumentReload: boolean;
   needsAddressReload: boolean;
+  recentAddresses: { [catalogId: string]: DocumentAbstract[] };
+  serverValidationErrors: ValidationError[];
+  latestDocuments: DocumentAbstract[];
+  latestAddresses: DocumentAbstract[];
+  latestPublishedDocuments: DocumentAbstract[];
+  oldestExpiredDocuments: DocumentAbstract[];
+  sessionTimeoutIn: number;
 };
 
 const initialState: GeneralState = {
@@ -48,6 +60,13 @@ const initialState: GeneralState = {
   },
   needsDocumentReload: false,
   needsAddressReload: false,
+  recentAddresses: {},
+  serverValidationErrors: [],
+  latestDocuments: [],
+  latestAddresses: [],
+  latestPublishedDocuments: [],
+  oldestExpiredDocuments: [],
+  sessionTimeoutIn: -1,
 };
 
 export const GeneralStore = signalStore(
@@ -120,6 +139,29 @@ export const GeneralStore = signalStore(
       if (forAddress)
         patchState(store, (_state) => ({ needsAddressReload: value }));
       else patchState(store, (_state) => ({ needsDocumentReload: value }));
+    },
+    setServerValidationErrors(errors: ValidationError[]): void {
+      patchState(store, (_state) => ({ serverValidationErrors: errors }));
+    },
+    setLatestDocuments(docs: DocumentAbstract[]): void {
+      patchState(store, (_state) => ({ latestDocuments: docs }));
+    },
+    setLatestPublishedDocuments(docs: DocumentAbstract[]): void {
+      patchState(store, (_state) => ({ latestPublishedDocuments: docs }));
+    },
+    setOldestExpiredDocuments(docs: DocumentAbstract[]): void {
+      patchState(store, (_state) => ({ oldestExpiredDocuments: docs }));
+    },
+    setLatestAddresses(docs: DocumentAbstract[]): void {
+      patchState(store, (_state) => ({ latestAddresses: docs }));
+    },
+    setRecentAddresses(docs: {
+      [catalogId: string]: DocumentAbstract[];
+    }): void {
+      patchState(store, (_state) => ({ recentAddresses: docs }));
+    },
+    setSessionTimeout(value: number): void {
+      patchState(store, (_state) => ({ sessionTimeoutIn: value }));
     },
   })),
 );
