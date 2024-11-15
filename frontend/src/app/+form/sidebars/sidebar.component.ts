@@ -134,7 +134,7 @@ export class SidebarComponent implements OnInit {
   }
 
   handleSelection(selectedDocsId: number[]) {
-    this.generalStore.setActiveTreeNodes(selectedDocsId);
+    this.generalStore.setActiveTreeNodes(selectedDocsId, this.address);
   }
 
   updateTreeMode(multiSelect: boolean) {

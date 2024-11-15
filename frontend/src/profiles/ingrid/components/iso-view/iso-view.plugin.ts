@@ -55,7 +55,8 @@ export class IsoViewPlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      const openedDoc = this.getOpenedDocument();
+      if (!this.formRegistered) return;
+      const openedDoc = this.generalStore.getOpenedDocument(this.forAddress());
       this.toolbarService.setButtonState(
         "toolBtnIso",
         openedDoc !== null && openedDoc._type != "FOLDER",
@@ -85,7 +86,9 @@ export class IsoViewPlugin extends Plugin {
   }
 
   private showISODialog() {
-    const currentDocument = this.getOpenedDocument();
+    const currentDocument = this.generalStore.getOpenedDocument(
+      this.forAddress(),
+    );
     const options = {
       ids: [currentDocument.id as number],
       useDraft: true,
@@ -115,11 +118,5 @@ export class IsoViewPlugin extends Plugin {
     if (this.isActive) {
       this.formToolbarService.removeButton("toolBtnIso");
     }
-  }
-
-  private getOpenedDocument(): DocumentAbstract {
-    return this.forAddress
-      ? this.generalStore.openedAddress()
-      : this.generalStore.openedDocument();
   }
 }

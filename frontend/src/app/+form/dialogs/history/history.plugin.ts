@@ -74,13 +74,15 @@ export class HistoryPlugin extends Plugin {
     super();
     inject(PluginService).registerPlugin(this);
     effect(() => {
+      if (!this.formRegistered) return;
       const doc = this.generalStore.openedDocument();
       if (doc !== null) {
         this.addDocToStack(doc);
       }
     });
     effect(() => {
-      const info = this.generalStore.getDatasetsChanged(this.forAddress);
+      if (!this.formRegistered) return;
+      const info = this.generalStore.getDatasetsChanged(this.forAddress());
       if (info?.type === UpdateType.Delete) {
         this.removeDeletedDocsFromStack(info.data);
       }
@@ -98,7 +100,7 @@ export class HistoryPlugin extends Plugin {
   }
 
   private setupFields() {
-    if (this.forAddress) {
+    if (this.forAddress()) {
       this.navigatePath = "/address";
     } else {
       this.navigatePath = "/form";
@@ -267,7 +269,7 @@ export class HistoryPlugin extends Plugin {
       console.log("Set from history plugin");
       this.generalStore.setExplicitActiveNode(
         new ShortTreeNode(<number>item.id, item.title),
-        this.forAddress,
+        this.forAddress(),
       );
     }
     return navigated;
@@ -358,7 +360,7 @@ export class HistoryPlugin extends Plugin {
   }
 
   private getOpenedDocument(): DocumentAbstract {
-    return this.forAddress
+    return this.forAddress()
       ? this.generalStore.openedAddress()
       : this.generalStore.openedDocument();
   }
@@ -368,7 +370,7 @@ export class HistoryPlugin extends Plugin {
       this.formStateService,
       this.documentService,
       this.dialog,
-      this.forAddress,
+      this.forAddress(),
     );
   }
 }

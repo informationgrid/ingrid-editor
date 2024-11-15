@@ -68,7 +68,8 @@ export class CreateDocumentPlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      const doc = this.generalStore.getOpenedDocument(this.forAddress);
+      if (!this.formRegistered) return;
+      const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.toolbarService.setButtonState(
         "toolBtnPrint",
         doc !== null && doc._type != "FOLDER",
@@ -91,7 +92,7 @@ export class CreateDocumentPlugin extends Plugin {
   private initializeButton() {
     this.translocoService
       .selectTranslate(
-        this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
+        this.forAddress() ? "toolbar.newAddress" : "toolbar.newDocument",
       )
       .pipe(take(1))
       .subscribe((tooltipText) => {
@@ -108,14 +109,14 @@ export class CreateDocumentPlugin extends Plugin {
   }
 
   async newDoc() {
-    const selectedDoc = this.generalStore.getOpenedDocument(this.forAddress);
+    const selectedDoc = this.generalStore.getOpenedDocument(this.forAddress());
 
     if (selectedDoc) {
       let handled = await FormUtils.handleDirtyForm(
         this.formStateService,
         this.documentService,
         this.dialog,
-        this.forAddress,
+        this.forAddress(),
       );
 
       if (!handled) {
@@ -131,7 +132,7 @@ export class CreateDocumentPlugin extends Plugin {
       disableClose: false,
       hasBackdrop: true,
       data: {
-        forAddress: this.forAddress,
+        forAddress: this.forAddress(),
         isFolder: false,
       } as CreateOptions,
     });
@@ -148,11 +149,11 @@ export class CreateDocumentPlugin extends Plugin {
   private addNonAdminBehaviour() {
     if (!this.isAdmin) {
       const canGenerallyCreate = this.config.hasPermission(
-        this.forAddress ? "can_create_address" : "can_create_dataset",
+        this.forAddress() ? "can_create_address" : "can_create_dataset",
       );
       this.toolbarService.setButtonState("toolBtnNew", canGenerallyCreate);
 
-      if (!canGenerallyCreate && this.forAddress) {
+      if (!canGenerallyCreate && this.forAddress()) {
         const organisationCheckSubscription = this.activeNodes$.subscribe(
           (data) => {
             const docs = data.map((item) => this.getStore().entityMap()[item]);
@@ -168,7 +169,7 @@ export class CreateDocumentPlugin extends Plugin {
   }
 
   private getStore() {
-    return this.forAddress ? this.addressTreeStore : this.documentTreeStore;
+    return this.forAddress() ? this.addressTreeStore : this.documentTreeStore;
   }
 
   private isOrganisation(data: any[]) {

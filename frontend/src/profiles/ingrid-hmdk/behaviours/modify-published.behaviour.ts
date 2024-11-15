@@ -72,9 +72,9 @@ export class ModifyPublishedBehaviour extends Plugin {
 
   private handleUpdate() {
     // ignore addresses
-    if (this.forAddress) return;
+    if (this.forAddress()) return;
     // if the document is published and if it is published in HmbTG. then show message
-    let openedDocument = this.generalStore.getOpenedDocument(this.forAddress);
+    let openedDocument = this.generalStore.getOpenedDocument(this.forAddress());
     if (openedDocument._state !== "P") return;
     this.documentDataService
       .loadPublished(openedDocument._uuid, true)

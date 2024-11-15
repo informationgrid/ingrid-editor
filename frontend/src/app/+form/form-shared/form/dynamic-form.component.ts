@@ -229,7 +229,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.formularService.currentProfile = null;
 
     // reset selected documents if we revisit the page
-    this.formularService.setSelectedDocuments([]);
+    this.formularService.setSelectedDocuments([], this.address);
   }
 
   ngOnInit() {

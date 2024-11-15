@@ -84,6 +84,7 @@ export class CopyCutPastePlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
+      if (!this.formRegistered) return;
       const docs = this.generalStore.activeTreeNodes();
       this.handleDocumentChange(docs);
     });
@@ -128,7 +129,7 @@ export class CopyCutPastePlugin extends Plugin {
         this.toolbarService.setButtonState("toolBtnCopy", true);
       } else {
         const buttonEnabled = this.config.hasPermission(
-          this.forAddress ? "can_create_address" : "can_create_dataset",
+          this.forAddress() ? "can_create_address" : "can_create_dataset",
         );
         this.toolbarService.setButtonState("toolBtnCopy", buttonEnabled);
       }
@@ -194,7 +195,7 @@ export class CopyCutPastePlugin extends Plugin {
       this.formStateService,
       this.documentService,
       this.dialog,
-      this.forAddress,
+      this.forAddress(),
     );
 
     if (!handled) {
@@ -212,7 +213,7 @@ export class CopyCutPastePlugin extends Plugin {
               : this.getSelectedDatasets(),
             result.selection,
             includeTree,
-            this.forAddress,
+            this.forAddress(),
           ),
         ),
         delay(100), // give some time to be available in store to update tree
@@ -223,7 +224,7 @@ export class CopyCutPastePlugin extends Plugin {
 
   private selectCopiedDataset(documents: DocumentWithMetadata[]) {
     if (documents.length == 1) {
-      const target = this.forAddress ? "address" : "form";
+      const target = this.forAddress() ? "address" : "form";
       this.router.navigate([
         `${ConfigService.catalogId}/${target}`,
         { id: documents[0].metadata.uuid },
@@ -236,7 +237,7 @@ export class CopyCutPastePlugin extends Plugin {
       this.formStateService,
       this.documentService,
       this.dialog,
-      this.forAddress,
+      this.forAddress(),
     );
 
     if (!handled) {
@@ -249,7 +250,7 @@ export class CopyCutPastePlugin extends Plugin {
           this.documentService.move(
             this.getSelectedDatasetsWithoutChildren(),
             result.selection,
-            this.forAddress,
+            this.forAddress(),
           ),
         ),
       )
@@ -265,7 +266,7 @@ export class CopyCutPastePlugin extends Plugin {
         data: {
           titleText: title,
           buttonText: "Einfügen",
-          forAddress: this.forAddress,
+          forAddress: this.forAddress(),
           typeToInsert: this.getSelectedDatasetDocType(),
         } as PasteDialogOptions,
         delayFocusTrap: true,
@@ -317,6 +318,6 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private getStore() {
-    return this.forAddress ? this.addressTreeStore : this.documentTreeStore;
+    return this.forAddress() ? this.addressTreeStore : this.documentTreeStore;
   }
 }

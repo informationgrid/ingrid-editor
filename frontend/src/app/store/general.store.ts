@@ -74,12 +74,12 @@ export const GeneralStore = signalStore(
       else return store.explicitActiveNode();
     },
     setExplicitActiveNode(node: ShortTreeNode, isAddress: boolean): void {
-      console.log("store setExplicitActiveNode", node);
       if (isAddress) patchState(store, { explicitActiveNodeAddress: node });
       else patchState(store, { explicitActiveNode: node });
     },
-    setActiveTreeNodes(docIds: number[]): void {
-      patchState(store, (_state) => ({ activeTreeNodes: docIds }));
+    setActiveTreeNodes(docIds: number[], isAddress: boolean): void {
+      if (isAddress) patchState(store, { activeAddressTreeNodes: docIds });
+      else patchState(store, { activeTreeNodes: docIds });
     },
     setOpenedDocument(doc: DocumentAbstract): void {
       patchState(store, (_state) => ({ openedDocument: doc }));

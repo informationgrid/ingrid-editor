@@ -81,8 +81,11 @@ export class FormularService {
     }
   }
 
-  setSelectedDocuments(docs: DocumentAbstract[]) {
-    this.generalStore.setActiveTreeNodes(docs.map((d) => d.id as number));
+  setSelectedDocuments(docs: DocumentAbstract[], isAddress: boolean) {
+    this.generalStore.setActiveTreeNodes(
+      docs.map((d) => d.id as number),
+      isAddress,
+    );
   }
 
   updateSidebarWidth(size: number) {

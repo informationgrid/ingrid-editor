@@ -75,7 +75,9 @@ export class AssignedUserBehaviour extends Plugin {
     effect(() => {
       // only add menu item in form if user is privileged
       if (this.formRegistered() && this.configService.hasMdAdminRights()) {
-        const onDocLoad = this.generalStore.getOpenedDocument(this.forAddress);
+        const onDocLoad = this.generalStore.getOpenedDocument(
+          this.forAddress(),
+        );
         this.handleDocumentLoad(onDocLoad);
       }
     });
@@ -92,7 +94,7 @@ export class AssignedUserBehaviour extends Plugin {
       }),
     );
 
-    this.formMenuId = this.forAddress ? "address" : "dataset";
+    this.formMenuId = this.forAddress() ? "address" : "dataset";
   }
 
   // TODO: data field not needed since openedDocument function can be used, will simplify a lot
@@ -180,7 +182,7 @@ export class AssignedUserBehaviour extends Plugin {
 
   private async openAssignUserDialog(docId: number) {
     const currentUUID = this.generalStore.getOpenedDocument(
-      this.forAddress,
+      this.forAddress(),
     )._uuid;
     console.debug("currentUUID", currentUUID);
 
@@ -188,7 +190,7 @@ export class AssignedUserBehaviour extends Plugin {
       this.formStateService,
       this.documentService,
       this.dialog,
-      this.forAddress,
+      this.forAddress(),
     );
     if (!handled) {
       return;
@@ -207,7 +209,7 @@ export class AssignedUserBehaviour extends Plugin {
       .subscribe(() => {
         this.documentService.reload$.next({
           uuid: currentUUID,
-          forAddress: this.forAddress,
+          forAddress: this.forAddress(),
         });
       });
   }

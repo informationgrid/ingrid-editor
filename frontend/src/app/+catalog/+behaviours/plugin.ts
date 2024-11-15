@@ -30,7 +30,7 @@ export abstract class Plugin {
   defaultActive: boolean;
   hide = false;
   _state?: string;
-  forAddress = false;
+  forAddress = signal<boolean>(false);
   subscriptions: Subscription[] = [];
   formSubscriptions: Subscription[] = [];
   fields?: FormlyFieldConfig[] = [];
@@ -68,6 +68,6 @@ export abstract class Plugin {
   update(): void {}
 
   setForAddress(forAddress: boolean): void {
-    this.forAddress = forAddress;
+    this.forAddress.set(forAddress);
   }
 }

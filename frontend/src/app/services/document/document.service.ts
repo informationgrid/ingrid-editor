@@ -315,7 +315,11 @@ export class DocumentService {
     keepOpenedDocument = false,
   ) {
     setTimeout(
-      () => this.generalStore.setActiveTreeNodes(doc ? [doc.id as number] : []),
+      () =>
+        this.generalStore.setActiveTreeNodes(
+          doc ? [doc.id as number] : [],
+          address,
+        ),
       0,
     );
     if (!keepOpenedDocument) {

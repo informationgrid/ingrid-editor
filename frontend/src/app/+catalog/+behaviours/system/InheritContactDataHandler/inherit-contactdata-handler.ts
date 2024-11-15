@@ -46,7 +46,6 @@ export class InheritContactDataHandler extends Plugin {
     "Für Personen und Organisationen, die einer anderen Organisation untergeordnet sind, können die Kontakt- und Adressdaten geerbt werden.";
   group = "Adressen";
   defaultActive = true;
-  forAddress = true;
 
   private generalStore = inject(GeneralStore);
   private addressTreeStore = inject(AddressTreeStore);
@@ -60,6 +59,7 @@ export class InheritContactDataHandler extends Plugin {
     private formMenuService: FormMenuService,
   ) {
     super();
+    this.setForAddress(true);
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
@@ -79,7 +79,7 @@ export class InheritContactDataHandler extends Plugin {
               this.formStateService,
               this.documentService,
               this.dialog,
-              this.forAddress,
+              this.forAddress(),
             );
             if (handled)
               this.inheritContactData(event.data.docId, event.data.parentId);

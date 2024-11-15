@@ -43,7 +43,6 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
     "Ermöglicht es, alle Referenzen zu einer Adresse mit einer anderen Adresse zu tauschen. Dadurch können alle Referenzen zu einer Adresse entfernt werden, um diese dann löschen zu können.";
   group = "Adressen";
   defaultActive = true;
-  forAddress = true;
 
   private generalStore = inject(GeneralStore);
   private addressTreeStore = inject(AddressTreeStore);
@@ -56,6 +55,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
     configService: ConfigService,
   ) {
     super();
+    this.setForAddress(true);
 
     if (configService.hasCatAdminRights()) {
       inject(PluginService).registerPlugin(this);
@@ -73,7 +73,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
     super.register();
 
     const subscription = this.docEvents
-      .onError(this.forAddress)
+      .onError(this.forAddress())
       .pipe(filter((error) => error.errorCode === "IS_REFERENCED_ERROR"))
       .subscribe((error) => {
         const selectedNodes = this.generalStore.activeTreeNodes();

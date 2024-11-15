@@ -53,15 +53,15 @@ export class SavePlugin extends SaveBase {
 
     effect(() => {
       if (!this.formRegistered) return;
-      console.log(this.forAddress);
+      console.log(this.forAddress());
       console.log(
         "save plugin",
-        this.generalStore.getOpenedDocument(this.forAddress),
+        this.generalStore.getOpenedDocument(this.forAddress()),
       );
     });
     effect(() => {
       if (!this.formRegistered) return;
-      const doc = this.generalStore.getOpenedDocument(this.forAddress);
+      const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.formToolbarService.setButtonState(
         "toolBtnSave",
         doc !== null && doc._pendingDate == null && doc.hasWritePermission,
@@ -112,12 +112,12 @@ export class SavePlugin extends SaveBase {
           id: metadata.wrapperId,
           version: metadata.version,
           isNewDoc: false,
-          isAddress: this.forAddress,
+          isAddress: this.forAddress(),
           type: metadata.docType,
         })
         .pipe(
           catchError((error) =>
-            this.handleError(error, metadata, this.forAddress, "SAVE"),
+            this.handleError(error, metadata, this.forAddress(), "SAVE"),
           ),
           finalize(() =>
             this.formToolbarService.setButtonState("toolBtnSave", true),

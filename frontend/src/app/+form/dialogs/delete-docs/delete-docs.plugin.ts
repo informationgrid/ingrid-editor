@@ -66,7 +66,10 @@ export class DeleteDocsPlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      const actives = this.generalStore.activeTreeNodes();
+      if (!this.formRegistered) return;
+      const actives = this.forAddress()
+        ? this.generalStore.activeAddressTreeNodes()
+        : this.generalStore.activeTreeNodes();
       const docs = actives.map((item) => this.getStore().entityMap()[item]);
       this.formToolbarService.setButtonState(
         "toolBtnRemove",
@@ -105,7 +108,7 @@ export class DeleteDocsPlugin extends Plugin {
   }
 
   private getStore() {
-    return this.forAddress ? this.addressTreeStore : this.documentTreeStore;
+    return this.forAddress() ? this.addressTreeStore : this.documentTreeStore;
   }
 
   showDeleteDialog(docs: DocumentAbstract[]) {
@@ -146,7 +149,7 @@ export class DeleteDocsPlugin extends Plugin {
     const parentEntity = store.entityMap()[parent];
 
     const commands: any[] = [
-      ConfigService.catalogId + (this.forAddress ? "/address" : "/form"),
+      ConfigService.catalogId + (this.forAddress() ? "/address" : "/form"),
     ];
     if (parent && parentEntity) {
       commands.push({ id: parentEntity._uuid });
@@ -159,14 +162,14 @@ export class DeleteDocsPlugin extends Plugin {
 
   private deleteDocs(docs: DocumentAbstract[]): Observable<void> {
     const docIdsToDelete = docs.map((doc) => <number>doc.id);
-    const currentDoc = this.generalStore.getOpenedDocument(this.forAddress);
+    const currentDoc = this.generalStore.getOpenedDocument(this.forAddress());
 
-    return this.documentService.delete(docIdsToDelete, this.forAddress).pipe(
+    return this.documentService.delete(docIdsToDelete, this.forAddress()).pipe(
       // TODO: handle update in plugin!?
       tap(() =>
         this.documentService.updateOpenedDocumentInTreestore(
           null,
-          this.forAddress,
+          this.forAddress(),
         ),
       ),
       tap(() => this.selectParent(docs, currentDoc)),

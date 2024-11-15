@@ -85,7 +85,7 @@ export class CreateFolderPlugin extends Plugin {
 
     if (!this.isAdmin) {
       const buttonEnabled = this.config.hasPermission(
-        this.forAddress ? "can_create_address" : "can_create_dataset",
+        this.forAddress() ? "can_create_address" : "can_create_dataset",
       );
       this.formToolbarService.setButtonState("toolBtnFolder", buttonEnabled);
     }
@@ -97,7 +97,7 @@ export class CreateFolderPlugin extends Plugin {
     // show dialog where user can choose name of the folder and location
     // it can be created under the root node or another folder
     // TODO: parent node determination is the same as in new-doc plugin
-    const selectedDoc = this.generalStore.getOpenedDocument(this.forAddress);
+    const selectedDoc = this.generalStore.getOpenedDocument(this.forAddress());
 
     // wait for entity in store, otherwise it could happen that the tree is being
     // loaded while we clicked on the create node button. In this case the function
@@ -107,14 +107,14 @@ export class CreateFolderPlugin extends Plugin {
         this.formStateService,
         this.documentService,
         this.dialog,
-        this.forAddress,
+        this.forAddress(),
       );
 
       if (!handled) {
         return;
       }
 
-      const store = this.forAddress
+      const store = this.forAddress()
         ? this.addressTreeStore
         : this.documentTreeStore;
 
@@ -136,7 +136,7 @@ export class CreateFolderPlugin extends Plugin {
       hasBackdrop: true,
       data: {
         parent: parentDocId,
-        forAddress: this.forAddress,
+        forAddress: this.forAddress(),
         isFolder: true,
       } as CreateOptions,
       ariaLabel: this.transloco.translate("toolbar.newFolder"),

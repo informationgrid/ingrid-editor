@@ -47,6 +47,7 @@ export class TreeModeToolbarBehaviour extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
+      if (!this.formRegistered) return;
       this.handleMode(this.uiStore.multiSelectMode());
     });
   }

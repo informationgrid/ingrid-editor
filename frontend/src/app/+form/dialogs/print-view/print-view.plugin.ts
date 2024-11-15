@@ -59,7 +59,8 @@ export class PrintViewPlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      const doc = this.generalStore.getOpenedDocument(this.forAddress);
+      if (!this.formRegistered) return;
+      const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.toolbarService.setButtonState(
         "toolBtnPrint",
         doc !== null && doc._type != "FOLDER",
@@ -91,7 +92,7 @@ export class PrintViewPlugin extends Plugin {
   }
 
   private showPrintDialog() {
-    let openedDocument = this.generalStore.getOpenedDocument(this.forAddress);
+    let openedDocument = this.generalStore.getOpenedDocument(this.forAddress());
     const type = openedDocument._type;
     const profile = this.profileService.getProfile(type);
 

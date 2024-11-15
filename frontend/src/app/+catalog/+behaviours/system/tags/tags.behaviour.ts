@@ -63,7 +63,7 @@ export class TagsBehaviour extends Plugin {
   registerForm() {
     super.registerForm();
 
-    this.menuId = this.forAddress ? "address" : "dataset";
+    this.menuId = this.forAddress() ? "address" : "dataset";
     this.formMenuService.addMenuItem(this.menuId, {
       title: "Veröffentlichungsrecht setzen ...",
       name: this.menuItemId,
@@ -87,17 +87,17 @@ export class TagsBehaviour extends Plugin {
   }
 
   private async showTagsDialog() {
-    const currentDocument = this.forAddress
+    const currentDocument = this.forAddress()
       ? this.generalStore.openedAddress()
       : this.generalStore.openedDocument();
-    const helpText = this.forAddress
+    const helpText = this.forAddress()
       ? "Eine Adresse darf in ihrem Veröffentlichungsrecht nicht weiter eingeschränkt sein als die Datensätze, in denen sie referenziert wird. Bitte prüfen Sie das Veröffentlichungsrecht der Datensätze."
       : "Bitte stellen Sie bei einer Veränderung des Veröffentlichungsrechts sicher, dass auch alle Referenzen das passende Veröffentlichungsrecht besitzen.";
     const handled = await FormUtils.handleDirtyForm(
       this.formStateService,
       this.documentService,
       this.dialog,
-      this.forAddress,
+      this.forAddress(),
     );
     if (!handled) {
       return;
@@ -122,7 +122,7 @@ export class TagsBehaviour extends Plugin {
         this.tagsService.updateTagForDocument(
           currentDocument,
           newTag,
-          this.forAddress,
+          this.forAddress(),
         ),
       );
   }

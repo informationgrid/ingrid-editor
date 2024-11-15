@@ -83,7 +83,7 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
   }
 
   private activeDocsWithChildren(): string[] {
-    const store = this.forAddress
+    const store = this.forAddress()
       ? this.addressTreeStore
       : this.documentTreeStore;
     return this.generalStore

@@ -85,7 +85,7 @@ export class PublishPlugin extends SaveBase {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      const doc = this.generalStore.getOpenedDocument(this.forAddress);
+      const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.handleDocumentChange(doc);
     });
   }
@@ -285,19 +285,19 @@ export class PublishPlugin extends SaveBase {
         metadata.version,
         metadata.docType,
         data,
-        this.forAddress,
+        this.forAddress(),
         delay,
       )
       .pipe(
         catchError((error) =>
-          this.handleError(error, metadata, this.forAddress, "PUBLISH"),
+          this.handleError(error, metadata, this.forAddress(), "PUBLISH"),
         ),
         tap(() => {
           this.documentService.publishState$.next(false);
           if (delay != null) {
             this.documentService.reload$.next({
               uuid: metadata.uuid,
-              forAddress: this.forAddress,
+              forAddress: this.forAddress(),
             });
           }
         }),
@@ -331,7 +331,7 @@ export class PublishPlugin extends SaveBase {
       .afterClosed()
       .subscribe((doRevert) => {
         if (doRevert) {
-          this.documentService.revert(docId, this.forAddress).subscribe({
+          this.documentService.revert(docId, this.forAddress()).subscribe({
             error: (err) => {
               console.error("Error when reverting data", err);
               throw err;
@@ -375,12 +375,12 @@ export class PublishPlugin extends SaveBase {
   }
 
   private unpublish(id: number) {
-    this.documentService.unpublish(id, this.forAddress).subscribe();
+    this.documentService.unpublish(id, this.forAddress()).subscribe();
   }
 
   private checkForAllParentsPublished() {
     const id: number = this.getMetadata().wrapperId;
-    const store = this.forAddress
+    const store = this.forAddress()
       ? this.addressTreeStore
       : this.documentTreeStore;
     return store
@@ -449,7 +449,7 @@ export class PublishPlugin extends SaveBase {
     const profileCheck = await this.profileService.additionalPublicationCheck(
       this.formStateService.getForm().getRawValue(),
       this.formStateService.metadata(),
-      this.forAddress,
+      this.forAddress(),
     );
     if (!profileCheck) return;
 
