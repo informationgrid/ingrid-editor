@@ -814,7 +814,7 @@ export class DocumentService {
     });
   }
 
-  public removeFromRecentAddresses(id: string) {
+  public removeFromRecentAddresses(id: number) {
     const recentAddresses = this.generalStore.recentAddresses();
 
     let addresses = recentAddresses[ConfigService.catalogId]?.slice() ?? [];

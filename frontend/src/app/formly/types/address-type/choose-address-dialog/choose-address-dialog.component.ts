@@ -106,9 +106,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   recentAddresses$: Observable<DocumentAbstract[]> = toObservable(
     this.generalStore.recentAddresses,
   ).pipe(map((allRecent) => allRecent[ConfigService.catalogId] ?? []));
-  initialActiveAddressType = new BehaviorSubject<Partial<DocumentAbstract>>(
-    null,
-  );
+  initialActiveAddressType = new BehaviorSubject<Partial<any>>(null);
   typeSelectionEnabled = signal<boolean>(false);
   activeStep = 1;
   referenceTypes: DocumentAbstract[];

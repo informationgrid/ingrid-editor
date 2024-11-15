@@ -21,7 +21,6 @@ import { inject, Injectable, Type } from "@angular/core";
 import { ConfigDataService } from "./config-data.service";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { Catalog } from "../../+catalog/services/catalog.model";
-import { coerceArray } from "@datorama/akita";
 import { IgeError } from "../../models/ige-error";
 import { HttpClient } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -216,7 +215,17 @@ export class ConfigService {
 
   hasFlags(flags: string | string[]) {
     const userFlags = this.config.featureFlags;
-    return coerceArray(flags).every((current) => userFlags[current]);
+    return this.coerceArray(flags).every((current) => userFlags[current]);
+  }
+
+  private coerceArray<T>(value: T | T[]): T[] {
+    if (this.isNil(value)) {
+      return [];
+    }
+    return Array.isArray(value) ? value : [value];
+  }
+  private isNil(v) {
+    return v === null || v === undefined;
   }
 
   hasPermission(neededPermission: string | string[]): boolean {

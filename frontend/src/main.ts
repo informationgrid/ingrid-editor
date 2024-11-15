@@ -27,7 +27,6 @@ import {
 
 import { ConfigLoader } from "./app/config.loader";
 import { environment } from "./environments/environment";
-import { enableAkitaProdMode, persistState } from "@datorama/akita";
 import {
   HTTP_INTERCEPTORS,
   HttpClient,
@@ -68,7 +67,6 @@ import { rxStompServiceFactory } from "./app/rx-stomp-service-factory";
 import { FORMLY_CONFIG, FormlyModule } from "@ngx-formly/core";
 import { registerTranslateExtension } from "./app/formly/translate.extension";
 import { pluginProvider } from "./app/plugin.provider";
-import { AkitaNgDevtools } from "@datorama/akita-ngdevtools";
 import { KeycloakAngularModule } from "keycloak-angular";
 import { AngularSplitModule } from "angular-split";
 import { DragDropModule } from "@angular/cdk/drag-drop";
@@ -144,9 +142,9 @@ import { GermanDateIntl } from "./app/services/german-date.intl";
 
 if (environment.production) {
   enableProdMode();
-  enableAkitaProdMode();
 }
 
+/*
 persistState({
   include: ["session"],
   preStorageUpdate: (storeName: string, state: any) => {
@@ -163,13 +161,11 @@ persistState({
     return state;
   },
 });
+*/
 
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(
-      environment.production
-        ? []
-        : AkitaNgDevtools.forRoot({ logTrace: false }),
       KeycloakAngularModule,
       AngularSplitModule,
       DragDropModule,

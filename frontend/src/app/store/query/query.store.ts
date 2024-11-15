@@ -17,9 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ActiveState, EntityState } from "@datorama/akita";
 import { Query } from "./query.model";
-import { FacetUpdate } from "../../+research/+facets/facets.component";
 import {
   patchState,
   signalStore,
@@ -33,38 +31,6 @@ import {
   withEntities,
 } from "@ngrx/signals/entities";
 import { computed } from "@angular/core";
-
-export interface QueryState extends EntityState<Query>, ActiveState {
-  ui: {
-    search: {
-      category: "selectDocuments" | "selectAddresses";
-      query: string;
-      facets: FacetUpdate;
-    };
-    sql: {
-      query: string;
-    };
-  };
-}
-
-export function createInitialState(): QueryState {
-  return {
-    active: null,
-    ui: {
-      search: {
-        category: "selectDocuments",
-        query: "",
-        facets: {
-          model: {},
-          fieldsWithParameters: {},
-        },
-      },
-      sql: {
-        query: "",
-      },
-    },
-  };
-}
 
 export const QueryStore = signalStore(
   { providedIn: "root" },

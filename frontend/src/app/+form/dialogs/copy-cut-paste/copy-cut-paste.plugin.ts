@@ -31,7 +31,6 @@ import {
 import { Observable } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
 import { delay, filter, switchMap, tap } from "rxjs/operators";
-import { ID } from "@datorama/akita";
 import { ConfigService } from "../../../services/config/config.service";
 import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
@@ -154,7 +153,7 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private async checkForParentsWithSelectedChildren(
-    data: ID[],
+    data: number[],
   ): Promise<boolean> {
     return new Promise((resolve) => {
       return this.checkForParentsWithSelectedChildrenLoop(data, resolve);
@@ -162,7 +161,7 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private checkForParentsWithSelectedChildrenLoop(
-    data: ID[],
+    data: number[],
     resolve,
     tries = 10,
   ) {

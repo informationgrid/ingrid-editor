@@ -17,11 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ID } from "@datorama/akita";
 import { DocumentState } from "../../models/ige-document";
 
 export interface DocumentAbstract {
-  id: ID | number;
+  id: string | number;
   title: string;
   icon: string;
   _state: DocumentState;

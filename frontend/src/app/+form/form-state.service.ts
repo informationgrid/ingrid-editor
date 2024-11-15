@@ -20,7 +20,6 @@
 import { inject, Injectable, signal } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { transaction } from "@datorama/akita";
 import { Metadata } from "../models/ige-document";
 import { UiStore } from "../store/ui.store";
 
@@ -64,7 +63,6 @@ export class FormStateService {
   }
 
   // save current height of all textareas of current document type from the DOM
-  @transaction()
   private storeTextareaElementsHeight(entries: ResizeObserverEntry[]) {
     entries.forEach((entry) => {
       // get and store textareaElements heights

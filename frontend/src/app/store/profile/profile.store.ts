@@ -17,7 +17,6 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { EntityState } from "@datorama/akita";
 import { ProfileAbstract } from "./profile.model";
 import {
   patchState,
@@ -25,31 +24,8 @@ import {
   withComputed,
   withMethods,
 } from "@ngrx/signals";
-import {
-  setAllEntities,
-  updateEntity,
-  withEntities,
-} from "@ngrx/signals/entities";
-import { Group } from "../../models/user-group";
+import { setAllEntities, withEntities } from "@ngrx/signals/entities";
 import { computed } from "@angular/core";
-
-type FormHeaderInfoField = "status" | "type" | "created" | "modified";
-
-export interface ProfileState extends EntityState<ProfileAbstract> {
-  isInitialized: boolean;
-  ui: {
-    hideFormHeaderInfos: FormHeaderInfoField[];
-  };
-}
-
-export function createProfile(params: Partial<ProfileAbstract>) {
-  return (<Partial<ProfileAbstract>>{
-    isInitialized: false,
-    ui: {
-      hideFormHeaderInfos: null,
-    },
-  }) as ProfileAbstract;
-}
 
 export const ProfileStore = signalStore(
   { providedIn: "root" },
