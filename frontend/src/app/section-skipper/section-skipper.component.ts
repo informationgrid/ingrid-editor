@@ -26,7 +26,7 @@ import { Component } from "@angular/core";
   standalone: true,
 })
 export class SectionSkipperComponent {
-  focusable = "a, button, [tabindex='0']";
+  focusable = "a, button, [tabindex='0'], input";
 
   skipToMainMenu() {
     this.getFocusable("ige-side-menu")?.focus();

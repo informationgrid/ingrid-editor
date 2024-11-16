@@ -3,7 +3,7 @@
     class="allPageScroll flex-1 flex-col"
 >
     <div class="welcome" data-cy="welcome-message">
-        <div class="greetings">{{ t("welcome") }}</div>
+        <h1 class="greetings">{{ t("welcome") }}</h1>
         @for (message of messages$ | async; track message) {
             <div class="message">
                 <span>{{ message.text }}</span>

@@ -12,6 +12,7 @@
             ></ige-metadata-type-short>
             @if (!formState.disabled && formControl.enabled) {
                 <button
+                    type="button"
                     mat-stroked-button
                     color="primary"
                     data-cy="btn-edit-properties"
@@ -155,6 +156,7 @@
                 <ige-form-label class="small-label-width"></ige-form-label>
                 <div>
                     <button
+                        type="button"
                         mat-stroked-button
                         color="primary"
                         (click)="showShort = true"
@@ -173,6 +175,7 @@
         {{ item.label }}
         @if (item.contextHelpKey) {
             <button
+                type="button"
                 class="small-icon-button"
                 mat-icon-button
                 (click)="

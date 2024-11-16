@@ -87,6 +87,7 @@ import { GeneralStore } from "../../../store/general.store";
 import { toObservable } from "@angular/core/rxjs-interop";
 import { ProfileService } from "../../../services/profile.service";
 import { UiStore } from "../../../store/ui.store";
+import { BehaviourService } from "../../../services/behavior/behaviour.service";
 
 @UntilDestroy()
 @Component({
@@ -116,6 +117,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private generalStore = inject(GeneralStore);
   private profileService = inject(ProfileService);
   private uiStore = inject(UiStore);
+  private behaviourService = inject(BehaviourService);
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
   @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
@@ -145,8 +147,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // initial model for form info header
   formInfoModel: any = null;
 
-  behaviours: Behaviour[];
-  error = false;
   // @ts-ignore
   model: IgeDocument = {};
 
@@ -159,6 +159,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   hasOptionalFields = false;
 
   isLoading = true;
+  // TODO: only show when behaviour is active
   showJson = this.uiStore.showJSONView;
 
   private readonly: boolean;

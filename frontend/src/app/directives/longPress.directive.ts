@@ -59,4 +59,9 @@ export class LongPressDirective {
       if (!this.longPressHandled) this.shortClick.emit(event);
     }
   }
+
+  @HostListener("keydown.enter", ["$event"])
+  onKeydownEnter(event: Event) {
+    this.shortClick.emit(event);
+  }
 }
