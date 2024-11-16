@@ -63,7 +63,7 @@
                     >
                         <form
                             [style.padding-top]="paddingWithHeader"
-                            [class.hide-optionals]="!(showAllFields | async)"
+                            [class.hide-optionals]="!showAllFields()"
                             [class.hide]="metadata()?.docType === 'FOLDER'"
                         >
                             <div class="requiredDescription">

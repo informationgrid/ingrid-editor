@@ -29,6 +29,7 @@ import {
   Input,
   OnDestroy,
   OnInit,
+  Signal,
   signal,
   ViewChild,
 } from "@angular/core";
@@ -64,7 +65,6 @@ import {
   Observable,
   Subscription,
 } from "rxjs";
-import { Behaviour } from "../../../services/behavior/behaviour";
 import { TreeService } from "../../sidebars/tree/tree.service";
 import { FormStateService } from "../../form-state.service";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -154,13 +154,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   paddingWithHeader: string;
 
-  showAllFields = this.uiStore.toggleFieldsButtonShowAll;
+  showAllFields: Signal<boolean> = this.uiStore.toggleFieldsButtonShowAll;
 
   hasOptionalFields = false;
 
   isLoading = true;
-  // TODO: only show when behaviour is active
-  showJson = this.uiStore.showJSONView;
+
+  showJson = computed(() => {
+    const plugin = this.behaviourService.getBehaviour("plugin.show.json");
+    return plugin.isActive && this.uiStore.showJSONView();
+  });
 
   private readonly: boolean;
   private loadSubscription: Subscription[] = [];

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, inject, OnInit, Signal } from "@angular/core";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import {
@@ -75,7 +75,7 @@ export class SideMenuComponent implements OnInit {
     map((routes) => routes.filter((route) => this.checkIfUserHasAccess(route))),
   );
 
-  menuIsExpanded = this.uiStore.sidebarExpanded;
+  menuIsExpanded: Signal<boolean> = this.uiStore.sidebarExpanded;
 
   currentRoute: string;
   toggleState = "collapsed";
