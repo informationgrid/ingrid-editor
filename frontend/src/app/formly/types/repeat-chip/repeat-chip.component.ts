@@ -31,7 +31,7 @@ import {
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { BehaviorSubject, Observable, Subscription } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { debounceTime, map, startWith } from "rxjs/operators";
+import { debounceTime, filter, map, startWith, take } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {
@@ -113,6 +113,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
   searchResult = new BehaviorSubject<any[]>([]);
   codelistOptions: Observable<SelectOptionUi[]>;
   filteredOptions: Observable<SelectOptionUi[]>;
+  private codelists$ = toObservable(this.codelistStore.entityMap);
 
   constructor(
     private dialog: MatDialog,
@@ -131,9 +132,11 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
     if (this.props.codelistId) {
       this.type = "codelist";
       this.props.labelField = "label";
-      this.codelistOptions = toObservable(this.codelistStore.entityMap).pipe(
+      this.codelistOptions = this.codelists$.pipe(
+        filter((item) => item[this.props.codelistId] !== undefined),
         map((item) => item[this.props.codelistId]),
         map((codelist) => CodelistService.mapToSelect(codelist)),
+        take(1),
       );
     } else if (this.props.restCall) {
       this.type = "object";

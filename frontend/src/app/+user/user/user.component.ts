@@ -106,7 +106,7 @@ export class UserComponent implements OnInit {
   private previousSelectedUser: User = null;
 
   userTitle = computed<string>(() => {
-    const user = this.userService.selectedUser$();
+    const user = this.loadedUser();
     return user ? `${user.firstName} ${user.lastName}` : "Kein Titel";
   });
 
