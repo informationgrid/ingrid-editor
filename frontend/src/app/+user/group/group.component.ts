@@ -191,9 +191,9 @@ export class GroupComponent implements OnInit {
         this.groupService
           .getGroup(id)
           .subscribe((fetchedGroup) => this.updateGroupOnPage(fetchedGroup));
-      } /* else {
+      } else {
         this.groupService.setActive(this.previousGroupId);
-      }*/
+      }
     });
   }
 

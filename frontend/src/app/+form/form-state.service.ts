@@ -31,12 +31,22 @@ export class FormStateService {
   private form: UntypedFormGroup;
   private _metadata = signal<Metadata>(null);
   metadata = this._metadata.asReadonly();
-  private textareaElementsRows = this.uiStore.textAreaHeights;
+  private textareaElementsRows = {};
   private readonly lineHeight = 24;
 
   private resizeObserver = new ResizeObserver((entries) =>
     this.storeTextareaElementsHeight(entries),
   );
+
+  constructor() {
+    // get text area height state from browser store
+    setTimeout(
+      () =>
+        (this.textareaElementsRows = {
+          ...this.uiStore.textAreaHeights(),
+        }),
+    );
+  }
 
   updateForm(form: UntypedFormGroup) {
     this.form = form;
@@ -70,7 +80,9 @@ export class FormStateService {
       let styleHeight = (<HTMLTextAreaElement>entry.target).style.height;
       if (styleHeight !== "") {
         const rows = Math.round(height / this.lineHeight);
-        this.uiStore.setTextAreaHeights(rows <= 3 ? undefined : rows);
+        this.textareaElementsRows[entry.target.id] =
+          rows <= 3 ? undefined : rows;
+        this.uiStore.setTextAreaHeights(this.textareaElementsRows);
       }
     });
   }

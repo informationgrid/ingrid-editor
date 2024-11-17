@@ -61,6 +61,7 @@ import { CatalogService } from "../../+catalog/services/catalog.service";
 import { isExpired } from "../utils";
 import { GeneralStore } from "../../store/general.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
+import { EntityMap } from "@ngrx/signals/entities";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -656,9 +657,9 @@ export class DocumentService {
   private getEntitiesFromStoreContainingId(id: number) {
     let treeEntities = this.documentTreeStore.entityMap();
     if (!treeEntities[id]) {
-      return this.addressTreeStore.entities();
+      return this.addressTreeStore.entityMap();
     }
-    return this.documentTreeStore.entities();
+    return treeEntities;
   }
 
   /**
@@ -1036,7 +1037,7 @@ export class DocumentService {
   }
 
   private getPathFromTreeStore(
-    entities: Record<number, DocumentAbstract>,
+    entities: EntityMap<DocumentAbstract>,
     id: number,
   ): ShortTreeNode[] {
     const entity = entities[id];

@@ -71,6 +71,10 @@ export class DeleteDocsPlugin extends Plugin {
         ? this.generalStore.activeAddressTreeNodes()
         : this.generalStore.activeTreeNodes();
       const docs = actives.map((item) => this.getStore().entityMap()[item]);
+
+      // if store has not received all updates (e.g. node is nested structure is loaded but children not yet)
+      if (docs.some((item) => item === undefined)) return;
+
       this.formToolbarService.setButtonState(
         "toolBtnRemove",
         docs?.length > 0 && !docs?.find((doc) => !doc.hasWritePermission),

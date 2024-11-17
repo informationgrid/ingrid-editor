@@ -160,7 +160,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   isLoading = true;
 
-  showJson = computed(() => {
+  showJson: Signal<boolean> = computed(() => {
     const plugin = this.behaviourService.getBehaviour("plugin.show.json");
     return plugin.isActive && this.uiStore.showJSONView();
   });

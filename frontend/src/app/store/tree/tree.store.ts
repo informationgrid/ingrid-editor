@@ -28,19 +28,6 @@ import {
   withEntities,
 } from "@ngrx/signals/entities";
 
-const initialState = {
-  active: [],
-  openedDocument: null,
-  expandedNodes: [],
-  breadcrumb: [],
-  explicitActiveNode: undefined,
-  scrollPosition: 0,
-  isDocLoading: false,
-  multiSelectMode: false,
-  datasetsChanged: null,
-  needsReload: false,
-};
-
 export const TreeStore = signalStore(
   { providedIn: "root" },
   withEntities<DocumentAbstract>(),
