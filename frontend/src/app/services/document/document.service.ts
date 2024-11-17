@@ -736,14 +736,14 @@ export class DocumentService {
           isAddress ? "menu.address" : "menu.form",
         );
       } else {
-        destinationTitle = store.entityMap[dest].title;
+        destinationTitle = store.entityMap()[dest].title;
       }
 
       return this.modalService
         .confirmWith({
           title: "Verschieben bestätigen",
           message: `Möchten Sie den folgenden Datensatz wirklich nach "${destinationTitle}" verschieben?`,
-          list: srcIDs.map((id) => store.entityMap[id].title),
+          list: srcIDs.map((id) => store.entityMap()[id].title),
           buttons: [
             { text: "Abbrechen" },
             {

@@ -25,6 +25,7 @@ import { OpenDataDoctype } from "./opendata/doctypes/open-data.doctype";
 import { OpenDataAddressDoctype } from "./opendata/doctypes/open-data-address.doctype";
 import { CodelistStore } from "../app/store/codelist/codelist.store";
 import { filter, take } from "rxjs/operators";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @Component({
   template: "",
@@ -32,6 +33,9 @@ import { filter, take } from "rxjs/operators";
 })
 export class OpenDataComponent {
   private codelistStore = inject(CodelistStore);
+
+  private codelists$ = toObservable(this.codelistStore.entityMap);
+
   // TODO: bmiChange = (inject(BmiDoctype).codelistIdOpenData = "6400");
   constructor(
     service: ProfileService,
@@ -48,13 +52,15 @@ export class OpenDataComponent {
 
     reportsService.setFilter((route) => route.path != "url-check");
     // rename codelist entry (should be done in codelist repo!?)
-    this.codelistStore.entityMap["505"]
+    this.codelists$
       .pipe(
-        filter((data) => data !== undefined),
+        filter((map) => map["505"] !== undefined),
         take(1),
       )
       .subscribe((data) => {
-        const contact = data.entries.filter((item) => item.id === "10")[0];
+        const contact = data["505"].entries.filter(
+          (item) => item.id === "10",
+        )[0];
         const clonedContact = JSON.parse(JSON.stringify(contact));
         clonedContact.fields.de = "Veröffentlichende Stelle";
         this.codelistStore.updateCodelist(clonedContact);

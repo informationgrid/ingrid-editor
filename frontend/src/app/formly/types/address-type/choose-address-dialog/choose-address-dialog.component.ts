@@ -110,6 +110,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   typeSelectionEnabled = signal<boolean>(false);
   activeStep = 1;
   referenceTypes: DocumentAbstract[];
+  private codelists$ = toObservable(this.codelistStore.entityMap);
 
   disabledCondition: (node: TreeNode) => boolean = (node: TreeNode) => {
     return node.type === "FOLDER";
@@ -125,7 +126,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.codelistService.byId("505");
-    toObservable(this.codelistStore.entityMap)
+    this.codelists$
       .pipe(
         untilDestroyed(this),
         map((item) => item["505"]),
@@ -161,7 +162,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   }
 
   updateAddressTree(addressId: number) {
-    this.selection.set(this.addressTreeStore.entityMap[addressId]);
+    this.selection.set(this.addressTreeStore.entityMap()[addressId]);
   }
 
   getResult(): void {

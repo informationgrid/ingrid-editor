@@ -19,7 +19,7 @@
  */
 import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import { filter } from "rxjs/operators";
+import { filter, take } from "rxjs/operators";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import {
   ConfigService,
@@ -29,6 +29,7 @@ import { CodelistService } from "../../../../app/services/codelist/codelist.serv
 import { Codelist } from "../../../../app/store/codelist/codelist.model";
 import { BehaviourService } from "../../../../app/services/behavior/behaviour.service";
 import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 export class UvpReport {
   eiaStatistic: any;
@@ -69,6 +70,8 @@ export class UvpResearchService {
   private eiaNumbersCodelist: Codelist;
 
   initialized$ = new BehaviorSubject(false);
+
+  private codelists$ = toObservable(this.codelistStore.entityMap);
 
   constructor(
     private http: HttpClient,
@@ -179,10 +182,13 @@ export class UvpResearchService {
       this.behaviourService.getBehaviour("plugin.uvp.eia-number")?.data
         ?.uvpCodelist ?? 9000;
 
-    this.codelistStore.entityMap[uvpNumber]
-      .pipe(filter((id) => id !== undefined))
-      .subscribe((id) => {
-        this.eiaNumbersCodelist = id;
+    this.codelists$
+      .pipe(
+        filter((map) => map[uvpNumber] !== undefined),
+        take(1),
+      )
+      .subscribe((map) => {
+        this.eiaNumbersCodelist = map[uvpNumber];
         this.initialized$.next(true);
       });
   }

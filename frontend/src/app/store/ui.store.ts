@@ -41,16 +41,16 @@ export const UiStore = signalStore(
   withState(initialState),
   withMethods((store) => ({
     setHideFormHeaderInfos(hide: string[]): void {
-      patchState(store, (_state) => ({ hideFormHeaderInfos: hide }));
+      patchState(store, { hideFormHeaderInfos: hide });
     },
     setTreeMultiSelectMode(value: boolean): void {
-      patchState(store, (_state) => ({ multiSelectMode: value }));
+      patchState(store, { multiSelectMode: value });
     },
     setScrollPosition(value: number): void {
-      patchState(store, (_state) => ({ scrollPosition: value }));
+      patchState(store, { scrollPosition: value });
     },
     setToggleFieldsButtonShowAll(value: boolean): void {
-      patchState(store, (_state) => ({ toggleFieldsButtonShowAll: value }));
+      patchState(store, { toggleFieldsButtonShowAll: value });
     },
     toggleJsonView(forceValue?: boolean) {
       patchState(store, (state) => ({
@@ -61,14 +61,10 @@ export const UiStore = signalStore(
       patchState(store, { textAreaHeights: JSON.parse(JSON.stringify(value)) });
     },
     setSidebarWidth(value: number) {
-      patchState(store, (_state) => ({
-        sidebarWidth: value,
-      }));
+      patchState(store, { sidebarWidth: value });
     },
     setUserTableWidth(value: number) {
-      patchState(store, (_state) => ({
-        userTableWidth: value,
-      }));
+      patchState(store, { userTableWidth: value });
     },
     setSidebarExpanded(value: boolean) {
       patchState(store, { sidebarExpanded: value });

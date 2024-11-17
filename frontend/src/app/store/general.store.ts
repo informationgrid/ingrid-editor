@@ -74,19 +74,19 @@ export const GeneralStore = signalStore(
   withState(initialState),
   withMethods((store) => ({
     setCodelistsLoaded(): void {
-      patchState(store, (_state) => ({ codelistsLoaded: true }));
+      patchState(store, { codelistsLoaded: true });
     },
     setProfilesLoaded(): void {
-      patchState(store, (_state) => ({ profilesLoaded: true }));
+      patchState(store, { profilesLoaded: true });
     },
     updateFavorites(favorites): void {
-      patchState(store, (_state) => ({ favorites: favorites }));
+      patchState(store, { favorites: favorites });
     },
     setActiveGroup(id: number): void {
-      patchState(store, (_state) => ({ activeGroup: id }));
+      patchState(store, { activeGroup: id });
     },
     setActiveQuery(query: Query): void {
-      patchState(store, (_state) => ({ activeQuery: query }));
+      patchState(store, { activeQuery: query });
     },
     getExplicitActiveNode(isAddress: boolean): ShortTreeNode {
       if (isAddress) return store.explicitActiveNodeAddress();
@@ -101,18 +101,17 @@ export const GeneralStore = signalStore(
       else patchState(store, { activeTreeNodes: docIds });
     },
     setOpenedDocument(doc: DocumentAbstract): void {
-      patchState(store, (_state) => ({ openedDocument: doc }));
+      patchState(store, { openedDocument: doc });
     },
     setOpenedAddress(address: DocumentAbstract): void {
-      patchState(store, (_state) => ({ openedAddress: address }));
+      patchState(store, { openedAddress: address });
     },
     getOpenedDocument(isAddress: boolean): DocumentAbstract {
       return isAddress ? store.openedAddress() : store.openedDocument();
     },
     setDatasetsChanged(info: UpdateDatasetInfo, isAddress: boolean): void {
-      if (isAddress)
-        patchState(store, (_state) => ({ addressesChanged: info }));
-      else patchState(store, (_state) => ({ datasetsChanged: info }));
+      if (isAddress) patchState(store, { addressesChanged: info });
+      else patchState(store, { datasetsChanged: info });
     },
     getDatasetsChanged(forAddress: boolean): UpdateDatasetInfo {
       if (forAddress) return store.addressesChanged();
@@ -136,32 +135,31 @@ export const GeneralStore = signalStore(
       else return store.needsDocumentReload();
     },
     setNeedsReload(forAddress: boolean, value: boolean): void {
-      if (forAddress)
-        patchState(store, (_state) => ({ needsAddressReload: value }));
-      else patchState(store, (_state) => ({ needsDocumentReload: value }));
+      if (forAddress) patchState(store, { needsAddressReload: value });
+      else patchState(store, { needsDocumentReload: value });
     },
     setServerValidationErrors(errors: ValidationError[]): void {
-      patchState(store, (_state) => ({ serverValidationErrors: errors }));
+      patchState(store, { serverValidationErrors: errors });
     },
     setLatestDocuments(docs: DocumentAbstract[]): void {
-      patchState(store, (_state) => ({ latestDocuments: docs }));
+      patchState(store, { latestDocuments: docs });
     },
     setLatestPublishedDocuments(docs: DocumentAbstract[]): void {
-      patchState(store, (_state) => ({ latestPublishedDocuments: docs }));
+      patchState(store, { latestPublishedDocuments: docs });
     },
     setOldestExpiredDocuments(docs: DocumentAbstract[]): void {
-      patchState(store, (_state) => ({ oldestExpiredDocuments: docs }));
+      patchState(store, { oldestExpiredDocuments: docs });
     },
     setLatestAddresses(docs: DocumentAbstract[]): void {
-      patchState(store, (_state) => ({ latestAddresses: docs }));
+      patchState(store, { latestAddresses: docs });
     },
     setRecentAddresses(docs: {
       [catalogId: string]: DocumentAbstract[];
     }): void {
-      patchState(store, (_state) => ({ recentAddresses: docs }));
+      patchState(store, { recentAddresses: docs });
     },
     setSessionTimeout(value: number): void {
-      patchState(store, (_state) => ({ sessionTimeoutIn: value }));
+      patchState(store, { sessionTimeoutIn: value });
     },
   })),
 );
