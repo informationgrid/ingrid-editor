@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { ActivatedRouteSnapshot } from "@angular/router";
 import { ConfigService } from "./config/config.service";
 import { UiStore } from "../store/ui.store";
@@ -36,7 +36,19 @@ export interface Tab {
 })
 export class SessionService {
   private uiStore = inject(UiStore);
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService) {
+    effect(() => {
+      this.saveToLocalStorage(
+        "sidebarExpanded",
+        this.uiStore.sidebarExpanded(),
+      );
+    });
+    effect(() => {
+      const value = this.uiStore.textAreaHeights();
+      if (Object.keys(value).length === 0) return;
+      this.saveToLocalStorage("textAreaHeights", JSON.stringify(value));
+    });
+  }
 
   updateCurrentTab(page: TabPage, tabIndex: string) {
     const newTabState = {};
@@ -66,5 +78,9 @@ export class SessionService {
     return activeRoute.routeConfig.children
       .filter((item) => item.path)
       .map((item) => item.path);
+  }
+
+  private saveToLocalStorage(key: string, value: any) {
+    localStorage.setItem(key, value);
   }
 }

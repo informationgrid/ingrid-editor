@@ -58,9 +58,7 @@ export const UiStore = signalStore(
       }));
     },
     setTextAreaHeights(value: any) {
-      patchState(store, (_state) => ({
-        textAreaHeights: value,
-      }));
+      patchState(store, { textAreaHeights: JSON.parse(JSON.stringify(value)) });
     },
     setSidebarWidth(value: number) {
       patchState(store, (_state) => ({
@@ -73,9 +71,7 @@ export const UiStore = signalStore(
       }));
     },
     setSidebarExpanded(value: boolean) {
-      patchState(store, (_state) => ({
-        sidebarExpanded: value,
-      }));
+      patchState(store, { sidebarExpanded: value });
     },
     updateCurrentTab(value: any) {
       patchState(store, (state) => ({
