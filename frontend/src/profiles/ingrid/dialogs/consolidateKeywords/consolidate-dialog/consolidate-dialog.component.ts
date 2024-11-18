@@ -4,20 +4,21 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from "@angular/material/dialog";
-import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 import { MatChip, MatChipListbox } from "@angular/material/chips";
-import { NgClass, NgForOf, NgIf } from "@angular/common";
-import { UserTableComponent } from "../../../../../app/+user/user/user-table/user-table.component";
+import { NgClass } from "@angular/common";
 import { DialogTemplateComponent } from "../../../../../app/shared/dialog-template/dialog-template.component";
 import { CodelistQuery } from "../../../../../app/store/codelist/codelist.query";
 import { FormStateService } from "../../../../../app/+form/form-state.service";
 import { ConfigService } from "../../../../../app/services/config/config.service";
 import { KeywordAnalysis } from "../../../utils/keywords";
-import { ThesaurusResult } from "../../../components/thesaurus-result";
+import {
+  ThesaurusResult,
+  ThesaurusType,
+} from "../../../components/thesaurus-result";
 import { removeDuplicatesByValue } from "../../../../../app/shared/utils";
 import { IgeDocument, Metadata } from "../../../../../app/models/ige-document";
 import { UntypedFormGroup } from "@angular/forms";
@@ -37,18 +38,13 @@ class Keywords {
   templateUrl: "./consolidate-dialog.component.html",
   styleUrls: ["./consolidate-dialog.component.scss"],
   imports: [
-    UserTableComponent,
-    CdkDrag,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    CdkDragHandle,
     MatChip,
     MatChipListbox,
-    NgForOf,
     NgClass,
-    NgIf,
     DialogTemplateComponent,
   ],
   standalone: true,
@@ -69,9 +65,9 @@ export class ConsolidateDialogComponent implements OnInit {
   keywords: Keywords;
   isInspireIdentified: boolean;
 
-  keywordCategories = {
-    gemet: "Gemet Schlagworte",
-    umthes: "Umthes Schlagworte",
+  keywordCategories: { [x: string]: ThesaurusType } = {
+    gemet: "Gemet-Schlagworte",
+    umthes: "Umthes-Schlagworte",
     free: "Freie Schlagworte",
     themes: "INSPIRE-Themen",
   };
@@ -88,7 +84,7 @@ export class ConsolidateDialogComponent implements OnInit {
   timedOutKeywords: string[] = [];
   timedOutThesauri: string[] = [];
 
-  keywordHierarchyMap: Map<string, ThesaurusResult[][]>;
+  keywordHierarchyMap: Map<ThesaurusType, ThesaurusResult[][]>;
 
   keywordDialogData = [];
   isLoading: boolean;
@@ -111,7 +107,7 @@ export class ConsolidateDialogComponent implements OnInit {
     this.form = this.formStateService.getForm();
     this.keywords = this.form.get("keywords").value;
 
-    this.isInspireIdentified = this.form.get("isInspireIdentified")?.value;
+    this.isInspireIdentified = this.form.value.properties?.isInspireIdentified;
     this.inspireTopics = this.isInspireIdentified
       ? this.form.get("themes")?.value || []
       : []; // INSPIRE-Themen
@@ -128,6 +124,7 @@ export class ConsolidateDialogComponent implements OnInit {
       return false;
     }
 
+    // TODO: why set keywords field again?
     this.keywords = this.form.get("keywords")?.value;
 
     this.gemetKeywords = this.keywords?.gemet || [];
@@ -187,7 +184,7 @@ export class ConsolidateDialogComponent implements OnInit {
     }
   }
 
-  private categorizeKeywords(analyzedKeywords: any[]) {
+  private categorizeKeywords(analyzedKeywords: ThesaurusResult[]) {
     for (let [thesaurus, [oldKeywords, _]] of this.keywordHierarchyMap) {
       this.keywordHierarchyMap.set(thesaurus, [
         oldKeywords,

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ThesaurusResult } from "../components/thesaurus-result";
+import { ThesaurusResult, ThesaurusType } from "../components/thesaurus-result";
 import { HttpClient } from "@angular/common/http";
 import { firstValueFrom, throwError, timeout } from "rxjs";
 import { ConfigService } from "../../../app/services/config/config.service";
@@ -176,9 +176,9 @@ export class KeywordAnalysis {
 
   private mapThesaurusToModel(item: ThesaurusResult): string {
     switch (item.thesaurus) {
-      case "Gemet Schlagworte":
+      case "Gemet-Schlagworte":
         return "keywords.gemet";
-      case "Umthes Schlagworte":
+      case "Umthes-Schlagworte":
         return "keywords.umthes";
       case "Freie Schlagworte":
         return "keywords.free";
@@ -189,12 +189,12 @@ export class KeywordAnalysis {
     }
   }
 
-  private mapThesaurusToLabel(thesaurus: string): string {
+  private mapThesaurusToLabel(thesaurus: string): ThesaurusType {
     switch (thesaurus) {
       case "gemet":
-        return "Gemet Schlagworte";
+        return "Gemet-Schlagworte";
       case "umthes":
-        return "Umthes Schlagworte";
+        return "Umthes-Schlagworte";
       case "free":
         return "Freie Schlagworte";
       case "themes":
@@ -223,7 +223,7 @@ export class KeywordAnalysis {
             found: false,
             value: { label: item },
             label: item,
-            thesaurus: thesaurus,
+            thesaurus: this.mapThesaurusToLabel(thesaurus),
           };
         }
       }
@@ -266,11 +266,9 @@ export class KeywordAnalysis {
 
     const response = await firstValueFrom(
       this.http
-        .get<any[]>(
-          `${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(
-            item,
-          )}&type=EXACT`,
-        )
+        .get<
+          any[]
+        >(`${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(item)}&type=EXACT`)
         .pipe(
           timeout(timeoutDuration), // Set the timeout for the HTTP request
           catchError((err) => {
