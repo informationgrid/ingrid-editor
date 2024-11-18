@@ -117,6 +117,7 @@ export class CreateFolderPlugin extends Plugin {
         : this.documentTreeStore;
 
       let parentDocId = null;
+      await this.waitForDocumentInStore(store, selectedDoc.id);
       const folder = store.getFirstParentFolder(selectedDoc.id as number);
       if (folder !== null) {
         parentDocId = folder.id;
@@ -147,5 +148,21 @@ export class CreateFolderPlugin extends Plugin {
     if (this.isActive) {
       this.formToolbarService.removeButton("toolBtnFolder");
     }
+  }
+
+  // TODO: move to a function to be reused
+  private async waitForDocumentInStore(
+    store,
+    id: string | number,
+    maxTimes: number = 5,
+  ) {
+    while (maxTimes > 0) {
+      if (store.entityMap()[id]) return;
+      else await this.sleep(100);
+    }
+  }
+
+  async sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

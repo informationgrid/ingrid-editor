@@ -33,7 +33,7 @@ import { FrontendUser, User } from "../user";
 import { Observable, of } from "rxjs";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
-import { FormControl, UntypedFormGroup } from "@angular/forms";
+import { FormControl, FormGroup } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { NewUserDialogComponent } from "./new-user-dialog/new-user-dialog.component";
 import {
@@ -62,6 +62,7 @@ import { HeaderMoreComponent } from "./header-more/header-more.component";
 import { GroupStore } from "../../store/group/group.store";
 import { GeneralStore } from "../../store/general.store";
 import { UiStore } from "../../store/ui.store";
+import { toSignal } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
@@ -94,7 +95,7 @@ export class UserComponent implements OnInit {
   private uiStore = inject(UiStore);
 
   users = this.userService.users$;
-  form = new UntypedFormGroup({});
+  form = new FormGroup<any>({});
   menuItems: FormularMenuItem[];
 
   explicitUserLogin = signal<string>(null);
@@ -105,9 +106,11 @@ export class UserComponent implements OnInit {
   query = new FormControl<string>("");
   private previousSelectedUser: User = null;
 
+  formChange$ = toSignal(this.form.valueChanges);
   userTitle = computed<string>(() => {
-    const user = this.loadedUser();
-    return user ? `${user.firstName} ${user.lastName}` : "Kein Titel";
+    const value = this.formChange$();
+    const title = `${value.firstName} ${value.lastName}`;
+    return title.trim().length === 0 ? "Kein Titel" : title;
   });
 
   formlyFieldConfig = computed<FormlyFieldConfig[]>(() => {

@@ -2,7 +2,7 @@
     <div left-side>Auf dieser Seite können die Kataloge verwaltet werden.</div>
 
     <div main-header class="flex-col justify-content-start align-items-stretch">
-        @if (profiles()) {
+        @if (profiles().length > 0) {
             <div>
                 <ige-add-button
                     buttonType="flat"

@@ -68,6 +68,7 @@ import { BreadcrumbComponent } from "../../form-info/breadcrumb/breadcrumb.compo
 import { GeneralStore } from "../../../store/general.store";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 export interface CreateOptions {
   parent: string;
@@ -122,6 +123,7 @@ export class CreateNodeComponent implements OnInit {
   alreadySubmitted = false;
 
   docTypeChoice = signal<string>(null);
+  private entities$ = toObservable(this.getStore().entityMap);
 
   constructor(
     private config: ConfigService,
@@ -147,8 +149,8 @@ export class CreateNodeComponent implements OnInit {
 
     effect(
       () => {
-        // update path depending on selected document type
-        this.docTypeChoice();
+        // update path depending on selected document type or entities have changed (in case a deeply nested node finally has been loaded)
+        this.entities$ || this.docTypeChoice();
         this.mapPath(this.path);
       },
       { allowSignalWrites: true },

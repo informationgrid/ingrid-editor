@@ -25,7 +25,6 @@ import {
   OnInit,
   Signal,
 } from "@angular/core";
-import { Observable } from "rxjs";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../services/document/document.service";
@@ -37,7 +36,6 @@ import { CardBoxComponent } from "../../shared/card-box/card-box.component";
 import { DocumentListItemComponent } from "../../shared/document-list-item/document-list-item.component";
 import { MatIcon } from "@angular/material/icon";
 import { TranslocoDirective } from "@ngneat/transloco";
-import { AsyncPipe } from "@angular/common";
 import { GeneralStore } from "../../store/general.store";
 
 @UntilDestroy()
@@ -53,7 +51,6 @@ import { GeneralStore } from "../../store/general.store";
     DocumentListItemComponent,
     MatIcon,
     TranslocoDirective,
-    AsyncPipe,
   ],
 })
 export class FormDashboardComponent implements OnInit {
