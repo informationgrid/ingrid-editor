@@ -30,7 +30,6 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { TranslocoService } from "@ngneat/transloco";
-import { GeneralStore } from "../../../store/general.store";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
@@ -44,7 +43,6 @@ export class CreateFolderPlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
-  private generalStore = inject(GeneralStore);
   private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 

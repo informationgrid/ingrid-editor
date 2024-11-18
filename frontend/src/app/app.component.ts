@@ -114,8 +114,7 @@ export class AppComponent implements OnInit {
   }
 
   private updateStoreFromLocalStorage() {
-    const initValueSidebar =
-      localStorage.getItem("sidebarExpanded") === "true" ?? true;
+    const initValueSidebar = localStorage.getItem("sidebarExpanded") === "true";
     this.uiStore.setSidebarExpanded(initValueSidebar);
     const textAreaHeights = localStorage.getItem("textAreaHeights");
     try {

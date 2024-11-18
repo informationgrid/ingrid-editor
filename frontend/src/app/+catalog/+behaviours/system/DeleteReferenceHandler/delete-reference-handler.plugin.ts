@@ -30,8 +30,6 @@ import { Observable } from "rxjs";
 import { FormMenuService } from "../../../../+form/form-menu.service";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
-import { GeneralStore } from "../../../../store/general.store";
-import { TreeStore } from "../../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 
@@ -44,7 +42,6 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
   group = "Adressen";
   defaultActive = true;
 
-  private generalStore = inject(GeneralStore);
   private addressTreeStore = inject(AddressTreeStore);
 
   constructor(
@@ -76,7 +73,7 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
       .onError(this.forAddress())
       .pipe(filter((error) => error.errorCode === "IS_REFERENCED_ERROR"))
       .subscribe((error) => {
-        const selectedNodes = this.generalStore.activeTreeNodes();
+        const selectedNodes = this.activeNodes();
 
         // only supported when one address was selected so far
         if (selectedNodes.length > 1) {

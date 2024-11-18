@@ -35,7 +35,6 @@ import { ConfigService } from "../../../services/config/config.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { FormStateService } from "../../form-state.service";
-import { GeneralStore } from "../../../store/general.store";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
@@ -49,7 +48,6 @@ export class DeleteDocsPlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
-  private generalStore = inject(GeneralStore);
   private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
@@ -67,10 +65,9 @@ export class DeleteDocsPlugin extends Plugin {
 
     effect(() => {
       if (!this.formRegistered) return;
-      const actives = this.forAddress()
-        ? this.generalStore.activeAddressTreeNodes()
-        : this.generalStore.activeTreeNodes();
-      const docs = actives.map((item) => this.getStore().entityMap()[item]);
+      const docs = this.activeNodes().map(
+        (item) => this.getStore().entityMap()[item],
+      );
 
       // if store has not received all updates (e.g. node is nested structure is loaded but children not yet)
       if (docs.some((item) => item === undefined)) return;
@@ -99,9 +96,7 @@ export class DeleteDocsPlugin extends Plugin {
       this.docEvents.onEvent("DELETE").subscribe(() => {
         // TODO: this strategy is used in several toolbar plugins to prevent too early execution
         //       when opening page and hitting a toolbar button
-        const docs = this.generalStore
-          .activeTreeNodes()
-          .map((item) => store.entityMap()[item]);
+        const docs = this.activeNodes().map((item) => store.entityMap()[item]);
         if (docs.length > 0) {
           this.eventService
             .sendEventAndContinueOnSuccess(IgeEvent.DELETE, docs)

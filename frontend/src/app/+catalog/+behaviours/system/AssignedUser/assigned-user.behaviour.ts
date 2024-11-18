@@ -44,7 +44,6 @@ import { FormStateService } from "../../../../+form/form-state.service";
 import { DocumentService } from "../../../../services/document/document.service";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 import { Plugin } from "../../plugin";
-import { GeneralStore } from "../../../../store/general.store";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 
 @Injectable({ providedIn: "root" })
@@ -54,8 +53,6 @@ export class AssignedUserBehaviour extends Plugin {
   description =
     "Datensätze erhalten einen verantwortlichen Benutzer, der von Katalog Administratoren geändert werden kann. In der Benutzerverwaltung kann die Verantwortung übertragen werden. Nutzer die Verantwortlichkeiten haben können nicht gelöscht werden";
   defaultActive = true;
-
-  private generalStore = inject(GeneralStore);
 
   constructor(
     private eventService: EventService,

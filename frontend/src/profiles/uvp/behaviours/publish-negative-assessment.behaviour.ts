@@ -19,7 +19,7 @@
  */
 import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
 import { FormMenuService, MenuId } from "../../../app/+form/form-menu.service";
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { filter } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -29,7 +29,6 @@ import {
 import { DocumentAbstract } from "../../../app/store/document/document.model";
 import { TagsService } from "../../../app/+catalog/+behaviours/system/tags/tags.service";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
-import { GeneralStore } from "../../../app/store/general.store";
 import { toObservable } from "@angular/core/rxjs-interop";
 
 @Injectable({ providedIn: "root" })
@@ -44,7 +43,6 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
   group = "UVP";
   formMenuId: MenuId = "dataset";
 
-  private generalStore = inject(GeneralStore);
   private openedDocument$ = toObservable(this.generalStore.openedDocument);
 
   constructor(

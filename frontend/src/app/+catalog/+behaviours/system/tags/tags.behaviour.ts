@@ -32,7 +32,6 @@ import { FormUtils } from "../../../../+form/form.utils";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 import { TagsService } from "./tags.service";
-import { GeneralStore } from "../../../../store/general.store";
 
 @Injectable()
 export class TagsBehaviour extends Plugin {
@@ -42,8 +41,6 @@ export class TagsBehaviour extends Plugin {
   description =
     "Jedem Dokument kann ein oder mehrere Tags zugewiesen werden. Derzeit wird es nur verwendet, um einen Datensatz für die Indizierung zu markieren (Internet, Intranet, amtsintern)";
   eventAddTags = "ADD_TAGS";
-
-  private generalStore = inject(GeneralStore);
 
   constructor(
     private formMenuService: FormMenuService,

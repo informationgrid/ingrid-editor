@@ -27,8 +27,6 @@ import { ExchangeService } from "../../../../app/+importExport/exchange.service"
 import { of } from "rxjs";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
-import { DocumentAbstract } from "../../../../app/store/document/document.model";
-import { GeneralStore } from "../../../../app/store/general.store";
 
 @UntilDestroy()
 @Injectable({ providedIn: "root" })
@@ -41,8 +39,6 @@ export class IsoViewPlugin extends Plugin {
   defaultActive = false;
 
   isoExportFormat = "ingridISO";
-
-  private generalStore = inject(GeneralStore);
 
   constructor(
     private formToolbarService: FormToolbarService,

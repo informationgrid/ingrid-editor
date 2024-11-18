@@ -19,7 +19,8 @@
  */
 import { Subscription } from "rxjs";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { signal } from "@angular/core";
+import { computed, inject, Signal, signal } from "@angular/core";
+import { GeneralStore } from "../../store/general.store";
 
 export abstract class Plugin {
   abstract id: string;
@@ -37,7 +38,14 @@ export abstract class Plugin {
   data?: any;
   hideInAddress = false;
 
+  protected generalStore = inject(GeneralStore);
   protected formRegistered = signal<boolean>(false);
+
+  protected activeNodes: Signal<number[]> = computed(() => {
+    return this.forAddress()
+      ? this.generalStore.activeAddressTreeNodes()
+      : this.generalStore.activeTreeNodes();
+  });
 
   register(): void {
     console.debug("Register Plugin: ", this.name);

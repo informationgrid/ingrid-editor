@@ -34,7 +34,6 @@ import { clone, JsonDiffMerge } from "../../../shared/utils";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { GeneralStore } from "../../../store/general.store";
 
 @UntilDestroy()
 @Injectable()
@@ -45,8 +44,6 @@ export class PrintViewPlugin extends Plugin {
     "Fügt einen Button hinzu, um sich eine Vorschau anzeigen zu lassen.";
   group = "Toolbar";
   defaultActive = true;
-
-  private generalStore = inject(GeneralStore);
 
   constructor(
     private documentDataService: DocumentDataService,

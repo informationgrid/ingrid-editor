@@ -33,7 +33,6 @@ import { PluginService } from "../../../services/plugin/plugin.service";
 import { take } from "rxjs/operators";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
-import { GeneralStore } from "../../../store/general.store";
 import { toObservable } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
@@ -45,8 +44,6 @@ export class CreateDocumentPlugin extends Plugin {
   group = "Toolbar";
   defaultActive = true;
   hide = true;
-
-  private generalStore = inject(GeneralStore);
 
   private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);

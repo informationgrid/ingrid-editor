@@ -31,7 +31,6 @@ import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 import { TreeStore } from "../../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
-import { GeneralStore } from "../../../../store/general.store";
 
 @Injectable()
 export class DeleteEmptyFoldersBehaviour extends Plugin {
@@ -40,7 +39,6 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
   description = "Es dürfen nur leere Ordner gelöscht werden";
   defaultActive = true;
 
-  private generalStore = inject(GeneralStore);
   private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
@@ -86,8 +84,7 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
     const store = this.forAddress()
       ? this.addressTreeStore
       : this.documentTreeStore;
-    return this.generalStore
-      .activeTreeNodes()
+    return this.activeNodes()
       .map((item) => store.entityMap()[item])
       .filter((doc) => doc._hasChildren)
       .map((doc) => doc.title);

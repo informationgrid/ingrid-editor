@@ -41,7 +41,6 @@ import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
-import { GeneralStore } from "../../../store/general.store";
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -53,7 +52,6 @@ export class CopyCutPastePlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
-  private generalStore = inject(GeneralStore);
   private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);
 
@@ -84,8 +82,7 @@ export class CopyCutPastePlugin extends Plugin {
 
     effect(() => {
       if (!this.formRegistered) return;
-      const docs = this.generalStore.activeTreeNodes();
-      this.handleDocumentChange(docs);
+      this.handleDocumentChange(this.activeNodes());
     });
   }
 
@@ -120,7 +117,7 @@ export class CopyCutPastePlugin extends Plugin {
     this.formSubscriptions.push(...toolbarEventSubscription);
   }
 
-  private async handleDocumentChange(ids: number[]) {
+  private async handleDocumentChange(ids: number[]): Promise<void> {
     if (ids.length === 0) {
       this.toolbarService.setButtonState("toolBtnCopy", false);
     } else {
@@ -208,8 +205,8 @@ export class CopyCutPastePlugin extends Plugin {
           this.documentService.copy(
             // when copying a tree we don't need the children to be copied
             includeTree
-              ? this.getSelectedDatasetsWithoutChildren()
-              : this.getSelectedDatasets(),
+              ? this.getActiveNodesWithoutChildren()
+              : this.activeNodes(),
             result.selection,
             includeTree,
             this.forAddress(),
@@ -247,7 +244,7 @@ export class CopyCutPastePlugin extends Plugin {
       .pipe(
         switchMap((result) =>
           this.documentService.move(
-            this.getSelectedDatasetsWithoutChildren(),
+            this.getActiveNodesWithoutChildren(),
             result.selection,
             this.forAddress(),
           ),
@@ -277,12 +274,8 @@ export class CopyCutPastePlugin extends Plugin {
       );
   }
 
-  private getSelectedDatasets() {
-    return this.generalStore.activeTreeNodes().map((id) => <number>id);
-  }
-
-  private getSelectedDatasetsWithoutChildren(): number[] {
-    const selection = this.getSelectedDatasets();
+  private getActiveNodesWithoutChildren(): number[] {
+    const selection = this.activeNodes();
 
     const filtered = selection.filter(
       (id) => !this.isChildOfSelectedParent(id, selection),
@@ -292,8 +285,7 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private getSelectedDatasetDocType() {
-    return this.generalStore
-      .activeTreeNodes()
+    return this.activeNodes()
       .map((item) => this.getStore().entityMap()[item])
       .map((doc) => doc._type)
       .pop();

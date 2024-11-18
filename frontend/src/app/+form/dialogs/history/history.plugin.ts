@@ -36,7 +36,6 @@ import { ConfigService } from "../../../services/config/config.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { MatMenuTrigger } from "@angular/material/menu";
-import { GeneralStore } from "../../../store/general.store";
 
 @Injectable()
 export class HistoryPlugin extends Plugin {
@@ -47,8 +46,6 @@ export class HistoryPlugin extends Plugin {
   group = "Toolbar";
   defaultActive = true;
   hide = true;
-
-  private generalStore = inject(GeneralStore);
 
   private stack: DocumentAbstract[] = [];
 

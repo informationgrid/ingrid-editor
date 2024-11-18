@@ -29,7 +29,6 @@ import { FormMenuService } from "../../../../+form/form-menu.service";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
-import { GeneralStore } from "../../../../store/general.store";
 
 @Injectable()
 export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
@@ -38,8 +37,6 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
   description =
     "Administratoren können die Zugriffsberechtigungen für Dokumente und Adressen anzeigen";
   defaultActive = true;
-
-  private generalStore = inject(GeneralStore);
 
   constructor(
     private docEvents: DocEventsService,

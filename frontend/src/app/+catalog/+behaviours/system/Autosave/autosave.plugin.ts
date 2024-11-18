@@ -25,7 +25,6 @@ import { filter } from "rxjs/operators";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { GeneralStore } from "../../../../store/general.store";
 import { toObservable } from "@angular/core/rxjs-interop";
 
 @Injectable()
@@ -37,7 +36,6 @@ export class AutosavePlugin extends Plugin {
   // group = "Toolbar";
   defaultActive = false;
   hide = false;
-  private generalStore = inject(GeneralStore);
 
   private timeout$: Observable<number> = toObservable(
     this.generalStore.sessionTimeoutIn,

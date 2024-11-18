@@ -33,8 +33,6 @@ import { FormStateService } from "../../../../+form/form-state.service";
 import { FormMenuService } from "../../../../+form/form-menu.service";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
-import { GeneralStore } from "../../../../store/general.store";
-import { TreeStore } from "../../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 
@@ -47,7 +45,6 @@ export class InheritContactDataHandler extends Plugin {
   group = "Adressen";
   defaultActive = true;
 
-  private generalStore = inject(GeneralStore);
   private addressTreeStore = inject(AddressTreeStore);
 
   constructor(

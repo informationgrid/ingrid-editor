@@ -37,7 +37,6 @@ import { PluginService } from "../../../../app/services/plugin/plugin.service";
 import { DocumentAbstract } from "../../../../app/store/document/document.model";
 import { TreeStore } from "../../../../app/store/tree/tree.store";
 import { toObservable } from "@angular/core/rxjs-interop";
-import { GeneralStore } from "../../../../app/store/general.store";
 
 @Injectable({
   providedIn: "root",
@@ -62,7 +61,6 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   private router = inject(Router);
   private snack = inject(MatSnackBar);
   private treeStore = inject(TreeStore);
-  private generalStore = inject(GeneralStore);
   private configService = inject(ConfigService);
 
   private activeNode$ = toObservable(this.generalStore.activeTreeNodes);
