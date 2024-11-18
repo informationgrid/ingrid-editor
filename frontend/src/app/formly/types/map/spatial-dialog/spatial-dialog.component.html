@@ -58,6 +58,14 @@
                         (result)="updateBoundingBox($event)"
                     ></ige-geothesaurus-wfsgnde>
                 }
+                @case ("bwastr") {
+                    <ige-bwastr-spatial
+                        [map]="leafletReference"
+                        [value]="result"
+                        (updateTitle)="titleInput.setValue($event)"
+                        (result)="updateBwastr($event)"
+                    ></ige-bwastr-spatial>
+                }
             }
         </div>
 

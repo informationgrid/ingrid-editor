@@ -33,9 +33,14 @@ import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
+import de.ingrid.igeserver.services.BwastrCoordinateResponse
+import de.ingrid.igeserver.services.BwastrLocatorSearchResponse
+import de.ingrid.igeserver.services.BwastrLocatorService
+import de.ingrid.igeserver.services.BwastrSection
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.QueryService
 import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.igeserver.services.geothesaurus.BoundingBox
 import de.ingrid.igeserver.services.geothesaurus.GeoThesaurusFactory
 import de.ingrid.igeserver.services.geothesaurus.GeoThesaurusSearchOptions
 import de.ingrid.igeserver.services.geothesaurus.SpatialResponse
@@ -43,6 +48,7 @@ import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
 import de.ingrid.igeserver.utils.AuthUtils
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -57,8 +63,10 @@ class ResearchApiController(
     val catalogService: CatalogService,
     val authUtils: AuthUtils,
     val geoThesaurusFactory: GeoThesaurusFactory,
+    val bwastrLocatorService: BwastrLocatorService,
     val generalProperties: GeneralProperties,
 ) : ResearchApi {
+    val log = logger()
 
     override fun load(principal: Principal): ResponseEntity<List<Query>> {
         val userId = authUtils.getUsernameFromPrincipal(principal)
@@ -116,6 +124,29 @@ class ResearchApiController(
     override fun geoSearch(principal: Principal, query: String): ResponseEntity<List<SpatialResponse>> {
         val response = geoThesaurusFactory.get("wfsgnde").search(query, GeoThesaurusSearchOptions(ThesaurusSearchType.CONTAINS))
         return ResponseEntity.ok(response)
+    }
+
+    override fun bwastrSearch(principal: Principal, query: String): ResponseEntity<List<BwastrLocatorSearchResponse>> {
+        val response = bwastrLocatorService.search(query)
+        return ResponseEntity.ok(response)
+    }
+
+    override fun bwastrCoordinateSearch(principal: Principal, section: BwastrSection): ResponseEntity<BwastrCoordinateResponse> {
+        try {
+            val coordinates = bwastrLocatorService.getCoordinates(section)
+            val longitudes = coordinates.flatten().map { it[0] }
+            val latitudes = coordinates.flatten().map { it[1] }
+            val bounds = BoundingBox(
+                latitudes.minOrNull() ?: 0.0,
+                longitudes.minOrNull() ?: 0.0,
+                latitudes.maxOrNull() ?: 0.0,
+                longitudes.maxOrNull() ?: 0.0,
+            )
+            return ResponseEntity.ok(BwastrCoordinateResponse(coordinates, bounds))
+        } catch (e: Exception) {
+            log.debug("Error while getting coordinates for section $section", e)
+            return ResponseEntity.noContent().build()
+        }
     }
 
     override fun aiSearch(principal: Principal, query: String): ResponseEntity<String> {

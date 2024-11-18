@@ -62,6 +62,20 @@ class InGridBawComponent extends InGridComponent {
   constructor() {
     super();
     this.isoView.isoExportFormat = "ingridISOBaw";
+    this.modifyFormFieldConfiguration();
+  }
+
+  private modifyFormFieldConfiguration() {
+    [
+      this.geoDataset,
+      this.geoService,
+      this.project,
+      this.publication,
+      this.software,
+    ].forEach((docType) => {
+      // add BWaStr-Strecken to spatial types
+      docType.options.spatialTypes.push("bwastr");
+    });
   }
 }
 

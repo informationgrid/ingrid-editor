@@ -34,7 +34,7 @@ import { MatTooltip } from "@angular/material/tooltip";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { DecimalPipe } from "@angular/common";
 
-export type SpatialLocationType = "free" | "wkt" | "wfsgnde";
+export type SpatialLocationType = "free" | "wkt" | "wfsgnde" | "bwastr";
 
 export interface SpatialLocation {
   title: string;
@@ -43,7 +43,14 @@ export interface SpatialLocation {
   wkt?: string;
   limitTypes?: SpatialLocationType[];
   ars?: string;
+  bwastr?: BwastrSection;
 }
+
+export type BwastrSection = {
+  bwastrid: string;
+  start?: number;
+  end?: number;
+};
 
 export interface SpatialLocationWithColor extends SpatialLocation {
   indexNumber: number;
@@ -93,7 +100,7 @@ export class SpatialListComponent implements OnInit {
         prev[curr.type].push(curr);
         return prev;
       },
-      { free: [], wkt: [], coordinates: [], wfsgnde: [] },
+      { free: [], wkt: [], coordinates: [], wfsgnde: [], bwastr: [] },
     );
 
     // @ts-ignore

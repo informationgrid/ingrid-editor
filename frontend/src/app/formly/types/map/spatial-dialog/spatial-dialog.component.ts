@@ -37,6 +37,7 @@ import {
   MatDialogTitle,
 } from "@angular/material/dialog";
 import {
+  BwastrSection,
   SpatialLocation,
   SpatialLocationType,
 } from "../spatial-list/spatial-list.component";
@@ -56,6 +57,7 @@ import { WktSpatialComponent } from "./wkt-spatial/wkt-spatial.component";
 import { GeothesaurusWfsgndeComponent } from "./geothesaurus-wfsgnde/geothesaurus-wfsgnde.component";
 import { MatInput } from "@angular/material/input";
 import { CoordinatesSpatialComponent } from "./coordinates-spatial/coordinates-spatial.component";
+import { BwastrSpatialComponent } from "./bwastr-spatial/bwastr-spatial.component";
 
 interface LocationType {
   id: SpatialLocationType;
@@ -86,6 +88,7 @@ interface LocationType {
     CoordinatesSpatialComponent,
     MatDialogActions,
     MatButton,
+    BwastrSpatialComponent,
   ],
 })
 export class SpatialDialogComponent implements OnInit, AfterViewInit {
@@ -113,6 +116,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     { id: "free", label: this.transloco.translate("spatial.types.free") },
     { id: "wkt", label: this.transloco.translate("spatial.types.wkt") },
     { id: "wfsgnde", label: this.transloco.translate("spatial.types.wfsgnde") },
+    { id: "bwastr", label: this.transloco.translate("spatial.types.bwastr") },
   ];
   view: SpatialLocationType;
 
@@ -136,12 +140,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     if (this.data) {
       this._bbox = this.data.value;
       this.titleInput.setValue(this.data.title);
-      this.result = {
-        value: this.data?.value,
-        title: this.data?.title,
-        type: this.data?.type ?? "free",
-        ars: this.data?.ars,
-      };
+      this.result = { ...this.result, ...this.data };
     } else {
       this.titleInput.setValue("Neuer Raumbezug");
     }
@@ -159,11 +158,16 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
     this.result.value = result;
   }
 
+  updateBwastr(result: BwastrSection) {
+    this.result.bwastr = result;
+  }
+
   updateView(viewType: SpatialLocationType) {
     this.view = viewType;
     this.result.type = viewType;
     this.titleInput.enable();
     if (viewType !== "wkt") this.result.wkt = undefined;
+    if (viewType !== "bwastr") this.result.bwastr = undefined;
     if (viewType == "free") {
       if (!this.leafletReference.pm.controlsVisible()) {
         this.leafletReference.pm.toggleControls();

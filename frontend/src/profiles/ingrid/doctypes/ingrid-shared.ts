@@ -103,6 +103,7 @@ export abstract class IngridShared extends BaseDoctype {
     hide: {
       openData: false,
     },
+    spatialTypes: ["free", "wkt", "wfsgnde"],
   };
 
   private inspireChangeMessage =
@@ -950,6 +951,7 @@ export abstract class IngridShared extends BaseDoctype {
         [
           this.addSpatial("references", "Raumbezug", {
             required: this.options.required.spatialReferences,
+            limitTypes: this.options.spatialTypes,
             hasInlineContextHelp: true,
             defaultValue: defaultSpatial ? defaultSpatial : undefined,
             expressions: {

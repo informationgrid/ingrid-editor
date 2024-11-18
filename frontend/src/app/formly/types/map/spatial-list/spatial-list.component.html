@@ -67,6 +67,18 @@
                             {{ location.wkt }}
                         </div>
                     }
+                    @if (
+                        location.type === "bwastr" &&
+                        location.bwastr?.start != null &&
+                        location.bwastr?.end != null
+                    ) {
+                        <div matLine>
+                            Streckenabschnitt [km]:
+                            <span>{{ location.bwastr.start }}</span>
+                            -
+                            <span>{{ location.bwastr.end }}</span>
+                        </div>
+                    }
                 </div>
             </div>
             @if (!disabled) {

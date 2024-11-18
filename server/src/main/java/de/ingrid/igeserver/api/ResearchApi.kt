@@ -23,6 +23,9 @@ import de.ingrid.igeserver.model.Facets
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
+import de.ingrid.igeserver.services.BwastrCoordinateResponse
+import de.ingrid.igeserver.services.BwastrLocatorSearchResponse
+import de.ingrid.igeserver.services.BwastrSection
 import de.ingrid.igeserver.services.geothesaurus.SpatialResponse
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
@@ -99,6 +102,16 @@ interface ResearchApi {
     @PostMapping(value = ["/geothesaurus/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
     fun geoSearch(principal: Principal, @RequestBody query: String): ResponseEntity<List<SpatialResponse>>
+
+    @Operation
+    @PostMapping(value = ["/bwastr"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    fun bwastrSearch(principal: Principal, @RequestBody query: String): ResponseEntity<List<BwastrLocatorSearchResponse>>
+
+    @Operation
+    @PostMapping(value = ["/bwastr/coordinates"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    fun bwastrCoordinateSearch(principal: Principal, @RequestBody section: BwastrSection): ResponseEntity<BwastrCoordinateResponse>
 
     @Operation
     @PostMapping(value = ["/ai"], produces = [MediaType.APPLICATION_JSON_VALUE])
