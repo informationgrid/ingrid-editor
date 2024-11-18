@@ -31,6 +31,11 @@ export const ProfileStore = signalStore(
   { providedIn: "root" },
   withEntities<ProfileAbstract>(),
   withComputed((store) => ({
+    documentProfiles: computed(() => {
+      return store
+        .entities()
+        .filter((entity) => !entity.isAddressProfile && entity.id !== "FOLDER");
+    }),
     addressProfiles: computed(() => {
       return store
         .entities()

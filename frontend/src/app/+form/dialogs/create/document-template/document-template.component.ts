@@ -25,11 +25,10 @@ import {
   OnInit,
   output,
 } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
 import { ProfileAbstract } from "../../../../store/profile/profile.model";
-import { filter, map, take, tap } from "rxjs/operators";
 import { ProfileService } from "../../../../services/profile.service";
 import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
 import { MatError, MatFormField } from "@angular/material/form-field";
@@ -37,7 +36,6 @@ import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../../directives/focus.directive";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
 import { ProfileStore } from "../../../../store/profile/profile.store";
-import { toObservable } from "@angular/core/rxjs-interop";
 
 @Component({
   selector: "ige-document-template",
@@ -70,34 +68,21 @@ export class DocumentTemplateComponent implements OnInit {
     null,
   );
 
-  private profileEntities$ = toObservable(this.profileStore.entities);
-
   ngOnInit(): void {
     if (this.isFolder()) {
       this.setDocType({ id: "FOLDER" } as DocumentAbstract);
     } else {
-      this.initializeDocumentTypes(this.profileEntities$);
+      this.initializeDocumentTypes(this.profileStore.documentProfiles());
     }
   }
 
-  private initializeDocumentTypes(profiles: Observable<ProfileAbstract[]>) {
-    profiles
-      .pipe(
-        filter((types) => types.length > 0),
-        map((types) => this.prepareDocumentTypes(types)),
-        tap((types) => {
-          const initialType =
-            types.find(
-              (t) => t.id == this.profileService.getDefaultDataDoctype()?.id,
-            ) || types[0];
-          this.setDocType(initialType);
-          this.initialActiveDocumentType.next(initialType);
-        }),
-        take(1),
-      )
-      .subscribe((result) => {
-        this.documentTypes = result;
-      });
+  private initializeDocumentTypes(profiles: ProfileAbstract[]) {
+    const types = this.prepareDocumentTypes(profiles);
+    const defaultDocId = this.profileService.getDefaultDataDoctype()?.id;
+    const initialType = types.find((t) => t.id == defaultDocId) || types[0];
+    this.setDocType(initialType);
+    this.initialActiveDocumentType.next(initialType);
+    this.documentTypes = types;
   }
 
   private prepareDocumentTypes(result: ProfileAbstract[]): DocumentAbstract[] {

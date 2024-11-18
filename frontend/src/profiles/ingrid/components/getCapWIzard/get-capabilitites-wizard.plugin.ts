@@ -88,7 +88,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
 
     if (!this.configService.hasWriteRootPermission()) {
       const treeQuerySubscription = this.activeNode$.subscribe(async (data) => {
-        const parentId = this.treeStore.entityMap()[data[0]]._parent;
+        const parentId = (await this.treeStore.byId(data[0]))._parent;
         if (
           data.length !== 1 ||
           this.treeStore.entityMap()[parentId] === null
