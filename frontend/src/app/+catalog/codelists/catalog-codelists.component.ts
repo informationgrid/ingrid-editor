@@ -20,7 +20,7 @@
 import { Component, inject, OnInit } from "@angular/core";
 import { CodelistService } from "../../services/codelist/codelist.service";
 import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
-import { delay, filter, map, startWith, tap } from "rxjs/operators";
+import { delay, filter, map, startWith, take, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { UpdateCodelistComponent } from "./update-codelist/update-codelist.component";
 import {
@@ -36,8 +36,6 @@ import {
   moveItemInArray,
 } from "@angular/cdk/drag-drop";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-
-import { AsyncPipe } from "@angular/common";
 import { MatFormField } from "@angular/material/form-field";
 import { MatOption, MatSelect } from "@angular/material/select";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
@@ -59,7 +57,6 @@ import { toObservable } from "@angular/core/rxjs-interop";
   templateUrl: "./catalog-codelists.component.html",
   styleUrls: ["./catalog-codelists.component.scss"],
   imports: [
-    AsyncPipe,
     MatFormField,
     MatSelect,
     MatOption,
@@ -84,10 +81,7 @@ export class CatalogCodelistsComponent implements OnInit {
     map((codelists) => codelists.sort((a, b) => a.name.localeCompare(b.name))),
     delay(0), // set initial value in next rendering cycle!
     tap((options) => (this.codelistsValue = options)),
-    tap(() => {
-      this.activateRememberedCodelist();
-      this.setInitialValue();
-    }),
+    tap(() => this.setInitialValue()),
   );
 
   private readonly CODELIST_STORAGE_KEY = "codelist.selected.before.reload";
@@ -111,6 +105,14 @@ export class CatalogCodelistsComponent implements OnInit {
 
   ngOnInit(): void {
     this.codelistService.getAll();
+
+    this.codelists
+      .pipe(
+        untilDestroyed(this),
+        filter((data) => data !== null),
+        take(1),
+      )
+      .subscribe(() => this.activateRememberedCodelist());
 
     this.codelists
       .pipe(
