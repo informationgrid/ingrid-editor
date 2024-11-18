@@ -267,6 +267,7 @@ export class ConsolidateDialogComponent implements OnInit {
     for (let [thesaurus, [oldKeywords, newKeywords]] of this
       .keywordHierarchyMap) {
       if (thesaurus === this.keywordCategories.themes) {
+        otherThesauriNewKeywords.push(...newKeywords);
         continue;
       }
       const keywords = newKeywords;
