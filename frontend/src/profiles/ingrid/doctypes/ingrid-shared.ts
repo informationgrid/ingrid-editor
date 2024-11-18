@@ -265,7 +265,7 @@ export abstract class IngridShared extends BaseDoctype {
       null,
       [
         availableOptions.length > 0
-          ? this.addSection("Metadata", [
+          ? this.addSection("Merkmale", [
               <FormlyFieldConfig>{
                 key: "properties",
                 type: "metadata",
