@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { map } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { Observable } from "rxjs";
@@ -30,7 +30,6 @@ import {
   MenuId,
 } from "../../../../app/+form/form-menu.service";
 import { ConfigService } from "../../../../app/services/config/config.service";
-import { PluginService } from "../../../../app/services/plugin/plugin.service";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { DocumentAbstract } from "../../../../app/store/document/document.model";
 
@@ -63,8 +62,6 @@ export class ConsolidateKeywordsPlugin extends Plugin {
     private dialog: MatDialog,
   ) {
     super();
-    inject(PluginService).registerPlugin(this);
-
     this.isPrivileged =
       configService.hasCatAdminRights() || configService.hasMdAdminRights();
   }
