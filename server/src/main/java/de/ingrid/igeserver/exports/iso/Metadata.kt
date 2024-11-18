@@ -267,7 +267,7 @@ data class SpecificFeatureAttribute(
 )
 
 data class MDGeoreferenceable(
-    val numberOfDimensions: MDInteger,
+    val numberOfDimensions: MDInteger?,
     val axisDimensionProperties: List<AxisDimensionProperty>,
     val cellGeometry: CellGeometry,
     val transformationParameterAvailability: MDBoolean,
@@ -279,7 +279,7 @@ data class MDGeoreferenceable(
 )
 
 data class MDGeorectified(
-    val numberOfDimensions: MDInteger,
+    val numberOfDimensions: MDInteger?,
     val axisDimensionProperties: List<AxisDimensionProperty>,
     val cellGeometry: CellGeometry,
     val transformationParameterAvailability: MDBoolean,
@@ -302,8 +302,8 @@ data class MDVectorSpatialRepresentation(
 )
 
 data class MDGridSpatialRepresentation(
-    val numberOfDimensions: MDInteger,
-    val axisDimensionProperties: List<AxisDimensionProperty>,
+    val numberOfDimensions: MDInteger?,
+    val axisDimensionProperties: List<AxisDimensionProperty>?,
     val cellGeometry: CellGeometry,
     val transformationParameterAvailability: MDBoolean,
 )
@@ -314,7 +314,7 @@ data class AxisDimensionProperty(
 
 data class MDDimension(
     val dimensionName: DimensionName,
-    val dimensionSize: MDInteger,
+    val dimensionSize: MDInteger?,
     val resolution: Scale?,
 )
 

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wemove.com/schemas/ingrid/schemes/hmdk/GeoDatasetSh",
+  "allOf": [
+    {
+      "$ref": "../geo-dataset-base.schema.json"
+    }
+  ],
+  "properties": {
+    "geometryContext": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "unevaluatedProperties": false,
+        "properties": {
+          "geometryType": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "featureType": {
+            "$ref": "../../../general.schema.json#/definitions/KeyValue"
+          },
+          "dataType": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "min": {
+            "type": ["null", "number"]
+          },
+          "max": {
+            "type": ["null", "number"]
+          },
+          "unit": {
+            "type": ["null", "string"]
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "$ref": "../../../general.schema.json#/definitions/KeyValue"
+            }
+          }
+        }
+      }
+    }
+  },
+  "unevaluatedProperties": false
+}

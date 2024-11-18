@@ -200,7 +200,7 @@ export class LeafletTypeComponent
         width: "90%",
         disableClose: true,
         maxWidth: 1260,
-        minWidth: 600,
+        minWidth: "min(600px, 100%)",
         data: {
           ...this.locations[locationIndex],
           limitTypes: this.props.limitTypes,

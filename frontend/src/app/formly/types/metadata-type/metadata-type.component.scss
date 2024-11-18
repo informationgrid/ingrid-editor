@@ -1,0 +1,35 @@
+@import "src/variables";
+
+.option-row {
+  gap: 16px;
+  overflow: auto;
+  padding-left: 1px; // needed for box-shadow of chips
+}
+
+mat-chip-listbox {
+  flex: 0 0 auto;
+}
+
+.connector {
+  line-height: 40px;
+  padding-left: 8px;
+}
+
+ige-metadata-type-short + button {
+  margin: 2px 0;
+}
+
+mat-chip-listbox {
+  mat-chip-option.mat-mdc-chip-selected {
+    background-color: $ige-mark-color !important;
+  }
+
+  button.small-icon-button {
+    box-shadow: 0 0 0 1px $ige-text-color;
+    opacity: 0.3;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}

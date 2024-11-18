@@ -104,7 +104,7 @@ export class FormularService {
     const getSectionItem = (item: FormlyFieldConfig) => {
       return item?.wrappers?.indexOf("section") >= 0
         ? [item]
-        : item.fieldGroup ?? [];
+        : (item.fieldGroup ?? []);
     };
 
     of(profile)

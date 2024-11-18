@@ -105,7 +105,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   private openWizard() {
     this.dialog
       .open(GetCapabilitiesDialogComponent, {
-        minWidth: 700,
+        minWidth: "min(700px, 100%)",
         maxWidth: "80vw",
         disableClose: true,
         hasBackdrop: true,

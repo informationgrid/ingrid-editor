@@ -1,3 +1,4 @@
+@import de.ingrid.igeserver.exporter.AddressModelTransformer
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.exporter.model.CharacterStringModel
 @import de.ingrid.igeserver.exporter.model.SpatialModel
@@ -11,6 +12,7 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.CrossReference
 @import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
 @import gg.jte.Content
+@import java.util.List
 
 @param IngridModelTransformer page
 @param Content contentInfo = null
@@ -495,11 +497,6 @@
             <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="${language}" />
         </gmd:language>
     @endfor
-    @if(TransformationTools.hasValue(page.getSystemEnvironment()))
-        <gmd:environmentDescription>
-            <gco:CharacterString>${page.getSystemEnvironment()}</gco:CharacterString>
-        </gmd:environmentDescription>
-    @endif
     @if(TransformationTools.hasValue(page.getDatasetCharacterSet()))
         <gmd:characterSet>
             <gmd:MD_CharacterSetCode
@@ -522,6 +519,11 @@
             <gco:CharacterString>${version}</gco:CharacterString>
         </srv:serviceTypeVersion>
     @endfor
+    @if(TransformationTools.hasValue(page.getSystemEnvironment()))
+        <gmd:environmentDescription>
+            <gco:CharacterString>${page.getSystemEnvironment()}</gco:CharacterString>
+        </gmd:environmentDescription>
+    @endif
     <${page.getExtentType()}>
     <gmd:EX_Extent>
         @if(TransformationTools.hasValue(spatial.getDescription()))
@@ -789,20 +791,49 @@ ${contentInfo}
                     </gmd:MD_Format>
                 </gmd:distributionFormat>
             @endif
-            @if(page.hasDistributorInfo())
+            @for( AddressModelTransformer distributor : page.getOrderInfoContact() )
+            <gmd:distributor>
+                <gmd:MD_Distributor>
+                    <gmd:distributorContact>
+                        @template.export.ingrid.idf.addresses(addresses = List.of(distributor))
+                        @if(page.getOrderInfoContact().isEmpty())
+                            <gmd:CI_ResponsibleParty>
+                                <gmd:role>
+                                    <gmd:CI_RoleCode
+                                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
+                                            codeListValue="distributor" />
+                                </gmd:role>
+                            </gmd:CI_ResponsibleParty>
+                        @endif
+                    </gmd:distributorContact>
+                    <gmd:distributionOrderProcess>
+                        <gmd:MD_StandardOrderProcess>
+                            @if(TransformationTools.hasValue(page.getData().getFees()))
+                                <gmd:fees>
+                                    <gco:CharacterString>${page.getData().getFees()}</gco:CharacterString>
+                                </gmd:fees>
+                            @endif
+                            @if(TransformationTools.hasValue(page.getData().getOrderInfo()))
+                                <gmd:orderingInstructions>
+                                    <gco:CharacterString>${page.getData().getOrderInfo()}</gco:CharacterString>
+                                </gmd:orderingInstructions>
+                            @endif
+                        </gmd:MD_StandardOrderProcess>
+                    </gmd:distributionOrderProcess>
+                </gmd:MD_Distributor>
+            </gmd:distributor>
+            @endfor
+            @if(page.getOrderInfoContact().isEmpty() && page.hasDistributorInfo())
                 <gmd:distributor>
                     <gmd:MD_Distributor>
                         <gmd:distributorContact>
-                            @template.export.ingrid.idf.addresses(addresses = page.getOrderInfoContact())
-                            @if(page.getOrderInfoContact().isEmpty())
-                                <gmd:CI_ResponsibleParty>
-                                    <gmd:role>
-                                        <gmd:CI_RoleCode
-                                                codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
-                                                codeListValue="distributor" />
-                                    </gmd:role>
-                                </gmd:CI_ResponsibleParty>
-                            @endif
+                            <gmd:CI_ResponsibleParty>
+                                <gmd:role>
+                                    <gmd:CI_RoleCode
+                                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
+                                            codeListValue="distributor" />
+                                </gmd:role>
+                            </gmd:CI_ResponsibleParty>
                         </gmd:distributorContact>
                         <gmd:distributionOrderProcess>
                             <gmd:MD_StandardOrderProcess>

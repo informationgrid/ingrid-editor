@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$ref": "#/definitions/McloudAddress",
   "definitions": {
     "McloudAddress": {
@@ -30,12 +30,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "_uuid",
-        "_type",
-        "organization",
-        "contact"
-      ],
+      "required": ["_uuid", "_type", "organization", "contact"],
       "title": "Address"
     },
     "Contact": {
@@ -49,10 +44,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "connection",
-        "type"
-      ],
+      "required": ["connection", "type"],
       "title": "Contact"
     },
     "KeyValue": {
@@ -60,16 +52,10 @@
       "additionalProperties": false,
       "properties": {
         "key": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "value": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         }
       },
       "title": "KeyValue"

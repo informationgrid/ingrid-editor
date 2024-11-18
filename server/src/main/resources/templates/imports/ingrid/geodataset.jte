@@ -6,11 +6,14 @@
 @param Content additionalKeywords = null
 @param Content additionalResource = null
 @param Content additionalLineageSource = null
-
+@param Content additionalProperties = null
 {
-    @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource)
+    @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource, @`
+        ,
+        @if(model.isInspireIdentified())"isInspireIdentified": "notConform",@endif
+        "subType": @template.imports.ingrid.partial.key-value(item = model.getSubtype())${additionalProperties}
+    `)
     "invekosKeywords": @template.imports.ingrid.partial.key-values(list = model.getInVeKoSKeywords()),
-    "subType": @template.imports.ingrid.partial.key-value(item = model.getSubtype()),
     "metadata": {
         "language": @template.imports.ingrid.partial.key-value(item = model.getLanguage()),
         "characterSet": @template.imports.ingrid.partial.key-value(item = model.getCharacterSet())
@@ -92,7 +95,6 @@
         @endfor
         ]
     },
-    "isInspireConform": false,
     "vectorSpatialRepresentation": [
     @for(var vector : ForSupport.of(model.getVectorSpatialRepresentation()))
         {
@@ -116,7 +118,9 @@
         @endfor
         ],
         "transformationParameterAvailability": ${gridSpatial.getTransformationParameterAvailability()},
+        @if (gridSpatial.getNumberOfDimensions() != null)
         "numberOfDimensions": ${gridSpatial.getNumberOfDimensions()},
+        @endif
         "cellGeometry": @template.imports.ingrid.partial.key-value(item = gridSpatial.getCellGeometry())
         @if (gridSpatial.getType() != null && gridSpatial.getType().getKey().equals("rectified"))
         , "georectified": {

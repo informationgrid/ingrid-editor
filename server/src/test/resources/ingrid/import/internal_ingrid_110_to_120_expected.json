@@ -1,0 +1,535 @@
+[
+  [
+    {
+      "themes": [
+        {
+          "key": "313"
+        }
+      ],
+      "dataset": {
+        "languages": ["150"]
+      },
+      "lineage": {
+        "statement": "Freie fachliche Grundlage"
+      },
+      "spatial": {
+        "references": [
+          {
+            "type": "free",
+            "title": "Deutschland (administrative)",
+            "value": {
+              "lat1": 47.2701114,
+              "lat2": 55.099161,
+              "lon1": 5.8663153,
+              "lon2": 15.0419309
+            }
+          }
+        ],
+        "spatialSystems": [
+          {
+            "key": "84"
+          }
+        ],
+        "verticalExtent": {
+          "unitOfMeasure": null
+        }
+      },
+      "keywords": {
+        "free": [
+          {
+            "label": "Quatsch"
+          },
+          {
+            "label": "Laut"
+          },
+          {
+            "label": "Liebe"
+          }
+        ],
+        "gemet": [
+          {
+            "id": "http://www.eionet.europa.eu/gemet/concept/9128",
+            "label": "Abwasserabgabe",
+            "alternativeLabel": null
+          },
+          {
+            "id": "http://www.eionet.europa.eu/gemet/concept/245",
+            "label": "Luft",
+            "alternativeLabel": null
+          }
+        ],
+        "umthes": [
+          {
+            "id": "https://sns.uba.de/umthes/TH_00013195",
+            "label": "Impulslärm",
+            "alternativeLabel": null
+          },
+          {
+            "id": "https://sns.uba.de/umthes/DW_00022480",
+            "label": "Wasser",
+            "alternativeLabel": null
+          },
+          {
+            "id": "https://sns.uba.de/umthes/TH_00010461",
+            "label": "Garten",
+            "alternativeLabel": null
+          }
+        ]
+      },
+      "metadata": {
+        "language": {
+          "key": "150"
+        },
+        "characterSet": null
+      },
+      "resource": {
+        "useConstraints": [
+          {
+            "title": {
+              "key": "10"
+            }
+          }
+        ],
+        "accessConstraints": [
+          {
+            "key": "6"
+          }
+        ]
+      },
+      "temporal": {
+        "events": [
+          {
+            "referenceDate": "2022-12-31T23:00:00.000Z",
+            "referenceDateType": {
+              "key": "1"
+            }
+          },
+          {
+            "referenceDate": "2023-02-01T23:00:00.000Z",
+            "referenceDateType": {
+              "key": "3"
+            }
+          },
+          {
+            "referenceDate": "2023-03-02T23:00:00.000Z",
+            "referenceDateType": {
+              "key": "2"
+            }
+          }
+        ],
+        "status": null,
+        "resourceDate": null,
+        "resourceDateType": null
+      },
+      "extraInfo": {
+        "legalBasicsDescriptions": []
+      },
+      "qualities": [],
+      "identifier": "17278294-1c5b-4d68-ae56-3229f0559c4f",
+      "references": [
+        {
+          "url": "https://www.darmstadt.de",
+          "type": {
+            "key": "9990"
+          },
+          "title": "Datendownload",
+          "explanation": "Dramatischer Datendownload"
+        }
+      ],
+      "resolution": [],
+      "dataQuality": {
+        "completenessOmission": {}
+      },
+      "description": "Beste Beschreibung",
+      "distribution": {
+        "format": [
+          {
+            "name": {
+              "key": "2"
+            }
+          }
+        ]
+      },
+      "spatialScope": {
+        "key": "885989663"
+      },
+      "alternateTitle": "Kurzbezeichnung",
+      "pointOfContact": [
+        {
+          "ref": "0b114942-db3b-4a99-bd22-8990d8a69fc5",
+          "type": {
+            "key": "12"
+          }
+        },
+        {
+          "ref": "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
+          "type": {
+            "key": "7"
+          }
+        },
+        {
+          "ref": "f786219a-ec64-46ae-bac0-d7228f1bb0b2",
+          "type": {
+            "key": "5"
+          }
+        }
+      ],
+      "dataQualityInfo": {
+        "lineage": {
+          "source": {
+            "processStep": {
+              "description": []
+            },
+            "descriptions": []
+          }
+        }
+      },
+      "invekosKeywords": [],
+      "topicCategories": [
+        {
+          "key": "13"
+        },
+        {
+          "key": "4"
+        }
+      ],
+      "advProductGroups": [],
+      "graphicOverviews": [
+        {
+          "fileName": {
+            "uri": "akustikbild-ISS_17422_00289.jpg",
+            "value": "akustikbild-ISS_17422_00289.jpg",
+            "asLink": false
+          }
+        },
+        {
+          "fileName": {
+            "uri": "http://tollesbild.de",
+            "value": "http://tollesbild.de",
+            "asLink": true
+          },
+          "fileDescription": "tolles bild"
+        }
+      ],
+      "parentIdentifier": "identifikator-übergeordneter-metadatensatz",
+      "priorityDatasets": [],
+      "conformanceResult": [
+        {
+          "pass": {
+            "key": "1"
+          },
+          "isInspire": true,
+          "specification": {
+            "key": "12"
+          },
+          "publicationDate": "2010-12-08T00:00:00.000Z"
+        }
+      ],
+      "openDataCategories": [
+        {
+          "key": "3"
+        }
+      ],
+      "digitalTransferOptions": [],
+      "maintenanceInformation": {
+        "maintenanceAndUpdateFrequency": null,
+        "userDefinedMaintenanceFrequency": {
+          "unit": null
+        }
+      },
+      "portrayalCatalogueInfo": {
+        "citation": []
+      },
+      "spatialRepresentationType": [
+        {
+          "key": "5"
+        }
+      ],
+      "featureCatalogueDescription": {
+        "citation": [],
+        "featureTypes": []
+      },
+      "absoluteExternalPositionalAccuracy": {},
+      "title": "open data UND inspire",
+      "_uuid": "cf8a837e-f673-4d80-badf-62df5a007850",
+      "_type": "InGridGeoDataset",
+      "properties": {
+        "isOpenData": true,
+        "isInspireIdentified": "conform",
+        "invekos": {
+          "key": "gsaa"
+        },
+        "subType": {
+          "key": "5"
+        }
+      }
+    },
+    {
+      "themes": [
+        {
+          "key": "313"
+        }
+      ],
+      "dataset": {
+        "languages": ["150"]
+      },
+      "lineage": {
+        "statement": "Freie fachliche Grundlage"
+      },
+      "spatial": {
+        "references": [
+          {
+            "type": "free",
+            "title": "Deutschland (administrative)",
+            "value": {
+              "lat1": 47.2701114,
+              "lat2": 55.099161,
+              "lon1": 5.8663153,
+              "lon2": 15.0419309
+            }
+          }
+        ],
+        "spatialSystems": [
+          {
+            "key": "84"
+          }
+        ],
+        "verticalExtent": {
+          "unitOfMeasure": null
+        }
+      },
+      "keywords": {
+        "free": [
+          {
+            "label": "Quatsch"
+          },
+          {
+            "label": "Laut"
+          },
+          {
+            "label": "Liebe"
+          }
+        ],
+        "gemet": [
+          {
+            "id": "http://www.eionet.europa.eu/gemet/concept/9128",
+            "label": "Abwasserabgabe",
+            "alternativeLabel": null
+          },
+          {
+            "id": "http://www.eionet.europa.eu/gemet/concept/245",
+            "label": "Luft",
+            "alternativeLabel": null
+          }
+        ],
+        "umthes": [
+          {
+            "id": "https://sns.uba.de/umthes/TH_00013195",
+            "label": "Impulslärm",
+            "alternativeLabel": null
+          },
+          {
+            "id": "https://sns.uba.de/umthes/DW_00022480",
+            "label": "Wasser",
+            "alternativeLabel": null
+          },
+          {
+            "id": "https://sns.uba.de/umthes/TH_00010461",
+            "label": "Garten",
+            "alternativeLabel": null
+          }
+        ]
+      },
+      "metadata": {
+        "language": {
+          "key": "150"
+        },
+        "characterSet": null
+      },
+      "resource": {
+        "useConstraints": [
+          {
+            "title": {
+              "key": "10"
+            }
+          }
+        ],
+        "accessConstraints": [
+          {
+            "key": "6"
+          }
+        ]
+      },
+      "temporal": {
+        "events": [
+          {
+            "referenceDate": "2022-12-31T23:00:00.000Z",
+            "referenceDateType": {
+              "key": "1"
+            }
+          },
+          {
+            "referenceDate": "2023-02-01T23:00:00.000Z",
+            "referenceDateType": {
+              "key": "3"
+            }
+          },
+          {
+            "referenceDate": "2023-03-02T23:00:00.000Z",
+            "referenceDateType": {
+              "key": "2"
+            }
+          }
+        ],
+        "status": null,
+        "resourceDate": null,
+        "resourceDateType": null
+      },
+      "extraInfo": {
+        "legalBasicsDescriptions": []
+      },
+      "qualities": [
+        {
+          "_type": "topologicalConsistency",
+          "value": 3434,
+          "parameter": "dsfsdfsdfdsf",
+          "measureType": {
+            "key": null,
+            "value": "sdfdsf"
+          }
+        }
+      ],
+      "identifier": "17278294-1c5b-4d68-ae56-3229f0559c4f",
+      "references": [
+        {
+          "url": "https://www.darmstadt.de",
+          "type": {
+            "key": "9990"
+          },
+          "title": "Datendownload",
+          "explanation": "Dramatischer Datendownload"
+        }
+      ],
+      "resolution": [],
+      "dataQuality": {
+        "completenessOmission": {}
+      },
+      "description": "Beste Beschreibung",
+      "distribution": {
+        "format": [
+          {
+            "name": {
+              "key": "2"
+            }
+          }
+        ]
+      },
+      "spatialScope": {
+        "key": "885989663"
+      },
+      "hvdCategories": [],
+      "alternateTitle": "Kurzbezeichnung",
+      "pointOfContact": [
+        {
+          "ref": "0b114942-db3b-4a99-bd22-8990d8a69fc5",
+          "type": {
+            "key": "12"
+          }
+        },
+        {
+          "ref": "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
+          "type": {
+            "key": "7"
+          }
+        }
+      ],
+      "dataQualityInfo": {
+        "lineage": {
+          "source": {
+            "processStep": {
+              "description": []
+            },
+            "descriptions": []
+          }
+        }
+      },
+      "topicCategories": [
+        {
+          "key": "13"
+        },
+        {
+          "key": "4"
+        }
+      ],
+      "advProductGroups": [],
+      "graphicOverviews": [
+        {
+          "fileName": {
+            "uri": "akustikbild-ISS_17422_00289.jpg",
+            "value": "akustikbild-ISS_17422_00289.jpg",
+            "asLink": false
+          }
+        },
+        {
+          "fileName": {
+            "uri": "http://tollesbild.de",
+            "value": "http://tollesbild.de",
+            "asLink": true
+          },
+          "fileDescription": "tolles bild"
+        }
+      ],
+      "parentIdentifier": "identifikator-übergeordneter-metadatensatz",
+      "priorityDatasets": [],
+      "conformanceResult": [
+        {
+          "pass": {
+            "key": "1"
+          },
+          "isInspire": true,
+          "specification": {
+            "key": "12"
+          },
+          "publicationDate": "2010-12-08T00:00:00.000Z"
+        }
+      ],
+      "openDataCategories": [
+        {
+          "key": "3"
+        }
+      ],
+      "digitalTransferOptions": [],
+      "maintenanceInformation": {
+        "maintenanceAndUpdateFrequency": null,
+        "userDefinedMaintenanceFrequency": {
+          "unit": null
+        }
+      },
+      "portrayalCatalogueInfo": {
+        "citation": []
+      },
+      "spatialRepresentationType": [
+        {
+          "key": "5"
+        }
+      ],
+      "featureCatalogueDescription": {
+        "citation": [],
+        "featureTypes": []
+      },
+      "absoluteExternalPositionalAccuracy": {},
+      "title": "open data UND inspire",
+      "_uuid": "cf8a837e-f673-4d80-badf-62df5a007850",
+      "_type": "InGridGeoDataset",
+      "properties": {
+        "isOpenData": true,
+        "isAdVCompatible": true,
+        "isInspireIdentified": "conform",
+        "subType": {
+          "key": "5"
+        },
+        "isHvd": true
+      }
+    }
+  ]
+]

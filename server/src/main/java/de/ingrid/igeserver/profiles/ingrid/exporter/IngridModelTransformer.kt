@@ -56,6 +56,7 @@ import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.Config
+import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.kotlin.util.suffixIfNot
 import org.unbescape.json.JsonEscape
 import java.text.SimpleDateFormat
@@ -353,7 +354,7 @@ open class IngridModelTransformer(
 
     open fun getFreeKeywords(): Thesaurus {
         // if openData checkbox is checked, and keyword not already added, add "opendata"
-        if (data.isOpenData == true && freeKeywordsThesaurus.keywords.none { it.name == "opendata" }) {
+        if (data.properties?.isOpenData == true && freeKeywordsThesaurus.keywords.none { it.name == "opendata" }) {
             freeKeywordsThesaurus.keywords += listOf(KeywordIso("opendata"))
         }
         return freeKeywordsThesaurus
@@ -470,9 +471,9 @@ open class IngridModelTransformer(
     private fun mapHVDKeyword(key: String): String = hvdKeywordMapping[key] ?: key
 
     val advCompatibleKeyword =
-        if (data.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()
+        if (data.properties?.isAdVCompatible == true) Thesaurus(keywords = listOf(KeywordIso("AdVMIS"))) else Thesaurus()
     val inspireRelevantKeyword =
-        if (data.isInspireIdentified == true) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
+        if (data.properties?.isInspireIdentified != null) Thesaurus(keywords = listOf(KeywordIso("inspireidentifiziert"))) else Thesaurus()
 
     open fun getKeywordsAsList(): List<String> {
         val allKeywords = listOf(
@@ -766,7 +767,7 @@ open class IngridModelTransformer(
             data.pointOfContact?.filter { addressIsDistributor(it) }?.mapNotNull { toAddressModelTransformer(it) }
                 ?: emptyList()
 
-        atomDownloadURL = catalog.settings.config.atomDownloadUrl + model.uuid
+        atomDownloadURL = (catalog.settings.config.atomDownloadUrl ?: "") + model.uuid
 
         operations = data.service.operations?.map {
             DisplayOperation(
@@ -860,7 +861,16 @@ open class IngridModelTransformer(
 
     private fun getExternalCoupledResources(): List<ServiceUrl> = model.data.service.coupledResources
         ?.filter { it.isExternalRef }
-        ?.map { ServiceUrl(it.title ?: "", it.url ?: throw ServerException.withReason("External coupled resource URL is NULL"), null) } ?: emptyList()
+        ?.map {
+            ServiceUrl(
+                it.title ?: "",
+                it.url ?: throw ServerException.withReason("External coupled resource URL is NULL"),
+                null,
+                applicationProfile = "coupled",
+                // = "Gekoppelte Daten"/"Coupled Data"
+                attachedToField = AttachedField("2000", "3600", codelists.getValue("2000", KeyValue("3600", null))!!),
+            )
+        } ?: emptyList()
 
     private fun getIncomingReferencesProxy(excludeSubordinate: Boolean = false): List<CrossReference> {
         if (incomingReferencesCache == null) {
@@ -1026,6 +1036,7 @@ open class IngridModelTransformer(
     fun hasDistributionInfo(): Boolean = digitalTransferOptions.isNotEmpty() ||
         distributionFormats.isNotEmpty() ||
         hasDistributorInfo() ||
+        orderInfoContact.isNotEmpty() ||
         !data.references.isNullOrEmpty() ||
         !data.fileReferences.isNullOrEmpty() ||
         isAtomDownload ||
@@ -1044,6 +1055,8 @@ open class IngridModelTransformer(
     private fun isCapabilitiesEntry(op: Operation): Boolean = op.name?.key == "1" || op.name?.value == "GetCapabilities"
 
     open val mapLinkUrl: String? = null
+
+    fun getSortHash(): String = DigestUtils.sha1Hex(model.title)
 }
 
 enum class CoordinateType { Lat1, Lat2, Lon1, Lon2 }

@@ -37,6 +37,7 @@ import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExp
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.features.ogc_api_records.model.LimitAndOffset
 import de.ingrid.igeserver.features.ogc_api_records.model.Link
+import de.ingrid.igeserver.features.ogc_api_records.model.MoveRecordsDTO
 import de.ingrid.igeserver.features.ogc_api_records.model.RecordCollection
 import de.ingrid.igeserver.features.ogc_api_records.model.RecordsResponse
 import de.ingrid.igeserver.imports.ImportService
@@ -48,6 +49,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportResult
 import de.ingrid.igeserver.services.ExportService
+import de.ingrid.igeserver.utils.getBoolean
 import org.keycloak.util.JsonSerialization
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -215,19 +217,14 @@ class OgcRecordService(
             var jsonData: JsonNode = jacksonObjectMapper().readValue(docData, JsonNode::class.java)
             // wrap data in array if single dataset without array
             jsonData = if (jsonData[0] == null) jacksonObjectMapper().createArrayNode().add(jsonData) else jsonData
-            // check json format
-            val jsonFormat = if (jsonData[0].get("properties") == null) "internal" else "geojson"
-
             for (doc in jsonData) {
-                if (jsonFormat == "internal") {
-                    val internalDoc = internalExporter.addExportWrapper(collectionId, doc, null)
-                    documents.add(internalDoc.toString())
+                val document = if (jsonData[0].getBoolean("isGeojson") == true) {
+                    doc.get("properties")
+                } else {
+                    doc
                 }
-                if (jsonFormat == "geojson") {
-                    val relevantNode = doc.get("properties")
-                    val geoJsonDoc = internalExporter.addExportWrapper(collectionId, relevantNode, null)
-                    documents.add(geoJsonDoc.toString())
-                }
+                val docWithWrapper = internalExporter.addExportWrapper(collectionId, document, null)
+                documents.add(docWithWrapper.toString())
             }
         }
         return documents
@@ -580,5 +577,26 @@ class OgcRecordService(
         }
 
         return xmlNodeToString(doc)
+    }
+
+    @Transactional
+    fun moveRecords(collectionId: String, data: List<MoveRecordsDTO>) {
+        for (moveAction in data) {
+            if (moveAction.recordId.isBlank()) throw ClientException.withReason("Failed to move records to folder: Missing recordId.")
+            val recordId = moveAction.recordId
+            val folderId = moveAction.folderId
+            val recordWrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
+            val folderWrapper = if (folderId == "" || folderId == null) null else documentService.getWrapperByCatalogAndDocumentUuid(collectionId, folderId)
+            val folderWrapperId = if (folderWrapper == null) {
+                null
+            } else if (folderWrapper.type != "FOLDER") {
+                throw ClientException.withReason("Failed to move records to folder: folderId '$folderId' is of type '${folderWrapper.type}'. The folderId must represent a FOLDER.")
+            } else if (folderWrapper.category != recordWrapper.category) {
+                throw ClientException.withReason("Failed to move records to folder: folderId '$folderId' has category '${folderWrapper.category}' and recordId '$recordId' has category '${recordWrapper.category}'.")
+            } else {
+                folderWrapper.id
+            }
+            documentService.updateParent(collectionId, recordWrapper.id!!, folderWrapperId)
+        }
     }
 }

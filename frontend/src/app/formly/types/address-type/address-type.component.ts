@@ -221,7 +221,6 @@ export class AddressTypeComponent
     if (foundAddresses) {
       return this.dialog
         .open(ChooseAddressDialogComponent, {
-          minWidth: 500,
           data: <ChooseAddressDialogData>{
             address: address,
             allowedTypes: this.props.allowedTypes,
@@ -272,7 +271,12 @@ export class AddressTypeComponent
   private getPlaceholderAddresses(length: number): ResolvedAddressWithType[] {
     const placeholder: ResolvedAddressWithType[] = [];
     for (let i = 0; i < length; i++) {
-      placeholder.push({ type: null, address: null, error: null });
+      placeholder.push({
+        type: null,
+        address: null,
+        error: null,
+        isPlaceholder: true,
+      });
     }
     return placeholder;
   }

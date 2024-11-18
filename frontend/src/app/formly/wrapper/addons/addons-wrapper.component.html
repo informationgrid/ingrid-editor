@@ -2,7 +2,7 @@
     @if (props.addonLeft) {
         <span
             [ngStyle]="{
-                cursor: props.addonLeft?.onClick ? 'pointer' : 'inherit'
+                cursor: props.addonLeft?.onClick ? 'pointer' : 'inherit',
             }"
             (click)="addonLeftClick($event)"
         >
@@ -32,7 +32,7 @@
     @if (props.addonRight && !props.addonRight.isButton) {
         <span
             [ngStyle]="{
-                cursor: props.addonRight.onClick ? 'pointer' : 'inherit'
+                cursor: props.addonRight.onClick ? 'pointer' : 'inherit',
             }"
             (click)="addonRightClick($event)"
         >

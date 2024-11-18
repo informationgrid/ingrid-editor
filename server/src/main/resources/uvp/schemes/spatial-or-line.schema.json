@@ -1,6 +1,6 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "SpatialOrLine#1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "SpatialOrLine",
   "$ref": "#/definitions/SpatialOrLine",
   "definitions": {
     "SpatialOrLine": {

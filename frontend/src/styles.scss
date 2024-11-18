@@ -616,6 +616,10 @@ ige-one-column-wrapper formly-group {
   gap: 6px;
 }
 
+.gap-8 {
+  gap: 8px;
+}
+
 .gap-12 {
   gap: 12px;
 }
@@ -916,11 +920,6 @@ ige-context-help .mat-mdc-dialog-content {
 }
 
 // Icons
-/*.infoIcon {
-  .mat-icon svg rect {
-    fill: $ige-secondary;
-  }
-}*/
 
 mat-icon.mark-color .coloring {
   fill: $ige-check-color;
@@ -1211,12 +1210,15 @@ mat-icon.wide-icon-26px {
   span {
     padding: 10px 0;
   }
+}
+.infoIcon {
+  background-color: white;
+  margin-right: 15px;
+  height: 24px;
+  border-radius: 50%;
 
-  .infoIcon {
-    background-color: white;
-    margin-right: 15px;
-    height: 24px;
-    border-radius: 50%;
+  &.gray {
+    background-color: $ige-background;
   }
 }
 
@@ -1380,4 +1382,50 @@ table.big-font {
 .longtext-no-wrap {
   white-space: nowrap; /* Prevent text from wrapping */
   overflow: hidden; /* Hide any overflow text */
+}
+
+.rectangular-chips mat-chip-option,
+.rectangular-chips mat-chip {
+  border-radius: 4px;
+
+  &.mat-mdc-chip-selected {
+    background-color: #eef7fe !important;
+    box-shadow: 0 0 0 1px #7ea9ca;
+
+    .mdc-evolution-chip__text-label {
+      color: #000000 !important;
+    }
+  }
+}
+
+.small-icon-button {
+  width: 20px !important;
+  height: 20px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .mat-mdc-button-touch-target {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
+
+.dynamic-height-list-item {
+  .mat-mdc-list-item {
+    height: auto !important;
+  }
+
+  .mdc-list-item__primary-text::before,
+  .mdc-list-item__content::after {
+    content: "";
+    height: 10px !important;
+    display: block !important;
+  }
 }

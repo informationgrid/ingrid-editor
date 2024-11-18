@@ -23,15 +23,17 @@ import { inject, Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { generateUUID } from "../../../app/services/utils";
-import { UploadService } from "../../../app/shared/upload/upload.service";
 import { map } from "rxjs/operators";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
+import {
+  MetadataOption,
+  MetadataOptionItem,
+} from "../../../app/formly/types/metadata-type/metadata-type.component";
 
 @Injectable({
   providedIn: "root",
 })
 export class GeoDatasetDoctype extends IngridShared {
-  private uploadService = inject(UploadService);
   protected codelistQuery = inject(CodelistQuery);
 
   id = "InGridGeoDataset";
@@ -59,6 +61,7 @@ export class GeoDatasetDoctype extends IngridShared {
     },
   };
 
+  showInspireRelevant = true;
   showInspireConform = true;
   showHVD = true;
   showAdVCompatible = true;
@@ -73,9 +76,39 @@ export class GeoDatasetDoctype extends IngridShared {
     this.options.required.useConstraints = true;
     this.options.required.extraInfoLangData = true;
     this.options.dynamicRequired.dataFormat =
-      "formState.mainModel?.isInspireIdentified";
+      "formState.mainModel?.properties?.isInspireIdentified";
     this.options.dynamicRequired.spatialScope =
-      "formState.mainModel?.isInspireIdentified";
+      "formState.mainModel?.properties?.isInspireIdentified";
+  }
+
+  protected metadataOptions(): MetadataOption[] {
+    return [
+      {
+        label: "Datentyp",
+        contextHelpKey: "subType",
+        required: this.geodatasetOptions.required.subType,
+        typeOptions: [
+          {
+            multiple: false,
+            key: "subType",
+            codelistId: "525",
+            // TODO: try to only use codelistId, since codelist mapping also happens
+            //       in metadata-type-short component, where it's needed for print preview
+            asyncItems: this.getCodelistForSelect("525", "subType").pipe(
+              map((items) => {
+                return items.map((item) => {
+                  return <MetadataOptionItem>{
+                    label: item.label,
+                    value: { key: item.value },
+                  };
+                });
+              }),
+            ),
+          },
+        ],
+      },
+      ...super.metadataOptions(),
+    ];
   }
 
   documentFields = () => {
@@ -83,13 +116,13 @@ export class GeoDatasetDoctype extends IngridShared {
 
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection({
-        inspireRelevant: true,
         thesaurusTopics: true,
-        additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
+        // TODO AW: activate subType only from geodataset
+        /*additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
           required: this.geodatasetOptions.required.subType,
           options: this.getCodelistForSelect("525", "subType"),
           codelistId: "525",
-        }),
+        }),*/
       }),
       this.addKeywordsSection({
         priorityDataset: true,
@@ -144,7 +177,8 @@ export class GeoDatasetDoctype extends IngridShared {
             ),
             codelistId: "526",
             expressions: {
-              "props.required": "formState.mainModel?.isInspireConform",
+              "props.required":
+                "formState.mainModel?.properties?.isInspireIdentified === 'conform'",
               className: "field.props.required ? '' : 'optional'",
             },
           },
@@ -175,7 +209,7 @@ export class GeoDatasetDoctype extends IngridShared {
         }),
         this.addGroup(
           "gridSpatialRepresentation",
-          "Raster/Gridformat",
+          "Raster-/Gridformat",
           [
             this.addSelectInline("type", "Typ", {
               defaultValue: { key: "basis" },
@@ -533,87 +567,7 @@ export class GeoDatasetDoctype extends IngridShared {
       }),
       this.addAvailabilitySection(),
       this.addLinksSection(),
-      this.addSection("Dateien", [
-        this.addRepeatDistributionDetailList("fileReferences", "Dateien", {
-          required: false,
-          supportLink: false,
-          enableFileUploadOverride: false,
-          enableFileUploadReuse: false,
-          backendUrl: this.configService.getConfiguration().backendUrl,
-          infoText:
-            "Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten.",
-          jsonTemplate: {
-            format: { key: null },
-            title: "",
-            description: "",
-          },
-          fields: [
-            this.addGroupSimple(null, [
-              { key: "_title" },
-              this.addInputInline("title", "Titel", {
-                contextHelpId: "distribution_title",
-                hasInlineContextHelp: true,
-                wrappers: ["inline-help", "form-field"],
-              }),
-              {
-                key: "link",
-                type: "upload",
-                label: "Link",
-                class: "flex-2",
-                wrappers: ["form-field", "inline-help"],
-                props: {
-                  label: "Link",
-                  appearance: "outline",
-                  required: true,
-                  hasInlineContextHelp: true,
-                  contextHelpId: "distribution_upload",
-                  validators: {
-                    validation: ["url"],
-                  },
-                  onClick: (docUuid, uri, $event) => {
-                    this.uploadService.downloadFile(docUuid, uri, $event);
-                  },
-                },
-                expressions: {
-                  "props.label": (field) =>
-                    field.formControl.value?.asLink
-                      ? "URL (Link)"
-                      : "Dateiname (Upload)",
-                },
-              },
-              this.addAutoCompleteInline("format", "Format", {
-                required: true,
-                options: this.getCodelistForSelect(
-                  this.codelistIds.fileReferenceFormat,
-                  "fileReferenceFormat",
-                ),
-                codelistId: this.codelistIds.fileReferenceFormat,
-                wrappers: ["inline-help", "form-field"],
-                hasInlineContextHelp: true,
-              }),
-              this.addTextAreaInline("description", "Beschreibung", "ingrid", {
-                wrappers: ["form-field", "inline-help"],
-                hasInlineContextHelp: true,
-                contextHelpId: "distribution_description",
-              }),
-            ]),
-          ],
-          validators: {
-            requiredFormat: {
-              expression: (ctrl) => {
-                if (!ctrl.value || ctrl.value.length === 0) {
-                  return true;
-                }
-                return ctrl.value?.every(
-                  (entry) => entry?.format?.key || entry?.format.value,
-                );
-              },
-              message:
-                "Fehler: Es muss für jedes Dokument ein Format angegeben werden (Dokument bearbeiten).",
-            },
-          },
-        }),
-      ]),
+      this.addFileReferences(),
     ];
 
     return this.manipulateDocumentFields(fields);

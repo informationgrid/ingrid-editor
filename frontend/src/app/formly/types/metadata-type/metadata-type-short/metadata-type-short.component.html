@@ -1,0 +1,17 @@
+<div class="flex-row gap-12">
+    <mat-chip-listbox [hideSingleSelectionIndicator]="true">
+        @for (option of filteredOptions(); track option) {
+            @let asyncOptions = option | async;
+            @if (asyncOptions !== null) {
+                @for (option of asyncOptions; track option.id) {
+                    <mat-chip-option
+                        [selected]="true"
+                        [selectable]="false"
+                        [attr.data-cy]="option.id"
+                        >{{ option.label }}</mat-chip-option
+                    >
+                }
+            }
+        }
+    </mat-chip-listbox>
+</div>

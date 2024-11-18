@@ -22,6 +22,7 @@ import {
   HostListener,
   Inject,
   OnInit,
+  signal,
   ViewContainerRef,
 } from "@angular/core";
 import { MatIconRegistry } from "@angular/material/icon";
@@ -29,7 +30,7 @@ import { DomSanitizer, Title } from "@angular/platform-browser";
 import { BehaviourService } from "./services/behavior/behaviour.service";
 import { CodelistService } from "./services/codelist/codelist.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { throttleTime } from "rxjs/operators";
+import { map, throttleTime } from "rxjs/operators";
 import { AuthenticationFactory } from "./security/auth.factory";
 import { combineLatest, Subject } from "rxjs";
 import { ConfigService } from "./services/config/config.service";
@@ -45,6 +46,7 @@ import {
 } from "@angular/material/sidenav";
 import { SideMenuComponent } from "./side-menu/side-menu.component";
 import { MainHeaderComponent } from "./main-header/main-header.component";
+import { SectionSkipperComponent } from "./section-skipper/section-skipper.component";
 
 @UntilDestroy()
 @Component({
@@ -59,6 +61,7 @@ import { MainHeaderComponent } from "./main-header/main-header.component";
     RouterOutlet,
     MatDrawer,
     MatDrawerContent,
+    SectionSkipperComponent,
   ],
 })
 export class AppComponent implements OnInit {
@@ -67,6 +70,7 @@ export class AppComponent implements OnInit {
   showTestBadge: boolean;
 
   isLoggingout = false;
+  userHasCatalog = signal<boolean>(false);
 
   constructor(
     private behaviourService: BehaviourService /*for initialization!*/,
@@ -96,6 +100,9 @@ export class AppComponent implements OnInit {
       this.configService.getConfiguration().featureFlags?.showTestBadge;
     if (this.showTestBadge)
       titleService.setTitle(titleService.getTitle() + " TEST");
+    this.configService.$userInfo
+      .pipe(map((info) => ProfileService.userHasAnyCatalog(info)))
+      .subscribe((isAssigned) => this.userHasCatalog.set(isAssigned));
   }
 
   private loadIcons() {
@@ -133,6 +140,8 @@ export class AppComponent implements OnInit {
   }
 
   private initProfile() {
+    // the profile can be undefined if the user has no catalog assigned
+    if (this.configService.profileModule === undefined) return;
     this.viewContainerRef.createComponent(this.configService.profileModule);
   }
 

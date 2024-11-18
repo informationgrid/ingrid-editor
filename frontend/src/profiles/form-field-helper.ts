@@ -455,7 +455,7 @@ export class FormFieldHelper {
       type: "repeat",
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
-      defaultValue: options?.required ? options?.defaultValue ?? [{}] : null,
+      defaultValue: options?.required ? (options?.defaultValue ?? [{}]) : null,
       props: {
         externalLabel: label,
         required: options?.required,
@@ -478,7 +478,7 @@ export class FormFieldHelper {
     };
   }
 
-  addAutocomplete(id, label, options?: AutocompleteOptions) {
+  addAutocomplete(id, label, options?: AutocompleteOptions): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
@@ -486,6 +486,7 @@ export class FormFieldHelper {
       className: options?.className,
       wrappers: options?.wrappers ?? ["panel", "form-field"],
       expressions: expressions,
+      defaultValue: options?.defaultValue ?? undefined,
       props: {
         externalLabel: label,
         label: options?.fieldLabel,

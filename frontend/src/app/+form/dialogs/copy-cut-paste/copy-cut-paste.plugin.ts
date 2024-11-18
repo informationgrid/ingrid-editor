@@ -266,7 +266,7 @@ export class CopyCutPastePlugin extends Plugin {
   showDialog(title: string): Observable<any> {
     return this.dialog
       .open(PasteDialogComponent, {
-        minWidth: "400px",
+        minWidth: "min(400px, 100%)",
         maxWidth: "600px",
         hasBackdrop: true,
         data: {

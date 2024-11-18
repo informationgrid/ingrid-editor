@@ -219,7 +219,7 @@ export class TableTypeComponent
     this.dialog
       .open(this.props.dialog ?? FormDialogComponent, {
         hasBackdrop: true,
-        minWidth: 600,
+        minWidth: "min(600px, 100%)",
         data: {
           fields: this.props.columns.filter((column) => !column.hidden),
           model: newEntry
@@ -328,24 +328,23 @@ export class TableTypeComponent
 
     this.props.columns
       .filter((column) => column.props?.formatter)
-      .forEach(
-        (column) =>
-          value?.forEach((row, index) => {
-            this.formattedCell.push({});
-            this.formattedCell[index][column.key] = column.props.formatter(
-              value[index][column.key],
-              this.form,
-              value[index],
-              column,
-            );
-          }),
+      .forEach((column) =>
+        value?.forEach((row, index) => {
+          this.formattedCell.push({});
+          this.formattedCell[index][column.key] = column.props.formatter(
+            value[index][column.key],
+            this.form,
+            value[index],
+            column,
+          );
+        }),
       );
   }
 
   showUploadFilesDialog() {
     this.dialog
       .open(UploadFilesDialogComponent, {
-        minWidth: 700,
+        minWidth: "min(700px, 100%)",
         data: {
           currentItems: this.dataSource.data,
           uploadFieldKey: this.getUploadFieldKey(),

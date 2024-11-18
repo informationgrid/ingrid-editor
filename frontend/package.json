@@ -37,8 +37,8 @@
     "@ngneat/dirty-check-forms": "^3.0.3",
     "@ngneat/transloco": "6.0.4",
     "@ngneat/until-destroy": "^10.0.0",
-    "@ngx-formly/core": "6.3.7",
-    "@ngx-formly/material": "6.3.7",
+    "@ngx-formly/core": "6.3.8",
+    "@ngx-formly/material": "6.3.8",
     "@stomp/rx-stomp": "^2.0.0",
     "@stomp/stompjs": "^7.0.0",
     "@terraformer/wkt": "^2.2.1",
@@ -46,8 +46,8 @@
     "cronstrue": "^2.50.0",
     "diff": "^5.2.0",
     "file-saver-es": "^2.0.5",
-    "keycloak-angular": "^16.0.1",
-    "keycloak-js": "^24.0.5",
+    "keycloak-angular": "^16.1.0",
+    "keycloak-js": "25.0.6",
     "leaflet": "^1.9.4",
     "material-design-icons-iconfont": "^6.7.0",
     "ngx-mat-select-search": "^7.0.6",
@@ -80,7 +80,7 @@
     "karma-junit-reporter": "^2.0.1",
     "karma-sourcemap-loader": "^0.4.0",
     "lint-staged": "^15.2.7",
-    "prettier": "3.1.1",
+    "prettier": "3.3.3",
     "source-map-explorer": "^2.5.3",
     "stop-only": "^3.3.2",
     "typescript": "~5.4.5"
@@ -94,5 +94,5 @@
     "*.{ts,scss,js,css,html,md,json}": "prettier --check",
     "*.{spec,cy}.ts": "yarn stop-only --folder"
   },
-  "packageManager": "yarn@4.3.1"
+  "packageManager": "yarn@4.5.1"
 }

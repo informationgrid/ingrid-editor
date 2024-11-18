@@ -38,7 +38,6 @@ import { firstValueFrom, of, switchMap } from "rxjs";
 import { PublicationCheckDialogComponent } from "./ingrid/dialogs/publication-check/publication-check-dialog.component";
 import { Metadata } from "../app/models/ige-document";
 import { ResearchService } from "../app/+research/research.service";
-import { ConsolidateKeywordsPlugin } from "./ingrid/dialogs/consolidateKeywords/consolidate-keywords.plugin";
 
 export enum InGridDoctype {
   InGridSpecialisedTask = "InGridSpecialisedTask",
@@ -74,7 +73,6 @@ export class InGridComponent implements OnInit {
   dialog = inject(MatDialog);
   researchService = inject(ResearchService);
 
-  consolidateKeywords = inject(ConsolidateKeywordsPlugin);
   // docTypesEnum: InGridDoctype
 
   protected getDocTypes = () => {

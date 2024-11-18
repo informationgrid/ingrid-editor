@@ -132,15 +132,17 @@ class ExportService(val exporterFactory: ExporterFactory) {
     private fun zipToFile(result: List<Pair<String, String>>, fileExtension: String): ByteArray {
         val byteArrayOutputStream = ByteArrayOutputStream()
         ZipOutputStream(BufferedOutputStream(byteArrayOutputStream)).use { outZip ->
-            result.forEach { item ->
-                item.second.byteInputStream().use { fi ->
-                    BufferedInputStream(fi).use { origin ->
-                        val entry = ZipEntry("${item.first}.$fileExtension")
-                        outZip.putNextEntry(entry)
-                        origin.copyTo(outZip, 1024)
+            result
+                .associateBy { it.first }.values
+                .forEach { item ->
+                    item.second.byteInputStream().use { fi ->
+                        BufferedInputStream(fi).use { origin ->
+                            val entry = ZipEntry("${item.first}.$fileExtension")
+                            outZip.putNextEntry(entry)
+                            origin.copyTo(outZip, 1024)
+                        }
                     }
                 }
-            }
         }
 
         return byteArrayOutputStream.toByteArray()
@@ -173,16 +175,14 @@ class ExportService(val exporterFactory: ExporterFactory) {
     private fun getPublishedVersion(
         catalogId: String,
         doc: DocumentWrapper,
-    ): Document {
-        return try {
-            documentService.getLastPublishedDocument(
-                catalogId,
-                doc.uuid,
-                true,
-            )
-        } catch (ex: Exception) {
-            throw NotFoundException.withMissingPublishedVersion(doc.uuid)
-        }
+    ): Document = try {
+        documentService.getLastPublishedDocument(
+            catalogId,
+            doc.uuid,
+            true,
+        )
+    } catch (ex: Exception) {
+        throw NotFoundException.withMissingPublishedVersion(doc.uuid)
     }
 
     private fun handleWithSubDocuments(

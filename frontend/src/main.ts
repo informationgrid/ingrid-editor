@@ -138,6 +138,9 @@ import {
 } from "./app/formly/input.validators";
 import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
 import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
+import { MetadataTypeComponent } from "./app/formly/types/metadata-type/metadata-type.component";
+import { MatDatepickerIntl } from "@angular/material/datepicker";
+import { GermanDateIntl } from "./app/services/german-date.intl";
 
 if (environment.production) {
   enableProdMode();
@@ -250,6 +253,10 @@ bootstrapApplication(AppComponent, {
           {
             name: "previewImage",
             component: PreviewImageComponent,
+          },
+          {
+            name: "metadata",
+            component: MetadataTypeComponent,
           },
           /* FOR PREVIEW */
           {
@@ -385,6 +392,10 @@ bootstrapApplication(AppComponent, {
       provide: DateAdapter,
       useClass: GermanDateAdapter,
     },
+    {
+      provide: MatDatepickerIntl,
+      useClass: GermanDateIntl,
+    },
     // add authorization header to all requests
     {
       provide: HTTP_INTERCEPTORS,
@@ -419,6 +430,8 @@ bootstrapApplication(AppComponent, {
         panelClass: "mat-dialog-override",
         hasBackdrop: true,
         maxWidth: "min(950px, 90vw)",
+        minWidth: "min(500px, 100%)",
+        minHeight: "min(0px, 100%)",
         role: "dialog",
         autoFocus: "dialog",
         restoreFocus: true,

@@ -1,6 +1,6 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "ApprovalProcedure#1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ApprovalProcedure",
   "$ref": "#/definitions/ApprovalProcedure",
   "definitions": {
     "ApprovalProcedure": {

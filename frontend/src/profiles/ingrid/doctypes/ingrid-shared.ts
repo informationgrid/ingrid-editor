@@ -43,13 +43,16 @@ import { ThesaurusReportComponent } from "../components/thesaurus-report.compone
 import { ThesaurusResult } from "../components/thesaurus-result";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
-import { MatSelectChange } from "@angular/material/select";
 import { DocumentService } from "../../../app/services/document/document.service";
 import { KeywordAnalysis, KeywordSectionOptions } from "../utils/keywords";
+import {
+  MetadataOption,
+  MetadataOptionItems,
+  MetadataProps,
+} from "../../../app/formly/types/metadata-type/metadata-type.component";
+import { UploadService } from "../../../app/shared/upload/upload.service";
 
 interface GeneralSectionOptions {
-  additionalGroup?: FormlyFieldConfig;
-  inspireRelevant?: boolean;
   thesaurusTopics?: boolean;
 }
 
@@ -71,10 +74,12 @@ export abstract class IngridShared extends BaseDoctype {
   private behaviourService = inject(BehaviourService);
   private documentService = inject(DocumentService);
   private keywordAnalysis = inject(KeywordAnalysis);
+  private uploadService = inject(UploadService);
 
   options = {
     dynamicRequired: {
-      accessConstraints: "formState.mainModel?.isInspireIdentified",
+      accessConstraints:
+        "formState.mainModel?.properties?.isInspireIdentified !== undefined",
       openDataCategories: undefined,
       spatialReferences: undefined,
       spatialSystems: undefined,
@@ -82,7 +87,7 @@ export abstract class IngridShared extends BaseDoctype {
       spatialScope: undefined,
     },
     dynamicHide: {
-      openDataCategories: "!formState.mainModel?.isOpenData",
+      openDataCategories: "!formState.mainModel?.properties?.isOpenData",
     },
     required: {
       freeKeywords: false,
@@ -106,6 +111,7 @@ export abstract class IngridShared extends BaseDoctype {
     "ACHTUNG: Der Eintrag in Konformität zur INSPIRE-Spezifikation im Bereich 'Zusatzinformationen' wird gelöscht.";
 
   showInVeKoSField: boolean = false;
+  showInspireRelevant: boolean = false;
   showInspireConform: boolean = false;
   showHVD: boolean = false;
   showAdVCompatible: boolean = false;
@@ -124,12 +130,175 @@ export abstract class IngridShared extends BaseDoctype {
     fileReferenceFormat: "1320",
   };
 
+  protected metadataOptions(): MetadataOption[] {
+    return [
+      this.showInspireRelevant
+        ? <MetadataOption>{
+            label: "INSPIRE-relevant",
+            contextHelpKey: "isInspireIdentified",
+            typeOptions: [
+              {
+                multiple: false,
+                key: "isInspireIdentified",
+                onChange: (field, value) => {
+                  field.props.availableOptions[1].typeOptions[1].hidden =
+                    value === undefined;
+                },
+                items: this.showInspireConform
+                  ? [
+                      {
+                        label: "INSPIRE konform",
+                        value: "conform",
+                        onClick: (field, previousValue) =>
+                          this.handleIsInspireConformClick(
+                            field,
+                            previousValue,
+                          ).subscribe(),
+                      },
+                      {
+                        label: "INSPIRE nicht konform",
+                        value: "notConform",
+                        onClick: (field, previousValue) =>
+                          this.handleIsInspireConformClick(
+                            field,
+                            previousValue,
+                          ).subscribe(),
+                      },
+                    ]
+                  : [
+                      {
+                        label: "INSPIRE",
+                        value: "relevant",
+                        onClick: (field) =>
+                          field.formControl.value.isInspireIdentified ===
+                          "relevant"
+                            ? this.handleActivateInspireIdentifiedFromGeoservice(
+                                field,
+                              ).subscribe()
+                            : this.handleDeactivateInspireIdentifiedFromGeoservice(
+                                field,
+                              ).subscribe(),
+                      },
+                    ],
+              },
+              this.showInVeKoSField
+                ? <MetadataOptionItems>{
+                    multiple: false,
+                    key: "invekos",
+                    items: [
+                      {
+                        label: "InVeKoS/IACS (GSAA)",
+                        value: { key: "gsaa" },
+                        contextHelpKey: "invekos",
+                        onClick: (field) =>
+                          this.handleInVeKosChange(field, this.thesaurusTopics),
+                      },
+                      {
+                        label: "InVeKoS/IACS (LPIS)",
+                        value: { key: "lpis" },
+                        contextHelpKey: "invekos",
+                        onClick: (field) =>
+                          this.handleInVeKosChange(field, this.thesaurusTopics),
+                      },
+                    ],
+                  }
+                : null,
+            ].filter(Boolean),
+          }
+        : null,
+      this.options.hide.openData
+        ? null
+        : {
+            label: "Open Data",
+            typeOptions: [
+              <MetadataOptionItems>{
+                multiple: true,
+                items: [
+                  {
+                    label: "Offene Lizenz",
+                    key: "isOpenData",
+                    value: true,
+                    contextHelpKey: "isOpenData",
+                    onClick: (field) => this.handleOpenDataClick(field),
+                  },
+                  this.showHVD
+                    ? {
+                        label: "High-Value-Dataset",
+                        key: "isHvd",
+                        value: true,
+                        contextHelpKey: "isHvd",
+                        onClick: (field) =>
+                          this.handleHVDClick(field).subscribe(),
+                      }
+                    : null,
+                ].filter(Boolean),
+              },
+            ],
+          },
+      this.showAdVCompatible
+        ? {
+            label: "AdV",
+            typeOptions: [
+              {
+                multiple: true,
+                items: [
+                  {
+                    label: "kompatibel",
+                    key: "isAdVCompatible",
+                    value: true,
+                    contextHelpKey: "isAdVCompatible",
+                    onClick: (field: FormlyFieldConfig) =>
+                      this.handleAdvClick(field),
+                  },
+                ],
+              },
+            ],
+          }
+        : null,
+    ].filter(Boolean);
+  }
+
   addGeneralSection(options: GeneralSectionOptions = {}): FormlyFieldConfig {
     this.thesaurusTopics = options.thesaurusTopics;
+    const availableOptions = this.metadataOptions();
     return this.addGroupSimple(
       null,
       [
-        options.inspireRelevant || this.showAdVCompatible
+        availableOptions.length > 0
+          ? this.addSection("Metadata", [
+              <FormlyFieldConfig>{
+                key: "properties",
+                type: "metadata",
+
+                props: <MetadataProps>{
+                  availableOptions: availableOptions,
+                  disabledOptions: {},
+                  change: (field, previousValue) => {
+                    const data = field.formControl.value;
+                    if (
+                      !data.isInspireIdentified &&
+                      previousValue?.isInspireIdentified !== undefined
+                    ) {
+                      field.formControl.setValue({
+                        ...data,
+                        invekos: undefined,
+                      });
+                    }
+                    // hide options here, since we don't use real formly fields inside
+                    // metadata-component, so we can't use hide-property
+                    field.props?.availableOptions?.forEach((option) => {
+                      const invekosField = option?.typeOptions?.find(
+                        (typeOption) => typeOption.key === "invekos",
+                      );
+                      if (invekosField)
+                        invekosField.hidden = !data.isInspireIdentified;
+                    });
+                  },
+                },
+              },
+            ])
+          : null,
+        /*options.inspireRelevant || this.showAdVCompatible
           ? this.addGroup(
               null,
               "Typ",
@@ -225,8 +394,8 @@ export abstract class IngridShared extends BaseDoctype {
                     })
                   : null,
               ].filter(Boolean),
-            ),
-        options.additionalGroup ? options.additionalGroup : null,
+            ),*/
+        // options.additionalGroup ? options.additionalGroup : null,
         this.addSection("Allgemeines", [
           this.addInput(
             "parentIdentifier",
@@ -261,7 +430,7 @@ export abstract class IngridShared extends BaseDoctype {
               atLeastOnePointOfContactWhenAdV: {
                 expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
                   // equals "Ansprechpartner"
-                  !field.model.isAdVCompatible ||
+                  !field.model.properties?.isAdVCompatible ||
                   (ctrl.value
                     ? ctrl.value.some((address) => address.type?.key === "7")
                     : false),
@@ -285,17 +454,12 @@ export abstract class IngridShared extends BaseDoctype {
 
   handleActivateOpenData(field: FormlyFieldConfig): Observable<boolean> {
     const cookieId = "HIDE_OPEN_DATA_INFO";
-    const isInspire = field.model.isInspireIdentified;
 
     function executeAction() {
       const accessConstraintsControl = field.form.get(
         "resource.accessConstraints",
       );
-      if (isInspire) {
-        accessConstraintsControl.setValue([{ key: "1" }]);
-      } else {
-        accessConstraintsControl.setValue([]);
-      }
+      accessConstraintsControl?.setValue([{ key: "1" }]);
     }
 
     if (this.cookieService.getCookie(cookieId) === "true") {
@@ -303,28 +467,26 @@ export abstract class IngridShared extends BaseDoctype {
       return of(true);
     }
 
-    const message =
-      "Wird diese Auswahl gewählt, so:" +
-      ' <ul><li>werden alle Zugriffsbeschränkungen entfernt</li>  <li>wird die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li><li>wird dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li></ul> ';
-    return this.dialog
-      .open(ConfirmDialogComponent, {
-        data: <ConfirmDialogData>{
-          title: "Hinweis",
-          message: message,
-          cookieId: cookieId,
-        },
-      })
-      .afterClosed()
-      .pipe(
-        map((decision) => {
-          if (decision === "ok") {
-            executeAction();
-          } else {
-            field.formControl.setValue(false);
-          }
-          return decision === "ok";
-        }),
-      );
+    const message = `
+      Wird diese Auswahl gewählt, so:
+      <ul>
+        <li>wird "Es gelten keine Zugriffsbeschränkungen" zu den Zugriffsbeschränkungen hinzugefügt</li>
+        <li>wird die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li>
+        <li>wird dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li>
+      </ul>`;
+    return this.showConfirmDialog(message, cookieId).pipe(
+      map((decision) => {
+        if (decision === "ok") {
+          executeAction();
+          return true;
+        }
+        field.formControl.setValue({
+          ...field.formControl.value,
+          isOpenData: false,
+        });
+        return false;
+      }),
+    );
   }
 
   handleDeactivateOpenData(field: FormlyFieldConfig): Observable<boolean> {
@@ -333,29 +495,23 @@ export abstract class IngridShared extends BaseDoctype {
 
     const message =
       'Wird dieses Auswahl gewählt, so wird die Opendata-Kategorie unter "Verschlagwortung" entfernt.';
-    return this.dialog
-      .open(ConfirmDialogComponent, {
-        data: <ConfirmDialogData>{
-          title: "Hinweis",
-          message: message,
-          cookieId: cookieId,
-        },
-      })
-      .afterClosed()
-      .pipe(
-        map((decision) => {
-          if (decision != "ok") {
-            field.formControl.setValue(true);
-          } else {
-            if (this.showHVD) field.form.get("hvd").setValue(false);
+    return this.showConfirmDialog(message, cookieId).pipe(
+      map((decision) => {
+        const value = field.formControl.value;
+        if (decision === "ok") {
+          if (this.showHVD) {
+            field.formControl.setValue({ ...value, isHvd: false });
           }
-          return decision === "ok";
-        }),
-      );
+          return true;
+        }
+        field.formControl.setValue({ ...value, isOpenData: true });
+        return false;
+      }),
+    );
   }
 
   private handleOpenDataClick(field: FormlyFieldConfig) {
-    const isChecked = field.formControl.value;
+    const isChecked = field.formControl.value.isOpenData;
     if (!isChecked) {
       this.handleDeactivateOpenData(field).subscribe();
     } else {
@@ -379,7 +535,8 @@ export abstract class IngridShared extends BaseDoctype {
               ),
               codelistId: "8010",
               expressions: {
-                "props.required": "formState.mainModel?.isAdVCompatible",
+                "props.required":
+                  "formState.mainModel?.properties?.isAdVCompatible",
                 className: "field.props.required ? '' : 'optional'",
               },
             })
@@ -391,7 +548,7 @@ export abstract class IngridShared extends BaseDoctype {
               showSearch: true,
               defaultValue: [],
               expressions: {
-                hide: "!formState.mainModel?.isInspireIdentified",
+                hide: "!formState.mainModel?.properties?.isInspireIdentified",
               },
               options: [
                 {
@@ -429,7 +586,8 @@ export abstract class IngridShared extends BaseDoctype {
                 invekos: {
                   expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
                     const invekosValue =
-                      field.options.formState.mainModel?.invekos?.key;
+                      field.options.formState.mainModel?.properties?.invekos
+                        ?.key;
                     if (!invekosValue || invekosValue === "none") return true;
 
                     const hasKeyword = (keyword: string) =>
@@ -448,7 +606,8 @@ export abstract class IngridShared extends BaseDoctype {
                     }
                   },
                   message: (_, field: any) => {
-                    const invekos = field.formControl.root.value.invekos?.key;
+                    const invekos =
+                      field.formControl.root.value.properties?.invekos?.key;
                     let extraMessage = "";
                     if (invekos === "gsaa") extraMessage = "und 'GSAA'";
                     else if (invekos === "lpis") extraMessage = "und 'LPIS'";
@@ -470,9 +629,10 @@ export abstract class IngridShared extends BaseDoctype {
               options: this.getCodelistForSelect("6100", "themes"),
               codelistId: "6100",
               expressions: {
-                "props.required": "formState.mainModel?.isInspireIdentified",
+                "props.required":
+                  "formState.mainModel?.properties?.isInspireIdentified !== undefined",
                 className: "field.props.required ? '' : 'optional'",
-                hide: "!formState.mainModel?.isInspireIdentified",
+                hide: "formState.mainModel?.properties?.isInspireIdentified === undefined",
               },
               change: (field: FormlyFieldConfig, $event) =>
                 options.thesaurusTopics &&
@@ -492,7 +652,8 @@ export abstract class IngridShared extends BaseDoctype {
                       field: FormlyFieldConfig,
                     ) => {
                       const invekosValue =
-                        field.options.formState.mainModel?.invekos?.key;
+                        field.options.formState.mainModel?.properties?.invekos
+                          ?.key;
                       if (invekosValue !== "gsaa") return true;
 
                       return ctrl.value?.some((item) => item.key === "304");
@@ -505,7 +666,8 @@ export abstract class IngridShared extends BaseDoctype {
                       field: FormlyFieldConfig,
                     ) => {
                       const invekosValue =
-                        field.options.formState.mainModel?.invekos?.key;
+                        field.options.formState.mainModel?.properties?.invekos
+                          ?.key;
                       if (invekosValue !== "lpis") return true;
 
                       return ctrl.value?.some((item) => item.key === "202");
@@ -517,7 +679,7 @@ export abstract class IngridShared extends BaseDoctype {
               },
             })
           : null,
-        this.addRepeatList("openDataCategories", "OpenData - Kategorien", {
+        this.addRepeatList("openDataCategories", "OpenData-Kategorien", {
           view: "chip",
           asSelect: true,
           showSearch: true,
@@ -535,7 +697,7 @@ export abstract class IngridShared extends BaseDoctype {
               showSearch: true,
               asSelect: true,
               expressions: {
-                hide: (field: FormlyFieldConfig) => field.model.hvd !== true,
+                hide: "field.model.properties?.isHvd !== true",
               },
               options: [
                 {
@@ -578,7 +740,7 @@ export abstract class IngridShared extends BaseDoctype {
                 options: this.getPriorityDatasets(),
                 codelistId: "6350",
                 expressions: {
-                  hide: "!formState.mainModel?.isInspireIdentified",
+                  hide: "formState.mainModel?.properties?.isInspireIdentified === undefined",
                 },
               },
             )
@@ -594,7 +756,7 @@ export abstract class IngridShared extends BaseDoctype {
                 expressions: {
                   "props.required": this.options.dynamicRequired.spatialScope,
                   className: "field.props.required ? '' : 'optional'",
-                  hide: "!formState.mainModel?.isInspireIdentified",
+                  hide: "field.model.properties?.isInspireIdentified === undefined",
                 },
               },
             )
@@ -617,7 +779,8 @@ export abstract class IngridShared extends BaseDoctype {
                       field: FormlyFieldConfig,
                     ) => {
                       const invekosValue =
-                        field.options.formState.mainModel?.invekos?.key;
+                        field.options.formState.mainModel?.properties?.invekos
+                          ?.key;
                       if (invekosValue !== "gsaa" && invekosValue !== "lpis")
                         return true;
 
@@ -631,7 +794,7 @@ export abstract class IngridShared extends BaseDoctype {
             })
           : null,
         this.addGroupSimple("keywords", [
-          this.addRepeatList("gemet", "Gemet Schlagworte", {
+          this.addRepeatList("gemet", "Gemet-Schlagworte", {
             view: "chip",
             className: "optional",
             placeholder: "Im Gemet suchen",
@@ -650,7 +813,8 @@ export abstract class IngridShared extends BaseDoctype {
                 invekos: {
                   expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
                     const invekosValue =
-                      field.options.formState.mainModel?.invekos?.key;
+                      field.options.formState.mainModel?.properties?.invekos
+                        ?.key;
                     if (invekosValue !== "gsaa" && invekosValue !== "lpis")
                       return true;
 
@@ -664,7 +828,7 @@ export abstract class IngridShared extends BaseDoctype {
               }),
             },
           }),
-          this.addRepeatList("umthes", "Umthes Schlagworte", {
+          this.addRepeatList("umthes", "Umthes-Schlagworte", {
             view: "chip",
             className: "optional",
             placeholder: "Im Umweltthesaurus suchen",
@@ -733,7 +897,8 @@ export abstract class IngridShared extends BaseDoctype {
 
     const formState = field.options.formState;
     const checkThemes =
-      options.inspireTopics && formState.mainModel.isInspireIdentified;
+      options.inspireTopics &&
+      formState.mainModel?.["properties"]?.isInspireIdentified;
     const response = await this.keywordAnalysis.analyzeKeywords(
       value.split(","),
       checkThemes,
@@ -751,6 +916,7 @@ export abstract class IngridShared extends BaseDoctype {
     field.formControl.enable();
     field.formControl.setValue("");
   }
+
   private informUserAboutThesaurusAnalysis(res: Awaited<ThesaurusResult>[]) {
     this.snack.openFromComponent(ThesaurusReportComponent, {
       duration: 20000,
@@ -835,10 +1001,7 @@ export abstract class IngridShared extends BaseDoctype {
                     },
                   }),
                   this.addSelectInline("unitOfMeasure", "Maßeinheit", {
-                    options: this.getCodelistForSelect(
-                      "102",
-                      "spatialRefAltMeasure",
-                    ),
+                    options: this.getCodelistForSelect("102", "unitOfMeasure"),
                     codelistId: "102",
                     showSearch: true,
                     allowNoValue: true,
@@ -871,10 +1034,7 @@ export abstract class IngridShared extends BaseDoctype {
                 null,
                 [
                   this.addAutoCompleteInline("Datum", "Vertikaldatum", {
-                    options: this.getCodelistForSelect(
-                      "101",
-                      "spatialRefAltVDate",
-                    ),
+                    options: this.getCodelistForSelect("101", "Datum"),
                     codelistId: "101",
                     expressions: {
                       "props.required": (field: FormlyFieldConfig) =>
@@ -923,7 +1083,7 @@ export abstract class IngridShared extends BaseDoctype {
               wrappers: ["form-field"],
               className: "flex-3",
               required: true,
-              options: this.getCodelistForSelect("502", "type"),
+              options: this.getCodelistForSelect("502", "referenceDateType"),
               codelistId: "502",
             }),
           ],
@@ -932,7 +1092,7 @@ export abstract class IngridShared extends BaseDoctype {
               invekos: {
                 expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
                   const invekosValue =
-                    field.options.formState.mainModel?.invekos?.key;
+                    field.options.formState.mainModel?.properties?.invekos?.key;
                   if (invekosValue !== "gsaa" && invekosValue !== "lpis")
                     return true;
 
@@ -1001,7 +1161,7 @@ export abstract class IngridShared extends BaseDoctype {
         ),
         this.addSelect("status", "Status", {
           showSearch: true,
-          options: this.getCodelistForSelect("523", "timeRefStatus"),
+          options: this.getCodelistForSelect("523", "status"),
           codelistId: "523",
           className: "optional",
         }),
@@ -1009,7 +1169,10 @@ export abstract class IngridShared extends BaseDoctype {
       this.addGroupSimple("maintenanceInformation", [
         this.addSelect("maintenanceAndUpdateFrequency", "Periodizität", {
           showSearch: true,
-          options: this.getCodelistForSelect("518", "timeRefPeriodicity"),
+          options: this.getCodelistForSelect(
+            "518",
+            "maintenanceAndUpdateFrequency",
+          ),
           codelistId: "518",
           className: "optional",
         }),
@@ -1029,7 +1192,7 @@ export abstract class IngridShared extends BaseDoctype {
             }),
             this.addSelectInline("unit", "Einheit", {
               showSearch: true,
-              options: this.getCodelistForSelect("1230", "timeRefStatus"),
+              options: this.getCodelistForSelect("1230", "unit"),
               codelistId: "1230",
               className: "flex-3",
               allowNoValue: true,
@@ -1063,10 +1226,7 @@ export abstract class IngridShared extends BaseDoctype {
         this.addGroupSimple("metadata", [
           this.addSelect("language", "Sprache des Metadatensatzes", {
             showSearch: true,
-            options: this.getCodelistForSelect(
-              "99999999",
-              "extraInfoLangMetaData",
-            ),
+            options: this.getCodelistForSelect("99999999", "language"),
             codelistId: "99999999",
             required: true,
             defaultValue: {
@@ -1081,10 +1241,7 @@ export abstract class IngridShared extends BaseDoctype {
                 view: "chip",
                 asSelect: true,
                 asSimpleValues: true,
-                options: this.getCodelistForSelect(
-                  "99999999",
-                  "extraInfoLangData",
-                ),
+                options: this.getCodelistForSelect("99999999", "languages"),
                 codelistId: "99999999",
                 required: this.options.required.extraInfoLangData,
                 defaultValue: ["150"],
@@ -1108,7 +1265,8 @@ export abstract class IngridShared extends BaseDoctype {
           ? this.addTable("conformanceResult", "Konformität", {
               supportUpload: false,
               expressions: {
-                "props.required": "formState.mainModel?.isInspireIdentified",
+                "props.required":
+                  "formState.mainModel?.properties?.isInspireIdentified !== undefined",
                 className: "field.props.required ? '' : 'optional'",
               },
               dialog: ConformityDialogComponent,
@@ -1139,7 +1297,7 @@ export abstract class IngridShared extends BaseDoctype {
                     required: true,
                     label: "Grad",
                     appearance: "outline",
-                    options: this.getCodelistForSelect("6000", "level"),
+                    options: this.getCodelistForSelect("6000", "pass"),
                     codelistId: "6000",
                     formatter: (item: any) =>
                       this.formatCodelistValue("6000", item),
@@ -1184,7 +1342,7 @@ export abstract class IngridShared extends BaseDoctype {
                     return (
                       !model ||
                       !this.isGeoService ||
-                      !model.isInspireConform ||
+                      model.properties?.isInspireIdentified !== "conform" ||
                       this.conformityExists(ctrl, "10", "1")
                     );
                   },
@@ -1197,7 +1355,7 @@ export abstract class IngridShared extends BaseDoctype {
                     return (
                       !model ||
                       !this.isGeoDataset ||
-                      !model.isInspireConform ||
+                      model.properties?.isInspireIdentified !== "conform" ||
                       this.conformityExists(ctrl, "12", "1")
                     );
                   },
@@ -1210,13 +1368,26 @@ export abstract class IngridShared extends BaseDoctype {
                     return (
                       !model ||
                       !this.isGeoDataset ||
-                      !model.isInspireIdentified ||
-                      model.isInspireConform ||
+                      model?.["properties"]?.isInspireIdentified ===
+                        "conform" ||
                       !this.conformityExists(ctrl, "12", "1")
                     );
                   },
                   message:
                     "Die Konformität 'VERORDNUNG (EG) Nr. 1089/2010...' muss vorhanden sein und der Wert darf nicht 'konform' sein",
+                },
+                uniqueConformity: {
+                  expression: (_, field: FormlyFieldConfig) => {
+                    const value = field.formControl.value;
+                    const specs: string[] =
+                      value?.map(
+                        (item: any) =>
+                          item.isInspire +
+                          (item.specification.key ?? item.specification.value),
+                      ) ?? [];
+                    return specs.length === new Set(specs).size;
+                  },
+                  message: "Jede Spezifikation darf nur einmal auftreten",
                 },
               },
             })
@@ -1230,7 +1401,7 @@ export abstract class IngridShared extends BaseDoctype {
               showSearch: true,
               options: this.getCodelistForSelect(
                 "1350",
-                "extraInfoLegalBasicsTable",
+                "legalBasicsDescriptions",
               ),
               codelistId: "1350",
               className: "optional",
@@ -1268,10 +1439,7 @@ export abstract class IngridShared extends BaseDoctype {
           asSelect: false,
           showSearch: true,
           required: this.options.required.accessConstraints,
-          options: this.getCodelistForSelect(
-            "6010",
-            "availabilityAccessConstraints",
-          ),
+          options: this.getCodelistForSelect("6010", "accessConstraints"),
           codelistId: "6010",
           expressions: {
             "props.required": this.options.dynamicRequired.accessConstraints,
@@ -1288,7 +1456,10 @@ export abstract class IngridShared extends BaseDoctype {
           fields: [
             this.addAutocomplete("title", null, {
               required: true,
-              options: this.getCodelistForSelect("6500", "license"),
+              options: this.getCodelistForSelect(
+                "6500",
+                "useConstraints.title",
+              ),
               fieldLabel: "Lizenz",
               codelistId: "6500",
               wrappers: ["form-field"],
@@ -1321,7 +1492,7 @@ export abstract class IngridShared extends BaseDoctype {
             this.addAutoCompleteInline("name", "Name", {
               options: this.getCodelistForSelect(
                 this.codelistIds.distributionFormat,
-                "specification",
+                "format.name",
               ),
               codelistId: this.codelistIds.distributionFormat,
               required: true,
@@ -1340,7 +1511,10 @@ export abstract class IngridShared extends BaseDoctype {
         fields: [
           this.addSelectInline("name", "Medium", {
             showSearch: true,
-            options: this.getCodelistForSelect("520", "specification"),
+            options: this.getCodelistForSelect(
+              "520",
+              "digitalTransferOptions.name",
+            ),
             codelistId: "520",
           }),
           this.addUnitInputInline("transferSize", "Datenvolumen", {
@@ -1369,10 +1543,11 @@ export abstract class IngridShared extends BaseDoctype {
         validators: {
           downloadLinkWhenOpenData: {
             expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
-              !field.form.value.isOpenData ||
-              ctrl.value?.some((row) => row.type?.key === "9990"), // Datendownload
+              !field.form.value.properties?.isOpenData ||
+              ctrl.value?.some((row) => row.type?.key === "9990") || // one reference of type "Datendownload"
+              (field.form.value.fileReferences?.[0] ? true : false), // or one item in "Dateien"
             message:
-              "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
+              "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
           },
           requiredFieldsInItems: {
             expression: (ctrl: FormControl) =>
@@ -1386,6 +1561,90 @@ export abstract class IngridShared extends BaseDoctype {
               ),
             message:
               "Es müssen alle Pflichtfelder in den Verweisen ausgefüllt sein",
+          },
+        },
+      }),
+    ]);
+  }
+
+  addFileReferences() {
+    return this.addSection("Dateien", [
+      this.addRepeatDistributionDetailList("fileReferences", "Dateien", {
+        required: false,
+        supportLink: false,
+        enableFileUploadOverride: false,
+        enableFileUploadReuse: false,
+        backendUrl: this.configService.getConfiguration().backendUrl,
+        infoText:
+          "Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten.",
+        jsonTemplate: {
+          format: { key: null },
+          title: "",
+          description: "",
+        },
+        fields: [
+          this.addGroupSimple(null, [
+            { key: "_title" },
+            this.addInputInline("title", "Titel", {
+              contextHelpId: "distribution_title",
+              hasInlineContextHelp: true,
+              wrappers: ["inline-help", "form-field"],
+            }),
+            {
+              key: "link",
+              type: "upload",
+              label: "Link",
+              class: "flex-2",
+              wrappers: ["form-field", "inline-help"],
+              props: {
+                label: "Link",
+                appearance: "outline",
+                required: true,
+                hasInlineContextHelp: true,
+                contextHelpId: "distribution_upload",
+                validators: {
+                  validation: ["url"],
+                },
+                onClick: (docUuid, uri, $event) => {
+                  this.uploadService.downloadFile(docUuid, uri, $event);
+                },
+              },
+              expressions: {
+                "props.label": (field) =>
+                  field.formControl.value?.asLink
+                    ? "URL (Link)"
+                    : "Dateiname (Upload)",
+              },
+            },
+            this.addAutoCompleteInline("format", "Format", {
+              required: true,
+              options: this.getCodelistForSelect(
+                this.codelistIds.fileReferenceFormat,
+                "format",
+              ),
+              codelistId: this.codelistIds.fileReferenceFormat,
+              wrappers: ["inline-help", "form-field"],
+              hasInlineContextHelp: true,
+            }),
+            this.addTextAreaInline("description", "Beschreibung", "ingrid", {
+              wrappers: ["form-field", "inline-help"],
+              hasInlineContextHelp: true,
+              contextHelpId: "distribution_description",
+            }),
+          ]),
+        ],
+        validators: {
+          requiredFormat: {
+            expression: (ctrl) => {
+              if (!ctrl.value || ctrl.value.length === 0) {
+                return true;
+              }
+              return ctrl.value?.every(
+                (entry) => entry?.format?.key || entry?.format.value,
+              );
+            },
+            message:
+              "Fehler: Es muss für jedes Dokument ein Format angegeben werden (Dokument bearbeiten).",
           },
         },
       }),
@@ -1430,14 +1689,13 @@ export abstract class IngridShared extends BaseDoctype {
         options: this.getCodelistForSelect("2000", "type").pipe(
           map((data) => {
             const mappedDoctype = this.mapDocumentTypeToClass(this.id);
-            return data.filter((item) => {
-              return (
+            return data.filter(
+              (item) =>
                 this.codelistQuery
                   .getCodelistEntryByKey("2000", item.value)
-                  .data?.split(",")
-                  ?.indexOf(mappedDoctype) !== -1
-              );
-            });
+                  ?.data?.split(",")
+                  ?.indexOf(mappedDoctype) !== -1,
+            );
           }),
         ),
         codelistId: "2000",
@@ -1550,7 +1808,7 @@ export abstract class IngridShared extends BaseDoctype {
         className: "flex-3",
         wrappers: ["form-field"],
         required: true,
-        options: this.getCodelistForSelect(codelistForTitle, "title"),
+        options: this.getCodelistForSelect(codelistForTitle, "citation.title"),
         codelistId: codelistForTitle,
       }),
       { key: "_type" },
@@ -1564,48 +1822,35 @@ export abstract class IngridShared extends BaseDoctype {
     ];
   }
 
-  private handleInspireIdentifiedClick(field: FormlyFieldConfig) {
-    const checked = field.formControl.value;
-    if (checked) {
-      this.handleActivateInspireIdentified(field).subscribe();
-    } else {
-      this.handleDeactivateInspireIdentified(field).subscribe();
-    }
-  }
-
-  handleActivateInspireIdentified(
+  handleActivateInspireIdentifiedFromGeoservice(
     field: FormlyFieldConfig,
   ): Observable<boolean> {
     const cookieId = "HIDE_INSPIRE_INFO";
-    const isOpenData = field.form.get("isOpenData").value === true;
-
-    const executeAction = () => {
-      field.form.get("isInspireConform")?.setValue(true);
-
-      if (this.defaultKeySpatialScope) {
-        field.form.get("spatialScope").setValue({
-          key: this.defaultKeySpatialScope,
-        });
-      }
-
-      if (this.isGeoService) {
-        if (isOpenData) {
-          field.form.get("resource.accessConstraints").setValue([{ key: "1" }]);
-        }
-
-        this.addConformanceEntry(field, "10", "1");
-      } else if (this.isGeoDataset) {
-        this.addConformanceEntry(field, "12", "1");
-      }
-    };
 
     if (this.cookieService.getCookie(cookieId) === "true") {
-      executeAction();
+      this.handleActivateInspireIdentified(field);
       return of(true);
     }
 
     const message = this.inspireChangeMessage;
 
+    return this.showConfirmDialog(message, cookieId).pipe(
+      map((decision) => {
+        if (decision === "ok") this.handleActivateInspireIdentified(field);
+        else
+          field.formControl.setValue({
+            ...field.formControl.value,
+            isInspireIdentified: undefined,
+          });
+        return decision === "ok";
+      }),
+    );
+  }
+
+  private showConfirmDialog(
+    message: string,
+    cookieId: string,
+  ): Observable<string> {
     return this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
@@ -1614,60 +1859,66 @@ export abstract class IngridShared extends BaseDoctype {
           cookieId: cookieId,
         },
       })
-      .afterClosed()
-      .pipe(
-        map((decision) => {
-          if (decision === "ok") executeAction();
-          else field.formControl.setValue(false);
-          return decision === "ok";
-        }),
-      );
+      .afterClosed();
   }
 
-  handleDeactivateInspireIdentified(
+  handleDeactivateInspireIdentifiedFromGeoservice(
     field: FormlyFieldConfig,
   ): Observable<boolean> {
     const cookieId = "HIDE_INSPIRE_DEACTIVATE_INFO";
-    const isOpenData = field.form.get("isOpenData").value === true;
-    const specificationToRemove = this.isGeoService ? "10" : "12";
-
-    const executeAction = () => {
-      if (isOpenData) field.form.get("resource.accessConstraints").setValue([]);
-
-      const conformanceResultCtrl = field.form.get("conformanceResult");
-      // only set conformance value when field is available (#6535)
-      if (conformanceResultCtrl) {
-        conformanceResultCtrl.setValue(
-          (conformanceResultCtrl.value ?? []).filter(
-            (item) => item.specification?.key !== specificationToRemove,
-          ),
-        );
-      }
-    };
 
     if (this.cookieService.getCookie(cookieId) === "true") {
-      executeAction();
+      this.handleDeactivateInspireIdentified(field);
       return of(true);
     }
 
     const message = this.inspireDeleteMessage;
 
-    return this.dialog
-      .open(ConfirmDialogComponent, {
-        data: <ConfirmDialogData>{
-          title: "Hinweis",
-          message: message,
-          cookieId: cookieId,
-        },
-      })
-      .afterClosed()
-      .pipe(
-        map((decision) => {
-          if (decision === "ok") executeAction();
-          else field.formControl.setValue(true);
-          return decision === "ok";
-        }),
+    return this.showConfirmDialog(message, cookieId).pipe(
+      map((decision) => {
+        if (decision === "ok") this.handleDeactivateInspireIdentified(field);
+        else
+          field.formControl.setValue({
+            ...field.formControl.value,
+            isInspireIdentified: "relevant",
+          });
+        return decision === "ok";
+      }),
+    );
+  }
+
+  handleActivateInspireIdentified(field: FormlyFieldConfig) {
+    const isOpenData = field.formControl.value.isOpenData === true;
+
+    if (this.defaultKeySpatialScope) {
+      field.form.get("spatialScope")?.setValue({
+        key: this.defaultKeySpatialScope,
+      });
+    }
+
+    if (this.isGeoService) {
+      if (isOpenData) {
+        field.form.get("resource.accessConstraints")?.setValue([{ key: "1" }]);
+      }
+
+      this.addConformanceEntry(field, "10", "1");
+    }
+  }
+
+  handleDeactivateInspireIdentified(field: FormlyFieldConfig) {
+    const isOpenData = field.formControl.value.isOpenData === true;
+    const specificationToRemove = this.isGeoService ? "10" : "12";
+    if (isOpenData) field.form.get("resource.accessConstraints").setValue([]);
+
+    const conformanceResultCtrl = field.form.get("conformanceResult");
+    // only set conformance value when field is available (#6535)
+    if (conformanceResultCtrl) {
+      conformanceResultCtrl.setValue(
+        (conformanceResultCtrl.value ?? []).filter(
+          (item) => item.specification?.key !== specificationToRemove,
+        ),
       );
+    }
   }
 
   private conformityExists(
@@ -1709,15 +1960,23 @@ export abstract class IngridShared extends BaseDoctype {
 
   private handleIsInspireConformClick(
     field: FormlyFieldConfig,
+    previousValue: any = undefined,
   ): Observable<boolean> {
     const cookieId = "HIDE_INSPIRE_CONFORM_INFO";
-    const isConform = field.formControl.value;
+    const inspireIdentified = field.formControl.value.isInspireIdentified;
+    const isConform = inspireIdentified === "conform";
 
     const executeAction = () => {
-      if (isConform) {
-        this.addConformanceEntry(field, "12", "1");
-      } else {
-        this.addConformanceEntry(field, "12", "2");
+      if (previousValue?.isInspireIdentified === undefined) {
+        this.handleActivateInspireIdentified(field);
+
+        if (isConform) {
+          this.addConformanceEntry(field, "12", "1");
+        } else {
+          this.addConformanceEntry(field, "12", "2");
+        }
+      } else if (inspireIdentified === undefined) {
+        this.handleDeactivateInspireIdentified(field);
       }
     };
 
@@ -1726,29 +1985,28 @@ export abstract class IngridShared extends BaseDoctype {
       return of(true);
     }
 
-    return this.dialog
-      .open(ConfirmDialogComponent, {
-        data: <ConfirmDialogData>{
-          title: "Hinweis",
-          message: this.inspireChangeMessage,
-          cookieId: cookieId,
-        },
-      })
-      .afterClosed()
-      .pipe(
-        map((decision) => {
-          if (decision === "ok") executeAction();
-          else field.formControl.setValue(!isConform);
-          return decision === "ok";
-        }),
-      );
+    const message =
+      inspireIdentified === undefined
+        ? this.inspireDeleteMessage
+        : this.inspireChangeMessage;
+    return this.showConfirmDialog(message, cookieId).pipe(
+      map((decision) => {
+        if (decision === "ok") executeAction();
+        else
+          field.formControl.setValue({
+            ...field.formControl.value,
+            isInspireIdentified: previousValue?.isInspireIdentified,
+          });
+        return decision === "ok";
+      }),
+    );
   }
 
   /**
    * Empty adv-product list when adv checkbox was deselected
    */
   private handleAdvClick(field: FormlyFieldConfig) {
-    const isChecked = field.formControl.value;
+    const isChecked = field.formControl.value.isAdVCompatible;
     const advProductGroupsCtrl = field.form.get("advProductGroups");
     const advProductGroups = advProductGroupsCtrl.value;
     if (isChecked || !advProductGroups || advProductGroups.length === 0) return;
@@ -1826,15 +2084,16 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private handleHVDClick(field: FormlyFieldConfig) {
-    const hvdChecked = field.formControl.value;
-    const isOpenDataCtrl = field.form.get("isOpenData");
+    const hvdChecked = field.formControl.value.isHvd;
+    const metadata = field.formControl.value;
+    const isOpenData = metadata.isOpenData;
     // if hvd is checked and field is not open data, show open data dialog
-    if (hvdChecked && isOpenDataCtrl.value !== true) {
+    if (hvdChecked && !isOpenData) {
       return this.handleActivateOpenData(field).pipe(
         tap((success) =>
           success
-            ? isOpenDataCtrl.setValue(true)
-            : field.formControl.setValue(false),
+            ? field.formControl.setValue({ ...metadata, isOpenData: true })
+            : field.formControl.setValue({ ...metadata, isHvd: false }),
         ),
       );
     } else {
@@ -1844,10 +2103,10 @@ export abstract class IngridShared extends BaseDoctype {
 
   private handleInVeKosChange(
     field: FormlyFieldConfig,
-    value: MatSelectChange,
     hasThesaurusTopics: boolean,
   ) {
-    if (value.value.key === "none") return;
+    const value = field.formControl.value.invekos?.key ?? "none";
+    if (value === "none") return;
 
     this.addInVeKoSKeyword(field, "iacs");
 
@@ -1876,28 +2135,24 @@ export abstract class IngridShared extends BaseDoctype {
     };
 
     const cookieId = "HIDE_INVEKOS_INFO";
-    this.dialog
-      .open(ConfirmDialogComponent, {
-        data: <ConfirmDialogData>{
-          title: "Hinweis",
-          message:
-            "Dem Datensatz werden folgende Schlagworte hinzugefügt: <ul><li>InVeKoS: InVeKoS" +
-            (value.value.key === "gsaa"
-              ? " + GSAA"
-              : value.value.key === "lpis"
-                ? " + LPIS"
-                : "") +
-            "</li><li>Gemet: Gemeinsame Agrarpolitik</li><li>ISO-Themenkategorie: Landwirtschaft</li><li>INSPIRE-Themen: " +
-            (value.value.key === "gsaa" ? "Bodennutzung" : "Bodenbedeckung") +
-            "</li></ul>",
-          cookieId: cookieId,
-        },
-      })
-      .afterClosed()
-      .subscribe((decision) => {
-        if (decision === "ok") executeAction(value.value.key);
-        else field.formControl.setValue({ key: "none" });
-      });
+
+    if (this.cookieService.getCookie(cookieId) === "true") {
+      executeAction(value);
+      return of(true);
+    }
+
+    this.showConfirmDialog(
+      `Dem Datensatz werden folgende Schlagworte hinzugefügt:
+        <ul>
+          <li>InVeKoS: InVeKoS${value === "gsaa" ? " + GSAA" : value === "lpis" ? " + LPIS" : ""}</li>
+          <li>Gemet: Gemeinsame Agrarpolitik</li><li>ISO-Themenkategorie: Landwirtschaft</li>
+          <li>INSPIRE-Themen: ${value === "gsaa" ? "Bodennutzung" : "Bodenbedeckung"}</li>
+        </ul>`,
+      cookieId,
+    ).subscribe((decision) => {
+      if (decision === "ok") executeAction(value);
+      else field.formControl.setValue({ key: "none" });
+    });
   }
 
   private addInspireTopic(

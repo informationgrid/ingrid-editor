@@ -17,14 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Component,
-  EventEmitter,
-  input,
-  Input,
-  OnInit,
-  Output,
-} from "@angular/core";
+import { Component, input, output } from "@angular/core";
 import { FlowDirective, Transfer } from "@flowjs/ngx-flow";
 import { TransfersWithErrorInfo } from "../TransferWithErrors";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
@@ -49,44 +42,43 @@ import { SizePipe } from "../../../directives/size.pipe";
     SizePipe,
   ],
 })
-export class UploadItemComponent implements OnInit {
-  @Input() file: TransfersWithErrorInfo;
-  @Input() flow: FlowDirective;
-  @Input() showOnlyProgress = false;
+export class UploadItemComponent {
+  file = input<TransfersWithErrorInfo>();
+  flow = input<FlowDirective>();
+  showOnlyProgress = input<boolean>(false);
   enableFileUploadOverride = input<boolean>();
   enableFileUploadReuse = input<boolean>();
   enableFileUploadRename = input<boolean>();
 
-  @Output() remove = new EventEmitter<string>();
-  @Output() useExisting = new EventEmitter<Transfer>();
-  @Output() retryUpload = new EventEmitter<any>();
-
-  constructor() {}
-
-  ngOnInit(): void {}
+  remove = output<string>();
+  useExisting = output<Transfer>();
+  retryUpload = output<any>();
 
   cancelFile() {
-    this.file.transfer.flowFile.cancel();
-    this.remove.next(this.file.transfer.name);
+    this.file().transfer.flowFile.cancel();
+    this.remove.emit(this.file().transfer.name);
   }
 
   pause() {
-    this.flow.pauseFile(this.file.transfer);
+    this.flow().pauseFile(this.file().transfer);
   }
 
   resume() {
-    this.flow.resumeFile(this.file.transfer);
+    this.flow().resumeFile(this.file().transfer);
   }
 
   overwrite() {
-    this.retryUpload.next({ replace: true });
+    this.retryUpload.emit({ replace: true });
   }
 
   rename() {
-    this.retryUpload.next({ rename: true, altName: this.file.error.data.alt });
+    this.retryUpload.emit({
+      rename: true,
+      altName: this.file().error.data.alt,
+    });
   }
 
   retry() {
-    this.retryUpload.next({});
+    this.retryUpload.emit({});
   }
 }

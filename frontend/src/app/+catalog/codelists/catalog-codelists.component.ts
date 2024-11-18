@@ -142,7 +142,7 @@ export class CatalogCodelistsComponent implements OnInit {
         };
     this.dialog
       .open(UpdateCodelistComponent, {
-        minWidth: 650,
+        minWidth: "min(650px, 100%)",
         hasBackdrop: true,
         disableClose: true,
         data: {

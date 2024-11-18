@@ -32,14 +32,13 @@ export class InformationSystemDoctype extends IngridShared {
   iconClass = "Informationssystem";
 
   hasOptionalFields = true;
+  showInspireRelevant = true;
   showAdVCompatible = true;
   showAdVProductGroup = true;
 
   documentFields = () => {
     const fields = <FormlyFieldConfig[]>[
-      this.addGeneralSection({
-        inspireRelevant: true,
-      }),
+      this.addGeneralSection(),
       this.addKeywordsSection(),
 
       this.addSection("Fachbezug", [
@@ -111,6 +110,7 @@ export class InformationSystemDoctype extends IngridShared {
       this.addAdditionalInformationSection({ extraInfoLangData: true }),
       this.addAvailabilitySection(),
       this.addLinksSection(),
+      this.addFileReferences(),
     ];
 
     return this.manipulateDocumentFields(fields);

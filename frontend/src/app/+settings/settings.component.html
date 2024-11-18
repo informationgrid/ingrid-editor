@@ -1,23 +1,24 @@
-<nav
-    mat-tab-nav-bar
-    class="page-tabs-routing"
-    mat-stretch-tabs="false"
-    [tabPanel]="tabPanel"
->
-    @for (tab of tabs; track tab) {
-        <a
-            [attr.data-cy]="tab.path"
-            mat-tab-link
-            #rla="routerLinkActive"
-            routerLinkActive="active-link"
-            [routerLink]="tab.path"
-            [active]="rla.isActive"
-        >
-            {{ tab.label }}
-        </a>
-    }
-</nav>
-
+@if (userHasCatalog()) {
+    <nav
+        mat-tab-nav-bar
+        class="page-tabs-routing"
+        mat-stretch-tabs="false"
+        [tabPanel]="tabPanel"
+    >
+        @for (tab of tabs; track tab) {
+            <a
+                [attr.data-cy]="tab.path"
+                mat-tab-link
+                #rla="routerLinkActive"
+                routerLinkActive="active-link"
+                [routerLink]="tab.path"
+                [active]="rla.isActive"
+            >
+                {{ tab.label }}
+            </a>
+        }
+    </nav>
+}
 <mat-tab-nav-panel #tabPanel>
     <router-outlet></router-outlet>
 </mat-tab-nav-panel>
