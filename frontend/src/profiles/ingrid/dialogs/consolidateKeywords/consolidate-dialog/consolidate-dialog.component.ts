@@ -22,6 +22,7 @@ import {
 import { removeDuplicatesByValue } from "../../../../../app/shared/utils";
 import { IgeDocument, Metadata } from "../../../../../app/models/ige-document";
 import { UntypedFormGroup } from "@angular/forms";
+import { BackendOption } from "../../../../../app/store/codelist/codelist.model";
 
 export interface ConsolidateDialogData {
   id: number;
@@ -31,6 +32,11 @@ class Keywords {
   gemet: Object[];
   umthes: Object[];
   free: Object[];
+}
+
+interface ThesaurusTypeInfo extends Array<any | ThesaurusResult[]> {
+  0: any;
+  1: ThesaurusResult[];
 }
 
 @Component({
@@ -83,7 +89,7 @@ export class ConsolidateDialogComponent implements OnInit {
 
   timedOut: boolean;
 
-  keywordHierarchyMap: Map<ThesaurusType, ThesaurusResult[][]>;
+  keywordHierarchyMap: Map<ThesaurusType, ThesaurusTypeInfo>;
 
   keywordDialogData = [];
   isLoading: boolean;
@@ -123,9 +129,6 @@ export class ConsolidateDialogComponent implements OnInit {
       return false;
     }
 
-    // TODO: why set keywords field again?
-    this.keywords = this.form.get("keywords")?.value;
-
     this.gemetKeywords = this.keywords?.gemet || [];
     this.umthesKeywords = this.keywords?.umthes || [];
     this.freeKeywords = this.keywords?.free || [];
@@ -150,22 +153,11 @@ export class ConsolidateDialogComponent implements OnInit {
           ...this.gemetKeywords,
           ...this.umthesKeywords,
           ...this.freeKeywords,
-          ...this.inspireTopics.map((keyword) =>
-            this.getInspireLabel(keyword.key),
-          ),
+          ...this.inspireTopics.map((keyword) => this.getInspireLabel(keyword)),
         ].map((keyword) => keyword.label),
         this.isInspireIdentified,
       );
       analyzedKeywords = removeDuplicatesByValue(analyzedKeywords, "label");
-
-      // analyzedKeywords
-      //   .filter((keyword) => !keyword.found)
-      //   .forEach((keyword) => {
-      //     this.timedOutKeywords.push(keyword.label);
-      //     this.timedOutThesauri.push(keyword.thesaurus);
-      //   });
-      // this.timedOutThesauri = Array.from(new Set(this.timedOutThesauri));
-      // analyzedKeywords = analyzedKeywords.filter((keyword) => keyword.found);
 
       this.categorizeKeywords(analyzedKeywords);
       this.addAllKeywordStatuses();
@@ -191,7 +183,7 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   private addKeywordStatuses(
-    oldKeywords: ThesaurusResult[],
+    oldKeywords: any,
     newKeywords: ThesaurusResult[],
     thesaurus: ThesaurusResult["thesaurus"],
   ) {
@@ -199,18 +191,18 @@ export class ConsolidateDialogComponent implements OnInit {
     const isInspire = thesaurus === this.keywordCategories.themes;
     if (isInspire) {
       newKeywords.forEach((keyword) => {
-        if (!oldKeywords.some((k) => k["key"] === keyword.value.key)) {
+        if (!oldKeywords.some((item) => item.key === keyword.value.key)) {
           results.push({ ...keyword, status: "added" });
         } else {
           results.push({ ...keyword, status: "unchanged" });
         }
       });
       oldKeywords.forEach((keyword) => {
-        if (!newKeywords.some((k) => k.value.key === keyword["key"])) {
+        if (!newKeywords.some((k) => k.value.key === keyword.key)) {
           results.push({
             found: false,
-            label: this.getInspireLabel(keyword["key"]).label,
-            value: { key: keyword["key"] },
+            label: this.getInspireLabel(keyword).label,
+            value: { key: keyword.key },
             thesaurus: thesaurus,
             status: "removed",
           });
@@ -253,9 +245,12 @@ export class ConsolidateDialogComponent implements OnInit {
     }
   }
 
-  private getInspireLabel(key: string) {
+  private getInspireLabel(option: BackendOption) {
     return {
-      label: this.codelistQuery.getCodelistEntryByKey("6100", key).fields["de"],
+      label:
+        this.codelistQuery.getCodelistEntryByKey("6100", option.key)?.fields?.[
+          "de"
+        ] ?? option.value,
     };
   }
 
@@ -270,7 +265,7 @@ export class ConsolidateDialogComponent implements OnInit {
       const keywords = newKeywords;
       oldKeywords.map((keyword) => {
         const wasFoundInOtherThesauri = !otherThesauriNewKeywords.some(
-          (k) => k.label.toLowerCase() === keyword.label.toLowerCase(),
+          (k) => k.label?.toLowerCase() === keyword.label?.toLowerCase(),
         );
         const wasNotRemoved = newKeywords.some(
           (k2) =>

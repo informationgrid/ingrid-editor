@@ -34,7 +34,7 @@ import {
 import { CookieService } from "../../../app/services/cookie.service";
 import { AbstractControl, FormControl } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { firstValueFrom, Observable, of, TimeoutError } from "rxjs";
+import { firstValueFrom, Observable, of } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
 import { HttpClient } from "@angular/common/http";
@@ -905,26 +905,19 @@ export abstract class IngridShared extends BaseDoctype {
         value.split(","),
         checkThemes,
       );
-      if (response.length > 0) {
-        this.keywordAnalysis.updateForm(
-          response,
-          field.form,
-          this.thesaurusTopics,
-        );
-        this.informUserAboutThesaurusAnalysis(response);
-      }
-    } catch (error) {
-      if (error instanceof TimeoutError) {
-        throw new IgeError(
-          "Es konnte keine Verbindung zu einem der Thesauri hergestellt werden.",
-          error.stack,
-        );
-      } else {
-        throw new IgeError(
-          "Die Schlagwortanalyse konnte nicht durchgeführt werden.",
-          error.stack,
-        );
-      }
+      if (response.length == 0) return;
+
+      this.keywordAnalysis.updateForm(
+        response,
+        field.form,
+        this.thesaurusTopics,
+      );
+      this.informUserAboutThesaurusAnalysis(response);
+    } catch (error: any) {
+      throw new IgeError(
+        `Es gab ein Problem bei der Schlagwortanalyse: ${error.error?.errorText}`,
+        error.stack,
+      );
     } finally {
       field.formControl.enable();
       field.formControl.setValue("");
@@ -1559,7 +1552,7 @@ export abstract class IngridShared extends BaseDoctype {
             expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
               !field.form.value.properties?.isOpenData ||
               ctrl.value?.some((row) => row.type?.key === "9990") || // one reference of type "Datendownload"
-              field.form.value.fileReferences?.length, // or one item in "Dateien"
+              field.form.value.fileReferences?.length > 0, // or one item in "Dateien"
             message:
               "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
           },
