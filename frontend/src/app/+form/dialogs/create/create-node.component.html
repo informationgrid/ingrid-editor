@@ -38,7 +38,7 @@
                     } @else {
                         <ige-address-template
                             [form]="formGroup"
-                            [parent]="parent"
+                            [parent]="parent()"
                             (create)="handleCreate()"
                         >
                             <ng-container
@@ -93,7 +93,7 @@
                 color="primary"
                 data-cy="create-changeLocation"
                 [disabled]="alreadySubmitted"
-                (click)="jumpToTree(this.parent)"
+                (click)="jumpToTree(this.parent())"
             >
                 Zielordner ändern
             </button>
@@ -136,7 +136,7 @@
             Zielordner
         </div>
         <ige-breadcrumb
-            [path]="path"
+            [path]="path()"
             [rootName]="rootTreeName"
             [selectable]="true"
             [disableRoot]="!isAdmin"

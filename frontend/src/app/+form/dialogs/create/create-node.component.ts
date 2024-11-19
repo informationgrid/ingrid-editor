@@ -20,11 +20,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
+  computed,
   ElementRef,
   inject,
   Inject,
   OnInit,
+  Signal,
   signal,
   ViewChild,
 } from "@angular/core";
@@ -109,7 +110,9 @@ export class CreateNodeComponent implements OnInit {
 
   @ViewChild("contextNodeContainer") container: ElementRef;
   title = "Neuen Ordner anlegen";
-  parent: number = null;
+  parent: Signal<number> = computed(() => {
+    return this.path()[this.path().length - 1]?.id ?? null;
+  });
   forAddress: boolean;
   selectedPage = 0;
   rootTreeName: string;
@@ -118,7 +121,16 @@ export class CreateNodeComponent implements OnInit {
   jumpedTreeNodeId: number = null;
   isAdmin = this.config.hasWriteRootPermission();
   selectedLocation: number = null;
-  pathWithWritePermission = signal<boolean>(false);
+
+  path = signal<ShortTreeNode[]>([]);
+
+  pathWithWritePermission = computed<boolean>(() => {
+    const value = this.path();
+    return value.length === 0
+      ? this.isAdmin
+      : value[value.length - 1].permission.canOnlyWriteSubtree ||
+          !value[value.length - 1].disabled;
+  });
   alreadySubmitted = false;
 
   docTypeChoice = signal<string>(null);
@@ -145,31 +157,6 @@ export class CreateNodeComponent implements OnInit {
         this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
       );
     }
-
-    effect(
-      () => {
-        // update path depending on selected document type or entities have changed (in case a deeply nested node finally has been loaded)
-        this.entities$ || this.docTypeChoice();
-        this.mapPath(this.path);
-      },
-      { allowSignalWrites: true },
-    );
-  }
-
-  private _path: ShortTreeNode[] = [];
-
-  get path() {
-    return this._path;
-  }
-
-  set path(value: ShortTreeNode[]) {
-    this._path = value;
-    this.pathWithWritePermission.set(
-      value.length === 0
-        ? this.isAdmin
-        : value[value.length - 1].permission.canOnlyWriteSubtree ||
-            !value[value.length - 1].disabled,
-    );
   }
 
   async ngOnInit() {
@@ -191,7 +178,7 @@ export class CreateNodeComponent implements OnInit {
     if (path.length > 0) {
       await this.getStore().waitForDocumentInStore(path[path.length - 1].id);
     }
-    this.mapPath(path);
+    this.path.set(this.mapPath(path));
   }
 
   async handleCreate() {
@@ -216,14 +203,12 @@ export class CreateNodeComponent implements OnInit {
   }
 
   applyLocation() {
-    this.parent = this.selectedLocation;
-
     if (this.selectedLocation === null) {
-      this.path = [];
+      this.path.set([]);
     } else {
       this.documentService
-        .getPath(this.parent)
-        .pipe(tap((result) => (this.path = result)))
+        .getPath(this.selectedLocation)
+        .pipe(tap((result) => this.path.set(result)))
         .subscribe();
     }
 
@@ -238,19 +223,17 @@ export class CreateNodeComponent implements OnInit {
   }
 
   quickBreadcrumbChange(id: number) {
-    this.parent = id;
-    const index = this.path.findIndex((item) => item.id === id);
-    this.path = this.path.splice(0, index + 1);
+    // this.parent = id;
+    const index = this.path().findIndex((item) => item.id === id);
+    this.path.set([...this.path().splice(0, index + 1)]);
   }
 
-  private mapPath(path: ShortTreeNode[]) {
+  private mapPath(path: ShortTreeNode[]): ShortTreeNode[] {
     if (path.length === 0) {
-      this.path = [];
-      return;
+      return [];
     }
 
-    this.path = this.getPathAllowedToAdd([...path]);
-    this.parent = this.path[this.path.length - 1]?.id ?? null;
+    return this.getPathAllowedToAdd([...path]);
   }
 
   private getPathAllowedToAdd(path: ShortTreeNode[]): ShortTreeNode[] {
@@ -311,7 +294,7 @@ export class CreateNodeComponent implements OnInit {
     const savedDoc = await this.saveForm(
       newAddress,
       this.docTypeChoice(),
-      this.parent,
+      this.parent(),
     );
 
     this.navigateAfterSave(savedDoc.metadata.uuid);
@@ -324,14 +307,14 @@ export class CreateNodeComponent implements OnInit {
     const savedDoc = await this.saveForm(
       newDocument,
       this.docTypeChoice(),
-      this.parent,
+      this.parent(),
     );
 
     this.navigateAfterSave(savedDoc.metadata.uuid);
   }
 
   private saveForm(data: IgeDocument, type: string, parent: number) {
-    const pathIds = this.path.map((item) => item.id);
+    const pathIds = this.path().map((item) => item.id);
 
     return firstValueFrom(
       this.documentService.save(
