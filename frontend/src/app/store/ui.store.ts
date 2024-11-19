@@ -73,7 +73,7 @@ export const UiStore = signalStore(
       patchState(store, (state) => ({
         currentTab: {
           ...state.currentTab,
-          value,
+          ...value,
         },
       }));
     },

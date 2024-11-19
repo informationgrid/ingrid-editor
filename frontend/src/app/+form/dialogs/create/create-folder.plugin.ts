@@ -133,11 +133,10 @@ export class CreateFolderPlugin extends Plugin {
       maxWidth: 600,
       disableClose: false,
       hasBackdrop: true,
-      data: {
-        parent: parentDocId,
+      data: <CreateOptions>{
         forAddress: this.forAddress(),
         isFolder: true,
-      } as CreateOptions,
+      },
       ariaLabel: this.transloco.translate("toolbar.newFolder"),
     });
   }

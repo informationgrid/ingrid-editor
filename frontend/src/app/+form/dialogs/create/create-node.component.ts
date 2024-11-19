@@ -71,7 +71,6 @@ import { AddressTreeStore } from "../../../store/address-tree/address-tree.store
 import { toObservable } from "@angular/core/rxjs-interop";
 
 export interface CreateOptions {
-  parent: string;
   forAddress: boolean;
   isFolder: boolean;
 }
@@ -173,7 +172,7 @@ export class CreateNodeComponent implements OnInit {
     );
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (this.isFolder() || !this.forAddress) {
       this.initializeForDocumentsAndFolders();
     } else {
@@ -185,8 +184,14 @@ export class CreateNodeComponent implements OnInit {
       .subscribe((value) => this.docTypeChoice.set(value.choice));
 
     // set initial path to current position
-    if (this.forAddress) this.mapPath(this.generalStore.breadcrumb().address);
-    else this.mapPath(this.generalStore.breadcrumb().document);
+    const path = this.forAddress
+      ? this.generalStore.breadcrumb().address
+      : this.generalStore.breadcrumb().document;
+
+    if (path.length > 0) {
+      await this.getStore().waitForDocumentInStore(path[path.length - 1].id);
+    }
+    this.mapPath(path);
   }
 
   async handleCreate() {
