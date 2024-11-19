@@ -182,6 +182,7 @@ export class CreateNodeComponent implements OnInit {
   }
 
   async handleCreate() {
+    if (this.alreadySubmitted) return;
     if (
       // don't proceed if invalid form or user without writePermission on selected path
       this.formGroup.invalid ||

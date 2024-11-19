@@ -76,7 +76,7 @@ export class FolderDashboardComponent {
   }
 
   updateChildren(model: DocumentAbstract) {
-    const store = this.isAddress
+    const store = this.isAddress()
       ? this.addressTreeStore
       : this.documentTreeStore;
     // TODO switch to user specific query
@@ -110,7 +110,7 @@ export class FolderDashboardComponent {
 
   async openDocument(uuid: string) {
     await this.router.navigate([
-      ConfigService.catalogId + (this.isAddress ? "/address" : "/form"),
+      ConfigService.catalogId + (this.isAddress() ? "/address" : "/form"),
       { id: uuid },
     ]);
   }
