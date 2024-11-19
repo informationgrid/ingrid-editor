@@ -214,8 +214,7 @@ export class GroupComponent implements OnInit {
     this.form.markAsPristine();
     this.form.enable();
     this.isLoading = false;
-    // this.loadGroupUsers(group.id);
-    // this.loadGroup(this.generalStore.activeGroup());
+    this.groupService.forceReload$.next();
     this.groupService.setActive(group.id);
   }
 

@@ -34,7 +34,6 @@ export class GroupService {
   private groupStore = inject(GroupStore);
   private generalStore = inject(GeneralStore);
 
-  // selectedGroup$: BehaviorSubject<Group>;
   forceReload$ = new EventEmitter<void>();
 
   constructor(

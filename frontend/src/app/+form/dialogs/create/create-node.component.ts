@@ -176,6 +176,8 @@ export class CreateNodeComponent implements OnInit {
       : this.generalStore.breadcrumb().document;
 
     if (path.length > 0) {
+      console.log("waiting", path);
+      console.log("ids in store", this.getStore().ids());
       await this.getStore().waitForDocumentInStore(path[path.length - 1].id);
     }
     this.path.set(this.mapPath(path));

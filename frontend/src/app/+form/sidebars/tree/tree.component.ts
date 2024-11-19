@@ -239,7 +239,6 @@ export class TreeComponent implements OnInit {
     this.setActiveNode
       .pipe(untilDestroyed(this), debounceTime(100), distinctUntilChanged())
       .subscribe(async (id) => {
-        console.log("tree component setActive node: ", id);
         if (this.treeService.isReloadNeededWithReset(this.forAddresses)) {
           this.activeNodeId.set(id);
           await firstValueFrom(this.reloadTree(true));
