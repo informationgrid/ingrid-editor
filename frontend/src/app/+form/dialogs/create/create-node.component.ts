@@ -69,7 +69,6 @@ import { BreadcrumbComponent } from "../../form-info/breadcrumb/breadcrumb.compo
 import { GeneralStore } from "../../../store/general.store";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
-import { toObservable } from "@angular/core/rxjs-interop";
 
 export interface CreateOptions {
   forAddress: boolean;
@@ -122,7 +121,10 @@ export class CreateNodeComponent implements OnInit {
   isAdmin = this.config.hasWriteRootPermission();
   selectedLocation: number = null;
 
-  path = signal<ShortTreeNode[]>([]);
+  path = computed<ShortTreeNode[]>(() => {
+    // await this.getStore().waitForDocumentInStore(path[path.length - 1].id);
+    return this.overridePath() ?? this.mapPath(this.getBreadcrumb());
+  });
 
   pathWithWritePermission = computed<boolean>(() => {
     const value = this.path();
@@ -134,7 +136,8 @@ export class CreateNodeComponent implements OnInit {
   alreadySubmitted = false;
 
   docTypeChoice = signal<string>(null);
-  private entities$ = toObservable(this.getStore().entityMap);
+
+  private overridePath = signal<ShortTreeNode[]>(null);
 
   constructor(
     private config: ConfigService,
@@ -169,28 +172,22 @@ export class CreateNodeComponent implements OnInit {
     this.formGroup.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe((value) => this.docTypeChoice.set(value.choice));
+  }
 
-    // set initial path to current position
-    const path = this.forAddress()
-      ? this.generalStore.breadcrumb().address
-      : this.generalStore.breadcrumb().document;
-
-    if (path.length > 0) {
-      console.log("waiting", path);
-      console.log("ids in store", this.getStore().ids());
-      await this.getStore().waitForDocumentInStore(path[path.length - 1].id);
-    }
-    this.path.set(this.mapPath(path));
+  private getBreadcrumb(): ShortTreeNode[] {
+    console.log("cc", this.forAddress());
+    return this.forAddress()
+      ? this.generalStore.breadcrumb.address()
+      : this.generalStore.breadcrumb.document();
   }
 
   async handleCreate() {
     if (this.alreadySubmitted) return;
-    if (
-      // don't proceed if invalid form or user without writePermission on selected path
+    // don't proceed if invalid form or user without writePermission on selected path
+    const invalid =
       this.formGroup.invalid ||
-      (!this.isAdmin && !this.pathWithWritePermission())
-    )
-      return;
+      (!this.isAdmin && !this.pathWithWritePermission());
+    if (invalid) return;
 
     this.alreadySubmitted = true;
 
@@ -207,11 +204,11 @@ export class CreateNodeComponent implements OnInit {
 
   applyLocation() {
     if (this.selectedLocation === null) {
-      this.path.set([]);
+      this.overridePath.set([]);
     } else {
       this.documentService
         .getPath(this.selectedLocation)
-        .pipe(tap((result) => this.path.set(result)))
+        .pipe(tap((result) => this.overridePath.set(result)))
         .subscribe();
     }
 
@@ -227,7 +224,7 @@ export class CreateNodeComponent implements OnInit {
 
   quickBreadcrumbChange(id: number) {
     const index = this.path().findIndex((item) => item.id === id);
-    this.path.set([...this.path().splice(0, index + 1)]);
+    this.overridePath.set([...this.path().splice(0, index + 1)]);
   }
 
   private mapPath(path: ShortTreeNode[]): ShortTreeNode[] {
