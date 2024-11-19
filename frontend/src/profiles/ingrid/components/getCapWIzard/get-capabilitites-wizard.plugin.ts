@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../../../app/+form/form-shared/toolbar/form-toolbar.service";
 import { DocEventsService } from "../../../../app/services/event/doc-events.service";
 import { MatDialog } from "@angular/material/dialog";
@@ -36,7 +36,6 @@ import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
 import { DocumentAbstract } from "../../../../app/store/document/document.model";
 import { TreeStore } from "../../../../app/store/tree/tree.store";
-import { toObservable } from "@angular/core/rxjs-interop";
 
 @Injectable({
   providedIn: "root",
@@ -63,11 +62,28 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   private treeStore = inject(TreeStore);
   private configService = inject(ConfigService);
 
-  private activeNode$ = toObservable(this.generalStore.activeTreeNodes);
-
   constructor() {
     super();
     inject(PluginService).registerPlugin(this);
+
+    effect(async () => {
+      if (!this.formRegistered() || this.configService.hasWriteRootPermission())
+        return;
+
+      const activeNodes = this.generalStore.activeTreeNodes();
+      const parentId =
+        activeNodes.length === 0
+          ? null
+          : (await this.treeStore.byId(activeNodes[0]))._parent;
+      if (
+        activeNodes.length !== 1 ||
+        this.treeStore.entityMap()[parentId] === null
+      ) {
+        this.formToolbarService.setButtonState(this.buttonId, false);
+      } else {
+        this.formToolbarService.setButtonState(this.buttonId, true);
+      }
+    });
   }
 
   registerForm() {
@@ -85,21 +101,6 @@ export class GetCapabilititesWizardPlugin extends Plugin {
     const toolbarEventSubscription = this.docEvents
       .onEvent(this.eventId)
       .subscribe(() => this.openWizard());
-
-    if (!this.configService.hasWriteRootPermission()) {
-      const treeQuerySubscription = this.activeNode$.subscribe(async (data) => {
-        const parentId = (await this.treeStore.byId(data[0]))._parent;
-        if (
-          data.length !== 1 ||
-          this.treeStore.entityMap()[parentId] === null
-        ) {
-          this.formToolbarService.setButtonState(this.buttonId, false);
-        } else {
-          this.formToolbarService.setButtonState(this.buttonId, true);
-        }
-      });
-      this.formSubscriptions.push(treeQuerySubscription);
-    }
 
     this.formSubscriptions.push(toolbarEventSubscription);
   }

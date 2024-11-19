@@ -51,10 +51,11 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      this.updateShowRightsButton(this.generalStore.openedDocument(), false);
-    });
-    effect(() => {
-      this.updateShowRightsButton(this.generalStore.openedAddress(), true);
+      if (this.forAddress()) {
+        this.updateShowRightsButton(this.generalStore.openedAddress(), true);
+      } else {
+        this.updateShowRightsButton(this.generalStore.openedDocument(), false);
+      }
     });
   }
 
@@ -71,10 +72,7 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
     if (this.configService.hasMdAdminRights()) {
       const onEvent = this.docEvents
         .onEvent("SHOW_DOCUMENT_PERMISSIONS")
-        .subscribe((event) => {
-          console.debug("SHOW_DOCUMENT_PERMISSIONS", event);
-          this.showDialog(event.data.id);
-        });
+        .subscribe((event) => this.showDialog(event.data.id));
       this.subscriptions.push(onEvent);
     }
   }

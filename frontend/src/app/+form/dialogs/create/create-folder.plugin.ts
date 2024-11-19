@@ -85,13 +85,18 @@ export class CreateFolderPlugin extends Plugin {
       const buttonEnabled = this.config.hasPermission(
         this.forAddress() ? "can_create_address" : "can_create_dataset",
       );
-      this.formToolbarService.setButtonState("toolBtnFolder", buttonEnabled);
+      this.toggleButtonState(buttonEnabled);
     }
 
     this.formSubscriptions.push(toolbarEventSubscription);
   }
 
+  private toggleButtonState(buttonEnabled: boolean) {
+    this.formToolbarService.setButtonState("toolBtnFolder", buttonEnabled);
+  }
+
   async createFolder() {
+    this.toggleButtonState(false);
     // show dialog where user can choose name of the folder and location
     // it can be created under the root node or another folder
     // TODO: parent node determination is the same as in new-doc plugin
@@ -116,19 +121,13 @@ export class CreateFolderPlugin extends Plugin {
         ? this.addressTreeStore
         : this.documentTreeStore;
 
-      let parentDocId = null;
       await store.waitForDocumentInStore(selectedDoc.id);
-      const folder = store.getFirstParentFolder(selectedDoc.id as number);
-      if (folder !== null) {
-        parentDocId = folder.id;
-      }
-      this.showDialog(parentDocId);
-    } else {
-      this.showDialog(null);
     }
+    this.toggleButtonState(true);
+    this.showDialog();
   }
 
-  showDialog(parentDocId: string) {
+  showDialog() {
     this.dialog.open(CreateNodeComponent, {
       maxWidth: 600,
       disableClose: false,

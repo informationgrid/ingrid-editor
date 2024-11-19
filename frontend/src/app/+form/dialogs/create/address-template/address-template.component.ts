@@ -162,12 +162,14 @@ export class AddressTemplateComponent implements OnInit {
       organization.reset();
       organization.updateValueAndValidity();
       lastName.setValidators(Validators.required);
+      lastName.updateValueAndValidity();
     } else {
       lastName.clearValidators();
       lastName.reset();
       lastName.updateValueAndValidity();
       firstName.reset();
       organization.setValidators(Validators.required);
+      organization.updateValueAndValidity();
     }
   }
 

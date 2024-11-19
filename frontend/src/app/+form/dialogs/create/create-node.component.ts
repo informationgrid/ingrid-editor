@@ -122,7 +122,6 @@ export class CreateNodeComponent implements OnInit {
   selectedLocation: number = null;
 
   path = computed<ShortTreeNode[]>(() => {
-    // await this.getStore().waitForDocumentInStore(path[path.length - 1].id);
     return this.overridePath() ?? this.mapPath(this.getBreadcrumb());
   });
 
