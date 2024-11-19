@@ -2,11 +2,11 @@
     label="Schlagworte
 konsolidieren"
     (submit)="acceptConsolidatedKeywords(); isSaving = true"
-    [disabled]="isLoading || isSaving || !hasKeywords"
+    [disabled]="isLoading || isSaving || !hasKeywords || timedOut"
 >
     <ng-container content>
         @if (!isLoading) {
-            @if (this.hasKeywords) {
+            @if (hasKeywords) {
                 @for (keywordType of keywordDialogData; track keywordType) {
                     @if (keywordType.keywords.length) {
                         <div
@@ -49,22 +49,31 @@ konsolidieren"
                         </div>
                     }
                 }
-                <div class="help flex-row align-items-center">
-                    <mat-icon svgIcon="info-24px"></mat-icon>
-                    <div class="legend">
-                        <div>
-                            Grün hinterlegte Schlagworte werden der Liste
-                            hinzugefügt.
-                        </div>
-                        <div>Rot hinterlegte Schlagworte werden entfernt.</div>
+                @if (timedOut) {
+                    <div>
+                        Die Schlagworte konnten nicht konsolidiert werden.
                     </div>
-                </div>
-                @if (timedOutKeywords.length) {
                     <div class="error-box flex-row align-items-center">
-                        Verbindungsprobleme bei:
-                        {{ timedOutThesauri.join(", ") }}<br />Folgende
-                        Schlagworte werden den Freien Schlagworten zugeordnet:
-                        {{ timedOutKeywords.join(", ") }}
+                        <mat-icon svgIcon="error-24px"></mat-icon>
+                        <div class="error-message">
+                            <div>
+                                Es konnte keine Verbindung zu einem der Thesauri
+                                hergestellt werden.
+                            </div>
+                        </div>
+                    </div>
+                } @else {
+                    <div class="help flex-row align-items-center">
+                        <mat-icon svgIcon="info-24px"></mat-icon>
+                        <div class="legend">
+                            <div>
+                                Grün hinterlegte Schlagworte werden der Liste
+                                hinzugefügt.
+                            </div>
+                            <div>
+                                Rot hinterlegte Schlagworte werden entfernt.
+                            </div>
+                        </div>
                     </div>
                 }
             } @else {
@@ -88,7 +97,7 @@ konsolidieren"
     </ng-container>
 
     <ng-container actions>
-        @if (!this.isLoading && this.hasKeywords && timedOutKeywords.length) {
+        @if (!isLoading && hasKeywords && timedOut) {
             <button
                 color="secondary"
                 mat-flat-button

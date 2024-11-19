@@ -81,8 +81,7 @@ export class ConsolidateDialogComponent implements OnInit {
   umthesKeywords: any[] = [];
   freeKeywords: any[] = [];
 
-  timedOutKeywords: string[] = [];
-  timedOutThesauri: string[] = [];
+  timedOut: boolean;
 
   keywordHierarchyMap: Map<ThesaurusType, ThesaurusResult[][]>;
 
@@ -131,9 +130,6 @@ export class ConsolidateDialogComponent implements OnInit {
     this.umthesKeywords = this.keywords?.umthes || [];
     this.freeKeywords = this.keywords?.free || [];
 
-    this.timedOutKeywords = [];
-    this.timedOutThesauri = [];
-
     this.keywordHierarchyMap = new Map([
       [this.keywordCategories.themes, [this.inspireTopics, []]],
       [this.keywordCategories.gemet, [this.gemetKeywords, []]],
@@ -146,8 +142,7 @@ export class ConsolidateDialogComponent implements OnInit {
 
   protected async consolidateKeywords() {
     this.isLoading = true;
-    this.timedOutKeywords = [];
-    this.timedOutThesauri = [];
+    this.timedOut = false;
 
     try {
       let analyzedKeywords = await this.keywordAnalysis.analyzeKeywords(
@@ -160,18 +155,17 @@ export class ConsolidateDialogComponent implements OnInit {
           ),
         ].map((keyword) => keyword.label),
         this.isInspireIdentified,
-        true,
       );
       analyzedKeywords = removeDuplicatesByValue(analyzedKeywords, "label");
 
-      analyzedKeywords
-        .filter((keyword) => !keyword.found)
-        .forEach((keyword) => {
-          this.timedOutKeywords.push(keyword.label);
-          this.timedOutThesauri.push(keyword.thesaurus);
-        });
-      this.timedOutThesauri = Array.from(new Set(this.timedOutThesauri));
-      analyzedKeywords = analyzedKeywords.filter((keyword) => keyword.found);
+      // analyzedKeywords
+      //   .filter((keyword) => !keyword.found)
+      //   .forEach((keyword) => {
+      //     this.timedOutKeywords.push(keyword.label);
+      //     this.timedOutThesauri.push(keyword.thesaurus);
+      //   });
+      // this.timedOutThesauri = Array.from(new Set(this.timedOutThesauri));
+      // analyzedKeywords = analyzedKeywords.filter((keyword) => keyword.found);
 
       this.categorizeKeywords(analyzedKeywords);
       this.addAllKeywordStatuses();
@@ -179,6 +173,9 @@ export class ConsolidateDialogComponent implements OnInit {
       this.sortKeywordsByStatus();
       this.removeAllDuplicateKeywords();
       this.setKeywordDialogData();
+    } catch (error) {
+      console.error("Error consolidating keywords", error);
+      this.timedOut = true;
     } finally {
       this.isLoading = false;
     }

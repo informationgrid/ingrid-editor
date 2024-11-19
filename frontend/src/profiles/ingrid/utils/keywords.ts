@@ -19,13 +19,12 @@
  */
 import { ThesaurusResult, ThesaurusType } from "../components/thesaurus-result";
 import { HttpClient } from "@angular/common/http";
-import { firstValueFrom, throwError, timeout } from "rxjs";
+import { firstValueFrom } from "rxjs";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { inject, Injectable } from "@angular/core";
 import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IgeError } from "../../../app/models/ige-error";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { catchError } from "rxjs/operators";
 import { FormArray, FormGroup } from "@angular/forms";
 
 export interface KeywordSectionOptions {
@@ -76,19 +75,12 @@ export class KeywordAnalysis {
     "321": "5",
   };
 
-  async analyzeKeywords(
-    values: string[],
-    checkThemes: boolean,
-    consolidation: boolean = false,
-  ) {
+  async analyzeKeywords(values: string[], checkThemes: boolean) {
     return await Promise.all(
       values
         .map((item: string) => item.trim())
         .filter((item: string) => item.length > 0)
-        .map(
-          async (item) =>
-            await this.assignKeyword(item, checkThemes, consolidation),
-        ),
+        .map(async (item) => await this.assignKeyword(item, checkThemes)),
     );
   }
 
@@ -204,31 +196,18 @@ export class KeywordAnalysis {
     }
   }
 
-  async assignKeyword(
-    item: string,
-    checkThemes: boolean,
-    consolidation: boolean,
-  ): Promise<ThesaurusResult> {
+  private async assignKeyword(item: string, checkThemes: boolean) {
     if (checkThemes) {
       const resultTheme = this.checkInThemes(item);
       if (resultTheme.found) return resultTheme;
     }
-    for (const thesaurus of ["gemet", "umthes"]) {
-      try {
-        const thesaurusResult = await this.checkInThesaurus(item, thesaurus);
-        if (thesaurusResult.found) return thesaurusResult;
-      } catch (error) {
-        if (consolidation) {
-          return {
-            found: false,
-            value: { label: item },
-            label: item,
-            thesaurus: this.mapThesaurusToLabel(thesaurus),
-          };
-        }
-      }
-    }
-    return this.addFreeKeyword(item);
+
+    const gemetResult = await this.checkInThesaurus(item, "gemet");
+    if (gemetResult.found) return gemetResult;
+
+    const umthesResult = await this.checkInThesaurus(item, "umthes");
+    if (umthesResult.found) return umthesResult;
+    else return this.addFreeKeyword(item);
   }
 
   checkInThemes(item: string): ThesaurusResult {
@@ -257,30 +236,18 @@ export class KeywordAnalysis {
     };
   }
 
-  async checkInThesaurus(
+  private async checkInThesaurus(
     item: string,
     thesaurus: string,
-    timeoutDuration = 20000,
   ): Promise<ThesaurusResult> {
-    const thesaurusName = this.mapThesaurusToLabel(thesaurus);
-
     const response = await firstValueFrom(
-      this.http
-        .get<
-          any[]
-        >(`${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(item)}&type=EXACT`)
-        .pipe(
-          timeout(timeoutDuration), // Set the timeout for the HTTP request
-          catchError((err) => {
-            // Handle timeout error or other errors
-            if (err.name === "TimeoutError") {
-              return throwError(() => new Error("Request timed out"));
-            }
-            return throwError(() => err);
-          }),
-        ),
+      this.http.get<any[]>(
+        `${ConfigService.backendApiUrl}keywords/${thesaurus}?q=${encodeURI(
+          item,
+        )}&type=EXACT`,
+      ),
     );
-
+    const thesaurusName = this.mapThesaurusToLabel(thesaurus);
     if (response.length > 0) {
       return {
         thesaurus: thesaurusName,
@@ -289,12 +256,6 @@ export class KeywordAnalysis {
         label: response[0].label,
       };
     }
-
-    return {
-      thesaurus: thesaurusName,
-      found: false,
-      value: null,
-      label: item,
-    };
+    return { thesaurus: thesaurusName, found: false, value: null, label: item };
   }
 }

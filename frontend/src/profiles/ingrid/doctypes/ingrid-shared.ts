@@ -34,7 +34,7 @@ import {
 import { CookieService } from "../../../app/services/cookie.service";
 import { AbstractControl, FormControl } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { firstValueFrom, Observable, of } from "rxjs";
+import { firstValueFrom, Observable, of, TimeoutError } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
 import { HttpClient } from "@angular/common/http";
@@ -51,6 +51,7 @@ import {
   MetadataProps,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
 import { UploadService } from "../../../app/shared/upload/upload.service";
+import { IgeError } from "../../../app/models/ige-error";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -899,22 +900,35 @@ export abstract class IngridShared extends BaseDoctype {
     const checkThemes =
       options.inspireTopics &&
       formState.mainModel?.["properties"]?.isInspireIdentified;
-    const response = await this.keywordAnalysis.analyzeKeywords(
-      value.split(","),
-      checkThemes,
-    );
-
-    if (response.length > 0) {
-      this.keywordAnalysis.updateForm(
-        response,
-        field.form,
-        this.thesaurusTopics,
+    try {
+      const response = await this.keywordAnalysis.analyzeKeywords(
+        value.split(","),
+        checkThemes,
       );
-      this.informUserAboutThesaurusAnalysis(response);
+      if (response.length > 0) {
+        this.keywordAnalysis.updateForm(
+          response,
+          field.form,
+          this.thesaurusTopics,
+        );
+        this.informUserAboutThesaurusAnalysis(response);
+      }
+    } catch (error) {
+      if (error instanceof TimeoutError) {
+        throw new IgeError(
+          "Es konnte keine Verbindung zu einem der Thesauri hergestellt werden.",
+          error.stack,
+        );
+      } else {
+        throw new IgeError(
+          "Die Schlagwortanalyse konnte nicht durchgeführt werden.",
+          error.stack,
+        );
+      }
+    } finally {
+      field.formControl.enable();
+      field.formControl.setValue("");
     }
-
-    field.formControl.enable();
-    field.formControl.setValue("");
   }
 
   private informUserAboutThesaurusAnalysis(res: Awaited<ThesaurusResult>[]) {
@@ -2144,9 +2158,13 @@ export abstract class IngridShared extends BaseDoctype {
     this.showConfirmDialog(
       `Dem Datensatz werden folgende Schlagworte hinzugefügt:
         <ul>
-          <li>InVeKoS: InVeKoS${value === "gsaa" ? " + GSAA" : value === "lpis" ? " + LPIS" : ""}</li>
+          <li>InVeKoS: InVeKoS${
+            value === "gsaa" ? " + GSAA" : value === "lpis" ? " + LPIS" : ""
+          }</li>
           <li>Gemet: Gemeinsame Agrarpolitik</li><li>ISO-Themenkategorie: Landwirtschaft</li>
-          <li>INSPIRE-Themen: ${value === "gsaa" ? "Bodennutzung" : "Bodenbedeckung"}</li>
+          <li>INSPIRE-Themen: ${
+            value === "gsaa" ? "Bodennutzung" : "Bodenbedeckung"
+          }</li>
         </ul>`,
       cookieId,
     ).subscribe((decision) => {
