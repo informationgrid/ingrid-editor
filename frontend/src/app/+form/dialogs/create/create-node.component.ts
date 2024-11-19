@@ -113,7 +113,7 @@ export class CreateNodeComponent implements OnInit {
   parent: Signal<number> = computed(() => {
     return this.path()[this.path().length - 1]?.id ?? null;
   });
-  forAddress: boolean;
+  forAddress = signal<boolean>(false);
   selectedPage = 0;
   rootTreeName: string;
   isFolder = signal<boolean>(true);
@@ -147,20 +147,20 @@ export class CreateNodeComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: CreateOptions,
   ) {
     this.isFolder.set(data.isFolder);
-    this.forAddress = this.data.forAddress;
+    this.forAddress.set(this.data.forAddress);
     this.rootTreeName = this.translocoService.translate(
-      this.forAddress ? "menu.address" : "menu.form",
+      this.forAddress() ? "menu.address" : "menu.form",
     );
 
     if (!this.isFolder()) {
       this.title = this.translocoService.translate(
-        this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
+        this.forAddress() ? "toolbar.newAddress" : "toolbar.newDocument",
       );
     }
   }
 
   async ngOnInit() {
-    if (this.isFolder() || !this.forAddress) {
+    if (this.isFolder() || !this.forAddress()) {
       this.initializeForDocumentsAndFolders();
     } else {
       this.initializeForAddresses();
@@ -171,7 +171,7 @@ export class CreateNodeComponent implements OnInit {
       .subscribe((value) => this.docTypeChoice.set(value.choice));
 
     // set initial path to current position
-    const path = this.forAddress
+    const path = this.forAddress()
       ? this.generalStore.breadcrumb().address
       : this.generalStore.breadcrumb().document;
 
@@ -191,7 +191,7 @@ export class CreateNodeComponent implements OnInit {
 
     this.alreadySubmitted = true;
 
-    if (this.isFolder() || !this.forAddress) {
+    if (this.isFolder() || !this.forAddress()) {
       await this.handleDocumentCreate();
     } else {
       await this.handleAddressCreate();
@@ -223,7 +223,6 @@ export class CreateNodeComponent implements OnInit {
   }
 
   quickBreadcrumbChange(id: number) {
-    // this.parent = id;
     const index = this.path().findIndex((item) => item.id === id);
     this.path.set([...this.path().splice(0, index + 1)]);
   }
@@ -246,7 +245,7 @@ export class CreateNodeComponent implements OnInit {
     if (!entity) return [];
 
     const cannotAddBelow = this.docBehaviours.cannotAddDocumentBelow()(
-      this.forAddress,
+      this.forAddress(),
       <TreeNode>{
         type: entity._type,
         hasWritePermission: entity.hasWritePermission,
@@ -261,7 +260,7 @@ export class CreateNodeComponent implements OnInit {
   }
 
   private getStore() {
-    return this.forAddress ? this.addressTreeStore : this.documentTreeStore;
+    return this.forAddress() ? this.addressTreeStore : this.documentTreeStore;
   }
 
   private initializeForDocumentsAndFolders() {
@@ -322,7 +321,7 @@ export class CreateNodeComponent implements OnInit {
           data,
           type,
           parent,
-          this.forAddress,
+          this.forAddress(),
           pathIds,
         ),
       ),
@@ -333,7 +332,7 @@ export class CreateNodeComponent implements OnInit {
     this.dialogRef.close(uuid);
 
     const page =
-      ConfigService.catalogId + (this.forAddress ? "/address" : "/form");
+      ConfigService.catalogId + (this.forAddress() ? "/address" : "/form");
     this.router.navigate([page, { id: uuid }]);
   }
 }
