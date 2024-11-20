@@ -57,7 +57,9 @@ function loadProfile(configService: ConfigService) {
         map(({ ProfilePack }) => ProfilePack.getMyComponent() as Type<any>),
         take(1),
         catchError(() => {
-          throw new IgeError("Profile could not be loaded");
+          throw new IgeError(
+            `Profile '${configService.$userInfo.value.currentCatalog?.type}' could not be loaded. You may need to add it to the profile.mapper.ts file.`,
+          );
         }),
       )
       .subscribe((data) => {

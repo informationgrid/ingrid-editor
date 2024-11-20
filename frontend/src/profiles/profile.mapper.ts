@@ -39,6 +39,8 @@ export function ProfileMapper(profileId: string) {
       return from(import("./profile-ingrid-lfubayern"));
     case "ingrid-lubw":
       return from(import("./profile-ingrid-lubw"));
+    case "ingrid-lubw-skdv-ok":
+      return from(import("./profile-ingrid-lubw-skdv-ok"));
     case "ingrid-up-sh":
       return from(import("./profile-ingrid-up-sh"));
     case "ingrid-wsv":
