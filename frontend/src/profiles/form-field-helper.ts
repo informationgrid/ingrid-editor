@@ -942,6 +942,10 @@ export class FormFieldHelper {
     info.fieldConfig.splice(info.index + 1, 0, field);
   }
 
+  addMultipleAfter(info: FieldConfigPosition, fields: FormlyFieldConfig[]) {
+    info.fieldConfig.splice(info.index + 1, 0, ...fields);
+  }
+
   private initExpressions(expressions = {}) {
     return {
       "props.disabled": "formState.disabled",

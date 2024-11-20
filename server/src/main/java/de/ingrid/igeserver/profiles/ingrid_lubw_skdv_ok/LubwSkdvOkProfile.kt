@@ -19,6 +19,9 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lubw_skdv_ok
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.repository.CatalogRepository
@@ -50,4 +53,51 @@ class LubwSkdvOkProfile(
     override val indexExportFormatID = "indexInGridIDFSkdvOk"
 
     override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/bast/default-mapping.json")?.readText() ?: ""
+
+    override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
+        val catalogRef = catalogRepo.findByIdentifier(catalogId)
+
+        val codelist30000 = createCodelist30000(catalogRef)
+        val codelist30001 = createCodelist30001(catalogRef)
+
+        when (codelistId) {
+            "30000" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30000)
+                return
+            }
+            "30001" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30001)
+                return
+            }
+            null -> {
+                codelistHandler.removeAndAddCodelists(
+                    catalogId,
+                    listOf(codelist30000, codelist30001),
+                )
+            }
+        }
+        super.initCatalogCodelists(catalogId, codelistId)
+    }
+
+    private fun createCodelist30000(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30000"
+        catalog = catalogRef
+        name = "Datenführende Stelle"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Test-Eintrag Datenführende Stelle"))
+        }
+    }
+
+    private fun createCodelist30001(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30001"
+        catalog = catalogRef
+        name = "Produktionsumgebung"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Test-Eintrag Prod-Umgebung"))
+        }
+    }
 }
