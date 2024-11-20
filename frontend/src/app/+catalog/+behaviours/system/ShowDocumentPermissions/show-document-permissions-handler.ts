@@ -51,6 +51,7 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
+      if (!this.configService.hasMdAdminRights()) return;
       if (this.forAddress()) {
         this.updateShowRightsButton(this.generalStore.openedAddress(), true);
       } else {
