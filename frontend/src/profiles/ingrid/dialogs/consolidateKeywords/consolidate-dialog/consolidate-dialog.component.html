@@ -1,6 +1,5 @@
 <ige-dialog-template
-    label="Schlagworte
-konsolidieren"
+    label="Schlagworte konsolidieren"
     (submit)="acceptConsolidatedKeywords(); isSaving = true"
     [disabled]="isLoading || isSaving || !hasKeywords || timedOut"
 >
@@ -28,7 +27,7 @@ konsolidieren"
                                             'removed-keyword':
                                                 keyword.status === 'removed',
                                             'unchanged-keyword':
-                                                keyword.status === 'unchanged'
+                                                keyword.status === 'unchanged',
                                         }"
                                         [aria-label]="keyword.label"
                                     >
