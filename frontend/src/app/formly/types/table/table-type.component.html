@@ -14,11 +14,22 @@
     </ng-template>
 
     @if (dataSource?.data?.length > 0) {
-        <div class="table-header flex-row" [attr.data-cy]="key + '-header'">
+        <div
+            class="table-header flex-row justify-content-space-between"
+            [attr.data-cy]="key + '-header'"
+        >
             <ng-container *ngTemplateOutlet="label"></ng-container>
             @if (formControl.enabled) {
-                <div class="flex-1"></div>
-                @if (!batchMode) {
+                @if (batchMode()) {
+                    <button
+                        type="button"
+                        mat-button
+                        (click)="toggleBatchMode()"
+                    >
+                        <mat-icon>done</mat-icon>
+                        Fertig
+                    </button>
+                } @else {
                     <button
                         color="primary"
                         type="button"
@@ -29,22 +40,12 @@
                         Bearbeiten
                     </button>
                 }
-                @if (batchMode) {
-                    <button
-                        type="button"
-                        mat-button
-                        (click)="toggleBatchMode()"
-                    >
-                        <mat-icon>done</mat-icon>
-                        Fertig
-                    </button>
-                }
             }
         </div>
     }
 
     <div [class.padding-bottom]="dataSource?.data?.length > 0">
-        @if (batchMode) {
+        @if (batchMode()) {
             <div class="table-batch-edit-row">
                 <mat-checkbox
                     (change)="$event ? masterToggle() : null"
@@ -91,7 +92,7 @@
             <mat-table
                 class="flex-col"
                 [dataSource]="dataSource"
-                [class.edit-mode]="batchMode"
+                [class.edit-mode]="batchMode()"
                 [attr.data-cy]="key + '-table'"
                 cdkDropList
                 cdkDrag
@@ -99,11 +100,11 @@
                 (cdkDropListDropped)="dragDisabled = true; drop($event)"
             >
                 @for (
-                    column of displayedColumns;
+                    column of initialColumnsWithManagement();
                     track column;
                     let i = $index
                 ) {
-                    <ng-container [matColumnDef]="column">
+                    <ng-container [matColumnDef]="column.key ?? column">
                         @switch (column) {
                             <!-- Select Column -->
                             @case ("_select_") {
@@ -111,10 +112,7 @@
                                     *matHeaderCellDef
                                 ></mat-header-cell>
                                 <mat-cell
-                                    *matCellDef="
-                                        let element;
-                                        let rowIndex = index
-                                    "
+                                    *matCellDef="let element"
                                     class="select-controls"
                                 >
                                     <mat-icon
@@ -143,8 +141,8 @@
                             <!-- Action Column -->
                             @case ("_actions_") {
                                 <mat-header-cell *matHeaderCellDef
-                                    >Aktion</mat-header-cell
-                                >
+                                    >Aktion
+                                </mat-header-cell>
                                 <mat-cell
                                     *matCellDef="
                                         let element;
@@ -181,99 +179,53 @@
                             }
                             <!-- Normal column-->
                             @default {
-                                @if (
-                                    {
-                                        width: props.columns[
-                                            batchMode ? i - 1 : i
-                                        ].width,
-                                    };
-                                    as flex
-                                ) {
-                                    <mat-header-cell
-                                        *matHeaderCellDef
-                                        [class]="
-                                            props.columns[batchMode ? i - 1 : i]
-                                                .class
-                                        "
-                                        [style.flex-basis]="flex.width"
-                                        [style.max-width]="flex.width"
+                                <mat-header-cell
+                                    *matHeaderCellDef
+                                    [class]="column.class"
+                                    [style.flex-basis]="column.width"
+                                    [style.max-width]="column.width"
+                                >
+                                    {{ column.label
+                                    }}<span *ngIf="column.props?.required"
+                                        >*</span
                                     >
-                                        {{
-                                            props.columns[batchMode ? i - 1 : i]
-                                                .label
-                                        }}
-                                        @if (
-                                            props.columns[batchMode ? i - 1 : i]
-                                                .props.required
-                                        ) {
-                                            <span>*</span>
-                                        }
-                                    </mat-header-cell>
-                                    <mat-cell
-                                        *matCellDef="
-                                            let element;
-                                            let rowIndex = index
+                                </mat-header-cell>
+                                <mat-cell
+                                    *matCellDef="
+                                        let element;
+                                        let rowIndex = index
+                                    "
+                                    [class]="column.class"
+                                    [style.flex-basis]="column.width"
+                                    [style.max-width]="column.width"
+                                >
+                                    <span
+                                        [innerHTML]="
+                                            formattedCell[rowIndex]
+                                                ? (formattedCell[rowIndex][
+                                                      column.key
+                                                  ] ?? element[column.key])
+                                                : element[column.key]
                                         "
-                                        [class]="
-                                            props.columns[batchMode ? i - 1 : i]
-                                                .class
+                                        (click)="
+                                            handleCellClick(i, element, $event)
                                         "
-                                        [style.flex-basis]="flex.width"
-                                        [style.max-width]="flex.width"
-                                    >
-                                        <!--        <mat-cell *matCellDef="let element" [matPopoverEdit]="nameEdit" matPopoverEditTabOut matEditOpen>-->
-                                        <span
-                                            [innerHTML]="
-                                                formattedCell[rowIndex]
-                                                    ? (formattedCell[rowIndex][
-                                                          column
-                                                      ] ?? element[column])
-                                                    : element[column]
-                                            "
-                                            (click)="
-                                                handleCellClick(
-                                                    i,
-                                                    element,
-                                                    $event
-                                                )
-                                            "
-                                        ></span>
-                                        <!-- This edit is defined in the cell and can implicitly access element -->
-                                        <!--<ng-template #nameEdit>
-                    <form #f="ngForm"
-                      matEditLens
-                      matEditLensClickOutBehavior="submit"
-                      (ngSubmit)="onSubmitName(element, f)"
-                      [matEditLensPreservedFormValue]="preservedValues[column].get(element)"
-                      (matEditLensPreservedFormValueChange)="preservedValues[column].set(element, $event)">
-                      <div mat-edit-content>
-                        <mat-form-field class="full-width">
-                          <input matInput [ngModel]="element[column]" name="name" required>
-                        </mat-form-field>
-                      </div>
-                    </form>
-                  </ng-template>-->
-                                    </mat-cell>
-                                }
+                                    ></span>
+                                </mat-cell>
                             }
                         }
                     </ng-container>
                 }
+                @let shownColumns =
+                    formControl.enabled
+                        ? displayedColumns()
+                        : displayedColumnsReadOnly();
                 <mat-header-row
-                    *matHeaderRowDef="
-                        formControl.enabled
-                            ? displayedColumns
-                            : displayedColumnsReadOnly
-                    "
+                    *matHeaderRowDef="shownColumns"
                 ></mat-header-row>
                 <mat-row
-                    *matRowDef="
-                        let row;
-                        columns: formControl.enabled
-                            ? displayedColumns
-                            : displayedColumnsReadOnly
-                    "
-                    (click)="batchMode ? selection.toggle(row) : null"
+                    *matRowDef="let row; columns: shownColumns"
+                    (click)="batchMode() ? selection.toggle(row) : null"
                     [class.disabled]="formControl.disabled"
                     cdkDrag
                     [cdkDragData]="row"
