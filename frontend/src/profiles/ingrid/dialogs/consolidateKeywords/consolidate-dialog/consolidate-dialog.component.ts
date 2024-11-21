@@ -274,7 +274,7 @@ export class ConsolidateDialogComponent implements OnInit {
             k2.label.toLowerCase() === keyword.label.toLowerCase() &&
             k2.status === "removed",
         );
-        if (!wasFoundInOtherThesauri && !wasRemoved) {
+        if (!wasFoundInOtherThesauri && wasRemoved) {
           keywords.find((k) => k.label === keyword.label).status = "unchanged";
         }
       });
