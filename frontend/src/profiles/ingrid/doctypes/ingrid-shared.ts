@@ -51,6 +51,7 @@ import {
   MetadataProps,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
 import { UploadService } from "../../../app/shared/upload/upload.service";
+import { IgeError } from "../../../app/models/ige-error";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -634,12 +635,16 @@ export abstract class IngridShared extends BaseDoctype {
                 className: "field.props.required ? '' : 'optional'",
                 hide: "formState.mainModel?.properties?.isInspireIdentified === undefined",
               },
-              change: (field, $event) =>
+              change: (field: FormlyFieldConfig, $event) =>
                 options.thesaurusTopics &&
-                this.keywordAnalysis.updateIsoCategory($event, field),
-              remove: (field, $event) =>
+                this.keywordAnalysis.updateIsoCategory($event, field.form),
+              remove: (field: FormlyFieldConfig, $event) =>
                 options.thesaurusTopics &&
-                this.keywordAnalysis.updateIsoCategory($event, field, true),
+                this.keywordAnalysis.updateIsoCategory(
+                  $event,
+                  field.form,
+                  true,
+                ),
               validators: {
                 ...(this.showInVeKoSField && {
                   invekos_gsaa: {
@@ -895,18 +900,28 @@ export abstract class IngridShared extends BaseDoctype {
     const checkThemes =
       options.inspireTopics &&
       formState.mainModel?.["properties"]?.isInspireIdentified;
-    const response = await this.keywordAnalysis.analyzeKeywords(
-      value.split(","),
-      checkThemes,
-    );
+    try {
+      const response = await this.keywordAnalysis.analyzeKeywords(
+        value.split(","),
+        checkThemes,
+      );
+      if (response.length == 0) return;
 
-    if (response.length > 0) {
-      this.keywordAnalysis.updateForm(response, field, this.thesaurusTopics);
+      this.keywordAnalysis.updateForm(
+        response,
+        field.form,
+        this.thesaurusTopics,
+      );
       this.informUserAboutThesaurusAnalysis(response);
+    } catch (error: any) {
+      throw new IgeError(
+        `Es gab ein Problem bei der Schlagwortanalyse: ${error.error?.errorText}`,
+        error.stack,
+      );
+    } finally {
+      field.formControl.enable();
+      field.formControl.setValue("");
     }
-
-    field.formControl.enable();
-    field.formControl.setValue("");
   }
 
   private informUserAboutThesaurusAnalysis(res: Awaited<ThesaurusResult>[]) {
@@ -1537,7 +1552,7 @@ export abstract class IngridShared extends BaseDoctype {
             expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
               !field.form.value.properties?.isOpenData ||
               ctrl.value?.some((row) => row.type?.key === "9990") || // one reference of type "Datendownload"
-              (field.form.value.fileReferences?.[0] ? true : false), // or one item in "Dateien"
+              field.form.value.fileReferences?.length > 0, // or one item in "Dateien"
             message:
               "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
           },
@@ -2136,9 +2151,13 @@ export abstract class IngridShared extends BaseDoctype {
     this.showConfirmDialog(
       `Dem Datensatz werden folgende Schlagworte hinzugefügt:
         <ul>
-          <li>InVeKoS: InVeKoS${value === "gsaa" ? " + GSAA" : value === "lpis" ? " + LPIS" : ""}</li>
+          <li>InVeKoS: InVeKoS${
+            value === "gsaa" ? " + GSAA" : value === "lpis" ? " + LPIS" : ""
+          }</li>
           <li>Gemet: Gemeinsame Agrarpolitik</li><li>ISO-Themenkategorie: Landwirtschaft</li>
-          <li>INSPIRE-Themen: ${value === "gsaa" ? "Bodennutzung" : "Bodenbedeckung"}</li>
+          <li>INSPIRE-Themen: ${
+            value === "gsaa" ? "Bodennutzung" : "Bodenbedeckung"
+          }</li>
         </ul>`,
       cookieId,
     ).subscribe((decision) => {
@@ -2158,7 +2177,7 @@ export abstract class IngridShared extends BaseDoctype {
       const itemTheme = { key: id };
       themesCtrl.setValue([...themesCtrl.value, itemTheme]);
       if (hasThesaurusTopics) {
-        this.keywordAnalysis.updateIsoCategory(itemTheme, fieldConfig);
+        this.keywordAnalysis.updateIsoCategory(itemTheme, fieldConfig.form);
       }
     }
   }
