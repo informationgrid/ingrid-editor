@@ -1,0 +1,15 @@
+<ige-dialog-template
+    [label]="data?.newEntry ? 'Eintrag hinzufügen' : 'Eintrag bearbeiten'"
+    [disabled]="disabled"
+    (submit)="submit()"
+>
+    <ng-container content>
+        <form class="flex-col small-label-width">
+            <formly-form
+                [form]="form"
+                [fields]="fields"
+                [model]="data.model"
+            ></formly-form>
+        </form>
+    </ng-container>
+</ige-dialog-template>

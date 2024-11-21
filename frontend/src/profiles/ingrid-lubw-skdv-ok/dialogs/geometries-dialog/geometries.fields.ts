@@ -1,0 +1,64 @@
+/**
+ * ==================================================
+ * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
+import { FormFieldHelper } from "../../../form-field-helper";
+import { Observable } from "rxjs";
+import { SelectOption } from "../../../../app/services/codelist/codelist.service";
+
+export function geometriesFields(
+  typeCodelist: Observable<SelectOption[]>,
+  categoryCodelist: Observable<SelectOption[]>,
+  transmissionLevelCodelist: Observable<SelectOption[]>,
+) {
+  const fieldHelper = new FormFieldHelper();
+  return [
+    fieldHelper.addInput("number", "Nummer", {
+      required: true,
+      wrappers: ["panel", "form-field"],
+      type: "number",
+    }),
+    fieldHelper.addInput("designation", "Bezeichnung", {
+      required: true,
+      wrappers: ["panel", "form-field"],
+    }),
+    fieldHelper.addInput("description", "Beschreibung", {
+      wrappers: ["panel", "form-field"],
+    }),
+    fieldHelper.addSelect("type", "Geometrietyp", {
+      options: typeCodelist,
+    }),
+    fieldHelper.addInput("scale", "Maßstab", {
+      wrappers: ["panel", "form-field"],
+    }),
+    fieldHelper.addSelect("category", "Kategorie", {
+      required: true,
+      options: categoryCodelist,
+    }),
+    fieldHelper.addSelect("transmissionLevel", "Übermittlungsstufe", {
+      required: true,
+      options: transmissionLevelCodelist,
+    }),
+    fieldHelper.addInput("decisions", "Objektartscharfe Entscheidungen", {
+      wrappers: ["panel", "form-field"],
+    }),
+    fieldHelper.addInput("responsible", "Verantwortung der Änderung", {
+      wrappers: ["panel", "form-field"],
+    }),
+  ];
+}

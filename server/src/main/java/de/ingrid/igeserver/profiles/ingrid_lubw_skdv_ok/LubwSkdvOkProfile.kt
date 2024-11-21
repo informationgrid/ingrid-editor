@@ -60,6 +60,10 @@ class LubwSkdvOkProfile(
 
         val codelist30000 = createCodelist30000(catalogRef)
         val codelist30001 = createCodelist30001(catalogRef)
+        val codelist30002 = createCodelist30002(catalogRef)
+        val codelist30003 = createCodelist30003(catalogRef)
+        val codelist30004 = createCodelist30004(catalogRef)
+        val codelist30005 = createCodelist30005(catalogRef)
 
         when (codelistId) {
             "30000" -> {
@@ -70,10 +74,26 @@ class LubwSkdvOkProfile(
                 codelistHandler.removeAndAddCodelist(catalogId, codelist30001)
                 return
             }
+            "30002" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30002)
+                return
+            }
+            "30003" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30003)
+                return
+            }
+            "30004" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30004)
+                return
+            }
+            "30005" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30005)
+                return
+            }
             null -> {
                 codelistHandler.removeAndAddCodelists(
                     catalogId,
-                    listOf(codelist30000, codelist30001),
+                    listOf(codelist30000, codelist30001, codelist30002, codelist30003, codelist30004, codelist30005),
                 )
             }
         }
@@ -103,6 +123,50 @@ class LubwSkdvOkProfile(
             codelist30001.forEach { (key, value) ->
                 add(toCodelistEntry(key, value))
             }
+        }
+    }
+
+    private fun createCodelist30002(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30002"
+        catalog = catalogRef
+        name = "Sachattribute - Gruppe"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Test-Eintrag Gruppe"))
+        }
+    }
+
+    private fun createCodelist30003(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30003"
+        catalog = catalogRef
+        name = "Sachattribute - Kategorie"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Test-Eintrag Kategorie"))
+        }
+    }
+
+    private fun createCodelist30004(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30004"
+        catalog = catalogRef
+        name = "Sachattribute - Übermittlungsstufe"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Test-Eintrag Übermittlungsstufe"))
+        }
+    }
+
+    private fun createCodelist30005(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30005"
+        catalog = catalogRef
+        name = "Geometrie - Typ"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Test-Eintrag Geometrie - Typ"))
         }
     }
 }
