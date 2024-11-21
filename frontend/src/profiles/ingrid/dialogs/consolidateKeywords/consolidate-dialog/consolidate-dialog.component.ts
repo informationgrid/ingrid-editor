@@ -255,29 +255,30 @@ export class ConsolidateDialogComponent implements OnInit {
   }
 
   private keepKeywordsFoundWithAlternativeLabel() {
-    const otherThesauriNewKeywords: ThesaurusResult[] = [];
+    let otherThesauriNewKeywords: ThesaurusResult[] = [];
     for (let [thesaurus, [oldKeywords, newKeywords]] of this
       .keywordHierarchyMap) {
       if (thesaurus === this.keywordCategories.themes) {
-        otherThesauriNewKeywords.push(...newKeywords);
         continue;
       }
+      otherThesauriNewKeywords = Array.from(this.keywordHierarchyMap)
+        .filter(([key]) => key !== thesaurus)
+        .flatMap(([_, [, keywords]]) => keywords);
       const keywords = newKeywords;
-      oldKeywords.map((keyword) => {
-        const wasFoundInOtherThesauri = !otherThesauriNewKeywords.some(
+      oldKeywords.map((keyword: ThesaurusResult) => {
+        const wasFoundInOtherThesauri = otherThesauriNewKeywords.some(
           (k) => k.label?.toLowerCase() === keyword.label?.toLowerCase(),
         );
-        const wasNotRemoved = newKeywords.some(
+        const wasRemoved = newKeywords.some(
           (k2) =>
             k2.label.toLowerCase() === keyword.label.toLowerCase() &&
             k2.status === "removed",
         );
-        if (wasFoundInOtherThesauri && wasNotRemoved) {
+        if (!wasFoundInOtherThesauri && !wasRemoved) {
           keywords.find((k) => k.label === keyword.label).status = "unchanged";
         }
       });
       this.keywordHierarchyMap.set(thesaurus, [oldKeywords, keywords]);
-      otherThesauriNewKeywords.push(...newKeywords);
     }
   }
 
