@@ -28,7 +28,6 @@ import { TreeQuery } from "../../../store/tree/tree.query";
 import { DocumentState, IgeDocument } from "../../../models/ige-document";
 import { firstValueFrom, of } from "rxjs";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
-import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
 import { MatIcon } from "@angular/material/icon";
 import { MatButton, MatIconButton } from "@angular/material/button";
@@ -69,7 +68,6 @@ interface UrlReference extends Reference {
   standalone: true,
   imports: [
     FormErrorComponent,
-    AddButtonComponent,
     DocumentIconComponent,
     MatIcon,
     MatIconButton,

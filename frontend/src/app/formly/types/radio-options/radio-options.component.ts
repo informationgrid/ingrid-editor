@@ -47,7 +47,7 @@ export class RadioOptionsComponent
 
   ngOnInit() {
     this.radioOptions = this.props.radioOptions;
-    if (!this.formControl.value) {
+    if (!this.formControl.value && this.radioOptions?.length > 0) {
       this.formControl.setValue(this.radioOptions[0].key);
     }
     this.selectedValue = this.formControl.value;

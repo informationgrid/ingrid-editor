@@ -17,7 +17,7 @@ import org.springframework.transaction.PlatformTransactionManager
  * Iterate though references and add referenceType depending on presents of field "url" or "uuidRef"
  */
 @Service
-class M087MigrateReferencesReferenceType : MigrationBase("0.87") {
+class M090MigrateReferencesReferenceType : MigrationBase("0.90") {
 
     private var log = logger()
 
@@ -31,7 +31,7 @@ class M087MigrateReferencesReferenceType : MigrationBase("0.87") {
     private lateinit var docRepo: DocumentRepository
 
     override fun exec() {
-        log.info("Executing migration 0.87")
+        log.info("Executing migration 0.90")
     }
 
     override fun postExec() {
@@ -50,9 +50,8 @@ class M087MigrateReferencesReferenceType : MigrationBase("0.87") {
 
                 documents
                     .forEach {
-                        val type = (it as Document).catalog!!.type
-                        val field = "references"
-                        val changed = migrateReferences(it, field)
+                        (it as Document)
+                        val changed = migrateReferences(it)
                         if (changed) {
                             log.info("Migrated doc with dbID ${it.id}")
                             docRepo.save(it)
@@ -63,8 +62,8 @@ class M087MigrateReferencesReferenceType : MigrationBase("0.87") {
         }
     }
 
-    private fun migrateReferences(doc: Document?, field: String): Boolean {
-        val references = doc?.data?.get(field)
+    private fun migrateReferences(doc: Document?): Boolean {
+        val references = doc?.data?.get("references")
         if (references == null || references.isNull) return false
         var changed = false
 
@@ -92,7 +91,7 @@ class M087MigrateReferencesReferenceType : MigrationBase("0.87") {
                     }
                     changed = true
                 }
-                log.info("Before: $it")
+                log.info("After: $it")
             }
         }
 
