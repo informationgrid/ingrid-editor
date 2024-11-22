@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$ref": "#/definitions/BMI",
   "definitions": {
     "BMI": {
@@ -10,41 +10,26 @@
           "type": "string"
         },
         "_type": {
-          "type": "string"
+          "const": "OpenDataDoc"
         },
         "title": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "minLength": 1
         },
         "events": {
-          "type": [
-            "null",
-            "array"
-          ],
+          "type": ["null", "array"],
           "items": {
             "$ref": "#/definitions/Event"
           }
         },
         "landingPage": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "qualityProcessURI": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "spatial": {
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": ["array", "null"],
           "items": {
             "$ref": "#/definitions/Spatial"
           }
@@ -62,10 +47,7 @@
         "keywords": {
           "type": "array",
           "items": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           }
         },
         "temporal": {
@@ -100,10 +82,7 @@
           ]
         },
         "legalBasis": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "distributions": {
           "type": "array",
@@ -135,10 +114,7 @@
           "$ref": "#/definitions/KeyValue"
         }
       },
-      "required": [
-        "ref",
-        "type"
-      ],
+      "required": ["ref", "type"],
       "title": "Address"
     },
     "Distribution": {
@@ -149,16 +125,10 @@
           "$ref": "#/definitions/Link"
         },
         "title": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "description": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "format": {
           "oneOf": [
@@ -174,16 +144,10 @@
           "$ref": "#/definitions/KeyValue"
         },
         "byClause": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "modified": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "availability": {
           "oneOf": [
@@ -202,9 +166,7 @@
           }
         }
       },
-      "required": [
-        "link"
-      ],
+      "required": ["link"],
       "title": "Distribution"
     },
     "Link": {
@@ -212,35 +174,19 @@
       "additionalProperties": false,
       "properties": {
         "uri": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "value": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "asLink": {
-          "type": [
-            "boolean",
-            "null"
-          ]
+          "type": ["boolean", "null"]
         },
         "lastModified": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         }
       },
-      "required": [
-        "asLink",
-        "uri",
-        "value"
-      ],
+      "required": ["asLink", "uri", "value"],
       "title": "Link"
     },
     "Event": {
@@ -248,20 +194,14 @@
       "additionalProperties": false,
       "properties": {
         "date": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "format": "date-time"
         },
         "text": {
           "$ref": "#/definitions/KeyValue"
         }
       },
-      "required": [
-        "date",
-        "text"
-      ],
+      "required": ["date", "text"],
       "title": "Event"
     },
     "Spatial": {
@@ -272,16 +212,10 @@
           "type": "string"
         },
         "ars": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "title": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "value": {
           "oneOf": [
@@ -294,15 +228,10 @@
           ]
         },
         "wkt": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         }
       },
-      "required": [
-        "type"
-      ],
+      "required": ["type"],
       "title": "Spatial"
     },
     "Value": {
@@ -322,12 +251,7 @@
           "type": "number"
         }
       },
-      "required": [
-        "lat1",
-        "lat2",
-        "lon1",
-        "lon2"
-      ],
+      "required": ["lat1", "lat2", "lon1", "lon2"],
       "title": "Value"
     },
     "Temporal": {
@@ -348,10 +272,7 @@
               ]
             },
             "timeSpanDate": {
-              "type": [
-                "string",
-                "null"
-              ],
+              "type": ["string", "null"],
               "format": "date-time"
             }
           }
@@ -391,9 +312,7 @@
           }
         }
       ],
-      "required": [
-        "rangeType"
-      ],
+      "required": ["rangeType"],
       "title": "Temporal"
     },
     "KeyValue": {
@@ -401,16 +320,10 @@
       "additionalProperties": false,
       "properties": {
         "key": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "value": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         }
       },
       "title": "KeyValue"
@@ -420,17 +333,11 @@
       "additionalProperties": false,
       "properties": {
         "start": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "format": "date-time"
         },
         "end": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "format": "date-time"
         }
       },

@@ -1,108 +1,33 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "GeoDatasetLubw#1.0.0",
-  "$ref": "#/definitions/GeoDatasetLubw",
-  "definitions": {
-    "GeoDatasetLubw": {
-      "allOf": [
-        {
-          "$ref": "../geo-dataset.schema.json#/definitions/GeoDataset"
-        }
-      ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "GeoDatasetLubw",
+  "$ref": "../geo-dataset-base.schema.json",
+  "properties": {
+    "dataQualityInfo": {
+      "type": "object",
+      "unevaluatedProperties": false,
       "properties": {
-        "isAdVCompatible": true,
-        "hvd": true,
-        "hvdCategories": true,
-        "isOpenData": true,
-        "isInspireIdentified": true,
-        "isInspireConform": true,
-        "subType": true,
-        "identifier": true,
-        "spatialRepresentationType": true,
-        "vectorSpatialRepresentation": true,
-        "topicCategories": true,
-        "description": true,
-        "alternateTitle": true,
-        "parentIdentifier": true,
-        "pointOfContact": true,
-        "advProductGroups": true,
-        "themes": true,
-        "spatial": true,
-        "temporal": true,
-        "resolution": true,
-        "lineage": true,
-        "qualities": true,
-        "portrayalCatalogueInfo": true,
-        "featureCatalogueDescription": true,
-        "extraInfo": true,
-        "metadata": true,
-        "resource": true,
-        "keywords": true,
-        "digitalTransferOptions": true,
-        "distribution": true,
-        "dataset": true,
-        "dataQuality": true,
-        "dataQualityInfo": {
+        "lineage": {
           "type": "object",
-          "additionalProperties": false,
+          "unevaluatedProperties": false,
           "properties": {
-            "lineage": {
+            "source": {
               "type": "object",
-              "additionalProperties": false,
+              "unevaluatedProperties": false,
+              "$ref": "../geo-dataset-base.schema.json#/definitions/dataQualitySource",
               "properties": {
-                "source": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "properties": {
-                    "processStep": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "description": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "../../../general.schema.json#/definitions/KeyValue"
-                          }
-                        }
-                      }
-                    },
-                    "descriptions": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "../../../general.schema.json#/definitions/KeyValue"
-                      }
-                    },
-                    "environmentDescription": {
-                      "type": ["null", "string"]
-                    }
-                  }
+                "environmentDescription": {
+                  "type": ["null", "string"]
                 }
               }
             }
           }
-        },
-        "absoluteExternalPositionalAccuracy": true,
-        "priorityDatasets": true,
-        "invekos": true,
-        "invekosKeywords": true,
-        "spatialScope": true,
-        "maintenanceInformation": true,
-        "references": true,
-        "graphicOverviews": true,
-        "orderInfo": true,
-        "service": true,
-        "conformanceResult": true,
-        "gridSpatialRepresentation": true,
-        "openDataCategories": true,
-        "fileReferences": true,
-        "title": true,
-        "_uuid": true,
-        "_type": true,
-        "oac": {
-          "type": ["null", "string"]
         }
-      },
-      "additionalProperties": false
+      }
+    },
+    "oac": {
+      "type": ["null", "string"]
     }
-  }
+  },
+  "unevaluatedProperties": false
 }

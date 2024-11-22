@@ -28,7 +28,6 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.storage.Storage
-import net.pwall.json.schema.parser.Parser.Companion.isZero
 import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -38,34 +37,40 @@ data class PublicHearing(
     val considerationDocs: JsonNode,
     val publicHearingDate: JsonNode,
 )
+
 data class DecisionOfAdmissionDecisionDocs(
     val type: String,
     val decisionDate: String,
     val decisionDocs: List<JsonNode>,
 )
+
 data class DecisionOfAdmissionApprovalDocs(
     val type: String,
     val decisionDate: String,
     val approvalDocs: List<JsonNode>,
 )
+
 data class PublicDisclosureFurtherDocs(
     val type: String,
     val disclosureDate: JsonNode,
     val furtherDocs: List<JsonNode>,
     val furtherDocsPublishDuringDisclosure: Boolean,
 )
+
 data class PublicDisclosureApplicationDocs(
     val type: String,
     val disclosureDate: JsonNode,
     val applicationDocs: List<JsonNode>,
     val applicationDocsPublishDuringDisclosure: Boolean,
 )
+
 data class PublicDisclosureAnnouncementDocs(
     val type: String,
     val disclosureDate: JsonNode,
     val announcementDocs: List<JsonNode>,
     val announcementDocsPublishDuringDisclosure: Boolean,
 )
+
 data class PublicDisclosureReportsRecommendationDocs(
     val type: String,
     val disclosureDate: JsonNode,
@@ -86,11 +91,14 @@ class UvpDistributionHelper(
             emptyList(),
         )
 
-    override fun canHandleDistribution(profile: String): Boolean {
-        return "uvp" == profile
-    }
+    override fun canHandleDistribution(profile: String): Boolean = "uvp" == profile
 
-    override fun getDistributionDetails(document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
+    override fun getDistributionDetails(
+        document: Document,
+        collectionId: String,
+        recordId: String,
+        distributionId: String?,
+    ): JsonNode {
         val allDistributions: JsonNode = document.data.get("processingSteps")
 
         return if (distributionId.isNullOrEmpty()) {
@@ -121,8 +129,10 @@ class UvpDistributionHelper(
                     docTypeList.forEach { docType ->
                         val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)
                         if (updatedProcessStep is JsonNode) {
-                            val approvalDocs = updatedProcessStep.get("approvalDocs").filter { doc -> doc.getString("downloadURL.uri") == distributionId }
-                            val decisionDocs = updatedProcessStep.get("decisionDocs").filter { doc -> doc.getString("downloadURL.uri") == distributionId }
+                            val approvalDocs = updatedProcessStep.get("approvalDocs")
+                                .filter { doc -> doc.getString("downloadURL.uri") == distributionId }
+                            val decisionDocs = updatedProcessStep.get("decisionDocs")
+                                .filter { doc -> doc.getString("downloadURL.uri") == distributionId }
 
                             if (approvalDocs.isNotEmpty()) {
                                 val requestedInfo = DecisionOfAdmissionApprovalDocs(
@@ -146,14 +156,19 @@ class UvpDistributionHelper(
                 }
 
                 if (type == "publicDisclosure") {
-                    val docTypeList: List<String> = listOf("furtherDocs", "applicationDocs", "announcementDocs", "reportsRecommendationDocs")
+                    val docTypeList: List<String> =
+                        listOf("furtherDocs", "applicationDocs", "announcementDocs", "reportsRecommendationDocs")
                     docTypeList.forEach { docType ->
                         val updatedProcessStep = removeUnwantedInfos(distributionId, docType, processStep)
                         if (updatedProcessStep is JsonNode) {
-                            val furtherDocs = updatedProcessStep.get("furtherDocs").filter { doc -> doc.getString("downloadURL.uri") == distributionId }
-                            val applicationDocs = updatedProcessStep.get("applicationDocs").filter { doc -> doc.getString("downloadURL.uri") == distributionId }
-                            val announcementDocs = updatedProcessStep.get("announcementDocs").filter { doc -> doc.getString("downloadURL.uri") == distributionId }
-                            val reportsRecommendationDocs = updatedProcessStep.get("reportsRecommendationDocs").filter { doc -> doc.getString("downloadURL.uri") == distributionId }
+                            val furtherDocs = updatedProcessStep.get("furtherDocs")
+                                .filter { doc -> doc.getString("downloadURL.uri") == distributionId }
+                            val applicationDocs = updatedProcessStep.get("applicationDocs")
+                                .filter { doc -> doc.getString("downloadURL.uri") == distributionId }
+                            val announcementDocs = updatedProcessStep.get("announcementDocs")
+                                .filter { doc -> doc.getString("downloadURL.uri") == distributionId }
+                            val reportsRecommendationDocs = updatedProcessStep.get("reportsRecommendationDocs")
+                                .filter { doc -> doc.getString("downloadURL.uri") == distributionId }
 
                             if (furtherDocs.isNotEmpty()) {
                                 val requestedInfo = PublicDisclosureFurtherDocs(
@@ -202,7 +217,13 @@ class UvpDistributionHelper(
         }
     }
 
-    override fun searchForMissingFiles(distributions: JsonNode, collectionId: String, userID: String, recordId: String, distributionId: String?): List<String> {
+    override fun searchForMissingFiles(
+        distributions: JsonNode,
+        collectionId: String,
+        userID: String,
+        recordId: String,
+        distributionId: String?,
+    ): List<String> {
         val missingFiles: MutableList<String> = mutableListOf()
 
         distributions.forEach { distribution ->
@@ -250,7 +271,7 @@ class UvpDistributionHelper(
         val jsonNodeList = processStep.get(docType).filter {
             it.getString("downloadURL.uri") == distributionId
         }
-        if (jsonNodeList.size.isZero()) return null
+        if (jsonNodeList.isEmpty()) return null
 
         val jsonNode: JsonNode = convertListToJsonNode(jsonNodeList as List<Any>)
         (processStep as ObjectNode).replace(docType, jsonNode)

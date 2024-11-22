@@ -158,7 +158,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   showUploadFilesDialog() {
     this.dialog
       .open(UploadFilesDialogComponent, {
-        minWidth: 700,
+        minWidth: "min(700px, 100%)",
         data: {
           allowedUploadTypes: [
             "gif",

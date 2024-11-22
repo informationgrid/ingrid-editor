@@ -11,11 +11,13 @@
   "_state": "P",
   "_version": 7,
   "data": {
-    "isInspireIdentified": true,
-    "isAdVCompatible": true,
-    "isOpenData": true,
-    "subType": {
-      "key": "5"
+    "properties": {
+      "isInspireIdentified": "conform",
+      "isAdVCompatible": true,
+      "isOpenData": true,
+      "subType": {
+        "key": "5"
+      }
     },
     "parentIdentifier": "ueber-id",
     "graphicOverviews": [
@@ -450,7 +452,6 @@
         "explanation": "ErläuterungenVerweis"
       }
     ],
-    "isInspireConform": true,
     "openDataCategories": [
       {
         "key": "9"

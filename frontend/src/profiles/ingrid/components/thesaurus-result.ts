@@ -18,13 +18,16 @@
  * limitations under the Licence.
  */
 export interface ThesaurusResult {
-  thesaurus:
-    | "INSPIRE-Themen"
-    | "Gemet-Schlagworte"
-    | "Umthes-Schlagworte"
-    | "Freie Schlagworte";
+  thesaurus: ThesaurusType;
   value: any;
   label: string;
   found: boolean;
   alreadyExists?: boolean;
+  status?: string;
 }
+
+export type ThesaurusType =
+  | "INSPIRE-Themen"
+  | "Gemet-Schlagworte"
+  | "Umthes-Schlagworte"
+  | "Freie Schlagworte";

@@ -1,0 +1,29 @@
+.skipper {
+  top: 0;
+  left: 0;
+  position: absolute;
+  z-index: 100;
+  background: white;
+  margin-top: 25px;
+  border-radius: 0 2px 2px 0;
+  box-shadow:
+    0 2px 2px 0 rgba(0, 0, 0, 0.16),
+    0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+a {
+  width: 150px;
+  min-height: 50px;
+  margin: 5px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+a:not(:focus-visible) {
+  clip: rect(1px, 1px, 1px, 1px);
+  overflow: hidden;
+  position: absolute;
+  padding: 0;
+}

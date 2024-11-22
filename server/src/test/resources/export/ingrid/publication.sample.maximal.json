@@ -11,7 +11,9 @@
   "_version": 25,
   "_state": "P",
   "data": {
-    "isOpenData": true,
+    "properties": {
+      "isOpenData": true
+    },
     "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",
     "alternateTitle": "Hier ist die Kurzbeschreibung.",
     "description": "Hier ist die Beschreibung.",

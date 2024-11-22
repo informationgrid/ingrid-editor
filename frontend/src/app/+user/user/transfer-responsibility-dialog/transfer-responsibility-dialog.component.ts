@@ -64,7 +64,7 @@ export class TransferResponsibilityDialogComponent implements OnInit {
     private userService: UserDataService,
   ) {
     this.oldUser = data.oldUser;
-    this.users = data.users;
+    this.users = data.users.filter((user) => user.id !== this.oldUser.id);
   }
 
   ngOnInit() {}

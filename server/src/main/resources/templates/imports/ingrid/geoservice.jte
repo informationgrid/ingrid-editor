@@ -1,12 +1,16 @@
 @import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeoserviceMapper
 @import gg.jte.Content
 @import gg.jte.support.ForSupport
-@param GeoserviceMapper model 
+@param GeoserviceMapper model
 @param Content contentInfo = null
 @param Content additionalKeywords = null
 @param Content additionalResource = null
+@param Content additionalProperties = null
 {
-    @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource)
+    @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource, @`
+        @if(model.isInspireIdentified()), "isInspireIdentified": "relevant"@endif
+        ${additionalProperties}
+    `)
     "metadata": {
         "language": @template.imports.ingrid.partial.key-value(item = model.getLanguage())
     },

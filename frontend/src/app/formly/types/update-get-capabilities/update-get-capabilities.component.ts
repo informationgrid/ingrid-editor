@@ -46,7 +46,7 @@ export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {
   showDialog() {
     this.dialog
       .open(GetCapabilitiesDialogComponent, {
-        minWidth: 700,
+        minWidth: "min(700px, 100%)",
         maxWidth: "80vw",
         disableClose: true,
         hasBackdrop: true,

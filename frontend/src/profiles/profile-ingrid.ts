@@ -38,6 +38,8 @@ import { firstValueFrom, of, switchMap } from "rxjs";
 import { PublicationCheckDialogComponent } from "./ingrid/dialogs/publication-check/publication-check-dialog.component";
 import { Metadata } from "../app/models/ige-document";
 import { ResearchService } from "../app/+research/research.service";
+import { ConsolidateKeywordsPlugin } from "./ingrid/dialogs/consolidateKeywords/consolidate-keywords.plugin";
+import { PluginService } from "../app/services/plugin/plugin.service";
 
 export enum InGridDoctype {
   InGridSpecialisedTask = "InGridSpecialisedTask",
@@ -72,6 +74,8 @@ export class InGridComponent implements OnInit {
   invekos = inject(InvekosPlugin);
   dialog = inject(MatDialog);
   researchService = inject(ResearchService);
+  pluginService = inject(PluginService);
+  consolidateKeywordsPlugin = inject(ConsolidateKeywordsPlugin);
 
   // docTypesEnum: InGridDoctype
 
@@ -90,7 +94,9 @@ export class InGridComponent implements OnInit {
     ];
   };
 
-  constructor() {}
+  constructor() {
+    this.pluginService.registerPlugin(this.consolidateKeywordsPlugin);
+  }
 
   ngOnInit() {
     this.profileService.registerProfiles(this.getDocTypes());

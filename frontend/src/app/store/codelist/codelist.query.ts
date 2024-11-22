@@ -66,10 +66,16 @@ export class CodelistQuery extends QueryEntity<CodelistState, Codelist> {
     codelistId: string,
     value: string,
     field: string,
-  ): CodelistEntry {
-    return this.getCodelist(codelistId)?.entries?.find(
-      (entry) => entry.fields[field] === value,
-    );
+    caseSensitive: boolean = true,
+  ): CodelistEntry | undefined {
+    return this.getCodelist(codelistId)?.entries?.find((entry) => {
+      const entryValue = entry.fields[field];
+      if (caseSensitive) {
+        return entryValue === value;
+      } else {
+        return entryValue?.toLowerCase() === value.toLowerCase();
+      }
+    });
   }
 
   private getCodelist(codelistId: string): Codelist {

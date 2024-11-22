@@ -126,7 +126,7 @@ export class CatalogManagementComponent implements OnInit {
   showCreateCatalogDialog() {
     this.dialog
       .open(NewCatalogDialogComponent, {
-        minWidth: 400,
+        minWidth: "min(400px, 100%)",
         hasBackdrop: true,
         disableClose: true,
         data: this.profiles,
@@ -178,7 +178,7 @@ export class CatalogManagementComponent implements OnInit {
       .open(CatalogDetailComponent, {
         data: { ...catalog },
         disableClose: true,
-        minWidth: 350,
+        minWidth: "min(350px, 100%)",
       })
       .afterClosed()
       .subscribe((response: CatalogDetailResponse) => {

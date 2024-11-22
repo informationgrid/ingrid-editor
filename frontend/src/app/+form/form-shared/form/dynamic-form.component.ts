@@ -23,6 +23,7 @@ import {
   Component,
   ElementRef,
   HostListener,
+  inject,
   Input,
   OnDestroy,
   OnInit,
@@ -64,7 +65,6 @@ import {
   Subscription,
 } from "rxjs";
 import { ProfileQuery } from "../../../store/profile/profile.query";
-import { Behaviour } from "../../../services/behavior/behaviour";
 import { TreeService } from "../../sidebars/tree/tree.service";
 import { ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
@@ -85,6 +85,7 @@ import { FormInfoComponent } from "../../form-info/form-info.component";
 import { QuickNavbarComponent } from "./quick-navbar/quick-navbar.component";
 import { FolderDashboardComponent } from "../folder/folder-dashboard.component";
 import { AsyncPipe, JsonPipe } from "@angular/common";
+import { BehaviourService } from "../../../services/behavior/behaviour.service";
 
 @UntilDestroy()
 @Component({
@@ -110,6 +111,8 @@ import { AsyncPipe, JsonPipe } from "@angular/common";
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() address = false;
+
+  private behaviourService = inject(BehaviourService);
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
   @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
@@ -139,8 +142,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // initial model for form info header
   formInfoModel: any = null;
 
-  behaviours: Behaviour[];
-  error = false;
   // @ts-ignore
   model: IgeDocument = {};
 
@@ -268,9 +269,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private handleJsonViewPlugin() {
+    const plugin = this.behaviourService.getBehaviour("plugin.show.json");
     this.session.showJSONView$
       .pipe(untilDestroyed(this))
-      .subscribe((show) => (this.showJson = show));
+      .subscribe((show) => (this.showJson = plugin.isActive && show));
   }
 
   private handleServerSideValidationErrors() {

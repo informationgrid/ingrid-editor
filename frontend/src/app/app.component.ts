@@ -46,6 +46,7 @@ import {
 } from "@angular/material/sidenav";
 import { SideMenuComponent } from "./side-menu/side-menu.component";
 import { MainHeaderComponent } from "./main-header/main-header.component";
+import { SectionSkipperComponent } from "./section-skipper/section-skipper.component";
 
 @UntilDestroy()
 @Component({
@@ -60,6 +61,7 @@ import { MainHeaderComponent } from "./main-header/main-header.component";
     RouterOutlet,
     MatDrawer,
     MatDrawerContent,
+    SectionSkipperComponent,
   ],
 })
 export class AppComponent implements OnInit {
