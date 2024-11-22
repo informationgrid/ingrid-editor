@@ -89,6 +89,7 @@
   "references": [
     {
       "url": "ref-url",
+      "referenceType": "url",
       "type": { "key": "5304" },
       "title": "reference-title",
       "explanation": "reference-additional-info"

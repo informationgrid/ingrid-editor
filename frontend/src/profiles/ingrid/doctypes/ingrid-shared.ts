@@ -1564,7 +1564,8 @@ export abstract class IngridShared extends BaseDoctype {
                 (row) =>
                   row.type &&
                   row.title?.length > 0 &&
-                  (row.url?.length > 0 || row.uuidRef?.length > 0),
+                  ((row.url?.length > 0 && row.uuidRef == null) ||
+                    (row.url == null && row.uuidRef?.length > 0)),
               ),
             message:
               "Es müssen alle Pflichtfelder in den Verweisen ausgefüllt sein",
@@ -1715,6 +1716,24 @@ export abstract class IngridShared extends BaseDoctype {
         hasInlineContextHelp: true,
         updateOn: "change",
       }),
+      this.addRadioOptions("referenceType", "Verweistype auswählen", {
+        radioOptions: [
+          { title: "Externe URL", key: "url" },
+          { title: "Interner Datensatz", key: "uuidRef" },
+        ],
+      }),
+      this.addDocumentCard("uuidRef", {
+        docTypeFilter: [],
+        label: "Datensatzverweis",
+        allowRedirectToDocument: false,
+        allowMultiSelect: false,
+        titleOfDocumentSelectorDialog: "Internen Verweis hinzufügen",
+        expressions: {
+          hide: (field: FormlyFieldConfig) => {
+            return field.form.value.referenceType != "uuidRef";
+          },
+        },
+      }),
       this.addGroupSimple(
         null,
         [
@@ -1724,11 +1743,11 @@ export abstract class IngridShared extends BaseDoctype {
             hasInlineContextHelp: true,
             updateOn: "change",
             expressions: {
+              hide: (field: FormlyFieldConfig) => {
+                return field.form.value.referenceType != "url";
+              },
               "props.required": (field: FormlyFieldConfig) => {
                 return !field.form.value?.uuidRef;
-              },
-              "props.disabled": (field: FormlyFieldConfig) => {
-                return !!field.form.value?.uuidRef;
               },
               "props.label": (field: FormlyFieldConfig) => {
                 return field.props.disabled
@@ -1756,8 +1775,8 @@ export abstract class IngridShared extends BaseDoctype {
               hasInlineContextHelp: true,
               expressions: {
                 "props.required": 'field.form.value?.type?.key === "9990"', // Datendownload
-                "props.disabled": (field: FormlyFieldConfig) => {
-                  return !!field.form.value?.uuidRef;
+                hide: (field: FormlyFieldConfig) => {
+                  return field.form.value.referenceType != "url";
                 },
               },
             },
@@ -1765,41 +1784,6 @@ export abstract class IngridShared extends BaseDoctype {
         ],
         { fieldGroupClassName: "flex-row gap-12" },
       ),
-      this.addInputInline("uuidRef", "Datensatzverweis", {
-        wrappers: ["inline-help", "form-field"],
-        hasInlineContextHelp: true,
-        // updateOn: "change",
-        expressions: {
-          "props.required": (field: FormlyFieldConfig) => {
-            return !field.form.value?.url;
-          },
-          "props.disabled": (field: FormlyFieldConfig) => {
-            return !!field.form.value?.url;
-          },
-          "props.label": (field: FormlyFieldConfig) => {
-            return field.props.disabled
-              ? "Datensatzverweis (nur bei leerer URL)"
-              : "Datensatzverweis";
-          },
-        },
-        validation: {
-          messages: {
-            required: "Entweder URL oder Datensatzverweis muss ausgefüllt sein",
-          },
-        },
-        asyncValidators: {
-          uuidExists: {
-            expression: (control: AbstractControl) => {
-              if (!control.value) return of(true);
-              return firstValueFrom(
-                this.documentService.uuidExists(control.value),
-              );
-            },
-            message:
-              "Bitte geben Sie eine gültige UUID eines existierenden Datensatzes in diesem Katalog an",
-          },
-        },
-      }),
       this.addGroupSimple(null, [
         this.addTextAreaInline("explanation", "Erläuterungen", {
           wrappers: ["inline-help", "form-field"],

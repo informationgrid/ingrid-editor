@@ -312,6 +312,29 @@ export class FormFieldHelper {
     };
   }
 
+  addDocumentCard(key: string, options?) {
+    return <FormlyFieldConfig>{
+      key: key,
+      type: "documentReferenceSelector",
+      className: "flex-1",
+      props: { ...options },
+      expressions: options.expressions,
+    };
+  }
+
+  addRadioOptions(id: string, label: string, options) {
+    return <FormlyFieldConfig>{
+      key: id,
+      type: "radioOptions",
+      className: "flex-1",
+      id: id,
+      label: label,
+      props: {
+        radioOptions: options.radioOptions,
+      },
+    };
+  }
+
   /**
    * @deprecated use addRepeatList
    */

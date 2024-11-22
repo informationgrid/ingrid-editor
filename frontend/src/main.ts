@@ -123,6 +123,7 @@ import { UnitInputComponent } from "./app/formly/types/unit-type/unit-input.comp
 import { UvpSectionsComponent } from "./app/formly/types/uvp-sections/uvp-sections.component";
 import { ReferencedDocumentsTypeComponent } from "./app/formly/types/referenced-documents-type/referenced-documents-type.component";
 import { DocumentReferenceTypeComponent } from "./app/formly/types/document-reference-type/document-reference-type.component";
+import { DocumentReferenceSelectorComponent } from "./app/formly/types/document-reference-selector/document-reference-selector.component";
 import { UpdateGetCapabilitiesComponent } from "./app/formly/types/update-get-capabilities/update-get-capabilities.component";
 import { PreviewImageComponent } from "./app/formly/types/preview-image/preview-image.component";
 import { PrintTypeComponent } from "./app/formly/types/print/print-type.component";
@@ -141,6 +142,7 @@ import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
 import { MetadataTypeComponent } from "./app/formly/types/metadata-type/metadata-type.component";
 import { MatDatepickerIntl } from "@angular/material/datepicker";
 import { GermanDateIntl } from "./app/services/german-date.intl";
+import { RadioOptionsComponent } from "./app/formly/types/radio-options/radio-options.component";
 
 if (environment.production) {
   enableProdMode();
@@ -245,6 +247,14 @@ bootstrapApplication(AppComponent, {
           {
             name: "couplingService",
             component: DocumentReferenceTypeComponent,
+          },
+          {
+            name: "documentReferenceSelector",
+            component: DocumentReferenceSelectorComponent,
+          },
+          {
+            name: "radioOptions",
+            component: RadioOptionsComponent,
           },
           {
             name: "updateGetCapabilities",
