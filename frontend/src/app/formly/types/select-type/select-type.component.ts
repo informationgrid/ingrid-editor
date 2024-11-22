@@ -118,7 +118,7 @@ export class SelectTypeComponent
       .pipe(
         untilDestroyed(this),
         filter((data) => data !== undefined && data.length > 0),
-        take(1),
+        // take(1),
         map((options) =>
           options.map(
             (option) =>

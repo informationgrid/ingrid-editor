@@ -60,6 +60,7 @@
   "references": [
     {
       "url": "https://some-url/there",
+      "referenceType": "url",
       "type": { "key": "3535" },
       "title": "keys",
       "explanation": "info remarks"

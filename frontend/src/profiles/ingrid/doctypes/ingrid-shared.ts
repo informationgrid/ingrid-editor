@@ -51,6 +51,7 @@ import {
   MetadataProps,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
 import { UploadService } from "../../../app/shared/upload/upload.service";
+import { IgeError } from "../../../app/models/ige-error";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -265,7 +266,7 @@ export abstract class IngridShared extends BaseDoctype {
       null,
       [
         availableOptions.length > 0
-          ? this.addSection("Metadata", [
+          ? this.addSection("Merkmale", [
               <FormlyFieldConfig>{
                 key: "properties",
                 type: "metadata",
@@ -634,12 +635,16 @@ export abstract class IngridShared extends BaseDoctype {
                 className: "field.props.required ? '' : 'optional'",
                 hide: "formState.mainModel?.properties?.isInspireIdentified === undefined",
               },
-              change: (field, $event) =>
+              change: (field: FormlyFieldConfig, $event) =>
                 options.thesaurusTopics &&
-                this.keywordAnalysis.updateIsoCategory($event, field),
-              remove: (field, $event) =>
+                this.keywordAnalysis.updateIsoCategory($event, field.form),
+              remove: (field: FormlyFieldConfig, $event) =>
                 options.thesaurusTopics &&
-                this.keywordAnalysis.updateIsoCategory($event, field, true),
+                this.keywordAnalysis.updateIsoCategory(
+                  $event,
+                  field.form,
+                  true,
+                ),
               validators: {
                 ...(this.showInVeKoSField && {
                   invekos_gsaa: {
@@ -895,18 +900,28 @@ export abstract class IngridShared extends BaseDoctype {
     const checkThemes =
       options.inspireTopics &&
       formState.mainModel?.["properties"]?.isInspireIdentified;
-    const response = await this.keywordAnalysis.analyzeKeywords(
-      value.split(","),
-      checkThemes,
-    );
+    try {
+      const response = await this.keywordAnalysis.analyzeKeywords(
+        value.split(","),
+        checkThemes,
+      );
+      if (response.length == 0) return;
 
-    if (response.length > 0) {
-      this.keywordAnalysis.updateForm(response, field, this.thesaurusTopics);
+      this.keywordAnalysis.updateForm(
+        response,
+        field.form,
+        this.thesaurusTopics,
+      );
       this.informUserAboutThesaurusAnalysis(response);
+    } catch (error: any) {
+      throw new IgeError(
+        `Es gab ein Problem bei der Schlagwortanalyse: ${error.error?.errorText}`,
+        error.stack,
+      );
+    } finally {
+      field.formControl.enable();
+      field.formControl.setValue("");
     }
-
-    field.formControl.enable();
-    field.formControl.setValue("");
   }
 
   private informUserAboutThesaurusAnalysis(res: Awaited<ThesaurusResult>[]) {
@@ -1537,7 +1552,7 @@ export abstract class IngridShared extends BaseDoctype {
             expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
               !field.form.value.properties?.isOpenData ||
               ctrl.value?.some((row) => row.type?.key === "9990") || // one reference of type "Datendownload"
-              (field.form.value.fileReferences?.[0] ? true : false), // or one item in "Dateien"
+              field.form.value.fileReferences?.length > 0, // or one item in "Dateien"
             message:
               "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
           },
@@ -1549,7 +1564,8 @@ export abstract class IngridShared extends BaseDoctype {
                 (row) =>
                   row.type &&
                   row.title?.length > 0 &&
-                  (row.url?.length > 0 || row.uuidRef?.length > 0),
+                  ((row.url?.length > 0 && row.uuidRef == null) ||
+                    (row.url == null && row.uuidRef?.length > 0)),
               ),
             message:
               "Es müssen alle Pflichtfelder in den Verweisen ausgefüllt sein",
@@ -1700,6 +1716,24 @@ export abstract class IngridShared extends BaseDoctype {
         hasInlineContextHelp: true,
         updateOn: "change",
       }),
+      this.addRadioOptions("referenceType", "Verweistype auswählen", {
+        radioOptions: [
+          { title: "Externe URL", key: "url" },
+          { title: "Interner Datensatz", key: "uuidRef" },
+        ],
+      }),
+      this.addDocumentCard("uuidRef", {
+        docTypeFilter: [],
+        label: "Datensatzverweis",
+        allowRedirectToDocument: false,
+        allowMultiSelect: false,
+        titleOfDocumentSelectorDialog: "Internen Verweis hinzufügen",
+        expressions: {
+          hide: (field: FormlyFieldConfig) => {
+            return field.form.value.referenceType != "uuidRef";
+          },
+        },
+      }),
       this.addGroupSimple(
         null,
         [
@@ -1709,11 +1743,11 @@ export abstract class IngridShared extends BaseDoctype {
             hasInlineContextHelp: true,
             updateOn: "change",
             expressions: {
+              hide: (field: FormlyFieldConfig) => {
+                return field.form.value.referenceType != "url";
+              },
               "props.required": (field: FormlyFieldConfig) => {
                 return !field.form.value?.uuidRef;
-              },
-              "props.disabled": (field: FormlyFieldConfig) => {
-                return !!field.form.value?.uuidRef;
               },
               "props.label": (field: FormlyFieldConfig) => {
                 return field.props.disabled
@@ -1741,8 +1775,8 @@ export abstract class IngridShared extends BaseDoctype {
               hasInlineContextHelp: true,
               expressions: {
                 "props.required": 'field.form.value?.type?.key === "9990"', // Datendownload
-                "props.disabled": (field: FormlyFieldConfig) => {
-                  return !!field.form.value?.uuidRef;
+                hide: (field: FormlyFieldConfig) => {
+                  return field.form.value.referenceType != "url";
                 },
               },
             },
@@ -1750,41 +1784,6 @@ export abstract class IngridShared extends BaseDoctype {
         ],
         { fieldGroupClassName: "flex-row gap-12" },
       ),
-      this.addInputInline("uuidRef", "Datensatzverweis", {
-        wrappers: ["inline-help", "form-field"],
-        hasInlineContextHelp: true,
-        // updateOn: "change",
-        expressions: {
-          "props.required": (field: FormlyFieldConfig) => {
-            return !field.form.value?.url;
-          },
-          "props.disabled": (field: FormlyFieldConfig) => {
-            return !!field.form.value?.url;
-          },
-          "props.label": (field: FormlyFieldConfig) => {
-            return field.props.disabled
-              ? "Datensatzverweis (nur bei leerer URL)"
-              : "Datensatzverweis";
-          },
-        },
-        validation: {
-          messages: {
-            required: "Entweder URL oder Datensatzverweis muss ausgefüllt sein",
-          },
-        },
-        asyncValidators: {
-          uuidExists: {
-            expression: (control: AbstractControl) => {
-              if (!control.value) return of(true);
-              return firstValueFrom(
-                this.documentService.uuidExists(control.value),
-              );
-            },
-            message:
-              "Bitte geben Sie eine gültige UUID eines existierenden Datensatzes in diesem Katalog an",
-          },
-        },
-      }),
       this.addGroupSimple(null, [
         this.addTextAreaInline("explanation", "Erläuterungen", {
           wrappers: ["inline-help", "form-field"],
@@ -2136,9 +2135,13 @@ export abstract class IngridShared extends BaseDoctype {
     this.showConfirmDialog(
       `Dem Datensatz werden folgende Schlagworte hinzugefügt:
         <ul>
-          <li>InVeKoS: InVeKoS${value === "gsaa" ? " + GSAA" : value === "lpis" ? " + LPIS" : ""}</li>
+          <li>InVeKoS: InVeKoS${
+            value === "gsaa" ? " + GSAA" : value === "lpis" ? " + LPIS" : ""
+          }</li>
           <li>Gemet: Gemeinsame Agrarpolitik</li><li>ISO-Themenkategorie: Landwirtschaft</li>
-          <li>INSPIRE-Themen: ${value === "gsaa" ? "Bodennutzung" : "Bodenbedeckung"}</li>
+          <li>INSPIRE-Themen: ${
+            value === "gsaa" ? "Bodennutzung" : "Bodenbedeckung"
+          }</li>
         </ul>`,
       cookieId,
     ).subscribe((decision) => {
@@ -2158,7 +2161,7 @@ export abstract class IngridShared extends BaseDoctype {
       const itemTheme = { key: id };
       themesCtrl.setValue([...themesCtrl.value, itemTheme]);
       if (hasThesaurusTopics) {
-        this.keywordAnalysis.updateIsoCategory(itemTheme, fieldConfig);
+        this.keywordAnalysis.updateIsoCategory(itemTheme, fieldConfig.form);
       }
     }
   }

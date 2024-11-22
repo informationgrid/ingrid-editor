@@ -47,7 +47,6 @@ import {
   BehaviorSubject,
   merge,
   Observable,
-  of,
   Subject,
   Subscription,
 } from "rxjs";
@@ -196,7 +195,6 @@ export class RepeatListComponent
   filteredOptions: Observable<SelectOptionUi[]>;
   parameterOptions: SelectOptionUi[];
   initialParameterOptions: SelectOptionUi[];
-  parameterOptions$: Observable<SelectOptionUi[]>;
   inputControl = new FormControl<string>("");
   filterCtrl: UntypedFormControl;
   searchSub: Subscription;
@@ -261,7 +259,6 @@ export class RepeatListComponent
       this.parameterOptions = JSON.parse(optionsAsString);
       this.initialParameterOptions = JSON.parse(optionsAsString);
     }
-    this.parameterOptions$ = of(this.parameterOptions);
 
     // show error immediately (on publish)
     this.inputControl.markAllAsTouched();

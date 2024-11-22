@@ -84,8 +84,6 @@ export class CatalogCodelistsComponent implements OnInit {
     tap(() => this.setInitialValue()),
   );
 
-  private readonly CODELIST_STORAGE_KEY = "codelist.selected.before.reload";
-
   selectedCodelist: Codelist;
   codelistSelect = new FormControl();
   descriptionCtrl = new FormControl();
@@ -237,18 +235,7 @@ export class CatalogCodelistsComponent implements OnInit {
   save() {
     this.codelistService
       .updateCodelist(this.selectedCodelist)
-      .pipe(
-        tap(() => {
-          // store currently selected codelist
-          localStorage.setItem(
-            this.CODELIST_STORAGE_KEY,
-            this.selectedCodelist.id,
-          );
-          // reload window to hard reset forms that rely on codelists
-          window.location.reload();
-        }),
-        tap(() => this._snackBar.open("Codeliste gespeichert")),
-      )
+      .pipe(tap(() => this._snackBar.open("Codeliste gespeichert")))
       .subscribe();
   }
 
@@ -294,16 +281,6 @@ export class CatalogCodelistsComponent implements OnInit {
       this.codelistSelect.setValue(initialValue);
       this.selectCodelist(initialValue);
     }
-  }
-
-  // retrieve temporarily saved "current" codelist, and remove from localStorage
-  private activateRememberedCodelist() {
-    let codelistId = localStorage.getItem(this.CODELIST_STORAGE_KEY);
-    localStorage.removeItem(this.CODELIST_STORAGE_KEY);
-    let codelist = this.codelistsValue.find(
-      (option) => option.id === codelistId,
-    );
-    if (codelist) this.selectCodelist(codelist);
   }
 
   resetAllCodelists() {
