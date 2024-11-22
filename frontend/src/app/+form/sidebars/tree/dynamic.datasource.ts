@@ -216,7 +216,7 @@ export class DynamicDataSource extends DataSource<TreeNode> {
   insertNodeInTree(node: TreeNode, dest: number) {
     // in case the new parent was collapsed, the moved nodes are automatically
     // loaded from the backend when expanding the parent
-    const alreadyPresent = this.data.find((item) => item._id === node._id);
+    const alreadyPresent = this.data?.find((item) => item._id === node._id);
     if (alreadyPresent) {
       return;
     }
