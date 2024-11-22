@@ -259,7 +259,7 @@ export class CodelistService {
     const backendCodelist = this.prepareForBackend(codelist);
     return this.dataService
       .updateCodelist(backendCodelist)
-      .pipe(tap(() => this.store.update(codelist)));
+      .pipe(tap(() => this.store.update(codelist.id, codelist)));
   }
 
   private prepareForBackend(codelist: Codelist): CodelistBackend {
