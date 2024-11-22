@@ -20,7 +20,7 @@
 import { Component, inject, OnInit } from "@angular/core";
 import { CodelistService } from "../../services/codelist/codelist.service";
 import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
-import { delay, filter, map, startWith, take, tap } from "rxjs/operators";
+import { delay, filter, map, startWith, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { UpdateCodelistComponent } from "./update-codelist/update-codelist.component";
 import {
@@ -103,14 +103,6 @@ export class CatalogCodelistsComponent implements OnInit {
 
   ngOnInit(): void {
     this.codelistService.getAll();
-
-    this.codelists
-      .pipe(
-        untilDestroyed(this),
-        filter((data) => data !== null),
-        take(1),
-      )
-      .subscribe(() => this.activateRememberedCodelist());
 
     this.codelists
       .pipe(

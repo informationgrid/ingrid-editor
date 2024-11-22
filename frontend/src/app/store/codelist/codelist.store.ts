@@ -64,12 +64,17 @@ export const CodelistStore = signalStore(
       codelistId: string,
       value: string,
       field: string,
+      caseSensitive: boolean = true,
     ): CodelistEntry {
-      return this._getCodelist(codelistId)?.entries?.find(
-        (entry) => entry.fields[field] === value,
-      );
+      return this._getCodelist(codelistId)?.entries?.find((entry) => {
+        const entryValue = entry.fields[field];
+        if (caseSensitive) {
+          return entryValue === value;
+        } else {
+          return entryValue?.toLowerCase() === value.toLowerCase();
+        }
+      });
     },
-
     _getCodelist(codelistId: string): Codelist {
       const entities = store.entityMap()[codelistId];
       if (!entities)

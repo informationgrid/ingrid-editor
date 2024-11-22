@@ -17,14 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FieldTypeConfig, FormlyModule } from "@ngx-formly/core";
 import { catchError, debounceTime, map, startWith } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
-import { TreeQuery } from "../../../store/tree/tree.query";
 import { DocumentState, IgeDocument } from "../../../models/ige-document";
 import { firstValueFrom, of } from "rxjs";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
@@ -41,6 +40,7 @@ import {
 import { FieldType } from "@ngx-formly/material";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocumentReference } from "../document-reference-type/document-reference-type.component";
+import { TreeStore } from "../../../store/tree/tree.store";
 
 interface Reference {
   layerNames: string[];
@@ -83,6 +83,8 @@ export class DocumentReferenceSelectorComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
+  private treeStore = inject(TreeStore);
+
   myModel: (SelectedDocumentReference | UrlReference)[];
   allowMultiSelect = false;
   allowRedirectToDocument = false;
@@ -94,7 +96,6 @@ export class DocumentReferenceSelectorComponent
     private dialog: MatDialog,
     private router: Router,
     private docService: DocumentService,
-    private tree: TreeQuery,
   ) {
     super();
   }
@@ -196,7 +197,7 @@ export class DocumentReferenceSelectorComponent
   private async mapInternalRef(
     item: SelectedDocumentReference,
   ): Promise<SelectedDocumentReference> {
-    const nodeEntity = this.tree.getByUuid(item.uuid);
+    const nodeEntity = this.treeStore.getByUuid(item.uuid);
     if (nodeEntity) {
       return this.mapToDocumentReference(nodeEntity, item.layerNames);
     }
@@ -252,7 +253,7 @@ export class DocumentReferenceSelectorComponent
     }
   }
 
-  editItem(index: number, isExternalRef: boolean) {
+  editItem(index: number) {
     this.showInternalRefDialog(index);
   }
 

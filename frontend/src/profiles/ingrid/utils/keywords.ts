@@ -211,7 +211,7 @@ export class KeywordAnalysis {
   }
 
   checkInThemes(item: string): ThesaurusResult {
-    const id = this.codelistStore.getCodelistEntryByValue(
+    const codeListEntry = this.codelistStore.getCodelistEntryByValue(
       "6100",
       item,
       "de",
