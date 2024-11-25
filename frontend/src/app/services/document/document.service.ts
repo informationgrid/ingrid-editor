@@ -266,6 +266,7 @@ export class DocumentService {
       map((docs) => {
         docs.forEach((doc) => {
           doc.icon = this.profileService.getDocumentIcon(doc._type);
+          if (!doc.title) doc.title = "-Kein Titel-";
           doc.isRoot = parentId === null;
         });
         return docs as DocumentAbstract[];
