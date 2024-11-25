@@ -247,6 +247,7 @@
           "key": "9999"
         },
         "title": "Ein Verweis",
+        "referenceType": "url",
         "url": "http://my-link",
         "explanation": "Link Erläuterung"
       },
@@ -255,6 +256,7 @@
           "key": "5304"
         },
         "title": "Bestell Link",
+        "referenceType": "url",
         "url": "http://order-me.com",
         "explanation": "Meine Bestellungen"
       },
@@ -263,6 +265,7 @@
           "key": "5302"
         },
         "title": "Dienst \"Coupling Service\" (GetCapabilities)",
+        "referenceType": "url",
         "url": "https://my-getcapabilities",
         "explanation": ""
       }
