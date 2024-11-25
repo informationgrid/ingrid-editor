@@ -19,7 +19,7 @@
  */
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { generateUUID } from "../../../app/services/utils";
@@ -526,9 +526,9 @@ export class GeoDatasetDoctype extends IngridShared {
                       hasInlineContextHelp: true,
                       updateOn: "change",
                       expressions: {
-                        // hide: (field: FormlyFieldConfig) => {
-                        //   return field.form.value._type == "internalDataOrigin";
-                        // },
+                        hide: (field: FormlyFieldConfig) => {
+                          return field.form.value._type == "internalDataOrigin";
+                        },
                         "props.required": (field: FormlyFieldConfig) =>
                           !!field.form.value.identifier ||
                           !!field.form.value.date ||
@@ -540,9 +540,9 @@ export class GeoDatasetDoctype extends IngridShared {
                       hasInlineContextHelp: true,
                       updateOn: "change",
                       expressions: {
-                        // hide: (field: FormlyFieldConfig) => {
-                        //   return field.form.value._type == "internalDataOrigin";
-                        // },
+                        hide: (field: FormlyFieldConfig) => {
+                          return field.form.value._type != "freeDescription";
+                        },
                         "props.required": (field: FormlyFieldConfig) =>
                           !!field.form.value.title ||
                           !!field.form.value.date ||
@@ -553,11 +553,12 @@ export class GeoDatasetDoctype extends IngridShared {
                       null,
                       [
                         this.addDatepickerInline("date", null, {
-                          // className: "flex-2",
                           fieldLabel: "Datum",
                           wrappers: ["inline-help", "form-field"],
                           expressions: {
                             "props.required": (field: FormlyFieldConfig) =>
+                              field.form.value._type == "externalDataOrigin" ||
+                              field.form.value._type == "internalDataOrigin" ||
                               !!field.form.value.title ||
                               !!field.form.value.identifier ||
                               !!field.form.value.dateType,
@@ -572,6 +573,8 @@ export class GeoDatasetDoctype extends IngridShared {
                           codelistId: "502",
                           expressions: {
                             "props.required": (field: FormlyFieldConfig) =>
+                              field.form.value._type == "externalDataOrigin" ||
+                              field.form.value._type == "internalDataOrigin" ||
                               !!field.form.value.title ||
                               !!field.form.value.identifier ||
                               !!field.form.value.date,
