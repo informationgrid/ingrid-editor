@@ -7,7 +7,7 @@ ige-add-button {
 
 .cdk-drag {
   background-color: white;
-  border: 4px solid $ige-background;
+  border: 2px solid $ige-background;
   border-radius: 6px;
   margin-bottom: 4px;
 }
@@ -18,7 +18,7 @@ ige-add-button {
 .mat-mdc-list-item {
   height: auto;
   padding: 6px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 
   .type {
     font-size: 14px;
@@ -28,7 +28,6 @@ ige-add-button {
     opacity: 0.6;
     margin-bottom: 8px;
     width: 100%;
-    border-bottom: 1px solid $ige-background;
   }
 
   .title,
