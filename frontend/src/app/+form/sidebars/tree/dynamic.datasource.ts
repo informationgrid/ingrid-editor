@@ -214,9 +214,12 @@ export class DynamicDataSource extends DataSource<TreeNode> {
    * @param dest
    */
   insertNodeInTree(node: TreeNode, dest: number) {
+    // if data has not yet been initialized, we do not need to update any nodes
+    if (!this.data) return;
+
     // in case the new parent was collapsed, the moved nodes are automatically
     // loaded from the backend when expanding the parent
-    const alreadyPresent = this.data?.find((item) => item._id === node._id);
+    const alreadyPresent = this.data.find((item) => item._id === node._id);
     if (alreadyPresent) {
       return;
     }
