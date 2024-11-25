@@ -12,11 +12,12 @@
   "_state": "P",
   "data": {
     "_parent": 1238,
-    "isInspireIdentified": false,
-    "isAdVCompatible": false,
-    "isOpenData": true,
-    "subType": {
-      "key": "5"
+    "properties": {
+      "isAdVCompatible": false,
+      "isOpenData": true,
+      "subType": {
+        "key": "5"
+      }
     },
     "description": "Allgemeine Beschreibung.",
     "graphicOverviews": [],

@@ -49,7 +49,6 @@
   },
   "extraInfo": { "legalBasicsDescriptions": [{ "key": "60" }] },
   "orderInfo": "order",
-  "isOpenData": false,
   "methodText": "ghjk",
   "references": [
     {
@@ -75,7 +74,6 @@
     }
   ],
   "databaseContent": [{ "moreInfo": "sdfg", "parameter": "rewq" }],
-  "isAdVCompatible": true,
   "advProductGroups": [{ "key": "2" }],
   "graphicOverviews": [
     {

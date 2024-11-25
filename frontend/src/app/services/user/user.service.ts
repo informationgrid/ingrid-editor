@@ -31,9 +31,10 @@ import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { AuthenticationFactory } from "../../security/auth.factory";
-import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
 import { GroupQuery } from "../../store/group/group.query";
 import { Group } from "../../models/user-group";
+// @ts-ignore
+import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
 
 @Injectable({
   providedIn: "root",

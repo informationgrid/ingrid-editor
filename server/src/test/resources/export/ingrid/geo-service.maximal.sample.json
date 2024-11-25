@@ -12,9 +12,11 @@
   "_state": "P",
   "data": {
     "_parent": 1238,
-    "isInspireIdentified": true,
-    "isAdVCompatible": true,
-    "isOpenData": true,
+    "properties": {
+      "isInspireIdentified": "conform",
+      "isAdVCompatible": true,
+      "isOpenData": true
+    },
     "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",
     "alternateTitle": "Hier ist die Kurzbezeichnung.",
     "description": "Hier ist die Beschreibung.",

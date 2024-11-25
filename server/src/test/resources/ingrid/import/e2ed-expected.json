@@ -3,9 +3,11 @@
   "_uuid": "4915275a-733a-47cd-b1a6-1a3f1e976948",
   "_parent": "CBA54D12-110A-48BE-8BC9-66E5902F18F4",
   "_type": "InGridGeoDataset",
-  "isInspireIdentified": true,
-  "isAdVCompatible": true,
-  "isOpenData": true,
+  "properties": {
+    "isInspireIdentified": "notConform",
+    "isAdVCompatible": true,
+    "isOpenData": true
+  },
   "description": "siehe Originalplan",
   "alternateTitle": "Short",
   "parentIdentifier": "CBA54D12-110A-48BE-8BC9-66E5902F18F4",
@@ -498,7 +500,6 @@
   "dataset": {
     "languages": ["150", "134"]
   },
-  "isInspireConform": false,
   "vectorSpatialRepresentation": [
     {
       "topologyLevel": {

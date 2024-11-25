@@ -2,6 +2,10 @@
   "_uuid": "00cbcb2e-c52f-478d-97a4-46b0f5dabb3a",
   "title": "information_system_max",
   "_type": "InGridInformationSystem",
+  "properties": {
+    "isOpenData": false,
+    "isAdVCompatible": false
+  },
   "dataset": { "languages": ["142"] },
   "implementationHistory": "history4",
   "spatial": {
@@ -54,7 +58,6 @@
   },
   "extraInfo": { "legalBasicsDescriptions": [{ "key": "68" }] },
   "orderInfo": "order data",
-  "isOpenData": false,
   "references": [
     {
       "url": "https://this-reference.com/here",
@@ -81,7 +84,6 @@
     { "ref": "1f570220-d292-4fd5-8595-e2e088d2f410", "type": { "key": "3" } }
   ],
   "serviceVersion": [{ "key": null, "value": "4" }],
-  "isAdVCompatible": false,
   "advProductGroups": [{ "key": "14" }],
   "graphicOverviews": [
     {
@@ -95,7 +97,6 @@
   ],
   "parentIdentifier": "ident5",
   "systemEnvironment": "system environm",
-  "isInspireIdentified": false,
   "digitalTransferOptions": [
     {
       "name": { "key": "17" },

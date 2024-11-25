@@ -23,7 +23,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.amendLubwDescriptiveKeywords
-import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.getEnvironmentDescription
 
 class GeodatasetTransformerLubw(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
@@ -33,7 +33,7 @@ class GeodatasetTransformerLubw(transformerConfig: TransformerConfig) : Geodatas
         if (!super.systemEnvironment.isNullOrEmpty()) {
             super.systemEnvironment
         } else {
-            docData.getString("dataQualityInfo.lineage.source.environmentDescription")
+            getEnvironmentDescription(docData)
         }
 
     override fun getDescriptiveKeywords(): List<Thesaurus> =

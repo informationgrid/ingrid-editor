@@ -1,14 +1,14 @@
 import gg.jte.ContentType
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 import java.nio.file.Paths
 
 import static org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 
 buildscript {
-    ext.kotlin_version = '1.9.25'
-    ext.spring_boot_version = '3.3.4'
+    ext.kotlin_version = '2.0.21'
+    ext.spring_boot_version = '3.3.5'
     ext.kotest_version = '5.9.1'
     ext.jte_version = '3.1.13'
     ext.geotools_version = '28.2'
@@ -26,7 +26,7 @@ plugins {
     id "io.spring.dependency-management" version "1.1.6"
     id 'idea'
     id 'maven-publish'
-    id 'com.google.cloud.tools.jib' version '3.4.3'
+    id 'com.google.cloud.tools.jib' version '3.4.4'
     id "com.gorylenko.gradle-git-properties" version "2.4.2"
     id 'io.kotest' version '0.4.11'
     id "com.github.ben-manes.versions" version "0.51.0"
@@ -134,7 +134,7 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     // JSON schema validation
-    implementation 'net.pwall.json:json-kotlin-schema:0.50'
+    implementation 'com.networknt:json-schema-validator:1.5.2'
 
     // Keycloak
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
@@ -150,12 +150,12 @@ dependencies {
     implementation 'com.aallam.openai:openai-client'
     runtimeOnly 'io.ktor:ktor-client-okhttp'
     implementation "io.ktor:ktor-client-java"
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 
     // Markdown
-    implementation "org.commonmark:commonmark:0.23.0"
-    implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.23.0"
-    implementation "org.commonmark:commonmark-ext-gfm-tables:0.23.0"
+    implementation "org.commonmark:commonmark:0.24.0"
+    implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.24.0"
+    implementation "org.commonmark:commonmark-ext-gfm-tables:0.24.0"
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 
@@ -206,8 +206,8 @@ dependencies {
     }
     testImplementation 'org.springframework.security:spring-security-test'
 
-    // iBus communication
-    implementation("com.jillesvangurp:search-client:2.2.2")
+    // Elasticsearch communication
+    implementation("com.jillesvangurp:search-client:2.3.1")
 
     // for javax.annotation-support for elasticsearch-tools
 //    implementation("org.jboss.spec.javax.annotation:jboss-annotations-api_1.3_spec:2.0.1.Final")
@@ -234,7 +234,7 @@ dependencyManagement {
 
     }
     imports {
-        mavenBom 'com.fasterxml.jackson:jackson-bom:2.18.0' // allow Nulls.SKIP function, which works from 2.16.0 in kotlin data classes
+//        mavenBom 'com.fasterxml.jackson:jackson-bom:2.18.1' // allow Nulls.SKIP function, which works from 2.16.0 in kotlin data classes
     }
 }
 
@@ -272,7 +272,9 @@ tasks.withType(KotlinCompile).configureEach {
 }
 
 // disable kapt for tests since it leads to an error due to analyzing test sources
-tasks.matching { it.name.startsWith("kaptGenerateStubsTestKotlin") }.configureEach {
+// also disable completely because it takes too much time
+// instead just generate Log4j2Plugins.dat and copy it to resources folder
+tasks.matching { it.name.startsWith("kapt") }.configureEach {
     enabled = false
 }
 
@@ -281,6 +283,10 @@ tasks.register('updateGitHooks', Copy) {
     mustRunAfter("generateGitProperties")
     from '../scripts/pre-commit'
     into '../.git/hooks'
+}
+
+kapt {
+    includeCompileClasspath=false
 }
 
 jte {

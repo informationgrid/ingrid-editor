@@ -79,7 +79,7 @@ export class ModifyPublishedBehaviour extends Plugin {
     this.documentDataService
       .loadPublished(openedDocument._uuid, true)
       .subscribe((published) => {
-        if (published?.document.publicationHmbTG)
+        if (published?.document.properties?.publicationHmbTG)
           this.dialog
             .open(ConfirmDialogComponent, {
               data: {
@@ -147,8 +147,8 @@ export class ModifyPublishedBehaviour extends Plugin {
                  WHERE document1.uuid = ANY(('{<uuids>}'))
                    AND document1.is_latest = true
                    AND document_wrapper.deleted = 0
-                   AND jsonb_path_exists(jsonb_strip_nulls(data), '$.publicationHmbTG')
-                   AND data->>'publicationHmbTG' = 'true'`.replace(
+                   AND jsonb_path_exists(jsonb_strip_nulls(data), '$.properties.publicationHmbTG')
+                   AND data->'properties'->>'publicationHmbTG' = 'true'`.replace(
       "<uuids>",
       uuids.join(", "),
     );

@@ -23,6 +23,11 @@ import { inject, Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { generateUUID } from "../../../app/services/utils";
+import { map } from "rxjs/operators";
+import {
+  MetadataOption,
+  MetadataOptionItem,
+} from "../../../app/formly/types/metadata-type/metadata-type.component";
 
 @Injectable({
   providedIn: "root",
@@ -53,6 +58,7 @@ export class GeoDatasetDoctype extends IngridShared {
     },
   };
 
+  showInspireRelevant = true;
   showInspireConform = true;
   showHVD = true;
   showAdVCompatible = true;
@@ -67,9 +73,39 @@ export class GeoDatasetDoctype extends IngridShared {
     this.options.required.useConstraints = true;
     this.options.required.extraInfoLangData = true;
     this.options.dynamicRequired.dataFormat =
-      "formState.mainModel?.isInspireIdentified";
+      "formState.mainModel?.properties?.isInspireIdentified";
     this.options.dynamicRequired.spatialScope =
-      "formState.mainModel?.isInspireIdentified";
+      "formState.mainModel?.properties?.isInspireIdentified";
+  }
+
+  protected metadataOptions(): MetadataOption[] {
+    return [
+      {
+        label: "Datentyp",
+        contextHelpKey: "subType",
+        required: this.geodatasetOptions.required.subType,
+        typeOptions: [
+          {
+            multiple: false,
+            key: "subType",
+            codelistId: "525",
+            // TODO: try to only use codelistId, since codelist mapping also happens
+            //       in metadata-type-short component, where it's needed for print preview
+            asyncItems: this.getCodelistForSelect("525", "subType").pipe(
+              map((items) => {
+                return items.map((item) => {
+                  return <MetadataOptionItem>{
+                    label: item.label,
+                    value: { key: item.value },
+                  };
+                });
+              }),
+            ),
+          },
+        ],
+      },
+      ...super.metadataOptions(),
+    ];
   }
 
   documentFields = () => {
@@ -77,13 +113,13 @@ export class GeoDatasetDoctype extends IngridShared {
 
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection({
-        inspireRelevant: true,
         thesaurusTopics: true,
-        additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
+        // TODO AW: activate subType only from geodataset
+        /*additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
           required: this.geodatasetOptions.required.subType,
           options: this.getCodelistForSelect("525", "subType"),
           codelistId: "525",
-        }),
+        }),*/
       }),
       this.addKeywordsSection({
         priorityDataset: true,
@@ -138,7 +174,8 @@ export class GeoDatasetDoctype extends IngridShared {
             ),
             codelistId: "526",
             expressions: {
-              "props.required": "formState.mainModel?.isInspireConform",
+              "props.required":
+                "formState.mainModel?.properties?.isInspireIdentified === 'conform'",
               className: "field.props.required ? '' : 'optional'",
             },
           },

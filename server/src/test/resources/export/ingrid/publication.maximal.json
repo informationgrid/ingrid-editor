@@ -57,7 +57,6 @@
   },
   "extraInfo": { "legalBasicsDescriptions": [{ "key": "39" }] },
   "orderInfo": "order location",
-  "isOpenData": false,
   "references": [
     {
       "url": "https://some-url/there",
@@ -88,8 +87,6 @@
   "pointOfContact": [
     { "ref": "36ec9150-2f1b-4164-8221-08f9a85fc4fb", "type": { "key": "8" } }
   ],
-  "isAdVCompatible": false,
-  "advProductGroups": [{ "key": "13" }],
   "graphicOverviews": [
     {
       "fileName": {

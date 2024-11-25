@@ -31,7 +31,7 @@ import java.io.BufferedInputStream
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.PushbackInputStream
-import java.net.URL
+import java.net.URI
 import java.nio.charset.StandardCharsets
 import java.security.Principal
 import javax.xml.XMLConstants
@@ -70,9 +70,9 @@ class CapabilitiesService constructor(val capabilitiesParserFactory: GetCapabili
     }
 
     private fun getDocumentFromUrl(urlStr: String, namespaceAware: Boolean = false): Document {
-        val url = URL(urlStr)
+        val url = URI(urlStr)
         // get the content in UTF-8 format, to avoid "MalformedByteSequenceException: Invalid byte 1 of 1-byte UTF-8 sequence"
-        val input = checkForUtf8BOMAndDiscardIfAny(url.openStream())
+        val input = checkForUtf8BOMAndDiscardIfAny(url.toURL().openStream())
         val reader = InputStreamReader(input, StandardCharsets.UTF_8)
         val inputSource = InputSource(reader)
         // Build a document from the xml response

@@ -141,6 +141,21 @@ export function isNotEmptyObject(objValue: any, ignoreFields = []) {
   });
 }
 
+/**
+ * Replace null or empty fields with undefined in order to remove them from the resulting form value.
+ * @param obj
+ */
+export function removeNullOrEmptyFields(obj: any) {
+  for (const f in obj) {
+    let p = obj[f];
+    if (p === null || p === "") {
+      obj[f] = undefined;
+    } else if (typeof p === "object" && p !== null) {
+      this.removeNullOrEmptyFields(p);
+    }
+  }
+}
+
 /*!
  * JsonDiffMerge Library v1
  * https://debugtopinpoint.wordpress.com/
@@ -849,4 +864,12 @@ export class JsonDiffMerge {
 
     return node;
   }
+}
+
+// Takes an array of objects and returns a new array with only the unique objects based on a specific key
+export function removeDuplicatesByValue(arr: any[], uniqueKey: string) {
+  return arr.filter(
+    (item, index, self) =>
+      index === self.findIndex((t) => t[uniqueKey] === item[uniqueKey]),
+  );
 }

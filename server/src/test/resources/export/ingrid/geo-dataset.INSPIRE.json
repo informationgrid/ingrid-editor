@@ -11,11 +11,13 @@
   "_version": 7,
   "_state": "P",
   "data": {
-    "isInspireIdentified": true,
-    "isAdVCompatible": false,
-    "isOpenData": false,
-    "subType": {
-      "key": "5"
+    "properties": {
+      "isInspireIdentified": "conform",
+      "isAdVCompatible": false,
+      "isOpenData": false,
+      "subType": {
+        "key": "5"
+      }
     },
     "description": "Allgemeine Beschreibung.",
     "graphicOverviews": [],
@@ -174,7 +176,6 @@
     },
     "digitalTransferOptions": [],
     "references": [],
-    "isInspireConform": true,
     "themes": [
       {
         "key": "303"

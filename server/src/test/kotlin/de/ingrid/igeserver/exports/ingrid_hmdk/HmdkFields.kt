@@ -60,7 +60,9 @@ class HmdkFields : GeodatasetBase() {
                     jacksonObjectMapper()
                         .readTree(
                             """{
-                            "publicationHmbTG": true
+                                "properties": {
+                                    "publicationHmbTG": true
+                                }
                             }
                             """.trimIndent(),
                         ) as ObjectNode

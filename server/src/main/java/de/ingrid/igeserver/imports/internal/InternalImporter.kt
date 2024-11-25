@@ -28,6 +28,8 @@ import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.imports.internal.migrations.Migrate001
 import de.ingrid.igeserver.imports.internal.migrations.Migrate002
 import de.ingrid.igeserver.imports.internal.migrations.Migrate110
+import de.ingrid.igeserver.imports.internal.migrations.Migrate120
+import de.ingrid.igeserver.imports.internal.migrations.Migrate130
 import de.ingrid.igeserver.services.MapperService
 import de.ingrid.igeserver.utils.getString
 import org.springframework.http.MediaType
@@ -56,8 +58,17 @@ class InternalImporter : IgeImporter {
         val profile = json.getString("_profile")!!
         if (version == "1.0.0") {
             val response = Migrate110.migrate(documents, profile)
+            version = "1.1.0"
             documents = response.documents
             additionalReferences = response.references
+        }
+        if (version == "1.1.0" && profile.startsWith("ingrid")) {
+            documents = Migrate120.migrate(documents, profile)
+            version = "1.2.0"
+        }
+        if (version == "1.2.0" && profile.startsWith("ingrid")) {
+            documents = Migrate130.migrate(documents)
+            version = "1.3.0"
         }
 
         return jacksonObjectMapper().createArrayNode().apply {

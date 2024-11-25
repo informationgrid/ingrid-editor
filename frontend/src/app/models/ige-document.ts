@@ -41,8 +41,6 @@ export class Metadata {
   // the hierarchical parent of this document
   parentId: number;
 
-  parentIsFolder: boolean;
-
   // the creation date
   created?: string;
 

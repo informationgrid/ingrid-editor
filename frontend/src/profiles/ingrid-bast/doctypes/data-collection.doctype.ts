@@ -28,9 +28,6 @@ import { DataCollectionDoctype } from "../../ingrid/doctypes/data-collection.doc
 export class DataCollectionDoctypeBast extends DataCollectionDoctype {
   common = inject(CommonFieldsBast);
 
-  showAdVCompatible = false;
-  showAdVProductGroup = false;
-
   constructor() {
     super();
 

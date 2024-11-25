@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wemove.com/schemas/ingrid/schemes/specialisedTaskBase",
+  "type": "object",
+  "properties": {
+    "_uuid": {
+      "type": "string"
+    },
+    "_type": {
+      "const": "InGridSpecialisedTask"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "alternateTitle": {
+      "type": ["null", "string"]
+    },
+    "parentIdentifier": {
+      "type": ["null", "string"]
+    },
+    "pointOfContact": {
+      "type": "array",
+      "items": {
+        "$ref": "../../general.schema.json#/definitions/PointOfContact"
+      },
+      "minItems": 1
+    },
+    "themes": {
+      "$ref": "refs/general.schema.json#/definitions/themes"
+    },
+    "spatial": {
+      "$ref": "refs/general.schema.json#/definitions/Spatial"
+    },
+    "temporal": {
+      "$ref": "refs/general.schema.json#/definitions/temporal"
+    },
+    "dataset": {
+      "$ref": "refs/general.schema.json#/definitions/dataset"
+    },
+    "extraInfo": {
+      "$ref": "refs/general.schema.json#/definitions/extraInfo"
+    },
+    "metadata": {
+      "$ref": "refs/general.schema.json#/definitions/metadata"
+    },
+    "resource": {
+      "$ref": "refs/general.schema.json#/definitions/resource"
+    },
+    "keywords": {
+      "$ref": "refs/general.schema.json#/definitions/keywords"
+    },
+    "maintenanceInformation": {
+      "$ref": "refs/general.schema.json#/definitions/maintenanceInformation"
+    },
+    "references": {
+      "$ref": "refs/general.schema.json#/definitions/references"
+    },
+    "graphicOverviews": {
+      "$ref": "refs/general.schema.json#/definitions/graphicOverviews"
+    }
+  },
+  "required": [
+    "_uuid",
+    "_type",
+    "title",
+    "description",
+    "pointOfContact",
+    "spatial",
+    "temporal",
+    "metadata"
+  ]
+}

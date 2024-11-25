@@ -27,6 +27,10 @@
   width: 150px;
 }
 
+:host-context(.small-label-width) .label-wrapper {
+  width: 150px;
+}
+
 :host-context(ige-form-wrapper) .label-wrapper {
   width: 272px;
 }
