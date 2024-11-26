@@ -75,7 +75,7 @@ export abstract class IngridShared extends BaseDoctype {
   private snack = inject(MatSnackBar);
   protected configService = inject(ConfigService);
   private behaviourService = inject(BehaviourService);
-  private documentService = inject(DocumentService);
+  documentService = inject(DocumentService);
   private keywordAnalysis = inject(KeywordAnalysis);
   private uploadService = inject(UploadService);
 
@@ -1566,17 +1566,17 @@ export abstract class IngridShared extends BaseDoctype {
             const codelistKey = item["type"]?.["key"] ?? null;
             let value;
             if (codelistKey != null) {
-              const cat = this.codelistPipe
+              this.codelistPipe
                 .transform(codelistKey, "2000")
                 .subscribe((codelist) => {
                   value = codelist;
                 });
             }
-            return { value, link: null };
+            return of({ value, link: null });
           },
-          title: { value: "title", link: null },
-          subtitle: { value: "url", link: "url" },
-          description: { value: "explanation", link: null },
+          title: (item) => of({ value: item["title"], link: null }),
+          subtitle: (item) => of({ value: item["url"], link: item["url"] }),
+          description: (item) => of({ value: item["explanation"], link: null }),
         },
         validators: {
           downloadLinkWhenOpenData: {

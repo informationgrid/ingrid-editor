@@ -23,59 +23,63 @@
                         </mat-icon>
                     }
                     <div class="flex-1 flex-col align-items-start">
-                        <span class="category">
-                            @if (item?.category.link) {
+                        <div class="category">
+                            @let category = item?.category | async;
+                            @if (category.link) {
                                 <a
                                     class="url no-text-transform"
-                                    [href]="item?.category.link"
+                                    [href]="category.link"
                                     target="_blank"
                                 >
-                                    {{ item?.category.value }}
+                                    {{ category.value }}
                                 </a>
                             } @else {
-                                {{ item?.category.value }}
+                                {{ category.value }}
                             }
-                        </span>
+                        </div>
 
                         <div class="title">
-                            @if (item?.title.link) {
+                            @let title = item?.title | async;
+                            @if (title?.link) {
                                 <a
                                     class="url no-text-transform"
-                                    [href]="item?.title.link"
+                                    [href]="title?.link"
                                     target="_blank"
                                 >
-                                    {{ item?.title.value }}
+                                    {{ title?.value }}
                                 </a>
                             } @else {
-                                {{ item?.title.value }}
+                                {{ title?.value }}
                             }
                         </div>
 
                         <div class="subtitle">
-                            @if (item?.subtitle.link) {
+                            @let subtitle = item?.subtitle | async;
+                            @if (subtitle.link) {
                                 <a
                                     class="url no-text-transform"
-                                    [href]="item?.subtitle.link"
+                                    [href]="subtitle.link"
                                     target="_blank"
                                 >
-                                    {{ item?.subtitle.value }}
+                                    {{ subtitle.value }}
                                 </a>
                             } @else {
-                                {{ item?.subtitle.value }}
+                                {{ subtitle.value }}
                             }
                         </div>
 
                         <div class="description">
-                            @if (item?.description.link) {
+                            @let description = item?.description | async;
+                            @if (description.link) {
                                 <a
                                     class="url no-text-transform"
-                                    [href]="item?.description.link"
+                                    [href]="description.link"
                                     target="_blank"
                                 >
-                                    {{ item?.description.value }}
+                                    {{ description.value }}
                                 </a>
                             } @else {
-                                {{ item?.description.value }}
+                                {{ description.value }}
                             }
                         </div>
                     </div>

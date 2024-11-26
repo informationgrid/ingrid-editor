@@ -41,7 +41,7 @@ import {
   CdkDropList,
 } from "@angular/cdk/drag-drop";
 import { MatListModule } from "@angular/material/list";
-import { AsyncPipe, JsonPipe, KeyValuePipe, NgForOf } from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
@@ -49,13 +49,13 @@ import { MatButtonModule } from "@angular/material/button";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
-import { CodelistPipe } from "../../../directives/codelist.pipe";
 import {
   AddButtonComponent,
   AddButtonOptions,
 } from "../../../shared/add-button/add-button.component";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { debounceTime, map } from "rxjs/operators";
+import { debounceTime, switchMap } from "rxjs/operators";
+import { Observable, of } from "rxjs";
 
 interface RepeatDetailListProps extends FormlyFieldProps {
   titleField: string;
@@ -65,19 +65,20 @@ interface RepeatDetailListProps extends FormlyFieldProps {
 }
 
 export interface ItemPreviewFields {
-  category?:
-    | { value: string; link: string }
-    | ((item: any) => { value: string; link: string });
-  title?:
-    | { value: string; link: string }
-    | ((item: any) => { value: string; link: string });
-  subtitle?:
-    | { value: string; link: string }
-    | ((item: any) => { value: string; link: string });
-  description?:
-    | { value: string; link: string }
-    | ((item: any) => { value: string; link: string });
+  category?: (item: any) => Observable<{ value: string; link: string }>;
+  title?: (item: any) => Observable<{ value: string; link: string }>;
+  subtitle?: (item: any) => Observable<{ value: string; link: string }>;
+  description?: (item: any) => Observable<{ value: string; link: string }>;
 }
+
+interface ListEntry {
+  category?: ListEntryPart;
+  title?: ListEntryPart;
+  subtitle?: ListEntryPart;
+  description?: ListEntryPart;
+}
+
+type ListEntryPart = Observable<{ value: string; link: string }>;
 
 @UntilDestroy()
 @Component({
@@ -85,7 +86,6 @@ export interface ItemPreviewFields {
   templateUrl: "./repeat-detail-list.component.html",
   styleUrls: ["./repeat-detail-list.component.scss"],
   imports: [
-    AsyncPipe,
     CdkDrag,
     CdkDropList,
     CdkDragHandle,
@@ -96,12 +96,9 @@ export interface ItemPreviewFields {
     AddButtonComponent,
     MatButtonModule,
     FormErrorComponent,
-    KeyValuePipe,
     FormlyModule,
     MatTooltipModule,
-    JsonPipe,
-    NgForOf,
-    CodelistPipe,
+    AsyncPipe,
   ],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -114,36 +111,36 @@ export class RepeatDetailListComponent
     super();
   }
 
-  previewItems = signal<ItemPreviewFields[]>([]);
+  previewItems = signal<ListEntry[]>([]);
 
   ngOnInit(): void {
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
         debounceTime(0),
-        map((items) => this.mapItemPreviewFields(items)),
+        switchMap((items) => this.mapItemPreviewFields(items)),
       )
       .subscribe((items) => this.previewItems.set(items));
   }
 
-  private mapItemPreviewFields(items): ItemPreviewFields[] {
-    return items.map((item) => {
-      return {
-        category: this.getItemPreview("category", item),
-        title: this.getItemPreview("title", item),
-        subtitle: this.getItemPreview("subtitle", item),
-        description: this.getItemPreview("description", item),
-      };
-    });
+  private mapItemPreviewFields(items): Observable<ListEntry[]> {
+    return of(
+      items.map((item) => {
+        return {
+          category: this.getItemPreview("category", item),
+          title: this.getItemPreview("title", item),
+          subtitle: this.getItemPreview("subtitle", item),
+          description: this.getItemPreview("description", item),
+        };
+      }),
+    );
   }
 
-  getItemPreview(previewField, item): { value: string; link: string } {
-    return typeof this.props.itemPreviewFields?.[previewField] == "function"
-      ? this.props.itemPreviewFields?.[previewField]?.(item)
-      : {
-          value: item[this.props.itemPreviewFields?.[previewField]?.["value"]],
-          link: item[this.props.itemPreviewFields?.[previewField]?.["link"]],
-        };
+  getItemPreview(previewField, item): ListEntryPart {
+    return (
+      this.props.itemPreviewFields?.[previewField]?.(item) ??
+      of({ value: null, link: null })
+    );
   }
 
   addItem(type: string) {
@@ -211,4 +208,6 @@ export class RepeatDetailListComponent
     this.formControl.markAsDirty();
     this.formControl.markAsTouched();
   }
+
+  protected readonly JSON = JSON;
 }

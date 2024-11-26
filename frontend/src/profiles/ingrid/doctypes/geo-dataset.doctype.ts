@@ -28,6 +28,7 @@ import {
   MetadataOption,
   MetadataOptionItem,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
+import { of } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -415,26 +416,35 @@ export class GeoDatasetDoctype extends IngridShared {
                   required: true,
                   itemPreviewFields: {
                     category: (item) => {
-                      const value =
-                        item["_type"] == "freeDescription"
-                          ? "Freitextliche Beschreibung – " + item["identifier"]
-                          : item["_type"] == "internalDataOrigin"
-                            ? "Geodatensatz – " + item["uuidRef"]
-                            : item["_type"] == "externalDataOrigin"
-                              ? "Externe Referenz – " + item["url"]
-                              : "";
-                      return { value, link: null };
+                      let value = "";
+                      if (item["_type"] == "freeDescription") {
+                        value =
+                          "Freitextliche Beschreibung " + item["identifier"];
+                      } else if (item["_type"] == "internalDataOrigin") {
+                        value = "Geodatensatz " + item["uuidRef"];
+                      } else if (item["_type"] == "externalDataOrigin") {
+                        value = "Externe Referenz";
+                      }
+                      return of({ value, link: null });
                     },
                     title: (item) => {
-                      const value =
-                        item["_type"] == "freeDescription"
-                          ? item["title"]
-                          : item["_type"] == "internalDataOrigin"
-                            ? (item["title"] ?? item["uuidRef"])
-                            : item["_type"] == "externalDataOrigin"
-                              ? (item["title"] ?? item["url"])
-                              : "";
-                      return { value, link: item["url"] };
+                      if (item["_type"] == "internalDataOrigin") {
+                        return this.documentService
+                          .load(item["uuidRef"], false, false, true)
+                          .pipe(
+                            map((doc) => {
+                              return {
+                                value: doc?.document.title,
+                                link: null,
+                              };
+                            }),
+                          );
+                      } else {
+                        return of({
+                          value: item["title"],
+                          link: item["url"],
+                        });
+                      }
                     },
                     subtitle: (item) => {
                       const codelistKey = item["dateType"]?.["key"] ?? null;
@@ -448,9 +458,17 @@ export class GeoDatasetDoctype extends IngridShared {
                             value += " - " + codelist;
                           });
                       }
-                      return { value, link: null };
+                      return of({
+                        value,
+                        link: null,
+                      });
                     },
-                    description: { value: "value", link: null },
+                    description: (item) => {
+                      return of({
+                        value: item["value"],
+                        link: null,
+                      });
+                    },
                   },
                   _types: [
                     {
@@ -530,6 +548,7 @@ export class GeoDatasetDoctype extends IngridShared {
                           return field.form.value._type == "internalDataOrigin";
                         },
                         "props.required": (field: FormlyFieldConfig) =>
+                          field.form.value._type == "externalDataOrigin" ||
                           !!field.form.value.identifier ||
                           !!field.form.value.date ||
                           !!field.form.value.dateType,
