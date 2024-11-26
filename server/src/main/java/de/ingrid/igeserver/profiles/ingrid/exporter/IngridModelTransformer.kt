@@ -1048,6 +1048,8 @@ open class IngridModelTransformer(
     open val mapLinkUrl: String? = null
 
     fun getSortHash(): String = DigestUtils.sha1Hex(model.title)
+
+    fun isHvd(): Boolean = data.properties?.isHvd ?: false
 }
 
 enum class CoordinateType { Lat1, Lat2, Lon1, Lon2 }

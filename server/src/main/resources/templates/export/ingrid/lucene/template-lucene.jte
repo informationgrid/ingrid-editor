@@ -45,6 +45,7 @@
         "IDF_1.0"
     ],
     "isfolder": "false",
+    "is_hvd": ${page.isHvd()},
     "sort_hash": "${page.getSortHash()}",
     "lang": "de",
     "boost": 1,
