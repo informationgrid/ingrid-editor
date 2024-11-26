@@ -700,32 +700,11 @@ export abstract class IngridShared extends BaseDoctype {
               expressions: {
                 hide: "field.model.properties?.isHvd !== true",
               },
-              options: [
-                {
-                  label: "Georaum",
-                  value: "http://data.europa.eu/bna/c_ac64a52d",
-                },
-                {
-                  label: "Erdbeobachtung und Umwelt",
-                  value: "http://data.europa.eu/bna/c_dd313021",
-                },
-                {
-                  label: "Meteorologie",
-                  value: "http://data.europa.eu/bna/c_164e0bf5",
-                },
-                {
-                  label: "Statistik",
-                  value: "http://data.europa.eu/bna/c_e1da4e07",
-                },
-                {
-                  label: "Unternehmen und Eigentümerschaft von Unternehmen",
-                  value: "http://data.europa.eu/bna/c_a9135398",
-                },
-                {
-                  label: "Mobilität",
-                  value: "http://data.europa.eu/bna/c_b79e35eb",
-                },
-              ],
+              options: this.getCodelistForSelect(
+                "hvdCategories",
+                "hvdCategories",
+              ),
+              codelistId: "hvdCategories",
               required: true,
             })
           : null,
