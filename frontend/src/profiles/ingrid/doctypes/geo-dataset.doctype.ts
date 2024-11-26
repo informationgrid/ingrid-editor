@@ -418,8 +418,7 @@ export class GeoDatasetDoctype extends IngridShared {
                     category: (item) => {
                       let value = "";
                       if (item["_type"] == "freeDescription") {
-                        value =
-                          "Freitextliche Beschreibung " + item["identifier"];
+                        value = "Freie Beschreibung " + item["identifier"];
                       } else if (item["_type"] == "internalDataOrigin") {
                         value = "Geodatensatz " + item["uuidRef"];
                       } else if (item["_type"] == "externalDataOrigin") {
@@ -473,18 +472,18 @@ export class GeoDatasetDoctype extends IngridShared {
                   _types: [
                     {
                       key: "internalDataOrigin",
-                      value: "Geodatensatz auswählen",
+                      value: "Geodatensatz",
                       icon: "Geodatensatz",
                     },
                     {
                       key: "externalDataOrigin",
-                      value: "Externe Referenz angeben",
-                      icon: "upload",
+                      value: "Externe Referenz",
+                      icon: "circle-enable",
                     },
                     {
                       key: "freeDescription",
-                      value: "Freitextliche Beschreibung",
-                      icon: "cursor-edit",
+                      value: "Freie Beschreibung",
+                      icon: "circle",
                     },
                   ],
                   fields: [
