@@ -27,6 +27,7 @@ import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.CodelistHandler.Companion.toCodelistEntry
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
 import org.springframework.context.annotation.Lazy
@@ -86,7 +87,9 @@ class LubwSkdvOkProfile(
         description = ""
         defaultEntry = ""
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(CodelistHandler.toCodelistEntry("1", "Test-Eintrag Datenführende Stelle"))
+            codelist30000.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
         }
     }
 
@@ -97,7 +100,9 @@ class LubwSkdvOkProfile(
         description = ""
         defaultEntry = ""
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(CodelistHandler.toCodelistEntry("1", "Test-Eintrag Prod-Umgebung"))
+            codelist30001.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
         }
     }
 }
