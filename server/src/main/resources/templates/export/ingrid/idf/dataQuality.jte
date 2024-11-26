@@ -240,12 +240,36 @@
                     </gmd:LI_ProcessStep>
                 </gmd:processStep>
                 @endfor
-                @for( String description : page.getLineageSourceDescriptions())
+                @for( GeodatasetModelTransformer.LineageSourceDescription description : page.getLineageSourceDescriptions())
                 <gmd:source>
                     <gmd:LI_Source>
                         <gmd:description>
-                            <gco:CharacterString>${description}</gco:CharacterString>
+                            <gco:CharacterString>${description.getValue()}</gco:CharacterString>
                         </gmd:description>
+                        @if(!description.getIdentifier().isEmpty()  && !description.getTitle().isEmpty() && !description.getDateType().isEmpty() && !description.getDate().isEmpty())
+                            <gmd:CI_Citation>
+                                <gmd:title>
+                                    <gco:CharacterString>${description.getTitle()}</gco:CharacterString>
+                                </gmd:title>
+                                <gmd:identifier>
+                                    <gmd:MD_Identifier>
+                                        <gmd:code>
+                                            <gco:CharacterString>${description.getIdentifier()}</gco:CharacterString>
+                                        </gmd:code>
+                                    </gmd:MD_Identifier>
+                                </gmd:identifier>
+                                <gmd:date>
+                                    <gmd:CI_Date>
+                                        <gmd:date>
+                                            <gco:Date>${description.getDate()}</gco:Date>
+                                        </gmd:date>
+                                        <gmd:dateType>
+                                            <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="${description.getDateType()}">${description.getDateType()}</gmd:CI_DateTypeCode>
+                                        </gmd:dateType>
+                                    </gmd:CI_Date>
+                                </gmd:date>
+                            </gmd:CI_Citation>
+                        @endif
                     </gmd:LI_Source>
                 </gmd:source>
                 @endfor

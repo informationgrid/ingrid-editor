@@ -245,8 +245,39 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
     val lineageProcessStepDescriptions =
         data.dataQualityInfo?.lineage?.source?.processStep?.description?.map { codelists.getValue("", it) }
             ?: emptyList()
+
+    data class LineageSourceDescription(
+        val value: String,
+        val title: String?,
+        val identifier: String?,
+        val date: String?,
+        val dateType: String?,
+        val uuidRef: String?,
+        val url: String?,
+    )
+
     val lineageSourceDescriptions =
-        data.dataQualityInfo?.lineage?.source?.descriptions?.map { codelists.getValue("", it) } ?: emptyList()
+        data.dataQualityInfo?.lineage?.source?.descriptions?.map {
+            val identifier = when (it._type) {
+                "internalDataOrigin" -> it.uuidRef
+                "externalDataOrigin" -> it.url
+                else -> it.identifier
+            }
+            val title = when (it._type) {
+                "internalDataOrigin" -> (documentService.getLastPublishedDocument(catalogIdentifier, it.uuidRef!!, false)).title
+                else -> it.title
+            }
+            LineageSourceDescription(
+                value = it.value,
+                title,
+                identifier,
+                date = it.date,
+                dateType = (codelists.getValue("502", it.dateType, "en"))?.lowercase(),
+                uuidRef = it.uuidRef,
+                url = it.url,
+            )
+        } ?: emptyList()
+
     val hasLineageInformation =
         !lineageStatement.isNullOrEmpty() || lineageProcessStepDescriptions.isNotEmpty() || lineageSourceDescriptions.isNotEmpty()
 
