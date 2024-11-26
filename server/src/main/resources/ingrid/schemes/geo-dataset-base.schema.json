@@ -133,7 +133,17 @@
         "descriptions": {
           "type": "array",
           "items": {
-            "$ref": "../../general.schema.json#/definitions/KeyValue"
+            "_type": "string",
+            "uuidRef": ["null", "string"],
+            "url": ["null", "string"],
+            "identifier": ["null", "string"],
+            "date": {
+              "type": ["null", "string"],
+              "format": "date-time"
+            },
+            "dateType": {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            }
           }
         }
       }
