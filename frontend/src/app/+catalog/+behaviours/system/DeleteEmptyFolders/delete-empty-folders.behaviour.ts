@@ -25,14 +25,12 @@ import {
   IgeEvent,
   IgeEventResultType,
 } from "../../../../services/event/event.service";
-import { TreeQuery } from "../../../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { ModalService } from "../../../../services/modal/modal.service";
 import { IgeError } from "../../../../models/ige-error";
-import { filter, map, take } from "rxjs/operators";
-import { Observable } from "rxjs";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
+import { TreeStore } from "../../../../store/tree/tree.store";
+import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
 
 @Injectable()
 export class DeleteEmptyFoldersBehaviour extends Plugin {
@@ -41,11 +39,12 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
   description = "Es dürfen nur leere Ordner gelöscht werden";
   defaultActive = true;
 
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
+
   constructor(
     private modal: ModalService,
     private eventService: EventService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -66,37 +65,29 @@ export class DeleteEmptyFoldersBehaviour extends Plugin {
   private handleEvent(resultObserver: EventResponseHandler) {
     let success = true;
 
-    this.activeDocsWithChildren().subscribe((docsWithChildren) => {
-      if (docsWithChildren?.length) {
-        // TODO: improve error generation
-        const error = new IgeError();
-        error.setMessage(
-          "Um Ordner zu löschen, müssen diese leer sein",
-          docsWithChildren.join(" , "),
-        );
-        this.modal.showIgeError(error);
-        success = false;
-      }
-      const responseData = this.buildResponse(success);
-      resultObserver(responseData);
-    });
+    const docsWithChildren = this.activeDocsWithChildren();
+    if (docsWithChildren?.length) {
+      // TODO: improve error generation
+      const error = new IgeError();
+      error.setMessage(
+        "Um Ordner zu löschen, müssen diese leer sein",
+        docsWithChildren.join(" , "),
+      );
+      this.modal.showIgeError(error);
+      success = false;
+    }
+    const responseData = this.buildResponse(success);
+    resultObserver(responseData);
   }
 
-  private activeDocsWithChildren(): Observable<String[]> {
-    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
-    // TODO: refactor openedDocument in store to another one, since it's of different format
-    //       and not directly associated with tree-store
-    return query
-      .selectActive()
-      .pipe(
-        filter((entity) => entity !== undefined),
-        take(1),
-      )
-      .pipe(
-        map((docs) => {
-          return docs.filter((doc) => doc._hasChildren).map((doc) => doc.title);
-        }),
-      );
+  private activeDocsWithChildren(): string[] {
+    const store = this.forAddress()
+      ? this.addressTreeStore
+      : this.documentTreeStore;
+    return this.activeNodes()
+      .map((item) => store.entityMap()[item])
+      .filter((doc) => doc._hasChildren)
+      .map((doc) => doc.title);
   }
 
   private buildResponse(isSuccess: boolean): EventData {

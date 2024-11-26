@@ -17,15 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject } from "@angular/core";
+import { Component, inject, Inject } from "@angular/core";
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 import { FormGroup } from "@angular/forms";
 import { Subject } from "rxjs";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { TreeQuery } from "../../../../store/tree/tree.query";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
+import { TreeStore } from "../../../../store/tree/tree.store";
 
 export interface SelectDatasetData {
   currentRefs: string[];
@@ -55,6 +55,7 @@ export interface SelectServiceResponse {
   standalone: true,
 })
 export class SelectorServiceDialogComponent {
+  private treeStore = inject(TreeStore);
   selectedNode: number = null;
   field: FormlyFieldConfig[] = [
     {
@@ -71,12 +72,11 @@ export class SelectorServiceDialogComponent {
 
   constructor(
     private dlgRef: MatDialogRef<any>,
-    private tree: TreeQuery,
     @Inject(MAT_DIALOG_DATA) private data: SelectDatasetData,
   ) {
     if (data.activeRef) {
       setTimeout(() => {
-        const node = tree.getByUuid(data.activeRef);
+        const node = this.treeStore.getByUuid(data.activeRef);
         this.initialNode.next(parseInt(node.id.toString()));
       });
     }
@@ -96,8 +96,8 @@ export class SelectorServiceDialogComponent {
     };
   }
 
-  submit() {
-    const entity = this.tree.getEntity(this.selectedNode);
+  async submit() {
+    const entity = await this.treeStore.byId(this.selectedNode);
     let response: SelectServiceResponse = {
       title: entity.title,
       state: entity._state,

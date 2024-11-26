@@ -17,12 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, signal } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { ConfigService } from "../services/config/config.service";
 import { DocumentService } from "../services/document/document.service";
 import { DocumentAbstract } from "../store/document/document.model";
 import { BehaviorSubject, Observable } from "rxjs";
-import { SessionQuery } from "../store/session.query";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -39,6 +38,8 @@ import { CardBoxComponent } from "../shared/card-box/card-box.component";
 import { ChartComponent } from "./chart/chart.component";
 import { DocumentListItemComponent } from "../shared/document-list-item/document-list-item.component";
 import { AsyncPipe } from "@angular/common";
+import { GeneralStore } from "../store/general.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @Component({
   templateUrl: "./dashboard.component.html",
@@ -55,12 +56,20 @@ import { AsyncPipe } from "@angular/common";
   ],
 })
 export class DashboardComponent implements OnInit {
+  private generalStore = inject(GeneralStore);
+
   canCreateAddress: boolean;
   canCreateDataset: boolean;
   canImport: boolean;
-  recentDocs$: Observable<DocumentAbstract[]>;
-  recentPublishedDocs$: Observable<DocumentAbstract[]>;
-  oldestExpiredDocs$: Observable<DocumentAbstract[]>;
+  recentDocs$: Observable<DocumentAbstract[]> = toObservable(
+    this.generalStore.latestDocuments,
+  ).pipe(map((docs) => docs.slice(0, 5)));
+  recentPublishedDocs$: Observable<DocumentAbstract[]> = toObservable(
+    this.generalStore.latestPublishedDocuments,
+  ).pipe(map((docs) => docs.slice(0, 5)));
+  oldestExpiredDocs$: Observable<DocumentAbstract[]> = toObservable(
+    this.generalStore.oldestExpiredDocuments,
+  ).pipe(map((docs) => docs.slice(0, 5)));
   chartDataPublished = signal<number[]>(null);
   messages$: BehaviorSubject<Message[]>;
 
@@ -69,7 +78,6 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private dialog: MatDialog,
     private docService: DocumentService,
-    private sessionQuery: SessionQuery,
     private messageService: MessageService,
   ) {
     this.messages$ = this.messageService.messages$;
@@ -79,16 +87,6 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.recentDocs$ = this.sessionQuery.latestDocuments$.pipe(
-      map((docs) => docs.slice(0, 5)),
-    );
-    this.recentPublishedDocs$ =
-      this.sessionQuery.latestPublishedDocuments$.pipe(
-        map((docs) => docs.slice(0, 5)),
-      );
-    this.oldestExpiredDocs$ = this.sessionQuery.oldestExpiredDocuments$.pipe(
-      map((docs) => docs.slice(0, 5)),
-    );
     this.fetchStatistic();
     this.fetchData();
     this.messageService.loadStoredMessages();

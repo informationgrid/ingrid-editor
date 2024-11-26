@@ -17,23 +17,18 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { SessionStore } from "../store/session.store";
+import { inject, Injectable } from "@angular/core";
+import { UiStore } from "../store/ui.store";
 
 @Injectable()
 export class UserManagementService {
-  constructor(private sessionStore: SessionStore) {}
+  private uiStore = inject(UiStore);
 
   rememberTableWidth(info) {
     this.updateTableWidth(info.sizes[0]);
   }
 
   updateTableWidth(size: number) {
-    this.sessionStore.update((state) => ({
-      ui: {
-        ...state.ui,
-        userTableWidth: size,
-      },
-    }));
+    this.uiStore.setUserTableWidth(size);
   }
 }

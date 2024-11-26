@@ -23,7 +23,6 @@ import { inject, Injectable } from "@angular/core";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { map } from "rxjs/operators";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { of } from "rxjs";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
@@ -42,7 +41,6 @@ export class OpenDataDoctype extends BaseDoctype {
 
   private uploadService = inject(UploadService);
   private configService = inject(ConfigService);
-  protected codelistQuery = inject(CodelistQuery);
 
   documentFields = () =>
     <FormlyFieldConfig[]>[

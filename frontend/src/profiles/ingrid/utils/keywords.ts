@@ -22,10 +22,10 @@ import { HttpClient } from "@angular/common/http";
 import { firstValueFrom } from "rxjs";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { inject, Injectable } from "@angular/core";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { IgeError } from "../../../app/models/ige-error";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { FormArray, FormGroup } from "@angular/forms";
+import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 
 export interface KeywordSectionOptions {
   priorityDataset?: boolean;
@@ -37,7 +37,7 @@ export interface KeywordSectionOptions {
 @Injectable({ providedIn: "root" })
 export class KeywordAnalysis {
   http = inject(HttpClient);
-  codelistQuery = inject(CodelistQuery);
+  private codelistStore = inject(CodelistStore);
   snack = inject(MatSnackBar);
 
   static inspireToIsoMapping = {
@@ -121,7 +121,7 @@ export class KeywordAnalysis {
     const alreadyExists = topicsCtrl.value.some(
       (topic: any) => topic.key === isoKey,
     );
-    const isoValue = this.codelistQuery.getCodelistEntryValueByKey(
+    const isoValue = this.codelistStore.getCodelistEntryValueByKey(
       "527",
       isoKey,
     );
@@ -211,7 +211,7 @@ export class KeywordAnalysis {
   }
 
   checkInThemes(item: string): ThesaurusResult {
-    const codeListEntry = this.codelistQuery.getCodelistEntryByValue(
+    const codeListEntry = this.codelistStore.getCodelistEntryByValue(
       "6100",
       item,
       "de",

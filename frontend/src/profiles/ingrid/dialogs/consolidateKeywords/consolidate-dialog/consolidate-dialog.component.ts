@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, inject, Inject, OnInit } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -30,7 +30,6 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatChip, MatChipListbox } from "@angular/material/chips";
 import { NgClass } from "@angular/common";
 import { DialogTemplateComponent } from "../../../../../app/shared/dialog-template/dialog-template.component";
-import { CodelistQuery } from "../../../../../app/store/codelist/codelist.query";
 import { FormStateService } from "../../../../../app/+form/form-state.service";
 import { ConfigService } from "../../../../../app/services/config/config.service";
 import { KeywordAnalysis } from "../../../utils/keywords";
@@ -42,6 +41,7 @@ import { removeDuplicatesByValue } from "../../../../../app/shared/utils";
 import { IgeDocument, Metadata } from "../../../../../app/models/ige-document";
 import { UntypedFormGroup } from "@angular/forms";
 import { BackendOption } from "../../../../../app/store/codelist/codelist.model";
+import { CodelistStore } from "../../../../../app/store/codelist/codelist.store";
 
 export interface ConsolidateDialogData {
   id: number;
@@ -75,10 +75,10 @@ interface ThesaurusTypeInfo extends Array<any | ThesaurusResult[]> {
   standalone: true,
 })
 export class ConsolidateDialogComponent implements OnInit {
+  private codelistStore = inject(CodelistStore);
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ConsolidateDialogData,
     private dialogRef: MatDialogRef<ConsolidateDialogComponent>,
-    private codelistQuery: CodelistQuery,
     private formStateService: FormStateService,
     public configService: ConfigService,
     private keywordAnalysis: KeywordAnalysis,
@@ -267,7 +267,7 @@ export class ConsolidateDialogComponent implements OnInit {
   private getInspireLabel(option: BackendOption) {
     return {
       label:
-        this.codelistQuery.getCodelistEntryByKey("6100", option.key)?.fields?.[
+        this.codelistStore.getCodelistEntryByKey("6100", option.key)?.fields?.[
           "de"
         ] ?? option.value,
     };

@@ -20,10 +20,12 @@
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 
 import {
-  AfterViewInit,
   Component,
+  computed,
   effect,
+  inject,
   OnInit,
+  Signal,
   signal,
 } from "@angular/core";
 import { UserService } from "../../services/user/user.service";
@@ -31,7 +33,7 @@ import { FrontendUser, User } from "../user";
 import { Observable, of } from "rxjs";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
-import { FormControl, UntypedFormGroup } from "@angular/forms";
+import { FormControl, FormGroup } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { NewUserDialogComponent } from "./new-user-dialog/new-user-dialog.component";
 import {
@@ -40,10 +42,8 @@ import {
 } from "../../dialogs/confirm/confirm-dialog.component";
 import { finalize, map, tap } from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
-import { SessionQuery } from "../../store/session.query";
 import { ConfigService } from "../../services/config/config.service";
 import { Router } from "@angular/router";
-import { GroupQuery } from "../../store/group/group.query";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {
   FormMenuService,
@@ -59,6 +59,10 @@ import { UserTableComponent } from "./user-table/user-table.component";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { HeaderMoreComponent } from "./header-more/header-more.component";
+import { GroupStore } from "../../store/group/group.store";
+import { GeneralStore } from "../../store/general.store";
+import { UiStore } from "../../store/ui.store";
+import { toSignal } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
@@ -85,40 +89,47 @@ import { HeaderMoreComponent } from "./header-more/header-more.component";
   ],
   providers: [UserManagementService],
 })
-export class UserComponent implements OnInit, AfterViewInit {
+export class UserComponent implements OnInit {
+  private groupStore = inject(GroupStore);
+  private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
+
   users = this.userService.users$;
-  form = new UntypedFormGroup({});
+  form = new FormGroup<any>({});
   menuItems: FormularMenuItem[];
 
   explicitUserLogin = signal<string>(null);
   loadedUser = signal<User>(null);
   showMore = signal<boolean>(false);
   isLoading = signal<boolean>(false);
-  formlyFieldConfig: FormlyFieldConfig[];
-  tableWidth: number;
+  tableWidth: Signal<number> = this.uiStore.userTableWidth;
   query = new FormControl<string>("");
   private previousSelectedUser: User = null;
+
+  formChange$ = toSignal(this.form.valueChanges);
+  userTitle = computed<string>(() => {
+    const value = this.formChange$();
+    const title = `${value.firstName} ${value.lastName}`;
+    return title.trim().length === 0 ? "Kein Titel" : title;
+  });
+
+  formlyFieldConfig = computed<FormlyFieldConfig[]>(() => {
+    return this.userService.getUserFormFields(
+      this.groupStore.entities(),
+      this.groupSelectCallback,
+      this.roleChangeCallback,
+    );
+  });
 
   constructor(
     private dialog: MatDialog,
     public userService: UserService,
     private groupService: GroupService,
-    private groupQuery: GroupQuery,
     private router: Router,
     public userManagementService: UserManagementService,
     private formMenuService: FormMenuService,
-    private session: SessionQuery,
     private snackBar: MatSnackBar,
   ) {
-    this.groupQuery.selectAll().subscribe((groups) => {
-      this.formlyFieldConfig = this.userService.getUserFormFields(
-        groups,
-        this.groupSelectCallback,
-        this.roleChangeCallback,
-      );
-    });
-    this.tableWidth = this.session.getValue().ui.userTableWidth;
-
     effect(
       () => {
         const user = this.userService.selectedUser$();
@@ -133,10 +144,6 @@ export class UserComponent implements OnInit, AfterViewInit {
     );
   }
 
-  ngAfterViewInit(): void {
-    this.tableWidth = this.session.getValue().ui.userTableWidth;
-  }
-
   ngOnInit() {
     this.showLoading();
     this.menuItems = this.formMenuService.getMenuItems("user");
@@ -148,7 +155,7 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   groupSelectCallback = (groupIdString: string) => {
     const groupId = +groupIdString;
-    const doReload = this.groupQuery.getActiveId() === groupId;
+    const doReload = this.generalStore.activeGroup() === groupId;
     this.groupService.getGroup(groupId).subscribe(() => {
       this.groupService.setActive(groupId);
       this.router.navigate([`${ConfigService.catalogId}/manage/group`]);

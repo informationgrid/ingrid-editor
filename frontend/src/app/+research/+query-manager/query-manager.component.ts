@@ -17,8 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
-import { QueryQuery } from "../../store/query/query.query";
+import { Component, computed, inject, OnInit, Signal } from "@angular/core";
 import { ResearchService } from "../research.service";
 import {
   ConfirmDialogComponent,
@@ -27,9 +26,7 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { Query, QueryUI } from "../../store/query/query.model";
 import { ConfigService } from "../../services/config/config.service";
-import { Observable } from "rxjs";
-import { filter, map } from "rxjs/operators";
-import { logAction } from "@datorama/akita";
+import { filter } from "rxjs/operators";
 import { Router } from "@angular/router";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { CardBoxComponent } from "../../shared/card-box/card-box.component";
@@ -39,6 +36,7 @@ import { MatIconButton } from "@angular/material/button";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { AsyncPipe, DatePipe } from "@angular/common";
 import { DateAgoPipe } from "../../directives/date-ago.pipe";
+import { QueryStore } from "../../store/query/query.store";
 
 @Component({
   selector: "ige-query-manager",
@@ -60,23 +58,30 @@ import { DateAgoPipe } from "../../directives/date-ago.pipe";
   ],
 })
 export class QueryManagerComponent implements OnInit {
-  userQueries: Observable<QueryUI[]> = this.queryQuery.userQueries$.pipe(
-    map((queries: QueryUI[]) =>
-      QueryManagerComponent.addAllowDeleteInfo(queries),
-    ),
-  );
-  catalogQueries = this.queryQuery.catalogQueries$.pipe(
-    map((queries: QueryUI[]) => this.addDeleteInfo(queries)),
-  );
+  private queryStore = inject(QueryStore);
+
+  userQueries: Signal<QueryUI[]> = computed(() => {
+    const queries = this.queryStore.userQueries();
+    return QueryManagerComponent.addAllowDeleteInfo(queries);
+  });
+
+  catalogQueries: Signal<QueryUI[]> = computed(() => {
+    const queries = this.queryStore.catalogQueries();
+    let currentUserId = this.configService.$userInfo.value.login;
+    return QueryManagerComponent.addAllowDeleteInfo(
+      queries,
+      (q: Query) =>
+        this.configService.hasCatAdminRights() || q.userId === currentUserId,
+    );
+  });
 
   queryTypes: {
     label: string;
-    queries: Observable<QueryUI[]>;
+    queries: Signal<QueryUI[]>;
   }[];
 
   constructor(
     private router: Router,
-    private queryQuery: QueryQuery,
     private dialog: MatDialog,
     private researchService: ResearchService,
     private configService: ConfigService,
@@ -125,11 +130,10 @@ export class QueryManagerComponent implements OnInit {
   }
 
   loadQuery(id: string) {
-    let entity: Query = this.queryQuery.getEntity(id);
+    let entity: Query = this.queryStore.entityMap()[id];
 
     this.researchService.setActiveQuery(id);
 
-    logAction("Load query");
     this.router.navigate([
       entity.type === "facet"
         ? `${ConfigService.catalogId}/research/search`
@@ -137,26 +141,14 @@ export class QueryManagerComponent implements OnInit {
     ]);
   }
 
-  getIdentifier(index, item: Query) {
-    return item.id;
-  }
-
-  private addDeleteInfo(queries: QueryUI[]): QueryUI[] {
-    let currentUserId = this.configService.$userInfo.value.login;
-    return queries.map((q) => {
-      return {
-        ...q,
-        canDelete:
-          this.configService.hasCatAdminRights() || q.userId === currentUserId,
-      };
-    });
-  }
-
-  private static addAllowDeleteInfo(queries: QueryUI[]): QueryUI[] {
+  private static addAllowDeleteInfo(
+    queries: Query[],
+    fn: (q: Query) => boolean = () => true,
+  ): QueryUI[] {
     return queries.map((q: QueryUI) => {
       return {
         ...q,
-        canDelete: true,
+        canDelete: fn(q),
       };
     });
   }

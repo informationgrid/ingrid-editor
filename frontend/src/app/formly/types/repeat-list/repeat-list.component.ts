@@ -20,6 +20,7 @@
 import {
   Component,
   ElementRef,
+  inject,
   OnInit,
   signal,
   TemplateRef,
@@ -63,7 +64,6 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSelect } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ErrorStateMatcher, MatOption } from "@angular/material/core";
-import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FieldType } from "@ngx-formly/material";
 import {
   CdkDrag,
@@ -94,6 +94,7 @@ import { MatInput } from "@angular/material/input";
 import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
+import { CodelistStore } from "../../../store/codelist/codelist.store";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: RepeatListComponent) {}
@@ -170,6 +171,7 @@ export class RepeatListComponent
   extends FieldType<FieldTypeConfig<RepeatListProps>>
   implements OnInit
 {
+  private codelistStore = inject(CodelistStore);
   @ViewChild("repeatListInput", { read: ElementRef })
   autoCompleteEl: ElementRef;
   @ViewChild(MatAutocompleteTrigger) autoComplete: MatAutocompleteTrigger;
@@ -202,10 +204,7 @@ export class RepeatListComponent
   hasFocus = false;
   matcher = new MyErrorStateMatcher(this);
 
-  constructor(
-    private snack: MatSnackBar,
-    private codelistQuery: CodelistQuery,
-  ) {
+  constructor(private snack: MatSnackBar) {
     super();
   }
 
@@ -590,7 +589,7 @@ export class RepeatListComponent
   private prepareDuplicatesForView(duplicates: any[]) {
     if (this.props.codelistId) {
       duplicates = duplicates.map((dup) =>
-        this.codelistQuery.getCodelistEntryValueByKey(
+        this.codelistStore.getCodelistEntryValueByKey(
           this.props.codelistId,
           dup,
         ),
