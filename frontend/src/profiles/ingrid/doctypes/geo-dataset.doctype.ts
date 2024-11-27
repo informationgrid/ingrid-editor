@@ -418,7 +418,8 @@ export class GeoDatasetDoctype extends IngridShared {
                     category: (item) => {
                       let value = "";
                       if (item["_type"] == "freeDescription") {
-                        value = "Freie Beschreibung " + item["identifier"];
+                        value =
+                          "Freie Beschreibung " + (item["identifier"] ?? "");
                       } else if (item["_type"] == "internalDataOrigin") {
                         value = "Geodatensatz " + item["uuidRef"];
                       } else if (item["_type"] == "externalDataOrigin") {
@@ -492,6 +493,42 @@ export class GeoDatasetDoctype extends IngridShared {
                       wrappers: ["inline-help", "form-field"],
                       hasInlineContextHelp: true,
                     }),
+                    this.addGroupSimple(
+                      null,
+                      [
+                        this.addDatepickerInline("date", null, {
+                          fieldLabel: "Datum",
+                          wrappers: ["inline-help", "form-field"],
+                          expressions: {
+                            "props.required": (field: FormlyFieldConfig) =>
+                              field.form.value._type == "externalDataOrigin" ||
+                              field.form.value._type == "internalDataOrigin" ||
+                              !!field.form.value.title ||
+                              !!field.form.value.identifier ||
+                              !!field.form.value.dateType,
+                          },
+                        }),
+                        this.addSelect("dateType", null, {
+                          showSearch: true,
+                          fieldLabel: "Typ",
+                          wrappers: ["inline-help", "form-field"],
+                          className: "flex-3",
+                          options: this.getCodelistForSelect("502", "type"),
+                          codelistId: "502",
+                          expressions: {
+                            "props.required": (field: FormlyFieldConfig) =>
+                              field.form.value._type == "externalDataOrigin" ||
+                              field.form.value._type == "internalDataOrigin" ||
+                              !!field.form.value.title ||
+                              !!field.form.value.identifier ||
+                              !!field.form.value.date,
+                          },
+                        }),
+                      ],
+                      {
+                        fieldGroupClassName: "flex-row gap-12",
+                      },
+                    ),
                     this.addDocumentCard("uuidRef", {
                       required: true,
                       docTypeFilter: ["InGridGeoDataset"],
@@ -559,50 +596,15 @@ export class GeoDatasetDoctype extends IngridShared {
                       updateOn: "change",
                       expressions: {
                         hide: (field: FormlyFieldConfig) => {
-                          return field.form.value._type != "freeDescription";
+                          return field.form.value._type == "internalDataOrigin";
                         },
                         "props.required": (field: FormlyFieldConfig) =>
+                          field.form.value._type == "externalDataOrigin" ||
                           !!field.form.value.title ||
                           !!field.form.value.date ||
                           !!field.form.value.dateType,
                       },
                     }),
-                    this.addGroupSimple(
-                      null,
-                      [
-                        this.addDatepickerInline("date", null, {
-                          fieldLabel: "Datum",
-                          wrappers: ["inline-help", "form-field"],
-                          expressions: {
-                            "props.required": (field: FormlyFieldConfig) =>
-                              field.form.value._type == "externalDataOrigin" ||
-                              field.form.value._type == "internalDataOrigin" ||
-                              !!field.form.value.title ||
-                              !!field.form.value.identifier ||
-                              !!field.form.value.dateType,
-                          },
-                        }),
-                        this.addSelect("dateType", null, {
-                          showSearch: true,
-                          fieldLabel: "Typ",
-                          wrappers: ["inline-help", "form-field"],
-                          className: "flex-3",
-                          options: this.getCodelistForSelect("502", "type"),
-                          codelistId: "502",
-                          expressions: {
-                            "props.required": (field: FormlyFieldConfig) =>
-                              field.form.value._type == "externalDataOrigin" ||
-                              field.form.value._type == "internalDataOrigin" ||
-                              !!field.form.value.title ||
-                              !!field.form.value.identifier ||
-                              !!field.form.value.date,
-                          },
-                        }),
-                      ],
-                      {
-                        fieldGroupClassName: "flex-row gap-12",
-                      },
-                    ),
                   ],
                 },
               ),

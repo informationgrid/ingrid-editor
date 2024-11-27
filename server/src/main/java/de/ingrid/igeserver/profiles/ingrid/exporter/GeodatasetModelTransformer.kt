@@ -258,14 +258,18 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
 
     val lineageSourceDescriptions =
         data.dataQualityInfo?.lineage?.source?.descriptions?.map {
-            val identifier = when (it._type) {
-                "internalDataOrigin" -> it.uuidRef
-                "externalDataOrigin" -> it.url
-                else -> it.identifier
-            }
-            val title = when (it._type) {
-                "internalDataOrigin" -> (documentService.getLastPublishedDocument(catalogIdentifier, it.uuidRef!!, false)).title
-                else -> it.title
+            val title: String?
+            val identifier: String?
+            when (it._type) {
+                "internalDataOrigin" -> {
+                    val doc = documentService.getLastPublishedDocument(catalogIdentifier, it.uuidRef!!, false)
+                    title = doc.title
+                    identifier = doc.data.get("identifier").toString()
+                }
+                else -> {
+                    title = it.title
+                    identifier = it.identifier
+                }
             }
             LineageSourceDescription(
                 value = it.value,

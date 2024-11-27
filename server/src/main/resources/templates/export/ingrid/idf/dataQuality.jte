@@ -246,7 +246,7 @@
                         <gmd:description>
                             <gco:CharacterString>${description.getValue()}</gco:CharacterString>
                         </gmd:description>
-                        @if(!description.getIdentifier().isEmpty()  && !description.getTitle().isEmpty() && !description.getDateType().isEmpty() && !description.getDate().isEmpty())
+                        @if(description.getIdentifier() != null  && description.getTitle() != null && description.getDateType() != null && description.getDate() != null)
                             <gmd:sourceCitation>
                                 <gmd:CI_Citation>
                                     <gmd:title>
