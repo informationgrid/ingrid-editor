@@ -425,7 +425,7 @@ export class GeoDatasetDoctype extends IngridShared {
                       } else if (item["_type"] == "externalDataOrigin") {
                         value = "Externe Referenz";
                       }
-                      return of({ value, link: null });
+                      return of({ value, navigateTo: null });
                     },
                     title: (item) => {
                       if (item["_type"] == "internalDataOrigin") {
@@ -435,14 +435,17 @@ export class GeoDatasetDoctype extends IngridShared {
                             map((doc) => {
                               return {
                                 value: doc?.document.title,
-                                link: null,
+                                navigateTo: {
+                                  target: item["uuidRef"],
+                                  internal: true,
+                                },
                               };
                             }),
                           );
                       } else {
                         return of({
                           value: item["title"],
-                          link: item["url"],
+                          navigateTo: { target: item["url"] },
                         });
                       }
                     },
@@ -460,13 +463,13 @@ export class GeoDatasetDoctype extends IngridShared {
                       }
                       return of({
                         value,
-                        link: null,
+                        navigateTo: null,
                       });
                     },
                     description: (item) => {
                       return of({
                         value: item["value"],
-                        link: null,
+                        navigateTo: null,
                       });
                     },
                   },

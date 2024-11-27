@@ -56,6 +56,8 @@ import {
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { debounceTime, switchMap } from "rxjs/operators";
 import { Observable, of } from "rxjs";
+import { ConfigService } from "../../../services/config/config.service";
+import { Router } from "@angular/router";
 
 interface RepeatDetailListProps extends FormlyFieldProps {
   titleField: string;
@@ -65,10 +67,10 @@ interface RepeatDetailListProps extends FormlyFieldProps {
 }
 
 export interface ItemPreviewFields {
-  category?: (item: any) => Observable<{ value: string; link: string }>;
-  title?: (item: any) => Observable<{ value: string; link: string }>;
-  subtitle?: (item: any) => Observable<{ value: string; link: string }>;
-  description?: (item: any) => Observable<{ value: string; link: string }>;
+  category?: (item: any) => ListEntryPart;
+  title?: (item: any) => ListEntryPart;
+  subtitle?: (item: any) => ListEntryPart;
+  description?: (item: any) => ListEntryPart;
 }
 
 interface ListEntry {
@@ -78,7 +80,10 @@ interface ListEntry {
   description?: ListEntryPart;
 }
 
-type ListEntryPart = Observable<{ value: string; link: string }>;
+type ListEntryPart = Observable<{
+  value: string;
+  navigateTo?: { target: string; internal?: boolean };
+}>;
 
 @UntilDestroy()
 @Component({
@@ -107,7 +112,10 @@ export class RepeatDetailListComponent
   extends FieldType<FieldTypeConfig<RepeatDetailListProps>>
   implements OnInit
 {
-  constructor(private dialog: MatDialog) {
+  constructor(
+    private dialog: MatDialog,
+    private router: Router,
+  ) {
     super();
   }
 
@@ -141,6 +149,17 @@ export class RepeatDetailListComponent
       this.props.itemPreviewFields?.[previewField]?.(item) ??
       of({ value: null, link: null })
     );
+  }
+
+  async navigate(navigateTo) {
+    if (navigateTo.internal) {
+      return this.router.navigate([
+        `${ConfigService.catalogId}/form`,
+        { id: navigateTo.target },
+      ]);
+    } else {
+      window.open(navigateTo.target, "_blank");
+    }
   }
 
   addItem(type: string) {

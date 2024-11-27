@@ -23,64 +23,80 @@
                         </mat-icon>
                     }
                     <div class="flex-1 flex-col align-items-start">
+                        @let category = item?.category | async;
                         <div class="category">
-                            @let category = item?.category | async;
-                            @if (category.link) {
-                                <a
-                                    class="url no-text-transform"
-                                    [href]="category.link"
-                                    target="_blank"
-                                >
-                                    {{ category.value }}
-                                </a>
-                            } @else {
-                                {{ category.value }}
-                            }
+                            <div
+                                [class]="category?.navigateTo ? 'url' : ''"
+                                (click)="
+                                    category?.navigateTo
+                                        ? navigate(category?.navigateTo)
+                                        : null
+                                "
+                                (keyup.enter)="
+                                    category?.navigateTo
+                                        ? navigate(category?.navigateTo)
+                                        : null
+                                "
+                            >
+                                {{ category?.value }}
+                            </div>
                         </div>
 
+                        @let title = item?.title | async;
                         <div class="title">
-                            @let title = item?.title | async;
-                            @if (title?.link) {
-                                <a
-                                    class="url no-text-transform"
-                                    [href]="title?.link"
-                                    target="_blank"
-                                >
-                                    {{ title?.value }}
-                                </a>
-                            } @else {
+                            <div
+                                [class]="title?.navigateTo ? 'url' : ''"
+                                (click)="
+                                    title?.navigateTo
+                                        ? navigate(title?.navigateTo)
+                                        : null
+                                "
+                                (keyup.enter)="
+                                    title?.navigateTo
+                                        ? navigate(title?.navigateTo)
+                                        : null
+                                "
+                            >
                                 {{ title?.value }}
-                            }
+                            </div>
                         </div>
 
+                        @let subtitle = item?.subtitle | async;
                         <div class="subtitle">
-                            @let subtitle = item?.subtitle | async;
-                            @if (subtitle.link) {
-                                <a
-                                    class="url no-text-transform"
-                                    [href]="subtitle.link"
-                                    target="_blank"
-                                >
-                                    {{ subtitle.value }}
-                                </a>
-                            } @else {
-                                {{ subtitle.value }}
-                            }
+                            <div
+                                [class]="subtitle?.navigateTo ? 'url' : ''"
+                                (click)="
+                                    subtitle?.navigateTo
+                                        ? navigate(subtitle?.navigateTo)
+                                        : null
+                                "
+                                (keyup.enter)="
+                                    subtitle?.navigateTo
+                                        ? navigate(subtitle?.navigateTo)
+                                        : null
+                                "
+                            >
+                                {{ subtitle?.value }}
+                            </div>
                         </div>
 
+                        @let description = item?.description | async;
                         <div class="description">
-                            @let description = item?.description | async;
-                            @if (description.link) {
-                                <a
-                                    class="url no-text-transform"
-                                    [href]="description.link"
-                                    target="_blank"
-                                >
-                                    {{ description.value }}
-                                </a>
-                            } @else {
-                                {{ description.value }}
-                            }
+                            <div
+                                [class]="description?.navigateTo ? 'url' : ''"
+                                (click)="
+                                    description?.navigateTo
+                                        ? navigate(description?.navigateTo)
+                                        : null
+                                "
+                                (keyup.enter)="
+                                    description?.navigateTo
+                                        ? navigate(description?.navigateTo)
+                                        : null
+                                "
+                            >
+                                {{ description?.value }}
+                            </div>
                         </div>
                     </div>
                     @if (formControl.enabled) {

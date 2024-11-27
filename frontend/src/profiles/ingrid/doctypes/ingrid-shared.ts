@@ -1572,11 +1572,13 @@ export abstract class IngridShared extends BaseDoctype {
                   value = codelist;
                 });
             }
-            return of({ value, link: null });
+            return of({ value, navigateTo: null });
           },
-          title: (item) => of({ value: item["title"], link: null }),
-          subtitle: (item) => of({ value: item["url"], link: item["url"] }),
-          description: (item) => of({ value: item["explanation"], link: null }),
+          title: (item) => of({ value: item["title"], navigateTo: null }),
+          subtitle: (item) =>
+            of({ value: item["url"], navigateTo: { target: item["url"] } }),
+          description: (item) =>
+            of({ value: item["explanation"], navigateTo: null }),
         },
         validators: {
           downloadLinkWhenOpenData: {
