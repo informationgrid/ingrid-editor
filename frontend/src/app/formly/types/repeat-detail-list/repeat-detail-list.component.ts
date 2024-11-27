@@ -133,7 +133,7 @@ export class RepeatDetailListComponent
 
   private mapItemPreviewFields(items): Observable<ListEntry[]> {
     return of(
-      items.map((item) => {
+      items?.map((item) => {
         return {
           category: this.getItemPreview("category", item),
           title: this.getItemPreview("title", item),
