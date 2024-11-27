@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, EventEmitter, Output, Input } from "@angular/core";
+import {
+  Component,
+  computed,
+  input,
+  OnInit,
+  output,
+  Signal,
+} from "@angular/core";
 import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
 import {
   MatAccordion,
@@ -53,35 +60,39 @@ import { MatIconButton } from "@angular/material/button";
   standalone: true,
 })
 export class CodelistPresenterComponent implements OnInit {
-  _codelist: Codelist;
-  @Input() set codelist(value: Codelist) {
-    this._codelist = value;
-    if (value) {
-      this.prepareEntryFields(value);
-    }
-  }
+  codelist = input<Codelist>();
+  hideMenu = input<boolean>(false);
+  favoriteEntryIds = input<string[]>([]);
 
-  @Input() hideMenu = false;
-  @Input() favoriteEntryIds: string[] = [];
+  remove = output<CodelistEntry>();
+  setDefault = output<CodelistEntry>();
+  edit = output<CodelistEntry>();
+  asFavorite = output<CodelistEntry>();
 
-  @Output() remove = new EventEmitter<CodelistEntry>();
-  @Output() setDefault = new EventEmitter<CodelistEntry>();
-  @Output() edit = new EventEmitter<CodelistEntry>();
-  @Output() asFavorite = new EventEmitter<CodelistEntry>();
-
+  sortedEntries = computed(() => {
+    return this.codelist().entries.sort((a, b) =>
+      a.fields["de"].localeCompare(b.fields["de"]),
+    );
+  });
   showMore = {};
-  entryFields: { [x: string]: string[][] } = {};
+  entryFields: Signal<{ [x: string]: string[][] }> = computed(() => {
+    return this.prepareEntryFields(this.codelist());
+  });
 
   constructor() {}
 
   ngOnInit(): void {}
 
   private prepareEntryFields(entry: Codelist) {
+    if (!entry) return;
+
+    let entryFields = {};
     entry.entries.forEach((entry) => {
-      this.entryFields[entry.id] = Object.keys(entry.fields).map((key) => [
+      entryFields[entry.id] = Object.keys(entry.fields).map((key) => [
         key,
         entry.fields[key],
       ]);
     });
+    return entryFields;
   }
 }

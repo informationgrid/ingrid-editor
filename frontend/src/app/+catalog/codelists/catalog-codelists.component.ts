@@ -99,12 +99,13 @@ export class CatalogCodelistsComponent implements OnInit {
       this.init = true;
       this.setInitialValue();
     }
-    return this.getFilteredCodelists(this.filterCtrlValue());
-  });
-
-  private firstFilteredCodelist = computed(() => {
-    if (this.filteredOptions().length === 0) return;
-    return this.filteredOptions()[0];
+    const list = this.getFilteredCodelists(this.filterCtrlValue());
+    if (this.selectedCodelist) {
+      this.selectedCodelist = list.find(
+        (item) => item.id === this.selectedCodelist.id,
+      );
+    }
+    return list;
   });
 
   private init = false;
@@ -118,8 +119,15 @@ export class CatalogCodelistsComponent implements OnInit {
     private dialog: MatDialog,
   ) {
     effect(() => {
-      this.codelistSelect.setValue(this.firstFilteredCodelist());
-      setTimeout(() => this.selectCodelist(this.firstFilteredCodelist()));
+      if (this.codelistSelect) {
+        const option = this.filteredOptions().find(
+          (item) => item.id === this.codelistSelect.value.id,
+        );
+        if (!option) {
+          this.codelistSelect.setValue(this.filteredOptions()[0]);
+          this.selectCodelist(this.filteredOptions()[0]);
+        }
+      }
     });
   }
 
@@ -225,26 +233,17 @@ export class CatalogCodelistsComponent implements OnInit {
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          this.codelistService
-            .resetCodelist(this.selectedCodelist.id)
-            .subscribe();
+          const id = this.selectedCodelist.id;
+          this.codelistService.resetCodelist(id).subscribe();
         }
       });
   }
 
   save() {
-    const id = this.codelistSelect.value.id;
     this.codelistService
       .updateCodelist(this.selectedCodelist)
       .pipe(tap(() => this._snackBar.open("Codeliste gespeichert")))
-      .subscribe(() => {
-        // need a little delay to fix issue with select box value
-        setTimeout(() => {
-          this.codelistSelect.setValue(null);
-          const option = this.filteredOptions().find((item) => item.id === id);
-          this.codelistSelect.setValue(option);
-        });
-      });
+      .subscribe();
   }
 
   private modifyCodelistEntry(oldId: string, result: CodelistEntry) {

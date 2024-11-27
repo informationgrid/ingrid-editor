@@ -291,7 +291,9 @@ export class CodelistService {
   resetCodelist(id: string) {
     return this.dataService.resetCodelist(id).pipe(
       map((codelists) => this.prepareCodelists(codelists, true)),
-      tap((codelists) => this.store.updateCodelist(codelists[0])),
+      tap((codelists) =>
+        codelists.forEach((codelist) => this.store.updateCodelist(codelist)),
+      ),
     );
   }
 
