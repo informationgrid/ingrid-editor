@@ -166,4 +166,8 @@ export class AutocompleteTypeComponent
   private filterParameterByName(name) {
     return name ? this._filter(name) : this.parameterOptions.slice();
   }
+
+  itemId(option: BackendOption) {
+    return option.key ?? option;
+  }
 }
