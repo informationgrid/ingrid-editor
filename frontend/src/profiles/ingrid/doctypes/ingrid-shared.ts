@@ -1574,7 +1574,20 @@ export abstract class IngridShared extends BaseDoctype {
             }
             return of({ value, navigateTo: null });
           },
-          title: (item) => of({ value: item["title"], navigateTo: null }),
+          title: (item) => {
+            if (item["referenceType"] == "uuidRef") {
+              return of({
+                value: item["title"],
+                navigateTo: { target: item["uuidRef"], internal: true },
+              });
+            }
+            if (item["referenceType"] == "url") {
+              return of({
+                value: item["title"],
+                navigateTo: null,
+              });
+            }
+          },
           subtitle: (item) =>
             of({ value: item["url"], navigateTo: { target: item["url"] } }),
           description: (item) =>
