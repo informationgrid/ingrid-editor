@@ -25,7 +25,7 @@
         <mat-tab-group [selectedIndex]="selectedPage" dynamicHeight>
             <mat-tab>
                 <div class="first-tab-wrapper flex-col" [formGroup]="formGroup">
-                    @if (isFolder() || !forAddress) {
+                    @if (isFolder() || !forAddress()) {
                         <ige-document-template
                             [isFolder]="isFolder()"
                             [form]="formGroup"
@@ -38,7 +38,7 @@
                     } @else {
                         <ige-address-template
                             [form]="formGroup"
-                            [parent]="parent"
+                            [parent]="parent()"
                             (create)="handleCreate()"
                         >
                             <ng-container
@@ -52,7 +52,7 @@
             <mat-tab label="Zielordner auswählen">
                 <ige-destination-selection
                     [disableRoot]="!isAdmin"
-                    [forAddress]="forAddress"
+                    [forAddress]="forAddress()"
                     [initialSelectedId]="jumpedTreeNodeId"
                     [typeToInsert]="docTypeChoice()"
                     (choice)="updateParent($event)"
@@ -93,7 +93,7 @@
                 color="primary"
                 data-cy="create-changeLocation"
                 [disabled]="alreadySubmitted"
-                (click)="jumpToTree(this.parent)"
+                (click)="jumpToTree(this.parent())"
             >
                 Zielordner ändern
             </button>
@@ -136,7 +136,7 @@
             Zielordner
         </div>
         <ige-breadcrumb
-            [path]="path"
+            [path]="path()"
             [rootName]="rootTreeName"
             [selectable]="true"
             [disableRoot]="!isAdmin"

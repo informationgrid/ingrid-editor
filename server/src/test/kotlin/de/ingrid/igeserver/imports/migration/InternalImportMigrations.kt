@@ -6,13 +6,13 @@ import io.kotest.core.spec.style.AnnotationSpec
 class InternalImportMigrations : AnnotationSpec() {
 
     @Test
-    fun migrateGeodatasetFrom110To120() {
+    fun migrateGeodatasetFrom110ToCurrent() {
         val importer = InternalImporter()
         val result = importer.run("test", getFile("ingrid/import/internal_ingrid_110.json"), mutableMapOf())
         println(result.toString())
 
         result.toPrettyString().shouldEqualJson(
-            getFile("ingrid/import/internal_ingrid_110_to_120_expected.json"),
+            getFile("ingrid/import/internal_ingrid_110_to_current_expected.json"),
         )
     }
 }

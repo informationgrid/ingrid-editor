@@ -17,9 +17,8 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { ConfigService } from "../../services/config/config.service";
-import { CatalogQuery } from "../../store/catalog/catalog.query";
 import { MatDialog } from "@angular/material/dialog";
 import { Catalog } from "../../+catalog/services/catalog.model";
 import {
@@ -31,23 +30,18 @@ import {
   CatalogDetailResponse,
 } from "./catalog-detail/catalog-detail.component";
 import { NewCatalogDialogComponent } from "./new-catalog/new-catalog-dialog.component";
-import { catchError, filter, finalize, map, tap } from "rxjs/operators";
-import { combineLatest, Observable } from "rxjs";
-import { SessionService } from "../../services/session.service";
+import { catchError, filter, finalize, tap } from "rxjs/operators";
+import { Observable } from "rxjs";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { AddButtonComponent } from "../../shared/add-button/add-button.component";
-import {
-  AsyncPipe,
-  DatePipe,
-  DecimalPipe,
-  NgTemplateOutlet,
-} from "@angular/common";
+import { DatePipe, DecimalPipe, NgTemplateOutlet } from "@angular/common";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatCard, MatCardContent } from "@angular/material/card";
 import { MatIcon } from "@angular/material/icon";
 import { MatIconButton } from "@angular/material/button";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
+import { CatalogStore } from "../../store/catalog/catalog.store";
 
 @Component({
   selector: "ige-catalog-management",
@@ -67,55 +61,46 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
     MatMenuTrigger,
     MatMenu,
     MatMenuItem,
-    AsyncPipe,
     DecimalPipe,
     DatePipe,
   ],
 })
 export class CatalogManagementComponent implements OnInit {
-  // TODO: there is a race condition .... catalogs are often not loaded in time before
-  //       calling mapProfileTitleToCatalog
-  private catalogs = combineLatest([
-    this.catalogQuery.selectAll(),
-    this.catalogService
-      .getCatalogProfiles()
-      .pipe(tap((profiles) => (this.profiles = profiles))),
-  ]);
+  private catalogStore = inject(CatalogStore);
 
-  activeCatalog = this.catalogs.pipe(
-    map((catalog) => {
-      const active = catalog[0].find((cat) => cat.id === this.currentCatalog);
-      return active ? this.mapProfileTitleToCatalog(active, catalog[1]) : null;
-    }),
-  );
+  activeCatalog = computed(() => {
+    const active = this.catalogStore.entityMap()[this.currentCatalog];
+    return active
+      ? this.mapProfileTitleToCatalog(active, this.profiles())
+      : null;
+  });
 
-  nonActiveCatalogs = this.catalogs.pipe(
-    map((catalog) => {
-      const other = catalog[0].filter((cat) => cat.id !== this.currentCatalog);
-      return other.map((cat) => this.mapProfileTitleToCatalog(cat, catalog[1]));
-    }),
-  );
+  nonActiveCatalogs = computed(() => {
+    return this.catalogStore
+      .entities()
+      .filter((cat) => cat.id !== this.currentCatalog)
+      .map((cat) => this.mapProfileTitleToCatalog(cat, this.profiles()));
+  });
 
   noAssignedCatalogs = false;
   showSpinner = false;
   currentCatalog: string;
   private currentUserID: string;
-  profiles: Profile[];
-  trackByCatalogId = (index, item: Catalog) => {
-    return item.id;
-  };
+  profiles = signal<Profile[]>([]);
 
   constructor(
     private catalogService: CatalogService,
     private configService: ConfigService,
-    private sessionService: SessionService,
-    private catalogQuery: CatalogQuery,
     private dialog: MatDialog,
-  ) {}
+  ) {
+    this.catalogService
+      .getCatalogProfiles()
+      .pipe(tap((profiles) => this.profiles.set(profiles)))
+      .subscribe();
+    this.catalogService.getCatalogs().subscribe();
+  }
 
   ngOnInit() {
-    this.catalogService.getCatalogs().subscribe();
-
     this.configService.$userInfo.subscribe((info) => {
       this.currentUserID = info.login;
       this.noAssignedCatalogs = info.assignedCatalogs.length === 0;
@@ -129,7 +114,7 @@ export class CatalogManagementComponent implements OnInit {
         minWidth: "min(400px, 100%)",
         hasBackdrop: true,
         disableClose: true,
-        data: this.profiles,
+        data: this.profiles(),
       })
       .afterClosed()
       .pipe(filter((catalog) => catalog))
@@ -164,7 +149,7 @@ export class CatalogManagementComponent implements OnInit {
     }
   }
 
-  private handleCreateError(err): Observable<Error> {
+  private handleCreateError(err: Error): Observable<Error> {
     this.showSpinner = false;
     throw err;
   }

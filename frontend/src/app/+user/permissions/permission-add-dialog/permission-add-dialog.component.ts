@@ -17,11 +17,9 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, Input, OnInit } from "@angular/core";
+import { Component, inject, Inject, Input, OnInit } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { TreeNode } from "../../../store/tree/tree-node.model";
-import { TreeQuery } from "../../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -40,8 +38,9 @@ import { TreePermission } from "../../user";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { TreeComponent } from "../../../+form/sidebars/tree/tree.component";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { TreeStore } from "../../../store/tree/tree.store";
 
 @Component({
   selector: "permission-add-dialog",
@@ -55,7 +54,6 @@ import { TreeComponent } from "../../../+form/sidebars/tree/tree.component";
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     TreeComponent,
     MatDialogActions,
@@ -64,6 +62,9 @@ import { TreeComponent } from "../../../+form/sidebars/tree/tree.component";
 })
 export class PermissionAddDialogComponent implements OnInit {
   @Input() forAddress = this.data?.forAddress;
+
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
 
   val: TreePermission[] = [];
   private onChange: (x: any) => {};
@@ -83,8 +84,6 @@ export class PermissionAddDialogComponent implements OnInit {
   }
 
   constructor(
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<PermissionAddDialogComponent>,
     private dialog: MatDialog,
@@ -95,8 +94,10 @@ export class PermissionAddDialogComponent implements OnInit {
   }
 
   addPermission(option: string) {
-    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
-    const entity = query.getEntity(this.selection[0]);
+    const store = this.forAddress
+      ? this.addressTreeStore
+      : this.documentTreeStore;
+    const entity = store.entityMap()[this.selection[0]];
     const idToAdd = this.selection[0];
 
     // check if permission is an ancestor of an existing permission

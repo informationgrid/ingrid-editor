@@ -183,6 +183,7 @@
     {
     "type": @template.imports.ingrid.partial.key-value(item = reference.get().getType()),
     "title": "${reference.get().getTitle()}",
+    "referenceType": "url",
     "url": "${reference.get().getUrl()}",
     @if(reference.get().getUrlDataType() != null) "urlDataType": @template.imports.ingrid.partial.key-value(item = reference.get().getUrlDataType()),@endif
     "explanation": "${reference.get().getExplanation()}"

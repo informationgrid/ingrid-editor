@@ -18,9 +18,9 @@
  * limitations under the Licence.
  */
 import { Plugin } from "../../plugin";
-import { SessionStore } from "../../../../store/session.store";
 import { inject, Injectable } from "@angular/core";
 import { PluginService } from "../../../../services/plugin/plugin.service";
+import { UiStore } from "../../../../store/ui.store";
 
 @Injectable({ providedIn: "root" })
 export class FieldsToggleButtonBehaviour extends Plugin {
@@ -31,32 +31,20 @@ export class FieldsToggleButtonBehaviour extends Plugin {
     "Zeigt standardmäßig alle Felder eines Formulars an. Wenn ausgeschaltet, dann werden nur die Pflichtfelder und die explizit sichtbaren Felder angezeigt.";
   defaultActive = true;
 
-  constructor(private sessionStore: SessionStore) {
+  private uiStore = inject(UiStore);
+
+  constructor() {
     super();
     inject(PluginService).registerPlugin(this);
   }
 
   register() {
     super.register();
-    this.sessionStore.update((state) => {
-      return {
-        ui: {
-          ...state.ui,
-          toggleFieldsButtonShowAll: true,
-        },
-      };
-    });
+    this.uiStore.setToggleFieldsButtonShowAll(true);
   }
 
   unregister() {
     super.unregister();
-    this.sessionStore.update((state) => {
-      return {
-        ui: {
-          ...state.ui,
-          toggleFieldsButtonShowAll: false,
-        },
-      };
-    });
+    this.uiStore.setToggleFieldsButtonShowAll(false);
   }
 }

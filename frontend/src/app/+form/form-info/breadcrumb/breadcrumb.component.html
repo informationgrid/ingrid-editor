@@ -1,29 +1,29 @@
-@if (fullPath) {
-    <span [class.emphasize]="emphasize">
+@if (path()) {
+    <span [class.emphasize]="emphasize()">
         <span class="root">
             <button
-                [class.selectable]="selectable && !disableRoot"
-                [class.disabled]="disableRoot"
+                [class.selectable]="selectable() && !disableRoot()"
+                [class.disabled]="disableRoot()"
                 [matTooltip]="
-                    disableRoot
+                    disableRoot()
                         ? 'Sie dürfen nicht auf das Root-Element zugreifen'
                         : ''
                 "
-                (click)="!disableRoot && onSelect(null)"
+                (click)="!disableRoot() && onSelect(null)"
             >
-                {{ rootName }}
+                {{ rootName() }}
             </button>
-            @if (fullPath.length > 0) {
-                @if (!simplePath) {
+            @if (path().length > 0) {
+                @if (!simplePath()) {
                     <mat-icon>chevron_right</mat-icon>
                 }
-                @if (simplePath) {
+                @if (simplePath()) {
                     <span>/</span>
                 }
             }
         </span>
         @for (
-            item of collapsed ? shortPath : fullPath;
+            item of collapsed ? shortPath() : path();
             track item.title;
             let last = $last
         ) {
@@ -31,7 +31,7 @@
                 <button
                     [matTooltip]="item | breadCrumbTooltip"
                     [class.selectable]="
-                        selectable &&
+                        selectable() &&
                         (item.permission?.canRead || item.permission?.canWrite)
                     "
                     [class.disabled]="item.disabled"
@@ -40,10 +40,10 @@
                     {{ item.title }}
                 </button>
                 @if (!last) {
-                    @if (!simplePath) {
+                    @if (!simplePath()) {
                         <mat-icon>chevron_right</mat-icon>
                     }
-                    @if (simplePath) {
+                    @if (simplePath()) {
                         <span>/</span>
                     }
                 }

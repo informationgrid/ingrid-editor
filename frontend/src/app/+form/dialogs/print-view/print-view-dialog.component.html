@@ -9,11 +9,11 @@
                 (change)="this.compareView = !this.compareView"
             >
                 <mat-button-toggle value="false"
-                    >Druckansicht</mat-button-toggle
-                >
+                    >Druckansicht
+                </mat-button-toggle>
                 <mat-button-toggle value="true"
-                    >Vergleichsansicht</mat-button-toggle
-                >
+                    >Vergleichsansicht
+                </mat-button-toggle>
             </mat-button-toggle-group>
         }
     </ng-container>
@@ -28,8 +28,7 @@
                     [options]="options"
                 ></formly-form>
             </div>
-        }
-        @if (compareView) {
+        } @else {
             <as-split>
                 <as-split-area class="working">
                     <formly-form

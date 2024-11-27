@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import {
   ConfigService,
@@ -25,7 +25,6 @@ import {
 } from "../services/config/config.service";
 import { Observable } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
-import { QueryState, QueryStore } from "../store/query/query.store";
 import { FacetQuery, Query, SqlQuery } from "../store/query/query.model";
 import { BackendQuery } from "./backend-query.model";
 import { BackendStoreQuery } from "./backend-store-query.model";
@@ -33,6 +32,8 @@ import { ProfileService } from "../services/profile.service";
 import { SaveQueryDialogResponse } from "./save-query-dialog/save-query-dialog.response";
 import { IgeDocument } from "../models/ige-document";
 import { IgeError } from "../models/ige-error";
+import { QueryStore } from "../store/query/query.store";
+import { GeneralStore } from "../store/general.store";
 
 export interface QuickFilter {
   id: string;
@@ -71,6 +72,9 @@ export class ResearchResponse {
   providedIn: "root",
 })
 export class ResearchService {
+  private queryStore = inject(QueryStore);
+  private generalStore = inject(GeneralStore);
+
   facetModel: any;
   private configuration: Configuration;
   private filters: Facets;
@@ -87,10 +91,11 @@ export class ResearchService {
       label: "Metadatensätze ohne gültige Adressreferenz",
       value: `SELECT document1.*, document_wrapper.category
               FROM document_wrapper
-                    JOIN document document1 ON document_wrapper.uuid=document1.uuid
-              WHERE document1.is_latest = true AND document_wrapper.category = 'data'
-              AND document_wrapper.type <> 'FOLDER'
-              AND (data ->> 'pointOfContact' IS NULL OR data -> 'pointOfContact' = '[]'\\:\\:jsonb)`,
+                     JOIN document document1 ON document_wrapper.uuid = document1.uuid
+              WHERE document1.is_latest = true
+                AND document_wrapper.category = 'data'
+                AND document_wrapper.type <> 'FOLDER'
+                AND (data ->> 'pointOfContact' IS NULL OR data -> 'pointOfContact' = '[]'\\:\\:jsonb)`,
     },
   ];
 
@@ -98,7 +103,6 @@ export class ResearchService {
     private http: HttpClient,
     configService: ConfigService,
     private profileService: ProfileService,
-    private queryStore: QueryStore,
   ) {
     this.configuration = configService.getConfiguration();
   }
@@ -178,7 +182,7 @@ export class ResearchService {
   }
 
   setActiveQuery(id: string) {
-    this.queryStore.setActive(id);
+    this.generalStore.setActiveQuery(this.queryStore.entityMap()[id]);
   }
 
   saveQuery(
@@ -241,29 +245,6 @@ export class ResearchService {
       .pipe(tap(() => this.queryStore.remove(id)));
   }
 
-  updateUIState(partialState: {
-    search?: any;
-    sqlSearch?: any;
-    page?: number;
-    sort?: any;
-  }) {
-    this.queryStore.update((state) => {
-      const newState: QueryState = {
-        active: null,
-        ui: {
-          ...state.ui,
-        },
-      };
-      if (partialState.search) {
-        newState.ui.search = { ...state.ui.search, ...partialState.search };
-      }
-      if (partialState.sqlSearch) {
-        newState.ui.sql = { ...state.ui.sql, ...partialState.sqlSearch };
-      }
-      return newState;
-    });
-  }
-
   private createFacetModel(filters: Facets) {
     this.facetModel = {
       addresses: {},
@@ -320,41 +301,6 @@ export class ResearchService {
         model: model,
       };
     }
-  }
-
-  prepareFacetModel(state: QueryState) {
-    return {
-      ...state.ui.search.facets.model,
-      type: state.ui.search.category,
-    };
-  }
-
-  removeDataset(hit: IgeDocument) {
-    /*console.log(hit);
-    this.dialog
-      .open(ConfirmDialogComponent, {
-        data: <ConfirmDialogData>{
-          title: "Löschen",
-          message: `Wollen Sie den Datensatz ${hit.title} wirklich löschen?`,
-          buttons: [
-            { text: "Abbruch" },
-            {
-              text: "Löschen",
-              alignRight: true,
-              id: "confirm",
-              emphasize: true,
-            },
-          ],
-        },
-      })
-      .afterClosed()
-      .subscribe((result) => {
-        if (result) {
-          this.documentService
-            .delete([hit._id], this.isAddress(hit))
-            .subscribe(() => this.startSearch());
-        }
-      });*/
   }
 
   askAI(question: string) {

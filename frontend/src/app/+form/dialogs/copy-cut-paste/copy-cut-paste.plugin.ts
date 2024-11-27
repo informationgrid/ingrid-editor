@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { DocumentService } from "../../../services/document/document.service";
 import {
   FormToolbarService,
@@ -30,10 +30,7 @@ import {
 } from "./paste-dialog.component";
 import { Observable } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
-import { TreeQuery } from "../../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { delay, filter, switchMap, tap } from "rxjs/operators";
-import { ID } from "@datorama/akita";
 import { ConfigService } from "../../../services/config/config.service";
 import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
@@ -42,6 +39,8 @@ import { Router } from "@angular/router";
 import { DocumentWithMetadata } from "../../../models/ige-document";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
+import { TreeStore } from "../../../store/tree/tree.store";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -53,7 +52,8 @@ export class CopyCutPastePlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
-  private query: TreeQuery | AddressTreeQuery;
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
 
   // event element needs to be passed for restoring focus correctly,
   // see https://github.com/angular/components/issues/17962
@@ -74,19 +74,20 @@ export class CopyCutPastePlugin extends Plugin {
     private docEvents: DocEventsService,
     private documentService: DocumentService,
     private formStateService: FormStateService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     private dialog: MatDialog,
     private router: Router,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
+
+    effect(() => {
+      if (!this.formRegistered) return;
+      this.handleDocumentChange(this.activeNodes());
+    });
   }
 
   registerForm() {
     super.registerForm();
-
-    this.query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
 
     const buttons: Array<ToolbarItem | Separator> = [
       { id: "toolBtnCopyCutSeparator", pos: 30, isSeparator: true },
@@ -113,54 +114,43 @@ export class CopyCutPastePlugin extends Plugin {
       this.onEvent("COPYTREE").subscribe(() => this.copy(true)),
     ];
 
-    // set button state according to selected documents
-    const treeQuerySubscription = this.query
-      .selectActiveId()
-      .subscribe(async (data) => {
-        if (data.length === 0) {
-          this.toolbarService.setButtonState("toolBtnCopy", false);
-        } else {
-          if (this.isAdmin) {
-            this.toolbarService.setButtonState("toolBtnCopy", true);
-          } else {
-            const buttonEnabled = this.config.hasPermission(
-              this.forAddress ? "can_create_address" : "can_create_dataset",
-            );
-            this.toolbarService.setButtonState("toolBtnCopy", buttonEnabled);
-          }
+    this.formSubscriptions.push(...toolbarEventSubscription);
+  }
 
-          // set state of menu items
-          this.toolbarService.setMenuItemStateOfButton(
-            "toolBtnCopy",
-            "COPY",
-            true,
-          );
-          this.toolbarService.setMenuItemStateOfButton(
-            "toolBtnCopy",
-            "CUT",
-            this.query
-              .getActive()
-              .every((active) => active?.hasWritePermission),
-          );
+  private async handleDocumentChange(ids: number[]): Promise<void> {
+    if (ids.length === 0) {
+      this.toolbarService.setButtonState("toolBtnCopy", false);
+    } else {
+      if (this.isAdmin) {
+        this.toolbarService.setButtonState("toolBtnCopy", true);
+      } else {
+        const buttonEnabled = this.config.hasPermission(
+          this.forAddress() ? "can_create_address" : "can_create_dataset",
+        );
+        this.toolbarService.setButtonState("toolBtnCopy", buttonEnabled);
+      }
 
-          const parentWithChildrenSelected =
-            await this.checkForParentsWithSelectedChildren(data);
-          this.toolbarService.setMenuItemStateOfButton(
-            "toolBtnCopy",
-            "COPYTREE",
-            parentWithChildrenSelected,
-          );
-        }
-      });
+      // set state of menu items
+      const docs = ids.map((item) => this.getStore().entityMap()[item]);
+      this.toolbarService.setMenuItemStateOfButton("toolBtnCopy", "COPY", true);
+      this.toolbarService.setMenuItemStateOfButton(
+        "toolBtnCopy",
+        "CUT",
+        docs.every((active) => active?.hasWritePermission),
+      );
 
-    this.formSubscriptions.push(
-      ...toolbarEventSubscription,
-      treeQuerySubscription,
-    );
+      const parentWithChildrenSelected =
+        await this.checkForParentsWithSelectedChildren(ids);
+      this.toolbarService.setMenuItemStateOfButton(
+        "toolBtnCopy",
+        "COPYTREE",
+        parentWithChildrenSelected,
+      );
+    }
   }
 
   private async checkForParentsWithSelectedChildren(
-    data: ID[],
+    data: number[],
   ): Promise<boolean> {
     return new Promise((resolve) => {
       return this.checkForParentsWithSelectedChildrenLoop(data, resolve);
@@ -168,13 +158,13 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private checkForParentsWithSelectedChildrenLoop(
-    data: ID[],
+    data: number[],
     resolve,
     tries = 10,
   ) {
-    const allNodesLoaded = data.every((id) => this.query.getEntity(id));
+    const allNodesLoaded = data.every((id) => this.getStore().entityMap()[id]);
     if (allNodesLoaded) {
-      resolve(data.some((id) => this.query.getEntity(id)._hasChildren));
+      resolve(data.some((id) => this.getStore().entityMap()[id]._hasChildren));
     } else {
       if (tries === 0) {
         console.warn("Node information could not be received from store");
@@ -201,7 +191,7 @@ export class CopyCutPastePlugin extends Plugin {
       this.formStateService,
       this.documentService,
       this.dialog,
-      this.forAddress,
+      this.forAddress(),
     );
 
     if (!handled) {
@@ -215,11 +205,11 @@ export class CopyCutPastePlugin extends Plugin {
           this.documentService.copy(
             // when copying a tree we don't need the children to be copied
             includeTree
-              ? this.getSelectedDatasetsWithoutChildren()
-              : this.getSelectedDatasets(),
+              ? this.getActiveNodesWithoutChildren()
+              : this.activeNodes(),
             result.selection,
             includeTree,
-            this.forAddress,
+            this.forAddress(),
           ),
         ),
         delay(100), // give some time to be available in store to update tree
@@ -230,7 +220,7 @@ export class CopyCutPastePlugin extends Plugin {
 
   private selectCopiedDataset(documents: DocumentWithMetadata[]) {
     if (documents.length == 1) {
-      const target = this.forAddress ? "address" : "form";
+      const target = this.forAddress() ? "address" : "form";
       this.router.navigate([
         `${ConfigService.catalogId}/${target}`,
         { id: documents[0].metadata.uuid },
@@ -243,7 +233,7 @@ export class CopyCutPastePlugin extends Plugin {
       this.formStateService,
       this.documentService,
       this.dialog,
-      this.forAddress,
+      this.forAddress(),
     );
 
     if (!handled) {
@@ -254,9 +244,9 @@ export class CopyCutPastePlugin extends Plugin {
       .pipe(
         switchMap((result) =>
           this.documentService.move(
-            this.getSelectedDatasetsWithoutChildren(),
+            this.getActiveNodesWithoutChildren(),
             result.selection,
-            this.forAddress,
+            this.forAddress(),
           ),
         ),
       )
@@ -272,7 +262,7 @@ export class CopyCutPastePlugin extends Plugin {
         data: {
           titleText: title,
           buttonText: "Einfügen",
-          forAddress: this.forAddress,
+          forAddress: this.forAddress(),
           typeToInsert: this.getSelectedDatasetDocType(),
         } as PasteDialogOptions,
         delayFocusTrap: true,
@@ -284,12 +274,8 @@ export class CopyCutPastePlugin extends Plugin {
       );
   }
 
-  private getSelectedDatasets() {
-    return this.query.getActiveId().map((id) => <number>id);
-  }
-
-  private getSelectedDatasetsWithoutChildren(): number[] {
-    const selection = this.getSelectedDatasets();
+  private getActiveNodesWithoutChildren(): number[] {
+    const selection = this.activeNodes();
 
     const filtered = selection.filter(
       (id) => !this.isChildOfSelectedParent(id, selection),
@@ -299,8 +285,8 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private getSelectedDatasetDocType() {
-    return this.query
-      .getActive()
+    return this.activeNodes()
+      .map((item) => this.getStore().entityMap()[item])
       .map((doc) => doc._type)
       .pop();
   }
@@ -316,9 +302,13 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private isChildOfSelectedParent(id: number, selection: number[]): boolean {
-    const parents = this.query.getParents(id);
+    const parents = this.getStore().getParents(id);
     return parents.some(
       (parent) => selection.indexOf(<number>parent.id) !== -1,
     );
+  }
+
+  private getStore() {
+    return this.forAddress() ? this.addressTreeStore : this.documentTreeStore;
   }
 }

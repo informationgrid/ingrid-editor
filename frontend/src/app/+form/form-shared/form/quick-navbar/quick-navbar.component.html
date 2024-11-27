@@ -22,7 +22,7 @@
 <div [class.hide]="!hasOptionalFields" class="optional-fields-toggle">
     <div class="diagonal"></div>
     <mat-slide-toggle
-        [checked]="optionalButtonState | async"
+        [checked]="optionalButtonState()"
         (change)="updateToggleButtonState($event.checked)"
         >Alle
     </mat-slide-toggle>

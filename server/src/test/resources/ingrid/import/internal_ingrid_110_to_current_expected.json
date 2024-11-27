@@ -133,7 +133,8 @@
             "key": "9990"
           },
           "title": "Datendownload",
-          "explanation": "Dramatischer Datendownload"
+          "explanation": "Dramatischer Datendownload",
+          "referenceType": "url"
         }
       ],
       "resolution": [],
@@ -407,7 +408,8 @@
             "key": "9990"
           },
           "title": "Datendownload",
-          "explanation": "Dramatischer Datendownload"
+          "explanation": "Dramatischer Datendownload",
+          "referenceType": "url"
         }
       ],
       "resolution": [],

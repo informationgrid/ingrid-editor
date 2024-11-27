@@ -19,12 +19,11 @@
  */
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { generateUUID } from "../../../app/services/utils";
 import { map } from "rxjs/operators";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import {
   MetadataOption,
   MetadataOptionItem,
@@ -34,8 +33,6 @@ import {
   providedIn: "root",
 })
 export class GeoDatasetDoctype extends IngridShared {
-  protected codelistQuery = inject(CodelistQuery);
-
   id = "InGridGeoDataset";
 
   label = "Geodatensatz";

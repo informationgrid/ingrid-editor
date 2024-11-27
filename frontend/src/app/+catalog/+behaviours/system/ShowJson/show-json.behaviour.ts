@@ -19,10 +19,10 @@
  */
 import { inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../../../+form/form-shared/toolbar/form-toolbar.service";
-import { SessionStore } from "../../../../store/session.store";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
+import { UiStore } from "../../../../store/ui.store";
 
 @Injectable()
 export class ShowJsonBehaviour extends Plugin {
@@ -32,12 +32,13 @@ export class ShowJsonBehaviour extends Plugin {
   description =
     "Ein neuer Button ermöglicht die Anzeige des JSON-Dokuments neben dem Formular.";
   defaultActive = false;
+
+  private uiStore = inject(UiStore);
   private eventShowJsonId = "SHOW_JSON";
 
   constructor(
     private formToolbarService: FormToolbarService,
     private docEvents: DocEventsService,
-    private sessionStore: SessionStore,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -69,12 +70,7 @@ export class ShowJsonBehaviour extends Plugin {
   }
 
   private toggleJSONView(forceState?: boolean) {
-    this.sessionStore.update((state) => ({
-      ui: {
-        ...state.ui,
-        showJSONView: forceState ?? !state.ui.showJSONView,
-      },
-    }));
+    this.uiStore.toggleJsonView(forceState);
   }
 
   unregisterForm() {

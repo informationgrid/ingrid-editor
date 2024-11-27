@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 export interface ContextHelpAbstract {
-  id?: string;
+  id: string;
   fieldId: string;
   profile: string;
   docType: string;

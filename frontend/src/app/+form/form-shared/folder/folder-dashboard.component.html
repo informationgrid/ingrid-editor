@@ -2,13 +2,13 @@
     <ige-action-button
         label="Neuer Ordner"
         svgIcon="outline-create_new_folder-24px"
-        [disabled]="isAddress ? !canCreateAddress : !canCreateDataset"
+        [disabled]="isAddress() ? !canCreateAddress : !canCreateDataset"
         (submit)="createNewFolder()"
     ></ige-action-button>
     <ige-action-button
         [label]="t('newDocument')"
         svgIcon="Neuer-Datensatz"
-        [disabled]="isAddress ? !canCreateAddress : !canCreateDataset"
+        [disabled]="isAddress() ? !canCreateAddress : !canCreateDataset"
         (submit)="createNewDataset()"
     ></ige-action-button>
 </div>
@@ -34,7 +34,9 @@
         <div class="circle-wrapper">
             <mat-icon
                 [svgIcon]="
-                    isAddress ? 'image-banner-address' : 'image-banner-dataset'
+                    isAddress()
+                        ? 'image-banner-address'
+                        : 'image-banner-dataset'
                 "
             ></mat-icon>
         </div>
@@ -42,7 +44,7 @@
         <h2>Dieser Ordner ist noch leer</h2>
         <p *transloco="let t; read: 'dashboard'">
             Legen Sie einen neuen Unterordner oder
-            {{ isAddress ? "Adresse" : t("formSingular") }} an.
+            {{ isAddress() ? "Adresse" : t("formSingular") }} an.
         </p>
         <p>
             Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese
