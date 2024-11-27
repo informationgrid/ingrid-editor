@@ -594,6 +594,9 @@ export class GeoDatasetDoctype extends IngridShared {
                       wrappers: ["inline-help", "form-field"],
                       hasInlineContextHelp: true,
                       updateOn: "change",
+                      validators: {
+                        validation: ["url"],
+                      },
                       expressions: {
                         hide: (field: FormlyFieldConfig) => {
                           return field.form.value._type == "internalDataOrigin";
@@ -603,6 +606,12 @@ export class GeoDatasetDoctype extends IngridShared {
                           !!field.form.value.title ||
                           !!field.form.value.date ||
                           !!field.form.value.dateType,
+                      },
+                      validation: {
+                        messages: {
+                          required:
+                            "URL oder Datensatzverweis muss ausgefüllt sein",
+                        },
                       },
                     }),
                   ],
