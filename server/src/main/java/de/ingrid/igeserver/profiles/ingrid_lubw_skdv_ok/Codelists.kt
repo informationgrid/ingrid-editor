@@ -79,3 +79,12 @@ val codelist30001 = mapOf(
     "28" to "Keine Angabe zur Hauptanwendung",
     "99" to "sonstige Anwendung",
 )
+
+val codelist30004 = mapOf(
+    "1" to "1 - unbeschränkt (im Internet)",
+    "2" to "2 - beschränkt auf die öffentliche Verwaltung (LVN und KVN)",
+    "3" to "3 - beschränkt auf alle Partner des SKDV-Datenverbund pauschal ohne Vorprüfung",
+    "4" to "4 - beschränkt auf bestimmte Behörden, Mitgliedsgemeinden des SKDV-Datenverbunds (bezeichnet nach Auswahlliste)",
+    "5" to "5 - beschränkt auf Umwelt- und Naturschutzbehörden",
+    "6" to "6 - beschränktes Leserecht im Einzelfall",
+)

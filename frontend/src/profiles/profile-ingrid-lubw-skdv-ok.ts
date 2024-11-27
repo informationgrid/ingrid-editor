@@ -19,7 +19,6 @@
  */
 import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
-import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw-skdv-ok/doctypes/geo-dataset.doctype";
 
 @Component({
@@ -28,7 +27,6 @@ import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw-skdv-ok/doctypes/geo-
 })
 class InGridLubwSkdvOkComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeLubwSkdvOk);
-  codelistQuery = inject(CodelistQuery);
 
   constructor() {
     super();

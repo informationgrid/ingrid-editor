@@ -70,26 +70,32 @@ class LubwSkdvOkProfile(
                 codelistHandler.removeAndAddCodelist(catalogId, codelist30000)
                 return
             }
+
             "30001" -> {
                 codelistHandler.removeAndAddCodelist(catalogId, codelist30001)
                 return
             }
+
             "30002" -> {
                 codelistHandler.removeAndAddCodelist(catalogId, codelist30002)
                 return
             }
+
             "30003" -> {
                 codelistHandler.removeAndAddCodelist(catalogId, codelist30003)
                 return
             }
+
             "30004" -> {
                 codelistHandler.removeAndAddCodelist(catalogId, codelist30004)
                 return
             }
+
             "30005" -> {
                 codelistHandler.removeAndAddCodelist(catalogId, codelist30005)
                 return
             }
+
             null -> {
                 codelistHandler.removeAndAddCodelists(
                     catalogId,
@@ -133,7 +139,7 @@ class LubwSkdvOkProfile(
         description = ""
         defaultEntry = ""
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(CodelistHandler.toCodelistEntry("1", "Test-Eintrag Gruppe"))
+            add(toCodelistEntry("1", "Test-Eintrag Gruppe"))
         }
     }
 
@@ -144,7 +150,7 @@ class LubwSkdvOkProfile(
         description = ""
         defaultEntry = ""
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(CodelistHandler.toCodelistEntry("1", "Test-Eintrag Kategorie"))
+            add(toCodelistEntry("1", "Test-Eintrag Kategorie"))
         }
     }
 
@@ -155,7 +161,9 @@ class LubwSkdvOkProfile(
         description = ""
         defaultEntry = ""
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(CodelistHandler.toCodelistEntry("1", "Test-Eintrag Übermittlungsstufe"))
+            codelist30004.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
         }
     }
 
@@ -166,7 +174,7 @@ class LubwSkdvOkProfile(
         description = ""
         defaultEntry = ""
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(CodelistHandler.toCodelistEntry("1", "Test-Eintrag Geometrie - Typ"))
+            add(toCodelistEntry("1", "Test-Eintrag Geometrie - Typ"))
         }
     }
 }
