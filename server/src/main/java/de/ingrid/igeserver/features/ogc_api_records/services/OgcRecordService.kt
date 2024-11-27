@@ -456,7 +456,7 @@ class OgcRecordService(
     }
 
     fun prepareRecords(records: ResearchResponse, collectionId: String, format: RecordFormat, links: List<Link>, queryMetadata: QueryMetadata): ByteArray {
-        val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record._uuid!!, collectionId, format) }
+        val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record.uuid!!, collectionId, format) }
         val unwrappedRecords = removeDefaultWrapper(format, recordList)
         return addWrapperToRecords(unwrappedRecords, format, links, false, queryMetadata)
     }
