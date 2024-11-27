@@ -349,13 +349,13 @@ export class CodelistService {
   }
 
   getFavorite(id: string): CodelistEntry[] {
+    const favorite = this.generalStore.favorites()[id];
     return (
-      this.generalStore
-        .favorites()
-        [
-          id
-        ]?.map((entryId) => this.store.entityMap()[id].entries.find((entry) => entry.id === entryId)) ??
-      []
+      favorite?.map((entryId) =>
+        this.store
+          .entityMap()
+          [id].entries.find((entry) => entry.id === entryId),
+      ) ?? []
     );
   }
 

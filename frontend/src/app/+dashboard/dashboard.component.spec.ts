@@ -102,8 +102,6 @@ describe("DashboardComponent", () => {
     dataService.findRecentPublished.and.callFake(() => {
       sessionStore.setLatestDocuments(recentDocuments);
     });
-    // const formService = spectator.inject<FormularService>(FormularService);
-
     spectator.detectChanges();
 
     const recentDocs = spectator.queryAll(

@@ -71,7 +71,7 @@ export class CodelistPresenterComponent implements OnInit {
 
   sortedEntries = computed(() => {
     return this.codelist().entries.sort((a, b) =>
-      a.fields["de"].localeCompare(b.fields["de"]),
+      a.fields["de"]?.localeCompare(b.fields["de"]),
     );
   });
   showMore = {};
