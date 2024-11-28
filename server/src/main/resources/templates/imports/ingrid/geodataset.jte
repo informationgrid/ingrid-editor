@@ -59,7 +59,21 @@
     "dataQualityInfo": {
         "lineage": {
             "source": {
-                "descriptions": @template.imports.ingrid.partial.key-values(list = model.getSourceDescriptions()),
+                "descriptions": [
+                    @for(var description: ForSupport.of(model.getSourceDescriptions()))
+                        {
+                            "value": "${description.get().getValue()}",
+                            "date": "${description.get().getDate()}",
+                            @if(description.get().getDateType() != null)
+                                "dateType": { "key": "${description.get().getDateType()}"},
+                            @endif
+                            "title": "${description.get().getTitle()}",
+                            "identifier": "${description.get().getIdentifier()}",
+                            "uuidRef": "${description.get().getUuidRef()}",
+                            "_type": "${description.get().get_type()}"
+                        }@if (!description.isLast()),@endif
+                    @endfor
+                ],
                 "processStep": {
                     "description":  @template.imports.ingrid.partial.key-values(list = model.getProcessStep())
                 }

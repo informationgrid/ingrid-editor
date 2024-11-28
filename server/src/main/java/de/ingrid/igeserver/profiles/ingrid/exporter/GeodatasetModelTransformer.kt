@@ -22,6 +22,7 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
+import de.ingrid.igeserver.utils.getString
 
 open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
@@ -264,7 +265,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
                 "internalDataOrigin" -> {
                     val doc = documentService.getLastPublishedDocument(catalogIdentifier, it.uuidRef!!, false)
                     title = doc.title
-                    identifier = doc.data.get("identifier").toString()
+                    identifier = doc.data.getString("identifier")
                 }
                 else -> {
                     title = it.title
@@ -276,7 +277,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
                 title,
                 identifier,
                 date = it.date,
-                dateType = (codelists.getValue("502", it.dateType, "en"))?.lowercase(),
+                dateType = (codelists.getValue("502", it.dateType, "iso")),
                 uuidRef = it.uuidRef,
                 url = it.url,
             )
