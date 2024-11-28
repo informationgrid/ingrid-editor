@@ -16,8 +16,6 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
             value = "Freie Beschreibung " + (item["identifier"] ?? "");
           } else if (item["_type"] == "internalDataOrigin") {
             value = "Geodatensatz " + item["uuidRef"];
-          } else if (item["_type"] == "externalDataOrigin") {
-            value = "Externe Referenz";
           }
           return of({ value, navigateTo: null });
         },
@@ -74,11 +72,6 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
           icon: "Geodatensatz",
         },
         {
-          key: "externalDataOrigin",
-          value: "Externe Referenz",
-          icon: "circle-enable",
-        },
-        {
           key: "freeDescription",
           value: "Freie Beschreibung",
           icon: "circle",
@@ -98,7 +91,6 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
               wrappers: ["inline-help", "form-field"],
               expressions: {
                 "props.required": (field: FormlyFieldConfig) =>
-                  field.form.value._type == "externalDataOrigin" ||
                   field.form.value._type == "internalDataOrigin" ||
                   !!field.form.value.title ||
                   !!field.form.value.identifier ||
@@ -114,7 +106,6 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
               codelistId: "502",
               expressions: {
                 "props.required": (field: FormlyFieldConfig) =>
-                  field.form.value._type == "externalDataOrigin" ||
                   field.form.value._type == "internalDataOrigin" ||
                   !!field.form.value.title ||
                   !!field.form.value.identifier ||
@@ -139,34 +130,35 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
             },
           },
         }),
-        geoDatasetDoctype.addGroupSimple(
-          null,
-          [
-            geoDatasetDoctype.addInputInline("url", "URL", {
-              wrappers: ["inline-help", "form-field"],
-              className: "flex-3",
-              hasInlineContextHelp: true,
-              updateOn: "change",
-              validators: {
-                validation: ["url"],
-              },
-              expressions: {
-                hide: (field: FormlyFieldConfig) => {
-                  return field.form.value._type != "externalDataOrigin";
-                },
-                "props.required": (field: FormlyFieldConfig) => {
-                  return field.form.value._type == "externalDataOrigin";
-                },
-              },
-              validation: {
-                messages: {
-                  required: "URL oder Datensatzverweis muss ausgefüllt sein",
-                },
-              },
-            }),
-          ],
-          { fieldGroupClassName: "flex-row gap-12" },
-        ),
+        // geoDatasetDoctype.addGroupSimple(
+        //   null,
+        //   [
+        //     geoDatasetDoctype.addInputInline(
+        //       "url",
+        //       "URL Externer Geodatensatz",
+        //       {
+        //         wrappers: ["inline-help", "form-field"],
+        //         className: "flex-3",
+        //         hasInlineContextHelp: true,
+        //         updateOn: "change",
+        //         validators: {
+        //           validation: ["url"],
+        //         },
+        //         expressions: {
+        //           hide: (field: FormlyFieldConfig) => {
+        //             return field.form.value._type != "freeDescription";
+        //           },
+        //         },
+        //         validation: {
+        //           messages: {
+        //             required: "URL oder Datensatzverweis muss ausgefüllt sein",
+        //           },
+        //         },
+        //       },
+        //     ),
+        //   ],
+        //   { fieldGroupClassName: "flex-row gap-12" },
+        // ),
         geoDatasetDoctype.addInputInline("title", "Titel", {
           wrappers: ["inline-help", "form-field"],
           hasInlineContextHelp: true,
@@ -176,7 +168,6 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
               return field.form.value._type == "internalDataOrigin";
             },
             "props.required": (field: FormlyFieldConfig) =>
-              field.form.value._type == "externalDataOrigin" ||
               !!field.form.value.identifier ||
               !!field.form.value.date ||
               !!field.form.value.dateType,
@@ -194,15 +185,9 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
               return field.form.value._type == "internalDataOrigin";
             },
             "props.required": (field: FormlyFieldConfig) =>
-              field.form.value._type == "externalDataOrigin" ||
               !!field.form.value.title ||
               !!field.form.value.date ||
               !!field.form.value.dateType,
-          },
-          validation: {
-            messages: {
-              required: "URL oder Datensatzverweis muss ausgefüllt sein",
-            },
           },
         }),
       ],
