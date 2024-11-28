@@ -362,18 +362,20 @@ class ResearchService(
         val notDeletedFilter = "document_wrapper.deleted = 0"
         val isLatestFilter = "document1.is_latest = true"
 
-        val fromIndex = sqlQuery.indexOf("FROM")
+        val cleanSqlQuery = sqlQuery.replace("document1.*", minimalColumnsForSQL)
 
-        return when (val whereIndex = sqlQuery.indexOf("WHERE")) {
+        val fromIndex = cleanSqlQuery.indexOf("FROM")
+
+        return when (val whereIndex = cleanSqlQuery.indexOf("WHERE")) {
             -1 -> """
-                ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5)}
+                ${cleanSqlQuery.substring(0, fromIndex + 4)} catalog, ${cleanSqlQuery.substring(fromIndex + 5)}
                 WHERE $catalogFilter AND $notDeletedFilter AND $isLatestFilter
             """.trimIndent()
 
             else -> """
-                ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5, whereIndex + 5)}
+                ${cleanSqlQuery.substring(0, fromIndex + 4)} catalog, ${cleanSqlQuery.substring(fromIndex + 5, whereIndex + 5)}
                 $catalogFilter AND $notDeletedFilter AND $isLatestFilter AND
-                ${sqlQuery.substring(whereIndex + 6)}
+                ${cleanSqlQuery.substring(whereIndex + 6)}
             """.trimIndent()
         }
     }

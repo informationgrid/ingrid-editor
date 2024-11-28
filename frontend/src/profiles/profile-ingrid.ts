@@ -170,7 +170,7 @@ export class InGridComponent implements OnInit {
   }
 
   private checkForCoupledServiceWithGetCap(uuid: string) {
-    const sql = `WITH filtered_documents AS (SELECT document1.*, document_wrapper.category
+    const sql = `WITH filtered_documents AS (SELECT document1.*, document1.data, document_wrapper.category
                                              FROM document_wrapper
                                                     JOIN document document1 ON document_wrapper.uuid = document1.uuid
                                              WHERE document1.is_latest = true
