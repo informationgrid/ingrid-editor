@@ -13,7 +13,7 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
         category: (item) => {
           let value = "";
           if (item["_type"] == "freeDescription") {
-            value = "Freie Beschreibung " + (item["identifier"] ?? "");
+            value = "Freie Beschreibung";
           } else if (item["_type"] == "internalDataOrigin") {
             value = "Geodatensatz " + item["uuidRef"];
           }
@@ -37,7 +37,7 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
           } else {
             return of({
               value: item["title"],
-              navigateTo: { target: item["url"] },
+              navigateTo: { target: item["identifier"] },
             });
           }
         },

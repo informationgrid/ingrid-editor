@@ -37,6 +37,11 @@
                                         ? navigate(category?.navigateTo)
                                         : null
                                 "
+                                [matTooltip]="
+                                    category?.navigateTo?.target
+                                        ? category.navigateTo.target
+                                        : null
+                                "
                             >
                                 {{ category?.value }}
                             </div>
@@ -54,6 +59,11 @@
                                 (keyup.enter)="
                                     title?.navigateTo
                                         ? navigate(title?.navigateTo)
+                                        : null
+                                "
+                                [matTooltip]="
+                                    title?.navigateTo?.target
+                                        ? title.navigateTo.target
                                         : null
                                 "
                             >
@@ -75,6 +85,11 @@
                                         ? navigate(subtitle?.navigateTo)
                                         : null
                                 "
+                                [matTooltip]="
+                                    subtitle?.navigateTo?.target
+                                        ? subtitle.navigateTo.target
+                                        : null
+                                "
                             >
                                 {{ subtitle?.value }}
                             </div>
@@ -92,6 +107,11 @@
                                 (keyup.enter)="
                                     description?.navigateTo
                                         ? navigate(description?.navigateTo)
+                                        : null
+                                "
+                                [matTooltip]="
+                                    description?.navigateTo?.target
+                                        ? description.navigateTo.target
                                         : null
                                 "
                             >
