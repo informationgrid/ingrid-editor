@@ -30,7 +30,9 @@ import de.ingrid.igeserver.exports.iso.MDGeorectified
 import de.ingrid.igeserver.exports.iso.MDGeoreferenceable
 import de.ingrid.igeserver.exports.iso.MDGridSpatialRepresentation
 import de.ingrid.igeserver.exports.iso.MDVectorSpatialRepresentation
+import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
 import org.apache.logging.log4j.kotlin.logger
 
@@ -75,7 +77,16 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             dqi.dqDataQuality?.lineage?.liLinage?.source
                 ?.map {
                     val identifier = it.liSource?.sourceCitation?.citation?.identifier?.getOrNull(0)?.mdIdentifier?.code?.value
-                    val internalGeoDatasetUuid = null
+
+                    fun getGeoDatasetUuid(): String? {
+                        val response = isoData.researchService.query(
+                            catalogId,
+                            ResearchQuery(null, BoolFilter("AND", listOf("document_wrapper.type = 'InGridGeoDataset'", "deleted = 0", "state = 'PUBLISHED'", "data ->> 'identifier' = '$identifier'"), null, null, false)),
+                        )
+                        return if (response.totalHits == 1) response.hits[0]._uuid else null
+                    }
+                    val internalGeoDatasetUuid = getGeoDatasetUuid()
+
                     val dateType = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.dateType?.code?.codeListValue?.let { key ->
                         codeListService.getCodeListEntryId("502", key, "iso")
                     }

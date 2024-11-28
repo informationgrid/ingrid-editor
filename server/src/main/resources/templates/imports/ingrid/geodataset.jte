@@ -63,13 +63,21 @@
                     @for(var description: ForSupport.of(model.getSourceDescriptions()))
                         {
                             "value": "${description.get().getValue()}",
-                            "date": "${description.get().getDate()}",
+                            @if(description.get().getDate() != null)
+                                "date": "${description.get().getDate()}",
+                            @endif
                             @if(description.get().getDateType() != null)
                                 "dateType": { "key": "${description.get().getDateType()}"},
                             @endif
-                            "title": "${description.get().getTitle()}",
-                            "identifier": "${description.get().getIdentifier()}",
-                            "uuidRef": "${description.get().getUuidRef()}",
+                            @if(description.get().getTitle() != null)
+                                "title": "${description.get().getTitle()}",
+                            @endif
+                            @if(description.get().getIdentifier() != null)
+                                "identifier": "${description.get().getIdentifier()}",
+                            @endif
+                            @if(description.get().getUuidRef() != null)
+                                "uuidRef": "${description.get().getUuidRef()}",
+                            @endif
                             "_type": "${description.get().get_type()}"
                         }@if (!description.isLast()),@endif
                     @endfor
