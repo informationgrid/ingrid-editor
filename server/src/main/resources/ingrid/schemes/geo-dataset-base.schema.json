@@ -137,13 +137,9 @@
           }
         }
       }
-    }
-  },
-  "type": "object",
-  "properties": {
-    "properties": {
+    },
+    "propertiesGeoDataset": {
       "type": "object",
-      "unevaluatedProperties": false,
       "properties": {
         "isAdVCompatible": {
           "type": ["null", "boolean"]
@@ -176,6 +172,12 @@
           }
         }
       }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "properties": {
+      "$ref": "#/definitions/propertiesGeoDataset"
     },
     "identifier": {
       "type": "string"
