@@ -95,7 +95,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                         date = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.date?.date,
                         dateType = dateType,
                         title = if (internalGeoDatasetUuid == null) it.liSource?.sourceCitation?.citation?.title?.value else null,
-                        identifier = identifier,
+                        identifier = if (internalGeoDatasetUuid == null) identifier else null,
                         uuidRef = internalGeoDatasetUuid,
                         _type = if (internalGeoDatasetUuid == null) "freeDescription" else "internalDataOrigin",
                     )
