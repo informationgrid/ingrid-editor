@@ -81,7 +81,7 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
         geoDatasetDoctype.addTextAreaInline("value", "Beschreibung", null, {
           required: true,
           wrappers: ["inline-help", "form-field"],
-          hasInlineContextHelp: true,
+          hasInlineContextHelp: false,
         }),
         geoDatasetDoctype.addGroupSimple(
           null,
@@ -100,7 +100,7 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
             geoDatasetDoctype.addSelect("dateType", null, {
               showSearch: true,
               fieldLabel: "Typ",
-              wrappers: ["inline-help", "form-field"],
+              wrappers: ["form-field"],
               className: "flex-3",
               options: geoDatasetDoctype.getCodelistForSelect("502", "type"),
               codelistId: "502",
