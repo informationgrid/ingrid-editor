@@ -27,6 +27,7 @@ import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ResearchService
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.AnnotationSpec
 import io.mockk.every
@@ -39,6 +40,7 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
     private val catalogService = mockk<CatalogService>()
     private val documentService = mockk<DocumentService>()
     private val documentRepository = mockk<DocumentRepository>()
+    private val researchService = mockk<ResearchService>()
 
     @BeforeAll
     fun beforeAll() {
@@ -56,8 +58,8 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
 
     @Test
     fun importGeoservice() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService)
-        isoImporter.profileMapper["ingrid-lfubayern"] = ISOImportLfUBayern(codelistService, documentService)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService)
+        isoImporter.profileMapper["ingrid-lfubayern"] = ISOImportLfUBayern(codelistService, documentService, researchService)
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full_lfuBayern.xml"), mutableMapOf())
         println(result.toString())
 
