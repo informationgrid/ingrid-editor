@@ -8,7 +8,7 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
     "descriptions",
     "Datengrundlage/Herkunft",
     {
-      required: true,
+      required: false,
       itemPreviewFields: {
         category: (item) => {
           let value = "";
