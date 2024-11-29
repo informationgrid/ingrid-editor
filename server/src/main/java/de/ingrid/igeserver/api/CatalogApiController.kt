@@ -88,7 +88,7 @@ class CatalogApiController(
         return if (response.totalHits > 0) {
             val hit = response.hits[0]
             CatalogStatistic(
-                hit._contentModified,
+                hit.contentModified,
                 response.totalHits,
             )
         } else {
