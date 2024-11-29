@@ -32,7 +32,9 @@ class InGridProjectHmdkSchema : AnnotationSpec() {
         val json = SchemaUtils.getJsonFileContent("/export/ingrid/project.minimal.json").replaceFirst(
             "\"properties\": {",
             """"properties": {"publicationHmbTG": true, """,
-        ).replaceFirst("{", """{ "informationHmbTG": [{"key": "1"}], "openDataCategories": [], """,
+        ).replaceFirst(
+            "{",
+            """{ "informationHmbTG": [{"key": "1"}], "openDataCategories": [], """,
         )
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0

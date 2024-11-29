@@ -103,12 +103,14 @@ class ExportService(val exporterFactory: ExporterFactory) {
         options: ExportRequestParameter,
         document: DocumentData,
         catalogId: String,
-        it: String
+        it: String,
     ) = if (exporter is InternalExporter) {
         if (options.addressReferences) {
             val refData = getReferencedExportedDatasets(document, catalogId, options)
             refData + Pair(document.wrapper.uuid, it)
-        } else listOf(Pair(document.wrapper.uuid, it))
+        } else {
+            listOf(Pair(document.wrapper.uuid, it))
+        }
     } else {
         listOf(Pair(document.wrapper.uuid, it))
     }
@@ -118,7 +120,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
         doc: DocumentData,
         catalogId: String,
         data: String,
-        exporter: IgeExporter
+        exporter: IgeExporter,
     ) = if (options.addressReferences) {
         val refData = getReferencedExportedDatasets(doc, catalogId, options)
         ExportResult(
@@ -137,7 +139,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
     private fun getReferencedExportedDatasets(
         document: DocumentData,
         catalogId: String,
-        options: ExportRequestParameter
+        options: ExportRequestParameter,
     ): List<Pair<String, String>> {
         val referencedUuids = documentService.getReferencedUuids(document.document)
         val refData = referencedUuids.flatMap {
