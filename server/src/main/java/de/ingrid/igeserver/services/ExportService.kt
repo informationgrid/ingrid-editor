@@ -73,26 +73,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
                 ?: throw ServerException.withReason("Document was not exported: ${doc.wrapper.uuid}")
 
             if (exporter is InternalExporter) {
-                val referencedUuids = documentService.getReferencedUuids(doc.document)
-                val refData = referencedUuids.flatMap {
-                    val ref = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, it)
-                    handleSingleDataset(options, ref, catalogId)?.let {
-                        listOf(Pair(ref.uuid, it))
-                    } ?: emptyList()
-                }.toSet().toList()
-                return if (options.addressReferences) {
-                    ExportResult(
-                        zipToFile(refData + Pair(doc.wrapper.uuid, data), exporter.typeInfo.fileExtension),
-                        "export.zip",
-                        MediaType.valueOf("application/zip"),
-                    )
-                } else {
-                    ExportResult(
-                        data.toByteArray(),
-                        doc.wrapper.uuid + "." + exporter.typeInfo.fileExtension,
-                        MediaType.valueOf(exporter.typeInfo.dataType),
-                    )
-                }
+                return handleInternalExport(options, doc, catalogId, data, exporter)
             }
 
             val fileName = "${doc.wrapper.uuid}.${exporter.typeInfo.fileExtension}"
@@ -104,20 +85,8 @@ class ExportService(val exporterFactory: ExporterFactory) {
                     handleWithSubDocuments(document.wrapper, options, catalogId)
                 } else {
                     handleSingleDataset(options, document.wrapper, catalogId)
-                        ?.let {
-                            if (exporter is InternalExporter) {
-                                val referencedUuids = documentService.getReferencedUuids(document.document)
-                                val refData = referencedUuids.flatMap {
-                                    val ref = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, it)
-                                    handleSingleDataset(options, ref, catalogId)?.let {
-                                        listOf(Pair(ref.uuid, it))
-                                    } ?: emptyList()
-                                }.toSet().toList()
-                                refData + Pair(document.wrapper.uuid, it)
-                            } else {
-                                listOf(Pair(document.wrapper.uuid, it))
-                            }
-                        } ?: emptyList()
+                        ?.let { prepareDataForMultiExport(exporter, options, document, catalogId, it) }
+                        ?: emptyList()
                 }
             }.toSet().toList() // remove duplicates
 
@@ -127,6 +96,57 @@ class ExportService(val exporterFactory: ExporterFactory) {
                 MediaType.valueOf("application/zip"),
             )
         }
+    }
+
+    private fun prepareDataForMultiExport(
+        exporter: IgeExporter,
+        options: ExportRequestParameter,
+        document: DocumentData,
+        catalogId: String,
+        it: String
+    ) = if (exporter is InternalExporter) {
+        if (options.addressReferences) {
+            val refData = getReferencedExportedDatasets(document, catalogId, options)
+            refData + Pair(document.wrapper.uuid, it)
+        } else listOf(Pair(document.wrapper.uuid, it))
+    } else {
+        listOf(Pair(document.wrapper.uuid, it))
+    }
+
+    private fun handleInternalExport(
+        options: ExportRequestParameter,
+        doc: DocumentData,
+        catalogId: String,
+        data: String,
+        exporter: IgeExporter
+    ) = if (options.addressReferences) {
+        val refData = getReferencedExportedDatasets(doc, catalogId, options)
+        ExportResult(
+            zipToFile(refData + Pair(doc.wrapper.uuid, data), exporter.typeInfo.fileExtension),
+            "export.zip",
+            MediaType.valueOf("application/zip"),
+        )
+    } else {
+        ExportResult(
+            data.toByteArray(),
+            doc.wrapper.uuid + "." + exporter.typeInfo.fileExtension,
+            MediaType.valueOf(exporter.typeInfo.dataType),
+        )
+    }
+
+    private fun getReferencedExportedDatasets(
+        document: DocumentData,
+        catalogId: String,
+        options: ExportRequestParameter
+    ): List<Pair<String, String>> {
+        val referencedUuids = documentService.getReferencedUuids(document.document)
+        val refData = referencedUuids.flatMap {
+            val ref = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, it)
+            handleSingleDataset(options, ref, catalogId)?.let {
+                listOf(Pair(ref.uuid, it))
+            } ?: emptyList()
+        }.toSet().toList()
+        return refData
     }
 
     private fun zipToFile(result: List<Pair<String, String>>, fileExtension: String): ByteArray {
