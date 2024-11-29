@@ -198,6 +198,7 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   selectCodelist(option: Codelist) {
+    if (!option) return;
     const other = JSON.parse(JSON.stringify(option));
     this.sortCodelist(other);
     this.selectedCodelist = other;
