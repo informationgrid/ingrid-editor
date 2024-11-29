@@ -1,14 +1,16 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/hmdk/GeoServiceHmdk",
-  "allOf": [
-    {
-      "$ref": "../geo-service-base.schema.json"
-    }
-  ],
+  "$ref": "../geo-service-base.schema.json",
   "properties": {
-    "publicationHmbTG": {
-      "type": ["null", "boolean"]
+    "properties": {
+      "unevaluatedProperties": false,
+      "$ref": "../geo-service-base.schema.json#/definitions/propertiesGeoService",
+      "properties": {
+        "publicationHmbTG": {
+          "type": ["null", "boolean"]
+        }
+      }
     },
     "informationHmbTG": {
       "type": "array",

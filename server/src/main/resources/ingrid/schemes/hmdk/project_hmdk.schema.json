@@ -4,7 +4,8 @@
   "$ref": "../project-base.schema.json",
   "properties": {
     "properties": {
-      "type": "object",
+      "unevaluatedProperties": false,
+      "$ref": "../geo-dataset-base.schema.json#/definitions/propertiesGeoDataset",
       "properties": {
         "publicationHmbTG": {
           "type": ["null", "boolean"]
