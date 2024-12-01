@@ -119,7 +119,7 @@ export class CatalogCodelistsComponent implements OnInit {
     private dialog: MatDialog,
   ) {
     effect(() => {
-      if (this.codelistSelect) {
+      if (this.codelistSelect?.value) {
         const option = this.filteredOptions().find(
           (item) => item.id === this.codelistSelect.value.id,
         );
@@ -127,6 +127,9 @@ export class CatalogCodelistsComponent implements OnInit {
           this.codelistSelect.setValue(this.filteredOptions()[0]);
           this.selectCodelist(this.filteredOptions()[0]);
         }
+      } else if (this.filteredOptions().length > 0) {
+        this.codelistSelect.setValue(this.filteredOptions()[0]);
+        this.selectCodelist(this.filteredOptions()[0]);
       }
     });
   }
