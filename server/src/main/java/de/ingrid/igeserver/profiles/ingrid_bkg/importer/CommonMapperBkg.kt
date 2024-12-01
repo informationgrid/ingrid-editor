@@ -28,7 +28,7 @@ class CommonMapperBkg(val codeListService: CodelistHandler) {
 
     fun accessConstraintBkg(metadata: Metadata): AccessConstraint? =
         metadata.identificationInfo[0].identificationInfo?.resourceConstraints
-            ?.last { it.legalConstraint?.accessConstraints != null }
+            ?.lastOrNull { it.legalConstraint?.accessConstraints != null }
             ?.let {
                 val otherConstraints = it.legalConstraint?.otherConstraints
                 when (otherConstraints?.size) {
@@ -65,8 +65,11 @@ class CommonMapperBkg(val codeListService: CodelistHandler) {
             if (entry == null) KeyValue(null, value) else KeyValue(entry.id)
         } ?: KeyValue(null, value)
 
-    private fun getDataField(jsonData: String, field: String): String? = jacksonObjectMapper().readValue(
-        jsonData,
-        JsonNode::class.java,
-    ).getString(field)
+    private fun getDataField(jsonData: String?, field: String): String? {
+        if (jsonData.isNullOrEmpty()) return null
+        return jacksonObjectMapper().readValue(
+            jsonData,
+            JsonNode::class.java,
+        ).getString(field)
+    }
 }
