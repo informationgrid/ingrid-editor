@@ -263,6 +263,7 @@
           "key": "9999"
         },
         "title": "Bekanntmachung im HmbGVBl als PDF Datei",
+        "referenceType": "url",
         "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf",
         "explanation": ""
       },
@@ -271,6 +272,7 @@
           "key": "9999"
         },
         "title": "URL zu weiteren Informationen über den Datensatz",
+        "referenceType": "url",
         "url": "http://www.hamburg.de/bebauungsplaene-online.de",
         "explanation": ""
       },
@@ -279,6 +281,7 @@
           "key": "9999"
         },
         "title": "Begründung des Bebauungsplans als PDF Datei",
+        "referenceType": "url",
         "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan_begr/Barmbek-Nord18(1Aend).pdf",
         "explanation": ""
       },
@@ -287,6 +290,7 @@
           "key": "9999"
         },
         "title": "Festsetzungen (Planzeichnung / Verordnung) als PDF Datei",
+        "referenceType": "url",
         "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf",
         "explanation": ""
       }
