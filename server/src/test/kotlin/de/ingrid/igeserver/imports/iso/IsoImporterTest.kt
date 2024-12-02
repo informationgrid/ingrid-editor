@@ -30,6 +30,7 @@ import de.ingrid.igeserver.imports.expectedPersonSingle
 import de.ingrid.igeserver.imports.expectedPersonUnderOrganisation
 import de.ingrid.igeserver.imports.expectedPersonUnderOrganisation2
 import de.ingrid.igeserver.imports.minimalMetadata
+import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -37,6 +38,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.igeserver.services.Result
 import de.ingrid.igeserver.utils.getString
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.AnnotationSpec
@@ -62,6 +64,27 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCatalogCodelistKey("test", "3535", "von Drachenfels 94") } returns "1"
         every { codelistService.getCatalogCodelistKey("test", "3555", "Ganzflächige Biotopkartierung 94") } returns "1"
         every { codelistService.getCatalogCodelistKey("test", "6250", "Hessen") } returns "7"
+        every { researchService.query("test", any(), any()) } returnsMany listOf(
+            ResearchResponse(0, emptyList()),
+            ResearchResponse(
+                totalHits = 1,
+                hits = listOf(
+                    Result(
+                        _id = 1,
+                        _uuid = "00000000-0000-0000-0000-000000000000",
+                        title = null,
+                        _type = null,
+                        _created = null,
+                        _contentModified = null,
+                        _state = null,
+                        _category = null,
+                        hasWritePermission = null,
+                        hasOnlySubtreeWritePermission = null,
+                        _tags = null, _responsibleUser = null,
+                    ),
+                ),
+            ),
+        )
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog()
         every { documentService.docRepo } returns documentRepository
         every { documentRepository.findAddressByOrganisationName(any(), any()) } returns emptyList()
