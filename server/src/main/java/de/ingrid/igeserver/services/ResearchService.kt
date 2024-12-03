@@ -30,6 +30,7 @@ import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.utils.AuthUtils
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -61,8 +62,9 @@ class ResearchService(
     val aclService: IgeAclService,
     val authUtils: AuthUtils,
 ) {
-
-    private final val minimalColumns = listOf("uuid", "title", "type", "created", "modified", "contentmodified", "state")
+    val log = logger()
+    private final val minimalColumns =
+        listOf("uuid", "title", "type", "created", "modified", "contentmodified", "state")
     val minimalWrapperColumns = listOf("wrapperid", "tags", "responsibleuser", "category")
     val minimalColumnsForSQL = minimalColumns.joinToString(",") { "document1.$it" }
 
@@ -206,7 +208,8 @@ class ResearchService(
         return filterString.any { it }
     }
 
-    private fun createCatalogFilter(catalogId: String): String = "document1.catalog_id = catalog.id AND document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
+    private fun createCatalogFilter(catalogId: String): String =
+        "document1.catalog_id = catalog.id AND document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
 
     private fun determineJsonSearch(term: String?): String = if (!term.isNullOrEmpty()) {
         "LEFT JOIN jsonb_each_text(document1.data) as t(k, val) on true"
@@ -325,6 +328,7 @@ class ResearchService(
 
             return ResearchResponse(totalHits, map)
         } catch (error: Exception) {
+            log.error("Error querying SQL", error)
             throw ClientException.withReason(
                 (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage,
                 data = mapOf("sql" to finalQuery),
@@ -342,18 +346,12 @@ class ResearchService(
     }
 
     private fun addAdditionalSelectsToQuery(query: String): String {
-        val fromIndex = query.indexOf("SELECT") + 6
+        val selectDistinctIndex = query.indexOf("SELECT DISTINCT")
+        val selectIndex = if (selectDistinctIndex == -1) query.indexOf("SELECT") + 6 else selectDistinctIndex + 15
         return """
-            ${
-            query.substring(
-                0,
-                fromIndex,
-            )
-        } document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser, ${
-            query.substring(
-                fromIndex,
-            )
-        }
+            ${query.substring(0, selectIndex)}
+            document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser, 
+            ${query.substring(selectIndex)}
         """.trimIndent()
     }
 
@@ -369,7 +367,8 @@ class ResearchService(
         // in case of sub-selects we need to start from the last parentheses!?
         val lastParentheses = cleanSqlQuery.lastIndexOf(")")
         val fromIndexAfterParentheses = cleanSqlQuery.indexOf("FROM", lastParentheses)
-        val fromIndex = if (fromIndexAfterParentheses == -1) cleanSqlQuery.lastIndexOf("FROM") else fromIndexAfterParentheses
+        val fromIndex =
+            if (fromIndexAfterParentheses == -1) cleanSqlQuery.lastIndexOf("FROM") else fromIndexAfterParentheses
 
         return when (val whereIndex = cleanSqlQuery.indexOf("WHERE")) {
             -1 -> """
@@ -378,7 +377,12 @@ class ResearchService(
             """.trimIndent()
 
             else -> """
-                ${cleanSqlQuery.substring(0, fromIndex + 4)} catalog, ${cleanSqlQuery.substring(fromIndex + 5, whereIndex + 5)}
+                ${cleanSqlQuery.substring(0, fromIndex + 4)} catalog, ${
+                cleanSqlQuery.substring(
+                    fromIndex + 5,
+                    whereIndex + 5
+                )
+            }
                 $catalogFilter AND $notDeletedFilter AND $isLatestFilter AND
                 ${cleanSqlQuery.substring(whereIndex + 6)}
             """.trimIndent()
