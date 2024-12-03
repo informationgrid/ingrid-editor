@@ -62,7 +62,7 @@ class ResearchService(
     val authUtils: AuthUtils,
 ) {
 
-    val minimalColumns = listOf("uuid", "title", "type", "created", "modified", "contentmodified", "state")
+    private final val minimalColumns = listOf("uuid", "title", "type", "created", "modified", "contentmodified", "state")
     val minimalWrapperColumns = listOf("wrapperid", "tags", "responsibleuser", "category")
     val minimalColumnsForSQL = minimalColumns.joinToString(",") { "document1.$it" }
 
@@ -342,14 +342,14 @@ class ResearchService(
     }
 
     private fun addAdditionalSelectsToQuery(query: String): String {
-        val fromIndex = query.indexOf("FROM")
+        val fromIndex = query.indexOf("SELECT") + 6
         return """
             ${
             query.substring(
                 0,
                 fromIndex,
             )
-        }, document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser ${
+        } document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser, ${
             query.substring(
                 fromIndex,
             )
@@ -362,9 +362,14 @@ class ResearchService(
         val notDeletedFilter = "document_wrapper.deleted = 0"
         val isLatestFilter = "document1.is_latest = true"
 
-        val cleanSqlQuery = sqlQuery.replace("document1.*", minimalColumnsForSQL)
+        val wrapperSelects = if (!sqlQuery.contains("document_wrapper.category")) ", document_wrapper.category" else ""
 
-        val fromIndex = cleanSqlQuery.indexOf("FROM")
+        val cleanSqlQuery = sqlQuery.replace("document1.*", minimalColumnsForSQL + wrapperSelects)
+
+        // in case of sub-selects we need to start from the last parentheses!?
+        val lastParentheses = cleanSqlQuery.lastIndexOf(")")
+        val fromIndexAfterParentheses = cleanSqlQuery.indexOf("FROM", lastParentheses)
+        val fromIndex = if (fromIndexAfterParentheses == -1) cleanSqlQuery.lastIndexOf("FROM") else fromIndexAfterParentheses
 
         return when (val whereIndex = cleanSqlQuery.indexOf("WHERE")) {
             -1 -> """
