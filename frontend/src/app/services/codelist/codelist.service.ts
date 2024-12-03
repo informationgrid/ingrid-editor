@@ -71,10 +71,16 @@ export class SelectOption {
 
 export interface SelectOptionUi extends SelectOption {
   disabled?: boolean;
-  sortkey?: string;
+  description?: string;
+  sortkey?: CodelistSort;
 }
 
-export type CodelistSort = "NO_SORT" | "value" | "label" | "sortkey";
+export type CodelistSort =
+  | "NO_SORT"
+  | "value"
+  | "label"
+  | "sortkey"
+  | "description";
 
 @UntilDestroy()
 @Injectable({
@@ -100,10 +106,11 @@ export class CodelistService {
     }
 
     const items = codelist.entries.map(
-      (entry) =>
+      (entry: CodelistEntry) =>
         ({
           label: entry.fields[language] ?? entry.fields["name"],
           value: entry.id,
+          description: entry.description,
           sortkey: entry.fields["sortkey"],
         }) as SelectOptionUi,
     );
@@ -131,6 +138,7 @@ export class CodelistService {
   ) {
     switch (sortBy) {
       case "label":
+      case "description":
         return a[sortBy]?.localeCompare(b[sortBy]);
       case "value":
       case "sortkey":
