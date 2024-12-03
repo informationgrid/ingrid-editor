@@ -2001,13 +2001,15 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private sortFunctionPriorityDatasets(
-    a: SelectOptionUi,
-    b: SelectOptionUi,
+    a: CodelistEntry,
+    b: CodelistEntry,
   ): number {
+    const labelA = a.fields["language"] ?? a.fields["name"];
+    const labelB = b.fields["language"] ?? b.fields["name"];
     // put INVALID items to the end of the list
-    if (a.label.indexOf("INVALID -") === 0) return 1;
-    if (b.label.indexOf("INVALID -") === 0) return -1;
-    return a.label?.localeCompare(b.label);
+    if (labelA.indexOf("INVALID -") === 0) return 1;
+    if (labelB.indexOf("INVALID -") === 0) return -1;
+    return labelA?.localeCompare(labelB);
   }
 
   private adaptPriorityDatasetItem(

@@ -71,7 +71,6 @@ export class SelectOption {
 
 export interface SelectOptionUi extends SelectOption {
   disabled?: boolean;
-  description?: string;
   sortkey?: CodelistSort;
 }
 
@@ -99,50 +98,52 @@ export class CodelistService {
     language = "de",
     sortBy:
       | CodelistSort
-      | ((a: SelectOptionUi, b: SelectOptionUi) => number) = "label",
+      | ((a: CodelistEntry, b: CodelistEntry) => number) = "label",
   ): SelectOptionUi[] => {
     if (!codelist) {
       return [];
     }
-
-    const items = codelist.entries.map(
-      (entry: CodelistEntry) =>
-        ({
-          label: entry.fields[language] ?? entry.fields["name"],
-          value: entry.id,
-          description: entry.description,
-          sortkey: entry.fields["sortkey"],
-        }) as SelectOptionUi,
-    );
-
+    // Sort codelist entries
     const sortFunction =
       typeof sortBy === "function"
         ? sortBy
         : CodelistService.getDefaultSortFunction(sortBy);
 
-    return CodelistService.addFavorites(
-      codelist.id,
-      sortBy === "NO_SORT" ? items : items.sort(sortFunction),
+    const sortedEntries: CodelistEntry[] = codelist.entries.sort(sortFunction);
+
+    // Map to SelectOptionUi
+    const items: SelectOptionUi[] = sortedEntries.map(
+      (entry: CodelistEntry) =>
+        ({
+          label: entry.fields[language] ?? entry.fields["name"],
+          value: entry.id,
+          sortkey: entry.fields["sortkey"],
+        }) as SelectOptionUi,
     );
+
+    return CodelistService.addFavorites(codelist.id, items);
   };
 
   private static getDefaultSortFunction(sortBy: CodelistSort) {
-    return (a: SelectOptionUi, b: SelectOptionUi) =>
+    return (a: CodelistEntry, b: CodelistEntry) =>
       CodelistService.compareEntries(a, b, sortBy);
   }
 
   private static compareEntries(
-    a: SelectOptionUi,
-    b: SelectOptionUi,
+    a: CodelistEntry,
+    b: CodelistEntry,
     sortBy: CodelistSort,
   ) {
     switch (sortBy) {
       case "label":
+        return (a.fields["language"] ?? a.fields["name"])?.localeCompare(
+          b.fields["language"] ?? b.fields["name"],
+        );
       case "description":
-        return a[sortBy]?.localeCompare(b[sortBy]);
+        return a.description?.localeCompare(b.description);
       case "value":
       case "sortkey":
-        return a[sortBy]?.localeCompare(b[sortBy], undefined, {
+        return a.fields[sortBy]?.localeCompare(b.fields[sortBy], undefined, {
           numeric: true,
         });
     }
