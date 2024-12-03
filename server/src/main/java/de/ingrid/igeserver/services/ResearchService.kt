@@ -354,9 +354,13 @@ class ResearchService(
     }
 
     private fun getSelectIndex(query: String): Int {
+        val selectIndex = query.indexOf("SELECT")
         val selectDistinctIndex = query.indexOf("SELECT DISTINCT")
-        val selectIndex = if (selectDistinctIndex == -1) query.indexOf("SELECT") + 6 else selectDistinctIndex + 15
-        return selectIndex
+        return if (selectIndex == selectDistinctIndex) {
+            selectDistinctIndex + 15
+        } else {
+            selectIndex + 6
+        }
     }
 
     private fun restrictQueryOnCatalogAndNotDeleted(catalogId: String, sqlQuery: String): String {
