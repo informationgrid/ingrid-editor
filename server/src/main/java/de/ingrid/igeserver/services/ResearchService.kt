@@ -208,8 +208,7 @@ class ResearchService(
         return filterString.any { it }
     }
 
-    private fun createCatalogFilter(catalogId: String): String =
-        "document1.catalog_id = catalog.id AND document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
+    private fun createCatalogFilter(catalogId: String): String = "document1.catalog_id = catalog.id AND document_wrapper.catalog_id = catalog.id AND catalog.identifier = '$catalogId' "
 
     private fun determineJsonSearch(term: String?): String = if (!term.isNullOrEmpty()) {
         "LEFT JOIN jsonb_each_text(document1.data) as t(k, val) on true"
@@ -380,7 +379,7 @@ class ResearchService(
                 ${cleanSqlQuery.substring(0, fromIndex + 4)} catalog, ${
                 cleanSqlQuery.substring(
                     fromIndex + 5,
-                    whereIndex + 5
+                    whereIndex + 5,
                 )
             }
                 $catalogFilter AND $notDeletedFilter AND $isLatestFilter AND
