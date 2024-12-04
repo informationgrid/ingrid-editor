@@ -29,5 +29,5 @@ private const val PROFILE_ID = LubwSkdvOkProfile.ID
 @Component
 class InGridGeoDatasetTypeSkdvOk(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
     override val profiles = arrayOf(PROFILE_ID)
-//    override val jsonSchema = "/ingrid/schemes/bast/geo-dataset_bast.schema.json"
+    override val jsonSchema = "/ingrid/schemes/lubw-skdv-ok/geo-dataset_lubw-skdv-ok.schema.json"
 }

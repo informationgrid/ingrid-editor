@@ -51,9 +51,9 @@ class LubwSkdvOkProfile(
     override val title = "InGrid Katalog (LUBW SKDV-OK)"
     override val parentProfile = "ingrid"
 
-    override val indexExportFormatID = "indexInGridIDFSkdvOk"
+    override val indexExportFormatID = "indexInGridIDFLubwSkdvOk"
 
-    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/bast/default-mapping.json")?.readText() ?: ""
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/lubw/default-mapping.json")?.readText() ?: ""
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)

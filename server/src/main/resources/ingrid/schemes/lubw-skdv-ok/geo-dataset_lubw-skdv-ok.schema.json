@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "GeoDatasetLubwSkdvOk",
+  "$ref": "../geo-dataset-base.schema.json",
+  "properties": {
+    "dataManagement": {
+      "type": "array",
+      "items": {
+        "$ref": "../../../general.schema.json#/definitions/KeyValue"
+      }
+    },
+    "protectDataAccessControl": {
+      "type": ["null", "string"]
+    },
+    "featureCatalogueDescription": {
+      "unevaluatedProperties": false,
+      "$ref": "../geo-dataset-base.schema.json#/definitions/featureDescription",
+      "properties": {
+        "environmentDescription": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "../../../general.schema.json#/definitions/KeyValue" }
+          ]
+        },
+        "objectAttributes": {
+          "type": ["null", "array"]
+        },
+        "geometries": {
+          "type": ["null", "array"]
+        }
+      }
+    }
+  },
+  "unevaluatedProperties": false
+}

@@ -19,43 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lubw_skdv_ok.exporter.internal
 
-import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
-import de.ingrid.igeserver.profiles.ingrid_bast.exporter.getBastKeywords
-import de.ingrid.igeserver.utils.getString
-import de.ingrid.igeserver.utils.getStringOrEmpty
 
-class GeodatasetTransformerLubwSkdvOk(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
-
-    init {
-        this.citationURL = if (model.data.identifier.isNullOrBlank() && model.data.properties?.isOpenData == true) {
-            null
-        } else {
-            super.addNamespaceIfNeeded(model.data.identifier ?: model.uuid)
-        }
-    }
-
-    private val docData = doc.data
-
-    override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBastKeywords(docData)
-
-    override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() + getBastKeywords(docData).keywords.mapNotNull { it.name }
-
-    override val supplementalInformation = docData.getString("supplementalInformation")
-
-    override val useConstraints: List<UseConstraintTemplate> =
-        super.useConstraints + if (docData.getString("resource.useConstraintsComments") == null) {
-            emptyList()
-        } else {
-            listOf(
-                UseConstraintTemplate(
-                    CharacterStringModel(docData.getStringOrEmpty("resource.useConstraintsComments"), null),
-                    null,
-                    null,
-                    null,
-                ),
-            )
-        }
-}
+class GeodatasetTransformerLubwSkdvOk(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig)

@@ -137,6 +137,28 @@
           }
         }
       }
+    },
+    "featureDescription": {
+      "properties": {
+        "citation": {
+          "$ref": "#/definitions/citation"
+        },
+        "featureTypes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "unevaluatedProperties": false,
+            "properties": {
+              "key": {
+                "type": ["null", "string"]
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "type": "object",
@@ -300,24 +322,7 @@
       }
     },
     "featureCatalogueDescription": {
-      "citation": {
-        "$ref": "#/definitions/citation"
-      },
-      "featureTypes": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "unevaluatedProperties": false,
-          "properties": {
-            "key": {
-              "type": ["null", "string"]
-            },
-            "value": {
-              "type": "string"
-            }
-          }
-        }
-      }
+      "$ref": "#/definitions/featureDescription"
     },
     "extraInfo": {
       "$ref": "refs/general.schema.json#/definitions/extraInfo"
