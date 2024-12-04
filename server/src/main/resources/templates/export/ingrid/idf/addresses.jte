@@ -48,7 +48,7 @@
             @endif
             <gmd:address>
                 <gmd:CI_Address>
-                    @if(TransformationTools.hasValue(address.getPostBoxAddress())
+                    @if(TransformationTools.hasValue(address.getPostBoxAddress()))
                         <gmd:deliveryPoint>
                             <gco:CharacterString>${address.getPostBoxAddress()}</gco:CharacterString>
                         </gmd:deliveryPoint>
