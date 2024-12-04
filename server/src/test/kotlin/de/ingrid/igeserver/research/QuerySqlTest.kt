@@ -27,11 +27,11 @@ class QuerySqlTest : AnnotationSpec() {
     private lateinit var service: ResearchService
 
     private val defaultColumns =
-        """document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser,document_wrapper.category,document_wrapper.deleted, 
+        """document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser,document_wrapper.category,document_wrapper.deleted,document_wrapper.catalog_idaswrapper_catalog_id, 
             document1.uuid,document1.title,document1.type,document1.created,document1.modified,document1.contentmodified,document1.state,document1.catalog_id,document1.is_latest"""
 
     private val outerSelection =
-        """SELECT sql_query.* FROM sql_query, catalog WHERE sql_query.catalog_id = catalog.id AND catalog.identifier = 'testCatalogId' AND deleted = 0 AND is_latest = true"""
+        """SELECT sql_query.* FROM sql_query, catalog WHERE sql_query.catalog_id = catalog.id AND sql_query.wrapper_catalog_id=catalog.id AND catalog.identifier = 'testCatalogId' AND deleted = 0 AND is_latest = true"""
 
     private val principal = mockk<Authentication>(relaxed = true)
     private val catalogId = "testCatalogId"
