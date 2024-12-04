@@ -65,7 +65,7 @@ class ResearchService(
     val log = logger()
     private final val minimalColumns =
         listOf("uuid", "title", "type", "created", "modified", "contentmodified", "state", "catalog_id", "is_latest")
-    val minimalWrapperColumns = listOf("wrapperid", "tags", "responsibleuser", "category", "deleted")
+    val minimalWrapperColumns = listOf("wrapperid", "tags", "responsibleuser", "category", "deleted", "wrapper_catalog_id")
     val minimalColumnsForSQL = minimalColumns.joinToString(",") { "document1.$it" }
 
     fun createFacetDefinitions(catalogType: String): Facets = profiles
@@ -348,7 +348,7 @@ class ResearchService(
         val selectIndex = getSelectIndex(query)
         return """
             ${query.substring(0, selectIndex)}
-            document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser,document_wrapper.category,document_wrapper.deleted, 
+            document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser,document_wrapper.category,document_wrapper.deleted,document_wrapper.catalog_id as wrapper_catalog_id, 
             ${query.substring(selectIndex)}
         """.trimIndent()
     }
@@ -380,7 +380,7 @@ class ResearchService(
         return """
             WITH sql_query AS ( $finalQuery )
             SELECT sql_query.* FROM sql_query, catalog
-            WHERE sql_query.catalog_id = catalog.id 
+            WHERE sql_query.catalog_id = catalog.id AND sql_query.wrapper_catalog_id = catalog.id
                 AND catalog.identifier = '$catalogId' 
                 AND $notDeletedFilter 
                 AND $isLatestFilter
