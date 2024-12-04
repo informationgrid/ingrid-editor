@@ -164,8 +164,8 @@ export class TabSqlComponent implements OnInit {
           ? answer.substring(start)
           : answer.substring(start, end);
     return (
-      "SELECT document1.*, document_wrapper.category FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid " +
-      adaptedAnswer
+      "SELECT document1.* FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid " +
+      adaptedAnswer.replace(";", "")
     );
   }
 }

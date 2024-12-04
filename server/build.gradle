@@ -144,13 +144,11 @@ dependencies {
 
     // OpenAI
     // import Kotlin API client BOM
-    implementation platform('com.aallam.openai:openai-client-bom:3.8.2')
+    implementation platform('com.aallam.openai:openai-client-bom:4.0.0-beta01')
 
     // define dependencies without versions
     implementation 'com.aallam.openai:openai-client'
     runtimeOnly 'io.ktor:ktor-client-okhttp'
-    implementation "io.ktor:ktor-client-java"
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 
     // Markdown
     implementation "org.commonmark:commonmark:0.24.0"

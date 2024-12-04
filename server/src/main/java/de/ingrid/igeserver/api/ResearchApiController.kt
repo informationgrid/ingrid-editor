@@ -24,7 +24,9 @@ import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.http.Timeout
+import com.aallam.openai.api.logging.Logger
 import com.aallam.openai.api.model.ModelId
+import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.configuration.GeneralProperties
@@ -191,6 +193,7 @@ class ResearchApiController(
         val openAI = OpenAI(
             token = generalProperties.openAIToken!!,
             timeout = Timeout(socket = 60.seconds),
+            logging = LoggingConfig(logger = Logger.Empty),
             // additional configurations...
         )
 
