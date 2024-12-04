@@ -41,14 +41,29 @@ import de.ingrid.igeserver.services.geothesaurus.GeoThesaurusSearchOptions
 import de.ingrid.igeserver.services.geothesaurus.SpatialResponse
 import de.ingrid.igeserver.services.thesaurus.ThesaurusSearchType
 import de.ingrid.igeserver.utils.AuthUtils
+import io.swagger.v3.oas.annotations.Hidden
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.tags.Tag
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import kotlin.time.Duration.Companion.seconds
 
+@Hidden
+@Tag(name = "Research", description = "extensive Search API")
 @RestController
 @RequestMapping(path = ["/api/search"])
 class ResearchApiController(
@@ -58,9 +73,12 @@ class ResearchApiController(
     val authUtils: AuthUtils,
     val geoThesaurusFactory: GeoThesaurusFactory,
     val generalProperties: GeneralProperties,
-) : ResearchApi {
+) {
 
-    override fun load(principal: Principal): ResponseEntity<List<Query>> {
+    @Operation
+    @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun load(principal: Principal): ResponseEntity<List<Query>> {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
@@ -68,27 +86,63 @@ class ResearchApiController(
         return ResponseEntity.ok(queries)
     }
 
-    override fun save(principal: Principal, query: Query): ResponseEntity<Query> {
+    @Operation
+    @PostMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun save(
+        principal: Principal,
+        @Parameter(
+            description = "The dataset to be stored.",
+            required = true,
+        ) @RequestBody query: Query,
+    ): ResponseEntity<Query> {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
-        val result = queryService.saveQuery(userId, catalogId, query)
+        val result = queryService.save(userId, catalogId, query)
         return ResponseEntity.ok(result)
     }
 
-    override fun delete(principal: Principal, id: Int): ResponseEntity<Void> {
-        queryService.removeQueryForUser(id)
+    @Operation
+    @DeleteMapping(value = ["query/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun delete(
+        principal: Principal,
+        @Parameter(description = "The id of the query to be deleted") @PathVariable id: Int,
+    ): ResponseEntity<Void> {
+        queryService.remove(id)
         return ResponseEntity.ok().build()
     }
 
-    override fun search(principal: Principal, query: ResearchQuery): ResponseEntity<ResearchResponse> {
+    @Operation
+    @PutMapping(value = ["query/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun update(
+        principal: Principal,
+        @Parameter(description = "The id of the query to be updated", required = true) @PathVariable id: Int,
+        @Parameter(description = "The data to be updated.", required = true) @RequestBody query: Query,
+    ): ResponseEntity<Query> {
+        val result = queryService.update(id, query)
+        return ResponseEntity.ok(result)
+    }
+
+    @Operation
+    @PostMapping(value = ["/query"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun search(
+        principal: Principal,
+        @Parameter(description = "the query with filter definitions") @RequestBody query: ResearchQuery,
+    ): ResponseEntity<ResearchResponse> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
         val result = researchService.query(catalogId, query, principal)
         return ResponseEntity.ok(result)
     }
 
-    override fun searchSql(principal: Principal, sqlQuery: String, page: Int?, pageSize: Int?): ResponseEntity<ResearchResponse> {
+    @Operation
+    @PostMapping(value = ["/querySql"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun searchSql(
+        principal: Principal,
+        @Parameter(description = "the sql query") @RequestBody sqlQuery: String,
+        @Parameter(description = "the page of the results") @RequestParam page: Int?,
+        @Parameter(description = "the size of the results to show") @RequestParam pageSize: Int?,
+    ): ResponseEntity<ResearchResponse> {
         // TODO: check for invalid SQL commands (like DELETE, ...)
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val paging = if (page != null && pageSize != null) {
@@ -101,7 +155,9 @@ class ResearchApiController(
         return ResponseEntity.ok(result)
     }
 
-    override fun getQuickFilter(principal: Principal): ResponseEntity<Facets> {
+    @Operation
+    @GetMapping(value = ["/quickFilter"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getQuickFilter(principal: Principal): ResponseEntity<Facets> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val dbType = catalogService.getProfileFromCatalog(catalogId).identifier
 
@@ -109,16 +165,17 @@ class ResearchApiController(
         return ResponseEntity.ok(facets)
     }
 
-    override fun export(principal: Principal): ResponseEntity<Any> {
-        TODO("Not yet implemented")
-    }
-
-    override fun geoSearch(principal: Principal, query: String): ResponseEntity<List<SpatialResponse>> {
-        val response = geoThesaurusFactory.get("wfsgnde").search(query, GeoThesaurusSearchOptions(ThesaurusSearchType.CONTAINS))
+    @Operation
+    @PostMapping(value = ["/geothesaurus/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun geoSearch(principal: Principal, @RequestBody query: String): ResponseEntity<List<SpatialResponse>> {
+        val response =
+            geoThesaurusFactory.get("wfsgnde").search(query, GeoThesaurusSearchOptions(ThesaurusSearchType.CONTAINS))
         return ResponseEntity.ok(response)
     }
 
-    override fun aiSearch(principal: Principal, query: String): ResponseEntity<String> {
+    @Operation
+    @PostMapping(value = ["/ai"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun aiSearch(principal: Principal, @RequestBody query: String): ResponseEntity<String> {
         var answer: String? = null
         runBlocking {
             launch {

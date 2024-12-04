@@ -56,6 +56,7 @@ import { toObservable } from "@angular/core/rxjs-interop";
 })
 export class TabSqlComponent implements OnInit {
   private generalStore = inject(GeneralStore);
+  private snackBar = inject(MatSnackBar);
 
   sql = new UntypedFormControl("");
   request = new FormControl<string>("");
@@ -74,7 +75,6 @@ export class TabSqlComponent implements OnInit {
   constructor(
     private researchService: ResearchService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar,
     private config: ConfigService,
   ) {}
 

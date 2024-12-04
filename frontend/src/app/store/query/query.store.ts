@@ -28,6 +28,7 @@ import {
   addEntity,
   removeEntity,
   setAllEntities,
+  updateEntity,
   withEntities,
 } from "@ngrx/signals/entities";
 import { computed } from "@angular/core";
@@ -52,6 +53,9 @@ export const QueryStore = signalStore(
     },
     remove(id: string): void {
       patchState(store, removeEntity(id));
+    },
+    update(id: number, query: Query): void {
+      patchState(store, updateEntity({ id: id, changes: query }));
     },
   })),
 );
