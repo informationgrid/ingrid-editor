@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, OnInit } from "@angular/core";
+import { Component, EventEmitter, inject, OnInit } from "@angular/core";
 import {
   ReactiveFormsModule,
   UntypedFormBuilder,
@@ -33,7 +33,6 @@ import {
   startWith,
   tap,
 } from "rxjs/operators";
-import { QueryQuery } from "../../store/query/query.query";
 import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog.component";
 import { ActivatedRoute } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
@@ -49,6 +48,8 @@ import { MatOption } from "@angular/material/core";
 import { SearchInputComponent } from "../../shared/search-input/search-input.component";
 import { MatButton } from "@angular/material/button";
 import { ResultTableComponent } from "../result-table/result-table.component";
+import { GeneralStore } from "../../store/general.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
@@ -71,6 +72,8 @@ import { ResultTableComponent } from "../result-table/result-table.component";
   ],
 })
 export class TabSearchComponent implements OnInit {
+  private generalStore = inject(GeneralStore);
+
   form: UntypedFormGroup;
 
   result: ResearchResponse;
@@ -82,9 +85,9 @@ export class TabSearchComponent implements OnInit {
 
   facets: Facets;
   private initialValue: any;
+  private activeQuery$ = toObservable(this.generalStore.activeQuery);
 
   constructor(
-    private queryQuery: QueryQuery,
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private researchService: ResearchService,
@@ -103,8 +106,7 @@ export class TabSearchComponent implements OnInit {
       .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
       .subscribe(() => this.startSearch());
 
-    this.queryQuery
-      .selectActive()
+    this.activeQuery$
       .pipe(
         untilDestroyed(this),
         filter((a) => a && a.type === "facet"),

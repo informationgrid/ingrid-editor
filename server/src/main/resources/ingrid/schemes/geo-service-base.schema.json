@@ -53,13 +53,9 @@
           }
         ]
       }
-    }
-  },
-  "type": "object",
-  "properties": {
-    "properties": {
+    },
+    "propertiesGeoService": {
       "type": "object",
-      "unevaluatedProperties": false,
       "properties": {
         "isAdVCompatible": {
           "type": ["null", "boolean"]
@@ -71,6 +67,12 @@
           "type": ["null", "string"]
         }
       }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "properties": {
+      "$ref": "#/definitions/propertiesGeoService"
     },
     "_uuid": {
       "type": "string"

@@ -116,12 +116,10 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
 
     val log = logger()
 
-    protected fun getKeywords(doc: Node?, xpath: String?): MutableList<String> {
-        return xPathUtils.getStringArray(doc, xpath)
-            .toSet()
-            .filter { it.isNotEmpty() }
-            .toMutableList()
-    }
+    protected fun getKeywords(doc: Node?, xpath: String?): MutableList<String> = xPathUtils.getStringArray(doc, xpath)
+        .toSet()
+        .filter { it.isNotEmpty() }
+        .toMutableList()
 
     protected fun transformKeywordListToStrings(keywords: List<String?>): List<String> {
         val snsTopics: MutableList<String> = ArrayList()
@@ -167,13 +165,11 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         return null
     }
 
-    private fun getSimpleDate(date: String): Date? {
-        return try {
-            SimpleDateFormat("yyyy-MM-dd").parse(date)
-        } catch (e: ParseException) {
-            log.debug("Error on getSimpleDate", e)
-            null
-        }
+    private fun getSimpleDate(date: String): Date? = try {
+        SimpleDateFormat("yyyy-MM-dd").parse(date)
+    } catch (e: ParseException) {
+        log.debug("Error on getSimpleDate", e)
+        null
     }
 
     private fun mapToConformityBeans(doc: Document, xPath: String): List<ConformityBean> {
@@ -293,36 +289,30 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         listId: String,
         versionList: List<String>,
         versionSyslistMap: Map<String, String>,
-    ): List<KeyValue> {
-        return versionList.map {
-            val entryId = versionSyslistMap[it]
-            if (entryId != null) {
-                val value = codelistHandler.getCodelistValue(listId, entryId.toString())
-                if (value == null) {
-                    log.warn("Version could not be mapped!")
-                }
-                KeyValue(entryId, value)
-            } else {
-                KeyValue(null, it)
+    ): List<KeyValue> = versionList.map {
+        val entryId = versionSyslistMap[it]
+        if (entryId != null) {
+            val value = codelistHandler.getCodelistValue(listId, entryId.toString())
+            if (value == null) {
+                log.warn("Version could not be mapped!")
             }
-        }.toSet().toList()
-    }
+            KeyValue(entryId, value)
+        } else {
+            KeyValue(null, it)
+        }
+    }.toSet().toList()
 
     protected fun mapValuesFromCodelist(
         listId: String,
         values: List<String>,
-    ): List<KeyValue> {
-        return values.map {
-            val itemId = codelistHandler.getCodeListEntryId(listId, it, "de")
-            KeyValue(itemId, it)
-        }
+    ): List<KeyValue> = values.map {
+        val itemId = codelistHandler.getCodeListEntryId(listId, it, "de")
+        KeyValue(itemId, it)
     }
 
     // TODO: should be mapped from a special codelist which only allows certain versions (this is for IGE-NG)
-    protected fun addOGCtoVersions(versions: List<String>): List<KeyValue> {
-        return versions
-            .map { version -> KeyValue(null, "OGC:WCS $version") }
-    }
+    protected fun addOGCtoVersions(versions: List<String>): List<KeyValue> = versions
+        .map { version -> KeyValue(null, "OGC:WCS $version") }
 
     protected fun getOnlineResources(doc: Document?, xPath: String?): List<UrlBean> {
         val urls = mutableListOf<UrlBean>()
@@ -501,11 +491,9 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
      * @param type
      * @return
      */
-    private fun mapServiceTypeToKey(type: String): String? {
-        return codelistHandler.getCodelists(listOf("5100"))[0].entries
-            .find { it.getField("iso") == type }
-            ?.id
-    }
+    private fun mapServiceTypeToKey(type: String): String? = codelistHandler.getCodelists(listOf("5100"))[0].entries
+        .find { it.getField("iso") == type }
+        ?.id
 
     /**
      * Search for an existing address by equal firstname, lastname and email OR institution and email.
@@ -531,9 +519,9 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
             catalogId,
             ResearchQuery(null, documentFilter),
         ).hits.getOrNull(0)?.let {
-            address.uuid = it._uuid
-            address.type = it._type
-            address._state = it._state
+            address.uuid = it.uuid
+            address.type = it.type
+            address._state = it.state
             address.exists = true
         }
     }
@@ -553,8 +541,8 @@ open class GeneralCapabilitiesParser(open val xPathUtils: XPathUtils, val codeli
         if (hit != null) {
             return GeoDataset().apply {
                 objectIdentifier = id
-                objectClass = hit._type
-                uuid = hit._uuid
+                objectClass = hit.type
+                uuid = hit.uuid
                 title = hit.title
                 exists = true
             }

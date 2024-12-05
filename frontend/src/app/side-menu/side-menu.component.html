@@ -1,5 +1,5 @@
 <mat-nav-list
-    [class.collapsed]="!menuIsExpanded"
+    [class.collapsed]="!menuIsExpanded()"
     *transloco="let t; read: 'menu'"
     aria-label="Hauptmenü"
     role="menu"
@@ -12,7 +12,7 @@
             [attr.data-cy]="item.path"
             [matTooltip]="t(item.path)"
             matTooltipPosition="right"
-            [matTooltipDisabled]="menuIsExpanded"
+            [matTooltipDisabled]="menuIsExpanded()"
             [class.active]="
                 currentRoute?.indexOf(catalogId + '/' + item.path) === 0
             "
@@ -36,7 +36,7 @@
             data-cy="link-accessibility"
             matTooltip="Erklärung zur Barrierefreiheit"
             matTooltipPosition="right"
-            [matTooltipDisabled]="menuIsExpanded"
+            [matTooltipDisabled]="menuIsExpanded()"
             aria-label="Erklärung zur Barrierefreiheit"
             role="menuitem"
             tabindex="0"
@@ -52,20 +52,20 @@
         <a
             mat-list-item
             class="menu-toggle no-text-transform"
-            (click)="toggleSidebar(!menuIsExpanded)"
-            (keydown.enter)="toggleSidebar(!menuIsExpanded)"
+            (click)="toggleSidebar(!menuIsExpanded())"
+            (keydown.enter)="toggleSidebar(!menuIsExpanded())"
             matTooltipPosition="right"
             data-cy="menu-scale"
-            [matTooltip]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
-            [matTooltipDisabled]="menuIsExpanded"
-            [attr.aria-label]="menuIsExpanded ? 'Verkleinern' : 'Vergrößern'"
+            [matTooltip]="menuIsExpanded() ? 'Verkleinern' : 'Vergrößern'"
+            [matTooltipDisabled]="menuIsExpanded()"
+            [attr.aria-label]="menuIsExpanded() ? 'Verkleinern' : 'Vergrößern'"
             role="menuitem"
             tabindex="0"
         >
-            @if (!menuIsExpanded) {
+            @if (!menuIsExpanded()) {
                 <mat-icon matListItemIcon svgIcon="Nav-auf"></mat-icon>
             }
-            @if (menuIsExpanded) {
+            @if (menuIsExpanded()) {
                 <mat-icon matListItemIcon svgIcon="Nav-zu"></mat-icon>
             }
             <p matListItemTitle aria-hidden="true">Verkleinern</p>

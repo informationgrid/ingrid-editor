@@ -17,11 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  OnInit,
+  signal,
+} from "@angular/core";
 import { CodelistService } from "../../services/codelist/codelist.service";
 import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
-import { delay, filter, map, startWith, tap } from "rxjs/operators";
-import { CodelistQuery } from "../../store/codelist/codelist.query";
+import { filter, tap } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { UpdateCodelistComponent } from "./update-codelist/update-codelist.component";
 import {
@@ -36,9 +42,7 @@ import {
   CdkDropList,
   moveItemInArray,
 } from "@angular/cdk/drag-drop";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-
-import { AsyncPipe } from "@angular/common";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { MatFormField } from "@angular/material/form-field";
 import { MatOption, MatSelect } from "@angular/material/select";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
@@ -51,6 +55,7 @@ import { CodelistPresenterComponent } from "../../shared/codelist-presenter/code
 import { MatIcon } from "@angular/material/icon";
 import { MatDivider } from "@angular/material/divider";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { CodelistStore } from "../../store/codelist/codelist.store";
 
 @UntilDestroy()
 @Component({
@@ -58,7 +63,6 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
   templateUrl: "./catalog-codelists.component.html",
   styleUrls: ["./catalog-codelists.component.scss"],
   imports: [
-    AsyncPipe,
     MatFormField,
     MatSelect,
     MatOption,
@@ -77,12 +81,7 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
   standalone: true,
 })
 export class CatalogCodelistsComponent implements OnInit {
-  private codelists = this.codelistQuery.selectAll().pipe(
-    map((codelists) => codelists.sort((a, b) => a.name.localeCompare(b.name))),
-    delay(0), // set initial value in next rendering cycle!
-    tap((options) => (this.codelistsValue = options)),
-    tap((options) => this.setInitialValue()),
-  );
+  private codelistStore = inject(CodelistStore);
 
   selectedCodelist: Codelist;
   codelistSelect = new FormControl();
@@ -90,38 +89,57 @@ export class CatalogCodelistsComponent implements OnInit {
   favorites: CodelistEntry[];
   favoriteIds: string[];
   filterCtrl = new FormControl();
-  filteredOptions: Codelist[] = [];
+
+  filterCtrlValue = signal<string>("");
+  filteredOptions = computed<Codelist[]>(() => {
+    this.codelistsValue = this.codelistStore
+      .entities()
+      .sort((a, b) => a.name.localeCompare(b.name));
+    if (!this.init) {
+      this.init = true;
+      this.setInitialValue();
+    }
+    const list = this.getFilteredCodelists(this.filterCtrlValue());
+    if (this.selectedCodelist) {
+      this.selectedCodelist = list.find(
+        (item) => item.id === this.selectedCodelist.id,
+      );
+    }
+    return list;
+  });
+
+  private init = false;
 
   private codelistsValue: Codelist[];
-  showAllCodelists: boolean = true;
+  showAllCodelists = signal<boolean>(true);
 
   constructor(
     private codelistService: CodelistService,
-    private codelistQuery: CodelistQuery,
     private _snackBar: MatSnackBar,
     private dialog: MatDialog,
-  ) {}
+  ) {
+    effect(() => {
+      if (this.codelistSelect?.value) {
+        const option = this.filteredOptions().find(
+          (item) => item.id === this.codelistSelect.value.id,
+        );
+        if (!option) {
+          this.codelistSelect.setValue(this.filteredOptions()[0]);
+          this.selectCodelist(this.filteredOptions()[0]);
+        }
+      } else if (this.filteredOptions().length > 0) {
+        this.codelistSelect.setValue(this.filteredOptions()[0]);
+        this.selectCodelist(this.filteredOptions()[0]);
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.codelistService.getAll();
 
-    this.codelists
-      .pipe(
-        untilDestroyed(this),
-        filter((data) => data !== null),
-      )
-      .subscribe(() => {
-        this.filterCtrl.valueChanges
-          .pipe(untilDestroyed(this), startWith(""))
-          .subscribe((value) => {
-            this.filteredOptions = this.getFilteredCodelists(value);
-            if (this.filteredOptions.length === 0) {
-              this.codelistSelect.disable();
-            } else {
-              this.codelistSelect.enable();
-            }
-          });
-      });
+    this.filterCtrl.valueChanges.subscribe((value) =>
+      this.filterCtrlValue.set(value),
+    );
   }
 
   addCodelist() {
@@ -183,13 +201,14 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   selectCodelist(option: Codelist) {
+    if (!option) return;
     const other = JSON.parse(JSON.stringify(option));
     this.sortCodelist(other);
     this.selectedCodelist = other;
     this.descriptionCtrl.setValue(this.selectedCodelist.description, {
       emitEvent: false,
     });
-    this.favorites = this.codelistQuery.getFavorite(option.id);
+    this.favorites = this.codelistService.getFavorite(option.id);
     this.favoriteIds = this.favorites.map((f) => f.id);
   }
 
@@ -218,9 +237,8 @@ export class CatalogCodelistsComponent implements OnInit {
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          this.codelistService
-            .resetCodelist(this.selectedCodelist.id)
-            .subscribe();
+          const id = this.selectedCodelist.id;
+          this.codelistService.resetCodelist(id).subscribe();
         }
       });
   }
@@ -329,7 +347,7 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   private getFilteredCodelists(value: string): Codelist[] {
-    let visibleCodelists = this.showAllCodelists
+    let visibleCodelists = this.showAllCodelists()
       ? this.codelistsValue
       : this.codelistsValue.filter((item) => item.isCatalog);
 
@@ -344,12 +362,8 @@ export class CatalogCodelistsComponent implements OnInit {
   }
 
   handleCodelistToggle(event: MatSlideToggleChange) {
-    this.showAllCodelists = event.checked;
+    this.showAllCodelists.set(event.checked);
     this.filterCtrl.setValue("");
-    if (this.filteredOptions.length > 0) {
-      this.codelistSelect.setValue(this.filteredOptions[0]);
-      this.selectCodelist(this.filteredOptions[0]);
-    }
   }
 
   removeFavorite(item: CodelistEntry) {

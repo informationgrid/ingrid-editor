@@ -17,16 +17,31 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { EntityState, EntityStore, StoreConfig } from "@datorama/akita";
 import { Group } from "../../models/user-group";
+import { patchState, signalStore, withMethods } from "@ngrx/signals";
+import {
+  addEntity,
+  removeEntity,
+  setAllEntities,
+  updateEntity,
+  withEntities,
+} from "@ngrx/signals/entities";
 
-export interface GroupState extends EntityState<Group> {}
-
-@Injectable({ providedIn: "root" })
-@StoreConfig({ name: "group" })
-export class GroupStore extends EntityStore<GroupState, Group> {
-  constructor() {
-    super();
-  }
-}
+export const GroupStore = signalStore(
+  { providedIn: "root" },
+  withEntities<Group>(),
+  withMethods((store) => ({
+    set(groups: Group[]): void {
+      patchState(store, setAllEntities(groups));
+    },
+    update(group: Group): void {
+      patchState(store, updateEntity({ id: group.id, changes: group }));
+    },
+    add(group: Group): void {
+      patchState(store, addEntity(group));
+    },
+    remove(id: number): void {
+      patchState(store, removeEntity(id));
+    },
+  })),
+);

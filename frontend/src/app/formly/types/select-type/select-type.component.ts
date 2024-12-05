@@ -33,7 +33,7 @@ import {
   MatPseudoCheckbox,
   MatPseudoCheckboxState,
 } from "@angular/material/core";
-import { debounceTime, filter, map, take, tap } from "rxjs/operators";
+import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
 import { FieldTypeConfig, FormlyModule } from "@ngx-formly/core";
 import { BackendOption } from "../../../store/codelist/codelist.model";
@@ -221,5 +221,9 @@ export class SelectTypeComponent
     return this.selectOptions.filter(
       (option) => option.value.toLowerCase().indexOf(filter) !== -1,
     );
+  }
+
+  itemId(item: BackendOption) {
+    return item.key ?? item;
   }
 }

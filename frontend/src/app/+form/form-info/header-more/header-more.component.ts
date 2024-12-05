@@ -25,7 +25,6 @@ import {
   OnInit,
 } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
-import { ProfileQuery } from "../../../store/profile/profile.query";
 import { ConfigService } from "../../../services/config/config.service";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FormStateService } from "../../form-state.service";
@@ -34,6 +33,7 @@ import { MatTooltip } from "@angular/material/tooltip";
 import { FormLabelComponent } from "../../../formly/wrapper/form-label/form-label.component";
 import { AsyncPipe, DatePipe } from "@angular/common";
 import { FullNamePipe } from "../../../directives/full-name.pipe";
+import { UiStore } from "../../../store/ui.store";
 
 @Component({
   selector: "ige-header-more",
@@ -68,20 +68,18 @@ export class HeaderMoreComponent implements OnInit {
   migrated: boolean;
 
   private contextHelpService = inject(ContextHelpService);
-  private profileQuery = inject(ProfileQuery);
   private configService = inject(ConfigService);
   private formStateService = inject(FormStateService);
+  private uiStore = inject(UiStore);
 
   metadata = this.formStateService.metadata;
 
   ngOnInit() {
     this.hideFields =
-      this.profileQuery
-        .getValue()
-        .ui.hideFormHeaderInfos?.reduce((acc, val) => {
-          acc[val] = true;
-          return acc;
-        }, {}) ?? {};
+      this.uiStore.hideFormHeaderInfos()?.reduce((acc, val) => {
+        acc[val] = true;
+        return acc;
+      }, {}) ?? {};
 
     const catCreateDate =
       this.configService.$userInfo.getValue().currentCatalog.created;

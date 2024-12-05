@@ -18,8 +18,8 @@
  * limitations under the Licence.
  */
 export interface Query {
+  id: number;
   type: string;
-  id?: string;
   name: string;
   description: string;
   isCatalogQuery: boolean;

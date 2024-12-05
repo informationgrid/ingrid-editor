@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 export interface Catalog {
-  id?: string;
+  id: string;
   label?: string;
   description?: string;
   type?: string;

@@ -133,3 +133,7 @@ export function isExpired(date: string, days: number): boolean {
   const expiryTime = modifiedTime + expiryDuration;
   return Date.now() > expiryTime;
 }
+
+export async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

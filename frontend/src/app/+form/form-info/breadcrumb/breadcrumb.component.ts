@@ -19,13 +19,14 @@
  */
 import {
   Component,
-  EventEmitter,
+  computed,
   forwardRef,
-  Input,
+  input,
   OnInit,
-  Output,
+  output,
   Pipe,
   PipeTransform,
+  Signal,
 } from "@angular/core";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
 import { MatTooltip } from "@angular/material/tooltip";
@@ -39,22 +40,18 @@ import { MatIcon } from "@angular/material/icon";
   imports: [MatTooltip, MatIcon, forwardRef(() => BreadCrumbTooltipPipe)],
 })
 export class BreadcrumbComponent implements OnInit {
-  @Input() set path(path: ShortTreeNode[]) {
-    this.fullPath = path;
-    this.shortPath = this.calculateShortPath(this.fullPath);
-    this.collapsed = true;
-  }
+  path = input<ShortTreeNode[]>([]);
+  simplePath = input<boolean>(false);
+  rootName = input<string>("Daten");
+  emphasize = input<boolean>(false);
+  selectable = input<boolean>(false);
+  disableRoot = input<boolean>(false);
 
-  @Input() simplePath = false;
-  @Input() rootName = "Daten";
-  @Input() emphasize = false;
-  @Input() selectable = false;
-  @Input() disableRoot = false;
+  select = output<number>();
 
-  @Output() select = new EventEmitter<number>();
-
-  fullPath: ShortTreeNode[];
-  shortPath: ShortTreeNode[];
+  shortPath: Signal<ShortTreeNode[]> = computed(() => {
+    return this.calculateShortPath(this.path());
+  });
   collapsed = true;
 
   static readonly COLLAPSED_SYMBOL_NODE = new ShortTreeNode(
@@ -69,8 +66,8 @@ export class BreadcrumbComponent implements OnInit {
   ngOnInit() {}
 
   onSelect(id: number) {
-    if (this.selectable) {
-      this.select.next(id);
+    if (this.selectable()) {
+      this.select.emit(id);
     }
   }
 

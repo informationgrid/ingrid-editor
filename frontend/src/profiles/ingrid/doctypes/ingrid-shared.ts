@@ -714,32 +714,11 @@ export abstract class IngridShared extends BaseDoctype {
               expressions: {
                 hide: "field.model.properties?.isHvd !== true",
               },
-              options: [
-                {
-                  label: "Georaum",
-                  value: "http://data.europa.eu/bna/c_ac64a52d",
-                },
-                {
-                  label: "Erdbeobachtung und Umwelt",
-                  value: "http://data.europa.eu/bna/c_dd313021",
-                },
-                {
-                  label: "Meteorologie",
-                  value: "http://data.europa.eu/bna/c_164e0bf5",
-                },
-                {
-                  label: "Statistik",
-                  value: "http://data.europa.eu/bna/c_e1da4e07",
-                },
-                {
-                  label: "Unternehmen und Eigentümerschaft von Unternehmen",
-                  value: "http://data.europa.eu/bna/c_a9135398",
-                },
-                {
-                  label: "Mobilität",
-                  value: "http://data.europa.eu/bna/c_b79e35eb",
-                },
-              ],
+              options: this.getCodelistForSelect(
+                "hvdCategories",
+                "hvdCategories",
+              ),
+              codelistId: "hvdCategories",
               required: true,
             })
           : null,
@@ -959,7 +938,7 @@ export abstract class IngridShared extends BaseDoctype {
     if (connectedInspireTheme) {
       const topicCategoriesCtrl = field.form.get("topicCategories");
       topicCategoriesCtrl.setValue([...topicCategoriesCtrl.value, event]);
-      const inspireThemeValue = this.codelistQuery.getCodelistEntryValueByKey(
+      const inspireThemeValue = this.codelistStore.getCodelistEntryValueByKey(
         "6100",
         connectedInspireTheme.key,
       );
@@ -1745,7 +1724,7 @@ export abstract class IngridShared extends BaseDoctype {
             const mappedDoctype = this.mapDocumentTypeToClass(this.id);
             return data.filter(
               (item) =>
-                this.codelistQuery
+                this.codelistStore
                   .getCodelistEntryByKey("2000", item.value)
                   ?.data?.split(",")
                   ?.indexOf(mappedDoctype) !== -1,
@@ -1973,7 +1952,7 @@ export abstract class IngridShared extends BaseDoctype {
     specificationKey: string,
     passKey: string,
   ) {
-    const publicationDate = this.codelistQuery.getCodelistEntryByKey(
+    const publicationDate = this.codelistStore.getCodelistEntryByKey(
       "6005",
       specificationKey,
     )?.data;

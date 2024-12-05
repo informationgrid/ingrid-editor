@@ -17,7 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  Component,
+  effect,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { TreeStore } from "../../store/tree/tree.store";
 import { BehaviorSubject, Subject } from "rxjs";
@@ -25,11 +33,11 @@ import { UntilDestroy } from "@ngneat/until-destroy";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { TreeAction } from "./tree/tree.types";
 import { FormStateService } from "../form-state.service";
-import { TreeQuery } from "../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
-import { filter, take } from "rxjs/operators";
 import { ConfigService } from "../../services/config/config.service";
 import { TreeComponent } from "./tree/tree.component";
+import { GeneralStore } from "../../store/general.store";
+import { DocumentAbstract } from "../../store/document/document.model";
+import { UiStore } from "../../store/ui.store";
 
 @UntilDestroy()
 @Component({
@@ -44,37 +52,38 @@ export class SidebarComponent implements OnInit {
 
   @Output() dropped = new EventEmitter();
 
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
+  private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
+
   updateTree = new Subject<TreeAction[]>();
   activeTreeNode = new BehaviorSubject<number>(null);
 
-  private treeStore: AddressTreeStore | TreeStore;
-  private treeQuery: AddressTreeQuery | TreeQuery;
   private path: "/form" | "/address";
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private formStateService: FormStateService,
-    private addressTreeStore: AddressTreeStore,
-    private docTreeStore: TreeStore,
-    private docTreeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
-  ) {}
+  ) {
+    effect(() => {
+      const active = this.address
+        ? this.generalStore.explicitActiveNodeAddress()
+        : this.generalStore.explicitActiveNode();
+      // console.log("Sidebar effect", actives);
+      this.activeTreeNode.next(active?.id ?? null);
+    });
+  }
 
   ngOnInit() {
     if (this.address) {
-      this.treeStore = this.addressTreeStore;
-      this.treeQuery = this.addressTreeQuery;
       this.path = "/address";
     } else {
-      this.treeStore = this.docTreeStore;
-      this.treeQuery = this.docTreeQuery;
       this.path = "/form";
     }
 
     this.setInitialTreeNode();
-
-    this.handleExplicitlySetNodes();
 
     // TODO: sure? Improve performance by keeping store! Make it more intelligent
     //       to avoid node creation from dashboard conflict
@@ -87,12 +96,10 @@ export class SidebarComponent implements OnInit {
     // since we need to set with id instead of uuid, we need to wait for the document to be loaded,
     // before the tree can be expanded
     if (id) {
-      this.treeQuery.openedDocument$
-        .pipe(
-          filter((doc) => doc !== null),
-          take(1),
-        )
-        .subscribe((doc) => this.activeTreeNode.next(<number>doc.id));
+      const doc = this.getOpenedDocument();
+      if (doc !== null) {
+        this.activeTreeNode.next(<number>doc.id);
+      }
     }
   }
 
@@ -117,7 +124,7 @@ export class SidebarComponent implements OnInit {
     }
 
     // reset scroll position when loading a new document
-    this.treeStore.update({ scrollPosition: 0 });
+    this.uiStore.setScrollPosition(0);
 
     const navigated = await this.router.navigate([
       ConfigService.catalogId + this.path,
@@ -126,25 +133,27 @@ export class SidebarComponent implements OnInit {
     if (!navigated) this.activeTreeNode.next(currentId);
   }
 
-  handleSelection(selectedDocsId: string[]) {
-    this.treeStore.setActive(selectedDocsId);
+  handleSelection(selectedDocsId: number[]) {
+    this.generalStore.setActiveTreeNodes(selectedDocsId, this.address);
   }
 
   updateTreeMode(multiSelect: boolean) {
-    this.treeStore.update({
-      multiSelectMode: multiSelect,
-    });
+    this.uiStore.setTreeMultiSelectMode(multiSelect);
   }
 
   // make sure to reload tree instead of using cached nodes
   // otherwise adding new node from dashboard would lead to an error
   private clearTreeStore() {
-    this.treeStore.set([]);
+    this.getTreeStore().set([]);
   }
 
-  private handleExplicitlySetNodes() {
-    this.treeQuery.explicitActiveNode$.subscribe((node) => {
-      this.activeTreeNode.next(node?.id ?? null);
-    });
+  private getTreeStore() {
+    return this.address ? this.addressTreeStore : this.documentTreeStore;
+  }
+
+  private getOpenedDocument(): DocumentAbstract {
+    return this.address
+      ? this.generalStore.openedAddress()
+      : this.generalStore.openedDocument();
   }
 }

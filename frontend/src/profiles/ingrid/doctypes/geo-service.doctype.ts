@@ -27,7 +27,6 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
-import { TreeQuery } from "../../../app/store/tree/tree.query";
 
 @Injectable({
   providedIn: "root",
@@ -55,8 +54,6 @@ export class GeoServiceDoctype extends IngridShared {
   };
 
   isGeoService = true;
-
-  tree = inject(TreeQuery);
 
   constructor() {
     super();

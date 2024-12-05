@@ -20,7 +20,6 @@
 import { Component, inject, Inject } from "@angular/core";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { TreeQuery } from "../../../../store/tree/tree.query";
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 
 import { FormGroup } from "@angular/forms";
@@ -28,6 +27,7 @@ import { Subject } from "rxjs";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import { DocumentService } from "../../../../services/document/document.service";
+import { TreeStore } from "../../../../store/tree/tree.store";
 
 export interface SelectGeoDatasetData {
   currentRefs: string[];
@@ -51,6 +51,7 @@ export interface SelectServiceResponse {
 })
 export class SelectGeoDatasetDialog {
   private documentService = inject(DocumentService);
+  private documentTreeStore = inject(TreeStore);
 
   selectedNode: number = null;
   field: FormlyFieldConfig[] = [
@@ -66,12 +67,11 @@ export class SelectGeoDatasetDialog {
 
   constructor(
     private dlgRef: MatDialogRef<any>,
-    private tree: TreeQuery,
     @Inject(MAT_DIALOG_DATA) private data: SelectGeoDatasetData,
   ) {
     if (data.activeRef) {
       setTimeout(() => {
-        const node = tree.getByUuid(data.activeRef);
+        const node = this.documentTreeStore.getByUuid(data.activeRef);
         if (node) {
           this.initialNode.next(parseInt(node.id.toString()));
         } else {
@@ -96,7 +96,7 @@ export class SelectGeoDatasetDialog {
   }
 
   submit() {
-    const entity = this.tree.getEntity(this.selectedNode);
+    const entity = this.documentTreeStore.entityMap()[this.selectedNode];
     this.dlgRef.close({
       title: entity.title,
       state: entity._state,

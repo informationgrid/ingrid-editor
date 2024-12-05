@@ -504,7 +504,7 @@
                     codeListValue="${page.getDatasetCharacterSet()}" />
         </gmd:characterSet>
     @endif
-    @for(String category : page.getTopicCategories())
+    @for(String category : page.getTopicCategoriesISO())
         <gmd:topicCategory>
             <gmd:MD_TopicCategoryCode>${category}</gmd:MD_TopicCategoryCode>
         </gmd:topicCategory>

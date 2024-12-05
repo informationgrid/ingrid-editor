@@ -17,12 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { map } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { Observable } from "rxjs";
 import { ConsolidateDialogComponent } from "./consolidate-dialog/consolidate-dialog.component";
-import { TreeQuery } from "../../../../app/store/tree/tree.query";
 import { DocEventsService } from "../../../../app/services/event/doc-events.service";
 import {
   FormMenuService,
@@ -32,6 +31,7 @@ import {
 import { ConfigService } from "../../../../app/services/config/config.service";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { DocumentAbstract } from "../../../../app/store/document/document.model";
+import { TreeStore } from "../../../../app/store/tree/tree.store";
 
 @Injectable({ providedIn: "root" })
 export class ConsolidateKeywordsPlugin extends Plugin {
@@ -39,7 +39,8 @@ export class ConsolidateKeywordsPlugin extends Plugin {
   name = "Schlagworte konsolidieren";
   description = "Schlagworte konsolidieren";
   defaultActive = true;
-  forAddress = false;
+
+  private treeStore = inject(TreeStore);
 
   formMenuId: MenuId = "dataset";
   private isPresent = false;
@@ -56,7 +57,6 @@ export class ConsolidateKeywordsPlugin extends Plugin {
   constructor(
     private docEvents: DocEventsService,
     private docEventsService: DocEventsService,
-    private documentTreeQuery: TreeQuery,
     private formMenuService: FormMenuService,
     configService: ConfigService,
     private dialog: MatDialog,
@@ -64,20 +64,22 @@ export class ConsolidateKeywordsPlugin extends Plugin {
     super();
     this.isPrivileged =
       configService.hasCatAdminRights() || configService.hasMdAdminRights();
+
+    effect(() => {
+      this.handleMenuItem(
+        this.generalStore.getOpenedDocument(this.forAddress()),
+      );
+    });
   }
 
   registerForm() {
     super.registerForm();
     // only add menu item in form if user is privileged and not for address
-    if (this.isPrivileged && !this.forAddress) {
-      const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
-        (doc) => this.handleMenuItem(doc),
-      );
-
+    if (this.isPrivileged && !this.forAddress()) {
       const onEvent = this.docEvents
         .onEvent("OPEN_CONSOLIDATE_KEYWORDS_DIALOG")
         .subscribe(async () => this.openConsolidateKeywordsDialog());
-      this.formSubscriptions.push(onDocLoad); // Add menu button
+      // this.formSubscriptions.push(onDocLoad); // Add menu button
       this.formSubscriptions.push(onEvent); // Open dialog
     }
   }

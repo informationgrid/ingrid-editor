@@ -19,6 +19,8 @@
  */
 import { Subscription } from "rxjs";
 import { FormlyFieldConfig } from "@ngx-formly/core";
+import { computed, inject, Signal, signal } from "@angular/core";
+import { GeneralStore } from "../../store/general.store";
 
 export abstract class Plugin {
   abstract id: string;
@@ -29,12 +31,21 @@ export abstract class Plugin {
   defaultActive: boolean;
   hide = false;
   _state?: string;
-  forAddress = false;
+  forAddress = signal<boolean>(false);
   subscriptions: Subscription[] = [];
   formSubscriptions: Subscription[] = [];
   fields?: FormlyFieldConfig[] = [];
   data?: any;
   hideInAddress = false;
+
+  protected generalStore = inject(GeneralStore);
+  protected formRegistered = signal<boolean>(false);
+
+  protected activeNodes: Signal<number[]> = computed(() => {
+    return this.forAddress()
+      ? this.generalStore.activeAddressTreeNodes()
+      : this.generalStore.activeTreeNodes();
+  });
 
   register(): void {
     console.debug("Register Plugin: ", this.name);
@@ -43,6 +54,7 @@ export abstract class Plugin {
 
   registerForm(): void {
     console.debug("Register Form-Plugin: ", this.name);
+    this.formRegistered.set(true);
   }
 
   unregister(): void {
@@ -57,12 +69,13 @@ export abstract class Plugin {
       console.debug("Unregister Form-Plugin: ", this.name);
       this.formSubscriptions.forEach((sub) => sub.unsubscribe());
       this.formSubscriptions = [];
+      this.formRegistered.set(false);
     }
   }
 
   update(): void {}
 
   setForAddress(forAddress: boolean): void {
-    this.forAddress = forAddress;
+    this.forAddress.set(forAddress);
   }
 }

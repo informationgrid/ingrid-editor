@@ -23,17 +23,29 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.utils.getString
-import org.apache.jena.vocabulary.RDFSyntax.doc
 
 class Migrate120 {
 
     companion object {
+        private val includedTypes = listOf(
+            "InGridGeoDataset",
+            "InGridDataCollection",
+            "InGridGeoService",
+            "InGridInformationSystem",
+            "InGridPublication",
+            "InGridProject",
+            "InGridSpecialisedTask",
+        )
+
         fun migrate(documents: JsonNode, profile: String): JsonNode {
             listOf("draft", "published").forEach { type ->
                 documents.get(type)?.let { docVersion ->
                     docVersion as ObjectNode
-                    val migratedData = getPropertiesOfDocument(docVersion, docVersion.getString("_type")!!)
-                    docVersion.set<JsonNode>("properties", migratedData)
+                    val docType = docVersion.getString("_type")!!
+                    if (includedTypes.contains(docType)) {
+                        val migratedData = getPropertiesOfDocument(docVersion, docType)
+                        docVersion.set<JsonNode>("properties", migratedData)
+                    }
                 }
             }
             return documents

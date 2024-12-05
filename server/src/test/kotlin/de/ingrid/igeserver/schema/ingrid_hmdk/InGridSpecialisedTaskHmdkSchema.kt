@@ -30,8 +30,11 @@ class InGridSpecialisedTaskHmdkSchema : AnnotationSpec() {
     @Test
     fun minimal() {
         val json = SchemaUtils.getJsonFileContent("/export/ingrid/specialized-task.minimal.json").replaceFirst(
+            "\"properties\": {",
+            """"properties": {"publicationHmbTG": true, """,
+        ).replaceFirst(
             "{",
-            """ { "publicationHmbTG": true, "informationHmbTG": [{"key": "1"}], "isOpenData": true, "openDataCategories": [], """,
+            """{ "informationHmbTG": [{"key": "1"}], "isOpenData": true, "openDataCategories": [], """,
         )
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0

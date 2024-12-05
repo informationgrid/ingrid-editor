@@ -400,8 +400,8 @@ export class GeoDatasetDoctype extends IngridShared {
           "Darstellender Dienst",
           true,
           false,
-          "Dieser Datensatz wurde von keinem Geodatendienst referenziert",
-          "Die Referenz kann nur vom darstellenden Dienst entfernt werden",
+          "Dieser Datensatz wird von keinem Geodatendienst referenziert.",
+          "Die Referenz kann nur vom darstellenden Dienst entfernt werden.",
           {
             className: "optional",
             contextHelpId: "coupledResources",
