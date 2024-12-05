@@ -129,7 +129,7 @@ export class PrintViewPlugin extends Plugin {
           fields: fields,
           fieldsPublished: fieldsPublished,
           model: current.documentWithMetadata,
-          modelPublished: published,
+          modelPublished: published?.documentWithMetadata,
         },
       });
     });
