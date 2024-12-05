@@ -291,7 +291,8 @@ open class IngridModelTransformer(
             ?: emptyList()
 
     val datasetCharacterSet = codelists.getValue("510", data.metadata?.characterSet, "iso")
-    val topicCategories = data.topicCategories?.map { codelists.getValue("527", it, "iso") } ?: emptyList()
+    val topicCategories = data.topicCategories?.map { codelists.getValue("527", it) } ?: emptyList()
+    val topicCategoriesISO = data.topicCategories?.map { codelists.getValue("527", it, "iso") } ?: emptyList()
 
     val spatialRepresentationTypes = data.spatialRepresentationType?.map { codelists.getValue("526", it, "iso") }
         ?: emptyList()
