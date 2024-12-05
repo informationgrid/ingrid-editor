@@ -90,7 +90,7 @@ export class OpenDataDoctype extends BaseDoctype {
           options: this.getCodelistForSelect("6400", "openDataCategories"),
           codelistId: "6400",
         }),
-        this.addCheckbox("hvd", "High-Value-Dataset (HVD)", {
+        this.addCheckbox("isHvd", "High-Value-Dataset (HVD)", {
           className: "flex-1",
           click: (field: FormlyFieldConfig) =>
             this.handleHVDClick(field).subscribe(),
@@ -100,7 +100,7 @@ export class OpenDataDoctype extends BaseDoctype {
           showSearch: true,
           asSelect: true,
           expressions: {
-            hide: (field: FormlyFieldConfig) => field.model.hvd !== true,
+            hide: (field: FormlyFieldConfig) => field.model.isHvd !== true,
           },
           options: this.getCodelistForSelect("hvdCategories", null),
           codelistId: "hvdCategories",
