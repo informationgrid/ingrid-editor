@@ -2,6 +2,7 @@ import { map } from "rxjs/operators";
 import { of } from "rxjs";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { GeoDatasetDoctype } from "./geo-dataset.doctype";
+import { DataOriginViewComponent } from "../components/data-origin-view/data-origin-view.component";
 
 export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
   return geoDatasetDoctype.addRepeatDetailList(
@@ -9,7 +10,8 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
     "Datengrundlage/Herkunft",
     {
       required: false,
-      itemPreviewFields: {
+      viewComponent: DataOriginViewComponent,
+      /*      itemPreviewFields: {
         category: (item) => {
           let value = "";
           if (item._type == "freeDescription") {
@@ -47,11 +49,11 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
             ? new Date(item.date).toLocaleDateString("de-DE")
             : "";
           if (codelistKey != null) {
-            /*geoDatasetDoctype.codecodelistPipe
+            /!*geoDatasetDoctype.codecodelistPipe
               .transform(codelistKey, "502")
               .subscribe((codelist) => {
                 value += " - " + codelist;
-              });*/
+              });*!/
           }
           return of({
             value,
@@ -64,7 +66,7 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
             navigateTo: null,
           });
         },
-      },
+      },*/
       _types: [
         {
           key: "internalDataOrigin",

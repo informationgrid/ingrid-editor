@@ -24,7 +24,6 @@ import { HttpClient } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { TranslocoService } from "@ngneat/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
-import { ItemPreviewFields } from "../app/formly/types/repeat-detail-list/repeat-detail-list.component";
 import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
 
 export interface FieldConfigPosition {
@@ -88,7 +87,6 @@ export interface RepeatDetailListOptions extends Options {
   backendUrl?: string;
   fields?: FormlyFieldConfig[];
   _types?: AddButtonOptions[];
-  itemPreviewFields?: ItemPreviewFields;
   validators?: { [x: string]: { expression: any; message: string } | string[] };
   titleField?: string;
   infoText?: string;
@@ -98,6 +96,7 @@ export interface RepeatDetailListOptions extends Options {
   enableFileUploadReuse?: boolean;
   enableFileUploadRename?: boolean;
   jsonTemplate?: object;
+  viewComponent?: any;
 }
 
 export interface RepeatListOptions extends Options {
@@ -419,7 +418,7 @@ export class FormFieldHelper {
         titleField: options?.titleField,
         fields: options?.fields,
         _types: options?._types,
-        itemPreviewFields: options?.itemPreviewFields,
+        viewComponent: options?.viewComponent,
       },
       expressions: expressions,
       validators: options?.validators,

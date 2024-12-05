@@ -20,6 +20,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   OnInit,
   signal,
 } from "@angular/core";
@@ -41,7 +42,7 @@ import {
   CdkDropList,
 } from "@angular/cdk/drag-drop";
 import { MatListModule } from "@angular/material/list";
-import { AsyncPipe } from "@angular/common";
+import { NgComponentOutlet } from "@angular/common";
 
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
@@ -54,36 +55,14 @@ import {
   AddButtonOptions,
 } from "../../../shared/add-button/add-button.component";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { debounceTime, switchMap } from "rxjs/operators";
-import { Observable, of } from "rxjs";
-import { ConfigService } from "../../../services/config/config.service";
-import { Router } from "@angular/router";
+import { debounceTime } from "rxjs/operators";
 
 interface RepeatDetailListProps extends FormlyFieldProps {
   titleField: string;
   fields: FormlyFieldConfig[];
   _types?: AddButtonOptions[];
-  itemPreviewFields: ItemPreviewFields;
+  viewComponent: any;
 }
-
-export interface ItemPreviewFields {
-  category?: (item: any) => ListEntryPart;
-  title?: (item: any) => ListEntryPart;
-  subtitle?: (item: any) => ListEntryPart;
-  description?: (item: any) => ListEntryPart;
-}
-
-interface ListEntry {
-  category?: ListEntryPart;
-  title?: ListEntryPart;
-  subtitle?: ListEntryPart;
-  description?: ListEntryPart;
-}
-
-type ListEntryPart = Observable<{
-  value: string;
-  navigateTo?: { target: string; internal?: boolean };
-}>;
 
 @UntilDestroy()
 @Component({
@@ -103,7 +82,7 @@ type ListEntryPart = Observable<{
     FormErrorComponent,
     FormlyModule,
     MatTooltipModule,
-    AsyncPipe,
+    NgComponentOutlet,
   ],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -112,54 +91,14 @@ export class RepeatDetailListComponent
   extends FieldType<FieldTypeConfig<RepeatDetailListProps>>
   implements OnInit
 {
-  constructor(
-    private dialog: MatDialog,
-    private router: Router,
-  ) {
-    super();
-  }
+  private dialog = inject(MatDialog);
 
-  previewItems = signal<ListEntry[]>([]);
+  previewItems = signal<any[]>([]);
 
   ngOnInit(): void {
     this.formControl.valueChanges
-      .pipe(
-        untilDestroyed(this),
-        debounceTime(0),
-        switchMap((items) => this.mapItemPreviewFields(items)),
-      )
+      .pipe(untilDestroyed(this), debounceTime(0))
       .subscribe((items) => this.previewItems.set(items));
-  }
-
-  private mapItemPreviewFields(items): Observable<ListEntry[]> {
-    return of(
-      items?.map((item) => {
-        return {
-          category: this.getItemPreview("category", item),
-          title: this.getItemPreview("title", item),
-          subtitle: this.getItemPreview("subtitle", item),
-          description: this.getItemPreview("description", item),
-        };
-      }),
-    );
-  }
-
-  getItemPreview(previewField, item): ListEntryPart {
-    return (
-      this.props.itemPreviewFields?.[previewField]?.(item) ??
-      of({ value: null, link: null })
-    );
-  }
-
-  async navigate(navigateTo) {
-    if (navigateTo.internal) {
-      return this.router.navigate([
-        `${ConfigService.catalogId}/form`,
-        { id: navigateTo.target },
-      ]);
-    } else {
-      window.open(navigateTo.target, "_blank");
-    }
   }
 
   addItem(type: string) {
@@ -227,6 +166,4 @@ export class RepeatDetailListComponent
     this.formControl.markAsDirty();
     this.formControl.markAsTouched();
   }
-
-  protected readonly JSON = JSON;
 }

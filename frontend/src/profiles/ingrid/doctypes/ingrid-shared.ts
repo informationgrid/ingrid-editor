@@ -53,6 +53,7 @@ import {
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { IgeError } from "../../../app/models/ige-error";
 import { CodelistStore } from "../../../app/store/codelist/codelist.store";
+import { ReferenceViewComponent } from "../components/reference-view/reference-view.component";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -1530,36 +1531,7 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection("Verweise", [
       this.addRepeatDetailList("references", "Verweise", {
         fields: [this.urlRefFields()],
-        itemPreviewFields: {
-          category: (item) => {
-            const codelistKey = item.type?.key ?? null;
-            if (codelistKey != null) {
-              const value = this.codelistStore.getCodelistEntryValueByKey(
-                "2000",
-                codelistKey,
-              );
-              return of({ value: value });
-            }
-            return of({ value: item.type?.value });
-          },
-          title: (item) => {
-            if (item.referenceType == "uuidRef") {
-              return of({
-                value: item["title"],
-                navigateTo: { target: item.uuidRef, internal: true },
-              });
-            }
-            if (item.referenceType == "url") {
-              return of({
-                value: item.title,
-                navigateTo: null,
-              });
-            }
-          },
-          subtitle: (item) =>
-            of({ value: item.url, navigateTo: { target: item["url"] } }),
-          description: (item) => of({ value: item.explanation }),
-        },
+        viewComponent: ReferenceViewComponent,
         validators: {
           downloadLinkWhenOpenData: {
             expression: (ctrl: FormControl, field: FormlyFieldConfig) =>

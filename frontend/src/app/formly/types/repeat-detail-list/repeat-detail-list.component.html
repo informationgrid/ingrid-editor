@@ -23,101 +23,12 @@
                         </mat-icon>
                     }
                     <div class="flex-1 flex-col align-items-start">
-                        @let category = item?.category | async;
-                        <div class="category">
-                            <div
-                                [class]="category?.navigateTo ? 'url' : ''"
-                                (click)="
-                                    category?.navigateTo
-                                        ? navigate(category?.navigateTo)
-                                        : null
-                                "
-                                (keyup.enter)="
-                                    category?.navigateTo
-                                        ? navigate(category?.navigateTo)
-                                        : null
-                                "
-                                [matTooltip]="
-                                    category?.navigateTo?.target
-                                        ? category.navigateTo.target
-                                        : null
-                                "
-                            >
-                                {{ category?.value }}
-                            </div>
-                        </div>
-
-                        @let title = item?.title | async;
-                        <div class="title">
-                            <div
-                                [class]="title?.navigateTo ? 'url' : ''"
-                                (click)="
-                                    title?.navigateTo
-                                        ? navigate(title?.navigateTo)
-                                        : null
-                                "
-                                (keyup.enter)="
-                                    title?.navigateTo
-                                        ? navigate(title?.navigateTo)
-                                        : null
-                                "
-                                [matTooltip]="
-                                    title?.navigateTo?.target
-                                        ? title.navigateTo.target
-                                        : null
-                                "
-                            >
-                                {{ title?.value }}
-                            </div>
-                        </div>
-
-                        @let subtitle = item?.subtitle | async;
-                        <div class="subtitle">
-                            <div
-                                [class]="subtitle?.navigateTo ? 'url' : ''"
-                                (click)="
-                                    subtitle?.navigateTo
-                                        ? navigate(subtitle?.navigateTo)
-                                        : null
-                                "
-                                (keyup.enter)="
-                                    subtitle?.navigateTo
-                                        ? navigate(subtitle?.navigateTo)
-                                        : null
-                                "
-                                [matTooltip]="
-                                    subtitle?.navigateTo?.target
-                                        ? subtitle.navigateTo.target
-                                        : null
-                                "
-                            >
-                                {{ subtitle?.value }}
-                            </div>
-                        </div>
-
-                        @let description = item?.description | async;
-                        <div class="description">
-                            <div
-                                [class]="description?.navigateTo ? 'url' : ''"
-                                (click)="
-                                    description?.navigateTo
-                                        ? navigate(description?.navigateTo)
-                                        : null
-                                "
-                                (keyup.enter)="
-                                    description?.navigateTo
-                                        ? navigate(description?.navigateTo)
-                                        : null
-                                "
-                                [matTooltip]="
-                                    description?.navigateTo?.target
-                                        ? description.navigateTo.target
-                                        : null
-                                "
-                            >
-                                {{ description?.value }}
-                            </div>
-                        </div>
+                        <ng-container
+                            *ngComponentOutlet="
+                                props.viewComponent;
+                                inputs: { item }
+                            "
+                        />
                     </div>
                     @if (formControl.enabled) {
                         <button
