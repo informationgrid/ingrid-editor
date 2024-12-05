@@ -12,23 +12,23 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
       itemPreviewFields: {
         category: (item) => {
           let value = "";
-          if (item["_type"] == "freeDescription") {
+          if (item._type == "freeDescription") {
             value = "Freie Beschreibung";
-          } else if (item["_type"] == "internalDataOrigin") {
-            value = "Geodatensatz " + item["uuidRef"];
+          } else if (item._type == "internalDataOrigin") {
+            value = "Geodatensatz " + item.uuidRef;
           }
-          return of({ value, navigateTo: null });
+          return of({ value });
         },
         title: (item) => {
-          if (item["_type"] == "internalDataOrigin") {
+          if (item._type == "internalDataOrigin") {
             return geoDatasetDoctype.documentService
-              .load(item["uuidRef"], false, false, true)
+              .load(item.uuidRef, false, false, true)
               .pipe(
                 map((doc) => {
                   return {
                     value: doc?.document.title,
                     navigateTo: {
-                      target: item["uuidRef"],
+                      target: item.uuidRef,
                       internal: true,
                     },
                   };
@@ -37,21 +37,21 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
           } else {
             return of({
               value: item["title"],
-              navigateTo: { target: item["identifier"] },
+              navigateTo: { target: item.identifier },
             });
           }
         },
         subtitle: (item) => {
-          const codelistKey = item["dateType"]?.["key"] ?? null;
-          let value: string = item["date"]
-            ? new Date(item["date"]).toLocaleDateString("de-DE")
+          const codelistKey = item.dateType.key ?? null;
+          let value: string = item.date
+            ? new Date(item.date).toLocaleDateString("de-DE")
             : "";
           if (codelistKey != null) {
-            geoDatasetDoctype.codelistPipe
+            /*geoDatasetDoctype.codecodelistPipe
               .transform(codelistKey, "502")
               .subscribe((codelist) => {
                 value += " - " + codelist;
-              });
+              });*/
           }
           return of({
             value,
@@ -60,7 +60,7 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
         },
         description: (item) => {
           return of({
-            value: item["value"],
+            value: item.value,
             navigateTo: null,
           });
         },

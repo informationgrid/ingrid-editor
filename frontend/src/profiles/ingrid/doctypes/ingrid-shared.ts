@@ -32,9 +32,9 @@ import {
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
 import { CookieService } from "../../../app/services/cookie.service";
-import { AbstractControl, FormControl } from "@angular/forms";
+import { FormControl } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { firstValueFrom, Observable, of } from "rxjs";
+import { Observable, of } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
 import { HttpClient } from "@angular/common/http";
@@ -51,9 +51,8 @@ import {
   MetadataProps,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
 import { UploadService } from "../../../app/shared/upload/upload.service";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
-import { CodelistPipe } from "../../../app/directives/codelist.pipe";
 import { IgeError } from "../../../app/models/ige-error";
+import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -79,17 +78,8 @@ export abstract class IngridShared extends BaseDoctype {
   private keywordAnalysis = inject(KeywordAnalysis);
   private uploadService = inject(UploadService);
 
-  protected codelistQuery = inject(CodelistQuery);
+  protected codelistStore = inject(CodelistStore);
   protected codelistService = inject(CodelistService);
-  codelistPipe: CodelistPipe;
-
-  constructor() {
-    super();
-    this.codelistPipe = new CodelistPipe(
-      this.codelistQuery,
-      this.codelistService,
-    );
-  }
 
   options = {
     dynamicRequired: {
@@ -1542,35 +1532,33 @@ export abstract class IngridShared extends BaseDoctype {
         fields: [this.urlRefFields()],
         itemPreviewFields: {
           category: (item) => {
-            const codelistKey = item["type"]?.["key"] ?? null;
-            let value;
+            const codelistKey = item.type?.key ?? null;
             if (codelistKey != null) {
-              this.codelistPipe
-                .transform(codelistKey, "2000")
-                .subscribe((codelist) => {
-                  value = codelist;
-                });
+              const value = this.codelistStore.getCodelistEntryValueByKey(
+                "2000",
+                codelistKey,
+              );
+              return of({ value: value });
             }
-            return of({ value, navigateTo: null });
+            return of({ value: item.type?.value });
           },
           title: (item) => {
-            if (item["referenceType"] == "uuidRef") {
+            if (item.referenceType == "uuidRef") {
               return of({
                 value: item["title"],
-                navigateTo: { target: item["uuidRef"], internal: true },
+                navigateTo: { target: item.uuidRef, internal: true },
               });
             }
-            if (item["referenceType"] == "url") {
+            if (item.referenceType == "url") {
               return of({
-                value: item["title"],
+                value: item.title,
                 navigateTo: null,
               });
             }
           },
           subtitle: (item) =>
-            of({ value: item["url"], navigateTo: { target: item["url"] } }),
-          description: (item) =>
-            of({ value: item["explanation"], navigateTo: null }),
+            of({ value: item.url, navigateTo: { target: item["url"] } }),
+          description: (item) => of({ value: item.explanation }),
         },
         validators: {
           downloadLinkWhenOpenData: {

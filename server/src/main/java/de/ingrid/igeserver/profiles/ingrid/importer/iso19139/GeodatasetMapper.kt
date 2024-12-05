@@ -83,7 +83,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                             catalogId,
                             ResearchQuery(null, BoolFilter("AND", listOf("document_wrapper.type = 'InGridGeoDataset'", "deleted = 0", "state = 'PUBLISHED'", "data ->> 'identifier' = '$identifier'"), null, null, false)),
                         )
-                        return if (response.totalHits == 1) response.hits[0]._uuid else null
+                        return if (response.totalHits == 1) response.hits[0].uuid else null
                     }
                     val internalGeoDatasetUuid = getGeoDatasetUuid()
 
