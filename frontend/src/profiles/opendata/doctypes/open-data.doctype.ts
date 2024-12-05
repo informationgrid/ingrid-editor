@@ -100,7 +100,7 @@ export class OpenDataDoctype extends BaseDoctype {
           showSearch: true,
           asSelect: true,
           expressions: {
-            hide: (field: FormlyFieldConfig) => field.model.isHvd !== true,
+            hide: (field: FormlyFieldConfig) => field.model.hvd !== true,
           },
           options: this.getCodelistForSelect("hvdCategories", null),
           codelistId: "hvdCategories",
