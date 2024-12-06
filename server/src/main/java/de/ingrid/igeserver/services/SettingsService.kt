@@ -51,7 +51,7 @@ class SettingsService(
     }
 
     fun getConnectionConfig(id: String): WithId? {
-        return getIBusConfig().find { it.id!! == id } ?: getElasticConfig().find { it.id!! == id }
+        return getIBusConfig().find { it.id!! == id } ?: getElasticConfig().find { it.id!! == id } ?: getCSWTConfig().find { it.id!! == id }
     }
 
     fun setIBusConfig(config: List<IBusConfig>) {

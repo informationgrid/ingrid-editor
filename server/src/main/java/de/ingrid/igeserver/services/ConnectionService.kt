@@ -20,9 +20,11 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.index.CSWTIndexer
 import de.ingrid.igeserver.index.ElasticIndexer
 import de.ingrid.igeserver.index.IBusIndexer
 import de.ingrid.igeserver.index.IIndexManager
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWTConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
 import org.springframework.stereotype.Service
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Service
 class ConnectionService(
     private val iBusService: IBusService,
     private val elasticsearchService: ElasticsearchService,
+    private val cswtService: CSWTService,
     private val settingsService: SettingsService,
 ) {
     fun getIndexerForConnection(id: String): IIndexManager {
@@ -40,6 +43,7 @@ class ConnectionService(
                 connection.name,
                 elasticsearchService.getClient(id),
             )
+            is CSWTConfig -> CSWTIndexer(connection.name, cswtService.getClient(id))
             else -> throw ServerException.withReason("Unknown Connection-Config Class: ${connection?.javaClass}")
         }
     }
@@ -49,6 +53,8 @@ class ConnectionService(
             iBusService
         } else if (elasticsearchService.containsId(id)) {
             elasticsearchService
+        } else if (cswtService.containsId(id)) {
+            cswtService
         } else {
             throw ServerException.withReason("Connection-ID not found: $id")
         }
@@ -61,5 +67,6 @@ class ConnectionService(
     fun setupConnections() {
         iBusService.setupConnections()
         elasticsearchService.setupConnections()
+        cswtService.setupConnections()
     }
 }
