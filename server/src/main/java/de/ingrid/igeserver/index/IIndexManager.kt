@@ -20,8 +20,12 @@
 package de.ingrid.igeserver.index
 
 import de.ingrid.elasticsearch.IndexInfo
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.utils.ElasticDocument
 
+/**
+ * Interface representing a manager for handling index-related operations.
+ */
 interface IIndexManager {
     val name: String
 
@@ -46,4 +50,12 @@ interface IIndexManager {
     fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean)
 
     fun indexExists(indexName: String): Boolean
+
+    /**
+     * Retrieves a list of document categories (i.e. DATA or ADDRESS).
+     *
+     * @return a list of available document categories as defined in the DocumentCategory enum.
+     */
+    fun getCategories(): List<DocumentCategory>
+
 }

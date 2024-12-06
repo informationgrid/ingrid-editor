@@ -34,6 +34,7 @@ import com.jillesvangurp.searchdsls.querydsl.sort
 import com.jillesvangurp.searchdsls.querydsl.term
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.utils.ElasticDocument
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.logger
@@ -176,4 +177,9 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
     }
 
     override fun indexExists(indexName: String): Boolean = runBlocking { elastic.client.exists(indexName) }
+
+    override fun getCategories(): List<DocumentCategory> {
+        return listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
+    }
+
 }

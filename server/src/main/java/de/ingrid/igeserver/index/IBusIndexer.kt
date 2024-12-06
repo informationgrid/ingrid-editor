@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.index
 
 import de.ingrid.elasticsearch.IndexInfo
+import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.utils.ElasticDocument
 import de.ingrid.utils.IBus
 import de.ingrid.utils.IngridCall
@@ -153,4 +154,9 @@ class IBusIndexer(override val name: String, private val iBus: IBus) : IIndexMan
             return null
         }
     }
+
+    override fun getCategories(): List<DocumentCategory> {
+        return listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
+    }
+
 }
