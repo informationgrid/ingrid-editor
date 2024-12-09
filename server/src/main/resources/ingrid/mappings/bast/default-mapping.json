@@ -408,6 +408,10 @@
     "distributor": {
       "type": "keyword",
       "store": true
+    },
+    "topic_categories": {
+      "type": "keyword",
+      "store": true
     }
   }
 }
