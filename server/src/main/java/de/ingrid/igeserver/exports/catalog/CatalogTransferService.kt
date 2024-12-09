@@ -89,7 +89,8 @@ class CatalogTransferService(
             if (value == "null") {
                 "NULL"
             } else {
-                "'$value'"
+                // surround string with single quotes and escape single quotes in the string for SQL
+                "'${value.replace("'", "''")}'"
             }
         }
         is List<*> -> "'{${value.joinToString { transformValueForQuery(it) }}}'"
