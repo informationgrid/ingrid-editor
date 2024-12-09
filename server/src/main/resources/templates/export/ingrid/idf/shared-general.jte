@@ -864,6 +864,11 @@ ${contentInfo}
                                 <gmd:linkage>
                                     <gmd:URL>${serviceUrl.getUrl()}</gmd:URL>
                                 </gmd:linkage>
+                                @if (serviceUrl.getProtocol() != null)
+                                    <gmd:protocol>
+                                        <gmx:Anchor xlink:href="http://www.opengis.net/def/serviceType/ogc/${serviceUrl.getProtocol().getId()}">${serviceUrl.getProtocol().getLabel()}</gmx:Anchor>
+                                    </gmd:protocol>
+                                @endif
                                 @if(TransformationTools.hasValue(serviceUrl.getApplicationProfile()))
                                     <gmd:applicationProfile>
                                         <gco:CharacterString>${serviceUrl.getApplicationProfile()}</gco:CharacterString>

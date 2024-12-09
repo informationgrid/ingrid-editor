@@ -847,7 +847,7 @@ open class IngridModelTransformer(
 
         return getIncomingReferencesProxy(true)
             .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities" }
-            .map { ServiceUrl(it.objectName, it.serviceUrl ?: throw ServerException.withReason("Service URL is NULL"), null) }
+            .map { ServiceUrl(it.objectName, it.serviceUrl ?: throw ServerException.withReason("Service URL is NULL"), null, serviceType = it.serviceType, serviceversion = it.serviceVersion) }
     }
 
     private fun getGetCapabilitiesUrl(): List<ServiceUrl> = model.data.service.operations
