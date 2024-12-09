@@ -1,0 +1,21 @@
+{
+  "version": "0.XX",
+  "catalog": {
+    "id": 7,
+    "identifier": "existing_identifier",
+    "type": "ingrid",
+    "name": "existing_identifier_cat",
+    "description": null,
+    "created": "2023-01-12T10:19:24.025094Z",
+    "modified": "2023-01-12T10:19:24.068457Z",
+    "settings": "{\"config\": {\"partner\": null, \"provider\": null, \"elasticsearchAlias\": \"ingrid_cat\"}, \"indexCronPattern\": null}"
+  },
+  "behaviour": [],
+  "codelist": [],
+  "userInfo": [],
+  "query": [],
+  "documentWrapper": [],
+  "document": [],
+  "permissionGroup": [],
+  "userGroup": []
+}

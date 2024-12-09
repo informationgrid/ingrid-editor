@@ -19,7 +19,12 @@
  */
 package de.ingrid.igeserver.api
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.annotations.AuditLog
+import de.ingrid.igeserver.exports.catalog.CatalogExportService
+import de.ingrid.igeserver.imports.CatalogImportService
 import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.CatalogConfigRequest
 import de.ingrid.igeserver.model.ResearchPaging
@@ -28,11 +33,19 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.igeserver.utils.AuthUtils
+import jakarta.validation.Valid
+import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
+import org.springframework.http.HttpHeaders.CONTENT_DISPOSITION
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
+import java.text.SimpleDateFormat
 import java.util.*
 
 @RestController
@@ -41,6 +54,9 @@ class CatalogApiController(
     val catalogService: CatalogService,
     val documentService: DocumentService,
     val researchService: ResearchService,
+    val catalogImportService: CatalogImportService,
+    val catalogExportService: CatalogExportService,
+    val authUtils: AuthUtils,
 ) : CatalogApi {
 
     override fun catalogs(principal: Principal): ResponseEntity<List<Catalog>> {
@@ -116,6 +132,38 @@ class CatalogApiController(
     override fun deleteCatalog(name: String): ResponseEntity<Void> {
         catalogService.removeCatalog(name)
         return ResponseEntity.ok().build()
+    }
+
+    override fun catalogImport(
+        principal: Principal,
+        file: @Valid MultipartFile,
+    ): ResponseEntity<Unit> {
+        authUtils.isAdmin(principal).ifFalse {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .build()
+        }
+
+        catalogImportService.importCatalog(
+            jacksonObjectMapper().readValue(file.inputStream),
+        )
+        return ResponseEntity.ok().build()
+    }
+
+    override fun catalogExport(principal: Principal, catalogId: Int): ResponseEntity<ByteArray?> {
+        authUtils.isAdmin(principal).ifFalse {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .build()
+        }
+
+        val exportedTables = catalogExportService.exportCatalog(catalogId)
+        val mapper = jacksonObjectMapper()
+        mapper.registerModule(JavaTimeModule())
+        mapper.dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        val file = mapper.writeValueAsBytes(exportedTables)
+        return ResponseEntity.ok()
+            .header(CONTENT_DISPOSITION, "attachment;filename=catalogExport.json")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(file)
     }
 }
 
