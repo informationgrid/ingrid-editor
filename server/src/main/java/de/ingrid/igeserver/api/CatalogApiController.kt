@@ -149,17 +149,17 @@ class CatalogApiController(
         return ResponseEntity.ok().build()
     }
 
-    override fun catalogExport(principal: Principal, catalogId: Int): ResponseEntity<ByteArray?> {
+    override fun catalogExport(principal: Principal, catalogIdentifier: String): ResponseEntity<ByteArray?> {
         authUtils.isAdmin(principal).ifFalse {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .build()
         }
 
-        val exportedTables = catalogExportService.exportCatalog(catalogId)
+        val exportedTables = catalogExportService.exportCatalog(catalogIdentifier)
         val mapper = jacksonObjectMapper()
         mapper.registerModule(JavaTimeModule())
         mapper.dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        val file = mapper.writeValueAsBytes(exportedTables)
+        val file = mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(exportedTables)
         return ResponseEntity.ok()
             .header(CONTENT_DISPOSITION, "attachment;filename=catalogExport.json")
             .contentType(MediaType.APPLICATION_JSON)

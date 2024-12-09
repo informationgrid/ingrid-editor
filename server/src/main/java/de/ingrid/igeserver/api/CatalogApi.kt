@@ -105,9 +105,9 @@ interface CatalogApi {
         @Parameter(description = "The catalog to be imported.", required = true) @RequestBody file: @Valid MultipartFile,
     ): ResponseEntity<Unit>
 
-    @PostMapping(value = ["/catalogs/export/{id}"], produces = ["application/zip"])
+    @PostMapping(value = ["/catalogs/export/{identifier}"], produces = ["application/zip"])
     fun catalogExport(
         principal: Principal,
-        @Parameter(description = "The ID of the catalog.", required = true) @PathVariable("id") id: Int,
+        @Parameter(description = "The identifier of the catalog.", required = true) @PathVariable("identifier") id: String,
     ): ResponseEntity<ByteArray?>
 }

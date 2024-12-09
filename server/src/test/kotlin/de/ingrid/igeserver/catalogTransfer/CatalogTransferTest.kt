@@ -42,15 +42,15 @@ class CatalogTransferTest : ShouldSpec() {
     init {
         should("export catalog correctly") {
 
-            val exportedCatId = catalogInfo["id"] as Int
-            val exported = catalogExportService.exportCatalog(exportedCatId)
+            val exportedCatIdentifier = catalogInfo["identifier"] as String
+            val exported = catalogExportService.exportCatalog(exportedCatIdentifier)
             exported shouldBe expectedExportedCatalog
         }
 
         should("export catalog via api") {
 
-            val exportedCatId = catalogInfo["id"] as Int
-            val exported = catalogApiController.catalogExport(mockk(), exportedCatId).body as ByteArray
+            val exportedCatIdentifier = catalogInfo["identifier"] as String
+            val exported = catalogApiController.catalogExport(mockk(), exportedCatIdentifier).body as ByteArray
             // TODO: Compare to actual file
             // exported shouldBe getFile("export/catalog/testexport.json")
         }

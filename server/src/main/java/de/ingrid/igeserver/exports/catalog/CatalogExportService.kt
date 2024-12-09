@@ -30,9 +30,9 @@ class CatalogExportService(
     transactionManager: PlatformTransactionManager,
 ) : CatalogTransferService(entityManager, transactionManager) {
 
-    private fun exportCatalogTable(catalogId: Int): MutableMap<String?, Any?> = getQueryResultsAsMap(
+    private fun exportCatalogTable(catalogIdentifier: String): MutableMap<String?, Any?> = getQueryResultsAsMap(
         """
-        SELECT * FROM catalog WHERE id = '$catalogId';
+        SELECT * FROM catalog WHERE identifier = '$catalogIdentifier';
         """.trimIndent(),
     ).first()
 
@@ -77,12 +77,14 @@ class CatalogExportService(
         """.trimIndent(),
     )
 
-    fun exportCatalog(catalogId: Int): ExportedCatalog {
+    fun exportCatalog(catalogIdentifier: String): ExportedCatalog {
+        val catalog = exportCatalogTable(catalogIdentifier)
+        val catalogId = catalog["id"] as Int
         val userInfo = exportUserInfoTable(catalogId)
 
         return ExportedCatalog(
             version = getEditorVersion(),
-            catalog = exportCatalogTable(catalogId),
+            catalog = catalog,
             behaviour = exportBehaviourTable(catalogId),
             codelist = exportCodelistTable(catalogId),
             userInfo = userInfo,

@@ -56,6 +56,7 @@ class CatalogImportService(
 
         val userMigrationMap = importUserInfo(exportedCatalog.userInfo, catalogId)
         addCatalogUserInfo(catalogId, userMigrationMap.values)
+        // TODO: import new users to keycloak
 
         importQueries(exportedCatalog.query, catalogId, userMigrationMap)
 
