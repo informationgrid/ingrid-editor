@@ -2,7 +2,6 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.CoordinateType
 @import gg.jte.support.ForSupport
-@import java.util.List
 @import java.util.Map
 @import gg.jte.Content
 
@@ -340,7 +339,7 @@
     "spatial_ref_value.y2": ${page.getSpatialReferenceComponents(CoordinateType.Lat2)},
     "topic_categories": [
     @for(var entry : ForSupport.of(page.getTopicCategories()))
-        "${entry.get()}"@if (!entry.isLast()),@endif
+        "${page.handleContent(entry.get())}"@if (!entry.isLast()),@endif
     @endfor
     ],
 
