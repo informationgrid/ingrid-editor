@@ -20,6 +20,8 @@
 import { inject } from "@angular/core";
 import { Clipboard } from "@angular/cdk/clipboard";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { interval, Observable, of } from "rxjs";
+import { catchError, filter, map, take, timeout } from "rxjs/operators";
 
 interface IIsObject {
   (item: any): boolean;
@@ -136,4 +138,25 @@ export function isExpired(date: string, days: number): boolean {
 
 export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Waits for a condition to become true, checking every interval until a timeout.
+ * @param conditionFn A function that returns a boolean to indicate if the condition is true.
+ * @param intervalMs Interval to check the condition, in milliseconds (default is 100ms).
+ * @param timeoutMs Maximum time to wait for the condition, in milliseconds (default is 3000ms).
+ * @returns A Promise that resolves when the condition is true or rejects if the timeout is reached.
+ */
+export function waitForCondition(
+  conditionFn: () => boolean,
+  intervalMs = 100,
+  timeoutMs = 3000,
+): Observable<boolean> {
+  return interval(intervalMs).pipe(
+    filter(() => conditionFn()),
+    take(1), // Complete after the first time the condition is true
+    timeout(timeoutMs), // Throw an error if the timeout is reached
+    map(() => true),
+    catchError(() => of(false)),
+  );
 }

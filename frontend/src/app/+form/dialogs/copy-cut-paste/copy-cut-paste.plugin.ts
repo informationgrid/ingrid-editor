@@ -41,6 +41,7 @@ import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { waitForCondition } from "../../../services/utils";
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -139,51 +140,25 @@ export class CopyCutPastePlugin extends Plugin {
         docs.every((active) => active?.hasWritePermission),
       );
 
-      const parentWithChildrenSelected =
-        await this.checkForParentsWithSelectedChildren(ids);
-      this.toolbarService.setMenuItemStateOfButton(
-        "toolBtnCopy",
-        "COPYTREE",
-        parentWithChildrenSelected,
+      this.checkForParentsWithSelectedChildren(ids).subscribe(
+        (parentWithChildrenSelected) => {
+          this.toolbarService.setMenuItemStateOfButton(
+            "toolBtnCopy",
+            "COPYTREE",
+            parentWithChildrenSelected,
+          );
+        },
       );
     }
   }
 
-  private async checkForParentsWithSelectedChildren(
+  private checkForParentsWithSelectedChildren(
     data: number[],
-  ): Promise<boolean> {
-    return new Promise((resolve) => {
-      return this.checkForParentsWithSelectedChildrenLoop(data, resolve);
-    });
-  }
-
-  private checkForParentsWithSelectedChildrenLoop(
-    data: number[],
-    resolve,
-    tries = 10,
-  ) {
-    const allNodesLoaded = data.every((id) => this.getStore().entityMap()[id]);
-    if (allNodesLoaded) {
-      resolve(data.some((id) => this.getStore().entityMap()[id]._hasChildren));
-    } else {
-      if (tries === 0) {
-        console.warn("Node information could not be received from store");
-        resolve(false);
-      } else {
-        console.debug(
-          "Tree does not have node information yet. Waiting 200ms ...",
-        );
-        setTimeout(
-          () =>
-            this.checkForParentsWithSelectedChildrenLoop(
-              data,
-              resolve,
-              --tries,
-            ),
-          200,
-        );
-      }
-    }
+  ): Observable<boolean> {
+    return waitForCondition(
+      () => data.every((id) => this.getStore().entityMap()[id]),
+      200,
+    );
   }
 
   async copy(includeTree = false) {
