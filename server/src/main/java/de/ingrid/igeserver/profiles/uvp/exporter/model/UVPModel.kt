@@ -30,6 +30,7 @@ import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
@@ -95,7 +96,8 @@ data class UVPModel(
             ?.ref ?: return null
 
         val address = documentService?.getLastPublishedDocument(catalogId, ref)!!
-        val codelistTransformer = CodelistTransformer(codelistHandler!!, catalogId)
+        val catalogLanguage = catalogService?.getCatalogById(catalogId)?.settings?.config?.language ?: "de"
+        val codelistTransformer = CodelistTransformer(codelistHandler!!, catalogId, catalogLanguage)
         val addressTransformer =
             AddressModelTransformer(
                 AddressTransformerConfig(
@@ -192,6 +194,10 @@ data class UVPModel(
             SpringContext.getBean(CodelistHandler::class.java)
         }
 
+        val catalogService: CatalogService? by lazy {
+            SpringContext.getBean(CatalogService::class.java)
+        }
+
         val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
     }
 
@@ -215,11 +221,9 @@ data class UVPModel(
 
     fun hasPoBox(): Boolean = !pointOfContact?.poBox.isNullOrEmpty()
 
-    fun getUvpAddressParents(): List<DocumentData> =
-        if (pointOfContact!!.parentAddresses.isEmpty()) emptyList() else nonHiddenAncestorAddresses!!.dropLast(1)
+    fun getUvpAddressParents(): List<DocumentData> = if (pointOfContact!!.parentAddresses.isEmpty()) emptyList() else nonHiddenAncestorAddresses!!.dropLast(1)
 
-    fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> =
-        if (pointOfContact == null) emptyList() else nonHiddenAncestorAddresses!!.map { getAddressShort(it.document) }
+    fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> = if (pointOfContact == null) emptyList() else nonHiddenAncestorAddresses!!.map { getAddressShort(it.document) }
 
     fun getAddressShort(address: Document): AddressShort = if (address.data.getString("organization") == null) {
         AddressShort(address.uuid, getPersonStringFromJson(address))

@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.services.getCapabilities
 
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.Wfs200NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
@@ -28,11 +26,8 @@ import org.w3c.dom.Document
 /**
  * @author André Wallat
  */
-class Wfs200CapabilitiesParser(
-    codelistHandler: CodelistHandler,
-    private val researchService: ResearchService,
-    catalogId: String,
-) : GeneralCapabilitiesParser(XPathUtils(Wfs200NamespaceContext()), codelistHandler, catalogId),
+class Wfs200CapabilitiesParser(params: CapabilitiesParameter) :
+    GeneralCapabilitiesParser(XPathUtils(Wfs200NamespaceContext()), params),
     ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.1.0" to "1", "2.0" to "2", "2.0.0" to "2")
@@ -119,7 +114,7 @@ class Wfs200CapabilitiesParser(
         )
         if (getCapabilitiesOp.addressList?.isNotEmpty() == true) {
             getCapabilitiesOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
                 "GetCapabilities",
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
@@ -140,7 +135,7 @@ class Wfs200CapabilitiesParser(
         )
         if (describeFeatureTypeOp.addressList?.isNotEmpty() == true) {
             describeFeatureTypeOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "DescribeFeatureType", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "DescribeFeatureType", "de"),
                 "DescribeFeatureType",
             )
             describeFeatureTypeOp.methodCall = "DescribeFeatureType"
@@ -158,7 +153,7 @@ class Wfs200CapabilitiesParser(
         )
         if (getFeatureOp.addressList?.isNotEmpty() == true) {
             getFeatureOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetFeature", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "GetFeature", "de"),
                 "GetFeature",
             )
             getFeatureOp.methodCall = "GetFeature"
@@ -176,7 +171,7 @@ class Wfs200CapabilitiesParser(
         )
         if (getGmlObjectOp.addressList?.isNotEmpty() == true) {
             getGmlObjectOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetGmlObject", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "GetGmlObject", "de"),
                 "GetGmlObject",
             )
             getGmlObjectOp.methodCall = "GetGmlObject"
@@ -194,7 +189,7 @@ class Wfs200CapabilitiesParser(
         )
         if (lockFeatureOp.addressList?.isNotEmpty() == true) {
             lockFeatureOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "LockFeature", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "LockFeature", "de"),
                 "LockFeature",
             )
             lockFeatureOp.methodCall = "LockFeature"
@@ -212,7 +207,7 @@ class Wfs200CapabilitiesParser(
         )
         if (transactionOp.addressList?.isNotEmpty() == true) {
             transactionOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "Transaction", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "Transaction", "de"),
                 "Transaction",
             )
             transactionOp.methodCall = "Transaction"
@@ -275,7 +270,7 @@ class Wfs200CapabilitiesParser(
         )
 
         // try to find address in database and set the uuid if found
-        searchForAddress(researchService, catalogId, this)
+        searchForAddress(params.researchService, params.catalogId, this)
 
         street = xPathUtils.getString(
             doc,

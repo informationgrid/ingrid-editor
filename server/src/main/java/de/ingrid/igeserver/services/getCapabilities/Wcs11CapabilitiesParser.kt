@@ -19,39 +19,32 @@
  */
 package de.ingrid.igeserver.services.getCapabilities
 
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.Wcs11NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class Wcs11CapabilitiesParser(
-    codelistHandler: CodelistHandler,
-    private val researchService: ResearchService,
-    catalogId: String,
-) :
-    GeneralCapabilitiesParser(XPathUtils(Wcs11NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
+class Wcs11CapabilitiesParser(params: CapabilitiesParameter) :
+    GeneralCapabilitiesParser(XPathUtils(Wcs11NamespaceContext()), params),
+    ICapabilitiesParser {
 
-    override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        return CapabilitiesBean().apply {
-            serviceType = "WCS"
-            dataServiceType = "3" // download
-            title = xPathUtils.getString(doc, XPATH_EXP_WCS_TITLE)
-            description = xPathUtils.getString(doc, XPATH_EXP_WCS_ABSTRACT)
-            versions =
-                addOGCtoVersions(getNodesContentAsList(doc, XPATH_EXP_WCS_VERSION))
-            fees = getKeyValueForPath(doc, XPATH_EXP_WCS_FEES, "6500")
-            accessConstraints =
-                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WCS_ACCESS_CONSTRAINTS))
-            onlineResources =
-                getOnlineResources(doc, XPATH_EXP_WCS_ONLINE_RESOURCE)
+    override fun getCapabilitiesData(doc: Document): CapabilitiesBean = CapabilitiesBean().apply {
+        serviceType = "WCS"
+        dataServiceType = "3" // download
+        title = xPathUtils.getString(doc, XPATH_EXP_WCS_TITLE)
+        description = xPathUtils.getString(doc, XPATH_EXP_WCS_ABSTRACT)
+        versions =
+            addOGCtoVersions(getNodesContentAsList(doc, XPATH_EXP_WCS_VERSION))
+        fees = getKeyValueForPath(doc, XPATH_EXP_WCS_FEES, "6500")
+        accessConstraints =
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WCS_ACCESS_CONSTRAINTS))
+        onlineResources =
+            getOnlineResources(doc, XPATH_EXP_WCS_ONLINE_RESOURCE)
 
-            // TODO: Resource Locator / Type
-            // ...
-            keywords = getKeywords(doc, XPATH_EXP_WCS_KEYWORDS).toMutableList()
-            address = getAddress(doc)
-            operations = getOperations(doc)
-        }
+        // TODO: Resource Locator / Type
+        // ...
+        keywords = getKeywords(doc, XPATH_EXP_WCS_KEYWORDS).toMutableList()
+        address = getAddress(doc)
+        operations = getOperations(doc)
     }
 
     private fun getOperations(doc: Document): List<OperationBean> {
@@ -69,7 +62,7 @@ class Wcs11CapabilitiesParser(
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
                 "GetCapabilities",
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
@@ -88,7 +81,7 @@ class Wcs11CapabilitiesParser(
         )
         if (describeCoverageOp.addressList!!.isNotEmpty()) {
             describeCoverageOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "DescribeCoverage", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "DescribeCoverage", "de"),
                 "DescribeCoverage",
             )
             describeCoverageOp.methodCall = "DescribeCoverage"
@@ -107,7 +100,7 @@ class Wcs11CapabilitiesParser(
         )
         if (getCoverageOp.addressList!!.isNotEmpty()) {
             getCoverageOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetCoverage", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "GetCoverage", "de"),
                 "GetCoverage",
             )
             getCoverageOp.methodCall = "GetCoverage"
@@ -136,7 +129,7 @@ class Wcs11CapabilitiesParser(
         )
 
         // try to find address in database and set the uuid if found
-        searchForAddress(researchService, catalogId, address)
+        searchForAddress(params.researchService, params.catalogId, address)
 
         address.street = xPathUtils.getString(
             doc,

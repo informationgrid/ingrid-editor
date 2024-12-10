@@ -19,38 +19,31 @@
  */
 package de.ingrid.igeserver.services.getCapabilities
 
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.Csw202NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class CswCapabilitiesParser(
-    codelistHandler: CodelistHandler,
-    private val researchService: ResearchService,
-    catalogId: String,
-) :
-    GeneralCapabilitiesParser(XPathUtils(Csw202NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
+class CswCapabilitiesParser(params: CapabilitiesParameter) :
+    GeneralCapabilitiesParser(XPathUtils(Csw202NamespaceContext()), params),
+    ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("2.0.2" to "1")
 
-    override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        return CapabilitiesBean().apply {
-            serviceType = "CSW"
-            dataServiceType = "1" // discovery
-            title = xPathUtils.getString(doc, XPATH_EXP_CSW_TITLE)
-            description = xPathUtils.getString(doc, XPATH_EXP_CSW_ABSTRACT)
-            val versionList = getNodesContentAsList(doc, XPATH_EXP_CSW_VERSION)
-            versions = mapVersionsFromCodelist("5151", versionList, versionSyslistMap)
-            fees = getKeyValueForPath(doc, XPATH_EXP_CSW_FEES, "6500")
-            accessConstraints =
-                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_CSW_ACCESS_CONSTRAINTS))
-            onlineResources = getOnlineResources(doc, XPATH_EXP_CSW_ONLINE_RESOURCE)
-            addExtendedCapabilities(this, doc, XPATH_EXP_CSW_EXTENDED_CAPABILITIES)
-            keywords.addAll(getKeywords(doc, XPATH_EXP_CSW_KEYWORDS))
-            address = getAddress(doc)
-            operations = getOperations(doc)
-        }
+    override fun getCapabilitiesData(doc: Document): CapabilitiesBean = CapabilitiesBean().apply {
+        serviceType = "CSW"
+        dataServiceType = "1" // discovery
+        title = xPathUtils.getString(doc, XPATH_EXP_CSW_TITLE)
+        description = xPathUtils.getString(doc, XPATH_EXP_CSW_ABSTRACT)
+        val versionList = getNodesContentAsList(doc, XPATH_EXP_CSW_VERSION)
+        versions = mapVersionsFromCodelist("5151", versionList, versionSyslistMap)
+        fees = getKeyValueForPath(doc, XPATH_EXP_CSW_FEES, "6500")
+        accessConstraints =
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_CSW_ACCESS_CONSTRAINTS))
+        onlineResources = getOnlineResources(doc, XPATH_EXP_CSW_ONLINE_RESOURCE)
+        addExtendedCapabilities(this, doc, XPATH_EXP_CSW_EXTENDED_CAPABILITIES)
+        keywords.addAll(getKeywords(doc, XPATH_EXP_CSW_KEYWORDS))
+        address = getAddress(doc)
+        operations = getOperations(doc)
     }
 
     private fun getOperations(doc: Document): List<OperationBean> {
@@ -71,7 +64,7 @@ class CswCapabilitiesParser(
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5105", "GetCapabilities", "de"),
+                params.codelistHandler.getCodeListEntryId("5105", "GetCapabilities", "de"),
                 "GetCapabilities",
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
@@ -93,7 +86,7 @@ class CswCapabilitiesParser(
         )
         if (describeRecordOp.addressList!!.isNotEmpty()) {
             describeRecordOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5105", "DescribeRecord", "de"),
+                params.codelistHandler.getCodeListEntryId("5105", "DescribeRecord", "de"),
                 "DescribeRecord",
             )
             describeRecordOp.methodCall = "DescribeRecord"
@@ -115,7 +108,7 @@ class CswCapabilitiesParser(
         )
         if (getDomainOp.addressList!!.isNotEmpty()) {
             getDomainOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5105", "GetDomain", "de"),
+                params.codelistHandler.getCodeListEntryId("5105", "GetDomain", "de"),
                 "GetDomain",
             )
             getDomainOp.methodCall = "GetDomain"
@@ -137,7 +130,7 @@ class CswCapabilitiesParser(
         )
         if (getRecordsOp.addressList!!.isNotEmpty()) {
             getRecordsOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5105", "GetRecords", "de"),
+                params.codelistHandler.getCodeListEntryId("5105", "GetRecords", "de"),
                 "GetRecords",
             )
             getRecordsOp.methodCall = "GetRecords"
@@ -159,7 +152,7 @@ class CswCapabilitiesParser(
         )
         if (getRecordByIdOp.addressList!!.isNotEmpty()) {
             getRecordByIdOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5105", "GetRecordById", "de"),
+                params.codelistHandler.getCodeListEntryId("5105", "GetRecordById", "de"),
                 "GetRecordById",
             )
             getRecordByIdOp.methodCall = "GetRecordById"
@@ -181,7 +174,7 @@ class CswCapabilitiesParser(
         )
         if (harvestOp.addressList!!.isNotEmpty()) {
             harvestOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5105", "Harvest", "de"),
+                params.codelistHandler.getCodeListEntryId("5105", "Harvest", "de"),
                 "Harvest",
             )
             harvestOp.methodCall = "Harvest"
@@ -210,7 +203,7 @@ class CswCapabilitiesParser(
         )
 
         // try to find address in database and set the uuid if found
-        searchForAddress(researchService, catalogId, address)
+        searchForAddress(params.researchService, params.catalogId, address)
 
         address.street = xPathUtils.getString(
             doc,
