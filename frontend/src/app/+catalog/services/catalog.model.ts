@@ -42,4 +42,5 @@ export interface CatalogSettingsConfig {
   elasticsearchAlias: string;
   spatialReference: any;
   codelistFavorites: { [x: string]: string[] };
+  language: string;
 }

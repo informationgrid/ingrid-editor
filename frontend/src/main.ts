@@ -141,6 +141,7 @@ import { MetadataTypeComponent } from "./app/formly/types/metadata-type/metadata
 import { MatDatepickerIntl } from "@angular/material/datepicker";
 import { GermanDateIntl } from "./app/services/german-date.intl";
 import { RadioOptionsComponent } from "./app/formly/types/radio-options/radio-options.component";
+import { GeneralStore } from "./app/store/general.store";
 
 if (environment.production) {
   enableProdMode();
@@ -382,6 +383,7 @@ bootstrapApplication(AppComponent, {
         HttpClient,
         MatDialog,
         TranslocoService,
+        GeneralStore,
       ],
       multi: true,
     },

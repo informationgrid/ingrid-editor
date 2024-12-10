@@ -26,7 +26,7 @@ import {
   CodelistEntry,
   CodelistEntryBackend,
 } from "../../store/codelist/codelist.model";
-import { Observable, Subject, throwError } from "rxjs";
+import { combineLatest, Observable, Subject, throwError } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   catchError,
@@ -85,6 +85,7 @@ export class CodelistService {
   private generalStore = inject(GeneralStore);
 
   private codelistStore$ = toObservable(this.store.entityMap);
+  private catalogLanguage$ = toObservable(this.generalStore.catalogLanguage);
 
   private requestedCodelists = new Subject<string[]>();
 
@@ -301,8 +302,13 @@ export class CodelistService {
     codelistId: string,
     sortBy: CodelistSort = "label",
   ): Observable<SelectOptionUi[]> {
-    return this.observeRaw(codelistId).pipe(
-      map((codelist) => CodelistService.mapToSelect(codelist, "de", sortBy)),
+    return combineLatest([
+      this.observeRaw(codelistId),
+      this.catalogLanguage$,
+    ]).pipe(
+      map(([codelist, language]) =>
+        CodelistService.mapToSelect(codelist, language, sortBy),
+      ),
     );
   }
 

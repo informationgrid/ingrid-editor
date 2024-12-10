@@ -50,6 +50,7 @@ data class CatalogConfig(
     var spatialReference: Any? = null,
     val expiredDatasetConfig: ExpiredDatasetConfig? = null,
     var codelistFavorites: MutableMap<String, List<String>>? = null,
+    val language: String? = null,
 )
 
 data class ExpiredDatasetConfig(
