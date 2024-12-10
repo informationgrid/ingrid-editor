@@ -30,7 +30,7 @@ import {
 } from "./paste-dialog.component";
 import { Observable } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
-import { delay, filter, switchMap, tap } from "rxjs/operators";
+import { delay, filter, map, switchMap, tap } from "rxjs/operators";
 import { ConfigService } from "../../../services/config/config.service";
 import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
@@ -155,10 +155,17 @@ export class CopyCutPastePlugin extends Plugin {
   private checkForParentsWithSelectedChildren(
     data: number[],
   ): Observable<boolean> {
-    return waitForCondition(
-      () => data.every((id) => this.getStore().entityMap()[id]),
-      200,
+    return waitForCondition(this.treeNodesLoaded(data), 200).pipe(
+      map(() => this.atLeastOneWithChildren(data)),
     );
+  }
+
+  private atLeastOneWithChildren(data: number[]) {
+    return data.some((id) => this.getStore().entityMap()[id]._hasChildren);
+  }
+
+  private treeNodesLoaded(data: number[]) {
+    return () => data.every((id) => this.getStore().entityMap()[id]);
   }
 
   async copy(includeTree = false) {
