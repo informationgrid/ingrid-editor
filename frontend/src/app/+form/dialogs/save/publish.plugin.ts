@@ -171,27 +171,34 @@ export class PublishPlugin extends SaveBase {
 
     const validation: BeforePublishData = { errors: [] };
     this.docEvents.sendBeforePublish(validation);
-    return this.formStateService.getForm().statusChanges.pipe(
-      filter((state) => state !== "PENDING"),
-      take(1),
-      map(() => {
-        const formIsInvalid = this.formStateService.getForm().invalid;
-        const allParentsPublished = this.checkForAllParentsPublished();
-        const hasOtherErrors = validation.errors.length > 0;
+    if (this.formStateService.getForm().status !== "PENDING") {
+      return of(this.doValidation(validation));
+    } else {
+      // wait for async validators
+      return this.formStateService.getForm().statusChanges.pipe(
+        filter((state) => state !== "PENDING"),
+        take(1),
+        map(() => this.doValidation(validation)),
+      );
+    }
+  }
 
-        if (!allParentsPublished) {
-          this.modalService.showJavascriptError(
-            "Es müssen alle übergeordnete Datensätze veröffentlicht sein, bevor dieser ebenfalls veröffentlicht werden kann.",
-          );
-          return false;
-        }
-        if (formIsInvalid || hasOtherErrors) {
-          this.showErrorDialog(hasOtherErrors, validation);
-          return false;
-        }
-        return true;
-      }),
-    );
+  private doValidation(validation: BeforePublishData) {
+    const formIsInvalid = this.formStateService.getForm().invalid;
+    const allParentsPublished = this.checkForAllParentsPublished();
+    const hasOtherErrors = validation.errors.length > 0;
+
+    if (!allParentsPublished) {
+      this.modalService.showJavascriptError(
+        "Es müssen alle übergeordnete Datensätze veröffentlicht sein, bevor dieser ebenfalls veröffentlicht werden kann.",
+      );
+      return false;
+    }
+    if (formIsInvalid || hasOtherErrors) {
+      this.showErrorDialog(hasOtherErrors, validation);
+      return false;
+    }
+    return true;
   }
 
   private showErrorDialog(
