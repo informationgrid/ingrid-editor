@@ -19,6 +19,7 @@
  */
 import {
   Component,
+  computed,
   Inject,
   OnDestroy,
   OnInit,
@@ -65,7 +66,7 @@ export interface LinkInfo {
 })
 export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   chosenFiles: TransfersWithErrorInfo[] = [];
-  targetUrl: string;
+  targetUrl: WritableSignal<string> = signal("");
   docUuid = null;
   uploadComplete = false;
   allowedUploadTypes: string[];
@@ -75,6 +76,10 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   extractZipFiles = false;
   extractInProgress = false;
   infoText;
+  multiple: WritableSignal<boolean> = signal(true);
+  dialogTitle = computed(() =>
+    this.multiple() ? "Datei(en) hochladen" : "Datei hochladen",
+  );
   enableFileUploadOverride: WritableSignal<boolean> = signal(true);
   enableFileUploadReuse: WritableSignal<boolean> = signal(true);
   enableFileUploadRename: WritableSignal<boolean> = signal(true);
@@ -97,15 +102,20 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
       enableFileUploadOverride?: boolean;
       enableFileUploadReuse?: boolean;
       enableFileUploadRename?: boolean;
+      multiple?: boolean;
+      targetUrl?: string;
     },
   ) {
-    this.docUuid = formStateService.metadata().uuid;
-    this.targetUrl = `${configService.getConfiguration().backendUrl}upload/${
-      this.docUuid
-    }`;
+    this.docUuid = formStateService.metadata()?.uuid;
+    this.targetUrl.set(
+      data.targetUrl ??
+        `${configService.getConfiguration().backendUrl}upload/${this.docUuid}`,
+    );
+
     this.allowedUploadTypes = data.allowedUploadTypes;
     this.hasExtractZipOption = data.hasExtractZipOption;
     this.infoText = data.infoText;
+    this.multiple.set(data.multiple ?? true);
     this.enableFileUploadOverride.set(data.enableFileUploadOverride ?? true);
     this.enableFileUploadReuse.set(data.enableFileUploadReuse ?? true);
     this.enableFileUploadRename.set(data.enableFileUploadRename ?? true);
