@@ -71,9 +71,14 @@ class CatalogExportService(
         catalogId,
     )
 
-    private fun exportUserGroupTable(userInfo: List<MutableMap<String?, Any?>>) = getQueryResultsAsMap(
+    private fun exportUserGroupTable(
+        userInfo: List<MutableMap<String?, Any?>>,
+        permissionGroup: List<MutableMap<String?, Any?>>,
+    ) = getQueryResultsAsMap(
         """
-        SELECT * FROM user_group WHERE user_info_id IN (${userInfo.joinToString { it["id"].toString() }});
+        SELECT * FROM user_group 
+        WHERE user_info_id IN (${userInfo.joinToString { it["id"].toString() }})
+        AND group_id in (${permissionGroup.joinToString { it["id"].toString() }});
         """.trimIndent(),
     )
 
@@ -81,6 +86,7 @@ class CatalogExportService(
         val catalog = exportCatalogTable(catalogIdentifier)
         val catalogId = catalog["id"] as Int
         val userInfo = exportUserInfoTable(catalogId)
+        val permissionGroup = exportPermissionGroupTable(catalogId)
 
         return ExportedCatalog(
             version = getEditorVersion(),
@@ -91,8 +97,8 @@ class CatalogExportService(
             query = exportQueryTable(catalogId),
             documentWrapper = exportDocumentWrapperTable(catalogId),
             document = exportDocumentTable(catalogId),
-            permissionGroup = exportPermissionGroupTable(catalogId),
-            userGroup = exportUserGroupTable(userInfo),
+            permissionGroup = permissionGroup,
+            userGroup = exportUserGroupTable(userInfo, permissionGroup),
         )
     }
 }

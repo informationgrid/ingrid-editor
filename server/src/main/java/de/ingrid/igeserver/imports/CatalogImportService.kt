@@ -292,7 +292,6 @@ class CatalogImportService(
         userMigrationMap: Map<Int, Int>,
     ) {
         userGroups.forEach { row ->
-            row.remove("id")
             row["user_info_id"] = userMigrationMap[row["user_info_id"] as Int]
             row["group_id"] = groupMigrationMap[row["group_id"] as Int]
         }
