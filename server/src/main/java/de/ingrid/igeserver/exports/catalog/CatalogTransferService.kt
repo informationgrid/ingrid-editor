@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.exports.catalog
 
+import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Query
@@ -26,7 +27,6 @@ import jakarta.persistence.Tuple
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
-import kotlin.collections.associate
 
 @Service
 class CatalogTransferService(
@@ -136,5 +136,6 @@ class CatalogTransferService(
         var document: List<MutableMap<String?, Any?>>,
         val permissionGroup: List<MutableMap<String?, Any?>>,
         val userGroup: List<MutableMap<String?, Any?>>,
+        val users: List<User>,
     )
 }

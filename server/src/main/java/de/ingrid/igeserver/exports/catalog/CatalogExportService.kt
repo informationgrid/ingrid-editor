@@ -19,15 +19,16 @@
  */
 package de.ingrid.igeserver.exports.catalog
 
+import de.ingrid.igeserver.services.CatalogService
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
-import kotlin.collections.first
 
 @Service
 class CatalogExportService(
     entityManager: EntityManager,
     transactionManager: PlatformTransactionManager,
+    val catalogService: CatalogService,
 ) : CatalogTransferService(entityManager, transactionManager) {
 
     private fun exportCatalogTable(catalogIdentifier: String): MutableMap<String?, Any?> = getQueryResultsAsMap(
@@ -82,6 +83,8 @@ class CatalogExportService(
         """.trimIndent(),
     )
 
+    private fun exportUsers(catalogIdentifier: String) = catalogService.getAllCatalogUsers(catalogIdentifier)
+
     fun exportCatalog(catalogIdentifier: String): ExportedCatalog {
         val catalog = exportCatalogTable(catalogIdentifier)
         val catalogId = catalog["id"] as Int
@@ -99,6 +102,7 @@ class CatalogExportService(
             document = exportDocumentTable(catalogId),
             permissionGroup = permissionGroup,
             userGroup = exportUserGroupTable(userInfo, permissionGroup),
+            users = exportUsers(catalogIdentifier),
         )
     }
 }

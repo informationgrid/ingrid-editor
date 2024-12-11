@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.catalogTransfer
 
 import de.ingrid.igeserver.exports.catalog.CatalogTransferService.ExportedCatalog
+import de.ingrid.igeserver.model.User
 import kotlinx.datetime.Instant
 
 val catalogInfo =
@@ -229,6 +230,42 @@ val createdCatalogAnswer = listOf(
     ),
 )
 
+val users = listOf<User>(
+    User(
+        login = "testUser1",
+        firstName = "firstName",
+        lastName = "lastName",
+        email = "email",
+        phoneNumber = "phoneNumber",
+        organisation = "organisation",
+        department = "department",
+        latestLogin = null,
+        fromLdap = false,
+    ),
+    User(
+        login = "testUser2",
+        firstName = "firstName",
+        lastName = "lastName",
+        email = "email",
+        phoneNumber = "phoneNumber",
+        organisation = "organisation",
+        department = "department",
+        latestLogin = null,
+        fromLdap = false,
+    ),
+    User(
+        login = "testUser3",
+        firstName = "firstName",
+        lastName = "lastName",
+        email = "email",
+        phoneNumber = "phoneNumber",
+        organisation = "organisation",
+        department = "department",
+        latestLogin = null,
+        fromLdap = false,
+    ),
+)
+
 private const val DB_VERSION = "0.XX"
 
 val expectedExportedCatalog = ExportedCatalog(
@@ -242,4 +279,5 @@ val expectedExportedCatalog = ExportedCatalog(
     document,
     permissionGroup,
     userGroup,
+    users,
 )

@@ -24,19 +24,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.exports.catalog.CatalogTransferService
+import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.model.meta.PermissionsData
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
+import de.ingrid.igeserver.services.KeycloakService
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
-import kotlin.collections.associate
-import kotlin.collections.first
-import kotlin.collections.forEach
-import kotlin.collections.joinToString
 
 @Service
 class CatalogImportService(
@@ -44,6 +42,7 @@ class CatalogImportService(
     transactionManager: PlatformTransactionManager,
     val groupService: GroupService,
     val catalogService: CatalogService,
+    val keycloakService: KeycloakService,
 ) : CatalogTransferService(entityManager, transactionManager) {
     private val log = logger()
 
@@ -55,9 +54,8 @@ class CatalogImportService(
         importBehaviours(exportedCatalog.behaviour, catalogId)
         importCodelists(exportedCatalog.codelist, catalogId)
 
-        val userMigrationMap = importUserInfo(exportedCatalog.userInfo, catalogId)
+        val userMigrationMap = importUsers(exportedCatalog.users, exportedCatalog.userInfo, catalogId)
         addCatalogUserInfo(catalogId, userMigrationMap.values)
-        // TODO: import new users to keycloak
 
         importQueries(exportedCatalog.query, catalogId, userMigrationMap)
 
@@ -109,7 +107,7 @@ class CatalogImportService(
         importToTable("codelist", codelists)
     }
 
-    private fun importUserInfo(userInfo: List<MutableMap<String?, Any?>>, catalogId: Int): Map<Int, Int> {
+    private fun importUsers(users: List<User>, userInfo: List<MutableMap<String?, Any?>>, catalogId: Int): Map<Int, Int> {
         val idMigrationMap = mutableMapOf<Int, Int>()
         val exportedUserIds = mutableMapOf<String, Int>()
         val currentUserIds: Map<String, Int> = getCurrentUsers()
@@ -128,10 +126,9 @@ class CatalogImportService(
                 newUserData += row
             }
         }
-
-        val createdUsers = importNewUsers(catalogId, newUserData)
+        val createdUsers = importNewUsers(catalogId, newUserData, users.filterNot { user -> currentUserIds.contains(user.login) })
         // map the exported user ids to the new user ids
-        createdUsers.forEach { (username, id) -> idMigrationMap.plus(exportedUserIds[username]!! to id) }
+        createdUsers.forEach { (username, id) -> idMigrationMap.put(exportedUserIds[username]!!, id) }
 
         return idMigrationMap
     }
@@ -315,11 +312,29 @@ class CatalogImportService(
         return importToTableReturningId("catalog", listOf(data)).first()
     }
 
-    private fun importNewUsers(newCatalogId: Int, newUserdata: List<MutableMap<String?, Any?>>): Map<String, Int> {
+    private fun importNewUsers(newCatalogId: Int, newUserdata: List<MutableMap<String?, Any?>>, newUsers: List<User>): Map<String, Int> {
         if (newUserdata.isEmpty()) {
             log.warn("No new users to import")
             return emptyMap()
         }
+
+        log.info("Importing ${newUserdata.size} new users...")
+        importUsersToKeycloak(newUsers)
+        log.info("Imported new users to Keycloak")
+        val userMigrationMap = importUsersToDB(newCatalogId, newUserdata)
+        log.info("Imported new users to DB")
+        return userMigrationMap
+    }
+
+    private fun importUsersToKeycloak(users: List<User>) = users.forEach {
+        try {
+            keycloakService.createUser(it)
+        } catch (e: Exception) {
+            log.error("Error while importing user ${it.login} to Keycloak", e)
+        }
+    }
+
+    private fun importUsersToDB(newCatalogId: Int, newUserdata: List<MutableMap<String?, Any?>>): Map<String, Int> {
         newUserdata.forEach { row ->
             {
                 row.remove("id")

@@ -29,8 +29,8 @@ class CatalogTransferTest : ShouldSpec() {
     private val transactionManager = mockk<PlatformTransactionManager>(relaxed = true)
     private val groupService = mockk<GroupService>(relaxed = true)
     private val catalogService = mockk<CatalogService>(relaxed = true)
-    private val catalogImportService = CatalogImportService(entityManager, transactionManager, groupService, catalogService)
-    private val catalogExportService = CatalogExportService(entityManager, transactionManager)
+    private val catalogImportService = CatalogImportService(entityManager, transactionManager, groupService, catalogService, mockk())
+    private val catalogExportService = CatalogExportService(entityManager, transactionManager, catalogService)
     private val authUtils = mockk<AuthUtils>(relaxed = true)
     private val catalogApiController = CatalogApiController(catalogService, mockk(), mockk(), catalogImportService, catalogExportService, authUtils)
 
@@ -38,6 +38,7 @@ class CatalogTransferTest : ShouldSpec() {
         clearAllMocks()
         mockEntityManagerTupleResults(entityManager)
         every { authUtils.isSuperAdmin(any()) } returns true
+        every { catalogService.getAllCatalogUsers(any<String>()) } returns users
     }
 
     init {
@@ -61,7 +62,7 @@ class CatalogTransferTest : ShouldSpec() {
             val data = jacksonObjectMapper().readValue<ExportedCatalog>(file)
 
             catalogImportService.importCatalog(data)
-            verify(exactly = 5) { entityManager.createNativeQuery(any<String>()).executeUpdate() }
+            verify(exactly = 6) { entityManager.createNativeQuery(any<String>()).executeUpdate() }
         }
 
         should("not import catalog with wrong version") {
