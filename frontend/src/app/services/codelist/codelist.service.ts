@@ -103,7 +103,10 @@ export class CodelistService {
     const items = codelist.entries.map(
       (entry) =>
         ({
-          label: entry.fields[language] ?? entry.fields["name"],
+          label:
+            entry.fields[language] ??
+            entry.fields["de"] ??
+            entry.fields["name"],
           value: entry.id,
           sortkey: entry.fields["sortkey"],
         }) as SelectOptionUi,

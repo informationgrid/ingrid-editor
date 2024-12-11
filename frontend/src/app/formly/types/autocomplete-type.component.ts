@@ -146,7 +146,7 @@ export class AutocompleteTypeComponent
 
     return this.parameterOptions
       ? this.parameterOptions.filter((option) =>
-          option.value.toLowerCase().includes(filterValue),
+          option.value?.toLowerCase()?.includes(filterValue),
         )
       : [];
   }
