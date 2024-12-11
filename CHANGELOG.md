@@ -1,5 +1,11 @@
 # Changelog
 
+## 7.3.5 (11.12.2024)
+
+### Features
+
+- AdV-MIS: Dopplung der HVD-Kategorie in Detailbeschreibung (#6988)
+
 ## 7.3.4 (26.11.2024)
 
 ### Bugfixes
