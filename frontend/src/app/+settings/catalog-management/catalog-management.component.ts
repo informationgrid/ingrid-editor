@@ -38,10 +38,14 @@ import { DatePipe, DecimalPipe, NgTemplateOutlet } from "@angular/common";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatCard, MatCardContent } from "@angular/material/card";
 import { MatIcon } from "@angular/material/icon";
-import { MatIconButton } from "@angular/material/button";
+import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { CatalogStore } from "../../store/catalog/catalog.store";
+import {
+  LinkInfo,
+  UploadFilesDialogComponent,
+} from "../../formly/types/table/upload-files-dialog/upload-files-dialog.component";
 
 @Component({
   selector: "ige-catalog-management",
@@ -63,6 +67,7 @@ import { CatalogStore } from "../../store/catalog/catalog.store";
     MatMenuItem,
     DecimalPipe,
     DatePipe,
+    MatButton,
   ],
 })
 export class CatalogManagementComponent implements OnInit {
@@ -121,6 +126,22 @@ export class CatalogManagementComponent implements OnInit {
       .subscribe((catalog: Catalog) => this.createCatalog(catalog));
   }
 
+  showImportDialog() {
+    this.dialog
+      .open(UploadFilesDialogComponent, {
+        minWidth: "min(700px, 100%)",
+        data: {
+          targetUrl: `${this.configService.getConfiguration().backendUrl}catalogs/import`,
+          multiple: false,
+        },
+      })
+      .afterClosed()
+      .pipe(filter((result) => result !== undefined))
+      .subscribe((files: LinkInfo[]) => {
+        // TODO: Switch to new Catalog and/or reload Catalogs
+      });
+  }
+
   private createCatalog(catalog: Catalog) {
     this.showSpinner = true;
     this.catalogService
@@ -158,6 +179,10 @@ export class CatalogManagementComponent implements OnInit {
     this.catalogService.switchCatalog(id);
   }
 
+  exportCatalog(id: string) {
+    this.catalogService.exportCatalog(id);
+  }
+
   showCatalogDetail(catalog: Catalog) {
     this.dialog
       .open(CatalogDetailComponent, {
@@ -185,4 +210,6 @@ export class CatalogManagementComponent implements OnInit {
         `Unbekannt: ${catalog.type}`,
     };
   }
+
+  protected readonly ConfigService = ConfigService;
 }

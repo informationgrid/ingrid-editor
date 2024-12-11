@@ -9,6 +9,11 @@
                     (add)="showCreateCatalogDialog()"
                 ></ige-add-button>
             </div>
+            <div>
+                <button mat-flat-button (click)="showImportDialog()">
+                    Importieren
+                </button>
+            </div>
         }
         @if (noAssignedCatalogs) {
             <p>
@@ -75,10 +80,14 @@
                         <button mat-menu-item (click)="chooseCatalog(cat.id)">
                             Aktivieren
                         </button>
+                        <button mat-menu-item (click)="exportCatalog(cat.id)">
+                            Exportieren
+                        </button>
                     </mat-menu>
                 </div>
 
                 <div class="title">{{ cat.label }}</div>
+                <div class="subtitle">{{ cat.id }}</div>
                 @if (cat.lastDocModification) {
                     <div class="subtitle">
                         Letzte Änderung am

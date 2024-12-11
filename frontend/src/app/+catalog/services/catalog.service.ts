@@ -25,7 +25,7 @@ import {
 import { Observable } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { CatalogDataService } from "./catalog-data.service";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpResponse } from "@angular/common/http";
 import { Catalog } from "./catalog.model";
 import { CatalogStore } from "../../store/catalog/catalog.store";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -103,6 +103,26 @@ export class CatalogService {
         CatalogService.prepareForBackend(catalog),
       )
       .pipe(tap(() => this.getCatalogs().subscribe()));
+  }
+
+  exportCatalog(id: string) {
+    this.http
+      .post(this.configuration.backendUrl + `catalogs/export/${id}`, null, {
+        responseType: "blob",
+        observe: "response",
+      })
+      .pipe(
+        tap((response: HttpResponse<Blob>) => {
+          const downloadLink = document.createElement("a");
+          downloadLink.href = window.URL.createObjectURL(response.body);
+          downloadLink.setAttribute("download", "testexport.json");
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          downloadLink.remove();
+        }),
+        map((): void => null),
+      )
+      .subscribe();
   }
 
   setCatalogAdmin(catalogName: string, userIds: string[]) {
