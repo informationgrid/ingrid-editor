@@ -24,6 +24,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.exports.catalog.CatalogExportService
+import de.ingrid.igeserver.exports.catalog.CatalogTransferService.ExportedCatalog
 import de.ingrid.igeserver.imports.CatalogImportService
 import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.CatalogConfigRequest
@@ -143,8 +144,10 @@ class CatalogApiController(
                 .build()
         }
 
+        val exportedCatalog: ExportedCatalog = jacksonObjectMapper().readValue(file.inputStream)
+
         catalogImportService.importCatalog(
-            jacksonObjectMapper().readValue(file.inputStream),
+            exportedCatalog,
         )
         return ResponseEntity.ok().build()
     }

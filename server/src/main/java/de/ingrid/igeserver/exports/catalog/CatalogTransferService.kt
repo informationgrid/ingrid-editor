@@ -21,6 +21,7 @@ package de.ingrid.igeserver.exports.catalog
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import jakarta.persistence.EntityManager
+import jakarta.persistence.Query
 import jakarta.persistence.Tuple
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
@@ -53,7 +54,10 @@ class CatalogTransferService(
      */
     fun getQueryResultsAsMap(sql: String): List<MutableMap<String?, Any?>> {
         val nativeQuery = entityManager.createNativeQuery(sql, Tuple::class.java)
+        return getQueryResultsAsMap(nativeQuery)
+    }
 
+    fun getQueryResultsAsMap(nativeQuery: Query): List<MutableMap<String?, Any?>> {
         @Suppress("UNCHECKED_CAST")
         val result = nativeQuery.resultList as List<Tuple>
         return result.map { item ->
@@ -70,17 +74,35 @@ class CatalogTransferService(
         }
         try {
             ClosableTransaction(transactionManager).use {
-                entityManager.createNativeQuery(
+                val query = entityManager.createNativeQuery(
                     """
-                INSERT INTO $tableName (${data.first().keys.joinToString()}) VALUES ${data.joinToString { row -> "(${row.values.joinToString { transformValueForQuery(it) }})" }};
+                INSERT INTO $tableName (${data.first().keys.joinToString()}) VALUES ${generatePlaceholder(data)};
                     """.trimIndent(),
-                ).executeUpdate()
+                )
+                populateParameters(query, data)
+                query.executeUpdate()
             }
         } catch (e: Exception) {
             // TODO: handle exception properly or make sure it doesn't happen
             // problem DS: ba10d5fe-0bb6-4498-a271-2caf26c41dd5  (con terra GmbH test catalogue Server)
             log.error("Error while importing data to table $tableName")
             log.error(e)
+        }
+    }
+
+    internal fun generatePlaceholder(data: List<Map<String?, Any?>>): String = data.joinToString { row -> "(${row.values.joinToString { "?" }})" }
+
+    /**
+     * Set the query parameters for the given query
+     * @param query the query to set the parameters for
+     * @param data the data to set as parameters
+     */
+    fun populateParameters(query: Query, data: List<Map<String?, Any?>>) {
+        var idx = 1
+        data.forEach { row ->
+            row.values.forEach { value ->
+                query.setParameter(idx++, value)
+            }
         }
     }
 

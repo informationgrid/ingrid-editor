@@ -29,6 +29,7 @@ import de.ingrid.igeserver.persistence.postgresql.model.meta.PermissionsData
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
 import jakarta.persistence.EntityManager
+import jakarta.persistence.Tuple
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
@@ -152,7 +153,7 @@ class CatalogImportService(
         val wrapperIdMigrationMap = mutableMapOf<Int, Int>()
 
         @Suppress("UNCHECKED_CAST")
-        val depthToWrapper = documentWrapper.groupBy { (it["path"] as List<Int>).size }
+        val depthToWrapper = documentWrapper.groupBy { (it["path"] as List<String>).size }
 
         depthToWrapper.keys.sorted().forEach { depth ->
             log.info("Importing DocumentWrapper with depth $depth ...")
@@ -205,24 +206,20 @@ class CatalogImportService(
             if (row["parent_id"] != null) {
                 row["parent_id"] = idMigrationMap[row["parent_id"] as Int]
                 @Suppress("UNCHECKED_CAST")
-                row["path"] = (row["path"] as List<String>).map { idMigrationMap[it.toInt()] }
+                row["path"] = "{${(row["path"] as List<String>).joinToString(",") { idMigrationMap[it.toInt()].toString() }}}"
+            }
+
+            if (row["tags"] != null) {
+                @Suppress("UNCHECKED_CAST")
+                row["tags"] = "{${(row["tags"] as List<String>).joinToString(",")}}"
             }
 
             if (row["responsible_user"] != null) {
                 row["responsible_user"] = userMigrationMap[row["responsible_user"] as Int]
             }
         }
-
-        ClosableTransaction(transactionManager).use {
-            val newIds = getQueryResultsAsMap(
-                """
-                INSERT INTO document_wrapper (${wrapper.first().keys.joinToString()}) VALUES ${wrapper.joinToString { row -> "(${row.values.joinToString { transformValueForQuery(it) }})" }}
-                RETURNING id;
-                """.trimIndent(),
-            ).map { row -> row["id"] as Int }
-
-            return previousIds.zip(newIds).toMap()
-        }
+        val newIds = importToTableReturningId("document_wrapper", wrapper)
+        return previousIds.zip(newIds).toMap()
     }
 
     private fun importGroups(
@@ -244,26 +241,24 @@ class CatalogImportService(
             return emptyMap()
         }
 
-        ClosableTransaction(transactionManager).use {
-            val newIds = getQueryResultsAsMap(
-                """
-                INSERT INTO permission_group (${permissionGroups.first().keys.joinToString()}) VALUES ${
-                    permissionGroups.joinToString { row ->
-                        "(${
-                            row.values.joinToString {
-                                transformValueForQuery(
-                                    it,
-                                )
-                            }
-                        })"
-                    }
-                }
-                RETURNING id;
-                """.trimIndent(),
-            ).map { row -> row["id"] as Int }
+        val newIds = importToTableReturningId("permission_group", permissionGroups)
+        return previousIds.zip(newIds).toMap()
+    }
 
-            return previousIds.zip(newIds).toMap()
+    private fun importToTableReturningId(tableName: String, data: List<Map<String?, Any?>>): List<Int> {
+        if (data.isEmpty()) {
+            log.warn("No data to import to table $tableName")
+            return emptyList()
         }
+        val query = entityManager.createNativeQuery(
+            """
+            INSERT INTO $tableName (${data.first().keys.joinToString()}) VALUES ${generatePlaceholder(data)}
+            RETURNING id;
+            """.trimIndent(),
+            Tuple::class.java,
+        )
+        populateParameters(query, data)
+        return getQueryResultsAsMap(query).map { row -> row["id"] as Int }
     }
 
     private fun adaptGroupPermissions(permissions: String, documentWrapperMigrationMap: Map<Int, Int>): String {
@@ -318,14 +313,7 @@ class CatalogImportService(
 
     private fun createCatalog(data: MutableMap<String?, Any?>): Int {
         data.remove("id")
-        ClosableTransaction(transactionManager).use {
-            return entityManager.createNativeQuery(
-                """
-                INSERT INTO catalog (${data.keys.joinToString()}) VALUES (${data.values.joinToString { transformValueForQuery(it) }})
-                RETURNING id;
-                """.trimIndent(),
-            ).singleResult as Int
-        }
+        return importToTableReturningId("catalog", listOf(data)).first()
     }
 
     private fun importNewUsers(newCatalogId: Int, newUserdata: List<MutableMap<String?, Any?>>): Map<String, Int> {
@@ -341,12 +329,15 @@ class CatalogImportService(
         }
 
         ClosableTransaction(transactionManager).use {
-            return getQueryResultsAsMap(
+            val query = entityManager.createNativeQuery(
                 """
-                INSERT INTO user_info (${newUserdata.first().keys.joinToString()}) VALUES ${newUserdata.joinToString { row -> "(${row.values.joinToString { transformValueForQuery(it) }})" }}
+                INSERT INTO user_info (${newUserdata.first().keys.joinToString()}) VALUES ${generatePlaceholder(newUserdata)}
                 RETURNING id, user_id;
                 """.trimIndent(),
-            ).associate { row -> row["user_id"] as String to row["id"] as Int }
+                Tuple::class.java,
+            )
+            populateParameters(query, newUserdata)
+            return getQueryResultsAsMap(query).associate { row -> row["user_id"] as String to row["id"] as Int }
         }
     }
 }
