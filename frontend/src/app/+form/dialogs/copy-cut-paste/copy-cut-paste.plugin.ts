@@ -161,7 +161,7 @@ export class CopyCutPastePlugin extends Plugin {
   }
 
   private atLeastOneWithChildren(data: number[]) {
-    return data.some((id) => this.getStore().entityMap()[id]._hasChildren);
+    return data.some((id) => this.getStore().entityMap()[id]?._hasChildren);
   }
 
   private treeNodesLoaded(data: number[]) {
