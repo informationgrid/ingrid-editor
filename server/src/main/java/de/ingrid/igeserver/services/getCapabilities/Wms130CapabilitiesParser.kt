@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.services.getCapabilities
 
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.Wms130NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
@@ -29,53 +27,48 @@ import org.w3c.dom.Node
 /**
  * @author André Wallat
  */
-class Wms130CapabilitiesParser(
-    codelistHandler: CodelistHandler,
-    private val researchService: ResearchService,
-    catalogId: String,
-) :
-    GeneralCapabilitiesParser(XPathUtils(Wms130NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
+class Wms130CapabilitiesParser(params: CapabilitiesParameter) :
+    GeneralCapabilitiesParser(XPathUtils(Wms130NamespaceContext()), params),
+    ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.1.1" to "1", "1.3.0" to "2")
 
-    override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        return CapabilitiesBean().apply {
-            serviceType = "WMS"
-            dataServiceType = "2" // view
-            title = xPathUtils.getString(doc, XPATH_EXP_WMS_1_3_0_TITLE)
-            description = xPathUtils.getString(doc, XPATH_EXP_WMS_1_3_0_ABSTRACT)
-            versions = run {
-                val versionList = getNodesContentAsList(doc, XPATH_EXP_WMS_1_3_0_VERSION)
-                mapVersionsFromCodelist("5152", versionList, versionSyslistMap)
-            }
-            fees = getKeyValueForPath(doc, XPATH_EXP_WMS_FEES, "6500")
-            accessConstraints =
-                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMS_ACCESS_CONSTRAINTS))
-            onlineResources = getOnlineResources(doc, XPATH_EXP_WMS_ONLINE_RESOURCE)
-            addExtendedCapabilities(this, doc, XPATH_EXP_WMS_EXTENDED_CAPABILITIES)
-            val commonKeywords: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS)
-            val allKeywordsSet: MutableList<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS_LAYER)
-            keywords.addAll((commonKeywords + allKeywordsSet).distinctBy { it.lowercase() })
+    override fun getCapabilitiesData(doc: Document): CapabilitiesBean = CapabilitiesBean().apply {
+        serviceType = "WMS"
+        dataServiceType = "2" // view
+        title = xPathUtils.getString(doc, XPATH_EXP_WMS_1_3_0_TITLE)
+        description = xPathUtils.getString(doc, XPATH_EXP_WMS_1_3_0_ABSTRACT)
+        versions = run {
+            val versionList = getNodesContentAsList(doc, XPATH_EXP_WMS_1_3_0_VERSION)
+            mapVersionsFromCodelist("5152", versionList, versionSyslistMap)
+        }
+        fees = getKeyValueForPath(doc, XPATH_EXP_WMS_FEES, "6500")
+        accessConstraints =
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMS_ACCESS_CONSTRAINTS))
+        onlineResources = getOnlineResources(doc, XPATH_EXP_WMS_ONLINE_RESOURCE)
+        addExtendedCapabilities(this, doc, XPATH_EXP_WMS_EXTENDED_CAPABILITIES)
+        val commonKeywords: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS)
+        val allKeywordsSet: MutableList<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS_LAYER)
+        keywords.addAll((commonKeywords + allKeywordsSet).distinctBy { it.lowercase() })
 
-            // get bounding boxes of each layer and create a union
-            val boundingBoxesFromLayers = getBoundingBoxesFromLayers(doc)
-            var unionOfBoundingBoxes: LocationBean? = null
-            if (boundingBoxesFromLayers.isNotEmpty()) {
-                unionOfBoundingBoxes = getUnionOfBoundingBoxes(boundingBoxesFromLayers)
+        // get bounding boxes of each layer and create a union
+        val boundingBoxesFromLayers = getBoundingBoxesFromLayers(doc)
+        var unionOfBoundingBoxes: LocationBean? = null
+        if (boundingBoxesFromLayers.isNotEmpty()) {
+            unionOfBoundingBoxes = getUnionOfBoundingBoxes(boundingBoxesFromLayers)
 //            TODO: if (catalogService.getCatalogData().getLanguageShort().equals("de")) {
-                unionOfBoundingBoxes.name = "Raumbezug von: $title"
+            unionOfBoundingBoxes.name = "Raumbezug von: $title"
 //            } else {
 //                unionOfBoundingBoxes.name = "spatial extent from: " + title
 //            }
-                boundingBoxes = listOf(unionOfBoundingBoxes)
-            }
-
-            spatialReferenceSystems =
-                getSpatialReferenceSystems(doc, "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:CRS")
-            coupledResources = getCoupledResources(doc, spatialReferenceSystems!!, unionOfBoundingBoxes, commonKeywords)
-            address = getAddress(doc)
-            operations = getOperations(doc)
+            boundingBoxes = listOf(unionOfBoundingBoxes)
         }
+
+        spatialReferenceSystems =
+            getSpatialReferenceSystems(doc, "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:CRS")
+        coupledResources = getCoupledResources(doc, spatialReferenceSystems!!, unionOfBoundingBoxes, commonKeywords)
+        address = getAddress(doc)
+        operations = getOperations(doc)
     }
 
     private fun getCoupledResources(
@@ -99,7 +92,7 @@ class Wms130CapabilitiesParser(
         for (i in 0 until identifierNodes.length) {
             val id = identifierNodes.item(i).textContent
             // check for the found IDs if a metadata with this resource identifier exists
-            val coupledResource: GeoDataset? = checkForCoupledResource(researchService, catalogId, id)
+            val coupledResource: GeoDataset? = checkForCoupledResource(params.researchService, params.catalogId, id)
             // the dataset does not exist yet
             if (coupledResource == null) {
                 val newDataset = GeoDataset().apply {
@@ -138,7 +131,7 @@ class Wms130CapabilitiesParser(
         // Operation - GetCapabilities
         val getCapabilitiesOp = OperationBean()
         getCapabilitiesOp.name = KeyValue(
-            codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"),
+            params.codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"),
             "GetCapabilities",
         )
         getCapabilitiesOp.methodCall = "GetCapabilities"
@@ -155,7 +148,7 @@ class Wms130CapabilitiesParser(
         // Operation - GetMap
         val getMapOp = OperationBean()
         getMapOp.name = KeyValue(
-            codelistHandler.getCodeListEntryId("5110", "GetMap", "de"),
+            params.codelistHandler.getCodeListEntryId("5110", "GetMap", "de"),
             "GetMap",
         )
         getMapOp.methodCall = "GetMap"
@@ -173,7 +166,7 @@ class Wms130CapabilitiesParser(
         if (getFeatureInfoAddress != null && getFeatureInfoAddress.length != 0) {
             val getFeatureInfoOp = OperationBean()
             getFeatureInfoOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5110", "GetFeatureInfo", "de"),
+                params.codelistHandler.getCodeListEntryId("5110", "GetFeatureInfo", "de"),
                 "GetFeatureInfo",
             )
             getFeatureInfoOp.methodCall = "GetFeatureInfo"
@@ -205,7 +198,7 @@ class Wms130CapabilitiesParser(
             xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactElectronicMailAddress")
 
         // try to find address in database and set the uuid if found
-        searchForAddress(researchService, catalogId, address)
+        searchForAddress(params.researchService, params.catalogId, address)
 
         address.street = xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:Address")
         address.city = xPathUtils.getString(doc, "$XPATH_EXT_WMS_CONTACTINFORMATION/wms:ContactAddress/wms:City")

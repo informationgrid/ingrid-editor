@@ -56,6 +56,7 @@ type GeneralState = {
   latestPublishedDocuments: DocumentAbstract[];
   oldestExpiredDocuments: DocumentAbstract[];
   sessionTimeoutIn: number;
+  catalogLanguage: string;
 };
 
 const initialState: GeneralState = {
@@ -86,6 +87,7 @@ const initialState: GeneralState = {
   latestPublishedDocuments: [],
   oldestExpiredDocuments: [],
   sessionTimeoutIn: -1,
+  catalogLanguage: "de",
 };
 
 export const GeneralStore = signalStore(
@@ -179,6 +181,9 @@ export const GeneralStore = signalStore(
     },
     setSessionTimeout(value: number): void {
       patchState(store, { sessionTimeoutIn: value });
+    },
+    setCatalogLanguage(value: string): void {
+      patchState(store, { catalogLanguage: value });
     },
   })),
 );

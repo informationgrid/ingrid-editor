@@ -29,6 +29,7 @@ import { HttpClient } from "@angular/common/http";
 import { Catalog } from "./catalog.model";
 import { CatalogStore } from "../../store/catalog/catalog.store";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { GeneralStore } from "../../store/general.store";
 
 export interface Profile {
   id: string;
@@ -41,6 +42,7 @@ export interface Profile {
 })
 export class CatalogService {
   private catalogStore = inject(CatalogStore);
+  private generalStore = inject(GeneralStore);
 
   private configuration: Configuration;
 
@@ -183,7 +185,10 @@ export class CatalogService {
     const body = this.prepareBody(value);
     this.http
       .put(this.configuration.backendUrl + "catalogConfig", body)
-      .pipe(tap(() => this.snackbar.open("Konfiguration wurde gespeichert")))
+      .pipe(
+        tap(() => this.generalStore.setCatalogLanguage(value.language ?? "de")),
+        tap(() => this.snackbar.open("Konfiguration wurde gespeichert")),
+      )
       .subscribe();
   }
 

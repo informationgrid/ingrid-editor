@@ -18,7 +18,10 @@
  * limitations under the Licence.
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { CodelistService } from "../../services/codelist/codelist.service";
+import {
+  CodelistService,
+  SelectOption,
+} from "../../services/codelist/codelist.service";
 
 export const fields = (codelistService: CodelistService) =>
   <FormlyFieldConfig[]>[
@@ -53,6 +56,28 @@ export const fields = (codelistService: CodelistService) =>
         options: codelistService.observe("110"),
         showSearch: true,
         allowNoValue: true,
+        simple: true,
+      },
+    },
+    {
+      key: "language",
+      type: "ige-select",
+      wrappers: ["panel", "form-field"],
+      className: "width-100",
+      defaultValue: "de",
+      props: {
+        externalLabel: "Katalogsprache",
+        appearance: "outline",
+        options: <SelectOption[]>[
+          {
+            value: "de",
+            label: "Deutsch",
+          },
+          {
+            value: "en",
+            label: "Englisch",
+          },
+        ],
         simple: true,
       },
     },
