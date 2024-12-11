@@ -22,48 +22,40 @@ fun mockTuples(data: List<MutableMap<String?, Any?>>): List<Tuple> = data.map { 
 fun mockEntityManagerTupleResults(entityManager: EntityManager) {
     val sqlSlot = slot<String>()
 
+    // resultList
     every { entityManager.createNativeQuery(capture(sqlSlot), eq(Tuple::class.java)).resultList } answers {
         val sql = sqlSlot.captured
 
-        if (sql.contains("SELECT * FROM catalog")) {
-            mockTuples(listOf(catalogInfo))
-        } else if (sql.contains("FROM behaviour")) {
-            mockTuples(behaviours)
-        } else if (sql.contains("FROM codelist")) {
-            mockTuples(codelists)
-        } else if (sql.contains("FROM query")) {
-            mockTuples(queries)
-        } else if (sql.contains("FROM document_wrapper")) {
-            mockTuples(documentWrapper)
-        } else if (sql.contains("FROM document")) {
-            mockTuples(document)
-        } else if (sql.contains("FROM user_info")) {
-            mockTuples(userInfo)
-        } else if (sql.contains("FROM permission_group")) {
-            mockTuples(permissionGroup)
-        } else if (sql.contains("FROM user_group")) {
-            mockTuples(userGroup)
-        } else if (sql.contains("FROM version_info")) {
-            mockTuples(versionInfo)
-        } else if (sql.contains("INSERT INTO user_info")) {
-            mockTuples(insertedUser)
-        } else {
-            println("WARN Unknown query: $sql")
-            emptyList()
-//            throw IllegalArgumentException("Unknown query: $sql")
+        when {
+            sql.contains("SELECT * FROM catalog") -> mockTuples(listOf(catalogInfo))
+
+            sql.contains("FROM behaviour") -> mockTuples(behaviours)
+            sql.contains("FROM codelist") -> mockTuples(codelists)
+            sql.contains("FROM query") -> mockTuples(queries)
+            sql.contains("FROM document_wrapper") -> mockTuples(documentWrapper)
+            sql.contains("FROM document") -> mockTuples(document)
+            sql.contains("FROM user_info") -> mockTuples(userInfo)
+            sql.contains("FROM permission_group") -> mockTuples(permissionGroup)
+            sql.contains("FROM user_group") -> mockTuples(userGroup)
+            sql.contains("FROM version_info") -> mockTuples(versionInfo)
+
+            sql.contains("INSERT INTO user_info") -> mockTuples(insertedUser)
+            sql.contains("INSERT INTO catalog") -> mockTuples(createdCatalogAnswer)
+            sql.contains("INSERT INTO document_wrapper") -> emptyList<Tuple>()
+            sql.contains("INSERT INTO permission_group") -> emptyList<Tuple>()
+            else -> throw IllegalArgumentException("Unknown query: $sql")
         }
     }
 
+    // singleResult
     every { entityManager.createNativeQuery(capture(sqlSlot)).singleResult } answers {
         val sql = sqlSlot.captured
         println("singleResult for: $sql")
         // Assume that this is the catalog id query
-        if (sql.contains("SELECT id FROM catalog")) {
-            1
-        } else if (sql.contains("INSERT INTO catalog")) {
-            CREATED_CATALOG_ID
-        } else {
-            throw IllegalArgumentException("Unknown query: $sql")
+        when {
+            sql.contains("SELECT id FROM catalog") -> 1
+            sql.contains("INSERT INTO catalog") -> CREATED_CATALOG_ID
+            else -> throw IllegalArgumentException("Unknown query: $sql")
         }
     }
 }

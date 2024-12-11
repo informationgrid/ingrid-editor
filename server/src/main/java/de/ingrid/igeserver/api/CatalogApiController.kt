@@ -139,7 +139,7 @@ class CatalogApiController(
         principal: Principal,
         file: @Valid MultipartFile,
     ): ResponseEntity<Unit> {
-        authUtils.isAdmin(principal).ifFalse {
+        authUtils.isSuperAdmin(principal).ifFalse {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .build()
         }
@@ -153,7 +153,7 @@ class CatalogApiController(
     }
 
     override fun catalogExport(principal: Principal, catalogIdentifier: String): ResponseEntity<ByteArray?> {
-        authUtils.isAdmin(principal).ifFalse {
+        authUtils.isSuperAdmin(principal).ifFalse {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .build()
         }

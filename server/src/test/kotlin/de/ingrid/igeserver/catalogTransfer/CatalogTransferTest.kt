@@ -17,6 +17,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import jakarta.persistence.EntityManager
 import org.springframework.transaction.PlatformTransactionManager
 import java.nio.file.Files
@@ -36,7 +37,7 @@ class CatalogTransferTest : ShouldSpec() {
     override suspend fun beforeEach(testCase: TestCase) {
         clearAllMocks()
         mockEntityManagerTupleResults(entityManager)
-        every { authUtils.isAdmin(any()) } returns true
+        every { authUtils.isSuperAdmin(any()) } returns true
     }
 
     init {
@@ -60,6 +61,7 @@ class CatalogTransferTest : ShouldSpec() {
             val data = jacksonObjectMapper().readValue<ExportedCatalog>(file)
 
             catalogImportService.importCatalog(data)
+            verify(exactly = 5) { entityManager.createNativeQuery(any<String>()).executeUpdate() }
         }
 
         should("not import catalog with wrong version") {

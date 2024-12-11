@@ -223,6 +223,12 @@ val versionInfo = listOf(
     ),
 )
 
+val createdCatalogAnswer = listOf(
+    mutableMapOf<String?, Any?>(
+        "id" to CREATED_CATALOG_ID,
+    ),
+)
+
 private const val DB_VERSION = "0.XX"
 
 val expectedExportedCatalog = ExportedCatalog(
