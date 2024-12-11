@@ -174,7 +174,6 @@ export class CreateNodeComponent implements OnInit {
   }
 
   private getBreadcrumb(): ShortTreeNode[] {
-    console.log("cc", this.forAddress());
     return this.forAddress()
       ? this.generalStore.breadcrumb.address()
       : this.generalStore.breadcrumb.document();

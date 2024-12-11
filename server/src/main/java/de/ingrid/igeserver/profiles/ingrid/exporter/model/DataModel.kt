@@ -220,7 +220,25 @@ data class ServiceUrl(
     var applicationProfile: String? = null,
     var functionValue: String? = null,
     val isIdfResource: Boolean = true,
-)
+    val serviceType: String? = null,
+    val serviceversion: String? = null,
+) {
+    data class Protocol(val id: String, val label: String)
+
+    // See for mapping: https://inspire.ec.europa.eu/metadata-codelist/ProtocolValue
+    private val protocolMap = mapOf(
+//        "discovery" to Protocol("", ""),
+        "view" to Protocol("wms", "OGC Web Map Service"),
+        "download" to Protocol("wfs", "OGC Web Feature Service"),
+//        "transformation" to Protocol("", ""),
+//        "invoke" to Protocol("", ""),
+//        "other" to Protocol("", ""),
+    )
+    fun getProtocol(): Protocol? {
+        if (serviceType == null) return null
+        return protocolMap[serviceType]
+    }
+}
 
 data class AttachedField(
     val listId: String,
