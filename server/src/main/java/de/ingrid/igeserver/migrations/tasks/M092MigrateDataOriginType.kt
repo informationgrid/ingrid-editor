@@ -17,7 +17,7 @@ import org.springframework.transaction.PlatformTransactionManager
  * Iterate though references and add referenceType depending on presents of field "url" or "uuidRef"
  */
 @Service
-class M091MigrateDataOriginType : MigrationBase("0.91") {
+class M092MigrateDataOriginType : MigrationBase("0.92") {
 
     private var log = logger()
 
@@ -31,7 +31,7 @@ class M091MigrateDataOriginType : MigrationBase("0.91") {
     private lateinit var docRepo: DocumentRepository
 
     override fun exec() {
-        log.info("Executing migration 0.91")
+        log.info("Executing migration 0.92")
     }
 
     override fun postExec() {
@@ -71,7 +71,7 @@ class M091MigrateDataOriginType : MigrationBase("0.91") {
             if (it.getString("_type").isNullOrEmpty()) {
                 val hasUuidRef: Boolean = it.getString("uuidRef")?.isNotEmpty() ?: false
 
-                val newDescriptionType: String? = if (hasUuidRef) {
+                val newDescriptionType = if (hasUuidRef) {
                     "internalDataOrigin"
                 } else {
                     "freeDescription"
