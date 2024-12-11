@@ -57,6 +57,7 @@ data class DataModel(
     val dataset: Dataset?,
     val isAdVCompatible: Boolean?,
     val isOpenData: Boolean?,
+    val hvd: Boolean?,
     val isInspireIdentified: Boolean?,
     val openDataCategories: List<KeyValue>?,
     val priorityDatasets: List<KeyValue>?,
