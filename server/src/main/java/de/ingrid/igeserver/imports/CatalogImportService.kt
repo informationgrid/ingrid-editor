@@ -29,7 +29,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.model.meta.PermissionsData
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
-import de.ingrid.igeserver.services.KeycloakService
+import de.ingrid.igeserver.services.UserManagementService
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
 import org.apache.logging.log4j.kotlin.logger
@@ -42,7 +42,7 @@ class CatalogImportService(
     transactionManager: PlatformTransactionManager,
     val groupService: GroupService,
     val catalogService: CatalogService,
-    val keycloakService: KeycloakService,
+    val keycloakService: UserManagementService,
 ) : CatalogTransferService(entityManager, transactionManager) {
     private val log = logger()
 
