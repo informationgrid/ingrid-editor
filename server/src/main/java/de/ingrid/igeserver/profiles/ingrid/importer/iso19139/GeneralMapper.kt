@@ -344,12 +344,19 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     fun getGraphicOverviews(): List<PreviewGraphic> = metadata.identificationInfo[0].identificationInfo?.graphicOverview
         ?.map {
-            PreviewGraphic(it.mdBrowseGraphic?.fileName?.value!!, it.mdBrowseGraphic.fileDescription?.value)
+            val isInternalStorage: Boolean = it.mdBrowseGraphic?.fileName?.value?.contains("/documents/") ?: false
+            val fileName = if (isInternalStorage) {
+                it.mdBrowseGraphic?.fileName?.value?.substringAfterLast('/')
+            } else {
+                it.mdBrowseGraphic?.fileName?.value
+            }
+            PreviewGraphic(fileName, it.mdBrowseGraphic?.fileDescription?.value, !isInternalStorage)
         } ?: emptyList()
 
     data class PreviewGraphic(
-        val fileName: String,
+        val fileName: String?,
         val description: String? = null,
+        val asLink: Boolean,
     )
 
     open fun getKeywords() = getKeywords(emptyList())

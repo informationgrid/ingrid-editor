@@ -30,7 +30,7 @@
 @for(var image : ForSupport.of(model.getGraphicOverviews()))
     {
     "fileName": {
-    "asLink": true,
+    "asLink": ${image.get().getAsLink()},
     "value": "${image.get().getFileName()}",
     "uri": "${image.get().getFileName()}"
     },
