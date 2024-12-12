@@ -295,6 +295,21 @@
         "explanation": ""
       }
     ],
+    "fileReferences": [
+      {
+        "link": {
+          "uri": "placeholder.pdf",
+          "value": "placeholder.pdf",
+          "asLink": false,
+          "sizeInBytes": 43143
+        },
+        "title": "Platzhalter Titel",
+        "format": {
+          "key": "9990"
+        },
+        "description": "Platzhalter Beschreibung"
+      }
+    ],
     "metadata": {
       "language": {
         "key": "150"
