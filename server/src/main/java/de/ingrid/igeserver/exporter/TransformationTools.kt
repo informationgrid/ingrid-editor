@@ -30,6 +30,9 @@ class TransformationTools {
         val log = logger()
 
         @kotlin.jvm.JvmStatic
+        fun bytesToMegabytes(i: Number): Number = i.toDouble() / 1_000_000
+
+        @kotlin.jvm.JvmStatic
         fun hasValue(s: String?) = !s.isNullOrEmpty()
 
         @kotlin.jvm.JvmStatic
