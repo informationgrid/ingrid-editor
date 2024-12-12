@@ -22,10 +22,10 @@ package de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.getInternalReferences
 import de.ingrid.igeserver.utils.getString
 
-class GeoserviceTransformerKrzn(transformerConfig: TransformerConfig) :
-    GeodataserviceModelTransformer(transformerConfig) {
+class GeoserviceTransformerKrzn(transformerConfig: TransformerConfig) : GeodataserviceModelTransformer(transformerConfig) {
 
     private val docData = doc.data
 
@@ -43,4 +43,6 @@ class GeoserviceTransformerKrzn(transformerConfig: TransformerConfig) :
                 }
             }
         }
+
+    override fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() = super.getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() + getInternalReferences(this, codelists)
 }

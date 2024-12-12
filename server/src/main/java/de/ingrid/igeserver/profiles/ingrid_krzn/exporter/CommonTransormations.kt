@@ -19,14 +19,45 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_krzn.exporter
 
+import de.ingrid.igeserver.exporter.CodelistTransformer
+import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
+import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.DataCollectionTransformerKrzn
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.GeodatasetTransformerKrzn
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.GeoserviceTransformerKrzn
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.InformationSystemTransformerKrzn
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.ProjectTransformerKrzn
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.PublicationTransformerKrzn
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.SpecializedTaskTransformerKrzn
+import java.net.URI
 import kotlin.reflect.KClass
 
-fun getKrznTransformer(docType: String): KClass<out Any>? {
+fun getKrznTransformer(docType: Enum<*>): KClass<out Any>? {
+    if (docType !is InGridDocType) return null
+
     return when (docType) {
-        "InGridGeoDataset" -> GeodatasetTransformerKrzn::class
-        "InGridGeoService" -> GeoserviceTransformerKrzn::class
-        else -> null
+        InGridDocType.InGridGeoDataset -> GeodatasetTransformerKrzn::class
+        InGridDocType.InGridGeoService -> GeoserviceTransformerKrzn::class
+        InGridDocType.InGridDataCollection -> DataCollectionTransformerKrzn::class
+        InGridDocType.InGridInformationSystem -> InformationSystemTransformerKrzn::class
+        InGridDocType.InGridPublication -> PublicationTransformerKrzn::class
+        InGridDocType.InGridProject -> ProjectTransformerKrzn::class
+        InGridDocType.InGridSpecialisedTask -> SpecializedTaskTransformerKrzn::class
     }
+}
+
+fun getInternalReferences(modelTransformer: IngridModelTransformer, codelists: CodelistTransformer) = modelTransformer.referencesWithUuidRefs.map {
+    ServiceUrl(
+        it.title,
+        "${getPortalUrl(modelTransformer.transformerConfig)}/trefferanzeige?docuuid=${it.uuidRef}",
+        it.explanation,
+        functionValue = codelists.getValue("2000", KeyValue(it.type.key), "iso") ?: "information",
+    )
+}
+
+fun getPortalUrl(transformerConfig: TransformerConfig): String = URI(transformerConfig.config.uploadExternalUrl).let {
+    if (it.scheme == null) "" else it.scheme + "://" + it.host
 }

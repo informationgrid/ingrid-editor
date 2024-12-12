@@ -79,7 +79,7 @@ data class TransformerConfig(
 )
 
 open class IngridModelTransformer(
-    transformerConfig: TransformerConfig,
+    val transformerConfig: TransformerConfig,
 ) {
     val model = transformerConfig.model
     val catalogIdentifier = transformerConfig.catalogIdentifier
@@ -737,7 +737,7 @@ open class IngridModelTransformer(
     // systemEnvironment for GeoService does not exist and will be added to description! (#3462)
     open val systemEnvironment = data.systemEnvironment
 
-    fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs(): List<ServiceUrl> = externalReferences + serviceUrls + getCoupledServiceUrlsOrGetCapabilitiesUrl() + getAtomAsServiceUrl()
+    open fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs(): List<ServiceUrl> = externalReferences + serviceUrls + getCoupledServiceUrlsOrGetCapabilitiesUrl() + getAtomAsServiceUrl()
 
     private fun getAtomAsServiceUrl(): List<ServiceUrl> = if (isAtomDownload) {
         listOf(
