@@ -183,7 +183,7 @@ class JpaTest : IntegrationTest() {
 
         // test query
         val q = em.createNativeQuery(
-            "SELECT * FROM document WHERE id = :id AND data @> jsonb_build_object('lastName', :lastName)",
+            "SELECT * FROM document WHERE id = :id AND data @> jsonb_build_object('lastName', (:lastName)::text)",
             Document::class.java,
         )
             .setParameter("id", doc.id)

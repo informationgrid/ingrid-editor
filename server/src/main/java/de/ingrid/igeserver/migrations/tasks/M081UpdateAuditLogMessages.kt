@@ -39,7 +39,7 @@ class M081UpdateAuditLogMessages : MigrationBase("0.81") {
     private val updateSql = """
         UPDATE audit_log SET
             logger = 'audit.data-history',
-            message = jsonb_set(message, '{cat}', to_jsonb(:cat))            
+            message = jsonb_set(message, '{cat}', to_jsonb((:cat)::text))            
         WHERE 
             message->>'action' = 'unpublish'
     """.trimIndent()
