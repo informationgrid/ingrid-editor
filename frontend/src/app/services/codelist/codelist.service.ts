@@ -103,14 +103,16 @@ export class CodelistService {
     if (!codelist) {
       return [];
     }
+
     // Sort codelist entries
     const sortFunction =
       typeof sortBy === "function"
         ? sortBy
-        : CodelistService.getDefaultSortFunction(sortBy);
+        : CodelistService.getSortFunction(sortBy, language);
 
-    const sortedEntries: CodelistEntry[] = codelist.entries.sort(sortFunction);
-
+    const sortedEntries: CodelistEntry[] = [...codelist.entries].sort(
+      sortFunction,
+    );
     // Map to SelectOptionUi
     const items: SelectOptionUi[] = sortedEntries.map(
       (entry: CodelistEntry) =>
@@ -124,29 +126,29 @@ export class CodelistService {
     return CodelistService.addFavorites(codelist.id, items);
   };
 
-  private static getDefaultSortFunction(sortBy: CodelistSort) {
-    return (a: CodelistEntry, b: CodelistEntry) =>
-      CodelistService.compareEntries(a, b, sortBy);
-  }
-
-  private static compareEntries(
-    a: CodelistEntry,
-    b: CodelistEntry,
+  private static getSortFunction(
     sortBy: CodelistSort,
+    language: string = "de",
   ) {
-    switch (sortBy) {
-      case "label":
-        return (a.fields["language"] ?? a.fields["name"])?.localeCompare(
-          b.fields["language"] ?? b.fields["name"],
-        );
-      case "description":
-        return a.description?.localeCompare(b.description);
-      case "value":
-      case "sortkey":
-        return a.fields[sortBy]?.localeCompare(b.fields[sortBy], undefined, {
-          numeric: true,
-        });
-    }
+    return (a: CodelistEntry, b: CodelistEntry) => {
+      switch (sortBy) {
+        case "label":
+          return (a.fields[language] ?? a.fields["name"])?.localeCompare(
+            b.fields[language] ?? b.fields["name"],
+          );
+        case "description":
+          return a.description?.localeCompare(b.description);
+        case "value":
+          return a.id?.localeCompare(b.id);
+        case "sortkey":
+          return a.fields[sortBy]?.localeCompare(b.fields[sortBy], undefined, {
+            numeric: true,
+          });
+        case "NO_SORT":
+        default:
+          return 0;
+      }
+    };
   }
 
   private queue = [];
