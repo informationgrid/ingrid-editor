@@ -269,6 +269,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       "autocomplete",
       "datepicker",
       "repeatList",
+      "repeatChip",
       "unit-input",
       // "table",
     ];
