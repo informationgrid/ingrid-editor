@@ -190,3 +190,18 @@
     }@if (!reference.isLast()),@endif
 @endfor
 ],
+"fileReferences": [
+@for(var fileReference : ForSupport.of(model.getFileReferences()))
+    {
+    "title": "${fileReference.get().getTitle()}",
+    "description": "${fileReference.get().getDescription()}",
+    "format": @template.imports.ingrid.partial.key-value(item = fileReference.get().getFormat()),
+    "link": {
+        "asLink": ${fileReference.get().getLink().getAsLink()},
+        "value": "${fileReference.get().getLink().getValue()}",
+        "uri": "${fileReference.get().getLink().getUri()}",
+        "sizeInBytes": ${fileReference.get().getLink().getSizeInBytes()}
+    }
+    }@if (!fileReference.isLast()),@endif
+@endfor
+],
