@@ -53,7 +53,8 @@ export class TestDoctype extends BaseDoctype {
           required: true,
           maxLength: 10,
           expressions: {
-            "props.description": '(model.textMaxLength||"").length+" / 10"',
+            "props.description": (model) =>
+              (model.textMaxLength || "").length + " / 10",
           },
         }),
         this.addInput("optionalText", "Optionales Textfeld", {

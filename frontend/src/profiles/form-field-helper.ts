@@ -967,7 +967,7 @@ export class FormFieldHelper {
 
   private initExpressions(expressions = {}) {
     return {
-      "props.disabled": "formState.disabled",
+      "props.disabled": (field) => field.options.formState.disabled,
       ...expressions,
     };
   }
