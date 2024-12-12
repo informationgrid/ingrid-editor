@@ -2,7 +2,20 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/projectBase",
   "type": "object",
+  "definitions": {
+    "propertiesProject": {
+      "type": "object",
+      "properties": {
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        }
+      }
+    }
+  },
   "properties": {
+    "properties": {
+      "$ref": "#/definitions/propertiesProject"
+    },
     "_uuid": {
       "type": "string"
     },
