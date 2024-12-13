@@ -32,9 +32,9 @@ import {
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
 import { CookieService } from "../../../app/services/cookie.service";
-import { AbstractControl, FormControl } from "@angular/forms";
+import { FormControl } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { firstValueFrom, Observable, of } from "rxjs";
+import { Observable, of } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
 import { HttpClient } from "@angular/common/http";
@@ -2003,9 +2003,10 @@ export abstract class IngridShared extends BaseDoctype {
   private sortFunctionPriorityDatasets(
     a: CodelistEntry,
     b: CodelistEntry,
+    language: string,
   ): number {
-    const labelA = a.fields["language"] ?? a.fields["name"];
-    const labelB = b.fields["language"] ?? b.fields["name"];
+    const labelA = a.fields[language];
+    const labelB = b.fields[language];
     // put INVALID items to the end of the list
     if (labelA.indexOf("INVALID -") === 0) return 1;
     if (labelB.indexOf("INVALID -") === 0) return -1;

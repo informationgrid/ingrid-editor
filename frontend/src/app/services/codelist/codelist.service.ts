@@ -98,7 +98,11 @@ export class CodelistService {
     language = "de",
     sortBy:
       | CodelistSort
-      | ((a: CodelistEntry, b: CodelistEntry) => number) = "label",
+      | ((
+          a: CodelistEntry,
+          b: CodelistEntry,
+          language: string,
+        ) => number) = "label",
   ): SelectOptionUi[] => {
     if (!codelist) {
       return [];
@@ -107,24 +111,25 @@ export class CodelistService {
     // Sort codelist entries
     const sortFunction =
       typeof sortBy === "function"
-        ? sortBy
+        ? (a: CodelistEntry, b: CodelistEntry) => sortBy(a, b, language)
         : CodelistService.getSortFunction(sortBy, language);
 
-    const sortedEntries: CodelistEntry[] = [...codelist.entries].sort(
-      sortFunction,
-    );
     // Map to SelectOptionUi
-    const items: SelectOptionUi[] = sortedEntries.map(
-      (entry: CodelistEntry) =>
-        ({
-          label: entry.fields[language] ?? entry.fields["name"],
-          value: entry.id,
-          sortkey: entry.fields["sortkey"],
-        }) as SelectOptionUi,
-    );
+    const items: SelectOptionUi[] = [...codelist.entries]
+      .sort(sortFunction)
+      .map(CodelistService.mapToSelectOptionUi(language));
 
     return CodelistService.addFavorites(codelist.id, items);
   };
+
+  private static mapToSelectOptionUi(language: string) {
+    return (entry: CodelistEntry) =>
+      ({
+        label: entry.fields[language] ?? entry.fields["name"],
+        value: entry.id,
+        sortkey: entry.fields["sortkey"],
+      }) as SelectOptionUi;
+  }
 
   private static getSortFunction(
     sortBy: CodelistSort,

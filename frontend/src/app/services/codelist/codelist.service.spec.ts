@@ -119,7 +119,7 @@ describe("CodelistService", () => {
   });
 
   it("should map and sort a codelist by specific function", () => {
-    const sortFn = (a: CodelistEntry, b: CodelistEntry) => {
+    const sortFn = (a: CodelistEntry, b: CodelistEntry, language: string) => {
       if (a.id === "2") return -1; // 2 should be first
       if (a.id === "3") return 1; // 3 should be last
       return 0; // other (1) in the middle
