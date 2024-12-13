@@ -834,7 +834,7 @@
                                 <gmd:URL>/documents/catalogId/4915275a-733a-47cd-b1a6-1a3f1e976948/placeholder.pdf</gmd:URL>
                             </gmd:linkage>
                             <gmd:applicationProfile>
-                                <gco:CharacterString/>
+                                <gco:CharacterString>Bitmap</gco:CharacterString>
                             </gmd:applicationProfile>
                             <gmd:name>
                                 <gco:CharacterString>Platzhalter Titel</gco:CharacterString>

@@ -345,7 +345,7 @@ open class GeneralMapper(val isoData: IsoImportData, val config: Config) {
 
     fun getGraphicOverviews(): List<PreviewGraphic> = metadata.identificationInfo[0].identificationInfo?.graphicOverview
         ?.map {
-            val isInternalStorage: Boolean = it.mdBrowseGraphic?.fileName?.value?.contains(config.uploadExternalUrl) ?: false
+            val isInternalStorage: Boolean = it.mdBrowseGraphic?.fileName?.value?.contains(config.uploadExternalUrl ?: "/documents/") ?: false
             val fileName = if (isInternalStorage) {
                 it.mdBrowseGraphic?.fileName?.value?.substringAfterLast('/')
             } else {
