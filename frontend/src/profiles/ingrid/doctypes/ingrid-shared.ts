@@ -1713,6 +1713,7 @@ export abstract class IngridShared extends BaseDoctype {
         allowRedirectToDocument: false,
         allowMultiSelect: false,
         titleOfDocumentSelectorDialog: "Internen Verweis hinzufügen",
+        required: true,
         expressions: {
           hide: (field: FormlyFieldConfig) => {
             return field.form.value.referenceType != "uuidRef";

@@ -127,7 +127,7 @@ export class DocumentReferenceSelectorComponent
         }),
       );
     } else {
-      if (this.formControl.value) {
+      if (this.formControl.value?.length > 0) {
         let item = await this.mapInternalRef(<SelectedDocumentReference>{
           title: `???`,
           uuid: this.formControl?.value as string,
@@ -256,6 +256,7 @@ export class DocumentReferenceSelectorComponent
     event.stopImmediatePropagation();
     this.myModel.splice(index, 1);
     this.props.change?.(this.field, event);
+    setTimeout(() => this.formControl.setValue(this.myModel));
   }
 
   async openReference(item: DocumentReference | UrlReference) {
