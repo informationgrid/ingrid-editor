@@ -49,7 +49,7 @@ class M077MigrateAuditLogActorUuids : MigrationBase("0.77") {
 
     private val updateSql = """
         UPDATE audit_log SET
-            message = jsonb_set(message, '{actor}', to_jsonb((:login)::text))
+            message = jsonb_set(message, '{actor}', to_jsonb(:login))
         WHERE 
             message->>'actor' = :uuid
     """.trimIndent()
