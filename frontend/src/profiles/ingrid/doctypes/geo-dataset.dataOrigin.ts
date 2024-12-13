@@ -11,62 +11,6 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
     {
       required: false,
       viewComponent: DataOriginViewComponent,
-      /*      itemPreviewFields: {
-        category: (item) => {
-          let value = "";
-          if (item._type == "freeDescription") {
-            value = "Freie Beschreibung";
-          } else if (item._type == "internalDataOrigin") {
-            value = "Geodatensatz " + item.uuidRef;
-          }
-          return of({ value });
-        },
-        title: (item) => {
-          if (item._type == "internalDataOrigin") {
-            return geoDatasetDoctype.documentService
-              .load(item.uuidRef, false, false, true)
-              .pipe(
-                map((doc) => {
-                  return {
-                    value: doc?.document.title,
-                    navigateTo: {
-                      target: item.uuidRef,
-                      internal: true,
-                    },
-                  };
-                }),
-              );
-          } else {
-            return of({
-              value: item["title"],
-              navigateTo: { target: item.identifier },
-            });
-          }
-        },
-        subtitle: (item) => {
-          const codelistKey = item.dateType.key ?? null;
-          let value: string = item.date
-            ? new Date(item.date).toLocaleDateString("de-DE")
-            : "";
-          if (codelistKey != null) {
-            /!*geoDatasetDoctype.codecodelistPipe
-              .transform(codelistKey, "502")
-              .subscribe((codelist) => {
-                value += " - " + codelist;
-              });*!/
-          }
-          return of({
-            value,
-            navigateTo: null,
-          });
-        },
-        description: (item) => {
-          return of({
-            value: item.value,
-            navigateTo: null,
-          });
-        },
-      },*/
       _types: [
         {
           key: "internalDataOrigin",
@@ -132,35 +76,6 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
             },
           },
         }),
-        // geoDatasetDoctype.addGroupSimple(
-        //   null,
-        //   [
-        //     geoDatasetDoctype.addInputInline(
-        //       "url",
-        //       "URL Externer Geodatensatz",
-        //       {
-        //         wrappers: ["inline-help", "form-field"],
-        //         className: "flex-3",
-        //         hasInlineContextHelp: true,
-        //         updateOn: "change",
-        //         validators: {
-        //           validation: ["url"],
-        //         },
-        //         expressions: {
-        //           hide: (field: FormlyFieldConfig) => {
-        //             return field.form.value._type != "freeDescription";
-        //           },
-        //         },
-        //         validation: {
-        //           messages: {
-        //             required: "URL oder Datensatzverweis muss ausgefüllt sein",
-        //           },
-        //         },
-        //       },
-        //     ),
-        //   ],
-        //   { fieldGroupClassName: "flex-row gap-12" },
-        // ),
         geoDatasetDoctype.addInputInline("title", "Titel", {
           wrappers: ["inline-help", "form-field"],
           hasInlineContextHelp: true,
