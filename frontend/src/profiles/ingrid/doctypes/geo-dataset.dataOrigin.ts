@@ -47,6 +47,7 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
           required: true,
           wrappers: ["inline-help", "form-field"],
           hasInlineContextHelp: false,
+          updateOn: "change",
         }),
         geoDatasetDoctype.addGroupSimple(
           null,

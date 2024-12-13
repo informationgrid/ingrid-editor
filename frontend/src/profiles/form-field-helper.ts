@@ -180,6 +180,7 @@ export interface TextAreaOptions extends Options {
   autosize?: boolean;
   autosizeMinRows?: number;
   autosizeMaxRows?: number;
+  updateOn?: "change" | "blur" | "submit";
 }
 
 export interface AutocompleteOptions extends Options {
@@ -274,6 +275,9 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
       },
+      modelOptions: {
+        updateOn: options?.updateOn ?? "blur",
+      },
       expressions: {
         ...expressions,
         "props.attributes.aria-labelledby": (field: FormlyFieldConfig) =>
@@ -286,7 +290,7 @@ export class FormFieldHelper {
     id,
     label,
     elementIdPrefix,
-    options: Options = {},
+    options: TextAreaOptions = {},
   ): FormlyFieldConfig {
     return this.addTextArea(id, null, elementIdPrefix, {
       className: "top-align-suffix flex-1",
