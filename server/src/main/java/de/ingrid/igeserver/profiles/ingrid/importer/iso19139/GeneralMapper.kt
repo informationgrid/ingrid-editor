@@ -344,12 +344,19 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     fun getGraphicOverviews(): List<PreviewGraphic> = metadata.identificationInfo[0].identificationInfo?.graphicOverview
         ?.map {
-            PreviewGraphic(it.mdBrowseGraphic?.fileName?.value!!, it.mdBrowseGraphic.fileDescription?.value)
+            val isInternalStorage: Boolean = it.mdBrowseGraphic?.fileName?.value?.contains("/documents/") ?: false
+            val fileName = if (isInternalStorage) {
+                it.mdBrowseGraphic?.fileName?.value?.substringAfterLast('/')
+            } else {
+                it.mdBrowseGraphic?.fileName?.value
+            }
+            PreviewGraphic(fileName, it.mdBrowseGraphic?.fileDescription?.value, !isInternalStorage)
         } ?: emptyList()
 
     data class PreviewGraphic(
-        val fileName: String,
+        val fileName: String?,
         val description: String? = null,
+        val asLink: Boolean,
     )
 
     open fun getKeywords() = getKeywords(emptyList())
@@ -630,10 +637,39 @@ open class GeneralMapper(val isoData: IsoImportData) {
         }
         ?.joinToString(";") ?: ""
 
+    fun getFileReferences(): List<FileReference> = metadata.distributionInfo?.mdDistribution?.transferOptions
+        ?.flatMap { transferOption ->
+            transferOption.mdDigitalTransferOptions?.onLine
+                ?.filter { transferOption.mdDigitalTransferOptions.unitsOfDistribution?.value == "MB" }
+                ?.mapNotNull { it.ciOnlineResource }
+                ?.map { resource ->
+                    val codeListValue = resource.function?.code?.codeListValue
+                    val typeId =
+                        if (codeListValue == null) null else codeListService.getCodeListEntryId("2000", codeListValue, "iso")
+                    val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
+                    val fileName = resource.linkage.url?.substringAfterLast('/') ?: ""
+                    val sizeInBytes = transferOption.mdDigitalTransferOptions.transferSize?.value?.times(1_000_000)
+                    val fileReferenceLink = FileReferenceLink(
+                        asLink = false,
+                        value = fileName,
+                        uri = fileName,
+                        lastModified = null,
+                        sizeInBytes = sizeInBytes,
+                    )
+                    FileReference(
+                        title = resource.name?.value,
+                        description = resource.description?.value,
+                        format = keyValue,
+                        link = fileReferenceLink,
+                    )
+                } ?: emptyList()
+        } ?: emptyList()
+
     fun getReferences(): List<Reference> = metadata.distributionInfo?.mdDistribution?.transferOptions
         ?.flatMap { transferOption ->
             transferOption.mdDigitalTransferOptions?.onLine
                 ?.filter { it.ciOnlineResource?.applicationProfile?.value != "coupled" }
+                ?.filter { transferOption.mdDigitalTransferOptions.unitsOfDistribution?.value != "MB" }
                 ?.mapNotNull { it.ciOnlineResource }
                 ?.map { resource ->
                     val value = resource.function?.code?.codeListValue
@@ -862,6 +898,21 @@ data class Reference(
     val urlDataType: KeyValue?,
     val title: String?,
     val explanation: String?,
+)
+
+data class FileReference(
+    val title: String?,
+    val description: String?,
+    val format: KeyValue?,
+    val link: FileReferenceLink,
+)
+
+data class FileReferenceLink(
+    val asLink: Boolean = false,
+    val value: String,
+    val uri: String,
+    val lastModified: Date?,
+    val sizeInBytes: Number?,
 )
 
 data class DistributionFormat(
