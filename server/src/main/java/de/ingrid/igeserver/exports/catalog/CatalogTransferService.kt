@@ -49,7 +49,8 @@ class CatalogTransferService(
 
     /**
      *  Get all data from a query as a list of maps where the key is the column name and the value is the value
-     *  @param sql the sql query. WARNING: This method is not safe against SQL injection
+     *  WARNING: Unsafe SQL
+     *  @param sql the sql query.
      *  @return a list where each row is a maps where the key is the column name and the value is the value
      */
     fun getQueryResultsAsMap(sql: String): List<MutableMap<String?, Any?>> {
@@ -90,7 +91,17 @@ class CatalogTransferService(
         }
     }
 
-    internal fun generatePlaceholder(data: List<Map<String?, Any?>>): String = data.joinToString { row -> "(${row.values.joinToString { "?" }})" }
+    internal fun generatePlaceholder(data: List<Map<String?, Any?>>): String = data.joinToString { row ->
+        "(${
+            row.entries.joinToString {
+                when (it.key) {
+                    "data", "settings", "fingerprint", "permissions" -> "? ::jsonb"
+                    "created", "modified", "contentmodified", "pending_date", "last_expiry_time" -> "? ::timestamp at time zone 'UTC'"
+                    "tags", "path" -> "? ::text[]"
+                    else -> "?"
+                }
+            }})"
+    }
 
     /**
      * Set the query parameters for the given query
@@ -104,19 +115,6 @@ class CatalogTransferService(
                 query.setParameter(idx++, value)
             }
         }
-    }
-
-    fun transformValueForQuery(value: Any?): String = when (value) {
-        is String -> {
-            if (value == "null") {
-                "NULL"
-            } else {
-                // surround string with single quotes and escape single quotes in the string for SQL
-                "'${value.replace("'", "''")}'"
-            }
-        }
-        is List<*> -> "'{${value.joinToString { transformValueForQuery(it) }}}'"
-        else -> value.toString()
     }
 
     fun getEditorVersion() = getQueryResultsAsMap(
