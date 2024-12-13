@@ -126,10 +126,8 @@ export class CodelistService {
   private static mapToSelectOptionUi(language: string) {
     return (entry: CodelistEntry) =>
       ({
-          label:
-            entry.fields[language] ??
-            entry.fields["de"] ??
-            entry.fields["name"],
+        label:
+          entry.fields[language] ?? entry.fields["de"] ?? entry.fields["name"],
         value: entry.id,
         sortkey: entry.fields["sortkey"],
       }) as SelectOptionUi;
