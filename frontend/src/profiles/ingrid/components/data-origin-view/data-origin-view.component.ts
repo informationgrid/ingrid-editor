@@ -66,7 +66,7 @@ export class DataOriginViewComponent {
       ? new Date(this.item().date).toLocaleDateString("de-DE")
       : "";
 
-    const codelistKey = this.item().dateType.key ?? null;
+    const codelistKey = this.item().dateType?.key ?? null;
     if (codelistKey != null) {
       const codelistValue = this.codelistStore.getCodelistEntryValueByKey(
         "502",
@@ -79,15 +79,18 @@ export class DataOriginViewComponent {
   description = computed<string>(() => this.item().value);
 
   constructor() {
-    effect(() => {
-      if (this.item()._type == "internalDataOrigin") {
-        return this.documentService
-          .load(this.item().uuidRef, false, false, true)
-          .pipe(map((doc) => doc.document.title))
-          .subscribe((value) => this.title.set(value));
-      } else {
-        return this.title.set(this.item().title);
-      }
-    });
+    effect(
+      () => {
+        if (this.item()._type == "internalDataOrigin") {
+          return this.documentService
+            .load(this.item().uuidRef, false, false, true)
+            .pipe(map((doc) => doc.document.title))
+            .subscribe((value) => this.title.set(value));
+        } else {
+          return this.title.set(this.item().title);
+        }
+      },
+      { allowSignalWrites: true },
+    );
   }
 }
