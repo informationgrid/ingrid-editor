@@ -643,9 +643,9 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 ?.filter { transferOption.mdDigitalTransferOptions.unitsOfDistribution?.value == "MB" }
                 ?.mapNotNull { it.ciOnlineResource }
                 ?.map { resource ->
-                    val codeListValue = resource.function?.code?.codeListValue
+                    val fileFormatCode = resource.applicationProfile?.value
                     val typeId =
-                        if (codeListValue == null) null else codeListService.getCodeListEntryId("2000", codeListValue, "iso")
+                        if (fileFormatCode == null) null else codeListService.getCodeListEntryId("1320", fileFormatCode, "de")
                     val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
                     val fileName = resource.linkage.url?.substringAfterLast('/') ?: ""
                     val sizeInBytes = transferOption.mdDigitalTransferOptions.transferSize?.value?.times(1_000_000)
