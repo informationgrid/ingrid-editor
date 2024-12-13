@@ -163,18 +163,14 @@ export class DocumentReferenceSelectorComponent
       .afterClosed()
       .subscribe((item: SelectServiceResponse) => {
         if (!item) return;
-        if (this.allowMultiSelect) {
-          this.updateValue(
-            {
-              uuid: item.uuid,
-              layerNames: item.layerNames,
-              isExternalRef: false,
-            },
-            index,
-          );
-        } else {
-          this.updateValue(item.uuid);
-        }
+        this.updateValue(
+          {
+            uuid: item.uuid,
+            layerNames: item.layerNames,
+            isExternalRef: false,
+          },
+          index,
+        );
       });
   }
 
@@ -188,10 +184,9 @@ export class DocumentReferenceSelectorComponent
       docArray.push(item);
       setTimeout(() => this.formControl.setValue(docArray));
     } else {
-      setTimeout(() => this.formControl.setValue(item));
+      setTimeout(() => this.formControl.setValue(item.uuid));
     }
     this.props.change?.(this.field);
-    console.debug("update value", item);
   }
 
   private async mapInternalRef(

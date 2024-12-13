@@ -34,6 +34,7 @@ import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ResearchService
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -49,6 +50,7 @@ data class IsoImportData(
     val catalogId: String,
     val documentService: DocumentService,
     val addressMaps: MutableMap<String, String>,
+    val researchService: ResearchService,
 )
 
 data class IsoConverterOutput(
@@ -57,7 +59,7 @@ data class IsoConverterOutput(
 )
 
 @Service
-class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService) : IgeImporter {
+class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService) : IgeImporter {
     private val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -75,7 +77,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
-        val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps)
+        val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps, researchService)
         val output = try {
             val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
             convertIsoToJson(isoData, catalogProfileId)

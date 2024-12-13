@@ -30,7 +30,9 @@ import de.ingrid.igeserver.exports.iso.MDGeorectified
 import de.ingrid.igeserver.exports.iso.MDGeoreferenceable
 import de.ingrid.igeserver.exports.iso.MDGridSpatialRepresentation
 import de.ingrid.igeserver.exports.iso.MDVectorSpatialRepresentation
+import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
 import org.apache.logging.log4j.kotlin.logger
 
@@ -70,12 +72,36 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         }
         ?.map { KeyValue(null, it) } ?: emptyList()
 
-    fun getSourceDescriptions(): List<KeyValue> = metadata.dataQualityInfo
+    fun getSourceDescriptions(): List<LineageSourceDescription> = metadata.dataQualityInfo
         ?.flatMap { dqi ->
             dqi.dqDataQuality?.lineage?.liLinage?.source
-                ?.map { it.liSource?.description?.value } ?: emptyList()
+                ?.map {
+                    val identifier = it.liSource?.sourceCitation?.citation?.identifier?.getOrNull(0)?.mdIdentifier?.code?.value
+
+                    fun getGeoDatasetUuid(): String? {
+                        val response = isoData.researchService.query(
+                            catalogId,
+                            ResearchQuery(null, BoolFilter("AND", listOf("document_wrapper.type = 'InGridGeoDataset'", "deleted = 0", "state = 'PUBLISHED'", "data ->> 'identifier' = '$identifier'"), null, null, false)),
+                        )
+                        return if (response.totalHits == 1) response.hits[0].uuid else null
+                    }
+                    val internalGeoDatasetUuid = getGeoDatasetUuid()
+
+                    val dateType = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.dateType?.code?.codeListValue?.let { key ->
+                        codeListService.getCodeListEntryId("502", key, "iso")
+                    }
+                    LineageSourceDescription(
+                        value = it.liSource?.description?.value,
+                        date = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.date?.date,
+                        dateType = dateType,
+                        title = if (internalGeoDatasetUuid == null) it.liSource?.sourceCitation?.citation?.title?.value else null,
+                        identifier = if (internalGeoDatasetUuid == null) identifier else null,
+                        uuidRef = internalGeoDatasetUuid,
+                        _type = if (internalGeoDatasetUuid == null) "freeDescription" else "internalDataOrigin",
+                    )
+                } ?: emptyList()
         }
-        ?.map { KeyValue(null, it) } ?: emptyList()
+        ?.map { it } ?: emptyList()
 
     fun getProcessStep(): List<KeyValue> = metadata.dataQualityInfo
         ?.flatMap { dqi ->
@@ -475,4 +501,14 @@ data class GeometryContextInternal(
     val max: Double?,
     val unit: String?,
     val attributes: List<KeyValue>,
+)
+
+data class LineageSourceDescription(
+    val _type: String,
+    val value: String?,
+    val title: String?,
+    val identifier: String?,
+    val date: String?,
+    val dateType: String?,
+    val uuidRef: String?,
 )

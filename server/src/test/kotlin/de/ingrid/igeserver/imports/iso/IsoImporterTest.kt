@@ -30,12 +30,15 @@ import de.ingrid.igeserver.imports.expectedPersonSingle
 import de.ingrid.igeserver.imports.expectedPersonUnderOrganisation
 import de.ingrid.igeserver.imports.expectedPersonUnderOrganisation2
 import de.ingrid.igeserver.imports.minimalMetadata
+import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.igeserver.services.Result
 import de.ingrid.igeserver.utils.getString
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.AnnotationSpec
@@ -52,6 +55,7 @@ class IsoImporterTest : AnnotationSpec() {
     private val catalogService = mockk<CatalogService>()
     private val documentService = mockk<DocumentService>()
     private val documentRepository = mockk<DocumentRepository>()
+    private val researchService = mockk<ResearchService>()
 
     @BeforeAll
     fun beforeAll() {
@@ -60,6 +64,29 @@ class IsoImporterTest : AnnotationSpec() {
         every { codelistService.getCatalogCodelistKey("test", "3535", "von Drachenfels 94") } returns "1"
         every { codelistService.getCatalogCodelistKey("test", "3555", "Ganzflächige Biotopkartierung 94") } returns "1"
         every { codelistService.getCatalogCodelistKey("test", "6250", "Hessen") } returns "7"
+        every { researchService.query("test", any(), any()) } returnsMany listOf(
+            ResearchResponse(0, emptyList()),
+            ResearchResponse(
+                totalHits = 1,
+                hits = listOf(
+                    Result(
+                        id = 1,
+                        uuid = "00000000-0000-0000-0000-000000000000",
+                        title = null,
+                        type = null,
+                        created = null,
+                        contentModified = null,
+                        state = null,
+                        category = null,
+                        hasWritePermission = null,
+                        hasOnlySubtreeWritePermission = null,
+                        tags = null,
+                        responsibleUser = null,
+                        additional = null,
+                    ),
+                ),
+            ),
+        )
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog()
         every { documentService.docRepo } returns documentRepository
         every { documentRepository.findAddressByOrganisationName(any(), any()) } returns emptyList()
@@ -69,7 +96,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun importGeoservice() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService)
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geoservice_full.xml"), mutableMapOf())
 
         changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "D")
@@ -83,7 +110,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun importGeodataset() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService)
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full.xml"), mutableMapOf())
 
         changeUuidOfOrganisationTo(result, "Some Organisation", "some_organisation")
@@ -95,7 +122,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun addressHierarchy1() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService)
 
         val data = addPointOfContact(
             minimalMetadata,
@@ -119,7 +146,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun addressHierarchy2() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService)
 
         val data = addPointOfContact(
             minimalMetadata,
@@ -146,7 +173,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun addressHierarchy3() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService)
 
         val data = addPointOfContact(
             minimalMetadata,
@@ -179,7 +206,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun addressHierarchy4() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService)
 
         val data = addPointOfContact(
             minimalMetadata,
@@ -212,7 +239,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun addressHierarchy5() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService)
 
         val data = addPointOfContact(
             minimalMetadata,
@@ -238,7 +265,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun addressHierarchy6() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService)
 
         val data = addPointOfContact(
             minimalMetadata,
@@ -265,7 +292,7 @@ class IsoImporterTest : AnnotationSpec() {
 
     @Test
     fun importAddressAsPointOfContactMDAndPointOfContact() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService)
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService)
 
         val pointOfContact = """
             <gmd:pointOfContact>

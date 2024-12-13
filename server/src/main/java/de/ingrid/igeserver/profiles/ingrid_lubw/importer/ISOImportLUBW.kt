@@ -26,14 +26,15 @@ import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ImportProfileData
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ResearchService
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class ISOImportLUBW(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService) :
+class ISOImportLUBW(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService) :
     ISOImportProfile {
     override fun handle(catalogId: String, data: Metadata, addressMaps: MutableMap<String, String>): ImportProfileData? {
-        val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps)
+        val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps, researchService)
 
         return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset", "series" -> {

@@ -104,8 +104,8 @@
         "source": {
           "descriptions": [
             {
-              "key": null,
-              "value": "Datengrundlage"
+              "value": "Datengrundlage",
+              "_type": "freeDescription"
             }
           ],
           "processStep": {

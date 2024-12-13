@@ -45,7 +45,7 @@ export const CodelistStore = signalStore(
       codelistId: string,
       entryKey: string,
       defaultValue?: string,
-    ) {
+    ): string {
       const codelist = this._getCodelist(codelistId);
       const entryFields = codelist.entries.find(
         (entry) => entry.id === entryKey,

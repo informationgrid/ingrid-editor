@@ -28,6 +28,8 @@ import {
   MetadataOption,
   MetadataOptionItem,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
+import { of } from "rxjs";
+import { dataOrigin } from "./geo-dataset.dataOrigin";
 
 @Injectable({
   providedIn: "root",
@@ -408,10 +410,7 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [
             this.addGroupSimple("source", [
-              this.addRepeatList("descriptions", "Datengrundlage", {
-                className: "optional flex-1",
-                asAutocomplete: true,
-              }),
+              dataOrigin(this),
               this.addGroupSimple("processStep", [
                 this.addRepeatList("description", "Herstellungsprozess", {
                   className: "optional flex-1",

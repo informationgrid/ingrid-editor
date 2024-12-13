@@ -52,6 +52,8 @@ import {
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { IgeError } from "../../../app/models/ige-error";
+import { CodelistStore } from "../../../app/store/codelist/codelist.store";
+import { ReferenceViewComponent } from "../components/reference-view/reference-view.component";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -73,9 +75,12 @@ export abstract class IngridShared extends BaseDoctype {
   private snack = inject(MatSnackBar);
   protected configService = inject(ConfigService);
   private behaviourService = inject(BehaviourService);
-  private documentService = inject(DocumentService);
+  documentService = inject(DocumentService);
   private keywordAnalysis = inject(KeywordAnalysis);
   private uploadService = inject(UploadService);
+
+  protected codelistStore = inject(CodelistStore);
+  protected codelistService = inject(CodelistService);
 
   options = {
     dynamicRequired: {
@@ -1526,6 +1531,7 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection("Verweise", [
       this.addRepeatDetailList("references", "Verweise", {
         fields: [this.urlRefFields()],
+        viewComponent: ReferenceViewComponent,
         validators: {
           downloadLinkWhenOpenData: {
             expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
