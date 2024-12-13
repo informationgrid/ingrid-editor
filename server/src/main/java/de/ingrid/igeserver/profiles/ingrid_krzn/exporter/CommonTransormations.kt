@@ -35,10 +35,10 @@ import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.Specialized
 import java.net.URI
 import kotlin.reflect.KClass
 
-fun getKrznTransformer(docType: Enum<*>): KClass<out Any>? {
-    if (docType !is InGridDocType) return null
+fun getKrznTransformer(docType: String): KClass<out Any>? {
+    val inGridDocType = InGridDocType.entries.find { it.name == docType } ?: return null
 
-    return when (docType) {
+    return when (inGridDocType) {
         InGridDocType.InGridGeoDataset -> GeodatasetTransformerKrzn::class
         InGridDocType.InGridGeoService -> GeoserviceTransformerKrzn::class
         InGridDocType.InGridDataCollection -> DataCollectionTransformerKrzn::class
