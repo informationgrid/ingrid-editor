@@ -22,7 +22,7 @@ import { IgeError } from "./models/ige-error";
 import { ConfigService, Configuration } from "./services/config/config.service";
 import { AuthenticationFactory } from "./security/auth.factory";
 
-export function initializeKeycloakAndGetUserInfo(
+export async function initializeKeycloakAndGetUserInfo(
   authFactory: AuthenticationFactory,
   configService: ConfigService,
 ) {
