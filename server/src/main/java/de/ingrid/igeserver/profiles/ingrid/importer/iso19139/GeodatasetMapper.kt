@@ -34,9 +34,10 @@ import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
+import de.ingrid.mdek.upload.Config
 import org.apache.logging.log4j.kotlin.logger
 
-open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
+open class GeodatasetMapper(isoData: IsoImportData, config: Config) : GeneralMapper(isoData, config) {
 
     val log = logger()
     val identificationInfo = metadata.identificationInfo[0].dataIdentificationInfo

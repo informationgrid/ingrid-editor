@@ -35,6 +35,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.mdek.upload.Config
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -59,7 +60,7 @@ data class IsoConverterOutput(
 )
 
 @Service
-class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService) : IgeImporter {
+class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val config: Config) : IgeImporter {
     private val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -103,22 +104,22 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
 
         when (val hierarchyLevel = isoData.data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "service" -> {
-                model = GeoserviceMapper(isoData)
+                model = GeoserviceMapper(isoData, config)
                 templateEngine.render("imports/ingrid/geoservice.jte", mapOf("model" to model), output)
             }
 
             "dataset" -> {
-                model = GeodatasetMapper(isoData)
+                model = GeodatasetMapper(isoData, config)
                 templateEngine.render("imports/ingrid/geodataset.jte", mapOf("model" to model), output)
             }
 
             "series" -> {
-                model = GeodatasetMapper(isoData)
+                model = GeodatasetMapper(isoData, config)
                 templateEngine.render("imports/ingrid/geodataset.jte", mapOf("model" to model), output)
             }
 
             "application" -> {
-                model = ApplicationMapper(isoData)
+                model = ApplicationMapper(isoData, config)
                 templateEngine.render("imports/ingrid/application.jte", mapOf("model" to model), output)
             }
 

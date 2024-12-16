@@ -35,6 +35,7 @@ import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertGml32ToWkt
+import de.ingrid.mdek.upload.Config
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
@@ -45,7 +46,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-open class GeneralMapper(val isoData: IsoImportData) {
+open class GeneralMapper(val isoData: IsoImportData, val config: Config) {
 
     private val log = logger()
 
@@ -344,7 +345,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     fun getGraphicOverviews(): List<PreviewGraphic> = metadata.identificationInfo[0].identificationInfo?.graphicOverview
         ?.map {
-            val isInternalStorage: Boolean = it.mdBrowseGraphic?.fileName?.value?.contains("/documents/") ?: false
+            val isInternalStorage: Boolean = it.mdBrowseGraphic?.fileName?.value?.contains(config.uploadExternalUrl ?: "/documents/") ?: false
             val fileName = if (isInternalStorage) {
                 it.mdBrowseGraphic?.fileName?.value?.substringAfterLast('/')
             } else {
@@ -643,9 +644,9 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 ?.filter { transferOption.mdDigitalTransferOptions.unitsOfDistribution?.value == "MB" }
                 ?.mapNotNull { it.ciOnlineResource }
                 ?.map { resource ->
-                    val codeListValue = resource.function?.code?.codeListValue
+                    val fileFormatCode = resource.applicationProfile?.value
                     val typeId =
-                        if (codeListValue == null) null else codeListService.getCodeListEntryId("2000", codeListValue, "iso")
+                        if (fileFormatCode == null) null else codeListService.getCodeListEntryId("1320", fileFormatCode, "de")
                     val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
                     val fileName = resource.linkage.url?.substringAfterLast('/') ?: ""
                     val sizeInBytes = transferOption.mdDigitalTransferOptions.transferSize?.value?.times(1_000_000)
