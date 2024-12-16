@@ -53,6 +53,7 @@ import { UploadService } from "../../../app/shared/upload/upload.service";
 import { IgeError } from "../../../app/models/ige-error";
 import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 import { ReferenceViewComponent } from "../components/reference-view/reference-view.component";
+import { DocumentService } from "../../../app/services/document/document.service";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
