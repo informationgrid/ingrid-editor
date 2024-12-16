@@ -269,6 +269,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       "autocomplete",
       "datepicker",
       "repeatList",
+      "repeatChip",
       "unit-input",
       // "table",
     ];
@@ -317,7 +318,12 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       ) {
         field.type += "Print";
       }
+
+      if (field.type === "repeatDetailList") {
+        field.props.viewComponent = this.viewComponents[field.key as string];
+      }
     });
+
     // TODO: remove excludedTypes and use hideInPreview instead
     return fields
       ?.filter((field) => !excludedTypes.includes(<string>field.type))

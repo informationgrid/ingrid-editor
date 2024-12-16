@@ -273,13 +273,25 @@ data class DataQualityLineage(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataQualityLineageSource(
-    val descriptions: List<KeyValue>?,
+    val descriptions: List<LineageSourceDescription>?,
     val processStep: ProcessStep?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ProcessStep(
     val description: List<KeyValue>?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class LineageSourceDescription(
+    val _type: String,
+    val value: String,
+    val title: String?,
+    val identifier: String?,
+    val date: String?,
+    val dateType: KeyValue?,
+    val uuidRef: String?,
+    val url: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

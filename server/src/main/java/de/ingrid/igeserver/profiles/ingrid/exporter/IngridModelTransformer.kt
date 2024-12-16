@@ -788,6 +788,7 @@ open class IngridModelTransformer(
 
         pointOfContact =
             data.pointOfContact?.filter { addressIsPointContactMD(it).not() && hasKnownAddressType(it) }
+                ?.filter { it.type?.key != "5" } // Distributor has its own place in ISO
                 ?.mapNotNull { toAddressModelTransformer(it) } ?: emptyList()
         contacts = data.pointOfContact?.filter { addressIsPointContactMD(it) && hasKnownAddressType(it) }
             ?.mapNotNull { toAddressModelTransformer(it) } ?: emptyList()

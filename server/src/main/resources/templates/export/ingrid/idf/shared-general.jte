@@ -934,8 +934,11 @@ ${contentInfo}
             @for( FileReferenceTransferOption fileReference : page.getFileReferenceTransferOptions() )
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
+                        <gmd:unitsOfDistribution>
+                            <gco:CharacterString>MB</gco:CharacterString>
+                        </gmd:unitsOfDistribution>
                         <gmd:transferSize>
-                           <gco:Real>${fileReference.getLink().getSizeInBytes()}</gco:Real>
+                           <gco:Real>${(TransformationTools.bytesToMegabytes(fileReference.getLink().getSizeInBytes()))}</gco:Real>
                         </gmd:transferSize>
                         <gmd:onLine>
                             <gmd:CI_OnlineResource>

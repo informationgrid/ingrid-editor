@@ -34,6 +34,12 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { TranslocoDirective } from "@ngneat/transloco";
 import { MatIcon } from "@angular/material/icon";
 
+export interface AddButtonOptions {
+  key: string;
+  value: string;
+  icon?: string;
+}
+
 @Component({
   selector: "ige-add-button",
   templateUrl: "./add-button.component.html",
@@ -67,7 +73,7 @@ export class AddButtonComponent implements OnInit {
 
   @Output() add = new EventEmitter();
 
-  _options: { key; value }[] = [];
+  _options: AddButtonOptions[] = [];
 
   constructor() {}
 

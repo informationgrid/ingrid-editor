@@ -51,6 +51,8 @@ import {
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { IgeError } from "../../../app/models/ige-error";
+import { CodelistStore } from "../../../app/store/codelist/codelist.store";
+import { ReferenceViewComponent } from "../components/reference-view/reference-view.component";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -72,8 +74,12 @@ export abstract class IngridShared extends BaseDoctype {
   private snack = inject(MatSnackBar);
   protected configService = inject(ConfigService);
   private behaviourService = inject(BehaviourService);
+  documentService = inject(DocumentService);
   private keywordAnalysis = inject(KeywordAnalysis);
   private uploadService = inject(UploadService);
+
+  protected codelistStore = inject(CodelistStore);
+  protected codelistService = inject(CodelistService);
 
   options = {
     dynamicRequired: {
@@ -1479,6 +1485,7 @@ export abstract class IngridShared extends BaseDoctype {
     return this.addSection("Verweise", [
       this.addRepeatDetailList("references", "Verweise", {
         fields: [this.urlRefFields()],
+        viewComponent: ReferenceViewComponent,
         validators: {
           downloadLinkWhenOpenData: {
             expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
@@ -1660,6 +1667,7 @@ export abstract class IngridShared extends BaseDoctype {
         allowRedirectToDocument: false,
         allowMultiSelect: false,
         titleOfDocumentSelectorDialog: "Internen Verweis hinzufügen",
+        required: true,
         expressions: {
           hide: (field: FormlyFieldConfig) => {
             return field.form.value.referenceType != "uuidRef";
@@ -1956,13 +1964,16 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   private sortFunctionPriorityDatasets(
-    a: SelectOptionUi,
-    b: SelectOptionUi,
+    a: CodelistEntry,
+    b: CodelistEntry,
+    language: string,
   ): number {
+    const labelA = a.fields[language];
+    const labelB = b.fields[language];
     // put INVALID items to the end of the list
-    if (a.label.indexOf("INVALID -") === 0) return 1;
-    if (b.label.indexOf("INVALID -") === 0) return -1;
-    return a.label?.localeCompare(b.label);
+    if (labelA.indexOf("INVALID -") === 0) return 1;
+    if (labelB.indexOf("INVALID -") === 0) return -1;
+    return labelA?.localeCompare(labelB);
   }
 
   private adaptPriorityDatasetItem(

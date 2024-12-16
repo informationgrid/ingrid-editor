@@ -385,6 +385,7 @@ data class Source(
 
 data class LISource(
     val description: CharacterString?,
+    val sourceCitation: Citation?,
 )
 
 data class DQReport(

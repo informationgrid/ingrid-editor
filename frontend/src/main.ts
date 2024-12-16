@@ -287,6 +287,10 @@ bootstrapApplication(AppComponent, {
             component: PrintTypeComponent,
           },
           {
+            name: "repeatChipPrint",
+            component: PrintTypeComponent,
+          },
+          {
             name: "tablePrint",
             component: PrintTypeComponent,
           },

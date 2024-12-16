@@ -47,6 +47,10 @@ class InGridKrznComponent extends InGridComponent {
     ].forEach((docType) => {
       docType.options.dynamicRequired.accessConstraints = undefined;
       docType.options.required.accessConstraints = true;
+
+      if (docType === this.informationSystem) {
+        docType.options.required.useConstraints = true;
+      }
     });
   }
 }

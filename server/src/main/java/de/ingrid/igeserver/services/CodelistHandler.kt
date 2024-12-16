@@ -40,7 +40,7 @@ class CodelistHandler(
 ) {
 
     companion object {
-        fun toCodelistEntry(id: String, german: String, data: String? = null, english: String? = null): JsonNode {
+        fun toCodelistEntry(id: String, german: String, data: String? = null, english: String? = null, description: String? = null): JsonNode {
             return jacksonObjectMapper().createObjectNode().apply {
                 put("id", id)
                 if (data != null) put("data", data)
@@ -51,6 +51,7 @@ class CodelistHandler(
                         if (english != null) put("en", english)
                     },
                 )
+                if (description != null) put("description", description)
             }
         }
     }

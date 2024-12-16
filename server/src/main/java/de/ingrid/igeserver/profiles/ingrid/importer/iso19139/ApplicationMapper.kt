@@ -23,9 +23,10 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
+import de.ingrid.mdek.upload.Config
 import org.apache.logging.log4j.kotlin.logger
 
-open class ApplicationMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
+open class ApplicationMapper(isoData: IsoImportData, config: Config) : GeneralMapper(isoData, config) {
 
     val log = logger()
     val identificationInfo = metadata.identificationInfo[0].dataIdentificationInfo

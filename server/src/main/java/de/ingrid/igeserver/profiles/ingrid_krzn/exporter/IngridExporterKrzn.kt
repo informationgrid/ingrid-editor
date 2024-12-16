@@ -30,7 +30,6 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
-import de.ingrid.igeserver.profiles.ingrid.types.InGridDocType
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -70,7 +69,7 @@ class IngridIdfExporterKrzn(
     @Lazy documentService: DocumentService,
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
-    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getKrznTransformer(InGridDocType.valueOf(docType)) ?: super.getModelTransformerClass(docType)
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getKrznTransformer(docType) ?: super.getModelTransformerClass(docType)
 }
 
 @Service
@@ -88,7 +87,7 @@ class IngridLuceneExporterKrzn(
 
     override fun getTransformer(data: TransformerData): Any = when (data.type) {
         IngridDocType.DOCUMENT -> {
-            getKrznTransformer(InGridDocType.valueOf(data.doc.type))
+            getKrznTransformer(data.doc.type)
                 ?.constructors
                 ?.first()
                 ?.call(

@@ -71,10 +71,15 @@ export class SelectOption {
 
 export interface SelectOptionUi extends SelectOption {
   disabled?: boolean;
-  sortkey?: string;
+  sortkey?: CodelistSort;
 }
 
-export type CodelistSort = "NO_SORT" | "value" | "label" | "sortkey";
+export type CodelistSort =
+  | "NO_SORT"
+  | "value"
+  | "label"
+  | "sortkey"
+  | "description";
 
 @UntilDestroy()
 @Injectable({
@@ -94,54 +99,63 @@ export class CodelistService {
     language = "de",
     sortBy:
       | CodelistSort
-      | ((a: SelectOptionUi, b: SelectOptionUi) => number) = "label",
+      | ((
+          a: CodelistEntry,
+          b: CodelistEntry,
+          language: string,
+        ) => number) = "label",
   ): SelectOptionUi[] => {
     if (!codelist) {
       return [];
     }
 
-    const items = codelist.entries.map(
-      (entry) =>
-        ({
-          label:
-            entry.fields[language] ??
-            entry.fields["de"] ??
-            entry.fields["name"],
-          value: entry.id,
-          sortkey: entry.fields["sortkey"],
-        }) as SelectOptionUi,
-    );
-
+    // Sort codelist entries
     const sortFunction =
       typeof sortBy === "function"
-        ? sortBy
-        : CodelistService.getDefaultSortFunction(sortBy);
+        ? (a: CodelistEntry, b: CodelistEntry) => sortBy(a, b, language)
+        : CodelistService.getSortFunction(sortBy, language);
 
-    return CodelistService.addFavorites(
-      codelist.id,
-      sortBy === "NO_SORT" ? items : items.sort(sortFunction),
-    );
+    // Map to SelectOptionUi
+    const items: SelectOptionUi[] = [...codelist.entries]
+      .sort(sortFunction)
+      .map(CodelistService.mapToSelectOptionUi(language));
+
+    return CodelistService.addFavorites(codelist.id, items);
   };
 
-  private static getDefaultSortFunction(sortBy: CodelistSort) {
-    return (a: SelectOptionUi, b: SelectOptionUi) =>
-      CodelistService.compareEntries(a, b, sortBy);
+  private static mapToSelectOptionUi(language: string) {
+    return (entry: CodelistEntry) =>
+      ({
+        label:
+          entry.fields[language] ?? entry.fields["de"] ?? entry.fields["name"],
+        value: entry.id,
+        sortkey: entry.fields["sortkey"],
+      }) as SelectOptionUi;
   }
 
-  private static compareEntries(
-    a: SelectOptionUi,
-    b: SelectOptionUi,
+  private static getSortFunction(
     sortBy: CodelistSort,
+    language: string = "de",
   ) {
-    switch (sortBy) {
-      case "label":
-        return a[sortBy]?.localeCompare(b[sortBy]);
-      case "value":
-      case "sortkey":
-        return a[sortBy]?.localeCompare(b[sortBy], undefined, {
-          numeric: true,
-        });
-    }
+    return (a: CodelistEntry, b: CodelistEntry) => {
+      switch (sortBy) {
+        case "label":
+          return (a.fields[language] ?? a.fields["name"])?.localeCompare(
+            b.fields[language] ?? b.fields["name"],
+          );
+        case "description":
+          return a.description?.localeCompare(b.description);
+        case "value":
+          return a.id?.localeCompare(b.id);
+        case "sortkey":
+          return a.fields[sortBy]?.localeCompare(b.fields[sortBy], undefined, {
+            numeric: true,
+          });
+        case "NO_SORT":
+        default:
+          return 0;
+      }
+    };
   }
 
   private queue = [];
