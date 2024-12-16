@@ -55,9 +55,7 @@ class InGridBastComponent extends InGridComponent {
     [this.geoDataset, this.geoService].forEach((docType) => {
       const options = docType.options;
       options.required.resourceDateType = true;
-      options.required.spatialReferences = false;
       options.dynamicRequired.spatialReferences = openDataActiveNotRequired;
-      options.required.spatialSystems = false;
       options.dynamicRequired.spatialSystems = openDataActiveNotRequired;
     });
     const geodatasetOptions = this.geoDataset.geodatasetOptions;
@@ -69,8 +67,7 @@ class InGridBastComponent extends InGridComponent {
 
     const dataCollectionOptions = this.dataCollection.options;
     dataCollectionOptions.required.resourceDateType = true;
-    dataCollectionOptions.required.spatialReferences = false;
-    dataCollectionOptions.required.spatialSystems = false;
+    dataCollectionOptions.dynamicRequired.spatialReferences = () => false;
   }
 }
 

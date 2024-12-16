@@ -57,7 +57,7 @@ export class GeoServiceDoctype extends IngridShared {
 
   constructor() {
     super();
-    this.options.required.spatialSystems = true;
+    this.options.dynamicRequired.spatialSystems = () => true;
     this.options.required.useConstraints = true;
   }
 

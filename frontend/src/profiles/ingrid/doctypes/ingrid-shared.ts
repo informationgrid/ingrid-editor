@@ -86,11 +86,11 @@ export abstract class IngridShared extends BaseDoctype {
       accessConstraints: (field: FormlyFieldConfig) =>
         field.options.formState.mainModel?.properties?.isInspireIdentified !==
         undefined,
-      openDataCategories: undefined,
-      spatialReferences: undefined,
-      spatialSystems: undefined,
-      dataFormat: undefined,
-      spatialScope: undefined,
+      openDataCategories: (field: FormlyFieldConfig) => true,
+      spatialReferences: (field: FormlyFieldConfig) => true,
+      spatialSystems: (field: FormlyFieldConfig) => false,
+      dataFormat: (field: FormlyFieldConfig) => false,
+      spatialScope: (field: FormlyFieldConfig) => false,
     },
     dynamicHide: {
       openDataCategories: (field: FormlyFieldConfig) =>
@@ -100,10 +100,7 @@ export abstract class IngridShared extends BaseDoctype {
       freeKeywords: false,
       useLimitation: false,
       topicCategories: true,
-      accessConstraints: false,
       resourceDateType: false,
-      spatialReferences: true,
-      spatialSystems: false,
       extraInfoLangData: false,
       useConstraints: false,
     },
@@ -617,7 +614,6 @@ export abstract class IngridShared extends BaseDoctype {
           view: "chip",
           asSelect: true,
           showSearch: true,
-          required: true,
           options: this.getCodelistForSelect("6400", "openDataCategories"),
           codelistId: "6400",
           expressions: {
@@ -673,7 +669,7 @@ export abstract class IngridShared extends BaseDoctype {
                 codelistId: "6360",
                 expressions: {
                   "props.required": (field: FormlyFieldConfig) =>
-                    this.options.dynamicRequired.spatialScope?.(field),
+                    this.options.dynamicRequired.spatialScope(field),
                   className: (field: FormlyFieldConfig) =>
                     field.props.required ? "" : "optional",
                   hide: (field: FormlyFieldConfig) =>
@@ -885,23 +881,21 @@ export abstract class IngridShared extends BaseDoctype {
         "spatial",
         [
           this.addSpatial("references", "Raumbezug", {
-            required: this.options.required.spatialReferences,
             hasInlineContextHelp: true,
             defaultValue: defaultSpatial ? defaultSpatial : undefined,
             expressions: {
               "props.required": (field: FormlyFieldConfig) =>
-                this.options.dynamicRequired.spatialReferences?.(field),
+                this.options.dynamicRequired.spatialReferences(field),
             },
           }),
           this.addRepeatList("spatialSystems", "Koordinatenreferenzsysteme", {
-            required: this.options.required.spatialSystems,
             asSelect: false,
             showSearch: true,
             options: this.getCodelistForSelect("100", "spatialSystems"),
             codelistId: "100",
             expressions: {
               "props.required": (field: FormlyFieldConfig) =>
-                this.options.dynamicRequired.spatialSystems?.(field),
+                this.options.dynamicRequired.spatialSystems(field),
             },
           }),
           this.addGroup(
@@ -1376,7 +1370,6 @@ export abstract class IngridShared extends BaseDoctype {
         this.addRepeatList("accessConstraints", "Zugriffsbeschränkungen", {
           asSelect: false,
           showSearch: true,
-          required: this.options.required.accessConstraints,
           options: this.getCodelistForSelect("6010", "accessConstraints"),
           codelistId: "6010",
           expressions: {
@@ -1429,7 +1422,7 @@ export abstract class IngridShared extends BaseDoctype {
         this.addRepeat("format", "Datenformat", {
           expressions: {
             "props.required": (field: FormlyFieldConfig) =>
-              this.options.dynamicRequired.dataFormat?.(field),
+              this.options.dynamicRequired.dataFormat(field),
             className: (field: FormlyFieldConfig) =>
               field.props.required ? "" : "optional",
           },
