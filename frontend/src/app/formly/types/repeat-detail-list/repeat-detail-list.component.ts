@@ -55,7 +55,7 @@ import {
   AddButtonOptions,
 } from "../../../shared/add-button/add-button.component";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { debounceTime } from "rxjs/operators";
+import { debounceTime, startWith } from "rxjs/operators";
 
 interface RepeatDetailListProps extends FormlyFieldProps {
   titleField: string;
@@ -97,7 +97,11 @@ export class RepeatDetailListComponent
 
   ngOnInit(): void {
     this.formControl.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(0))
+      .pipe(
+        untilDestroyed(this),
+        startWith(this.formControl.value),
+        debounceTime(0),
+      )
       .subscribe((items) => this.previewItems.set(items));
   }
 

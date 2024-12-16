@@ -21,7 +21,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
 import { HttpClient } from "@angular/common/http";
-import { inject } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { TranslocoService } from "@ngneat/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
@@ -199,6 +199,9 @@ export interface UnitInputOptions extends InputOptions {
 
 export class FormFieldHelper {
   protected transloco = inject(TranslocoService);
+
+  // remember view components for print view
+  protected viewComponents: { [field: string]: Component } = {};
 
   addSection(label: string, fields: any[]) {
     return {
@@ -411,6 +414,7 @@ export class FormFieldHelper {
     options?: RepeatDetailListOptions,
   ): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
+    this.viewComponents[id] = options?.viewComponent;
     return {
       key: id,
       type: "repeatDetailList",
