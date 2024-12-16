@@ -74,6 +74,7 @@ data class UrlBean(
     var type: KeyValue? = null,
     var title: String? = null,
     var explanation: String? = null,
+    val referenceType: String = "url",
 )
 
 data class LocationBean(
