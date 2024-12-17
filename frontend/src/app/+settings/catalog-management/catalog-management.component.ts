@@ -42,10 +42,8 @@ import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { CatalogStore } from "../../store/catalog/catalog.store";
-import {
-  LinkInfo,
-  UploadFilesDialogComponent,
-} from "../../formly/types/table/upload-files-dialog/upload-files-dialog.component";
+import { UploadFilesDialogComponent } from "../../formly/types/table/upload-files-dialog/upload-files-dialog.component";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "ige-catalog-management",
@@ -72,6 +70,7 @@ import {
 })
 export class CatalogManagementComponent implements OnInit {
   private catalogStore = inject(CatalogStore);
+  private snackBar = inject(MatSnackBar);
 
   activeCatalog = computed(() => {
     const active = this.catalogStore.entityMap()[this.currentCatalog];
@@ -133,12 +132,18 @@ export class CatalogManagementComponent implements OnInit {
         data: {
           targetUrl: `${this.configService.getConfiguration().backendUrl}catalogs/import`,
           multiple: false,
+          autoSubmit: true,
         },
       })
       .afterClosed()
-      .pipe(filter((result) => result !== undefined))
-      .subscribe((files: LinkInfo[]) => {
-        // TODO: Switch to new Catalog and/or reload Catalogs
+      .pipe(
+        filter((result) => result !== undefined),
+        tap(() => this.reloadCatalogs()),
+      )
+      .subscribe(() => {
+        this.snackBar.open("Katalog erfolgreich importiert", "OK", {
+          duration: 3000,
+        });
       });
   }
 
@@ -160,8 +165,12 @@ export class CatalogManagementComponent implements OnInit {
   private initCatalogAdminAndReloadCatalogs(catalog: Catalog) {
     return this.catalogService
       .setCatalogAdmin(catalog.id, [this.currentUserID])
-      .pipe(tap(() => this.catalogService.getCatalogs().subscribe()))
+      .pipe(tap(() => this.reloadCatalogs()))
       .subscribe();
+  }
+
+  private reloadCatalogs() {
+    this.catalogService.getCatalogs().subscribe();
   }
 
   private switchCatalogIfNoCurrentCatalog(response: Catalog) {

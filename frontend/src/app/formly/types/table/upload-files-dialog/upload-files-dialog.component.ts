@@ -76,6 +76,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   extractZipFiles = false;
   extractInProgress = false;
   infoText;
+  autoSubmit: boolean;
   multiple: WritableSignal<boolean> = signal(true);
   dialogTitle = computed(() =>
     this.multiple() ? "Datei(en) hochladen" : "Datei hochladen",
@@ -103,6 +104,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
       enableFileUploadReuse?: boolean;
       enableFileUploadRename?: boolean;
       multiple?: boolean;
+      autoSubmit?: boolean;
       targetUrl?: string;
     },
   ) {
@@ -115,6 +117,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
     this.allowedUploadTypes = data.allowedUploadTypes;
     this.hasExtractZipOption = data.hasExtractZipOption;
     this.infoText = data.infoText;
+    this.autoSubmit = data.autoSubmit ?? false;
     this.multiple.set(data.multiple ?? true);
     this.enableFileUploadOverride.set(data.enableFileUploadOverride ?? true);
     this.enableFileUploadReuse.set(data.enableFileUploadReuse ?? true);
@@ -247,6 +250,9 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
 
   handleUploadComplete() {
     this.uploadComplete = true;
+    if (this.autoSubmit) {
+      this.submit();
+    }
   }
 
   updateChosenFiles($event: TransfersWithErrorInfo[]) {

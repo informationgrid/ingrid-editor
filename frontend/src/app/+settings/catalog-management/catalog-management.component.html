@@ -3,16 +3,18 @@
 
     <div main-header class="flex-col justify-content-start align-items-stretch">
         @if (profiles().length > 0) {
-            <div>
-                <ige-add-button
-                    buttonType="flat"
-                    (add)="showCreateCatalogDialog()"
-                ></ige-add-button>
-            </div>
-            <div>
-                <button mat-flat-button (click)="showImportDialog()">
-                    Importieren
-                </button>
+            <div class="flex-row gap-12">
+                <div>
+                    <ige-add-button
+                        buttonType="flat"
+                        (add)="showCreateCatalogDialog()"
+                    ></ige-add-button>
+                </div>
+                <div>
+                    <button mat-stroked-button (click)="showImportDialog()">
+                        Importieren
+                    </button>
+                </div>
             </div>
         }
         @if (noAssignedCatalogs) {
