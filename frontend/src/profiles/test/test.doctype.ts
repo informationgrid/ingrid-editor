@@ -52,8 +52,10 @@ export class TestDoctype extends BaseDoctype {
           wrappers: ["panel", "form-field"],
           required: true,
           maxLength: 10,
+          updateOn: "change",
           expressions: {
-            "props.description": '(model.textMaxLength||"").length+" / 10"',
+            "props.description": (field: FormlyFieldConfig) =>
+              (field.model.textMaxLength || "").length + " / 10",
           },
         }),
         this.addInput("optionalText", "Optionales Textfeld", {

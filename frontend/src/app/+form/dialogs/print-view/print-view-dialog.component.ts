@@ -22,7 +22,7 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from "@angular/material/dialog";
-import { Component, Inject } from "@angular/core";
+import { Component, effect, Inject, signal } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { FormlyFormOptions, FormlyModule } from "@ngx-formly/core";
 import { MatIconModule } from "@angular/material/icon";
@@ -59,9 +59,9 @@ import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-
 export class PrintViewDialogComponent {
   profile: any;
   form = new UntypedFormGroup({});
-  options: FormlyFormOptions = {};
   formCompare = new UntypedFormGroup({});
-  compareView = false;
+  options: FormlyFormOptions = {};
+  compareView = signal<boolean>(false);
 
   constructor(
     public dialogRef: MatDialogRef<PrintViewDialogComponent>,
@@ -71,9 +71,19 @@ export class PrintViewDialogComponent {
       disabled: true,
       mainModel: data.model,
     };
+    // delay disabling of form since it first needs to be initialized
+    setTimeout(() => this.form.disable());
+
+    effect(() => {
+      if (this.compareView()) setTimeout(() => this.formCompare.disable());
+    });
   }
 
   print() {
     window.print();
+  }
+
+  toggleCompareView(): void {
+    this.compareView.set(!this.compareView());
   }
 }

@@ -49,8 +49,7 @@ class InGridKommunalStComponent extends InGridComponent {
     ].forEach((docType) => {
       docType.options.required.freeKeywords = true;
       docType.options.required.useLimitation = true;
-      docType.options.dynamicRequired.accessConstraints = undefined;
-      docType.options.required.accessConstraints = true;
+      docType.options.dynamicRequired.accessConstraints = () => true;
     });
   }
 }

@@ -22,6 +22,7 @@ import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeBast } from "./ingrid-bast/doctypes/geo-dataset.doctype";
 import { GeoServiceDoctypeBast } from "./ingrid-bast/doctypes/geo-service.doctype";
 import { DataCollectionDoctypeBast } from "./ingrid-bast/doctypes/data-collection.doctype";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @Component({
   template: "",
@@ -49,14 +50,12 @@ class InGridBastComponent extends InGridComponent {
   ];
 
   private modifyFormFieldConfiguration() {
-    const openDataActiveNotRequired =
-      '!field.form.root.get("isOpenData")?.value';
+    const openDataActiveNotRequired = (field: FormlyFieldConfig) =>
+      !field.form.root.get("isOpenData")?.value;
     [this.geoDataset, this.geoService].forEach((docType) => {
       const options = docType.options;
       options.required.resourceDateType = true;
-      options.required.spatialReferences = false;
       options.dynamicRequired.spatialReferences = openDataActiveNotRequired;
-      options.required.spatialSystems = false;
       options.dynamicRequired.spatialSystems = openDataActiveNotRequired;
     });
     const geodatasetOptions = this.geoDataset.geodatasetOptions;
@@ -68,8 +67,7 @@ class InGridBastComponent extends InGridComponent {
 
     const dataCollectionOptions = this.dataCollection.options;
     dataCollectionOptions.required.resourceDateType = true;
-    dataCollectionOptions.required.spatialReferences = false;
-    dataCollectionOptions.required.spatialSystems = false;
+    dataCollectionOptions.dynamicRequired.spatialReferences = () => false;
   }
 }
 

@@ -137,7 +137,7 @@ export class ConnectionForm extends FormFieldHelper {
           }),
         ],
         {
-          hideExpression: "!model.isSecure",
+          hideExpression: (field: FormlyFieldConfig) => !field.model.isSecure,
           fieldGroupClassName: "flex-row gap-6",
         },
       ),
