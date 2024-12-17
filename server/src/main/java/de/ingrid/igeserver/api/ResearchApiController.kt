@@ -35,9 +35,14 @@ import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
+import de.ingrid.igeserver.services.BwastrCoordinateResponse
+import de.ingrid.igeserver.services.BwastrLocatorSearchResponse
+import de.ingrid.igeserver.services.BwastrLocatorService
+import de.ingrid.igeserver.services.BwastrSection
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.QueryService
 import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.igeserver.services.geothesaurus.BoundingBox
 import de.ingrid.igeserver.services.geothesaurus.GeoThesaurusFactory
 import de.ingrid.igeserver.services.geothesaurus.GeoThesaurusSearchOptions
 import de.ingrid.igeserver.services.geothesaurus.SpatialResponse
@@ -46,9 +51,12 @@ import de.ingrid.igeserver.utils.AuthUtils
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -75,7 +83,9 @@ class ResearchApiController(
     val authUtils: AuthUtils,
     val geoThesaurusFactory: GeoThesaurusFactory,
     val generalProperties: GeneralProperties,
+    val bwastrLocatorService: BwastrLocatorService,
 ) {
+    private val log = logger()
 
     @Operation
     @GetMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -213,5 +223,34 @@ class ResearchApiController(
         val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
 
         return completion.choices.firstOrNull()?.message?.content
+    }
+
+    @Operation
+    @PostMapping(value = ["/bwastr"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    fun bwastrSearch(principal: Principal, @RequestBody query: String): ResponseEntity<List<BwastrLocatorSearchResponse>> {
+        val response = bwastrLocatorService.search(query)
+        return ResponseEntity.ok(response)
+    }
+
+    @Operation
+    @PostMapping(value = ["/bwastr/coordinates"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    fun bwastrCoordinateSearch(principal: Principal, @RequestBody section: BwastrSection): ResponseEntity<BwastrCoordinateResponse> {
+        try {
+            val coordinates = bwastrLocatorService.getCoordinates(section)
+            val longitudes = coordinates.flatten().map { it[0] }
+            val latitudes = coordinates.flatten().map { it[1] }
+            val bounds = BoundingBox(
+                latitudes.minOrNull() ?: 0.0,
+                longitudes.minOrNull() ?: 0.0,
+                latitudes.maxOrNull() ?: 0.0,
+                longitudes.maxOrNull() ?: 0.0,
+            )
+            return ResponseEntity.ok(BwastrCoordinateResponse(coordinates, bounds))
+        } catch (e: Exception) {
+            log.debug("Error while getting coordinates for section $section", e)
+            return ResponseEntity.noContent().build()
+        }
     }
 }
