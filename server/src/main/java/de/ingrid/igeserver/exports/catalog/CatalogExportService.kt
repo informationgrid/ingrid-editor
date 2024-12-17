@@ -75,13 +75,17 @@ class CatalogExportService(
     private fun exportUserGroupTable(
         userInfo: List<MutableMap<String?, Any?>>,
         permissionGroup: List<MutableMap<String?, Any?>>,
-    ) = getQueryResultsAsMap(
-        """
+    ) = if (permissionGroup.isEmpty() || userInfo.isEmpty()) {
+        emptyList()
+    } else {
+        getQueryResultsAsMap(
+            """
         SELECT * FROM user_group 
         WHERE user_info_id IN (${userInfo.joinToString { it["id"].toString() }})
         AND group_id in (${permissionGroup.joinToString { it["id"].toString() }});
-        """.trimIndent(),
-    )
+            """.trimIndent(),
+        )
+    }
 
     private fun exportUsers(catalogIdentifier: String) = catalogService.getAllCatalogUsers(catalogIdentifier)
 
