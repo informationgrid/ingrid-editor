@@ -980,7 +980,8 @@ export class FormFieldHelper {
 
   private initExpressions(expressions = {}) {
     return {
-      "props.disabled": (field) => field.options.formState.disabled,
+      "props.disabled": (field: FormlyFieldConfig) =>
+        field.options?.formState?.disabled ?? false,
       ...expressions,
     };
   }

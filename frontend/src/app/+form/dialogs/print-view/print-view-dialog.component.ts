@@ -71,6 +71,8 @@ export class PrintViewDialogComponent {
       disabled: true,
       mainModel: data.model,
     };
+    // delay disabling of form since it first needs to be initialized
+    setTimeout(() => this.form.disable());
   }
 
   print() {
