@@ -17,19 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import {
   FormToolbarService,
   Separator,
   ToolbarItem,
 } from "../../form-shared/toolbar/form-toolbar.service";
-import { TreeQuery } from "../../../store/tree/tree.query";
-import { filter } from "rxjs/operators";
 import { DocumentAbstract } from "../../../store/document/document.model";
-import { TreeStore } from "../../../store/tree/tree.store";
 import { ShortTreeNode } from "../../sidebars/tree/tree.types";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 import { Router } from "@angular/router";
 import { UpdateType } from "../../../models/update-type.enum";
 import { DocEventsService } from "../../../services/event/doc-events.service";
@@ -63,24 +58,32 @@ export class HistoryPlugin extends Plugin {
   // when loading a node by back-Button, we don't want to add it to the stack!
   ignoreNextPush = false;
 
-  private tree: TreeQuery | AddressTreeQuery;
-  private treeStore: TreeStore | AddressTreeStore;
   private navigatePath: string;
 
   constructor(
     private router: Router,
     private formToolbarService: FormToolbarService,
-    private docTreeStore: TreeStore,
-    private addressTreeStore: AddressTreeStore,
-    private docTreeQuery: TreeQuery,
     private docEvents: DocEventsService,
     private documentService: DocumentService,
     private formStateService: FormStateService,
-    private addressTreeQuery: AddressTreeQuery,
     private dialog: MatDialog,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
+    effect(() => {
+      if (!this.formRegistered) return;
+      const doc = this.generalStore.openedDocument();
+      if (doc !== null) {
+        this.addDocToStack(doc);
+      }
+    });
+    effect(() => {
+      if (!this.formRegistered) return;
+      const info = this.generalStore.getDatasetsChanged(this.forAddress());
+      if (info?.type === UpdateType.Delete) {
+        this.removeDeletedDocsFromStack(info.data);
+      }
+    });
   }
 
   registerForm() {
@@ -91,26 +94,12 @@ export class HistoryPlugin extends Plugin {
     this.addToolbarButtons();
 
     this.handleEvents();
-
-    const treeSubscription = this.tree.openedDocument$
-      .pipe(filter((doc) => doc !== null))
-      .subscribe((doc) => this.addDocToStack(doc));
-
-    const deleteSubscription = this.tree.datasetsChanged$
-      .pipe(filter((info) => info?.type === UpdateType.Delete))
-      .subscribe((info) => this.removeDeletedDocsFromStack(info.data));
-
-    this.formSubscriptions.push(treeSubscription, deleteSubscription);
   }
 
   private setupFields() {
-    if (this.forAddress) {
-      this.tree = this.addressTreeQuery;
-      this.treeStore = this.addressTreeStore;
+    if (this.forAddress()) {
       this.navigatePath = "/address";
     } else {
-      this.tree = this.docTreeQuery;
-      this.treeStore = this.docTreeStore;
       this.navigatePath = "/form";
     }
   }
@@ -246,7 +235,7 @@ export class HistoryPlugin extends Plugin {
     }
 
     // if current node is not last from stack we go to end of stack
-    const currentOpenedDocumentId = this.tree.getOpenedDocument()?.id;
+    const currentOpenedDocumentId = this.getOpenedDocument()?.id;
     if (currentOpenedDocumentId !== this.stack[this.pointer].id) {
       return this.gotoNode(this.stack[this.pointer]);
     }
@@ -274,9 +263,10 @@ export class HistoryPlugin extends Plugin {
     ]);
     if (navigated) {
       this.ignoreNextPush = true;
-      this.treeStore.update({
-        explicitActiveNode: new ShortTreeNode(<number>item.id, item.title),
-      });
+      this.generalStore.setExplicitActiveNode(
+        new ShortTreeNode(<number>item.id, item.title),
+        this.forAddress(),
+      );
     }
     return navigated;
   }
@@ -350,7 +340,7 @@ export class HistoryPlugin extends Plugin {
    */
   private async handleHistorySelect(item: any, direction: "PREVIOUS" | "NEXT") {
     const isCurrentDocument =
-      this.tree.getOpenedDocument()?.id === item.data.data.id;
+      this.getOpenedDocument()?.id === item.data.data.id;
     if (isCurrentDocument) return;
 
     const dirtyFormHandled = await this.handleDirtyForm();
@@ -365,12 +355,18 @@ export class HistoryPlugin extends Plugin {
     return;
   }
 
+  private getOpenedDocument(): DocumentAbstract {
+    return this.forAddress()
+      ? this.generalStore.openedAddress()
+      : this.generalStore.openedDocument();
+  }
+
   private handleDirtyForm() {
     return FormUtils.handleDirtyForm(
       this.formStateService,
       this.documentService,
       this.dialog,
-      this.forAddress,
+      this.forAddress(),
     );
   }
 }

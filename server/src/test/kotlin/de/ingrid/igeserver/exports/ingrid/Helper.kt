@@ -41,12 +41,10 @@ fun exportJsonToXML(exporter: IgeExporter, file: String, additional: ObjectNode?
     return prettyFormatXml(result, 4).replace("\r\n", "\n")
 }
 
-fun exportDocToXML(exporter: IgeExporter, doc: Document): String {
-    return (exporter.run(doc, "test-catalog") as String).let {
-        prettyFormatXml(it, 4).replace("\r\n", "\n")
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
-    }.also { println(it) }
-}
+fun exportDocToXML(exporter: IgeExporter, doc: Document): String = (exporter.run(doc, "test-catalog") as String).let {
+    prettyFormatXml(it, 4).replace("\r\n", "\n")
+        .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+}.also { println(it) }
 
 fun exportJsonStringToXML(exporter: IgeExporter, json: String): String {
     val doc = convertToDocument(json)

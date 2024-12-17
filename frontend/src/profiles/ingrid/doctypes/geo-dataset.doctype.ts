@@ -19,23 +19,22 @@
  */
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { generateUUID } from "../../../app/services/utils";
 import { map } from "rxjs/operators";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import {
   MetadataOption,
   MetadataOptionItem,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
+import { of } from "rxjs";
+import { dataOrigin } from "./geo-dataset.dataOrigin";
 
 @Injectable({
   providedIn: "root",
 })
 export class GeoDatasetDoctype extends IngridShared {
-  protected codelistQuery = inject(CodelistQuery);
-
   id = "InGridGeoDataset";
 
   label = "Geodatensatz";
@@ -401,8 +400,8 @@ export class GeoDatasetDoctype extends IngridShared {
           "Darstellender Dienst",
           true,
           false,
-          "Dieser Datensatz wurde von keinem Geodatendienst referenziert",
-          "Die Referenz kann nur vom darstellenden Dienst entfernt werden",
+          "Dieser Datensatz wird von keinem Geodatendienst referenziert.",
+          "Die Referenz kann nur vom darstellenden Dienst entfernt werden.",
           {
             className: "optional",
             contextHelpId: "coupledResources",
@@ -411,10 +410,7 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [
             this.addGroupSimple("source", [
-              this.addRepeatList("descriptions", "Datengrundlage", {
-                className: "optional flex-1",
-                asAutocomplete: true,
-              }),
+              dataOrigin(this),
               this.addGroupSimple("processStep", [
                 this.addRepeatList("description", "Herstellungsprozess", {
                   className: "optional flex-1",

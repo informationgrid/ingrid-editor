@@ -571,9 +571,13 @@
               },
               "explanation": {
                 "type": ["null", "string"]
+              },
+              "referenceType": {
+                "type": "string",
+                "minLength": 1
               }
             },
-            "required": ["type", "title", "url"]
+            "required": ["type", "title", "url", "referenceType"]
           },
           {
             "unevaluatedProperties": false,
@@ -603,9 +607,13 @@
               },
               "explanation": {
                 "type": ["null", "string"]
+              },
+              "referenceType": {
+                "type": "string",
+                "minLength": 1
               }
             },
-            "required": ["type", "title", "uuidRef"]
+            "required": ["type", "title", "uuidRef", "referenceType"]
           }
         ]
       }

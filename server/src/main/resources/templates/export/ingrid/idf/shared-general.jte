@@ -504,7 +504,7 @@
                     codeListValue="${page.getDatasetCharacterSet()}" />
         </gmd:characterSet>
     @endif
-    @for(String category : page.getTopicCategories())
+    @for(String category : page.getTopicCategoriesISO())
         <gmd:topicCategory>
             <gmd:MD_TopicCategoryCode>${category}</gmd:MD_TopicCategoryCode>
         </gmd:topicCategory>
@@ -864,6 +864,11 @@ ${contentInfo}
                                 <gmd:linkage>
                                     <gmd:URL>${serviceUrl.getUrl()}</gmd:URL>
                                 </gmd:linkage>
+                                @if (serviceUrl.getProtocol() != null)
+                                    <gmd:protocol>
+                                        <gmx:Anchor xlink:href="http://www.opengis.net/def/serviceType/ogc/${serviceUrl.getProtocol().getId()}">${serviceUrl.getProtocol().getLabel()}</gmx:Anchor>
+                                    </gmd:protocol>
+                                @endif
                                 @if(TransformationTools.hasValue(serviceUrl.getApplicationProfile()))
                                     <gmd:applicationProfile>
                                         <gco:CharacterString>${serviceUrl.getApplicationProfile()}</gco:CharacterString>
@@ -929,8 +934,11 @@ ${contentInfo}
             @for( FileReferenceTransferOption fileReference : page.getFileReferenceTransferOptions() )
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
+                        <gmd:unitsOfDistribution>
+                            <gco:CharacterString>MB</gco:CharacterString>
+                        </gmd:unitsOfDistribution>
                         <gmd:transferSize>
-                           <gco:Real>${fileReference.getLink().getSizeInBytes()}</gco:Real>
+                           <gco:Real>${(TransformationTools.bytesToMegabytes(fileReference.getLink().getSizeInBytes()))}</gco:Real>
                         </gmd:transferSize>
                         <gmd:onLine>
                             <gmd:CI_OnlineResource>

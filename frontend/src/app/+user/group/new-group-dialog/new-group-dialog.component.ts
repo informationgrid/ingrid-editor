@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import {
   ReactiveFormsModule,
   UntypedFormControl,
@@ -34,14 +34,13 @@ import {
   MatDialogRef,
   MatDialogTitle,
 } from "@angular/material/dialog";
-import { GroupQuery } from "../../../store/group/group.query";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../directives/focus.directive";
+import { GroupStore } from "../../../store/group/group.store";
 
 @Component({
   selector: "ige-new-group-dialog",
@@ -54,7 +53,6 @@ import { FocusDirective } from "../../../directives/focus.directive";
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     ReactiveFormsModule,
     MatFormField,
@@ -66,15 +64,15 @@ import { FocusDirective } from "../../../directives/focus.directive";
   ],
 })
 export class NewGroupDialogComponent implements OnInit {
+  private groupStore = inject(GroupStore);
   form = new UntypedFormGroup({
     name: new UntypedFormControl("", Validators.required),
   });
 
-  groups = this.groupQuery.getAll();
+  groups = this.groupStore.entities();
 
   constructor(
     private groupService: GroupService,
-    private groupQuery: GroupQuery,
     private modalService: ModalService,
     public dialogRef: MatDialogRef<NewGroupDialogComponent>,
   ) {}

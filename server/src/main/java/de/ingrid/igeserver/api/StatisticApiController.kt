@@ -99,9 +99,9 @@ class StatisticApiController(
         var allDataPublished: Long = 0
         val statsPerType = mutableMapOf<String, StatisticResponse>()
         queryResult.hits.forEach { hit ->
-            if (hit._type != null) {
+            if (hit.type != null) {
                 statsPerType.putIfAbsent(
-                    hit._type,
+                    hit.type,
                     StatisticResponse(
                         totalNum = 0,
                         numDrafts = 0,
@@ -110,9 +110,9 @@ class StatisticApiController(
                     ),
                 )
 
-                val statsType = statsPerType[hit._type]!!
+                val statsType = statsPerType[hit.type]!!
                 statsType.totalNum = statsType.totalNum!! + 1
-                if (hit._state == "PW" || hit._state == "P") {
+                if (hit.state == "PW" || hit.state == "P") {
                     allDataPublished++
                     statsType.numPublished++
                 } else {

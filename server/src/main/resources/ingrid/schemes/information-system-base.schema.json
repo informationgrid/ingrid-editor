@@ -2,10 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/informationBase",
   "type": "object",
-  "properties": {
-    "properties": {
+  "definitions": {
+    "propertiesInformation": {
       "type": "object",
-      "unevaluatedProperties": false,
       "properties": {
         "isAdVCompatible": {
           "type": ["null", "boolean"]
@@ -17,6 +16,11 @@
           "type": ["null", "string"]
         }
       }
+    }
+  },
+  "properties": {
+    "properties": {
+      "$ref": "#/definitions/propertiesInformation"
     },
     "_uuid": {
       "type": "string"

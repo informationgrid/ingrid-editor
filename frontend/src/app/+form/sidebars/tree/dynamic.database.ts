@@ -17,16 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { firstValueFrom, Observable, of, Subject } from "rxjs";
 import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
 import { DocumentService } from "../../../services/document/document.service";
-import { TreeQuery } from "../../../store/tree/tree.query";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { TreeNode } from "../../../store/tree/tree-node.model";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { map } from "rxjs/operators";
+import { GeneralStore } from "../../../store/general.store";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { TreeStore } from "../../../store/tree/tree.store";
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
@@ -35,21 +36,28 @@ import { map } from "rxjs/operators";
 @UntilDestroy()
 @Injectable()
 export class DynamicDatabase {
+  private generalStore = inject(GeneralStore);
+  private addressTreeStore = inject(AddressTreeStore);
+  private documentTreeStore = inject(TreeStore);
+
   treeUpdates = new Subject<UpdateDatasetInfo>();
 
   hideReadOnly = false;
 
-  constructor(
-    private docService: DocumentService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
-  ) {}
+  private isAddress = false;
+
+  constructor(private docService: DocumentService) {
+    effect(
+      () => {
+        const info = this.generalStore.getDatasetsChanged(this.isAddress);
+        if (info) this.treeUpdates.next(info);
+      },
+      { allowSignalWrites: true },
+    );
+  }
 
   init(forAdresses: boolean): void {
-    const query = forAdresses ? this.addressTreeQuery : this.treeQuery;
-    query.datasetsChanged$
-      .pipe(untilDestroyed(this))
-      .subscribe((docs) => this.treeUpdates.next(docs));
+    this.isAddress = forAdresses;
   }
 
   /** Initial data from database */
@@ -77,11 +85,11 @@ export class DynamicDatabase {
     forceFromServer?: boolean,
     isAddress?: boolean,
   ): Observable<DocumentAbstract[]> {
-    let children;
+    let children: DocumentAbstract[];
     if (forceFromServer) {
       children = [];
     } else {
-      const query = isAddress ? this.addressTreeQuery : this.treeQuery;
+      const query = isAddress ? this.addressTreeStore : this.documentTreeStore;
       children = query.getChildren(parentId);
     }
 

@@ -41,7 +41,7 @@
         @if (props.allowNoValue) {
             <mat-option>{{ props.noValueLabel ?? "- Keine -" }}</mat-option>
         }
-        @for (item of filteredOptions; track item) {
+        @for (item of filteredOptions; track itemId(item)) {
             @if (item.key === "_SEPARATOR_") {
                 <mat-divider class="space-bottom"></mat-divider>
             } @else {

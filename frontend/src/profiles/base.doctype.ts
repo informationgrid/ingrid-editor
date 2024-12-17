@@ -27,16 +27,19 @@ import {
   SelectOptionUi,
 } from "../app/services/codelist/codelist.service";
 import { filter, map, take, tap } from "rxjs/operators";
-import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { FormFieldHelper } from "./form-field-helper";
 import { clone } from "../app/shared/utils";
 import { inject } from "@angular/core";
 import { FormStateService } from "../app/+form/form-state.service";
+import { CodelistStore } from "../app/store/codelist/codelist.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   protected codelistService = inject(CodelistService);
-  protected codelistQuery = inject(CodelistQuery);
+  protected codelistStore = inject(CodelistStore);
   protected formStateService = inject(FormStateService);
+
+  private codelistStore$ = toObservable(this.codelistStore.entityMap);
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     return fieldConfig;
@@ -213,16 +216,13 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
         (prefix + field.key) as string,
       );
       if (codelistField !== undefined) {
-        this.codelistQuery
-          .selectEntity(codelistField)
+        this.codelistStore$
           .pipe(
+            map((item) => item[codelistField]),
             filter((codelist) => codelist !== undefined),
             take(1),
             filter((codelist) => codelist.default && codelist.default != "-1"),
             tap((codelist) => {
-              console.debug(
-                `Setting default codelist value for: ${field.key} with: ${codelist.default}`,
-              );
               if (field.type === "ige-select") {
                 field.defaultValue = { key: codelist.default };
               } else if (field.type === "repeatList") {
@@ -241,7 +241,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   formatCodelistValue(codelist: string, item: { key; value }) {
     return item?.key
-      ? this.codelistQuery.getCodelistEntryValueByKey(
+      ? this.codelistStore.getCodelistEntryValueByKey(
           codelist,
           item.key,
           item.value,
@@ -269,6 +269,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       "autocomplete",
       "datepicker",
       "repeatList",
+      "repeatChip",
       "unit-input",
       // "table",
     ];
@@ -317,7 +318,12 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       ) {
         field.type += "Print";
       }
+
+      if (field.type === "repeatDetailList") {
+        field.props.viewComponent = this.viewComponents[field.key as string];
+      }
     });
+
     // TODO: remove excludedTypes and use hideInPreview instead
     return fields
       ?.filter((field) => !excludedTypes.includes(<string>field.type))

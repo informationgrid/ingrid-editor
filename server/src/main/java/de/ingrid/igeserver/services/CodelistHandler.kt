@@ -40,7 +40,7 @@ class CodelistHandler(
 ) {
 
     companion object {
-        fun toCodelistEntry(id: String, german: String, data: String? = null, english: String? = null): JsonNode {
+        fun toCodelistEntry(id: String, german: String, data: String? = null, english: String? = null, description: String? = null): JsonNode {
             return jacksonObjectMapper().createObjectNode().apply {
                 put("id", id)
                 if (data != null) put("data", data)
@@ -51,6 +51,7 @@ class CodelistHandler(
                         if (english != null) put("en", english)
                     },
                 )
+                if (description != null) put("description", description)
             }
         }
     }
@@ -119,19 +120,19 @@ class CodelistHandler(
             }
     }
 
-    fun getCatalogCodelistValue(catalogId: String, codelistId: String, key: String): String? {
+    fun getCatalogCodelistValue(catalogId: String, codelistId: String, key: String, language: String = "de"): String? {
         return getCatalogCodelists(catalogId)
             .find { it.id == codelistId }
             ?.entries
             ?.find { it.id == key }
-            ?.fields?.get("de")
+            ?.fields?.get(language)
     }
 
-    fun getCatalogCodelistKey(catalogId: String, codelistId: String, value: String): String? {
+    fun getCatalogCodelistKey(catalogId: String, codelistId: String, value: String, language: String = "de"): String? {
         return getCatalogCodelists(catalogId)
             .find { it.id == codelistId }
             ?.entries
-            ?.find { it.getField("de") == value }
+            ?.find { it.getField(language) == value }
             ?.id
     }
 
@@ -142,10 +143,6 @@ class CodelistHandler(
             ?.find { it.id == key }
     }
 
-    fun getCodelistValue(codelistId: String, key: String): String? {
-        return getCodelistValue(codelistId, key, "de")
-    }
-
     fun getCodelistEntryDataField(codelistId: String, key: String): String? {
         return getCodelists(listOf(codelistId))
             .find { it.id == codelistId }
@@ -154,7 +151,7 @@ class CodelistHandler(
             ?.data
     }
 
-    fun getCodelistValue(codelistId: String, key: String, field: String): String? {
+    fun getCodelistValue(codelistId: String, key: String, field: String = "de"): String? {
         return getCodelists(listOf(codelistId))
             .find { it.id == codelistId }
             ?.entries

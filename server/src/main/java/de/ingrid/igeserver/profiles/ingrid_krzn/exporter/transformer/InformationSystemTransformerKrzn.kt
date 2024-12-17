@@ -17,21 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { EntityState, MultiActiveState } from "@datorama/akita";
-import { DocumentAbstract } from "../document/document.model";
-import { ShortTreeNode } from "../../+form/sidebars/tree/tree.types";
-import { UpdateDatasetInfo } from "../../models/update-dataset-info.model";
+package de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer
 
-export interface TreeState
-  extends EntityState<DocumentAbstract>,
-    MultiActiveState {
-  openedDocument: DocumentAbstract;
-  expandedNodes: string[];
-  breadcrumb: ShortTreeNode[];
-  explicitActiveNode: ShortTreeNode;
-  scrollPosition: number;
-  isDocLoading: boolean;
-  multiSelectMode: boolean;
-  datasetsChanged: UpdateDatasetInfo;
-  needsReload: boolean;
+import de.ingrid.igeserver.profiles.ingrid.exporter.InformationSystemModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.getInternalReferences
+
+class InformationSystemTransformerKrzn(transformerConfig: TransformerConfig) : InformationSystemModelTransformer(transformerConfig) {
+
+    override fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() = super.getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() + getInternalReferences(this, codelists)
 }

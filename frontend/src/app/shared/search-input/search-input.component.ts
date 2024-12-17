@@ -37,6 +37,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 
 import { ErrorStateMatcher } from "@angular/material/core";
+import { FocusDirective } from "../../directives/focus.directive";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: SearchInputComponent) {}
@@ -61,6 +62,7 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
     MatProgressSpinnerModule,
     MatIconModule,
     MatButtonModule,
+    FocusDirective,
   ],
   standalone: true,
 })

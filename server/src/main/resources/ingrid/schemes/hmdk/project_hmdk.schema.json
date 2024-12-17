@@ -4,7 +4,8 @@
   "$ref": "../project-base.schema.json",
   "properties": {
     "properties": {
-      "type": "object",
+      "unevaluatedProperties": false,
+      "$ref": "../project-base.schema.json#/definitions/propertiesProject",
       "properties": {
         "publicationHmbTG": {
           "type": ["null", "boolean"]

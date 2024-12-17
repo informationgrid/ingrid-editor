@@ -17,27 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { QueryEntity } from "@datorama/akita";
-import { ContexthelpState, ContextHelpStore } from "./context-help.store";
-import { ContextHelpAbstract } from "./context-help.model";
+package de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer
 
-@Injectable({
-  providedIn: "root",
-})
-export class ContextHelpQuery extends QueryEntity<
-  ContexthelpState,
-  ContextHelpAbstract
-> {
-  constructor(protected store: ContextHelpStore) {
-    super(store);
-  }
+import de.ingrid.igeserver.profiles.ingrid.exporter.DataCollectionModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.getInternalReferences
 
-  getContextHelp(
-    profile: string,
-    docType: string,
-    fieldId: string,
-  ): ContextHelpAbstract {
-    return this.getEntity([profile, docType, fieldId].join("_"));
-  }
+class DataCollectionTransformerKrzn(transformerConfig: TransformerConfig) : DataCollectionModelTransformer(transformerConfig) {
+
+    override fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() = super.getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() + getInternalReferences(this, codelists)
 }

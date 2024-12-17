@@ -41,8 +41,8 @@ export class DeactivateGuard {
 
   canDeactivate(
     component: UserComponent | GroupComponent,
-    currentRoute: ActivatedRouteSnapshot,
-    currentState: RouterStateSnapshot,
+    _currentRoute: ActivatedRouteSnapshot,
+    _currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot,
   ):
     | Observable<boolean | UrlTree>

@@ -131,5 +131,43 @@ class PartialExports : ShouldSpec() {
 
             result shouldContain IDF_REFERENCES
         }
+
+        should("export distributor but not in contact") {
+
+            val context = jacksonObjectMapper().readTree(
+                """{
+                    "pointOfContact": [
+                      {
+                        "type": {
+                          "key": "12"
+                        },
+                        "ref": "14a37ded-4ca5-4677-bfed-3607bed3071d"
+                      },
+                      {
+                        "type": {
+                          "key": "5"
+                        },
+                        "ref": "25d56d6c-ed8d-4589-8c14-f8cfcb669115"
+                      },
+                      {
+                        "type": {
+                          "key": "7"
+                        },
+                        "ref": "fc521f66-0f47-45fb-ae42-b14fc669942e"
+                      }
+                    ]
+                    }
+                """.trimIndent(),
+            ) as ObjectNode
+
+            val result = exportJsonToXML(
+                exporter,
+                "/export/ingrid/geo-service.minimal.sample.json",
+                context,
+            )
+
+            result shouldContain POINTOFCONTACT_WITHOUT_DISTRIBUTOR
+            result shouldContain DISTRIBUTOR
+        }
     }
 }

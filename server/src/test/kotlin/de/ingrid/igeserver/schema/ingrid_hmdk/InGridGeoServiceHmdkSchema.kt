@@ -30,14 +30,13 @@ class InGridGeoServiceHmdkSchema : AnnotationSpec() {
     @Test
     fun minimal() {
         val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.minimal.json").replaceFirst(
-            "{",
-            """ { "publicationHmbTG": true, "informationHmbTG": [{"key": "1"}], """,
-        )
+            "\"properties\": {",
+            """"properties": {"publicationHmbTG": true, """,
+        ).replaceFirst("{", """{ "informationHmbTG": [{"key": "1"}], """)
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
 
     @Test
-    fun negativeTest() =
-        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/ingrid/geo-service.minimal.json")
+    fun negativeTest() = SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/ingrid/geo-service.minimal.json")
 }

@@ -20,6 +20,7 @@
 import {
   Component,
   ElementRef,
+  inject,
   OnInit,
   signal,
   TemplateRef,
@@ -46,7 +47,6 @@ import {
   BehaviorSubject,
   merge,
   Observable,
-  of,
   Subject,
   Subscription,
 } from "rxjs";
@@ -64,7 +64,6 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSelect } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ErrorStateMatcher, MatOption } from "@angular/material/core";
-import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FieldType } from "@ngx-formly/material";
 import {
   CdkDrag,
@@ -95,6 +94,7 @@ import { MatInput } from "@angular/material/input";
 import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
+import { CodelistStore } from "../../../store/codelist/codelist.store";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: RepeatListComponent) {}
@@ -171,6 +171,7 @@ export class RepeatListComponent
   extends FieldType<FieldTypeConfig<RepeatListProps>>
   implements OnInit
 {
+  private codelistStore = inject(CodelistStore);
   @ViewChild("repeatListInput", { read: ElementRef })
   autoCompleteEl: ElementRef;
   @ViewChild(MatAutocompleteTrigger) autoComplete: MatAutocompleteTrigger;
@@ -194,7 +195,6 @@ export class RepeatListComponent
   filteredOptions: Observable<SelectOptionUi[]>;
   parameterOptions: SelectOptionUi[];
   initialParameterOptions: SelectOptionUi[];
-  parameterOptions$: Observable<SelectOptionUi[]>;
   inputControl = new FormControl<string>("");
   filterCtrl: UntypedFormControl;
   searchSub: Subscription;
@@ -204,10 +204,7 @@ export class RepeatListComponent
   hasFocus = false;
   matcher = new MyErrorStateMatcher(this);
 
-  constructor(
-    private snack: MatSnackBar,
-    private codelistQuery: CodelistQuery,
-  ) {
+  constructor(private snack: MatSnackBar) {
     super();
   }
 
@@ -262,7 +259,6 @@ export class RepeatListComponent
       this.parameterOptions = JSON.parse(optionsAsString);
       this.initialParameterOptions = JSON.parse(optionsAsString);
     }
-    this.parameterOptions$ = of(this.parameterOptions);
 
     // show error immediately (on publish)
     this.inputControl.markAllAsTouched();
@@ -593,7 +589,7 @@ export class RepeatListComponent
   private prepareDuplicatesForView(duplicates: any[]) {
     if (this.props.codelistId) {
       duplicates = duplicates.map((dup) =>
-        this.codelistQuery.getCodelistEntryValueByKey(
+        this.codelistStore.getCodelistEntryValueByKey(
           this.props.codelistId,
           dup,
         ),

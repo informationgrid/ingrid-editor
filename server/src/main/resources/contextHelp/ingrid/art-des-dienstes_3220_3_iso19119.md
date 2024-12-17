@@ -18,10 +18,6 @@ ATOM-Download sichtbar.
 
 Als Auswahlliste wird die Codeliste 5100 verwendet.
 
-## Beispiel:
-
-Darstellungsdienst (automatischer Eintrag "Technical Guidance for the implementation of INSPIRE View Services" in Konformität/Spezifikation)
-
 # ISO Abbildung
 
 Das Feld wird in ISO 19119 beschrieben. Es existiert keine deutsche Übersetzung.

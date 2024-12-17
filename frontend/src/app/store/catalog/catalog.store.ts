@@ -17,16 +17,23 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { EntityState, EntityStore, StoreConfig } from "@datorama/akita";
+import { patchState, signalStore, withMethods } from "@ngrx/signals";
+import {
+  setAllEntities,
+  updateEntity,
+  withEntities,
+} from "@ngrx/signals/entities";
 import { Catalog } from "../../+catalog/services/catalog.model";
 
-export interface CatalogState extends EntityState<Catalog> {}
-
-@Injectable({ providedIn: "root" })
-@StoreConfig({ name: "Catalog" })
-export class CatalogStore extends EntityStore<CatalogState, Catalog> {
-  constructor() {
-    super();
-  }
-}
+export const CatalogStore = signalStore(
+  { providedIn: "root" },
+  withEntities<Catalog>(),
+  withMethods((store) => ({
+    set(catalogs: Catalog[]): void {
+      patchState(store, setAllEntities(catalogs));
+    },
+    update(id: string, catalog: Partial<Catalog>): void {
+      patchState(store, updateEntity({ id: id, changes: catalog }));
+    },
+  })),
+);

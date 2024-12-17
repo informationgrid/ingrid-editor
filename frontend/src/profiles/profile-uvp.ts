@@ -90,9 +90,7 @@ class UVPComponent {
   }
 
   private modifyFormHeader() {
-    this.profileService.updateUIProfileStore({
-      hideFormHeaderInfos: ["_metadataDate"],
-    });
+    this.profileService.updateUIProfileStore(["_metadataDate"]);
   }
 
   private addBehaviour(

@@ -7,7 +7,7 @@ import java.nio.file.Paths
 import static org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 
 buildscript {
-    ext.kotlin_version = '1.9.25'
+    ext.kotlin_version = '2.0.21'
     ext.spring_boot_version = '3.3.5'
     ext.kotest_version = '5.9.1'
     ext.jte_version = '3.1.13'
@@ -144,13 +144,11 @@ dependencies {
 
     // OpenAI
     // import Kotlin API client BOM
-    implementation platform('com.aallam.openai:openai-client-bom:3.8.2')
+    implementation platform('com.aallam.openai:openai-client-bom:4.0.0-beta01')
 
     // define dependencies without versions
     implementation 'com.aallam.openai:openai-client'
     runtimeOnly 'io.ktor:ktor-client-okhttp'
-    implementation "io.ktor:ktor-client-java"
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 
     // Markdown
     implementation "org.commonmark:commonmark:0.24.0"
@@ -164,7 +162,7 @@ dependencies {
     implementation "org.hibernate.orm:hibernate-core"
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.5'
 
-    implementation "de.ingrid:ingrid-codelist-service:7.3.0"
+    implementation "de.ingrid:ingrid-codelist-service:7.4.0-SNAPSHOT"
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.17.0'
     implementation 'org.apache.commons:commons-text:1.12.0'

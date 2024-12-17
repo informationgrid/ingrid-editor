@@ -21,7 +21,6 @@ import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeBast } from "./ingrid-bast/doctypes/geo-dataset.doctype";
 import { GeoServiceDoctypeBast } from "./ingrid-bast/doctypes/geo-service.doctype";
-import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { DataCollectionDoctypeBast } from "./ingrid-bast/doctypes/data-collection.doctype";
 
 @Component({
@@ -32,7 +31,6 @@ class InGridBastComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeBast);
   geoService = inject(GeoServiceDoctypeBast);
   dataCollection = inject(DataCollectionDoctypeBast);
-  codelistQuery = inject(CodelistQuery);
 
   constructor() {
     super();

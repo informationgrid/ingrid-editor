@@ -27,7 +27,7 @@ import { CodelistService } from "../../services/codelist/codelist.service";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
-import { Codelist } from "../../store/codelist/codelist.model";
+import { Codelist, CodelistEntry } from "../../store/codelist/codelist.model";
 import { CodelistPresenterComponent } from "../../shared/codelist-presenter/codelist-presenter.component";
 import { MatSlideToggleHarness } from "@angular/material/slide-toggle/testing";
 import { HarnessLoader } from "@angular/cdk/testing";
@@ -80,6 +80,9 @@ describe("CatalogCodelistsComponent", () => {
         updateFavorites(id: string, entryIds: string[]): Observable<void> {
           return of();
         },
+        getFavorite(id: string): CodelistEntry[] {
+          return [];
+        },
       }),
     ],
     detectChanges: false,
@@ -88,7 +91,7 @@ describe("CatalogCodelistsComponent", () => {
   beforeEach(async () => {
     spectator = createHost({});
     let codelistStore = TestBed.inject(CodelistStore);
-    codelistStore.set(initCodelists);
+    codelistStore.addCodelists(initCodelists);
 
     spectator.detectChanges();
     loader = TestbedHarnessEnvironment.loader(spectator.fixture);

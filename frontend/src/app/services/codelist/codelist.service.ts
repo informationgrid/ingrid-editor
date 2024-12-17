@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { CodelistDataService } from "./codelist-data.service";
 import {
   BackendOption,
@@ -26,8 +26,7 @@ import {
   CodelistEntry,
   CodelistEntryBackend,
 } from "../../store/codelist/codelist.model";
-import { CodelistStore } from "../../store/codelist/codelist.store";
-import { Observable, Subject, throwError } from "rxjs";
+import { combineLatest, Observable, Subject, throwError } from "rxjs";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   catchError,
@@ -37,9 +36,11 @@ import {
   switchMap,
   tap,
 } from "rxjs/operators";
-import { CodelistQuery } from "../../store/codelist/codelist.query";
 import { HttpErrorResponse } from "@angular/common/http";
 import { IgeError } from "../../models/ige-error";
+import { CodelistStore } from "../../store/codelist/codelist.store";
+import { toObservable } from "@angular/core/rxjs-interop";
+import { GeneralStore } from "../../store/general.store";
 
 export class SelectOption {
   label: string;
@@ -70,16 +71,27 @@ export class SelectOption {
 
 export interface SelectOptionUi extends SelectOption {
   disabled?: boolean;
-  sortkey?: string;
+  sortkey?: CodelistSort;
 }
 
-export type CodelistSort = "NO_SORT" | "value" | "label" | "sortkey";
+export type CodelistSort =
+  | "NO_SORT"
+  | "value"
+  | "label"
+  | "sortkey"
+  | "description";
 
 @UntilDestroy()
 @Injectable({
   providedIn: "root",
 })
 export class CodelistService {
+  private store = inject(CodelistStore);
+  private generalStore = inject(GeneralStore);
+
+  private codelistStore$ = toObservable(this.store.entityMap);
+  private catalogLanguage$ = toObservable(this.generalStore.catalogLanguage);
+
   private requestedCodelists = new Subject<string[]>();
 
   static mapToSelect = (
@@ -87,51 +99,63 @@ export class CodelistService {
     language = "de",
     sortBy:
       | CodelistSort
-      | ((a: SelectOptionUi, b: SelectOptionUi) => number) = "label",
+      | ((
+          a: CodelistEntry,
+          b: CodelistEntry,
+          language: string,
+        ) => number) = "label",
   ): SelectOptionUi[] => {
     if (!codelist) {
       return [];
     }
 
-    const items = codelist.entries.map(
-      (entry) =>
-        ({
-          label: entry.fields[language] ?? entry.fields["name"],
-          value: entry.id,
-          sortkey: entry.fields["sortkey"],
-        }) as SelectOptionUi,
-    );
-
+    // Sort codelist entries
     const sortFunction =
       typeof sortBy === "function"
-        ? sortBy
-        : CodelistService.getDefaultSortFunction(sortBy);
+        ? (a: CodelistEntry, b: CodelistEntry) => sortBy(a, b, language)
+        : CodelistService.getSortFunction(sortBy, language);
 
-    return CodelistService.addFavorites(
-      codelist.id,
-      sortBy === "NO_SORT" ? items : items.sort(sortFunction),
-    );
+    // Map to SelectOptionUi
+    const items: SelectOptionUi[] = [...codelist.entries]
+      .sort(sortFunction)
+      .map(CodelistService.mapToSelectOptionUi(language));
+
+    return CodelistService.addFavorites(codelist.id, items);
   };
 
-  private static getDefaultSortFunction(sortBy: CodelistSort) {
-    return (a: SelectOptionUi, b: SelectOptionUi) =>
-      CodelistService.compareEntries(a, b, sortBy);
+  private static mapToSelectOptionUi(language: string) {
+    return (entry: CodelistEntry) =>
+      ({
+        label:
+          entry.fields[language] ?? entry.fields["de"] ?? entry.fields["name"],
+        value: entry.id,
+        sortkey: entry.fields["sortkey"],
+      }) as SelectOptionUi;
   }
 
-  private static compareEntries(
-    a: SelectOptionUi,
-    b: SelectOptionUi,
+  private static getSortFunction(
     sortBy: CodelistSort,
+    language: string = "de",
   ) {
-    switch (sortBy) {
-      case "label":
-        return a[sortBy]?.localeCompare(b[sortBy]);
-      case "value":
-      case "sortkey":
-        return a[sortBy]?.localeCompare(b[sortBy], undefined, {
-          numeric: true,
-        });
-    }
+    return (a: CodelistEntry, b: CodelistEntry) => {
+      switch (sortBy) {
+        case "label":
+          return (a.fields[language] ?? a.fields["name"])?.localeCompare(
+            b.fields[language] ?? b.fields["name"],
+          );
+        case "description":
+          return a.description?.localeCompare(b.description);
+        case "value":
+          return a.id?.localeCompare(b.id);
+        case "sortkey":
+          return a.fields[sortBy]?.localeCompare(b.fields[sortBy], undefined, {
+            numeric: true,
+          });
+        case "NO_SORT":
+        default:
+          return 0;
+      }
+    };
   }
 
   private queue = [];
@@ -139,14 +163,11 @@ export class CodelistService {
 
   private static favorites: { [x: string]: string[] } = {};
 
-  constructor(
-    private store: CodelistStore,
-    protected codelistQuery: CodelistQuery,
-    private dataService: CodelistDataService,
-  ) {
-    this.codelistQuery
-      .select((item) => item.favorites)
-      .subscribe((favorites) => (CodelistService.favorites = favorites));
+  constructor(private dataService: CodelistDataService) {
+    effect(() => {
+      CodelistService.favorites = this.generalStore.favorites();
+    });
+
     this.requestedCodelists
       .pipe(
         untilDestroyed(this),
@@ -157,7 +178,8 @@ export class CodelistService {
         filter((ids) => ids.length > 0),
         switchMap((ids) => this.requestCodelists(ids)),
         map((codelists) => this.prepareCodelists(codelists)),
-        tap((codelists) => this.store.add(codelists)),
+        tap((codelists) => this.store.addCodelists(codelists)),
+        tap(() => this.generalStore.setCodelistsLoaded()),
       )
       .subscribe();
   }
@@ -184,7 +206,8 @@ export class CodelistService {
   update(): Observable<Codelist[]> {
     return this.dataService.update().pipe(
       map((codelists) => this.prepareCodelists(codelists, true)),
-      tap((codelists) => this.store.set(codelists)),
+      tap((codelists) => this.store.setCodelists(codelists)),
+      tap(() => this.generalStore.setCodelistsLoaded()),
       catchError((e) => this.handleSyncError(e)),
     );
   }
@@ -234,7 +257,7 @@ export class CodelistService {
       .getAll()
       .pipe(
         map((codelists) => this.prepareCodelists(codelists)),
-        tap((codelists) => this.store.upsertMany(codelists)),
+        tap((codelists) => this.store.addCodelists(codelists)),
       )
       .subscribe();
   }
@@ -250,7 +273,7 @@ export class CodelistService {
       .getCatalogCodelists()
       .pipe(
         map((codelists) => this.prepareCodelists(codelists, true)),
-        tap((codelists) => this.store.add(codelists, { loading: true })),
+        tap((codelists) => this.store.addCodelists(codelists)), //, { loading: true })),
       )
       .subscribe();
   }
@@ -259,7 +282,7 @@ export class CodelistService {
     const backendCodelist = this.prepareForBackend(codelist);
     return this.dataService
       .updateCodelist(backendCodelist)
-      .pipe(tap(() => this.store.update(codelist)));
+      .pipe(tap(() => this.store.updateCodelist(codelist)));
   }
 
   private prepareForBackend(codelist: Codelist): CodelistBackend {
@@ -286,7 +309,9 @@ export class CodelistService {
   resetCodelist(id: string) {
     return this.dataService.resetCodelist(id).pipe(
       map((codelists) => this.prepareCodelists(codelists, true)),
-      tap((codelists) => this.store.upsertMany(codelists)),
+      tap((codelists) =>
+        codelists.forEach((codelist) => this.store.updateCodelist(codelist)),
+      ),
     );
   }
 
@@ -294,20 +319,26 @@ export class CodelistService {
     codelistId: string,
     sortBy: CodelistSort = "label",
   ): Observable<SelectOptionUi[]> {
-    return this.observeRaw(codelistId).pipe(
-      map((codelist) => CodelistService.mapToSelect(codelist, "de", sortBy)),
+    return combineLatest([
+      this.observeRaw(codelistId),
+      this.catalogLanguage$,
+    ]).pipe(
+      map(([codelist, language]) =>
+        CodelistService.mapToSelect(codelist, language, sortBy),
+      ),
     );
   }
 
   observeRaw(codelistId: string): Observable<Codelist> {
     const alreadyInQueue = this.queue.some((item) => item === codelistId);
-    const alreadyInStore = this.codelistQuery.getEntity(codelistId);
+    const alreadyInStore = this.store.entityMap()[codelistId];
 
     if (!alreadyInQueue && !alreadyInStore) {
       this.byId(codelistId);
     }
 
-    return this.codelistQuery.selectEntity(codelistId).pipe(
+    return this.codelistStore$.pipe(
+      map((item) => item[codelistId]),
       filter((codelist) => !!codelist),
       // take(1), // if we complete observable then we cannot modify catalog codelist and see change immediately
     );
@@ -340,6 +371,17 @@ export class CodelistService {
     return favoriteItems.concat(itemsWithoutFavorites);
   }
 
+  getFavorite(id: string): CodelistEntry[] {
+    const favorite = this.generalStore.favorites()[id];
+    return (
+      favorite?.map((entryId) =>
+        this.store
+          .entityMap()
+          [id].entries.find((entry) => entry.id === entryId),
+      ) ?? []
+    );
+  }
+
   updateFavorites(id: string, entryIds: string[]) {
     this.updateFavoriteInStore(id, entryIds);
 
@@ -348,11 +390,9 @@ export class CodelistService {
 
   private updateFavoriteInStore(id: string, entryIds: string[]) {
     const newFavorites = {
-      ...this.store.getValue().favorites,
+      ...this.generalStore.favorites(),
     };
     newFavorites[id] = entryIds;
-    this.store.update(() => ({
-      favorites: newFavorites,
-    }));
+    this.generalStore.updateFavorites(newFavorites);
   }
 }

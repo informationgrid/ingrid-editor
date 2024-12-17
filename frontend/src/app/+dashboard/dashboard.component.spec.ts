@@ -33,7 +33,6 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { CardBoxComponent } from "../shared/card-box/card-box.component";
 import { MatCardModule } from "@angular/material/card";
 import { MatListModule } from "@angular/material/list";
-import { SessionStore } from "../store/session.store";
 import { DateAgoPipe } from "../directives/date-ago.pipe";
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
@@ -46,6 +45,7 @@ import {
   withInterceptorsFromDi,
 } from "@angular/common/http";
 import { ProfileService } from "../services/profile.service";
+import { GeneralStore } from "../store/general.store";
 
 describe("DashboardComponent", () => {
   let spectator: Spectator<DashboardComponent>;
@@ -94,16 +94,14 @@ describe("DashboardComponent", () => {
   });
 
   it("should show last recent documents", () => {
-    const sessionStore = spectator.inject(SessionStore);
+    const sessionStore = spectator.inject(GeneralStore);
     const dataService = spectator.inject<DocumentService>(DocumentService);
     dataService.findRecentDrafts.and.callFake(() => {
-      sessionStore.update({ latestDocuments: recentDocuments });
+      sessionStore.setLatestDocuments(recentDocuments);
     });
     dataService.findRecentPublished.and.callFake(() => {
-      sessionStore.update({ latestDocuments: recentDocuments });
+      sessionStore.setLatestDocuments(recentDocuments);
     });
-    // const formService = spectator.inject<FormularService>(FormularService);
-
     spectator.detectChanges();
 
     const recentDocs = spectator.queryAll(

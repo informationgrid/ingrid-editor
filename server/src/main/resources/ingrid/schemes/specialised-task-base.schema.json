@@ -2,7 +2,20 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/specialisedTaskBase",
   "type": "object",
+  "definitions": {
+    "propertiesSpecialisedTask": {
+      "type": "object",
+      "properties": {
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        }
+      }
+    }
+  },
   "properties": {
+    "properties": {
+      "$ref": "#/definitions/propertiesSpecialisedTask"
+    },
     "_uuid": {
       "type": "string"
     },

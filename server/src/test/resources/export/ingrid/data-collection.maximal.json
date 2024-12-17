@@ -53,6 +53,7 @@
   "references": [
     {
       "url": "https://this.url.ag",
+      "referenceType": "url",
       "type": { "key": "3570" },
       "title": "basis",
       "explanation": "blabla"

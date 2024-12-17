@@ -97,7 +97,8 @@ class BmiExporter(
     }
 
     private fun getModelTransformer(json: Document, catalogId: String, exportOptions: ExportOptions): Any {
-        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
+        val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
+        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
 
         return BmiModelTransformer(
             TransformerConfig(

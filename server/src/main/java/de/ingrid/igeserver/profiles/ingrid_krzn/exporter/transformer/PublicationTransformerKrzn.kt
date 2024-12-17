@@ -17,13 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { QueryEntity } from "@datorama/akita";
-import { CatalogStore, CatalogState } from "./catalog.store";
+package de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer
 
-@Injectable({ providedIn: "root" })
-export class CatalogQuery extends QueryEntity<CatalogState> {
-  constructor(protected store: CatalogStore) {
-    super(store);
-  }
+import de.ingrid.igeserver.profiles.ingrid.exporter.PublicationModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.getInternalReferences
+
+class PublicationTransformerKrzn(transformerConfig: TransformerConfig) : PublicationModelTransformer(transformerConfig) {
+
+    override fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() = super.getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() + getInternalReferences(this, codelists)
 }

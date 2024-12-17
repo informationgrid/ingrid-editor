@@ -73,7 +73,7 @@ export class UnitInputComponent
     let options = this.props.unitOptions;
     if (!(options instanceof Observable)) options = of(options);
 
-    options.pipe(take(1)).subscribe((opts) => {
+    options.pipe(untilDestroyed(this)).subscribe((opts) => {
       const unitValue = this.field.fieldGroup[1].formControl.value;
       this.$options.set(opts);
 

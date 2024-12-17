@@ -17,16 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { QueryEntity } from "@datorama/akita";
-import { GroupStore, GroupState } from "./group.store";
-import { Group } from "../../models/user-group";
+package de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer
 
-@Injectable({
-  providedIn: "root",
-})
-export class GroupQuery extends QueryEntity<GroupState, Group> {
-  constructor(protected store: GroupStore) {
-    super(store);
-  }
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.getInternalReferences
+
+class SpecializedTaskTransformerKrzn(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
+
+    override fun getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() = super.getServiceUrlsAndCoupledServiceAndAtomAndExternalRefs() + getInternalReferences(this, codelists)
 }

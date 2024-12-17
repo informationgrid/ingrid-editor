@@ -28,7 +28,6 @@ import { DataCollectionDoctypeHMDK } from "./ingrid-hmdk/doctypes/data-collectio
 import { PublicationDoctypeHMDK } from "./ingrid-hmdk/doctypes/publication.doctype";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../app/services/event/doc-events.service";
-import { TreeQuery } from "../app/store/tree/tree.query";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { PluginService } from "../app/services/plugin/plugin.service";
 import { ModifyPublishedBehaviour } from "./ingrid-hmdk/behaviours/modify-published.behaviour";
@@ -50,7 +49,6 @@ class InGridHMDKComponent extends InGridComponent {
 
   dialog = inject(MatDialog);
   docEvents = inject(DocEventsService);
-  treeQuery = inject(TreeQuery);
   pluginService = inject(PluginService);
 
   constructor() {
