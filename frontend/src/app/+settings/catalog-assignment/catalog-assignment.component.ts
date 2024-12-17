@@ -38,7 +38,19 @@ import { MatButton } from "@angular/material/button";
 export class CatalogAssignmentComponent implements OnInit {
   selectedCatalogId: string;
   selectedUserId: string;
-  catalogs$ = toSignal(this.catalogService.getCatalogs());
+  catalogs$ = toSignal(
+    this.catalogService.getCatalogs().pipe(
+      map((catalogs) =>
+        catalogs.map(
+          (c) =>
+            ({
+              label: `${c.label} (${c.id})`,
+              value: c.id,
+            }) as SelectOptionUi,
+        ),
+      ),
+    ),
+  );
   userIds$ = toSignal(
     this.userService.getUserIdsFromAllCatalogs().pipe(
       map((ids) =>
