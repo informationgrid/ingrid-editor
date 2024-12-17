@@ -84,10 +84,8 @@ class CatalogTransferService(
                 query.executeUpdate()
             }
         } catch (e: Exception) {
-            // TODO: handle exception properly or make sure it doesn't happen
-            // problem DS: ba10d5fe-0bb6-4498-a271-2caf26c41dd5  (con terra GmbH test catalogue Server)
             log.error("Error while importing data to table $tableName")
-            log.error(e)
+            throw e
         }
     }
 

@@ -117,7 +117,7 @@ export class CatalogService {
         tap((response: HttpResponse<Blob>) => {
           const downloadLink = document.createElement("a");
           downloadLink.href = window.URL.createObjectURL(response.body);
-          downloadLink.setAttribute("download", "testexport.json");
+          downloadLink.setAttribute("download", "catalog_export.json");
           document.body.appendChild(downloadLink);
           downloadLink.click();
           downloadLink.remove();
