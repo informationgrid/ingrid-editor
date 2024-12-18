@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { CatalogService } from "../../+catalog/services/catalog.service";
 import { UserService } from "../../services/user/user.service";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
@@ -35,43 +35,24 @@ import { MatButton } from "@angular/material/button";
   standalone: true,
   imports: [PageTemplateComponent, FilterSelectComponent, MatButton],
 })
-export class CatalogAssignmentComponent implements OnInit {
+export class CatalogAssignmentComponent {
+  private catalogService = inject(CatalogService);
+  private userService = inject(UserService);
+  private snackBar = inject(MatSnackBar);
+
   selectedCatalogId: string;
   selectedUserId: string;
+
   catalogs$ = toSignal(
-    this.catalogService.getCatalogs().pipe(
-      map((catalogs) =>
-        catalogs.map(
-          (c) =>
-            ({
-              label: `${c.label} (${c.id})`,
-              value: c.id,
-            }) as SelectOptionUi,
-        ),
-      ),
-    ),
+    this.catalogService
+      .getCatalogs()
+      .pipe(map((catalogs) => this.mapCatalogs(catalogs))),
   );
   userIds$ = toSignal(
-    this.userService.getUserIdsFromAllCatalogs().pipe(
-      map((ids) =>
-        ids.map(
-          (id) =>
-            ({
-              label: id,
-              value: id,
-            }) as SelectOptionUi,
-        ),
-      ),
-    ),
+    this.userService
+      .getUserIdsFromAllCatalogs()
+      .pipe(map((ids) => this.mapIdsToSelectOptions(ids))),
   );
-
-  constructor(
-    private catalogService: CatalogService,
-    private userService: UserService,
-    private snackBar: MatSnackBar,
-  ) {}
-
-  ngOnInit() {}
 
   assignCatalog() {
     this.userService
@@ -84,5 +65,25 @@ export class CatalogAssignmentComponent implements OnInit {
         ),
       )
       .subscribe();
+  }
+
+  private mapCatalogs(catalogs: any[]): SelectOptionUi[] {
+    return catalogs.map(
+      (c) =>
+        ({
+          label: `${c.label} (${c.id})`,
+          value: c.id,
+        }) as SelectOptionUi,
+    );
+  }
+
+  private mapIdsToSelectOptions(ids: String[]) {
+    return ids.map(
+      (id) =>
+        ({
+          label: id,
+          value: id,
+        }) as SelectOptionUi,
+    );
   }
 }
