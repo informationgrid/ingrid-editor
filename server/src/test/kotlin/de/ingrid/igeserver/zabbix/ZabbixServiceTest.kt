@@ -144,7 +144,7 @@ class ZabbixServiceTest : ShouldSpec() {
     }
 
     private fun prepareZabbixData(uploads: List<ZabbixModel.Upload>): ZabbixModel.ZabbixData {
-        return ZabbixModel.ZabbixData("", "", "", "", uploads)
+        return ZabbixModel.ZabbixData("", "", "", "", "", "", uploads)
     }
 
     private fun getRequestParameter(request: HttpRequest): String {

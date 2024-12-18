@@ -87,10 +87,12 @@ class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler
         val documentTitle = xpath.getString(xmlDocument, "//idfMdMetadata/name")
         val uuid = xpath.getString(xmlDocument, "//idfMdMetadata/id")
         val detailUrl = zabbixService.detailUrl.format(uuid)
+        val addressName = xpath.getString(xmlDocument, "//idfMdMetadata/addresses/address/name")
+        val addressMail = xpath.getString(xmlDocument, "//idfMdMetadata/addresses/address/mail")
 
         val uploadsToAdd = getUploadsToAdd(xmlDocument, uploadUrl)
 
-        return ZabbixModel.ZabbixData(catalogIdentifier, uuid, documentTitle, detailUrl, uploadsToAdd)
+        return ZabbixModel.ZabbixData(catalogIdentifier, uuid, documentTitle, detailUrl, addressName, addressMail, uploadsToAdd)
     }
 
     private fun convertToDocument(payload: PostIndexPayload): Document {

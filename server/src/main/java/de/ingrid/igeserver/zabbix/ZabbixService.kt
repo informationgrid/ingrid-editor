@@ -67,7 +67,173 @@ class ZabbixService(
         log.debug("Delete documents: $documentsToDelete")
         deleteZabbixJob(documentsToDelete)
         log.debug("Add documents: $documentsToAdd")
-        createZabbixJob(data.catalogIdentifier, data.uuid, data.documentTitle, data.documentURL, documentsToAdd)
+        createZabbixJob(
+            data.catalogIdentifier,
+            data.uuid,
+            data.documentTitle,
+            data.documentURL,
+            data.addressMail,
+            documentsToAdd,
+        )
+    }
+
+    /**
+     * @return userId of created user
+     */
+    private fun createUser(addressMail: String): String {
+        val passwd = "readOnly"
+        val paramsUsergroup = listOf(ZabbixModel.UserGroup("12"))
+        val paramsMedias = listOf(ZabbixModel.Media("1", addressMail, 0, 63, "1-7,00:00-24:00"))
+        val params = ZabbixModel.UserParams(addressMail, passwd, "4", paramsUsergroup, paramsMedias)
+        val user = ZabbixModel.User(method = "user.create", params = params, auth = apiKey, id = 1)
+        val values = jacksonObjectMapper().writeValueAsString(user)
+        val response = requestApi(values)
+        val userid: String = if (response.has("error")) {
+            getUserId(addressMail)
+        } else {
+            getFromResultAsList(response, "userids")[0].asText()
+        }
+        return userid
+    }
+
+    data class Action(
+        val id: String,
+        val userid: String,
+    )
+
+    data class User(
+        val sendto: String?,
+        val actions: Int,
+    )
+
+    private fun getAction(uuid: String): Action? {
+        val request =
+            """{"jsonrpc":"$JSONRPC","method":"action.get","params":{"output":["actionid","name"],"selectOperations": ["opmessage_usr"],"filter":{"name":["$uuid"]}},"auth":"$apiKey","id":1}"""
+        val response = requestApi(request).get("result").get(0) ?: return null
+
+        return Action(
+            id = response.get("actionid").asText(),
+            userid = response["operations"].get(0).get("opmessage_usr").get(0).get("userid").asText(),
+        )
+    }
+
+    private fun getUserFromAction(userid: String): User {
+        val request =
+            """{"jsonrpc":"$JSONRPC","method":"action.get","params":{"output":["actionid","name"],"selectOperations": ["opmessage_usr"]},"auth":"$apiKey","id":1}"""
+        val response = requestApi(request)
+        val actionSize = response["result"]
+            .filter {
+                it["operations"]?.get(0)?.get("opmessage_usr")?.get(0)?.get("userid")?.asText() == userid
+            }.size
+
+        return User(
+            sendto = getUser("userid", userid)?.get("medias")?.get(0)?.get("sendto")?.get(0)?.asText(),
+            actions = actionSize,
+        )
+    }
+
+    private fun getUser(field: String, value: String): JsonNode? {
+        val response =
+            requestApi("""{"jsonrpc":"$JSONRPC","method":"user.get","params":{"output":["userid","username"],"selectMedias": ["sendto"],"filter":{"$field":["$value"]}},"auth":"$apiKey","id":1}""")
+        return response.get("result").get(0) ?: return null
+    }
+
+    /**
+     * @return userId of created user or null if no new user needed
+     */
+    private fun updateUserMail(uuid: String, addressMail: String): String? {
+        val action = getAction(uuid)
+        val user = action?.let { getUserFromAction(it.userid) }
+
+        if (action != null && user?.sendto != addressMail) {
+            deleteAction(listOf(action.id))
+            if (user?.actions == 1) {
+                deleteUser(listOf(action.userid))
+                return createUser(addressMail)
+            }
+        }
+        return null
+    }
+
+    private fun createAction(uuid: String, addressMail: String) {
+        val userid = getUser("username", addressMail)?.get("userid")?.asText() ?: createUser(addressMail)
+        val updatedUserId = updateUserMail(uuid, addressMail) ?: userid
+        val jsonActionCreate =
+            """
+                {
+                    "jsonrpc": "$JSONRPC",
+                    "method": "action.create",
+                    "params": {
+                        "name": "$uuid",
+                        "eventsource": 0,
+                        "notify_if_canceled": 0,
+                        "filter": {
+                            "evaltype": 0,
+                            "conditions": [
+                            {
+                                "conditiontype": 16,
+                                "operator": 11
+                            },
+                            {
+                                "conditiontype": 26,
+                                "operator": 0,
+                                "value": "$uuid",
+                                "value2": "id"
+                            }
+                            ]
+                        },
+                        "operations": [
+                        {
+                            "operationtype": 0,
+                            "esc_period": "24h",
+                            "esc_step_from": 1,
+                            "esc_step_to": 2,
+                            "opmessage_usr": [
+                            {
+                                "userid": "$updatedUserId"
+                            }
+                            ],
+                            "opmessage": {
+                                "default_msg": 1,
+                                "mediatypeid": "1"
+                            }
+                        }
+                        ],
+                        "recovery_operations": [
+                        {
+                            "operationtype": "11",
+                            "opmessage": {
+                                "default_msg": 1
+                            }
+                        }
+                        ]
+                    },
+                    "auth": "$apiKey",
+                    "id": 1
+                }
+            """.trimIndent()
+        val response = requestApi(jsonActionCreate)
+    }
+
+    private fun getUserId(username: String): String {
+        val jsonUserGet =
+            """{"jsonrpc":"$JSONRPC","method":"user.get","params":{"output":["userid","username"],"filter":{"username":["$username"]}},"auth":"$apiKey","id":1}"""
+        val responseUserGet = requestApi(jsonUserGet)
+        return responseUserGet.get("result").get(0).get("userid").asText()
+    }
+
+    private fun deleteUser(userid: List<String>) {
+        val user = ZabbixModel.Delete(method = "user.delete", params = userid, auth = apiKey, id = 1)
+        val values = jacksonObjectMapper().writeValueAsString(user)
+        val response = requestApi(values)
+        log.debug(response)
+    }
+
+    private fun deleteAction(actionid: List<String>) {
+        val action = ZabbixModel.Delete(method = "action.delete", params = actionid, auth = apiKey, id = 1)
+        val values = jacksonObjectMapper().writeValueAsString(action)
+        val response = requestApi(values)
+        log.debug(response)
     }
 
     private fun getUpload(item: JsonNode) = ZabbixModel.Upload(
@@ -83,9 +249,12 @@ class ZabbixService(
         uuid: String,
         name: String,
         url: String,
+        addressMail: String,
         documentsToAdd: List<ZabbixModel.Upload>,
     ) {
         val hostId = createHost(uuid, name, url, catalogIdentifier)
+        createUser(addressMail)
+        createAction(uuid, addressMail)
         documentsToAdd.forEach { document ->
             log.debug("Add document ${document.name}")
             createWebscenario(uuid, hostId, document.name, document.url)
@@ -252,6 +421,14 @@ class ZabbixService(
         val hostId = getFromResultArray(response, "hostid")
         log.debug("Delete host $uuid")
         deleteHosts(listOf(hostId.asText()))
+
+        val action = getAction(uuid)
+        val user = getAction(uuid)?.let { getUserFromAction(it.userid) }
+        action?.let {
+            log.debug("Delete action ${action.id}")
+            deleteAction(listOf(action.id))
+            if (user?.actions == 1) deleteUser(listOf(action.userid))
+        }
     }
 
     private fun getFromResultAsList(response: JsonNode, field: String): List<JsonNode> {
