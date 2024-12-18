@@ -61,13 +61,16 @@ class CatalogImportService(
 
         val documentWrapperMigrationMap = importDocumentWrapper(exportedCatalog.documentWrapper, catalogId, userMigrationMap)
         createObjectIdentities(documentWrapperMigrationMap.values.toList())
+        log.info("Imported ${documentWrapperMigrationMap.size} DocumentWrappers")
 
         importDocuments(exportedCatalog.document, catalogId, userMigrationMap)
 
         val groupMigrationMap = importGroups(exportedCatalog.permissionGroup, catalogId, documentWrapperMigrationMap, userMigrationMap)
+        log.info("Imported ${groupMigrationMap.size} PermissionGroups")
         assignGroupsToUsers(exportedCatalog.userGroup, groupMigrationMap, userMigrationMap)
-
+        log.info("Saving groups to set ACLs")
         saveAllGroupsOfCatalog(exportedCatalog.catalog["identifier"] as String)
+        log.info("Finished importing catalog ${exportedCatalog.catalog["identifier"]} with ID $catalogId")
     }
 
     private fun runPreChecks(exportedCatalog: ExportedCatalog) {
@@ -154,7 +157,11 @@ class CatalogImportService(
 
         depthToWrapper.keys.sorted().forEach { depth ->
             log.info("Importing DocumentWrapper with depth $depth ...")
-            wrapperIdMigrationMap.putAll(importIntoDocumentWrapperTable(catalogId, depthToWrapper[depth]!!, wrapperIdMigrationMap, userMigrationMap))
+            // Batch the wrappers into chunks of a manageable size
+            depthToWrapper[depth]!!.chunked(100).forEachIndexed { index, chunk ->
+                log.info("Processing chunk $index with ${chunk.size} wrappers for depth $depth ...")
+                wrapperIdMigrationMap.putAll(importIntoDocumentWrapperTable(catalogId, chunk, wrapperIdMigrationMap, userMigrationMap))
+            }
         }
 
         return wrapperIdMigrationMap
@@ -242,20 +249,31 @@ class CatalogImportService(
         return previousIds.zip(newIds).toMap()
     }
 
-    private fun importToTableReturningId(tableName: String, data: List<Map<String?, Any?>>): List<Int> {
+    private fun importToTableReturningId(tableName: String, data: List<Map<String?, Any?>>, chunkSize: Int = 1000): List<Int> {
         if (data.isEmpty()) {
             log.warn("No data to import to table $tableName")
             return emptyList()
         }
-        val query = entityManager.createNativeQuery(
-            """
-            INSERT INTO $tableName (${data.first().keys.joinToString()}) VALUES ${generatePlaceholder(data)}
+
+        val allIds = mutableListOf<Int>()
+        // Split data into chunks of a manageable size
+        data.chunked(chunkSize).forEachIndexed { index, chunk ->
+            log.debug("Processing chunk $index with ${chunk.size} entries for table $tableName ...")
+
+            val query = entityManager.createNativeQuery(
+                """
+            INSERT INTO $tableName (${chunk.first().keys.joinToString()}) VALUES ${generatePlaceholder(chunk)}
             RETURNING id;
-            """.trimIndent(),
-            Tuple::class.java,
-        )
-        populateParameters(query, data)
-        return getQueryResultsAsMap(query).map { row -> row["id"] as Int }
+                """.trimIndent(),
+                Tuple::class.java,
+            )
+            populateParameters(query, chunk)
+            val chunkIds = getQueryResultsAsMap(query).map { row -> row["id"] as Int }
+
+            allIds.addAll(chunkIds)
+        }
+
+        return allIds
     }
 
     private fun adaptGroupPermissions(permissions: String, documentWrapperMigrationMap: Map<Int, Int>): String {
@@ -335,22 +353,21 @@ class CatalogImportService(
     }
 
     private fun importUsersToDB(newCatalogId: Int, newUserdata: List<MutableMap<String?, Any?>>): Map<String, Int> {
-        newUserdata.forEach { row ->
-            {
-                row.remove("id")
-                row["cur_catalog_id"] = newCatalogId
-            }
+        val data = newUserdata.map {
+            it.remove("id")
+            it["cur_catalog_id"] = newCatalogId
+            it
         }
 
         ClosableTransaction(transactionManager).use {
             val query = entityManager.createNativeQuery(
                 """
-                INSERT INTO user_info (${newUserdata.first().keys.joinToString()}) VALUES ${generatePlaceholder(newUserdata)}
+                INSERT INTO user_info (${data.first().keys.joinToString()}) VALUES ${generatePlaceholder(data)}
                 RETURNING id, user_id;
                 """.trimIndent(),
                 Tuple::class.java,
             )
-            populateParameters(query, newUserdata)
+            populateParameters(query, data)
             return getQueryResultsAsMap(query).associate { row -> row["user_id"] as String to row["id"] as Int }
         }
     }

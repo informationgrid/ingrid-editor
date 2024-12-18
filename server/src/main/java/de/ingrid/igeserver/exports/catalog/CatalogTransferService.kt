@@ -68,20 +68,26 @@ class CatalogTransferService(
         }
     }
 
-    fun importToTable(tableName: String, data: List<Map<String?, Any?>>) {
+    fun importToTable(tableName: String, data: List<Map<String?, Any?>>, chunkSize: Int = 1000) {
         if (data.isEmpty()) {
             log.warn("No data to import to table $tableName")
             return
         }
+
         try {
-            ClosableTransaction(transactionManager).use {
-                val query = entityManager.createNativeQuery(
-                    """
-                INSERT INTO $tableName (${data.first().keys.joinToString()}) VALUES ${generatePlaceholder(data)};
-                    """.trimIndent(),
-                )
-                populateParameters(query, data)
-                query.executeUpdate()
+            // Process data in manageable chunks
+            data.chunked(chunkSize).forEachIndexed { index, chunk ->
+                log.debug("Processing chunk $index with ${chunk.size} entries for table $tableName ...")
+
+                ClosableTransaction(transactionManager).use {
+                    val query = entityManager.createNativeQuery(
+                        """
+                    INSERT INTO $tableName (${chunk.first().keys.joinToString()}) VALUES ${generatePlaceholder(chunk)};
+                        """.trimIndent(),
+                    )
+                    populateParameters(query, chunk)
+                    query.executeUpdate()
+                }
             }
         } catch (e: Exception) {
             log.error("Error while importing data to table $tableName")
