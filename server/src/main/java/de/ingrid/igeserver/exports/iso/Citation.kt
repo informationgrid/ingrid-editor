@@ -31,7 +31,7 @@ data class CICitation(
     val date: List<CitationDate>,
     val edition: CharacterString?,
     val identifier: List<Identifier>?,
-
+    val citedResponsibleParty: List<Contact>?,
 )
 
 data class CitationDate(

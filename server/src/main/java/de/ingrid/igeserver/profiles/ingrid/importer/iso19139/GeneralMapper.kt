@@ -92,8 +92,32 @@ open class GeneralMapper(val isoData: IsoImportData) {
         val distributors = metadata.distributionInfo?.mdDistribution?.distributor?.map {
             it.mdDistributor.distributorContact
         } ?: emptyList()
+        val featureCatalogContacts =
+            metadata.contentInfo?.get(0)?.mdFeatureCatalogueDescription?.featureCatalogueCitation?.get(0)?.citation?.citedResponsibleParty
+                ?: emptyList()
+        val domainConsistencyContacts = metadata.dataQualityInfo?.get(0)?.dqDataQuality?.report?.get(0)?.let {
+            listOf(
+                it.dqTemporalValidity,
+                it.dqTemporalConsistency,
+                it.dqAccuracyOfATimeMeasurement,
+                it.dqQuantitativeAttributeAccuracy,
+                it.dqNonQuantitativeAttributeAccuracy,
+                it.dqThematicClassificationCorrectness,
+                it.dqRelativeInternalPositionalAccuracy,
+                it.dqGriddedDataPositionalAccuracy,
+                it.dqAbsoluteExternalPositionalAccuracy,
+                it.dqTopologicalConsistency,
+                it.dqFormatConsistency,
+                it.dqDomainConsistency,
+                it.dqConceptualConsistency,
+                it.dqCompletenessOmission,
+                it.dqCompletenessCommission,
+            ).flatMap { item ->
+                item?.result?.dqConformanceResult?.specification?.citation?.citedResponsibleParty ?: emptyList()
+            }
+        } ?: emptyList()
 
-        (mainContact + additionalContacts + distributors).flatMapIndexed { index: Int, contact: Contact ->
+        (mainContact + additionalContacts + distributors + featureCatalogContacts + domainConsistencyContacts).flatMapIndexed { index: Int, contact: Contact ->
             val individualName = extractPersonInfo(contact.responsibleParty?.individualName?.value)
             val organization = contact.responsibleParty?.organisationName?.value
             val communications = getCommunications(contact.responsibleParty?.contactInfo?.ciContact)
@@ -145,10 +169,12 @@ open class GeneralMapper(val isoData: IsoImportData) {
                     // so we skip this "empty" address
                     if (organization == null) return@flatMapIndexed parents
                     uuid = findOrganisationUuid(organization)
-                        ?: uuid ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[organization] = newUuid }
+                        ?: uuid ?: UUID.randomUUID().toString()
+                        .also { newUuid -> isoData.addressMaps[organization] = newUuid }
                 } else {
                     uuid = findPersonUuid(individualName)
-                        ?: uuid ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[getPersonIdentifier(individualName)] = newUuid }
+                        ?: uuid ?: UUID.randomUUID().toString()
+                        .also { newUuid -> isoData.addressMaps[getPersonIdentifier(individualName)] = newUuid }
                 }
             } else {
                 val identifier = if (individualName != null) getPersonIdentifier(individualName) else organization
