@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
 
@@ -103,6 +104,12 @@ interface CatalogApi {
     fun catalogImport(
         principal: Principal,
         @Parameter(description = "The catalog to be imported.", required = true) @RequestBody file: @Valid MultipartFile,
+        @Parameter(description = "") @RequestParam("flowChunkNumber") flowChunkNumber: Int,
+        @Parameter(description = "") @RequestParam("flowTotalChunks") flowTotalChunks: Int,
+        @Parameter(description = "") @RequestParam("flowCurrentChunkSize") flowCurrentChunkSize: Long,
+        @Parameter(description = "") @RequestParam(value = "flowTotalSize") flowTotalSize: Long,
+        @Parameter(description = "") @RequestParam("flowIdentifier") flowIdentifier: String,
+        @Parameter(description = "") @RequestParam("flowFilename") flowFilename: String,
     ): ResponseEntity<Unit>
 
     @PostMapping(value = ["/catalogs/export/{identifier}"], produces = ["application/zip"])
