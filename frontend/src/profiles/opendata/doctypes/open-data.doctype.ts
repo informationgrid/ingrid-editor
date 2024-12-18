@@ -265,7 +265,9 @@ export class OpenDataDoctype extends BaseDoctype {
             fieldLabel: "Datum",
             required: true,
             expressions: {
-              hide: "model?.rangeType?.key == null || model?.rangeType?.key === 'range'",
+              hide: (field: FormlyFieldConfig) =>
+                field.model?.rangeType?.key == null ||
+                field.model?.rangeType?.key === "range",
             },
           }),
           this.addDateRange("timeSpanRange", null, {
@@ -273,7 +275,8 @@ export class OpenDataDoctype extends BaseDoctype {
             fieldLabel: "Datum",
             required: true,
             expressions: {
-              hide: "model?.rangeType?.key !== 'range'",
+              hide: (field: FormlyFieldConfig) =>
+                field.model?.rangeType?.key !== "range",
             },
           }),
         ]),
