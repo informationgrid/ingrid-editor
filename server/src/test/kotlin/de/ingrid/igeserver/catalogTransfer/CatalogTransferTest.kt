@@ -29,6 +29,7 @@ import de.ingrid.igeserver.imports.CatalogImportService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.igeserver.utils.FileUploadHandler
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.core.test.TestCase
@@ -51,7 +52,8 @@ class CatalogTransferTest : ShouldSpec() {
     private val catalogImportService = CatalogImportService(entityManager, transactionManager, groupService, catalogService, mockk())
     private val catalogExportService = CatalogExportService(entityManager, transactionManager, catalogService)
     private val authUtils = mockk<AuthUtils>(relaxed = true)
-    private val catalogApiController = CatalogApiController(catalogService, mockk(), mockk(), catalogImportService, catalogExportService, authUtils)
+    private val fileUploadHandler = mockk<FileUploadHandler>(relaxed = true)
+    private val catalogApiController = CatalogApiController(catalogService, mockk(), mockk(), catalogImportService, catalogExportService, authUtils, fileUploadHandler)
 
     override suspend fun beforeEach(testCase: TestCase) {
         clearAllMocks()
