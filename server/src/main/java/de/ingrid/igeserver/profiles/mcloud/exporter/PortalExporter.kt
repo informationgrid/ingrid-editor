@@ -65,14 +65,10 @@ class PortalExporter : IgeExporter {
         return writer.toString()
     }
 
-    override fun toString(exportedObject: Any): String {
-        return exportedObject.toString()
-    }
+    override fun toString(exportedObject: Any): String = exportedObject.toString()
 
-    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
-        return mapOf(
-            "model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java),
-            "catalogId" to catalogId,
-        )
-    }
+    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> = mapOf(
+        "model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java),
+        "catalogId" to catalogId,
+    )
 }

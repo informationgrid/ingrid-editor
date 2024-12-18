@@ -195,9 +195,7 @@ class UploadApiController(
 
     private val downloadHashCache = Collections.synchronizedMap(object : LinkedHashMap<String, StorageParameters>() {
         val maxSize = 500
-        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, StorageParameters>?): Boolean {
-            return size > maxSize
-        }
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, StorageParameters>?): Boolean = size > maxSize
     })
 
     override fun getFileDownloadHash(

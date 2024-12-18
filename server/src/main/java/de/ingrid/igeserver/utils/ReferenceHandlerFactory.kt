@@ -24,7 +24,5 @@ import org.springframework.stereotype.Service
 
 @Service
 class ReferenceHandlerFactory(val referenceHandlers: List<ReferenceHandler>) {
-    fun get(profile: CatalogProfile): ReferenceHandler? {
-        return referenceHandlers.find { it.getProfile() == profile.identifier || it.getProfile() == profile.parentProfile }
-    }
+    fun get(profile: CatalogProfile): ReferenceHandler? = referenceHandlers.find { it.getProfile() == profile.identifier || it.getProfile() == profile.parentProfile }
 }

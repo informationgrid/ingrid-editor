@@ -21,9 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_up_sh.exporter
 
 import kotlin.reflect.KClass
 
-fun getUPSHTransformer(docType: String): KClass<out Any>? {
-    return when (docType) {
-        "InGridGeoDataset" -> GeodatasetTransformerUPSH::class
-        else -> null
-    }
+fun getUPSHTransformer(docType: String): KClass<out Any>? = when (docType) {
+    "InGridGeoDataset" -> GeodatasetTransformerUPSH::class
+    else -> null
 }

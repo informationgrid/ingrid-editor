@@ -107,19 +107,17 @@ class MigrateUrlDataTypeTask(
             }.toList()
     }
 
-    private fun getCatalogsForPostMigration(): List<String> {
-        return try {
-            entityManager
-                .createQuery(
-                    "SELECT version FROM VersionInfo version WHERE version.key = 'doFixMigrateUrlDataType'",
-                    VersionInfo::class.java,
-                )
-                .resultList
-                .map { it.value!! }
-        } catch (e: Exception) {
-            log.warn("Could not query version_info table")
-            emptyList()
-        }
+    private fun getCatalogsForPostMigration(): List<String> = try {
+        entityManager
+            .createQuery(
+                "SELECT version FROM VersionInfo version WHERE version.key = 'doFixMigrateUrlDataType'",
+                VersionInfo::class.java,
+            )
+            .resultList
+            .map { it.value!! }
+    } catch (e: Exception) {
+        log.warn("Could not query version_info table")
+        emptyList()
     }
 
     private fun removePostMigrationInfo(catalogIdentifier: String) {

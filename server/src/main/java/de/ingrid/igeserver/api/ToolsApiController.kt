@@ -28,12 +28,10 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(path = ["/api/tools"])
 class ToolsApiController : ToolsApi {
 
-    override fun validWkt(wkt: String): ResponseEntity<WktValidateResponse> {
-        return try {
-            convertWktToGml32(wkt)
-            ResponseEntity.ok(WktValidateResponse(true))
-        } catch (ex: Exception) {
-            ResponseEntity.ok(WktValidateResponse(false, ex.message))
-        }
+    override fun validWkt(wkt: String): ResponseEntity<WktValidateResponse> = try {
+        convertWktToGml32(wkt)
+        ResponseEntity.ok(WktValidateResponse(true))
+    } catch (ex: Exception) {
+        ResponseEntity.ok(WktValidateResponse(false, ex.message))
     }
 }

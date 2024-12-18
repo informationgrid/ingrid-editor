@@ -24,8 +24,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.amendHMDKDescriptiveKeywords
 
-class InformationSystemModelTransformerHmdk(transformerConfig: TransformerConfig) :
-    InformationSystemModelTransformer(transformerConfig) {
+class InformationSystemModelTransformerHmdk(transformerConfig: TransformerConfig) : InformationSystemModelTransformer(transformerConfig) {
     override fun getDescriptiveKeywords(): List<Thesaurus> =
         amendHMDKDescriptiveKeywords(doc.data, codelists, super.getDescriptiveKeywords())
 }

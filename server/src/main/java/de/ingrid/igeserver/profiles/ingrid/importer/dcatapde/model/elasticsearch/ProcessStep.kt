@@ -47,18 +47,14 @@ class ProcessStep : Serializable {
         return identifier == that.identifier && passNumber == that.passNumber && processStepType == that.processStepType && temporal == that.temporal && title == that.title && distributions == that.distributions
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(identifier, passNumber, processStepType, temporal, title, distributions)
-    }
+    override fun hashCode(): Int = Objects.hash(identifier, passNumber, processStepType, temporal, title, distributions)
 
-    override fun toString(): String {
-        return "ProcessStep{" +
-            "identifier='" + identifier + '\'' +
-            ", passNumber='" + passNumber + '\'' +
-            ", processStepType=" + processStepType +
-            ", temporal=" + temporal +
-            ", title='" + title + '\'' +
-            ", distributions=" + distributions +
-            '}'
-    }
+    override fun toString(): String = "ProcessStep{" +
+        "identifier='" + identifier + '\'' +
+        ", passNumber='" + passNumber + '\'' +
+        ", processStepType=" + processStepType +
+        ", temporal=" + temporal +
+        ", title='" + title + '\'' +
+        ", distributions=" + distributions +
+        '}'
 }

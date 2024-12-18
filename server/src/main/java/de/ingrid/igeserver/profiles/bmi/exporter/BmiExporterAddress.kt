@@ -52,7 +52,5 @@ class BmiExporterAddress : IgeExporter {
         return "{}"
     }
 
-    override fun toString(exportedObject: Any): String {
-        return exportedObject.toString()
-    }
+    override fun toString(exportedObject: Any): String = exportedObject.toString()
 }

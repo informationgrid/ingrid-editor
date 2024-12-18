@@ -31,10 +31,8 @@ class GeodatasetMapperHMDK(isoData: IsoImportData, config: Config) : GeodatasetM
     override fun getKeywords(): List<String> =
         super.getKeywords(listOf("HmbTG-Informationsgegenstand")).filterNot { it == "hmbtg" }
 
-    fun getInformationHmbTG(): List<KeyValue> {
-        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
-            ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "HmbTG-Informationsgegenstand" }
-            ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
-            ?.map { KeyValue(it) } ?: emptyList()
-    }
+    fun getInformationHmbTG(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "HmbTG-Informationsgegenstand" }
+        ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+        ?.map { KeyValue(it) } ?: emptyList()
 }

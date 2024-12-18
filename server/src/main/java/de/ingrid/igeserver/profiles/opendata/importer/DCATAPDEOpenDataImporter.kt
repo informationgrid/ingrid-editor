@@ -76,9 +76,7 @@ class DCATAPDEOpenDataImporter(
         return output.toString()
     }
 
-    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
-        return (contentType == "application/xml" || contentType == "application/rdf+xml") && fileContent.contains("<rdf:RDF") && fileContent.contains("http://dcat-ap.de/def/dcatde/")
-    }
+    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean = (contentType == "application/xml" || contentType == "application/rdf+xml") && fileContent.contains("<rdf:RDF") && fileContent.contains("http://dcat-ap.de/def/dcatde/")
 
     internal class JsonStringOutput : StringOutput() {
         override fun writeUserContent(value: String?) {

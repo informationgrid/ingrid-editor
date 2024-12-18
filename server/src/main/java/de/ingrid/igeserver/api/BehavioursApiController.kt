@@ -31,7 +31,9 @@ import java.security.Principal
 
 @RestController
 @RequestMapping(path = ["/api"])
-class BehavioursApiController : BehavioursApi, Logging {
+class BehavioursApiController :
+    BehavioursApi,
+    Logging {
 
     @Autowired
     private lateinit var catalogService: CatalogService

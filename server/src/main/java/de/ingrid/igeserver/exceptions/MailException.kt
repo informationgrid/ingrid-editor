@@ -33,8 +33,6 @@ class MailException : ServerException {
         /**
          * Factory method for an arbitrary reason
          */
-        fun withException(cause: Throwable): MailException {
-            return MailException(STATUS_CODE, ERROR_CODE, cause.message ?: ERROR_TEXT, null, cause)
-        }
+        fun withException(cause: Throwable): MailException = MailException(STATUS_CODE, ERROR_CODE, cause.message ?: ERROR_TEXT, null, cause)
     }
 }

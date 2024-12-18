@@ -41,9 +41,7 @@ abstract class MigrationBase(val versionString: String) : MigrationStrategy {
         return true
     }
 
-    override fun hashCode(): Int {
-        return version.hashCode()
-    }
+    override fun hashCode(): Int = version.hashCode()
 
     override fun postExec() {}
 

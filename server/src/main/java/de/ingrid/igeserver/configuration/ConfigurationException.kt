@@ -34,15 +34,11 @@ open class ConfigurationException : ServerException {
         /**
          * Factory method for missing configuration value
          */
-        fun withMissingValue(valueName: String, cause: Throwable? = null): ConfigurationException {
-            return ConfigurationException(STATUS_CODE, ERROR_CODE, ERROR_TEXT_MISSING, mapOf("valueName" to valueName), cause)
-        }
+        fun withMissingValue(valueName: String, cause: Throwable? = null): ConfigurationException = ConfigurationException(STATUS_CODE, ERROR_CODE, ERROR_TEXT_MISSING, mapOf("valueName" to valueName), cause)
 
         /**
          * Factory method for an arbitrary reason
          */
-        fun withReason(reason: String, cause: Throwable? = null): ConfigurationException {
-            return ConfigurationException(STATUS_CODE, ERROR_CODE, reason, null, cause)
-        }
+        fun withReason(reason: String, cause: Throwable? = null): ConfigurationException = ConfigurationException(STATUS_CODE, ERROR_CODE, reason, null, cause)
     }
 }

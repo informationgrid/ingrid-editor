@@ -44,8 +44,6 @@ open class ValidationException protected constructor(
             return ValidationException(STATUS_CODE, ERROR_CODE_FIELD, errorText, mapOf("fields" to fields), cause)
         }
 
-        fun withReason(data: Any?, cause: Throwable? = null, errorCode: String? = null): ValidationException {
-            return ValidationException(STATUS_CODE, errorCode ?: ERROR_CODE, ERROR_TEXT, mapOf("error" to data), cause)
-        }
+        fun withReason(data: Any?, cause: Throwable? = null, errorCode: String? = null): ValidationException = ValidationException(STATUS_CODE, errorCode ?: ERROR_CODE, ERROR_TEXT, mapOf("error" to data), cause)
     }
 }

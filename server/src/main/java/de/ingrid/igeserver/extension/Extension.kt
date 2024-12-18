@@ -41,13 +41,13 @@ interface Extension {
      * Check if the extension is used in the given profile
      * @param profileId Name of the profile (null, if unspecified)
      */
-    fun usedInProfile(profileId: String?): Boolean {
-        return profiles != null && // not deactivated
-            (
-                // no profiles specified for extension -> match all given profiles
-                profiles!!.isEmpty() ||
-                    // profiles specified for extension -> match only specific profile
-                    profiles!!.isNotEmpty() && profileId in profiles!!
-                )
-    }
+    fun usedInProfile(profileId: String?): Boolean = profiles != null &&
+        // not deactivated
+        (
+            // no profiles specified for extension -> match all given profiles
+            profiles!!.isEmpty() ||
+                // profiles specified for extension -> match only specific profile
+                profiles!!.isNotEmpty() &&
+                profileId in profiles!!
+            )
 }

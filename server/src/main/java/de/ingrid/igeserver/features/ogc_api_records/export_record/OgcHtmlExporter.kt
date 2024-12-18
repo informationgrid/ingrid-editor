@@ -71,21 +71,15 @@ class OgcHtmlExporter(
         return
     }
 
-    private fun getPublished(catalogId: String, uuid: String): JsonNode? {
-        return try {
-            val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
-            getRawJsonFromDocument(document)
-        } catch (ex: Exception) {
-            // allow to export only draft versions
-            null
-        }
+    private fun getPublished(catalogId: String, uuid: String): JsonNode? = try {
+        val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
+        getRawJsonFromDocument(document)
+    } catch (ex: Exception) {
+        // allow to export only draft versions
+        null
     }
 
-    private fun selectDraftOrPublished(publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode {
-        return (draftVersion ?: publishedVersion) as ObjectNode
-    }
+    private fun selectDraftOrPublished(publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode = (draftVersion ?: publishedVersion) as ObjectNode
 
-    override fun toString(exportedObject: Any): String {
-        return exportedObject as String
-    }
+    override fun toString(exportedObject: Any): String = exportedObject as String
 }

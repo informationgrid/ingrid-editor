@@ -57,7 +57,5 @@ class DcatApExporter : IgeExporter {
         return writer.toString().replace("\\s+\n".toRegex(), "\n")
     }
 
-    private fun getMapFromObject(json: Document): Map<String, Any> {
-        return mapOf("model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java))
-    }
+    private fun getMapFromObject(json: Document): Map<String, Any> = mapOf("model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java))
 }

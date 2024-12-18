@@ -27,8 +27,7 @@ import de.ingrid.igeserver.profiles.ingrid_bast.exporter.getBastKeywords
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 
-class GeoserviceTransformerBast(transformerConfig: TransformerConfig) :
-    GeodataserviceModelTransformer(transformerConfig) {
+class GeoserviceTransformerBast(transformerConfig: TransformerConfig) : GeodataserviceModelTransformer(transformerConfig) {
 
     private val docData = doc.data
 

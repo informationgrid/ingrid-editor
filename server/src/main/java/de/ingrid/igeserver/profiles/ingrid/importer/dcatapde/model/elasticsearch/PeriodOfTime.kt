@@ -39,11 +39,7 @@ class PeriodOfTime : Serializable {
         return startDate == temporal.startDate && endDate == temporal.endDate
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(startDate, endDate)
-    }
+    override fun hashCode(): Int = Objects.hash(startDate, endDate)
 
-    override fun toString(): String {
-        return "PeriodOfTime{startDate=$startDate, endDate=$endDate}"
-    }
+    override fun toString(): String = "PeriodOfTime{startDate=$startDate, endDate=$endDate}"
 }

@@ -69,58 +69,54 @@ class TestProfile : CatalogProfile {
     override val indexExportFormatID = ""
     override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
 
-    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state",
-                "Allgemein",
-                arrayOf(
-                    Published(),
-                    ExceptFolders(),
-                ),
-                viewComponent = ViewComponent.CHECKBOX,
-                combine = Operator.AND,
+    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Allgemein",
+            arrayOf(
+                Published(),
+                ExceptFolders(),
             ),
-            FacetGroup(
-                "docType",
-                "Dokumententyp",
-                arrayOf(
-                    DocTest(),
-                ),
+            viewComponent = ViewComponent.CHECKBOX,
+            combine = Operator.AND,
+        ),
+        FacetGroup(
+            "docType",
+            "Dokumententyp",
+            arrayOf(
+                DocTest(),
             ),
-            FacetGroup(
-                "timeRef",
-                "Zeitbezug",
-                arrayOf(
-                    TimeSpan(),
-                ),
-                viewComponent = ViewComponent.TIMESPAN,
+        ),
+        FacetGroup(
+            "timeRef",
+            "Zeitbezug",
+            arrayOf(
+                TimeSpan(),
             ),
-        )
-    }
+            viewComponent = ViewComponent.TIMESPAN,
+        ),
+    )
 
-    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> {
-        return arrayOf(
-            FacetGroup(
-                "state",
-                "Allgemein",
-                arrayOf(
-                    Published(),
-                    ExceptFolders(),
-                ),
-                viewComponent = ViewComponent.CHECKBOX,
+    override fun getFacetDefinitionsForAddresses(): Array<FacetGroup> = arrayOf(
+        FacetGroup(
+            "state",
+            "Allgemein",
+            arrayOf(
+                Published(),
+                ExceptFolders(),
             ),
-            FacetGroup(
-                "addrType",
-                "Typ",
-                arrayOf(
-                    Organisations(),
-                    Persons(),
-                ),
-                viewComponent = ViewComponent.CHECKBOX,
+            viewComponent = ViewComponent.CHECKBOX,
+        ),
+        FacetGroup(
+            "addrType",
+            "Typ",
+            arrayOf(
+                Organisations(),
+                Persons(),
             ),
-        )
-    }
+            viewComponent = ViewComponent.CHECKBOX,
+        ),
+    )
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
@@ -222,13 +218,9 @@ class TestProfile : CatalogProfile {
     override fun initIndices() {
     }
 
-    override fun getElasticsearchMapping(format: String): String {
-        return ""
-    }
+    override fun getElasticsearchMapping(format: String): String = ""
 
-    override fun getElasticsearchSetting(format: String): String {
-        return ""
-    }
+    override fun getElasticsearchSetting(format: String): String = ""
 
     private fun removeAndAddCodelist(catalogId: String, codelist: Codelist) {
         codelistRepo.deleteByCatalog_IdentifierAndIdentifier(catalogId, codelist.identifier)
@@ -236,15 +228,13 @@ class TestProfile : CatalogProfile {
         codelistRepo.save(codelist)
     }
 
-    private fun toCodelistEntry(id: String, german: String): JsonNode {
-        return jacksonObjectMapper().createObjectNode().apply {
-            put("id", id)
-            set<JsonNode>(
-                "localisations",
-                jacksonObjectMapper().createObjectNode().apply {
-                    put("de", german)
-                },
-            )
-        }
+    private fun toCodelistEntry(id: String, german: String): JsonNode = jacksonObjectMapper().createObjectNode().apply {
+        put("id", id)
+        set<JsonNode>(
+            "localisations",
+            jacksonObjectMapper().createObjectNode().apply {
+                put("de", german)
+            },
+        )
     }
 }

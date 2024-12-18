@@ -59,7 +59,5 @@ class AuthenticationProviderMock : AuthenticationProvider {
         return UsernamePasswordAuthenticationToken(user, "", groups + roles)
     }
 
-    override fun supports(authentication: Class<*>?): Boolean {
-        return true
-    }
+    override fun supports(authentication: Class<*>?): Boolean = true
 }
