@@ -80,7 +80,7 @@
         </gmd:PT_Locale>
     </gmd:locale>
 @endif
-@if(page.getGridSpatialRepresentation() != null)
+@if(page.containsSpatialRepresentation())
     <gmd:spatialRepresentationInfo>
         <gmd:MD_${page.getGridType()}>
             @if(page.getGridSpatialRepresentation().getNumberOfDimensions() != null)

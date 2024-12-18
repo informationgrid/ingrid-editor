@@ -43,6 +43,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.Operation
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.isAllFieldsNullOrEmpty
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
@@ -224,6 +225,8 @@ open class IngridModelTransformer(
             constraint.title?.key,
         )
     } ?: emptyList()
+
+    fun containsSpatialRepresentation(): Boolean = gridSpatialRepresentation != null && !gridSpatialRepresentation.isAllFieldsNullOrEmpty()
 
     val gridSpatialRepresentation = data.gridSpatialRepresentation
     val georectified = gridSpatialRepresentation?.georectified
