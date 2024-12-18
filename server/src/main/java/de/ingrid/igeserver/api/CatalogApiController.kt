@@ -36,6 +36,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.igeserver.utils.FileUploadHandler
 import org.apache.logging.log4j.kotlin.logger
 import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
 import org.springframework.http.HttpHeaders.CONTENT_DISPOSITION
@@ -46,14 +47,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import java.io.SequenceInputStream
-import java.nio.file.Path
 import java.security.Principal
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.createTempDirectory
 
 @RestController
 @RequestMapping("/api")
@@ -64,6 +60,7 @@ class CatalogApiController(
     val catalogImportService: CatalogImportService,
     val catalogExportService: CatalogExportService,
     val authUtils: AuthUtils,
+    val fileUploadHandler: FileUploadHandler,
 ) : CatalogApi {
     val log = logger()
 
@@ -142,8 +139,6 @@ class CatalogApiController(
         return ResponseEntity.ok().build()
     }
 
-    private val tempDirectories: ConcurrentHashMap<String, Path> = ConcurrentHashMap()
-
     override fun catalogImport(
         principal: Principal,
         file: MultipartFile,
@@ -158,50 +153,27 @@ class CatalogApiController(
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
-        synchronized(this) {
-            var tempDir: Path? = tempDirectories[flowIdentifier]
-            if (tempDir == null) {
-                tempDir = createTempDirectory("import-chunks-$flowIdentifier")
-                tempDirectories[flowIdentifier] = tempDir
-            }
+        val combinedFile = fileUploadHandler.handleChunk(
+            file = file,
+            flowChunkNumber = flowChunkNumber,
+            flowTotalChunks = flowTotalChunks,
+            flowIdentifier = flowIdentifier,
+            flowFilename = flowFilename,
+        )
 
-            // save chunk
-            val chunkFile = tempDir.resolve("$flowChunkNumber")
-            file.transferTo(chunkFile)
+        combinedFile?.let {
+            // Actual Import
+            val exportedCatalog: ExportedCatalog = jacksonObjectMapper()
+                .enable(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION)
+                .readValue(it.toFile())
+            catalogImportService.importCatalog(exportedCatalog)
 
-            // if all chunks are uploaded combine them
-            if (tempDir.toFile().listFiles()?.size == flowTotalChunks) {
-                val combinedFile = tempDir.resolve(flowFilename)
-                val chunkFiles = tempDir.toFile().listFiles()
-                    ?.sortedBy { it.name.toInt() }
-                    ?: throw IllegalStateException("Chunk files not found or empty.")
-
-                SequenceInputStream(
-                    Vector(chunkFiles.map { it.inputStream() }).elements(),
-
-                ).use { sequenceInputStream ->
-                    combinedFile.toFile().outputStream().use { output ->
-                        sequenceInputStream.copyTo(output, DEFAULT_BUFFER_SIZE)
-                    }
-                }
-
-                // Actual Import
-                val exportedCatalog: ExportedCatalog = jacksonObjectMapper()
-                    .enable(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION)
-                    .readValue(combinedFile.toFile())
-                catalogImportService.importCatalog(exportedCatalog)
-
-                // cleanup temp
-                tempDir.toFile().deleteRecursively()
-                tempDirectories.remove(flowIdentifier)
-                log.info("Deleted temp directory: '${tempDir.absolutePathString()}'")
-
-                return ResponseEntity.ok().build()
-            }
-
-            // not every chunk uploaded yet
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build()
+            fileUploadHandler.cleanup(flowIdentifier)
+            return ResponseEntity.ok().build()
         }
+
+        // Not every chunk uploaded yet
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build()
     }
 
     override fun catalogExport(principal: Principal, catalogIdentifier: String): ResponseEntity<ByteArray?> {
