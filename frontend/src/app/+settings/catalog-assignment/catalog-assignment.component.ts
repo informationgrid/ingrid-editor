@@ -27,6 +27,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { FilterSelectComponent } from "../../shared/filter-select/filter-select.component";
 import { MatButton } from "@angular/material/button";
+import { Catalog } from "../../+catalog/services/catalog.model";
 
 @Component({
   selector: "ige-catalog-assignment",
@@ -67,11 +68,11 @@ export class CatalogAssignmentComponent {
       .subscribe();
   }
 
-  private mapCatalogs(catalogs: any[]): SelectOptionUi[] {
+  private mapCatalogs(catalogs: Catalog[]): SelectOptionUi[] {
     return catalogs.map(
       (c) =>
         ({
-          label: `${c.label} (${c.id})`,
+          label: c.label,
           value: c.id,
         }) as SelectOptionUi,
     );
