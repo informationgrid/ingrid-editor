@@ -76,7 +76,7 @@ class InGridHMDKComponent extends InGridComponent {
         docType.options.dynamicHide.openDataCategories = () => true;
         docType.options.dynamicRequired.openDataCategories = () => false;
       } else {
-        docType.options.dynamicHide.openDataCategories = undefined;
+        docType.options.dynamicHide.openDataCategories = () => false;
         docType.options.dynamicRequired.openDataCategories = (
           field: FormlyFieldConfig,
         ) =>

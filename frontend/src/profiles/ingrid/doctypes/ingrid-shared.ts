@@ -619,9 +619,9 @@ export abstract class IngridShared extends BaseDoctype {
           codelistId: "6400",
           expressions: {
             hide: (field: FormlyFieldConfig) =>
-              this.options.dynamicHide.openDataCategories?.(field),
+              this.options.dynamicHide.openDataCategories(field),
             "props.required": (field: FormlyFieldConfig) =>
-              this.options.dynamicRequired.openDataCategories?.(field),
+              this.options.dynamicRequired.openDataCategories(field),
           },
         }),
         this.showHVD
