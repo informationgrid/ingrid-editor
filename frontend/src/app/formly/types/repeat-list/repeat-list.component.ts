@@ -431,7 +431,7 @@ export class RepeatListComponent
     });
   }
 
-  removeItem(index: number, $event?: KeyboardEvent) {
+  removeItem(index: number, $event?: Event) {
     const item = this.model[this.field.key as string][index];
     this.formControl.patchValue(
       [...(this.formControl.value || [])].filter((_, idx) => idx !== index),
@@ -447,6 +447,7 @@ export class RepeatListComponent
 
     // focus next element when removed by keyboard
     if ($event) {
+      $event.stopImmediatePropagation();
       const nextElement = ($event.currentTarget as HTMLElement)
         ?.nextElementSibling as HTMLElement;
       nextElement?.focus();
