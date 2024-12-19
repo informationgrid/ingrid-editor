@@ -44,6 +44,7 @@ class ZabbixService(
     private val apiURL = zabbixProperties.apiURL
     private val checkDelay = zabbixProperties.checkDelay
     private val checkCount = zabbixProperties.checkCount
+    private val userGroupId = zabbixProperties.userGroupId
     val activatedCatalogs = zabbixProperties.catalogs ?: emptyList()
     val detailUrl = zabbixProperties.detailURLTemplate
     val uploadUrl = zabbixProperties.uploadURL
@@ -82,7 +83,7 @@ class ZabbixService(
      */
     private fun createUser(addressMail: String): String {
         val passwd = "readOnly"
-        val paramsUsergroup = listOf(ZabbixModel.UserGroup("12"))
+        val paramsUsergroup = listOf(ZabbixModel.UserGroup(userGroupId))
         val paramsMedias = listOf(ZabbixModel.Media("1", addressMail, 0, 63, "1-7,00:00-24:00"))
         val params = ZabbixModel.UserParams(addressMail, passwd, "4", paramsUsergroup, paramsMedias)
         val user = ZabbixModel.User(method = "user.create", params = params, auth = apiKey, id = 1)
