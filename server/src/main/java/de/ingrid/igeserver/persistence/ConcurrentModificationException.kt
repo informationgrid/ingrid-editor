@@ -38,14 +38,12 @@ open class ConcurrentModificationException : ConflictException {
         /**
          * Factory method for a conflicting resource
          */
-        fun withConflictingResource(id: String, databaseVersion: Int, recordVersion: Int, cause: Throwable? = null): ConcurrentModificationException {
-            return ConcurrentModificationException(
-                STATUS_CODE,
-                ERROR_CODE,
-                ERROR_TEXT.format(id),
-                mapOf("id" to id, "databaseVersion" to databaseVersion, "recordVersion" to recordVersion),
-                cause,
-            )
-        }
+        fun withConflictingResource(id: String, databaseVersion: Int, recordVersion: Int, cause: Throwable? = null): ConcurrentModificationException = ConcurrentModificationException(
+            STATUS_CODE,
+            ERROR_CODE,
+            ERROR_TEXT.format(id),
+            mapOf("id" to id, "databaseVersion" to databaseVersion, "recordVersion" to recordVersion),
+            cause,
+        )
     }
 }

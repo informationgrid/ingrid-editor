@@ -58,8 +58,10 @@ fun convertWktToGml32(wkt: String): String {
         // add gml:id attribute to root element
         .replace(
             Regex("<gml:(Point|MultiPoint|LineString|MultiLineString|Polygon|MultiPolygon|MultiGeometry)\\b"),
-            """<gml:$1 gml:id="$1_ID_${UUID.randomUUID()}"""",
-        )
+        ) { matchResult ->
+            val type = matchResult.groupValues[1]
+            """<gml:$type gml:id="${type}_ID_${UUID.randomUUID()}""""
+        }
 }
 
 fun convertGml32ToWkt(input: String?): String? = if (!input.isNullOrEmpty()) {

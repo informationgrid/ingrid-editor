@@ -37,8 +37,6 @@ class ChildDatasetException(
         /**
          * Factory method for an arbitrary reason
          */
-        fun mustNotBePublished(uuids: List<String>): ChildDatasetException {
-            return ChildDatasetException(STATUS_CODE, ERROR_CODE, ERROR_TEXT, mapOf("uuids" to uuids))
-        }
+        fun mustNotBePublished(uuids: List<String>): ChildDatasetException = ChildDatasetException(STATUS_CODE, ERROR_CODE, ERROR_TEXT, mapOf("uuids" to uuids))
     }
 }

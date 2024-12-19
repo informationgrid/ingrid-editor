@@ -23,7 +23,6 @@ import { inject, Injectable } from "@angular/core";
 import { UploadService } from "../../../app/shared/upload/upload.service";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { map } from "rxjs/operators";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { of } from "rxjs";
 
 // TODO: check out this, for handling functions in json schema: https://stackblitz.com/edit/angular-g1h2be-hpwffy
@@ -42,7 +41,6 @@ export class OpenDataDoctype extends BaseDoctype {
 
   private uploadService = inject(UploadService);
   private configService = inject(ConfigService);
-  protected codelistQuery = inject(CodelistQuery);
 
   documentFields = () =>
     <FormlyFieldConfig[]>[
@@ -92,7 +90,7 @@ export class OpenDataDoctype extends BaseDoctype {
           options: this.getCodelistForSelect("6400", "openDataCategories"),
           codelistId: "6400",
         }),
-        this.addCheckbox("hvd", "High-Value-Dataset (HVD)", {
+        this.addCheckbox("isHvd", "High-Value-Dataset (HVD)", {
           className: "flex-1",
           click: (field: FormlyFieldConfig) =>
             this.handleHVDClick(field).subscribe(),
@@ -102,10 +100,10 @@ export class OpenDataDoctype extends BaseDoctype {
           showSearch: true,
           asSelect: true,
           expressions: {
-            hide: (field: FormlyFieldConfig) => field.model.hvd !== true,
+            hide: (field: FormlyFieldConfig) => field.model.isHvd !== true,
           },
-          options: this.getCodelistForSelect("20008", null),
-          codelistId: "20008",
+          options: this.getCodelistForSelect("hvdCategories", null),
+          codelistId: "hvdCategories",
           required: true,
         }),
         this.addRepeatDistributionDetailList("distributions", "Ressourcen", {
@@ -267,7 +265,9 @@ export class OpenDataDoctype extends BaseDoctype {
             fieldLabel: "Datum",
             required: true,
             expressions: {
-              hide: "model?.rangeType?.key == null || model?.rangeType?.key === 'range'",
+              hide: (field: FormlyFieldConfig) =>
+                field.model?.rangeType?.key == null ||
+                field.model?.rangeType?.key === "range",
             },
           }),
           this.addDateRange("timeSpanRange", null, {
@@ -275,7 +275,8 @@ export class OpenDataDoctype extends BaseDoctype {
             fieldLabel: "Datum",
             required: true,
             expressions: {
-              hide: "model?.rangeType?.key !== 'range'",
+              hide: (field: FormlyFieldConfig) =>
+                field.model?.rangeType?.key !== "range",
             },
           }),
         ]),

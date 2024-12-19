@@ -27,7 +27,6 @@ import {
 
 import { ConfigLoader } from "./app/config.loader";
 import { environment } from "./environments/environment";
-import { enableAkitaProdMode, persistState } from "@datorama/akita";
 import {
   HTTP_INTERCEPTORS,
   HttpClient,
@@ -68,7 +67,6 @@ import { rxStompServiceFactory } from "./app/rx-stomp-service-factory";
 import { FORMLY_CONFIG, FormlyModule } from "@ngx-formly/core";
 import { registerTranslateExtension } from "./app/formly/translate.extension";
 import { pluginProvider } from "./app/plugin.provider";
-import { AkitaNgDevtools } from "@datorama/akita-ngdevtools";
 import { KeycloakAngularModule } from "keycloak-angular";
 import { AngularSplitModule } from "angular-split";
 import { DragDropModule } from "@angular/cdk/drag-drop";
@@ -123,6 +121,7 @@ import { UnitInputComponent } from "./app/formly/types/unit-type/unit-input.comp
 import { UvpSectionsComponent } from "./app/formly/types/uvp-sections/uvp-sections.component";
 import { ReferencedDocumentsTypeComponent } from "./app/formly/types/referenced-documents-type/referenced-documents-type.component";
 import { DocumentReferenceTypeComponent } from "./app/formly/types/document-reference-type/document-reference-type.component";
+import { DocumentReferenceSelectorComponent } from "./app/formly/types/document-reference-selector/document-reference-selector.component";
 import { UpdateGetCapabilitiesComponent } from "./app/formly/types/update-get-capabilities/update-get-capabilities.component";
 import { PreviewImageComponent } from "./app/formly/types/preview-image/preview-image.component";
 import { PrintTypeComponent } from "./app/formly/types/print/print-type.component";
@@ -138,12 +137,17 @@ import {
 } from "./app/formly/input.validators";
 import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
 import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
+import { MetadataTypeComponent } from "./app/formly/types/metadata-type/metadata-type.component";
+import { MatDatepickerIntl } from "@angular/material/datepicker";
+import { GermanDateIntl } from "./app/services/german-date.intl";
+import { RadioOptionsComponent } from "./app/formly/types/radio-options/radio-options.component";
+import { GeneralStore } from "./app/store/general.store";
 
 if (environment.production) {
   enableProdMode();
-  enableAkitaProdMode();
 }
 
+/*
 persistState({
   include: ["session"],
   preStorageUpdate: (storeName: string, state: any) => {
@@ -160,13 +164,11 @@ persistState({
     return state;
   },
 });
+*/
 
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(
-      environment.production
-        ? []
-        : AkitaNgDevtools.forRoot({ logTrace: false }),
       KeycloakAngularModule,
       AngularSplitModule,
       DragDropModule,
@@ -244,12 +246,24 @@ bootstrapApplication(AppComponent, {
             component: DocumentReferenceTypeComponent,
           },
           {
+            name: "documentReferenceSelector",
+            component: DocumentReferenceSelectorComponent,
+          },
+          {
+            name: "radioOptions",
+            component: RadioOptionsComponent,
+          },
+          {
             name: "updateGetCapabilities",
             component: UpdateGetCapabilitiesComponent,
           },
           {
             name: "previewImage",
             component: PreviewImageComponent,
+          },
+          {
+            name: "metadata",
+            component: MetadataTypeComponent,
           },
           /* FOR PREVIEW */
           {
@@ -270,6 +284,10 @@ bootstrapApplication(AppComponent, {
           },
           {
             name: "repeatListPrint",
+            component: PrintTypeComponent,
+          },
+          {
+            name: "repeatChipPrint",
             component: PrintTypeComponent,
           },
           {
@@ -369,6 +387,7 @@ bootstrapApplication(AppComponent, {
         HttpClient,
         MatDialog,
         TranslocoService,
+        GeneralStore,
       ],
       multi: true,
     },
@@ -384,6 +403,10 @@ bootstrapApplication(AppComponent, {
     {
       provide: DateAdapter,
       useClass: GermanDateAdapter,
+    },
+    {
+      provide: MatDatepickerIntl,
+      useClass: GermanDateIntl,
     },
     // add authorization header to all requests
     {
@@ -419,6 +442,8 @@ bootstrapApplication(AppComponent, {
         panelClass: "mat-dialog-override",
         hasBackdrop: true,
         maxWidth: "min(950px, 90vw)",
+        minWidth: "min(500px, 100%)",
+        minHeight: "min(0px, 100%)",
         role: "dialog",
         autoFocus: "dialog",
         restoreFocus: true,

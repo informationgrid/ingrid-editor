@@ -30,9 +30,7 @@ class BehaviourService(
     private val catalogRepo: CatalogRepository,
 ) {
 
-    fun get(catalogId: String): List<Behaviour> {
-        return behaviourRepo.findAllByCatalog_Identifier(catalogId)
-    }
+    fun get(catalogId: String): List<Behaviour> = behaviourRepo.findAllByCatalog_Identifier(catalogId)
 
     fun get(catalogId: String, behaviourId: String): Behaviour? = get(catalogId).find { it.name == behaviourId }
 

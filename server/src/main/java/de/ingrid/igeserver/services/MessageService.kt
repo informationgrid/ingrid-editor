@@ -31,17 +31,11 @@ class MessageService(
     private val catalogService: CatalogService,
 ) {
 
-    fun get(catalogId: String?): List<Message> {
-        return messageRepo.findAllByCatalog_Identifier(catalogId)
-    }
+    fun get(catalogId: String?): List<Message> = messageRepo.findAllByCatalog_Identifier(catalogId)
 
-    fun getById(id: Int): Optional<Message> {
-        return messageRepo.findById(id)
-    }
+    fun getById(id: Int): Optional<Message> = messageRepo.findById(id)
 
-    fun getAll(): List<Message> {
-        return messageRepo.findAll()
-    }
+    fun getAll(): List<Message> = messageRepo.findAll()
 
     fun save(
         message: de.ingrid.igeserver.model.Message,

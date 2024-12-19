@@ -117,7 +117,10 @@ export class UvpShared extends BaseDoctype {
   addPublicDisclosure() {
     return {
       name: "publicDisclosure",
-      expressions: { hide: 'model?.type !== "publicDisclosure"' },
+      expressions: {
+        hide: (field: FormlyFieldConfig) =>
+          field.model?.type !== "publicDisclosure",
+      },
       props: {
         label: "Öffentliche Auslegung",
       },
@@ -166,7 +169,10 @@ export class UvpShared extends BaseDoctype {
       fieldLabel: "Erst mit Beginn des Auslegungszeitraumes veröffentlichen",
       className: "space-bottom-field negative-space-top-field",
       expressions: {
-        hide: `!model || !model["${id}"] || model["${id}"].length === 0`,
+        hide: (field: FormlyFieldConfig) =>
+          !field.model ||
+          !field.model["${id}"] ||
+          !(field.model["${id}"].length === 0),
       },
     });
   }
@@ -174,7 +180,10 @@ export class UvpShared extends BaseDoctype {
   addPublicHearing() {
     return {
       name: "publicHearing",
-      expressions: { hide: 'model?.type !== "publicHearing"' },
+      expressions: {
+        hide: (field: FormlyFieldConfig) =>
+          field.model?.type !== "publicHearing",
+      },
       props: {
         label: "Erörterungstermin",
       },
@@ -202,7 +211,10 @@ export class UvpShared extends BaseDoctype {
   addDecisionOfAdmission() {
     return {
       name: "decisionOfAdmission",
-      expressions: { hide: 'model?.type !== "decisionOfAdmission"' },
+      expressions: {
+        hide: (field: FormlyFieldConfig) =>
+          field.model?.type !== "decisionOfAdmission",
+      },
       props: {
         label: "Entscheidung über die Zulassung",
       },
@@ -332,8 +344,8 @@ export class UvpShared extends BaseDoctype {
 
   receiptDateValidator() {
     return {
-      expression: (ctrl, other) => {
-        const model = other.form.root.value;
+      expression: (_ctrl: any, field: FormlyFieldConfig) => {
+        const model = field.form.root.value;
         let receiptDate = this.convertToIsoDate(model.receiptDate);
         let lowestDisclosureDate = model.processingSteps
           ?.filter((step) => step.type === "publicDisclosure")

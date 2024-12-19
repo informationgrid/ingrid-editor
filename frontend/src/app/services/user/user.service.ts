@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable, signal } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { BackendUser, FrontendUser, User } from "../../+user/user";
 import { Observable } from "rxjs";
 import { UserDataService } from "./user-data.service";
@@ -31,14 +31,17 @@ import { IgeError } from "../../models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { AuthenticationFactory } from "../../security/auth.factory";
-import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
-import { GroupQuery } from "../../store/group/group.query";
 import { Group } from "../../models/user-group";
+// @ts-ignore
+import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
+import { GroupStore } from "../../store/group/group.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class UserService {
+  private groupStore = inject(GroupStore);
+
   availableRoles: SelectOptionUi[] = [
     new SelectOption("cat-admin", "Katalog-Administrator"),
     new SelectOption("md-admin", "Metadaten-Administrator"),
@@ -60,7 +63,6 @@ export class UserService {
     private configService: ConfigService,
     private snackBar: MatSnackBar,
     private keycloakService: AuthenticationFactory,
-    private groupQuery: GroupQuery,
   ) {
     if (!this.configService.hasCatAdminRights()) {
       this.availableRoles = this.availableRoles.filter(
@@ -196,7 +198,6 @@ export class UserService {
     groupClickCallback: (id: string) => void = undefined,
     roleChangeCallback: FormlyAttributeEvent = undefined,
   ): FormlyFieldConfig[] {
-    console.debug("get user form fields");
     return getUserFormFields(
       this.availableRoles,
       groups,
@@ -209,7 +210,7 @@ export class UserService {
     return getNewUserFormFields(
       this.availableRoles,
       this.getExternalUsersAsSelectOptions(users),
-      this.groupQuery.getAll().map((group) => {
+      this.groupStore.entities().map((group) => {
         return new SelectOption(group.id.toString(), group.name);
       }),
     );

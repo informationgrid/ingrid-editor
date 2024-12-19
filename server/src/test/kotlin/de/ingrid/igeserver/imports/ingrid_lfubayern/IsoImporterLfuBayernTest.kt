@@ -20,23 +20,20 @@
 package de.ingrid.igeserver.imports.ingrid_lfubayern
 
 import de.ingrid.igeserver.DummyCatalog
+import de.ingrid.igeserver.imports.getFile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
-import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.importer.ISOImportLfUBayern
-import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentRepository
-import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.mdek.upload.Config
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.AnnotationSpec
 import io.mockk.every
 import io.mockk.mockk
 import mockCodelists
-import java.nio.file.Files
-import java.nio.file.Paths
 
 class IsoImporterLfuBayernTest : AnnotationSpec() {
 
@@ -44,12 +41,8 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
     private val catalogService = mockk<CatalogService>()
     private val documentService = mockk<DocumentService>()
     private val documentRepository = mockk<DocumentRepository>()
-    private val catalogRepository = mockk<CatalogRepository>()
-    private val queryRepository = mockk<QueryRepository>()
-    private val dateService = mockk<DateService>()
-    private val openDataCategory = mockk<OpenDataCategory>()
-    private val isoImport = mockk<ISOImport>()
-    private val isoImportLfUBayern = mockk<ISOImportLfUBayern>()
+    private val researchService = mockk<ResearchService>()
+    private val config = mockk<Config>()
 
     @BeforeAll
     fun beforeAll() {
@@ -61,25 +54,19 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
         every { codelistService.getCatalogCodelistKey("test", "20000", "geological eins") } returns "1"
         every { codelistService.getCatalogCodelistKey("test", "20001", "intern zwei") } returns "2"
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog("ingrid-lfubayern")
-        /*every { catalogService.getProfileFromCatalog(any()) } returns LfuBayernProfile(
-            catalogRepository, codelistService, documentService, queryRepository, dateService, openDataCategory, isoImport, isoImportLfUBayern
-        )*/
         every { documentService.docRepo } returns documentRepository
         every { documentRepository.findAddressByOrganisationName(any(), any()) } returns emptyList()
     }
 
     @Test
     fun importGeoservice() {
-        val isoImporter = ISOImport(codelistService, catalogService, documentService)
-        isoImporter.profileMapper["ingrid-lfubayern"] = ISOImportLfUBayern(codelistService, documentService)
-        val result = isoImporter.run("test", getFile("ingrid/import/iso_geoservice_full_lfuBayern.xml"), mutableMapOf())
+        val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, config)
+        isoImporter.profileMapper["ingrid-lfubayern"] = ISOImportLfUBayern(codelistService, documentService, researchService, config)
+        val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full_lfuBayern.xml"), mutableMapOf())
         println(result.toString())
 
         result.toPrettyString().shouldEqualJson(
-            getFile("ingrid/import/iso_geoservice_full_lfuBayern-expected.json"),
+            getFile("ingrid/import/iso_geodataset_full_lfuBayern-expected.json"),
         )
     }
-
-    private fun getFile(file: String) =
-        String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource(file).toURI())))
 }

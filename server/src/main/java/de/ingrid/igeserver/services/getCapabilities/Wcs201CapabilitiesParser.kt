@@ -19,50 +19,43 @@
  */
 package de.ingrid.igeserver.services.getCapabilities
 
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.Wcs201NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class Wcs201CapabilitiesParser(
-    codelistHandler: CodelistHandler,
-    private val researchService: ResearchService,
-    catalogId: String,
-) :
-    GeneralCapabilitiesParser(XPathUtils(Wcs201NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
+class Wcs201CapabilitiesParser(params: CapabilitiesParameter) :
+    GeneralCapabilitiesParser(XPathUtils(Wcs201NamespaceContext()), params),
+    ICapabilitiesParser {
 
-    override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        return CapabilitiesBean().apply {
-            // General settings
-            serviceType = "WCS"
-            dataServiceType = "3" // download
-            title = xPathUtils.getString(doc, XPATH_EXP_WCS_TITLE)
-            description = xPathUtils.getString(doc, XPATH_EXP_WCS_ABSTRACT)
-            versions = addOGCtoVersions(getNodesContentAsList(doc, XPATH_EXP_WCS_VERSION))
+    override fun getCapabilitiesData(doc: Document): CapabilitiesBean = CapabilitiesBean().apply {
+        // General settings
+        serviceType = "WCS"
+        dataServiceType = "3" // download
+        title = xPathUtils.getString(doc, XPATH_EXP_WCS_TITLE)
+        description = xPathUtils.getString(doc, XPATH_EXP_WCS_ABSTRACT)
+        versions = addOGCtoVersions(getNodesContentAsList(doc, XPATH_EXP_WCS_VERSION))
 
-            // Fees
-            fees = getKeyValueForPath(doc, XPATH_EXP_WCS_FEES, "6500")
+        // Fees
+        fees = getKeyValueForPath(doc, XPATH_EXP_WCS_FEES, "6500")
 
-            // Access Constraints
-            accessConstraints =
-                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WCS_ACCESS_CONSTRAINTS))
+        // Access Constraints
+        accessConstraints =
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WCS_ACCESS_CONSTRAINTS))
 
-            // Online Resources
-            onlineResources = getOnlineResources(doc, XPATH_EXP_WCS_ONLINE_RESOURCE)
+        // Online Resources
+        onlineResources = getOnlineResources(doc, XPATH_EXP_WCS_ONLINE_RESOURCE)
 
-            // TODO: Resource Locator / Type
-            // ...
+        // TODO: Resource Locator / Type
+        // ...
 
-            keywords = getKeywords(doc, XPATH_EXP_WCS_KEYWORDS).toMutableList()
-            address = getAddress(doc)
-            operations = getOperations(doc)
-            boundingBoxes = getBoundingBoxes(doc)
-            spatialReferenceSystems = getSpatialReferenceSystems(
-                doc,
-                "/wcs201:Capabilities/wcs201:ServiceMetadata/wcs201:Extension/crs:CrsMetadata/crs:crsSupported",
-            )
-        }
+        keywords = getKeywords(doc, XPATH_EXP_WCS_KEYWORDS).toMutableList()
+        address = getAddress(doc)
+        operations = getOperations(doc)
+        boundingBoxes = getBoundingBoxes(doc)
+        spatialReferenceSystems = getSpatialReferenceSystems(
+            doc,
+            "/wcs201:Capabilities/wcs201:ServiceMetadata/wcs201:Extension/crs:CrsMetadata/crs:crsSupported",
+        )
     }
 
     private fun getOperations(doc: Document): List<OperationBean> {
@@ -80,7 +73,7 @@ class Wcs201CapabilitiesParser(
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
                 "GetCapabilities",
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
@@ -102,7 +95,7 @@ class Wcs201CapabilitiesParser(
         )
         if (describeCoverageOp.addressList!!.isNotEmpty()) {
             describeCoverageOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "DescribeCoverage", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "DescribeCoverage", "de"),
                 "DescribeCoverage",
             )
             describeCoverageOp.methodCall = "DescribeCoverage"
@@ -121,7 +114,7 @@ class Wcs201CapabilitiesParser(
         )
         if (getCoverageOp.addressList!!.isNotEmpty()) {
             getCoverageOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetCoverage", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "GetCoverage", "de"),
                 "GetCoverage",
             )
             getCoverageOp.methodCall = "GetCoverage"
@@ -150,7 +143,7 @@ class Wcs201CapabilitiesParser(
         )
 
         // try to find address in database and set the uuid if found
-        searchForAddress(researchService, catalogId, address)
+        searchForAddress(params.researchService, params.catalogId, address)
 
         address.street = xPathUtils.getString(
             doc,

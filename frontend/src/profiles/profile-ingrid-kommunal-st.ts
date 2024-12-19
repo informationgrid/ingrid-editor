@@ -32,7 +32,6 @@ class InGridKommunalStComponent extends InGridComponent {
   }
 
   private modifyFormFieldConfiguration() {
-    this.geoService.geoServiceOptions.required.operations = true;
     this.geoService.geoServiceOptions.required.classification = false;
 
     this.geoDataset.geodatasetOptions.required.statement = false;
@@ -50,8 +49,7 @@ class InGridKommunalStComponent extends InGridComponent {
     ].forEach((docType) => {
       docType.options.required.freeKeywords = true;
       docType.options.required.useLimitation = true;
-      docType.options.dynamicRequired.accessConstraints = undefined;
-      docType.options.required.accessConstraints = true;
+      docType.options.dynamicRequired.accessConstraints = () => true;
     });
   }
 }

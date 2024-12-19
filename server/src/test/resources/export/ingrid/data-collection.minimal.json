@@ -35,7 +35,6 @@
     "resourceDateType": null
   },
   "extraInfo": { "legalBasicsDescriptions": [] },
-  "isOpenData": false,
   "references": [],
   "description": "some description",
   "pointOfContact": [
@@ -43,7 +42,6 @@
   ],
   "categoryCatalog": [],
   "databaseContent": [],
-  "isAdVCompatible": false,
   "advProductGroups": [],
   "digitalTransferOptions": [],
   "maintenanceInformation": {

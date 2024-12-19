@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "GeoDatasetLubw",
+  "$ref": "../geo-dataset-base.schema.json",
+  "properties": {
+    "dataQualityInfo": {
+      "type": "object",
+      "unevaluatedProperties": false,
+      "properties": {
+        "lineage": {
+          "type": "object",
+          "unevaluatedProperties": false,
+          "properties": {
+            "source": {
+              "type": "object",
+              "unevaluatedProperties": false,
+              "$ref": "../geo-dataset-base.schema.json#/definitions/dataQualitySource",
+              "properties": {
+                "environmentDescription": {
+                  "type": ["null", "string"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "oac": {
+      "type": ["null", "string"]
+    }
+  },
+  "unevaluatedProperties": false
+}

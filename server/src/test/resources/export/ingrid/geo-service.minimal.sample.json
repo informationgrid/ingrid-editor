@@ -11,9 +11,10 @@
   "_version": 4,
   "_state": "P",
   "data": {
-    "isInspireIdentified": false,
-    "isAdVCompatible": false,
-    "isOpenData": false,
+    "properties": {
+      "isAdVCompatible": false,
+      "isOpenData": false
+    },
     "description": "Feld von Beschreibung",
     "graphicOverviews": [],
     "pointOfContact": [

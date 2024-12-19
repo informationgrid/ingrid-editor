@@ -491,8 +491,6 @@ public class FileSystemStorage implements Storage {
 
         final List<StorageItem> storageItems = new ArrayList<>();
 
-
-
         final int bufferSize = 1024;
         // NOTE: UTF8 encoded ZIP file entries can be interpreted when the constructor is provided
         // with a non-UTF-8 encoding.

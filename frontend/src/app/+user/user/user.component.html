@@ -1,12 +1,12 @@
 <div class="page-wrapper flex-col">
     <div class="header-wrapper">
         <div class="user-management-header">
-            <div class="page-title">
+            <h1 class="page-title">
                 Benutzer (<span data-cy="users-count">{{
                     users()?.length
                 }}</span
                 >)
-            </div>
+            </h1>
             <mat-toolbar>
                 <mat-toolbar-row>
                     <ige-search-input
@@ -46,7 +46,7 @@
     </div>
     <as-split (dragEnd)="this.userManagementService.rememberTableWidth($event)">
         <as-split-area
-            [size]="tableWidth"
+            [size]="tableWidth()"
             id="sidebarUser"
             class="split-pane-content-primary container"
         >
@@ -58,7 +58,7 @@
             ></user-table>
         </as-split-area>
         <as-split-area
-            [size]="100 - tableWidth"
+            [size]="100 - tableWidth()"
             id="formUser"
             class="split-pane-content-secondary container-fluid flex-row"
         >
@@ -71,13 +71,9 @@
                             "
                         ></mat-icon>
                     </div>
-                    <span class="label flex-1">
-                        <span>{{
-                            form.get("firstName")?.value +
-                                " " +
-                                form.get("lastName")?.value || "Kein Titel"
-                        }}</span>
-                    </span>
+                    <h2 class="label flex-1">
+                        <span>{{ userTitle() }}</span>
+                    </h2>
                     @if (isLoading()) {
                         <mat-spinner diameter="24"></mat-spinner>
                     }
@@ -125,9 +121,8 @@
                 <formly-form
                     id="form"
                     [form]="form"
-                    [fields]="formlyFieldConfig"
+                    [fields]="formlyFieldConfig()"
                 >
-                    <!--                    [model]="model()"-->
                 </formly-form>
             </div>
             @if (!loadedUser()) {

@@ -16,7 +16,7 @@
 |https://ige-ng.informationgrid.eu
 
 |APP_INSTANCE_ID
-|
+|If multiple IGE-applications are connected to one iBus, then they need to be distinguished by setting a different instance ID.
 |ige-ng
 
 |APP_PROXY_URL
@@ -92,11 +92,11 @@
 |ige-ng-frontend
 
 |KEYCLOAK_URL
-|
+|The URL to Keycloak. When an internal IP is used, then the environment variable `KEYCLOAK_URL_FRONTEND` must be set in order to authenticate through the browser.
 |https://keycloak.informationgrid.eu
 
 |KEYCLOAK_URL_FRONTEND
-|
+|Is needed, when backend-communication to keycloak is established through an internal IP. You need to provide an external URL that can be reached from the outside.
 |wie KEYCLOAK_URL
 
 |OPEN_AI_TOKEN
@@ -213,7 +213,9 @@ In order to communicate through a proxy, you need to set some JVM options:
 * https.proxyPort
 * http.nonProxyHosts
 
-In docker these can be set in the following way. As an environment variable you can set `javaOptions` where you list each option prefixed with `-D`. For example:
+In docker these can be set in the following way.
+As an environment variable you can set `javaOptions` where you list each option prefixed with `-D`.
+For example:
 
 [source]
 ----

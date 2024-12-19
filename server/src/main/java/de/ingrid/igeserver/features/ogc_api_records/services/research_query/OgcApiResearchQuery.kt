@@ -41,9 +41,7 @@ abstract class OgcApiResearchQuery {
 
     abstract fun profileSpecificClauses(): MutableList<BoolFilter>?
 
-    fun profiles(): List<String> {
-        return profiles
-    }
+    fun profiles(): List<String> = profiles
 
     private fun ogcDateTimeConverter(datetime: String): List<String> {
         val dateArray = datetime.split("/")

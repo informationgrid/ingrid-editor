@@ -17,12 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-export interface BackendStoreQuery {
-  readonly id: string;
+export interface BackendUpdateStoreQuery {
+  readonly id: number;
   readonly name: string;
-  readonly category: "facet" | "sql";
   readonly description: string;
   readonly global: boolean;
+}
+
+export interface BackendStoreQuery extends BackendUpdateStoreQuery {
+  readonly category: "facet" | "sql";
   readonly userId?: string;
   readonly modified?: any;
   readonly settings: {

@@ -141,6 +141,21 @@ export function isNotEmptyObject(objValue: any, ignoreFields = []) {
   });
 }
 
+/**
+ * Replace null or empty fields with undefined in order to remove them from the resulting form value.
+ * @param obj
+ */
+export function removeNullOrEmptyFields(obj: any) {
+  for (const f in obj) {
+    let p = obj[f];
+    if (p === null || p === "") {
+      obj[f] = undefined;
+    } else if (typeof p === "object" && p !== null) {
+      this.removeNullOrEmptyFields(p);
+    }
+  }
+}
+
 /*!
  * JsonDiffMerge Library v1
  * https://debugtopinpoint.wordpress.com/
@@ -190,7 +205,6 @@ export class JsonDiffMerge {
       ) {
         // Dates must be in ISO string format and not as an object for the json merge to succeed (otherwise it will try and walk properties on the date object and merge those)
         obj2[property] = obj2[property].toISOString();
-        console.log("- Date object converted to ISO date string: " + property);
       }
 
       if (
@@ -484,12 +498,6 @@ export class JsonDiffMerge {
         ) {
           // Dates must be in ISO string format and not as an object for the json merge to succeed (otherwise it will try and walk properties on the date object and merge those)
           nodeEdits[property] = nodeEdits[property].toISOString();
-          console.log(
-            "- Date object converted to ISO date string: " +
-              path +
-              "." +
-              property,
-          );
         }
 
         var originalObjectAtKey = null;
@@ -849,4 +857,12 @@ export class JsonDiffMerge {
 
     return node;
   }
+}
+
+// Takes an array of objects and returns a new array with only the unique objects based on a specific key
+export function removeDuplicatesByValue(arr: any[], uniqueKey: string) {
+  return arr.filter(
+    (item, index, self) =>
+      index === self.findIndex((t) => t[uniqueKey] === item[uniqueKey]),
+  );
 }

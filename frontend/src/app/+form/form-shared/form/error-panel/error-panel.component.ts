@@ -107,11 +107,10 @@ export class ErrorPanelComponent implements OnInit {
       ...this.dialog.openDialogs.map((dialog) => dialog.afterClosed()),
       // run delayed, since in firefox the scrollIntoView function seems to get interrupted otherwise
       timer(300),
-    ]).subscribe(
-      () =>
-        (<HTMLElement>(
-          element?.querySelectorAll("input,textarea,mat-select,button")?.item(0)
-        ))?.focus(),
+    ]).subscribe(() =>
+      (<HTMLElement>(
+        element?.querySelectorAll("input,textarea,mat-select,button")?.item(0)
+      ))?.focus(),
     );
   }
 

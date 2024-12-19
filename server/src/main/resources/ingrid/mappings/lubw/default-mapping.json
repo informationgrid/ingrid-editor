@@ -23,6 +23,26 @@
       "type": "keyword",
       "store": true
     },
+    "environmentDescription": {
+      "type": "keyword",
+      "store": true
+    },
+    "oac": {
+      "type": "keyword",
+      "store": true
+    },
+    "object_node.tree_path.name": {
+      "type": "keyword",
+      "store": true
+    },
+    "object_node.tree_path.uuid": {
+      "type": "keyword",
+      "store": true
+    },
+    "distributor": {
+      "type": "keyword",
+      "store": true
+    },
     "kml": {
       "type": "keyword",
       "store": true
@@ -35,7 +55,7 @@
       "type": "keyword",
       "store": true
     },
-    "capabilities_url_with_client": {
+    "capabilities_download_url": {
       "type": "keyword",
       "store": true
     },
@@ -67,11 +87,27 @@
       "type": "keyword",
       "store": true
     },
+    "object_access.restriction_value": {
+      "type": "keyword",
+      "store": true
+    },
+    "object_access.restriction_key": {
+      "type": "keyword",
+      "store": true
+    },
     "t011_obj_serv.type": {
       "type": "text",
       "store": true
     },
     "t011_obj_serv.type_key": {
+      "type": "keyword",
+      "store": true
+    },
+    "t011_obj_serv_url.name": {
+      "type": "keyword",
+      "store": true
+    },
+    "t011_obj_serv_url.url": {
       "type": "keyword",
       "store": true
     },
@@ -391,6 +427,10 @@
       "type": "keyword",
       "store": true
     },
+    "is_hvd": {
+      "type": "keyword",
+      "store": true
+    },
     "wkt_geo": {
       "type": "geo_shape"
     },
@@ -401,7 +441,7 @@
     "sort_hash": {
       "type": "keyword"
     },
-    "distributor": {
+    "topic_categories": {
       "type": "keyword",
       "store": true
     }

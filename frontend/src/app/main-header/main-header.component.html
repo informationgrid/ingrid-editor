@@ -1,4 +1,4 @@
-<mat-toolbar *transloco="let t; read: 'menu'">
+<mat-toolbar role="banner" *transloco="let t; read: 'menu'">
     <mat-toolbar-row
         class="header-row medium-spacing"
         [class.showShadow]="showShadow"
@@ -10,10 +10,10 @@
             ><strong>{{ t("application") }}</strong> EDITOR
             <strong>{{ t("application-suffix") }}</strong></span
         >
-        <h1 class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</h1>
+        <div class="main-page-title">{{ pageTitle ? t(pageTitle) : "" }}</div>
 
         <div class="center-header flex-grow">
-            @if (timeout$ | async; as timer) {
+            @if (timeout(); as timer) {
                 <ige-session-timeout-info
                     [timeout]="timer"
                     [class.show]="timer < 300"
@@ -151,7 +151,7 @@
                             <button
                                 mat-menu-item
                                 [routerLink]="[
-                                    catalogId + '/settings/' + group.path
+                                    catalogId + '/settings/' + group.path,
                                 ]"
                             >
                                 {{ group.data?.title }}

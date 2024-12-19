@@ -21,9 +21,10 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
 import { HttpClient } from "@angular/common/http";
-import { inject } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { TranslocoService } from "@ngneat/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
+import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -85,6 +86,7 @@ export interface RepeatOptions extends Options {
 export interface RepeatDetailListOptions extends Options {
   backendUrl?: string;
   fields?: FormlyFieldConfig[];
+  _types?: AddButtonOptions[];
   validators?: { [x: string]: { expression: any; message: string } | string[] };
   titleField?: string;
   infoText?: string;
@@ -94,6 +96,7 @@ export interface RepeatDetailListOptions extends Options {
   enableFileUploadReuse?: boolean;
   enableFileUploadRename?: boolean;
   jsonTemplate?: object;
+  viewComponent?: any;
 }
 
 export interface RepeatListOptions extends Options {
@@ -178,6 +181,7 @@ export interface TextAreaOptions extends Options {
   autosize?: boolean;
   autosizeMinRows?: number;
   autosizeMaxRows?: number;
+  updateOn?: "change" | "blur" | "submit";
 }
 
 export interface AutocompleteOptions extends Options {
@@ -204,6 +208,9 @@ export interface SpatialOptions {
 
 export class FormFieldHelper {
   protected transloco = inject(TranslocoService);
+
+  // remember view components for print view
+  protected viewComponents: { [field: string]: Component } = {};
 
   addSection(label: string, fields: any[]) {
     return {
@@ -280,6 +287,9 @@ export class FormFieldHelper {
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
       },
+      modelOptions: {
+        updateOn: options?.updateOn ?? "blur",
+      },
       expressions: {
         ...expressions,
         "props.attributes.aria-labelledby": (field: FormlyFieldConfig) =>
@@ -292,7 +302,7 @@ export class FormFieldHelper {
     id,
     label,
     elementIdPrefix,
-    options: Options = {},
+    options: TextAreaOptions = {},
   ): FormlyFieldConfig {
     return this.addTextArea(id, null, elementIdPrefix, {
       className: "top-align-suffix flex-1",
@@ -317,6 +327,29 @@ export class FormFieldHelper {
       },
       validators: {
         ...options?.validators,
+      },
+    };
+  }
+
+  addDocumentCard(key: string, options?) {
+    return <FormlyFieldConfig>{
+      key: key,
+      type: "documentReferenceSelector",
+      className: "flex-1",
+      props: { ...options },
+      expressions: options.expressions,
+    };
+  }
+
+  addRadioOptions(id: string, label: string, options) {
+    return <FormlyFieldConfig>{
+      key: id,
+      type: "radioOptions",
+      className: "flex-1",
+      id: id,
+      label: label,
+      props: {
+        radioOptions: options.radioOptions,
       },
     };
   }
@@ -390,6 +423,7 @@ export class FormFieldHelper {
     options?: RepeatDetailListOptions,
   ): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
+    this.viewComponents[id] = options?.viewComponent;
     return {
       key: id,
       type: "repeatDetailList",
@@ -400,6 +434,8 @@ export class FormFieldHelper {
         required: options?.required,
         titleField: options?.titleField,
         fields: options?.fields,
+        _types: options?._types,
+        viewComponent: options?.viewComponent,
       },
       expressions: expressions,
       validators: options?.validators,
@@ -464,7 +500,7 @@ export class FormFieldHelper {
       type: "repeat",
       wrappers: options?.wrappers ?? ["panel"],
       className: options?.className,
-      defaultValue: options?.required ? options?.defaultValue ?? [{}] : null,
+      defaultValue: options?.required ? (options?.defaultValue ?? [{}]) : null,
       props: {
         externalLabel: label,
         required: options?.required,
@@ -487,7 +523,7 @@ export class FormFieldHelper {
     };
   }
 
-  addAutocomplete(id, label, options?: AutocompleteOptions) {
+  addAutocomplete(id, label, options?: AutocompleteOptions): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,
@@ -495,6 +531,7 @@ export class FormFieldHelper {
       className: options?.className,
       wrappers: options?.wrappers ?? ["panel", "form-field"],
       expressions: expressions,
+      defaultValue: options?.defaultValue ?? undefined,
       props: {
         externalLabel: label,
         label: options?.fieldLabel,
@@ -957,7 +994,8 @@ export class FormFieldHelper {
 
   private initExpressions(expressions = {}) {
     return {
-      "props.disabled": "formState.disabled",
+      "props.disabled": (field: FormlyFieldConfig) =>
+        field.options?.formState?.disabled ?? false,
       ...expressions,
     };
   }

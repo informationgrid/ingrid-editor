@@ -59,6 +59,10 @@ export interface ConfirmDialogButton {
   templateUrl: "confirm-dialog.component.html",
   styles: [
     `
+      .cookie-checkbox {
+        display: inline-flex;
+        max-height: 36px;
+      }
       .mat-mdc-dialog-content p {
         white-space: normal;
       }

@@ -37,8 +37,6 @@ open class TransferResponsibilityException : IgeException {
         /**
          * Factory method for an arbitrary reason
          */
-        fun withReason(reason: String, cause: Throwable? = null, data: Map<String, Any?>? = null): TransferResponsibilityException {
-            return TransferResponsibilityException(STATUS_CODE, ERROR_CODE, reason, data, cause)
-        }
+        fun withReason(reason: String, cause: Throwable? = null, data: Map<String, Any?>? = null): TransferResponsibilityException = TransferResponsibilityException(STATUS_CODE, ERROR_CODE, reason, data, cause)
     }
 }

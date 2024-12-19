@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, inject, Inject, OnInit } from "@angular/core";
 import {
   FormBuilder,
   FormControl,
@@ -31,7 +31,6 @@ import {
   SelectOption,
   SelectOptionUi,
 } from "../../../app/services/codelist/codelist.service";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter } from "rxjs/operators";
 import { BackendOption } from "../../../app/store/codelist/codelist.model";
@@ -55,6 +54,7 @@ import {
   MatDatepickerToggle,
 } from "@angular/material/datepicker";
 import { AsyncPipe } from "@angular/common";
+import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 
 export interface FormType {
   specification: FormControl<SelectOptionUi>;
@@ -88,6 +88,7 @@ export interface FormType {
   ],
 })
 export class ConformityDialogComponent implements OnInit {
+  private codelistStore = inject(CodelistStore);
   specifications = this.codelistService.observe("6005");
   specificationsFree = this.codelistService.observe("6006");
   level = this.codelistService.observe("6000");
@@ -105,7 +106,6 @@ export class ConformityDialogComponent implements OnInit {
     private dlgRef: MatDialogRef<any>,
     fb: FormBuilder,
     private codelistService: CodelistService,
-    private codelistQuery: CodelistQuery,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     const model = this.data.model;
@@ -156,7 +156,7 @@ export class ConformityDialogComponent implements OnInit {
       .subscribe((option) => {
         const codelistId =
           this.form.get("isInspire").value === true ? "6005" : "6006";
-        const codelistEntry = this.codelistQuery.getCodelistEntryByKey(
+        const codelistEntry = this.codelistStore.getCodelistEntryByKey(
           codelistId,
           option.value,
         );
@@ -194,7 +194,7 @@ export class ConformityDialogComponent implements OnInit {
   ): SelectOption {
     const option = SelectOption.fromBackend(specification);
     if (!isInspire && option.value)
-      option.label = this.codelistQuery.getCodelistEntryValueByKey(
+      option.label = this.codelistStore.getCodelistEntryValueByKey(
         "6006",
         option.value,
       );

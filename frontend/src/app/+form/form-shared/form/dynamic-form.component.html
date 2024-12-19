@@ -1,5 +1,5 @@
 <div class="flex-col flex-fill">
-    <div class="blocker" [class.show]="showBlocker"></div>
+    <div class="blocker" [class.show]="showBlocker()"></div>
 
     <!-- Toolbar -->
     <form-toolbar></form-toolbar>
@@ -17,7 +17,7 @@
         <!-- The form -->
         <as-split-area
             #scrollForm
-            [size]="100 - sidebarWidth - (showJson ? 20 : 0)"
+            [size]="100 - sidebarWidth - (showJson() ? 20 : 0)"
             id="form"
             class="form-content"
             cdkScrollable
@@ -63,7 +63,7 @@
                     >
                         <form
                             [style.padding-top]="paddingWithHeader"
-                            [class.hide-optionals]="!(showAllFields | async)"
+                            [class.hide-optionals]="!showAllFields()"
                             [class.hide]="metadata()?.docType === 'FOLDER'"
                         >
                             <div class="requiredDescription">
@@ -98,8 +98,8 @@
             }
         </as-split-area>
 
-        @if (showJson) {
-            <as-split-area [size]="20" class="debug-area">
+        @if (showJson()) {
+            <as-split-area [size]="20">
                 Metadata:
                 <pre>{{ metadata() | json }}</pre>
                 Document:

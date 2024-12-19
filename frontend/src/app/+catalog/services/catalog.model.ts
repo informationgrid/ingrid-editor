@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 export interface Catalog {
-  id?: string;
+  id: string;
   label?: string;
   description?: string;
   type?: string;
@@ -42,4 +42,5 @@ export interface CatalogSettingsConfig {
   elasticsearchAlias: string;
   spatialReference: any;
   codelistFavorites: { [x: string]: string[] };
+  language: string;
 }

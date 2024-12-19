@@ -48,20 +48,24 @@ export class TranslocoHttpLoader implements TranslocoLoader {
         const sources = [
           this.http.get<Translation>(`${assetsDir}/i18n/${lang}.json`),
         ];
-        if (parentProfile) {
+
+        if (profile !== undefined) {
+          if (parentProfile) {
+            sources.push(
+              this.http
+                .get<Translation>(
+                  `${assetsDir}/${parentProfile}/i18n/${lang}.json`,
+                )
+                .pipe(catchError(() => of({}))),
+            );
+          }
           sources.push(
             this.http
-              .get<Translation>(
-                `${assetsDir}/${parentProfile}/i18n/${lang}.json`,
-              )
+              .get<Translation>(`${assetsDir}/${profile}/i18n/${lang}.json`)
               .pipe(catchError(() => of({}))),
           );
         }
-        sources.push(
-          this.http
-            .get<Translation>(`${assetsDir}/${profile}/i18n/${lang}.json`)
-            .pipe(catchError(() => of({}))),
-        );
+
         return combineLatest(sources).pipe(
           map((files) => deepMerge(files[0], files[1], files[2])),
         );

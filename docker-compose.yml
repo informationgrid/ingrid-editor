@@ -1,20 +1,16 @@
-version: '3'
 services:
 
   keycloak:
-    image: docker-registry.wemove.com/keycloak:22.0.4-2
+    image: docker-registry.wemove.com/keycloak:26.0.2-1
     restart: unless-stopped
     environment:
       - SIMPLE_SECURITY=true
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
-      - KC_HTTP_RELATIVE_PATH=
-      - KC_HOSTNAME=
-      - KC_HOSTNAME_URL=http://localhost:8080
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_HOSTNAME=http://localhost:8080
       - KC_HTTP_ENABLED=true
-      - KC_HOSTNAME_STRICT_HTTPS=false
-      - KC_DB=postgres
-      - KC_DB_URL_HOST=db
+#      - KC_DB=postgres
+#      - KC_DB_URL_HOST=db
       - KC_DB_USERNAME=admin
       - KC_DB_PASSWORD=admin
       - MAIL_SMTP=mailrelay

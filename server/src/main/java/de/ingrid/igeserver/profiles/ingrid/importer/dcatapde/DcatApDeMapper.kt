@@ -66,9 +66,7 @@ class DcatApDeMapper(val catalogId: String, val model: RecordPLUProperties, val 
 
     val openDataCategories = emptyList<String>()
 
-    fun getContactTitle(contact: Contact): String {
-        return contact.hasOrganizationName ?: contact.fn ?: ""
-    }
+    fun getContactTitle(contact: Contact): String = contact.hasOrganizationName ?: contact.fn ?: ""
 
     fun formatDate(date: Instant?): String =
         if (date == null) "" else formatterISO.format(Date.from(date))

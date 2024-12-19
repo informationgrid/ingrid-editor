@@ -2,6 +2,10 @@
   "_uuid": "212cebd4-abb4-4d2d-b3f7-da790186aa96",
   "title": "geodienst_max",
   "_type": "InGridGeoService",
+  "properties": {
+    "isOpenData": false,
+    "isAdVCompatible": true
+  },
   "themes": [{ "key": "105" }],
   "service": {
     "type": { "key": "6" },
@@ -82,10 +86,10 @@
   },
   "extraInfo": { "legalBasicsDescriptions": [{ "key": "59" }] },
   "orderInfo": "order-info",
-  "isOpenData": false,
   "references": [
     {
       "url": "ref-url",
+      "referenceType": "url",
       "type": { "key": "5304" },
       "title": "reference-title",
       "explanation": "reference-additional-info"
@@ -107,7 +111,6 @@
   "pointOfContact": [
     { "ref": "36ec9150-2f1b-4164-8221-08f9a85fc4fb", "type": { "key": "3" } }
   ],
-  "isAdVCompatible": true,
   "advProductGroups": [{ "key": "2" }],
   "graphicOverviews": [
     {
@@ -130,7 +133,6 @@
       "publicationDate": "2010-12-08"
     }
   ],
-  "isInspireIdentified": false,
   "digitalTransferOptions": [
     {
       "name": { "key": "1" },

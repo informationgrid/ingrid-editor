@@ -17,25 +17,26 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit } from "@angular/core";
-import { Observable } from "rxjs";
-import { FormToolbarService } from "../form-shared/toolbar/form-toolbar.service";
+import {
+  Component,
+  effect,
+  inject,
+  Input,
+  OnInit,
+  Signal,
+} from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../services/document/document.service";
-import { SessionQuery } from "../../store/session.query";
 import { ConfigService } from "../../services/config/config.service";
-import { TreeQuery } from "../../store/tree/tree.query";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { filter } from "rxjs/operators";
-import { AddressTreeQuery } from "../../store/address-tree/address-tree.query";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { DashboardAddressHeaderComponent } from "./dashboard-address-header/dashboard-address-header.component";
 import { DashboardDocsHeaderComponent } from "./dashboard-docs-header/dashboard-docs-header.component";
 import { CardBoxComponent } from "../../shared/card-box/card-box.component";
 import { DocumentListItemComponent } from "../../shared/document-list-item/document-list-item.component";
 import { MatIcon } from "@angular/material/icon";
 import { TranslocoDirective } from "@ngneat/transloco";
-import { AsyncPipe } from "@angular/common";
+import { GeneralStore } from "../../store/general.store";
 
 @UntilDestroy()
 @Component({
@@ -50,48 +51,42 @@ import { AsyncPipe } from "@angular/common";
     DocumentListItemComponent,
     MatIcon,
     TranslocoDirective,
-    AsyncPipe,
   ],
 })
 export class FormDashboardComponent implements OnInit {
   @Input() address = false;
 
-  childDocs$: Observable<DocumentAbstract[]>;
+  private generalStore = inject(GeneralStore);
+
+  childDocs: Signal<DocumentAbstract[]>;
   canCreateDatasets: boolean;
   canCreateAddress: boolean;
   canImport: boolean;
 
   constructor(
     configService: ConfigService,
-    private formToolbarService: FormToolbarService,
     private router: Router,
-    private sessionQuery: SessionQuery,
     private docService: DocumentService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
   ) {
     // TODO switch to user specific query
     this.canCreateDatasets = configService.hasPermission("can_create_dataset");
     this.canCreateAddress = configService.hasPermission("can_create_address");
     this.canImport = configService.hasPermission("can_import");
-  }
 
-  ngOnInit(): void {
-    const query = this.address ? this.addressTreeQuery : this.treeQuery;
-    this.childDocs$ = this.address
-      ? this.sessionQuery.latestAddresses$
-      : this.sessionQuery.latestDocuments$;
-
-    query.openedDocument$
-      .pipe(
-        untilDestroyed(this),
-        filter((doc) => doc === null),
-      )
-      .subscribe(() => {
+    effect(() => {
+      const doc = this.generalStore.getOpenedDocument(this.address);
+      if (doc === null) {
         this.address
           ? this.docService.findRecentAddresses()
           : this.updateRecentDocs();
-      });
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    this.childDocs = this.address
+      ? this.generalStore.latestAddresses
+      : this.generalStore.latestDocuments;
   }
 
   openDocument(uuid: string) {

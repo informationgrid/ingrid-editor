@@ -35,6 +35,7 @@ import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertGml32ToWkt
+import de.ingrid.mdek.upload.Config
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
@@ -45,7 +46,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-open class GeneralMapper(val isoData: IsoImportData) {
+open class GeneralMapper(val isoData: IsoImportData, val config: Config) {
 
     private val log = logger()
 
@@ -370,12 +371,19 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     fun getGraphicOverviews(): List<PreviewGraphic> = metadata.identificationInfo[0].identificationInfo?.graphicOverview
         ?.map {
-            PreviewGraphic(it.mdBrowseGraphic?.fileName?.value!!, it.mdBrowseGraphic.fileDescription?.value)
+            val isInternalStorage: Boolean = it.mdBrowseGraphic?.fileName?.value?.contains(config.uploadExternalUrl ?: "/documents/") ?: false
+            val fileName = if (isInternalStorage) {
+                it.mdBrowseGraphic?.fileName?.value?.substringAfterLast('/')
+            } else {
+                it.mdBrowseGraphic?.fileName?.value
+            }
+            PreviewGraphic(fileName, it.mdBrowseGraphic?.fileDescription?.value, !isInternalStorage)
         } ?: emptyList()
 
     data class PreviewGraphic(
-        val fileName: String,
+        val fileName: String?,
         val description: String? = null,
+        val asLink: Boolean,
     )
 
     open fun getKeywords() = getKeywords(emptyList())
@@ -656,10 +664,39 @@ open class GeneralMapper(val isoData: IsoImportData) {
         }
         ?.joinToString(";") ?: ""
 
+    fun getFileReferences(): List<FileReference> = metadata.distributionInfo?.mdDistribution?.transferOptions
+        ?.flatMap { transferOption ->
+            transferOption.mdDigitalTransferOptions?.onLine
+                ?.filter { transferOption.mdDigitalTransferOptions.unitsOfDistribution?.value == "MB" }
+                ?.mapNotNull { it.ciOnlineResource }
+                ?.map { resource ->
+                    val fileFormatCode = resource.applicationProfile?.value
+                    val typeId =
+                        if (fileFormatCode == null) null else codeListService.getCodeListEntryId("1320", fileFormatCode, "de")
+                    val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
+                    val fileName = resource.linkage.url?.substringAfterLast('/') ?: ""
+                    val sizeInBytes = transferOption.mdDigitalTransferOptions.transferSize?.value?.times(1_000_000)
+                    val fileReferenceLink = FileReferenceLink(
+                        asLink = false,
+                        value = fileName,
+                        uri = fileName,
+                        lastModified = null,
+                        sizeInBytes = sizeInBytes,
+                    )
+                    FileReference(
+                        title = resource.name?.value,
+                        description = resource.description?.value,
+                        format = keyValue,
+                        link = fileReferenceLink,
+                    )
+                } ?: emptyList()
+        } ?: emptyList()
+
     fun getReferences(): List<Reference> = metadata.distributionInfo?.mdDistribution?.transferOptions
         ?.flatMap { transferOption ->
             transferOption.mdDigitalTransferOptions?.onLine
                 ?.filter { it.ciOnlineResource?.applicationProfile?.value != "coupled" }
+                ?.filter { transferOption.mdDigitalTransferOptions.unitsOfDistribution?.value != "MB" }
                 ?.mapNotNull { it.ciOnlineResource }
                 ?.map { resource ->
                     val value = resource.function?.code?.codeListValue
@@ -848,7 +885,6 @@ open class GeneralMapper(val isoData: IsoImportData) {
         val key = codeListService.getCodeListEntryId(codelist, value, "de")
             ?: codeListService.getCatalogCodelistKey(codelist, value, "de")
         return if (key == null) KeyValue(null, value) else KeyValue(key)
-    }
 }
 
 data class UseConstraint(
@@ -894,6 +930,21 @@ data class Reference(
     val urlDataType: KeyValue?,
     val title: String?,
     val explanation: String?,
+)
+
+data class FileReference(
+    val title: String?,
+    val description: String?,
+    val format: KeyValue?,
+    val link: FileReferenceLink,
+)
+
+data class FileReferenceLink(
+    val asLink: Boolean = false,
+    val value: String,
+    val uri: String,
+    val lastModified: Date?,
+    val sizeInBytes: Number?,
 )
 
 data class DistributionFormat(

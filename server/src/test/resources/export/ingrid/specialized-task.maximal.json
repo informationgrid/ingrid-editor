@@ -49,6 +49,7 @@
   "references": [
     {
       "url": "someUrl",
+      "referenceType": "url",
       "type": { "key": "5305" },
       "title": "reference title",
       "explanation": "reference information"
@@ -59,8 +60,6 @@
   "pointOfContact": [
     { "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4", "type": { "key": "11" } }
   ],
-  "isAdVCompatible": true,
-  "advProductGroups": [{ "key": "6" }],
   "graphicOverviews": [
     {
       "fileName": {

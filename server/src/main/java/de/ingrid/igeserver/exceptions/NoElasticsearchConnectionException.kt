@@ -33,8 +33,6 @@ open class NoElasticsearchConnectionException : ServerException {
         /**
          * Factory method for an arbitrary reason
          */
-        fun withReason(reason: String, cause: Throwable? = null): NoElasticsearchConnectionException {
-            return NoElasticsearchConnectionException(STATUS_CODE, ERROR_CODE, reason, null, cause)
-        }
+        fun withReason(reason: String, cause: Throwable? = null): NoElasticsearchConnectionException = NoElasticsearchConnectionException(STATUS_CODE, ERROR_CODE, reason, null, cause)
     }
 }

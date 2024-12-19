@@ -5,14 +5,16 @@
 @param GeneralMapper model
 @param Content additionalKeywords = null
 @param Content additionalResource = null
+@param Content additionalProperties = null
 
 "title": "${model.getTitle()}",
 "_uuid": "${model.getUuid()}",
 "_parent": @if(model.getParentUuid() == null) null @else "${model.getParentUuid()}"@endif,
 "_type": "${model.getType()}",
-"isInspireIdentified": ${model.isInspireIdentified()},
-"isAdVCompatible": ${model.isAdVCompatible()},
-"isOpenData": ${model.isOpenData()},
+"properties": {
+    "isAdVCompatible": ${model.isAdVCompatible()},
+    "isOpenData": ${model.isOpenData()}${additionalProperties}
+},
 "description": "${model.getDescription()}",
 "alternateTitle": "${model.getAlternateTitle()}",
 "parentIdentifier": "${model.getParentUuid()}",
@@ -28,7 +30,7 @@
 @for(var image : ForSupport.of(model.getGraphicOverviews()))
     {
     "fileName": {
-    "asLink": true,
+    "asLink": ${image.get().getAsLink()},
     "value": "${image.get().getFileName()}",
     "uri": "${image.get().getFileName()}"
     },
@@ -181,9 +183,25 @@
     {
     "type": @template.imports.ingrid.partial.key-value(item = reference.get().getType()),
     "title": "${reference.get().getTitle()}",
+    "referenceType": "url",
     "url": "${reference.get().getUrl()}",
     @if(reference.get().getUrlDataType() != null) "urlDataType": @template.imports.ingrid.partial.key-value(item = reference.get().getUrlDataType()),@endif
     "explanation": "${reference.get().getExplanation()}"
     }@if (!reference.isLast()),@endif
+@endfor
+],
+"fileReferences": [
+@for(var fileReference : ForSupport.of(model.getFileReferences()))
+    {
+    "title": "${fileReference.get().getTitle()}",
+    "description": "${fileReference.get().getDescription()}",
+    "format": @template.imports.ingrid.partial.key-value(item = fileReference.get().getFormat()),
+    "link": {
+        "asLink": ${fileReference.get().getLink().getAsLink()},
+        "value": "${fileReference.get().getLink().getValue()}",
+        "uri": "${fileReference.get().getLink().getUri()}",
+        "sizeInBytes": ${fileReference.get().getLink().getSizeInBytes()}
+    }
+    }@if (!fileReference.isLast()),@endif
 @endfor
 ],

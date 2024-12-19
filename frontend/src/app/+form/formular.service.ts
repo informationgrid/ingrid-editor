@@ -17,44 +17,33 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable, Signal } from "@angular/core";
 import { DocumentAbstract } from "../store/document/document.model";
 import { Doctype } from "../services/formular/doctype";
 import { ProfileService } from "../services/profile.service";
-import { TreeStore } from "../store/tree/tree.store";
-import { SessionStore } from "../store/session.store";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { ProfileQuery } from "../store/profile/profile.query";
 import { BehaviorSubject, of } from "rxjs";
 import { filter, map, mergeMap, toArray } from "rxjs/operators";
+import { GeneralStore } from "../store/general.store";
+import { UiStore } from "../store/ui.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class FormularService {
+  private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
+
   data = {};
 
   currentProfile: string;
 
-  profileDefinitions: Doctype[];
+  private profileDefinitions: Signal<Doctype[]> = this.profiles.getProfiles();
 
   sections$ = new BehaviorSubject<string[]>([]);
   private profileSections: string[] = [];
 
-  constructor(
-    private profiles: ProfileService,
-    private treeStore: TreeStore,
-    private sessionStore: SessionStore,
-    private profileQuery: ProfileQuery,
-  ) {
-    // create profiles after we have logged in
-    console.debug("init profiles");
-    this.profileQuery.selectLoading().subscribe((isLoading) => {
-      if (!isLoading) {
-        this.profileDefinitions = this.profiles.getProfiles();
-      }
-    });
-  }
+  constructor(private profiles: ProfileService) {}
 
   getFields(profile: string): FormlyFieldConfig[] {
     let fields: FormlyFieldConfig[];
@@ -74,8 +63,8 @@ export class FormularService {
   }
 
   private getProfile(id: string): Doctype {
-    if (this.profileDefinitions) {
-      const profile = this.profileDefinitions.find((p) => p.id === id);
+    if (this.profileDefinitions()) {
+      const profile = this.profileDefinitions().find((p) => p.id === id);
       if (!profile) {
         // throw Error('Unknown profile: ' + id);
         console.error("Unknown profile: " + id);
@@ -87,24 +76,22 @@ export class FormularService {
     }
   }
 
-  setSelectedDocuments(docs: DocumentAbstract[]) {
-    this.treeStore.setActive(docs.map((d) => d.id));
+  setSelectedDocuments(docs: DocumentAbstract[], isAddress: boolean) {
+    this.generalStore.setActiveTreeNodes(
+      docs.map((d) => d.id as number),
+      isAddress,
+    );
   }
 
   updateSidebarWidth(size: number) {
-    this.sessionStore.update((state) => ({
-      ui: {
-        ...state.ui,
-        sidebarWidth: size,
-      },
-    }));
+    this.uiStore.setSidebarWidth(size);
   }
 
   getSectionsFromProfile(profile: FormlyFieldConfig[]): void {
     const getSectionItem = (item: FormlyFieldConfig) => {
       return item?.wrappers?.indexOf("section") >= 0
         ? [item]
-        : item.fieldGroup ?? [];
+        : (item.fieldGroup ?? []);
     };
 
     of(profile)

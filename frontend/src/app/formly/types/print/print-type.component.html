@@ -14,6 +14,17 @@
                 </div>
             }
         }
+        @case ("repeatChipPrint") {
+            @for (item of formControl.value; track item) {
+                <div>
+                    {{
+                        props.codelistId
+                            ? (item | codelist: props.codelistId | async)
+                            : getFromOption(item)
+                    }}
+                </div>
+            }
+        }
         @case ("address-cardPrint") {
             @for (address of addresses(); track address) {
                 <div>{{ address.type | codelist: "505" | async }}</div>
@@ -53,9 +64,9 @@
         @case ("autocompletePrint") {
             {{
                 props.codelistId
-                    ? (formControl.value
+                    ? ((formControl.value
                           | codelist: props.codelistId
-                          | async) ?? formControl.value?.value
+                          | async) ?? formControl.value?.value)
                     : getFromOption(formControl.value)
             }}
         }

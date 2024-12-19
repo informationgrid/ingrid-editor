@@ -1,5 +1,10 @@
 <div class="dialog-title-wrapper flex-row align-items-center gap-12">
-    <button mat-icon-button mat-dialog-close aria-label="Dialog schließen">
+    <button
+        mat-icon-button
+        mat-dialog-close
+        aria-label="Dialog schließen"
+        data-cy="dlg-close"
+    >
         <mat-icon>close</mat-icon>
     </button>
     <h1 mat-dialog-title>
@@ -42,74 +47,67 @@
         class="flex-row flex-1"
         [class.justify-content-space-between]="data.cookieId"
     >
-        @if (data.cookieId) {
-            <mat-checkbox (change)="updateCookie($event)"
-                >Hinweis nicht erneut anzeigen
-            </mat-checkbox>
+        @if (!data.hideCancelButton) {
+            @for (button of leftAlignedButtons; track button) {
+                <button
+                    mat-button
+                    color="primary"
+                    [class.mat-stroked-button]="button.emphasize"
+                    [disabled]="
+                        button.disabledWhenNotConfirmed &&
+                        data.confirmText &&
+                        textConfirmed !== data.confirmText
+                    "
+                    [mat-dialog-close]="button.id || false"
+                    [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')"
+                >
+                    {{ button.text }}
+                </button>
+            }
+            @if (data.cookieId) {
+                <mat-checkbox
+                    class="cookie-checkbox"
+                    (change)="updateCookie($event)"
+                    >Hinweis nicht erneut anzeigen
+                </mat-checkbox>
+            }
         }
 
-        <div class="flex-row flex-1">
-            @if (!data.hideCancelButton) {
-                @for (button of leftAlignedButtons; track button) {
-                    <button
-                        mat-button
-                        color="primary"
-                        [class.mat-stroked-button]="button.emphasize"
-                        [disabled]="
-                            button.disabledWhenNotConfirmed &&
-                            data.confirmText &&
-                            textConfirmed !== data.confirmText
-                        "
-                        [mat-dialog-close]="button.id || false"
-                        [attr.data-cy]="
-                            'confirm-dialog-' + (button.id || 'cancel')
-                        "
-                    >
-                        {{ button.text }}
-                    </button>
-                }
-            }
+        <div class="flex-1"></div>
 
-            <div class="flex-1"></div>
-
-            @for (button of rightAlignedButtons; track button) {
-                @if (!button.emphasize) {
-                    <button
-                        mat-button
-                        color="primary"
-                        [disabled]="
-                            button.disabledWhenNotConfirmed &&
-                            data.confirmText &&
-                            textConfirmed !== data.confirmText
-                        "
-                        igeFocus
-                        [mat-dialog-close]="button.id || false"
-                        [attr.data-cy]="
-                            'confirm-dialog-' + (button.id || 'cancel')
-                        "
-                    >
-                        {{ button.text }}
-                    </button>
-                }
-                @if (button.emphasize) {
-                    <button
-                        mat-flat-button
-                        color="primary"
-                        [disabled]="
-                            button.disabledWhenNotConfirmed &&
-                            data.confirmText &&
-                            textConfirmed !== data.confirmText
-                        "
-                        igeFocus
-                        [mat-dialog-close]="button.id || false"
-                        [attr.data-cy]="
-                            'confirm-dialog-' + (button.id || 'cancel')
-                        "
-                    >
-                        {{ button.text }}
-                    </button>
-                }
+        @for (button of rightAlignedButtons; track button) {
+            @if (!button.emphasize) {
+                <button
+                    mat-button
+                    color="primary"
+                    [disabled]="
+                        button.disabledWhenNotConfirmed &&
+                        data.confirmText &&
+                        textConfirmed !== data.confirmText
+                    "
+                    igeFocus
+                    [mat-dialog-close]="button.id || false"
+                    [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')"
+                >
+                    {{ button.text }}
+                </button>
             }
-        </div>
+            @if (button.emphasize) {
+                <button
+                    mat-flat-button
+                    color="primary"
+                    [disabled]="
+                        button.disabledWhenNotConfirmed &&
+                        data.confirmText &&
+                        textConfirmed !== data.confirmText
+                    "
+                    igeFocus
+                    [mat-dialog-close]="button.id || false"
+                    [attr.data-cy]="'confirm-dialog-' + (button.id || 'cancel')"
+                >
+                    {{ button.text }}
+                </button>
+            }
+        }
     </div>
 </mat-dialog-actions>

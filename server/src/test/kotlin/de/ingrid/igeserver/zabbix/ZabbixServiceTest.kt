@@ -143,9 +143,7 @@ class ZabbixServiceTest : ShouldSpec() {
         }
     }
 
-    private fun prepareZabbixData(uploads: List<ZabbixModel.Upload>): ZabbixModel.ZabbixData {
-        return ZabbixModel.ZabbixData("", "", "", "", uploads)
-    }
+    private fun prepareZabbixData(uploads: List<ZabbixModel.Upload>): ZabbixModel.ZabbixData = ZabbixModel.ZabbixData("", "", "", "", uploads)
 
     private fun getRequestParameter(request: HttpRequest): String {
         val res = (request.bodyPublisher().get())

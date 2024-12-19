@@ -19,8 +19,6 @@
  */
 import { inject, Injectable } from "@angular/core";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
-import { TreeStore } from "../../../../store/tree/tree.store";
-import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
 import { DocumentService } from "../../../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -47,8 +45,6 @@ export class TagsBehaviour extends Plugin {
   constructor(
     private formMenuService: FormMenuService,
     private docEvents: DocEventsService,
-    private treeStore: TreeStore,
-    private addressTreeStore: AddressTreeStore,
     private documentService: DocumentService,
     private dialog: MatDialog,
     private formStateService: FormStateService,
@@ -64,7 +60,7 @@ export class TagsBehaviour extends Plugin {
   registerForm() {
     super.registerForm();
 
-    this.menuId = this.forAddress ? "address" : "dataset";
+    this.menuId = this.forAddress() ? "address" : "dataset";
     this.formMenuService.addMenuItem(this.menuId, {
       title: "Veröffentlichungsrecht setzen ...",
       name: this.menuItemId,
@@ -88,16 +84,17 @@ export class TagsBehaviour extends Plugin {
   }
 
   private async showTagsDialog() {
-    const store = this.forAddress ? this.addressTreeStore : this.treeStore;
-    const currentDocument = store.getValue().openedDocument;
-    const helpText = this.forAddress
+    const currentDocument = this.forAddress()
+      ? this.generalStore.openedAddress()
+      : this.generalStore.openedDocument();
+    const helpText = this.forAddress()
       ? "Eine Adresse darf in ihrem Veröffentlichungsrecht nicht weiter eingeschränkt sein als die Datensätze, in denen sie referenziert wird. Bitte prüfen Sie das Veröffentlichungsrecht der Datensätze."
       : "Bitte stellen Sie bei einer Veränderung des Veröffentlichungsrechts sicher, dass auch alle Referenzen das passende Veröffentlichungsrecht besitzen.";
     const handled = await FormUtils.handleDirtyForm(
       this.formStateService,
       this.documentService,
       this.dialog,
-      this.forAddress,
+      this.forAddress(),
     );
     if (!handled) {
       return;
@@ -122,7 +119,7 @@ export class TagsBehaviour extends Plugin {
         this.tagsService.updateTagForDocument(
           currentDocument,
           newTag,
-          this.forAddress,
+          this.forAddress(),
         ),
       );
   }

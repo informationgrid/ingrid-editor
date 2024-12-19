@@ -60,7 +60,13 @@ class ImportTask(
         val info = prepareJob(context)
         val notificationType = MessageTarget(NotificationType.IMPORT, info.catalogId)
         val stage =
-            if (info.importFile != null) Stage.ANALYZE else if (info.analysis != null) Stage.IMPORT else Stage.UNKNOWN
+            if (info.importFile != null) {
+                Stage.ANALYZE
+            } else if (info.analysis != null) {
+                Stage.IMPORT
+            } else {
+                Stage.UNKNOWN
+            }
 
         // use start time from analysis phase if it already happened
         val message = if (stage == Stage.ANALYZE) Message() else Message(info.startTime ?: Date())

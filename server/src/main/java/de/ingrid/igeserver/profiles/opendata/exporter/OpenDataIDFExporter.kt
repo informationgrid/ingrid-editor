@@ -105,7 +105,8 @@ class OpenDataIDFExporter(
         val isAddress = json.type == "OpenDataAddressDoc"
         ingridModel = if (isAddress) null else mapper.convertValue(json, IngridModel::class.java)
 
-        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
+        val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
+        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
 
         val transformerClass = getModelTransformerClass(json.type)
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")

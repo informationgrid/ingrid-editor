@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import {
   EventData,
   EventResponder,
@@ -25,8 +25,6 @@ import {
   IgeEvent,
   IgeEventResultType,
 } from "../../../../services/event/event.service";
-import { TreeQuery } from "../../../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { filter } from "rxjs/operators";
 import {
   ConfirmDialogComponent,
@@ -46,6 +44,7 @@ import { FormStateService } from "../../../../+form/form-state.service";
 import { DocumentService } from "../../../../services/document/document.service";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 import { Plugin } from "../../plugin";
+import { DocumentAbstract } from "../../../../store/document/document.model";
 
 @Injectable({ providedIn: "root" })
 export class AssignedUserBehaviour extends Plugin {
@@ -60,8 +59,6 @@ export class AssignedUserBehaviour extends Plugin {
     private userService: UserService,
     private docEvents: DocEventsService,
     private docEventsService: DocEventsService,
-    private addressTreeQuery: AddressTreeQuery,
-    private documentTreeQuery: TreeQuery,
     private formMenuService: FormMenuService,
     private formStateService: FormStateService,
     private documentService: DocumentService,
@@ -71,6 +68,16 @@ export class AssignedUserBehaviour extends Plugin {
   ) {
     super();
     inject(PluginService).registerPlugin(this);
+
+    effect(() => {
+      // only add menu item in form if user is privileged
+      if (this.formRegistered() && this.configService.hasMdAdminRights()) {
+        const onDocLoad = this.generalStore.getOpenedDocument(
+          this.forAddress(),
+        );
+        this.handleDocumentLoad(onDocLoad);
+      }
+    });
   }
 
   formMenuId: MenuId;
@@ -84,30 +91,23 @@ export class AssignedUserBehaviour extends Plugin {
       }),
     );
 
-    this.formMenuId = this.forAddress ? "address" : "dataset";
+    this.formMenuId = this.forAddress() ? "address" : "dataset";
+  }
 
-    const treeQuery = this.forAddress
-      ? this.addressTreeQuery
-      : this.documentTreeQuery;
-
-    // only add menu item in form if user is privileged
-    if (this.configService.hasMdAdminRights()) {
-      const onDocLoad = treeQuery.openedDocument$.subscribe((doc) => {
-        const button = {
-          title: "Verantwortlichkeit ändern",
-          name: "assign-user",
-          action: () =>
-            this.docEventsService.sendEvent({
-              type: "OPEN_ASSIGN_USER_DIALOG",
-              data: { id: doc.id },
-            }),
-        };
-        // refresh menu item
-        this.formMenuService.removeMenuItem(this.formMenuId, "assign-user");
-        this.formMenuService.addMenuItem(this.formMenuId, button);
-      });
-      this.formSubscriptions.push(onDocLoad);
-    }
+  // TODO: data field not needed since openedDocument function can be used, will simplify a lot
+  private handleDocumentLoad(doc: DocumentAbstract) {
+    const button = {
+      title: "Verantwortlichkeit ändern",
+      name: "assign-user",
+      action: () =>
+        this.docEventsService.sendEvent({
+          type: "OPEN_ASSIGN_USER_DIALOG",
+          data: { id: doc.id },
+        }),
+    };
+    // refresh menu item
+    this.formMenuService.removeMenuItem(this.formMenuId, "assign-user");
+    this.formMenuService.addMenuItem(this.formMenuId, button);
   }
 
   register() {
@@ -178,17 +178,16 @@ export class AssignedUserBehaviour extends Plugin {
   }
 
   private async openAssignUserDialog(docId: number) {
-    const query = this.forAddress
-      ? this.addressTreeQuery
-      : this.documentTreeQuery;
-    const currentUUID = query.getOpenedDocument()._uuid;
+    const currentUUID = this.generalStore.getOpenedDocument(
+      this.forAddress(),
+    )._uuid;
     console.debug("currentUUID", currentUUID);
 
     const handled = await FormUtils.handleDirtyForm(
       this.formStateService,
       this.documentService,
       this.dialog,
-      this.forAddress,
+      this.forAddress(),
     );
     if (!handled) {
       return;
@@ -207,7 +206,7 @@ export class AssignedUserBehaviour extends Plugin {
       .subscribe(() => {
         this.documentService.reload$.next({
           uuid: currentUUID,
-          forAddress: this.forAddress,
+          forAddress: this.forAddress(),
         });
       });
   }

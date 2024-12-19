@@ -114,7 +114,7 @@ class IndexingTask(
                 targets
                     .forEach { target ->
                         val plugInfo = createIPlugInfo(catalog, target)
-                        log.info("Running export on thread: ${Thread.currentThread()}")
+                        log.debug("Running export on thread: ${Thread.currentThread()}")
 
                         IndexTargetWorker(
                             target,

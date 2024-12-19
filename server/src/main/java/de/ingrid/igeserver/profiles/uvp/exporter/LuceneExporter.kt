@@ -63,9 +63,7 @@ class LuceneExporter(
         )
     }
 
-    private fun mapCodelistValue(codelistId: String, partner: String?): String {
-        return codelistService.getCodeListValue(codelistId, partner, "ident") ?: ""
-    }
+    private fun mapCodelistValue(codelistId: String, partner: String?): String = codelistService.getCodeListValue(codelistId, partner, "ident") ?: ""
 
     private class JsonStringOutput : StringOutput() {
         override fun writeUserContent(value: String?) {

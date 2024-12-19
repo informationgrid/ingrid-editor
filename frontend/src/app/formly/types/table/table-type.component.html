@@ -158,6 +158,9 @@
                                         class="menu-button"
                                         matTooltip="Bearbeiten"
                                         [matMenuTriggerFor]="tableRowAction"
+                                        (click)="
+                                            $event.stopImmediatePropagation()
+                                        "
                                     >
                                         <mat-icon svgIcon="Mehr"></mat-icon>
                                     </button>
@@ -185,7 +188,7 @@
                                     {
                                         width: props.columns[
                                             batchMode ? i - 1 : i
-                                        ].width
+                                        ].width,
                                     };
                                     as flex
                                 ) {
@@ -225,9 +228,9 @@
                                         <span
                                             [innerHTML]="
                                                 formattedCell[rowIndex]
-                                                    ? formattedCell[rowIndex][
+                                                    ? (formattedCell[rowIndex][
                                                           column
-                                                      ] ?? element[column]
+                                                      ] ?? element[column])
                                                     : element[column]
                                             "
                                             (click)="

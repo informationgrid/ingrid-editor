@@ -148,9 +148,7 @@ class UploadVirusScanTask(
             content.append(entry).append(System.lineSeparator())
         }
 
-        fun getContent(): String {
-            return content.toString()
-        }
+        fun getContent(): String = content.toString()
     }
 
     /**

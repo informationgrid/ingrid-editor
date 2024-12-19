@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ConfigService } from "../../../../services/config/config.service";
 import {
@@ -38,23 +38,24 @@ import {
   TimeReference,
   Url,
 } from "./get-capabilities.model";
-import { CodelistQuery } from "../../../../store/codelist/codelist.query";
 import { isEmptyObject } from "../../../../shared/utils";
 import { CodelistEntry } from "../../../../store/codelist/codelist.model";
 import { lastValueFrom } from "rxjs";
 import { KeywordAnalysis } from "../../../../../profiles/ingrid/utils/keywords";
+import { CodelistStore } from "../../../../store/codelist/codelist.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class GetCapabilitiesService {
+  private codelistStore = inject(CodelistStore);
+
   private backendUrl: string;
 
   constructor(
     private http: HttpClient,
     configService: ConfigService,
     private documentService: DocumentService,
-    private codelistQuery: CodelistQuery,
     private keywordAnalysis: KeywordAnalysis,
   ) {
     configService.$userInfo.subscribe(
@@ -139,10 +140,10 @@ export class GetCapabilitiesService {
         case "INSPIRE-Themen":
           model.themes.push(item.value);
           break;
-        case "Gemet Schlagworte":
+        case "Gemet-Schlagworte":
           model.keywords.gemet.push(item.value);
           break;
-        case "Umthes Schlagworte":
+        case "Umthes-Schlagworte":
           model.keywords.umthes.push(item.value);
           break;
         case "Freie Schlagworte":
@@ -228,7 +229,7 @@ export class GetCapabilitiesService {
 
   private mapConformities(value: any[]) {
     return value.map((item) => {
-      const entry: CodelistEntry = this.codelistQuery.getCodelistEntryByValue(
+      const entry: CodelistEntry = this.codelistStore.getCodelistEntryByValue(
         "6005",
         item.specification,
         "iso",

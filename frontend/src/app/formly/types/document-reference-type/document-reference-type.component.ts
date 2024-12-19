@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
 import { FieldArrayType, FormlyModule } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -36,7 +36,6 @@ import { DocumentService } from "../../../services/document/document.service";
 import { catchError, debounceTime, map, startWith } from "rxjs/operators";
 import { DocumentState, IgeDocument } from "../../../models/ige-document";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { TreeQuery } from "../../../store/tree/tree.query";
 import { firstValueFrom, of } from "rxjs";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { MatIcon } from "@angular/material/icon";
@@ -45,6 +44,7 @@ import { MatIconButton } from "@angular/material/button";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
+import { TreeStore } from "../../../store/tree/tree.store";
 
 interface Reference {
   layerNames: string[];
@@ -91,6 +91,7 @@ export class DocumentReferenceTypeComponent
   extends FieldArrayType
   implements OnInit
 {
+  private documentTreeStore = inject(TreeStore);
   myModel: (DocumentReference | UrlReference)[];
 
   refreshing = true;
@@ -100,7 +101,6 @@ export class DocumentReferenceTypeComponent
     private dialog: MatDialog,
     private router: Router,
     private docService: DocumentService,
-    private tree: TreeQuery,
   ) {
     super();
   }
@@ -124,7 +124,7 @@ export class DocumentReferenceTypeComponent
     };
     this.dialog
       .open(SelectGeoDatasetDialog, {
-        minWidth: 400,
+        minWidth: "min(400px, 100%)",
         data: data,
       })
       .afterClosed()
@@ -152,7 +152,7 @@ export class DocumentReferenceTypeComponent
     this.dialog
       .open(SelectCswRecordDialog, {
         data: data,
-        minWidth: 400,
+        minWidth: "min(400px, 100%)",
       })
       .afterClosed()
       .subscribe((item: SelectCswRecordResponse) => {
@@ -221,7 +221,7 @@ export class DocumentReferenceTypeComponent
   private async mapInternalRef(
     item: DocumentReference,
   ): Promise<DocumentReference> {
-    const nodeEntity = this.tree.getByUuid(item.uuid);
+    const nodeEntity = this.documentTreeStore.getByUuid(item.uuid);
     if (nodeEntity) {
       return this.mapToDocumentReference(nodeEntity, item.layerNames);
     }

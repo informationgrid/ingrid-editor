@@ -6,11 +6,14 @@
 @param Content additionalKeywords = null
 @param Content additionalResource = null
 @param Content additionalLineageSource = null
-
+@param Content additionalProperties = null
 {
-    @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource)
+    @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource, @`
+        ,
+        @if(model.isInspireIdentified())"isInspireIdentified": "notConform",@endif
+        "subType": @template.imports.ingrid.partial.key-value(item = model.getSubtype())${additionalProperties}
+    `)
     "invekosKeywords": @template.imports.ingrid.partial.key-values(list = model.getInVeKoSKeywords()),
-    "subType": @template.imports.ingrid.partial.key-value(item = model.getSubtype()),
     "metadata": {
         "language": @template.imports.ingrid.partial.key-value(item = model.getLanguage()),
         "characterSet": @template.imports.ingrid.partial.key-value(item = model.getCharacterSet())
@@ -56,7 +59,29 @@
     "dataQualityInfo": {
         "lineage": {
             "source": {
-                "descriptions": @template.imports.ingrid.partial.key-values(list = model.getSourceDescriptions()),
+                "descriptions": [
+                    @for(var description: ForSupport.of(model.getSourceDescriptions()))
+                        {
+                            "value": "${description.get().getValue()}",
+                            @if(description.get().getDate() != null)
+                                "date": "${description.get().getDate()}",
+                            @endif
+                            @if(description.get().getDateType() != null)
+                                "dateType": { "key": "${description.get().getDateType()}"},
+                            @endif
+                            @if(description.get().getTitle() != null)
+                                "title": "${description.get().getTitle()}",
+                            @endif
+                            @if(description.get().getIdentifier() != null)
+                                "identifier": "${description.get().getIdentifier()}",
+                            @endif
+                            @if(description.get().getUuidRef() != null)
+                                "uuidRef": "${description.get().getUuidRef()}",
+                            @endif
+                            "_type": "${description.get().get_type()}"
+                        }@if (!description.isLast()),@endif
+                    @endfor
+                ],
                 "processStep": {
                     "description":  @template.imports.ingrid.partial.key-values(list = model.getProcessStep())
                 }
@@ -92,7 +117,6 @@
         @endfor
         ]
     },
-    "isInspireConform": false,
     "vectorSpatialRepresentation": [
     @for(var vector : ForSupport.of(model.getVectorSpatialRepresentation()))
         {
@@ -116,7 +140,9 @@
         @endfor
         ],
         "transformationParameterAvailability": ${gridSpatial.getTransformationParameterAvailability()},
+        @if (gridSpatial.getNumberOfDimensions() != null)
         "numberOfDimensions": ${gridSpatial.getNumberOfDimensions()},
+        @endif
         "cellGeometry": @template.imports.ingrid.partial.key-value(item = gridSpatial.getCellGeometry())
         @if (gridSpatial.getType() != null && gridSpatial.getType().getKey().equals("rectified"))
         , "georectified": {

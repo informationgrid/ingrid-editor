@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.services
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.Facets
@@ -28,9 +29,8 @@ import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.utils.AuthUtils
 import jakarta.persistence.EntityManager
-import org.hibernate.jpa.AvailableHints
-import org.hibernate.query.NativeQuery
-import org.springframework.beans.factory.annotation.Autowired
+import jakarta.persistence.Tuple
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -40,42 +40,43 @@ import java.util.*
 
 data class Result(
     val title: String?,
-    val _id: Int,
-    val _uuid: String?,
-    val _type: String?,
-    val _created: Date?,
-    val _contentModified: Date?,
-    val _state: String?,
-    val _category: String?,
+    @JsonProperty("_id") val id: Int,
+    @JsonProperty("_uuid") val uuid: String?,
+    @JsonProperty("_type") val type: String?,
+    @JsonProperty("_created") val created: Date?,
+    @JsonProperty("_contentModified") val contentModified: Date?,
+    @JsonProperty("_state") val state: String?,
+    @JsonProperty("_category") val category: String?,
     var hasWritePermission: Boolean?,
     var hasOnlySubtreeWritePermission: Boolean?,
-    var _tags: String?,
-    val _responsibleUser: Any?,
+    @JsonProperty("_tags") var tags: String?,
+    @JsonProperty("_responsibleUser") val responsibleUser: Any?,
+    var additional: Any?,
 )
 
 @Service
-class ResearchService {
-
-    @Autowired
-    private lateinit var entityManager: EntityManager
-
-    @Autowired
-    private lateinit var quickFilters: List<QuickFilter>
-
-    @Autowired
-    private lateinit var profiles: List<CatalogProfile>
-
-    @Autowired
-    private lateinit var aclService: IgeAclService
-
-    @Autowired
-    private lateinit var authUtils: AuthUtils
+class ResearchService(
+    val entityManager: EntityManager,
+    val quickFilters: List<QuickFilter>,
+    val profiles: List<CatalogProfile>,
+    val aclService: IgeAclService,
+    val authUtils: AuthUtils,
+) {
+    val log = logger()
+    private final val minimalColumns =
+        listOf("uuid", "title", "type", "created", "modified", "contentmodified", "state", "catalog_id", "is_latest")
+    val minimalWrapperColumns = listOf("wrapperid", "tags", "responsibleuser", "category", "deleted", "wrapper_catalog_id")
+    val minimalColumnsForSQL = minimalColumns.joinToString(",") { "document1.$it" }
 
     fun createFacetDefinitions(catalogType: String): Facets = profiles
         .find { it.identifier == catalogType }!!
         .let { Facets(it.getFacetDefinitionsForAddresses(), it.getFacetDefinitionsForDocuments()) }
 
-    fun query(catalogId: String, query: ResearchQuery, principal: Principal = SecurityContextHolder.getContext().authentication): ResearchResponse {
+    fun query(
+        catalogId: String,
+        query: ResearchQuery,
+        principal: Principal = SecurityContextHolder.getContext().authentication,
+    ): ResearchResponse {
         val groups = authUtils.getCurrentUserRoles(catalogId)
         val hasReadAccessToRootDocs = authUtils.isAdmin(principal) || aclService.hasRootReadAccess(groups)
         val idsToSearchIn = if (hasReadAccessToRootDocs) null else aclService.getDatasetIdsSetInGroups(groups)
@@ -85,7 +86,9 @@ class ResearchService {
             return ResearchResponse(0, emptyList())
         }
 
-        val sql = createQuery(catalogId, query, idsToSearchIn)
+        val sqlQuery = createQuery(catalogId, query, idsToSearchIn)
+        val restricted = restrictQueryOnCatalogAndNotDeleted(catalogId, sqlQuery)
+        val sql = addAdditionalSelectsToQuery(restricted)
 
         val termAsParameters = getParameters(query)
         val result = sendQuery(sql, termAsParameters, query.pagination)
@@ -112,22 +115,15 @@ class ResearchService {
         }
     }
 
-    private fun createQuery(catalogId: String, query: ResearchQuery, idsToSearchIn: List<Int>?): String {
-        var sqlQuery =
-            """
-                SELECT DISTINCT document1.*, document_wrapper.category
-                FROM catalog, document_wrapper Join document document1 on document_wrapper.uuid = document1.uuid
-                ${determineJsonSearch(query.term)}
-                ${determineWhereQuery(catalogId, query, idsToSearchIn)}
-            """ + if (query.orderByField != null) {
-                """
-                ORDER BY document1.${query.orderByField} ${query.orderByDirection}
-                """.trimIndent()
-            } else {
-                ""
-            }
-        sqlQuery = this.addAdditionalSelectsToQuery(sqlQuery)
-        return sqlQuery
+    private fun createQuery(catalogId: String, query: ResearchQuery, idsToSearchIn: List<Int>?): String = """
+            SELECT DISTINCT document1.*
+            FROM catalog, document_wrapper Join document document1 on document_wrapper.uuid = document1.uuid
+            ${determineJsonSearch(query.term)}
+            ${determineWhereQuery(catalogId, query, idsToSearchIn)}
+        """ + if (query.orderByField != null) {
+        "ORDER BY document1.${query.orderByField} ${query.orderByDirection}"
+    } else {
+        ""
     }
 
     /**
@@ -191,7 +187,7 @@ class ResearchService {
         } else if (clauses.isFacet) {
             clauses.value
                 ?.map { reqFilterId -> quickFilters.find { it.id == reqFilterId } }
-                ?.map { it?.isFieldQuery ?: false } ?: listOf()
+                ?.map { it?.isFieldQuery == true } ?: listOf()
         } else {
             listOf(false)
         }
@@ -244,36 +240,20 @@ class ResearchService {
         }
     }
 
-    private fun sendQuery(sql: String, parameter: List<Any>, paging: ResearchPaging): List<Array<out Any?>> {
-        val nativeQuery = entityManager.createNativeQuery(sql)
+    private fun sendQuery(sql: String, parameter: List<Any>, paging: ResearchPaging): List<Tuple> {
+        val nativeQuery = entityManager.createNativeQuery(sql, Tuple::class.java)
 
-        parameter.forEachIndexed { index, term ->
-            nativeQuery.setParameter(index + 1, term)
-        }
+        parameter.forEachIndexed { index, term -> nativeQuery.setParameter(index + 1, term) }
 
+        @Suppress("UNCHECKED_CAST")
         return nativeQuery
-            .setHint(AvailableHints.HINT_READ_ONLY, true)
-            .unwrap(NativeQuery::class.java)
-            .addScalar("data")
-            .addScalar("title")
-            .addScalar("uuid")
-            .addScalar("type")
-            .addScalar("created")
-            .addScalar("contentmodified")
-            .addScalar("category")
-            .addScalar("wrapperid")
-            .addScalar("state")
-            .addScalar("tags")
-            .addScalar("responsibleUser")
             .setFirstResult((paging.page - 1) * paging.pageSize + paging.offset)
             .setMaxResults(paging.pageSize)
-            .resultList as List<Array<out Any?>>
+            .resultList as List<Tuple>
     }
 
     private fun getTotalHits(sql: String, termParameters: List<Any>): Int {
-        val countSQL = "SELECT count(DISTINCT document_wrapper.id) " + sql
-            .substring(sql.indexOf("FROM"))
-            .substringBeforeLast("ORDER BY")
+        val countSQL = sql.replace("SELECT sql_query.* FROM", "SELECT count(DISTINCT sql_query.wrapperid) FROM")
         val countQuery = entityManager.createNativeQuery(countSQL)
 
         termParameters.forEachIndexed { index, term ->
@@ -284,50 +264,41 @@ class ResearchService {
     }
 
     private fun filterAndMapResult(
-        result: List<Array<out Any?>>,
+        result: List<Tuple>,
         isAdmin: Boolean,
         principal: Principal,
     ): List<Result> {
-        principal as Authentication
-        return result
-            .filter { item ->
-                isAdmin ||
-                    aclService.getPermissionInfo(
-                        principal,
-                        // "id"
-                        item[7] as Int,
-                    ).canRead
-            }.map { item ->
+        val authPrincipal = principal as Authentication
+        return result.mapNotNull { item ->
+            val itemId = item.get("wrapperid") as? Int ?: return@mapNotNull null
+            val permissionInfo = aclService.getPermissionInfo(authPrincipal, itemId)
+            if (isAdmin || permissionInfo.canRead) {
                 Result(
-                    title = item[1] as? String,
-                    _uuid = item[2] as? String,
-                    _type = item[3] as? String,
-                    _created = Date.from(item[4] as Instant),
-                    _contentModified = Date.from(item[5] as Instant),
-                    _state = determineDocumentState(item[8] as String),
-                    _category = (item[6] as? String),
-                    hasWritePermission = if (isAdmin) {
-                        true
-                    } else {
-                        aclService.getPermissionInfo(
-                            principal,
-                            item[7] as Int,
-                        ).canWrite
-                    },
-                    hasOnlySubtreeWritePermission = if (isAdmin) {
-                        false
-                    } else {
-                        aclService.getPermissionInfo(
-                            principal,
-                            item[7] as Int,
-                        ).canOnlyWriteSubtree
-                    },
-                    _id = item[7] as Int,
-                    _tags = (item[9] as? Array<*>)?.joinToString(","),
-                    _responsibleUser = item[10],
+                    title = item.get("title") as? String,
+                    uuid = item.get("uuid") as? String,
+                    type = item.get("type") as? String,
+                    created = (item.get("created") as? Instant)?.let { Date.from(it) },
+                    contentModified = (item.get("contentModified") as? Instant)?.let { Date.from(it) },
+                    state = (item.get("state") as? String)?.let { determineDocumentState(it) },
+                    category = item.get("category") as? String,
+                    hasWritePermission = isAdmin || permissionInfo.canWrite,
+                    hasOnlySubtreeWritePermission = !isAdmin && permissionInfo.canOnlyWriteSubtree,
+                    id = itemId,
+                    tags = (item.get("tags") as? Array<*>)?.joinToString(","),
+                    responsibleUser = item.get("responsibleUser"),
+                    additional = getAdditionalInfo(item),
                 )
+            } else {
+                null
             }
+        }
     }
+
+    private fun getAdditionalInfo(tuple: Tuple): Map<String, Any?> = tuple.elements
+        .filter { element -> !minimalColumns.contains(element.alias) && !minimalWrapperColumns.contains(element.alias) }
+        .associate { element ->
+            element.alias to tuple.get(element.alias)
+        }
 
     private fun determineDocumentState(state: String) = DocumentState.valueOf(state).getState()
 
@@ -359,6 +330,7 @@ class ResearchService {
             throw ClientException.withReason(
                 (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage,
                 data = mapOf("sql" to finalQuery),
+                cause = error,
             )
         }
     }
@@ -373,30 +345,45 @@ class ResearchService {
     }
 
     private fun addAdditionalSelectsToQuery(query: String): String {
-        val fromIndex = query.indexOf("FROM")
+        val selectIndex = getSelectIndex(query)
         return """
-            ${query.substring(0, fromIndex)}, document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser ${query.substring(fromIndex)}
+            ${query.substring(0, selectIndex)}
+            document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser,document_wrapper.category,document_wrapper.deleted,document_wrapper.catalog_id as wrapper_catalog_id, 
+            ${query.substring(selectIndex)}
         """.trimIndent()
     }
 
-    private fun restrictQueryOnCatalogAndNotDeleted(catalogId: String, sqlQuery: String): String {
-        val catalogFilter = createCatalogFilter(catalogId)
-        val notDeletedFilter = "document_wrapper.deleted = 0"
-        val isLatestFilter = "document1.is_latest = true"
-
-        val fromIndex = sqlQuery.indexOf("FROM")
-
-        return when (val whereIndex = sqlQuery.indexOf("WHERE")) {
-            -1 -> """
-                ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5)}
-                WHERE $catalogFilter AND $notDeletedFilter AND $isLatestFilter
-            """.trimIndent()
-
-            else -> """
-                ${sqlQuery.substring(0, fromIndex + 4)} catalog, ${sqlQuery.substring(fromIndex + 5, whereIndex + 5)}
-                $catalogFilter AND $notDeletedFilter AND $isLatestFilter AND
-                ${sqlQuery.substring(whereIndex + 6)}
-            """.trimIndent()
+    private fun getSelectIndex(query: String): Int {
+        val selectIndex = query.indexOf("SELECT")
+        val selectDistinctIndex = query.indexOf("SELECT DISTINCT")
+        return if (selectIndex == selectDistinctIndex) {
+            selectDistinctIndex + 15
+        } else {
+            selectIndex + 6
         }
+    }
+
+    private fun restrictQueryOnCatalogAndNotDeleted(catalogId: String, sqlQuery: String): String {
+        val notDeletedFilter = "deleted = 0"
+        val isLatestFilter = "is_latest = true"
+
+        val selectIndex = getSelectIndex(sqlQuery)
+        var finalQuery = ""
+        if (sqlQuery.contains("document1.*")) {
+            finalQuery = sqlQuery.replace("document1.*", minimalColumnsForSQL)
+        } else {
+            finalQuery = sqlQuery.substring(0, selectIndex) +
+                minimalColumnsForSQL + "," +
+                sqlQuery.substring(selectIndex + 1)
+        }
+
+        return """
+            WITH sql_query AS ( $finalQuery )
+            SELECT sql_query.* FROM sql_query, catalog
+            WHERE sql_query.catalog_id = catalog.id AND sql_query.wrapper_catalog_id = catalog.id
+                AND catalog.identifier = '$catalogId' 
+                AND $notDeletedFilter 
+                AND $isLatestFilter
+        """.trimIndent()
     }
 }

@@ -21,13 +21,20 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { inject, Injectable } from "@angular/core";
 import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
 import { SharedHmdk } from "./shared-hmdk";
-import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
 })
 export class GeoDatasetDoctypeHMDK extends GeoDatasetDoctype {
   private sharedHmdk = inject(SharedHmdk);
+
+  metadataOptions() {
+    const options = super.metadataOptions();
+    options
+      .find((item) => item.label === "Open Data")
+      .typeOptions[0].items.push(this.sharedHmdk.metadataOptions(this));
+    return options;
+  }
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     return this.sharedHmdk.manipulateDocumentFields(this, fieldConfig);
@@ -44,12 +51,8 @@ export class GeoDatasetDoctypeHMDK extends GeoDatasetDoctype {
     return this.sharedHmdk.hmdkHandleDeactivateOpenData(field);
   }
 
-  handleActivateInspireIdentified(
-    field: FormlyFieldConfig,
-  ): Observable<boolean> {
-    return this.sharedHmdk.hmdkHandleActivateInspireIdentified(
-      field,
-      super.handleActivateInspireIdentified(field),
-    );
+  handleActivateInspireIdentified(field: FormlyFieldConfig) {
+    super.handleActivateInspireIdentified(field);
+    this.sharedHmdk.hmdkHandleActivateInspireIdentified(field);
   }
 }

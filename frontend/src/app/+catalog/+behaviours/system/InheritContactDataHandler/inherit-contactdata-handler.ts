@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { map } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
@@ -30,10 +30,11 @@ import { DocumentService } from "../../../../services/document/document.service"
 import { DocumentDataService } from "../../../../services/document/document-data.service";
 import { FormUtils } from "../../../../+form/form.utils";
 import { FormStateService } from "../../../../+form/form-state.service";
-import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
 import { FormMenuService } from "../../../../+form/form-menu.service";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
+import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
+import { DocumentAbstract } from "../../../../store/document/document.model";
 
 @Injectable()
 export class InheritContactDataHandler extends Plugin {
@@ -43,7 +44,8 @@ export class InheritContactDataHandler extends Plugin {
     "Für Personen und Organisationen, die einer anderen Organisation untergeordnet sind, können die Kontakt- und Adressdaten geerbt werden.";
   group = "Adressen";
   defaultActive = true;
-  forAddress = true;
+
+  private addressTreeStore = inject(AddressTreeStore);
 
   constructor(
     private docEvents: DocEventsService,
@@ -51,11 +53,15 @@ export class InheritContactDataHandler extends Plugin {
     private documentDataService: DocumentDataService,
     private formStateService: FormStateService,
     private documentService: DocumentService,
-    private addressTreeQuery: AddressTreeQuery,
     private formMenuService: FormMenuService,
   ) {
     super();
+    this.setForAddress(true);
     inject(PluginService).registerPlugin(this);
+
+    effect(() => {
+      this.handleDocumentLoad(this.generalStore.getOpenedDocument(true));
+    });
   }
 
   register() {
@@ -70,7 +76,7 @@ export class InheritContactDataHandler extends Plugin {
               this.formStateService,
               this.documentService,
               this.dialog,
-              this.forAddress,
+              this.forAddress(),
             );
             if (handled)
               this.inheritContactData(event.data.docId, event.data.parentId);
@@ -78,30 +84,30 @@ export class InheritContactDataHandler extends Plugin {
         });
       });
 
-    const onDocLoad = this.addressTreeQuery.openedDocument$.subscribe((doc) => {
-      // refresh menu item
-      this.formMenuService.removeMenuItem("address", "inherit-contact-data");
-      if (doc && doc._type !== "FOLDER") {
-        const parent = this.addressTreeQuery.getEntity(doc._parent);
-        this.formMenuService.addMenuItem("address", {
-          title: "Kontaktangaben der übergeordneten Adresse übernehmen",
-          name: "inherit-contact-data",
-          disabled: !parent || parent._type === "FOLDER",
-          action: () =>
-            this.docEvents.sendEvent({
-              type: "INHERIT_CONTACT_DATA",
-              data: { docId: doc.id, parentId: parent.id },
-            }),
-        });
-      }
-    });
-
-    this.subscriptions.push(onEvent, onDocLoad);
+    this.subscriptions.push(onEvent);
   }
 
   unregister() {
     super.unregister();
     this.formMenuService.removeMenuItem("address", "inherit-contact-data");
+  }
+
+  private handleDocumentLoad(doc: DocumentAbstract) {
+    // refresh menu item
+    this.formMenuService.removeMenuItem("address", "inherit-contact-data");
+    if (doc && doc._type !== "FOLDER") {
+      const parent = this.addressTreeStore.entityMap()[doc._parent];
+      this.formMenuService.addMenuItem("address", {
+        title: "Kontaktangaben der übergeordneten Adresse übernehmen",
+        name: "inherit-contact-data",
+        disabled: !parent || parent._type === "FOLDER",
+        action: () =>
+          this.docEvents.sendEvent({
+            type: "INHERIT_CONTACT_DATA",
+            data: { docId: doc.id, parentId: parent.id },
+          }),
+      });
+    }
   }
 
   private inheritContactData(docId: number, parentId: number) {

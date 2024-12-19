@@ -78,7 +78,5 @@ class IndexExporter(val idfExporter: IDFExporter, val luceneExporter: LuceneExpo
         return luceneJson.toPrettyString()
     }
 
-    override fun toString(exportedObject: Any): String {
-        return exportedObject.toString()
-    }
+    override fun toString(exportedObject: Any): String = exportedObject.toString()
 }

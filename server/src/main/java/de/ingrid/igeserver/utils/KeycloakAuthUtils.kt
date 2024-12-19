@@ -41,19 +41,17 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
 
     val log = logger()
 
-    override fun getUsernameFromPrincipal(principal: Principal): String {
-        return when (principal) {
-            is JwtAuthenticationToken -> {
-                (principal.principal as Jwt).getClaimAsString("preferred_username")
-            }
+    override fun getUsernameFromPrincipal(principal: Principal): String = when (principal) {
+        is JwtAuthenticationToken -> {
+            (principal.principal as Jwt).getClaimAsString("preferred_username")
+        }
 
-            is UsernamePasswordAuthenticationToken -> {
-                principal.principal as String
-            }
+        is UsernamePasswordAuthenticationToken -> {
+            principal.principal as String
+        }
 
-            else -> {
-                "???"
-            }
+        else -> {
+            "???"
         }
     }
 
@@ -74,13 +72,9 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
     private fun getRoles(principal: AbstractAuthenticationToken): Collection<GrantedAuthority> =
         principal.authorities ?: emptyList()
 
-    override fun isAdmin(principal: Principal): Boolean {
-        return containsRole(principal, "cat-admin") || containsRole(principal, "ige-super-admin")
-    }
+    override fun isAdmin(principal: Principal): Boolean = containsRole(principal, "cat-admin") || containsRole(principal, "ige-super-admin")
 
-    override fun isSuperAdmin(principal: Principal): Boolean {
-        return containsRole(principal, "ige-super-admin")
-    }
+    override fun isSuperAdmin(principal: Principal): Boolean = containsRole(principal, "ige-super-admin")
 
     override fun getCurrentUserRoles(catalogId: String): Set<Group> {
         val authentication: Authentication = SecurityContextHolder.getContext().authentication

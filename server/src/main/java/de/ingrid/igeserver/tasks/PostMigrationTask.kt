@@ -269,7 +269,7 @@ class PostMigrationTask(
             foundChildren.forEach { child ->
                 child.wrapper.parent = newFolder
                 documentService.docWrapperRepo.saveAndFlush(child.wrapper)
-                documentService.aclService.updateParent(doc.id!!, newFolderId)
+                documentService.aclService.updateParent(child.wrapper.id!!, newFolderId)
 
                 // only set parentIdentifier if not already set. do not overwrite explicitly set parentIdentifier
                 if (child.document.data.get("parentIdentifier") == null || child.document.data.get("parentIdentifier") is NullNode) {

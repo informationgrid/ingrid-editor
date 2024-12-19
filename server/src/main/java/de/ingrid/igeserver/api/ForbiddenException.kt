@@ -36,12 +36,8 @@ open class ForbiddenException : ClientException {
         /**
          * Factory method for an unauthorized user
          */
-        fun withUser(user: String, cause: Throwable? = null): ForbiddenException {
-            return ForbiddenException(STATUS_CODE, ERROR_CODE, "$ERROR_TEXT: $user", mapOf("user" to user), cause)
-        }
+        fun withUser(user: String, cause: Throwable? = null): ForbiddenException = ForbiddenException(STATUS_CODE, ERROR_CODE, "$ERROR_TEXT: $user", mapOf("user" to user), cause)
 
-        fun withAccessRights(message: String, cause: Throwable? = null): ForbiddenException {
-            return ForbiddenException(STATUS_CODE, ERROR_CODE, message, null, cause)
-        }
+        fun withAccessRights(message: String, cause: Throwable? = null): ForbiddenException = ForbiddenException(STATUS_CODE, ERROR_CODE, message, null, cause)
     }
 }

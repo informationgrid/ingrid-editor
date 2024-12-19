@@ -17,14 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../../../app/+form/form-shared/toolbar/form-toolbar.service";
 import { IsoViewComponent } from "./iso-view.component";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../../app/services/event/doc-events.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { TreeQuery } from "../../../../app/store/tree/tree.query";
-import { AddressTreeQuery } from "../../../../app/store/address-tree/address-tree.query";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { ExchangeService } from "../../../../app/+importExport/exchange.service";
 import { of } from "rxjs";
 import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
@@ -42,19 +40,24 @@ export class IsoViewPlugin extends Plugin {
 
   isoExportFormat = "ingridISO";
 
-  private treeQuery: TreeQuery | AddressTreeQuery;
-
   constructor(
     private formToolbarService: FormToolbarService,
     private docEvents: DocEventsService,
     private dialog: MatDialog,
     private toolbarService: FormToolbarService,
-    private docTreeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     private exportService: ExchangeService,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
+
+    effect(() => {
+      if (!this.formRegistered) return;
+      const openedDoc = this.generalStore.getOpenedDocument(this.forAddress());
+      this.toolbarService.setButtonState(
+        "toolBtnIso",
+        openedDoc !== null && openedDoc._type != "FOLDER",
+      );
+    });
   }
 
   registerForm() {
@@ -70,31 +73,18 @@ export class IsoViewPlugin extends Plugin {
       active: false,
     });
 
-    this.treeQuery = this.forAddress
-      ? this.addressTreeQuery
-      : this.docTreeQuery;
-
     // react on event when button is clicked
     const toolbarEventSubscription = this.docEvents
       .onEvent("ISO")
       .subscribe(() => this.showISODialog());
-    const openedDocSubscription = this.treeQuery.openedDocument$
-      .pipe(untilDestroyed(this))
-      .subscribe((openedDoc) => {
-        this.toolbarService.setButtonState(
-          "toolBtnIso",
-          openedDoc !== null && openedDoc._type != "FOLDER",
-        );
-      });
 
-    this.formSubscriptions.push(
-      toolbarEventSubscription,
-      openedDocSubscription,
-    );
+    this.formSubscriptions.push(toolbarEventSubscription);
   }
 
   private showISODialog() {
-    const currentDocument = this.treeQuery.getOpenedDocument();
+    const currentDocument = this.generalStore.getOpenedDocument(
+      this.forAddress(),
+    );
     const options = {
       ids: [currentDocument.id as number],
       useDraft: true,

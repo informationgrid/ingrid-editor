@@ -42,7 +42,7 @@ import { ShortTreeNode } from "../../../../+form/sidebars/tree/tree.types";
 import { ConfigService } from "../../../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
-import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatError, MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../../directives/focus.directive";
 import { MatButton } from "@angular/material/button";
@@ -75,6 +75,7 @@ import { CodelistPipe } from "../../../../directives/codelist.pipe";
     AsyncPipe,
     CodelistPipe,
     DatePipe,
+    MatError,
   ],
 })
 export class GetCapabilitiesDialogComponent {
@@ -129,7 +130,7 @@ export class GetCapabilitiesDialogComponent {
   }
 
   private handleError(error: any): Observable<null> {
-    this.error = error.message;
+    this.error = error.error?.errorText ?? error.message;
     return of(null);
   }
 
@@ -175,7 +176,9 @@ export class GetCapabilitiesDialogComponent {
       (item) => item.name.key === "1" || item.name.value === "GetCapabilities",
     );
 
-    getCapOp.addressList = getCapOp.addressList.map(() => originalUrl);
+    if (getCapOp) {
+      getCapOp.addressList = getCapOp.addressList?.map(() => originalUrl) ?? [];
+    }
     return report;
   }
 

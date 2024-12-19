@@ -32,10 +32,8 @@ class GeodatasetTransformerUPSH(transformerConfig: TransformerConfig) : Geodatas
 
     private val docData = doc.data
 
-    override fun getGeometryContexts(): List<GeometryContext> {
-        return docData.get("geometryContext")
-            ?.map { convertToGeometryContext(it) } ?: emptyList()
-    }
+    override fun getGeometryContexts(): List<GeometryContext> = docData.get("geometryContext")
+        ?.map { convertToGeometryContext(it) } ?: emptyList()
 
     private fun convertToGeometryContext(item: JsonNode): GeometryContext {
         val featureType = mapFeatureType(item.getStringOrEmpty("featureType.key"))
@@ -56,13 +54,11 @@ class GeodatasetTransformerUPSH(transformerConfig: TransformerConfig) : Geodatas
         )
     }
 
-    private fun mapFeatureType(type: String): String {
-        return when (type) {
-            "nominal" -> "NominalFeature"
-            "ordinal" -> "OrdinalFeature"
-            "scalar" -> "ScalarFeature"
-            "other" -> "OtherFeature"
-            else -> "OtherFeature"
-        }
+    private fun mapFeatureType(type: String): String = when (type) {
+        "nominal" -> "NominalFeature"
+        "ordinal" -> "OrdinalFeature"
+        "scalar" -> "ScalarFeature"
+        "other" -> "OtherFeature"
+        else -> "OtherFeature"
     }
 }

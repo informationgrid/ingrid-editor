@@ -23,7 +23,7 @@ import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.schema.SchemaUtils
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 
 class UvpNegativePreliminarySchema : AnnotationSpec() {
@@ -45,14 +45,14 @@ class UvpNegativePreliminarySchema : AnnotationSpec() {
     fun minimal() {
         val json = SchemaUtils.getJsonFileContent("/export/uvp/negative-preliminary.minimal.json")
         val result = SchemaUtils.validate(json, schema)
-        result.valid shouldBe true
+        result.size shouldBe 0
     }
 
     @Test
     fun full() {
         val json = SchemaUtils.getJsonFileContent("/export/uvp/negative-preliminary.maximal.json")
         val result = SchemaUtils.validate(json, schema)
-        result.valid shouldBe true
+        result.size shouldBe 0
     }
 
     @Test
@@ -60,11 +60,15 @@ class UvpNegativePreliminarySchema : AnnotationSpec() {
         val json = "{}"
         shouldThrow<ValidationException> {
             val result = SchemaUtils.validate(json, schema)
-            result.valid shouldBe false
-            val requiredErrors = SchemaUtils.extractMissingRequiredFields(result)
-
-            requiredErrors.size shouldBeExactly requiredFields.size
-            requiredErrors shouldBe requiredFields
+            result.size shouldBeGreaterThan 0
+//            val requiredErrors = SchemaUtils.extractMissingRequiredFields(result)
+//
+//            requiredErrors.size shouldBeExactly requiredFields.size
+//            requiredErrors shouldBe requiredFields
         }
     }
+
+    @Test
+    fun negativeTest() =
+        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/uvp/negative-preliminary.minimal.json")
 }

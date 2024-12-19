@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal, WritableSignal } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { Observable, of } from "rxjs";
 import { debounceTime, filter, map, startWith, tap } from "rxjs/operators";
@@ -60,8 +60,8 @@ export class AutocompleteTypeComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
-  parameterOptions: BackendOption[] = [];
-  filteredOptions: BackendOption[];
+  private parameterOptions: WritableSignal<BackendOption[]> = signal([]);
+  filteredOptions: WritableSignal<BackendOption[]> = signal([]);
 
   displayFn(option: BackendOption | string): string {
     if (this.props.simple) return <string>option;
@@ -85,7 +85,7 @@ export class AutocompleteTypeComponent
           if (!this.props.simple) {
             if (typeof value === "string") {
               const key =
-                this.parameterOptions.find((option) => option.value === value)
+                this.parameterOptions().find((option) => option.value === value)
                   ?.key ?? null;
 
               if (key === null && !value) {
@@ -109,7 +109,7 @@ export class AutocompleteTypeComponent
         }),
         filter((value) => value !== null),
       )
-      .subscribe((values) => (this.filteredOptions = values));
+      .subscribe((values) => this.filteredOptions.set(values));
 
     let options = this.props.options as Observable<any[]>;
     if (!(options instanceof Observable)) {
@@ -126,27 +126,29 @@ export class AutocompleteTypeComponent
   }
 
   private initInputListener(options: SelectOptionUi[]) {
-    this.parameterOptions = options.map(
-      (option) =>
-        <BackendOption>{
-          key: option.value,
-          value: option.label,
-          disabled: option.disabled,
-        },
+    this.parameterOptions.set(
+      options.map(
+        (option) =>
+          <BackendOption>{
+            key: option.value,
+            value: option.label,
+            disabled: option.disabled,
+          },
+      ),
     );
     const value = this.getFormValueLabel();
-    this.filteredOptions = this.filterParameterByName(value);
+    this.filteredOptions.set(this.filterParameterByName(value));
     this.formControl.setValue(this.formControl.value);
   }
 
   _filter(value: string): BackendOption[] {
     if (value === undefined || value === null || this.props.doNotFilter)
-      return this.parameterOptions;
+      return this.parameterOptions();
     const filterValue = value.toLowerCase();
 
     return this.parameterOptions
-      ? this.parameterOptions.filter((option) =>
-          option.value.toLowerCase().includes(filterValue),
+      ? this.parameterOptions().filter((option) =>
+          option.value?.toLowerCase()?.includes(filterValue),
         )
       : [];
   }
@@ -160,10 +162,14 @@ export class AutocompleteTypeComponent
   }
 
   private getValueFromOptionKey(key: string) {
-    return this.parameterOptions.find((param) => param.key === key)?.value;
+    return this.parameterOptions().find((param) => param.key === key)?.value;
   }
 
-  private filterParameterByName(name) {
-    return name ? this._filter(name) : this.parameterOptions.slice();
+  private filterParameterByName(name: string) {
+    return name ? this._filter(name) : this.parameterOptions().slice();
+  }
+
+  itemId(option: BackendOption) {
+    return option.key ?? option;
   }
 }

@@ -87,7 +87,6 @@ export class PermissionTableComponent implements ControlValueAccessor {
   callAddPermissionDialog() {
     return this.dialog
       .open(PermissionAddDialogComponent, {
-        minWidth: 500,
         hasBackdrop: true,
         data: {
           forAddress: this.forAddress,

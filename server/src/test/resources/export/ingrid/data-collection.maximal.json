@@ -49,11 +49,11 @@
   },
   "extraInfo": { "legalBasicsDescriptions": [{ "key": "60" }] },
   "orderInfo": "order",
-  "isOpenData": false,
   "methodText": "ghjk",
   "references": [
     {
       "url": "https://this.url.ag",
+      "referenceType": "url",
       "type": { "key": "3570" },
       "title": "basis",
       "explanation": "blabla"
@@ -74,7 +74,6 @@
     }
   ],
   "databaseContent": [{ "moreInfo": "sdfg", "parameter": "rewq" }],
-  "isAdVCompatible": true,
   "advProductGroups": [{ "key": "2" }],
   "graphicOverviews": [
     {

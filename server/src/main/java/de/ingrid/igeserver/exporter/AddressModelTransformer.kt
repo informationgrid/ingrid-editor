@@ -29,6 +29,7 @@ import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.igeserver.utils.mapToKeyValue
 import de.ingrid.mdek.upload.Config
+import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.dao.EmptyResultDataAccessException
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
@@ -84,14 +85,13 @@ open class AddressModelTransformer(
 
     fun getOrganization(): String? = displayAddress.data.getString("organization")
 
-    fun getPositionName(): String? =
-        if (displayAddress.data.getString("positionName")
-                .isNullOrEmpty()
-        ) {
-            determinePositionNameFromAncestors()
-        } else {
-            displayAddress.data.getString("positionName")
-        }
+    fun getPositionName(): String? = if (displayAddress.data.getString("positionName")
+            .isNullOrEmpty()
+    ) {
+        determinePositionNameFromAncestors()
+    } else {
+        displayAddress.data.getString("positionName")
+    }
 
     private fun determineDisplayAddress(): Document {
         val nonHiddenAddress = ancestorAddressesIncludingSelf
@@ -103,10 +103,9 @@ open class AddressModelTransformer(
         }
     }
 
-    fun getHierarchy(): List<AddressModelTransformer> =
-        ancestorAddressesIncludingSelf.map {
-            AddressModelTransformer(AddressTransformerConfig(catalogIdentifier, codelist, null, it.document, documentService, config, transformerConfig.tags))
-        }
+    fun getHierarchy(): List<AddressModelTransformer> = ancestorAddressesIncludingSelf.map {
+        AddressModelTransformer(AddressTransformerConfig(catalogIdentifier, codelist, null, it.document, documentService, config, transformerConfig.tags))
+    }
 
     private fun determineEldestAncestor(): DocumentData? = ancestorAddressesIncludingSelf.firstOrNull()
 
@@ -143,10 +142,14 @@ open class AddressModelTransformer(
     val postBoxAddress =
         listOfNotNull(
             // "Postbox" is a fixed string needed for portal display
-            this.poBox?.let { "Postbox $it" },
-            this.zipPoBox?.let { it + this.city?.let { " $it" } },
-        ).filter { it.isNotEmpty() }
-            .joinToString(", ")
+            valOrNull(this.poBox)?.let { "Postbox $it" },
+            valOrNull(this.zipPoBox)?.let {
+                it + (valOrNull(this.city)?.let { " $it" } ?: "")
+            },
+        ).joinToString(", ")
+
+    private fun valOrNull(value: String?) = value?.takeIf { it.isNotEmpty() }
+
     val telephone = contactType("1")
     val fax = contactType("2")
     val email = contactType("3")
@@ -168,8 +171,7 @@ open class AddressModelTransformer(
     fun getNextParent() = documentService.getParentWrapper(doc.wrapperId!!)?.uuid
 
     private val formatterISO = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    private fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String =
-        formatter.format(Date.from(date.toInstant()))
+    private fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime): String = formatter.format(Date.from(date.toInstant()))
 
     val lastModified = formatDate(formatterISO, displayAddress.modified!!)
 
@@ -222,8 +224,7 @@ open class AddressModelTransformer(
             )
         }.toMutableList()
 
-    private fun getPublishedChildren(id: Int?): List<DocumentData> =
-        documentService.findChildrenDocs(catalogIdentifier, id, true).hits
+    private fun getPublishedChildren(id: Int?): List<DocumentData> = documentService.findChildrenDocs(catalogIdentifier, id, true).hits
 
     fun getLastPublishedDocument(catalogIdentifier: String, uuid: String): Document? = try {
         documentService.getLastPublishedDocument(catalogIdentifier, uuid, forExport = true)
@@ -260,6 +261,8 @@ open class AddressModelTransformer(
     private fun contactType(type: String): String? = displayAddress.data.get("contact")
         ?.firstOrNull { it.get("type")?.getString("key") == type }
         ?.getString("connection")
+
+    fun getSortHash(): String = DigestUtils.sha1Hex(title)
 }
 
 data class ObjectReference(

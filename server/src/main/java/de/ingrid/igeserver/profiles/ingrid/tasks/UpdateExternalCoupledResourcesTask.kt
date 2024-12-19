@@ -133,15 +133,13 @@ class UpdateExternalCoupledResourcesTask(
         }
     }
 
-    private fun mapToCoupledResourceResult(result: Array<Any>): CoupledResourceResult {
-        return CoupledResourceResult(
-            result[0] as Int,
-            result[1].toString(),
-            mapper.readValue(result[2] as String, object : TypeReference<List<CoupledResource>>() {})
-                .filter { it.isExternalRef },
-            result[3] as Int,
-        )
-    }
+    private fun mapToCoupledResourceResult(result: Array<Any>): CoupledResourceResult = CoupledResourceResult(
+        result[0] as Int,
+        result[1].toString(),
+        mapper.readValue(result[2] as String, object : TypeReference<List<CoupledResource>>() {})
+            .filter { it.isExternalRef },
+        result[3] as Int,
+    )
 
     private data class Summary(var count: Int, var corrupt: Int, var updated: Int)
 

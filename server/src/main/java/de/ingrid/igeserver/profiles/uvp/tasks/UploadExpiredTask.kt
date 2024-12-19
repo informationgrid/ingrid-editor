@@ -90,29 +90,25 @@ class UploadExpiredTask(
     private fun archiveFile(
         uploadInfo: UploadInfo,
         uploads: DocumentLinks,
-    ): Boolean {
-        return try {
-            log.info("Archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
-            fileSystemStorage.archive(uploads.catalogId, uploads.docUuid, uploadInfo.uri)
-            true
-        } catch (ex: Exception) {
-            log.error("Could not archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}: ${ex.message}")
-            false
-        }
+    ): Boolean = try {
+        log.info("Archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
+        fileSystemStorage.archive(uploads.catalogId, uploads.docUuid, uploadInfo.uri)
+        true
+    } catch (ex: Exception) {
+        log.error("Could not archive file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}: ${ex.message}")
+        false
     }
 
     private fun restoreFile(
         uploadInfo: UploadInfo,
         uploads: DocumentLinks,
-    ): Boolean {
-        return try {
-            log.info("Restore file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
-            fileSystemStorage.restore(uploads.catalogId, uploads.docUuid, uploadInfo.uri)
-            true
-        } catch (ex: Exception) {
-            log.error("Could not restore file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}: ${ex.message}")
-            false
-        }
+    ): Boolean = try {
+        log.info("Restore file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}")
+        fileSystemStorage.restore(uploads.catalogId, uploads.docUuid, uploadInfo.uri)
+        true
+    } catch (ex: Exception) {
+        log.error("Could not restore file ${uploadInfo.uri} from ${uploads.docUuid} in catalog ${uploads.catalogId}: ${ex.message}")
+        false
     }
 
     private fun isExpired(upload: UploadInfo, today: LocalDate) =

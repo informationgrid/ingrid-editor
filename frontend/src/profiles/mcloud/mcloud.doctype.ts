@@ -232,12 +232,14 @@ export class McloudDoctype extends BaseDoctype {
             placeholder: "TT.MM.JJJJ",
             wrappers: ["form-field"],
             expressions: {
-              hide: "model?.rangeType?.key === 'range'",
+              hide: (field: FormlyFieldConfig) =>
+                field.model?.rangeType?.key === "range",
             },
           }),
           this.addDateRange("timeSpanRange", null, {
             expressions: {
-              hide: "model?.rangeType?.key !== 'range'",
+              hide: (field: FormlyFieldConfig) =>
+                field.model?.rangeType?.key !== "range",
             },
           }),
         ]),

@@ -43,6 +43,7 @@ export default [
       {
         path: "general",
         component: GeneralSettingsComponent,
+        canActivate: [AuthGuard],
         data: {
           title: "Allgemein",
         },

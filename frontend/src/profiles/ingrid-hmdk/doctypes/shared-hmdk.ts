@@ -29,6 +29,7 @@ import {
 import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { FormStateService } from "../../../app/+form/form-state.service";
+import { MetadataOptionItem } from "../../../app/formly/types/metadata-type/metadata-type.component";
 import { FormFieldHelper } from "../../form-field-helper";
 
 @Injectable({ providedIn: "root" })
@@ -36,31 +37,36 @@ export class SharedHmdk {
   private tagsService = inject(TagsService);
   private formStateService = inject(FormStateService);
 
+  metadataOptions = (doc: IngridShared) => {
+    return <MetadataOptionItem>{
+      label: "Veröffentlichung gemäß HmbTG",
+      key: "publicationHmbTG",
+      value: true,
+      onClick: (field) => this.handlePublicationHmbTGClick(doc, field),
+    };
+  };
+
   manipulateDocumentFields = (
     doc: IngridShared,
     fieldConfig: FormlyFieldConfig[],
   ) => {
     // add "Veröffentlichung gemäß HmbTG" to "OpenData" Section
-    const openData = FormFieldHelper.findFieldElementWithId(
-      fieldConfig,
-      "isOpenData",
-    );
-    openData.fieldConfig.push(this.getPublicationHmbTGFieldConfig(doc));
+    // const openData = doc.findFieldElementWithId(fieldConfig, "isOpenData");
+    // openData.fieldConfig.push(this.getPublicationHmbTGFieldConfig(doc));
     // add "Informationsgegenstand" right after OpenData Section
-    const openDataParent = doc.findParentFieldElementWithId(
+    /*const openDataParent = doc.findParentFieldElementWithId(
       fieldConfig,
       "isOpenData",
-    );
-    FormFieldHelper.addAfter(
-      openDataParent,
-      this.getInformationHmbTGFieldConfig(doc),
-    );
+    );*/
 
     // at least one "Herausgeber" is required when Dataset is OpenData
-    const pointOfContact = FormFieldHelper.findFieldElementWithId(
+    const pointOfContact = doc.findFieldElementWithId(
       fieldConfig,
       "pointOfContact",
     );
+
+    doc.addAfter(pointOfContact, this.getInformationHmbTGFieldConfig(doc));
+
     pointOfContact.fieldConfig[pointOfContact.index].validators = {
       ...pointOfContact.fieldConfig[pointOfContact.index].validators,
       atLeastOnePublisher: this.atLeastOnePublisher,
@@ -81,17 +87,20 @@ export class SharedHmdk {
   atLeastOnePublisher = {
     expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
       // equals "Herausgeber"
-      !(field.model.isOpenData || field.model.publicationHmbTG) ||
+      !(
+        field.model.properties?.isOpenData ||
+        field.model.properties?.publicationHmbTG
+      ) ||
       (ctrl.value
-        ? ctrl.value.some((address) => address.type?.key === "10")
+        ? ctrl.value.some((address: any) => address.type?.key === "10")
         : false),
     message: "Es muss mindestens einen 'Herausgeber' geben.",
   };
 
   downloadLinkWhenHmbtg = {
     expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
-      !field.model.publicationHmbTG ||
-      ctrl.value?.some((row) => row.type?.key === "9990"), // Datendownload
+      !field.model.properties?.publicationHmbTG ||
+      ctrl.value?.some((row: any) => row.type?.key === "9990"), // Datendownload
     message:
       "Bei aktivierter 'Veröffentlichung gemäß HmbgTG'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
   };
@@ -113,11 +122,11 @@ export class SharedHmdk {
       asSelect: true,
       expressions: {
         hide: (field: FormlyFieldConfig) =>
-          field.model.publicationHmbTG !== true &&
-          field.model.isOpenData !== true,
+          field.model.properties?.publicationHmbTG !== true &&
+          field.model.properties?.isOpenData !== true,
         "props.disabled":
-          "(field.model.publicationHmbTG !== true && field.model.isOpenData === true) || formState.disabled",
-        "props.required": "field.model.publicationHmbTG === true",
+          "(field.model.properties?.publicationHmbTG !== true && field.model.properties?.isOpenData === true) || formState.disabled",
+        "props.required": "field.model.properties?.publicationHmbTG === true",
       },
       options: doc.getCodelistForSelect(
         "informationsgegenstand",
@@ -131,7 +140,7 @@ export class SharedHmdk {
     doc: IngridShared,
     field: FormlyFieldConfig,
   ) {
-    const checked = field.formControl.value;
+    const checked = field.formControl.value?.publicationHmbTG;
     if (checked) {
       this.handleActivateHmbTG(doc, field);
     } else {
@@ -143,21 +152,23 @@ export class SharedHmdk {
     const cookieId = "HIDE_HMBTG_INFO";
     const id = this.formStateService.metadata().wrapperId;
 
-    function executeAction(that) {
+    function executeAction(that: any) {
       // if inspire set access constraint "keine" else empty
       field.form
         .get("resource.accessConstraints")
-        .setValue(
-          field.model.isInspireIdentified === true ? [{ key: "1" }] : [],
+        ?.setValue(
+          field.model.properties?.isInspireIdentified ? [{ key: "1" }] : [],
         );
 
       // set Anwendungseinschränkungen to "Datenlizenz Deutschland Namensnennung"
-      field.model.resource.useConstraints = [
-        {
-          title: { key: "1" },
-          source: "Freie und Hansestadt Hamburg, zuständige Behörde",
-        },
-      ];
+      if (field.model.resource) {
+        field.model.resource.useConstraints = [
+          {
+            title: { key: "1" },
+            source: "Freie und Hansestadt Hamburg, zuständige Behörde",
+          },
+        ];
+      }
       // we need to set the model here and update it, since new form controls need to be created
       // by ngx-formly, because we update a repeat-component!
       field.options.formState.updateModel();
@@ -210,10 +221,10 @@ export class SharedHmdk {
   private handleDeactivateHmbTG(doc: IngridShared, field: FormlyFieldConfig) {
     function executeAction() {
       // remove all categories
-      field.form.get("openDataCategories").setValue([]);
+      field.form.get("openDataCategories")?.setValue([]);
       // remove all "Informationsgegenstände" (set to "ohne Veröffentlichungspflicht" if open data)
       field.form.get("informationHmbTG")?.setValue(
-        field.model.isOpenData
+        field.model.properties?.isOpenData
           ? [
               {
                 key: "hmbtg_20_ohne_veroeffentlichungspflicht",
@@ -253,7 +264,10 @@ export class SharedHmdk {
     previous: Observable<boolean>,
   ) {
     return this.wrap(() => {
-      field.form.get("publicationHmbTG").setValue(true);
+      field.formControl.setValue({
+        ...field.formControl.value,
+        publicationHmbTG: true,
+      });
       if (field.model.resource !== undefined) {
         field.model.resource.useConstraints = [
           {
@@ -267,8 +281,8 @@ export class SharedHmdk {
       }
 
       // if inspire set access constraint "keine"
-      if (field.model.isInspireIdentified)
-        field.form.get("resource.accessConstraints").setValue([{ key: "1" }]);
+      if (field.model.properties?.isInspireIdentified)
+        field.form.get("resource.accessConstraints")?.setValue([{ key: "1" }]);
 
       this.tagsService
         .updatePublicationType(
@@ -283,34 +297,30 @@ export class SharedHmdk {
   hmdkHandleDeactivateOpenData(field: FormlyFieldConfig) {
     // remove "keine" from access constraints
     const accessConstraintsCtrl = field.form.get("resource.accessConstraints");
-    accessConstraintsCtrl.setValue(
-      accessConstraintsCtrl.value.filter((entry) => entry.key !== "1"),
+    accessConstraintsCtrl?.setValue(
+      accessConstraintsCtrl.value.filter((entry: any) => entry.key !== "1"),
     );
 
     // remove license set when open data was clicked
     const useConstraintsCtrl = field.form.get(
       "resource.useConstraints",
     ) as FormArray;
-    useConstraintsCtrl.clear();
+    useConstraintsCtrl?.clear();
 
     // remove all categories
-    field.form.get("openDataCategories").setValue([]);
-    if (field.model.hvd) field.form.get("hvd").setValue(false);
+    field.form.get("openDataCategories")?.setValue([]);
+    if (field.model.isHvd) field.form.get("isHvd").setValue(false);
     return of(true);
   }
 
-  hmdkHandleActivateInspireIdentified(
-    field: FormlyFieldConfig,
-    previous: Observable<boolean>,
-  ) {
-    return this.wrap(() => {
-      // if openData or publicationHmbTG is set access constraint "Es gelten keine Zugriffsbeschränkungen"
-      if (
-        field.model.resource &&
-        (field.model.isOpenData || field.model.publicationHmbTG)
-      )
-        field.form.get("resource.accessConstraints").setValue([{ key: "1" }]);
-    }, previous);
+  hmdkHandleActivateInspireIdentified(field: FormlyFieldConfig) {
+    // if openData or publicationHmbTG is set access constraint "Es gelten keine Zugriffsbeschränkungen"
+    if (
+      field.model.resource &&
+      (field.model.properties?.isOpenData ||
+        field.model.properties?.publicationHmbTG)
+    )
+      field.form.get("resource.accessConstraints")?.setValue([{ key: "1" }]);
   }
 
   wrap(executeFunction: () => void, previous: Observable<boolean>) {

@@ -1,64 +1,23 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "InformationSystemHmdk#1.0.0",
-  "$ref": "#/definitions/InformationSystemHmdk",
-  "definitions": {
-    "InformationSystemHmdk": {
-      "allOf": [
-        {
-          "$ref": "../information-system.schema.json#/definitions/InformationSystem"
-        }
-      ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wemove.com/schemas/ingrid/schemes/hmdk/InformationSystemHmdk",
+  "$ref": "../information-system-base.schema.json",
+  "properties": {
+    "properties": {
+      "unevaluatedProperties": false,
+      "$ref": "../information-system-base.schema.json#/definitions/propertiesInformation",
       "properties": {
-        "isAdVCompatible":  true,
-        "isOpenData": true,
-        "isInspireIdentified":  true,
-        "_uuid": true,
-        "_type":  true,
-        "title": true,
-        "description":  true,
-        "alternateTitle": true,
-        "serviceType": true,
-        "serviceUrls": true,
-        "serviceVersion": true,
-        "parentIdentifier": true,
-        "pointOfContact": true,
-        "advProductGroups": true,
-        "themes": true,
-        "spatial": true,
-        "temporal": true,
-        "dataset": true,
-        "extraInfo": true,
-        "metadata": true,
-        "resource": true,
-        "keywords": true,
-        "maintenanceInformation": true,
-        "references": true,
-        "graphicOverviews": true,
-        "digitalTransferOptions": true,
-        "categoryCatalog": true,
-        "databaseContent": true,
-        "explanation": true,
-        "methodText": true,
-        "systemEnvironment": true,
-        "baseDataText": true,
-        "implementationHistory": true,
-        "orderInfo": true,
-        "distribution": true,
-        "openDataCategories": true,
         "publicationHmbTG": {
           "type": ["null", "boolean"]
-        },
-        "hvd": true,
-        "hvdCategories": true,
-        "informationHmbTG": {
-          "type": "array",
-          "items": {
-            "$ref": "../../../general.schema.json#/definitions/KeyValue"
-          }
         }
-      },
-      "additionalProperties": false
+      }
+    },
+    "informationHmbTG": {
+      "type": "array",
+      "items": {
+        "$ref": "../../../general.schema.json#/definitions/KeyValue"
+      }
     }
-  }
+  },
+  "unevaluatedProperties": false
 }

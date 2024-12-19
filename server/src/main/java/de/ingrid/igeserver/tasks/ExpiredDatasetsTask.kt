@@ -139,16 +139,14 @@ class ExpiredDatasetsTask(
         }
     }
 
-    private fun mapToDataset(dbResponse: Array<Any?>): ExpiredDataset {
-        return ExpiredDataset(
-            dbResponse[0].toString(),
-            dbResponse[1].toString(),
-            dbResponse[2].toString(),
-            dbResponse[3] as OffsetDateTime,
-            dbResponse[4].toString(),
-            dbResponse[5].toString(),
-        )
-    }
+    private fun mapToDataset(dbResponse: Array<Any?>): ExpiredDataset = ExpiredDataset(
+        dbResponse[0].toString(),
+        dbResponse[1].toString(),
+        dbResponse[2].toString(),
+        dbResponse[3] as OffsetDateTime,
+        dbResponse[4].toString(),
+        dbResponse[5].toString(),
+    )
 
     private fun getDatasetsEditedBefore(
         catalog: Catalog,

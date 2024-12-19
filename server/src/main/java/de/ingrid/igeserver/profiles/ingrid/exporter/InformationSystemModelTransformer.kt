@@ -19,8 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
-open class InformationSystemModelTransformer(transformerConfig: TransformerConfig) :
-    IngridModelTransformer(transformerConfig) {
+open class InformationSystemModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
     override val hierarchyLevel = "application"
     override val hierarchyLevelName = "application"

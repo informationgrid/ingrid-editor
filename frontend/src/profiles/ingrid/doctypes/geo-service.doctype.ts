@@ -19,7 +19,7 @@
  */
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { distinctUntilKeyChanged, filter, tap } from "rxjs/operators";
 import { BehaviorSubject } from "rxjs";
@@ -27,7 +27,6 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
-import { TreeQuery } from "../../../app/store/tree/tree.query";
 
 @Injectable({
   providedIn: "root",
@@ -41,6 +40,7 @@ export class GeoServiceDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
+  showInspireRelevant = true;
   showAdVCompatible = true;
   showAdVProductGroup = true;
   showLayernamesForCoupledResources = false;
@@ -48,18 +48,16 @@ export class GeoServiceDoctype extends IngridShared {
 
   geoServiceOptions = {
     required: {
-      operations: false,
+      operations: true,
       classification: true,
     },
   };
 
   isGeoService = true;
 
-  tree = inject(TreeQuery);
-
   constructor() {
     super();
-    this.options.required.spatialSystems = true;
+    this.options.dynamicRequired.spatialSystems = () => true;
     this.options.required.useConstraints = true;
   }
 
@@ -91,9 +89,7 @@ export class GeoServiceDoctype extends IngridShared {
             },
           }
         : null,
-      this.addGeneralSection({
-        inspireRelevant: true,
-      }),
+      this.addGeneralSection(),
       this.addKeywordsSection({
         priorityDataset: true,
         spatialScope: true,
@@ -122,7 +118,8 @@ export class GeoServiceDoctype extends IngridShared {
                   contextHelpId: "serviceType",
                   wrappers: ["inline-help", "form-field"],
                   hooks: {
-                    onInit: (field) => this.handleServiceTypeChange(field),
+                    onInit: (field: FormlyFieldConfig) =>
+                      this.handleServiceTypeChange(field),
                   },
                 }),
                 this.addRepeatListInline("version", "Version des Dienstes", {
@@ -140,9 +137,12 @@ export class GeoServiceDoctype extends IngridShared {
                   "Als ATOM-Download Dienst bereitstellen",
                   {
                     className: "optional",
-                    click: (field) => this.showAtomFeedInfo(field),
+                    click: (field: FormlyFieldConfig) =>
+                      this.showAtomFeedInfo(field),
                     expressions: {
-                      hide: "formState.mainModel?.service?.type?.key !== '3'",
+                      hide: (field: FormlyFieldConfig) =>
+                        field.options.formState.mainModel?.service?.type
+                          ?.key !== "3",
                     },
                   },
                 ),
@@ -165,20 +165,6 @@ export class GeoServiceDoctype extends IngridShared {
                 },
               }),
             ],
-            validators: {
-              getCapabilityForWMS: {
-                expression: (ctrl, field) => {
-                  const model = field.options.formState.mainModel;
-                  return (
-                    !model ||
-                    model.service?.type?.key !== "2" ||
-                    field.model?.some((item) => item?.name?.key === "1")
-                  );
-                },
-                message:
-                  "Für Darstellungsdienste muss eine GetCapabilities-Operation angegeben sein",
-              },
-            },
           }),
           this.addGroup(
             null,
@@ -200,9 +186,11 @@ export class GeoServiceDoctype extends IngridShared {
                   },
                 },
                 expressions: {
-                  "props.required":
-                    "formState.mainModel?.service?.couplingType?.key === 'tight'",
-                  className: "field.props.required ? '' : 'optional'",
+                  "props.required": (field: FormlyFieldConfig) =>
+                    field.options.formState.mainModel?.service?.couplingType
+                      ?.key === "tight",
+                  className: (field: FormlyFieldConfig) =>
+                    field.props.required ? "" : "optional",
                 },
               },
               this.addSelectInline("couplingType", "Kopplungstyp", {
@@ -216,16 +204,20 @@ export class GeoServiceDoctype extends IngridShared {
                 hasInlineContextHelp: true,
                 wrappers: ["inline-help", "form-field"],
                 expressions: {
-                  hide: "!formState.mainModel?.service?.coupledResources?.length",
+                  hide: (field: FormlyFieldConfig) =>
+                    !field.options.formState.mainModel?.service
+                      ?.coupledResources?.length,
                 },
               }),
             ],
             {
               contextHelpId: "shownData",
               expressions: {
-                "props.required":
-                  "formState.mainModel?.service?.couplingType?.key === 'tight'",
-                className: "field.props.required ? '' : 'optional'",
+                "props.required": (field: FormlyFieldConfig) =>
+                  field.options.formState.mainModel?.service?.couplingType
+                    ?.key === "tight",
+                className: (field: FormlyFieldConfig) =>
+                  field.props.required ? "" : "optional",
               },
             },
           ),
@@ -284,7 +276,7 @@ export class GeoServiceDoctype extends IngridShared {
     });
   }
 
-  private handleServiceTypeChange(field) {
+  private handleServiceTypeChange(field: FormlyFieldConfig) {
     return field.formControl.valueChanges.pipe(
       filter((value) => value != null),
       distinctUntilKeyChanged("key"),
@@ -333,7 +325,7 @@ export class GeoServiceDoctype extends IngridShared {
     versionProps.options = value;
   }
 
-  private showAtomFeedInfo(field) {
+  private showAtomFeedInfo(field: FormlyFieldConfig) {
     if (!field.model.isAtomDownload) return;
 
     const cookieId = "HIDE_ATOM_FEED_INFO";

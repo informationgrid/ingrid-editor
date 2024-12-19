@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class OgcDistributionHelperFactory() {
+class OgcDistributionHelperFactory {
 
     @Autowired
     private lateinit var distributionHelper: List<OgcDistributionHelper>

@@ -28,10 +28,10 @@ import { DataCollectionDoctypeHMDK } from "./ingrid-hmdk/doctypes/data-collectio
 import { PublicationDoctypeHMDK } from "./ingrid-hmdk/doctypes/publication.doctype";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../app/services/event/doc-events.service";
-import { TreeQuery } from "../app/store/tree/tree.query";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { PluginService } from "../app/services/plugin/plugin.service";
 import { ModifyPublishedBehaviour } from "./ingrid-hmdk/behaviours/modify-published.behaviour";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Component({
@@ -50,7 +50,6 @@ class InGridHMDKComponent extends InGridComponent {
 
   dialog = inject(MatDialog);
   docEvents = inject(DocEventsService);
-  treeQuery = inject(TreeQuery);
   pluginService = inject(PluginService);
 
   constructor() {
@@ -74,12 +73,15 @@ class InGridHMDKComponent extends InGridComponent {
       docType.options.hide.openData = false;
       // show open data categories for all types. except specialisedTask ("Organisationseinheit")
       if (docType === this.specialisedTask) {
-        docType.options.dynamicHide.openDataCategories = "true";
-        docType.options.dynamicRequired.openDataCategories = "false";
+        docType.options.dynamicHide.openDataCategories = () => true;
+        docType.options.dynamicRequired.openDataCategories = () => false;
       } else {
-        docType.options.dynamicHide.openDataCategories = undefined;
-        docType.options.dynamicRequired.openDataCategories =
-          "formState.mainModel?.isOpenData || formState.mainModel?.publicationHmbTG";
+        docType.options.dynamicHide.openDataCategories = () => false;
+        docType.options.dynamicRequired.openDataCategories = (
+          field: FormlyFieldConfig,
+        ) =>
+          field.options.formState.mainModel?.properties?.isOpenData ||
+          field.options.formState.mainModel?.properties?.publicationHmbTG;
       }
     });
   }
