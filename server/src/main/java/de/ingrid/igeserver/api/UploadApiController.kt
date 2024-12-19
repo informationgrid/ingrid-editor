@@ -181,9 +181,25 @@ class UploadApiController(
             }
         }
 
-        val files = storage.extract(catalogId, userID, docUuid, file, conflictHandling)
+        // create physical copy of file
+        val newFileName = createCopy(catalogId, userID, docUuid, file)
+        val files = storage.extract(catalogId, userID, docUuid, newFileName, conflictHandling)
 
         return this.createUploadResponse(files)
+    }
+
+    private fun createCopy(catalogId: String, userID: String?, docUuid: String, file: String): String {
+        try {
+            val originalFile = storage.read(catalogId, userID, docUuid, file)
+
+            val newFilename = "${file}_${Random().nextInt(999)}"
+            val fileSize = storage.getInfo(catalogId, userID, docUuid, file).size
+            storage.write(catalogId, userID, docUuid, newFilename, originalFile, fileSize, false)
+            return newFilename
+        } catch (ex: Exception) {
+            log.error("Error creating physical copy of file $file", ex)
+            throw ex
+        }
     }
 
     data class StorageParameters(
