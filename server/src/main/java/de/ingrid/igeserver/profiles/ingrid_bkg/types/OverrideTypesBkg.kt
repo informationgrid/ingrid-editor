@@ -19,6 +19,50 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_bkg.types
 
+import de.ingrid.igeserver.profiles.ingrid.types.InGridDataCollectionType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoDatasetType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoServiceType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridInformationSystemType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridProjectType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridPublicationType
 import de.ingrid.igeserver.profiles.ingrid_bkg.BkgProfile
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.stereotype.Component
 
 private const val PROFILE_ID = BkgProfile.ID
+
+@Component
+class InGridGeoDatasetTypeBkg(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType(jdbcTemplate) {
+    override val profiles = arrayOf(PROFILE_ID)
+    override val jsonSchema = "/ingrid/schemes/bkg/geo-dataset_bkg.schema.json"
+}
+
+@Component
+class InGridGeoServiceTypeBkg(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType(jdbcTemplate) {
+    override val jsonSchema = "/ingrid/schemes/bkg/geo-service_bkg.schema.json"
+    override val profiles = arrayOf(PROFILE_ID)
+}
+
+@Component
+class InGridDataCollectionTypeBkg(jdbcTemplate: JdbcTemplate) : InGridDataCollectionType(jdbcTemplate) {
+    override val jsonSchema = "/ingrid/schemes/bkg/data-collection_bkg.schema.json"
+    override val profiles = arrayOf(PROFILE_ID)
+}
+
+@Component
+class InGridInformationSystemTypeBkg(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
+    override val jsonSchema = "/ingrid/schemes/bkg/information-system_bkg.schema.json"
+    override val profiles = arrayOf(PROFILE_ID)
+}
+
+@Component
+class InGridPublicationTypeBkg(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
+    override val jsonSchema = "/ingrid/schemes/bkg/publication_bkg.schema.json"
+    override val profiles = arrayOf(PROFILE_ID)
+}
+
+@Component
+class InGridProjectTypeBkg(jdbcTemplate: JdbcTemplate) : InGridProjectType(jdbcTemplate) {
+    override val jsonSchema = "/ingrid/schemes/bkg/project_bkg.schema.json"
+    override val profiles = arrayOf(PROFILE_ID)
+}
