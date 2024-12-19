@@ -27,6 +27,16 @@
             }
           ]
         },
+        "accessConstraintsBkg": {
+          "anyOf": [
+            {
+              "$ref": "../../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "useConstraintsBkgComment": {
           "type": ["null", "string"]
         },
