@@ -123,9 +123,12 @@ export class SharedHmdk {
         hide: (field: FormlyFieldConfig) =>
           field.model.properties?.publicationHmbTG !== true &&
           field.model.properties?.isOpenData !== true,
-        "props.disabled":
-          "(field.model.properties?.publicationHmbTG !== true && field.model.properties?.isOpenData === true) || formState.disabled",
-        "props.required": "field.model.properties?.publicationHmbTG === true",
+        "props.disabled": (field: FormlyFieldConfig) =>
+          (field.model.properties?.publicationHmbTG !== true &&
+            field.model.properties?.isOpenData === true) ||
+          field.options.formState.disabled,
+        "props.required": (field: FormlyFieldConfig) =>
+          field.model.properties?.publicationHmbTG === true,
       },
       options: doc.getCodelistForSelect(
         "informationsgegenstand",

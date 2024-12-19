@@ -110,7 +110,8 @@ export const getNewUserFormFields = (
         },
       ],
       expressions: {
-        className: "formState.showGroups ? 'hide' : ''",
+        className: (field: FormlyFieldConfig) =>
+          field.options.formState.showGroups ? "hide" : "",
       },
     },
     {
@@ -128,8 +129,10 @@ export const getNewUserFormFields = (
         asSelect: true,
       },
       expressions: {
-        className: "formState.showGroups ? '' : 'hide'",
-        "props.required": "formState.showGroups",
+        className: (field: FormlyFieldConfig) =>
+          field.options.formState.showGroups ? "" : "hide",
+        "props.required": (field: FormlyFieldConfig) =>
+          field.options.formState.showGroups,
       },
     },
   ];
