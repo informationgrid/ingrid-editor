@@ -24,7 +24,9 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 class DateDeserializer @JvmOverloads constructor(vc: Class<*>? = null) : StdDeserializer<OffsetDateTime?>(vc) {
@@ -46,8 +48,13 @@ class DateDeserializer @JvmOverloads constructor(vc: Class<*>? = null) : StdDese
         for (format in DATE_FORMATS) {
             try {
                 return OffsetDateTime.parse(date, DateTimeFormatter.ofPattern(format))
-            } catch (e: Exception) {}
+            } catch (_: Exception) {}
         }
+        // try to parse as "yyyy-MM-dd"
+        try {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneOffset.UTC)
+            return LocalDate.parse(date, formatter).atStartOfDay().atZone(ZoneOffset.systemDefault()).toOffsetDateTime()
+        } catch (_: Exception) {}
         throw JsonParseException(jp, "Unparseable date: '$date'. Supported formats: ${DATE_FORMATS.contentToString()}.")
     }
 }

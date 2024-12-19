@@ -380,7 +380,7 @@ open class GeodatasetMapper(isoData: IsoImportData, config: Config) : GeneralMap
                     val title = if (titleKey == null) KeyValue(null, titleValue) else KeyValue(titleKey)
                     CatalogInfo(
                         title,
-                        it.citation.date.getOrNull(0)?.date?.date?.dateTime,
+                        it.citation.date.getOrNull(0)?.date?.date?.dateTime ?: it.citation.date.getOrNull(0)?.date?.date?.date,
                         it.citation.edition?.value,
                     )
                 } ?: emptyList()
