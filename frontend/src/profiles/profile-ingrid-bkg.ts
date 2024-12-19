@@ -64,8 +64,8 @@ class InGridBkgComponent extends InGridComponent {
       };
 
       if (this.opendataBehaviour.isActive) {
-        docType.options.dynamicHide.openDataCategories =
-          this.isShowCategoriesActivated() ? "false" : "true";
+        docType.options.dynamicHide.openDataCategories = () =>
+          !this.isShowCategoriesActivated();
         docType.options.validate.downloadLinkWhenOpenData = false;
       }
     });

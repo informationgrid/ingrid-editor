@@ -22,7 +22,7 @@ export class CommonFieldsBkg extends BaseDoctype {
         expressions: {
           "props.hintStart": (field: FormlyFieldInput) => {
             const selectedKey = field.formControl.value?.key;
-            const data = this.codelistQuery.getCodelistEntryByKey(
+            const data = this.codelistStore.getCodelistEntryByKey(
               "10001",
               selectedKey,
             )?.data;
@@ -46,7 +46,7 @@ export class CommonFieldsBkg extends BaseDoctype {
         expressions: {
           "props.hintStart": (field: FormlyFieldInput) => {
             const selectedKey = field.formControl.value?.key;
-            const data = this.codelistQuery.getCodelistEntryByKey(
+            const data = this.codelistStore.getCodelistEntryByKey(
               "10003",
               selectedKey,
             )?.data;

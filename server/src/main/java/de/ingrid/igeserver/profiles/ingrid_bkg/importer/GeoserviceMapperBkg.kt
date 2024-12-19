@@ -23,12 +23,12 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeoserviceMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UseConstraint
+import de.ingrid.mdek.upload.Config
 
-class GeoserviceMapperBkg(isoData: IsoImportData) : GeoserviceMapper(isoData) {
+class GeoserviceMapperBkg(isoData: IsoImportData, config: Config) : GeoserviceMapper(isoData, config) {
     val common = CommonMapperBkg(codeListService)
 
-    override fun getAccessConstraints(): List<KeyValue> =
-        common.accessConstraintsOverride(super.getAccessConstraints(), metadata)
+    override fun getAccessConstraints(): List<KeyValue> = common.accessConstraintsOverride(super.getAccessConstraints(), metadata)
 
     val accessConstraintBkg: AccessConstraint? = common.accessConstraintBkg(metadata)
 

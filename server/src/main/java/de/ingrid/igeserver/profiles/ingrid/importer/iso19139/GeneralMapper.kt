@@ -885,6 +885,7 @@ open class GeneralMapper(val isoData: IsoImportData, val config: Config) {
         val key = codeListService.getCodeListEntryId(codelist, value, "de")
             ?: codeListService.getCatalogCodelistKey(codelist, value, "de")
         return if (key == null) KeyValue(null, value) else KeyValue(key)
+    }
 }
 
 data class UseConstraint(

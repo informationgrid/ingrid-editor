@@ -885,7 +885,6 @@ export abstract class IngridShared extends BaseDoctype {
         "spatial",
         [
           this.addSpatial("references", "Raumbezug", {
-            hasInlineContextHelp: true,
             defaultValue: defaultSpatial ? defaultSpatial : undefined,
             expressions: {
               "props.required": (field: FormlyFieldConfig) =>
@@ -1377,13 +1376,13 @@ export abstract class IngridShared extends BaseDoctype {
           {
             asSelect: false,
             showSearch: true,
-          options: this.getCodelistForSelect("6010", "accessConstraints"),
+            options: this.getCodelistForSelect("6010", "accessConstraints"),
             codelistId: "6010",
             expressions: {
-            "props.required": (field: FormlyFieldConfig) =>
-              this.options.dynamicRequired.accessConstraints(field),
-            className: (field: FormlyFieldConfig) =>
-              field.props.required ? "" : "optional",
+              "props.required": (field: FormlyFieldConfig) =>
+                this.options.dynamicRequired.accessConstraints(field),
+              className: (field: FormlyFieldConfig) =>
+                field.props.required ? "" : "optional",
             },
           },
         ),
@@ -1491,11 +1490,11 @@ export abstract class IngridShared extends BaseDoctype {
           ...(this.options.validate.downloadLinkWhenOpenData && {
             downloadLinkWhenOpenData: {
               expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
-              !field.form.value.properties?.isOpenData ||
-              ctrl.value?.some((row: any) => row.type?.key === "9990") || // one reference of type "Datendownload"
-              field.form.value.fileReferences?.length > 0, // or one item in "Dateien"
+                !field.form.value.properties?.isOpenData ||
+                ctrl.value?.some((row: any) => row.type?.key === "9990") || // one reference of type "Datendownload"
+                field.form.value.fileReferences?.length > 0, // or one item in "Dateien"
               message:
-              "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
+                "Bei aktivierter 'Open Data'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
             },
           }),
           requiredFieldsInItems: {
