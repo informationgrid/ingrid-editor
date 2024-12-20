@@ -60,6 +60,9 @@
                     (click)="add.emit(option.key)"
                     [attr.data-cy]="option.key"
                 >
+                    @if (option.icon) {
+                        <mat-icon svgIcon="{{ option.icon }}"></mat-icon>
+                    }
                     {{ option.value }}
                 </button>
             }

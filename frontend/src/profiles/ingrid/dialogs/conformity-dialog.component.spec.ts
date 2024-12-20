@@ -220,7 +220,6 @@ describe("ConformityDialogComponent", () => {
 
   function mockCodelists() {
     const codelistStore = spectator.inject(CodelistStore, true);
-    console.log("Store:", codelistStore.getCodelistEntryByKey);
     codelistStore.addCodelists([
       {
         id: "6005",

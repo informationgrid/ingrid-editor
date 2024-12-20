@@ -47,9 +47,10 @@ export class DataCollectionDoctype extends IngridShared {
       this.addSection("Fachbezug", [
         this.addRepeat("categoryCatalog", "Objektartenkatalog", {
           expressions: {
-            "props.required":
-              "formState.mainModel?.databaseContent?.length > 0",
-            className: "field.props.required ? '' : 'optional'",
+            "props.required": (field: FormlyFieldConfig) =>
+              field.options.formState.mainModel?.databaseContent?.length > 0,
+            className: (field: FormlyFieldConfig) =>
+              field.props.required ? "" : "optional",
           },
           fields: [
             this.addAutocomplete("title", "Titel", {

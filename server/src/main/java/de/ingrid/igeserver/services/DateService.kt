@@ -28,9 +28,7 @@ import java.util.*
 @Component
 class DateService {
 
-    fun now(): OffsetDateTime {
-        return OffsetDateTime.now()
-    }
+    fun now(): OffsetDateTime = OffsetDateTime.now()
 
     fun toISO8601UTC(date: Date?): String? {
         val tz: TimeZone = TimeZone.getTimeZone("UTC")

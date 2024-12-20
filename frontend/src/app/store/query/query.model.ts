@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 export interface Query {
-  id: string;
+  id: number;
   type: string;
   name: string;
   description: string;

@@ -26,16 +26,17 @@ import {
   CodelistEntry,
   CodelistEntryBackend,
 } from "../../store/codelist/codelist.model";
-import { Observable, Subject, throwError } from "rxjs";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
-  catchError,
+  bufferTime,
+  combineLatest,
+  concatMap,
   distinct,
-  filter,
-  map,
-  switchMap,
-  tap,
-} from "rxjs/operators";
+  Observable,
+  Subject,
+  throwError,
+} from "rxjs";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { catchError, filter, map, tap } from "rxjs/operators";
 import { HttpErrorResponse } from "@angular/common/http";
 import { IgeError } from "../../models/ige-error";
 import { CodelistStore } from "../../store/codelist/codelist.store";
@@ -71,10 +72,15 @@ export class SelectOption {
 
 export interface SelectOptionUi extends SelectOption {
   disabled?: boolean;
-  sortkey?: string;
+  sortkey?: CodelistSort;
 }
 
-export type CodelistSort = "NO_SORT" | "value" | "label" | "sortkey";
+export type CodelistSort =
+  | "NO_SORT"
+  | "value"
+  | "label"
+  | "sortkey"
+  | "description";
 
 @UntilDestroy()
 @Injectable({
@@ -85,63 +91,75 @@ export class CodelistService {
   private generalStore = inject(GeneralStore);
 
   private codelistStore$ = toObservable(this.store.entityMap);
+  private catalogLanguage$ = toObservable(this.generalStore.catalogLanguage);
 
-  private requestedCodelists = new Subject<string[]>();
+  private requestedCodelists = new Subject<string>();
 
   static mapToSelect = (
     codelist: Codelist,
     language = "de",
     sortBy:
       | CodelistSort
-      | ((a: SelectOptionUi, b: SelectOptionUi) => number) = "label",
+      | ((
+          a: CodelistEntry,
+          b: CodelistEntry,
+          language: string,
+        ) => number) = "label",
   ): SelectOptionUi[] => {
     if (!codelist) {
       return [];
     }
 
-    const items = codelist.entries.map(
-      (entry) =>
-        ({
-          label: entry.fields[language] ?? entry.fields["name"],
-          value: entry.id,
-          sortkey: entry.fields["sortkey"],
-        }) as SelectOptionUi,
-    );
-
+    // Sort codelist entries
     const sortFunction =
       typeof sortBy === "function"
-        ? sortBy
-        : CodelistService.getDefaultSortFunction(sortBy);
+        ? (a: CodelistEntry, b: CodelistEntry) => sortBy(a, b, language)
+        : CodelistService.getSortFunction(sortBy, language);
 
-    return CodelistService.addFavorites(
-      codelist.id,
-      sortBy === "NO_SORT" ? items : items.sort(sortFunction),
-    );
+    // Map to SelectOptionUi
+    const items: SelectOptionUi[] = [...codelist.entries]
+      .sort(sortFunction)
+      .map(CodelistService.mapToSelectOptionUi(language));
+
+    return CodelistService.addFavorites(codelist.id, items);
   };
 
-  private static getDefaultSortFunction(sortBy: CodelistSort) {
-    return (a: SelectOptionUi, b: SelectOptionUi) =>
-      CodelistService.compareEntries(a, b, sortBy);
+  private static mapToSelectOptionUi(language: string) {
+    return (entry: CodelistEntry) =>
+      ({
+        label:
+          entry.fields[language] ?? entry.fields["de"] ?? entry.fields["name"],
+        value: entry.id,
+        sortkey: entry.fields["sortkey"],
+      }) as SelectOptionUi;
   }
 
-  private static compareEntries(
-    a: SelectOptionUi,
-    b: SelectOptionUi,
+  private static getSortFunction(
     sortBy: CodelistSort,
+    language: string = "de",
   ) {
-    switch (sortBy) {
-      case "label":
-        return a[sortBy]?.localeCompare(b[sortBy]);
-      case "value":
-      case "sortkey":
-        return a[sortBy]?.localeCompare(b[sortBy], undefined, {
-          numeric: true,
-        });
-    }
+    return (a: CodelistEntry, b: CodelistEntry) => {
+      switch (sortBy) {
+        case "label":
+          return (a.fields[language] ?? a.fields["name"])?.localeCompare(
+            b.fields[language] ?? b.fields["name"],
+          );
+        case "description":
+          return a.description?.localeCompare(b.description);
+        case "value":
+          return a.id?.localeCompare(b.id);
+        case "sortkey":
+          return a.fields[sortBy]?.localeCompare(b.fields[sortBy], undefined, {
+            numeric: true,
+          });
+        case "NO_SORT":
+        default:
+          return 0;
+      }
+    };
   }
 
   private queue = [];
-  private batchProcessed = true;
 
   private static favorites: { [x: string]: string[] } = {};
 
@@ -153,15 +171,17 @@ export class CodelistService {
     this.requestedCodelists
       .pipe(
         untilDestroyed(this),
-        // ignore multiple same ids
-        distinct(),
-        // mark already as processed so that incoming codelists trigger a new event
-        tap(() => (this.batchProcessed = true)),
+        // Collect IDs within a time window of 100ms
+        bufferTime(100),
         filter((ids) => ids.length > 0),
-        switchMap((ids) => this.requestCodelists(ids)),
-        map((codelists) => this.prepareCodelists(codelists)),
-        tap((codelists) => this.store.addCodelists(codelists)),
-        tap(() => this.generalStore.setCodelistsLoaded()),
+        distinct(),
+        concatMap((ids) =>
+          this.requestCodelists(ids).pipe(
+            map((codelists) => this.prepareCodelists(codelists)),
+            tap((codelists) => this.store.addCodelists(codelists)),
+            tap(() => this.generalStore.setCodelistsLoaded()),
+          ),
+        ),
       )
       .subscribe();
   }
@@ -170,19 +190,7 @@ export class CodelistService {
     if (this.queue.indexOf(id) !== -1) return;
 
     this.queue.push(id);
-
-    if (!this.batchProcessed) return;
-
-    const interval = setInterval(() => {
-      if (this.batchProcessed && this.queue.length > 0) {
-        this.batchProcessed = false;
-        this.requestedCodelists.next([...this.queue]);
-        this.queue = [];
-      }
-      if (this.queue.length === 0) {
-        clearInterval(interval);
-      }
-    }, 100);
+    this.requestedCodelists.next(id);
   }
 
   update(): Observable<Codelist[]> {
@@ -301,8 +309,13 @@ export class CodelistService {
     codelistId: string,
     sortBy: CodelistSort = "label",
   ): Observable<SelectOptionUi[]> {
-    return this.observeRaw(codelistId).pipe(
-      map((codelist) => CodelistService.mapToSelect(codelist, "de", sortBy)),
+    return combineLatest([
+      this.observeRaw(codelistId),
+      this.catalogLanguage$,
+    ]).pipe(
+      map(([codelist, language]) =>
+        CodelistService.mapToSelect(codelist, language, sortBy),
+      ),
     );
   }
 

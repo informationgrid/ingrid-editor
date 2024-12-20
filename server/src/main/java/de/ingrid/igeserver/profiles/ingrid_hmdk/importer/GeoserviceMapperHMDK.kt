@@ -22,15 +22,14 @@ package de.ingrid.igeserver.profiles.ingrid_hmdk.importer
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeoserviceMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
+import de.ingrid.mdek.upload.Config
 
-class GeoserviceMapperHMDK(isoData: IsoImportData) : GeoserviceMapper(isoData) {
+class GeoserviceMapperHMDK(isoData: IsoImportData, config: Config) : GeoserviceMapper(isoData, config) {
 
     val publicationHmbTG = containsKeyword("hmbtg")
 
-    fun getInformationHmbTG(): List<KeyValue> {
-        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
-            ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "HmbTG-Informationsgegenstand" }
-            ?.flatMap { it.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
-            ?.map { KeyValue(it) } ?: emptyList()
-    }
+    fun getInformationHmbTG(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "HmbTG-Informationsgegenstand" }
+        ?.flatMap { it.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+        ?.map { KeyValue(it) } ?: emptyList()
 }

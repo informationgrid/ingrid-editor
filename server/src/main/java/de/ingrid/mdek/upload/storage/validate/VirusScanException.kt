@@ -25,8 +25,7 @@ import de.ingrid.mdek.upload.ValidationException
  * when an error -that do not throw an exception- is found during a scan
  * record all logs output of the scan
  */
-open class VirusScanException(message: String, file: String, scanReport: String) :
-    ValidationException(message, file, STATUS_CODE) {
+open class VirusScanException(message: String, file: String, scanReport: String) : ValidationException(message, file, STATUS_CODE) {
     init {
         data[SCAN_EXCEPTION_KEY] = scanReport
     }

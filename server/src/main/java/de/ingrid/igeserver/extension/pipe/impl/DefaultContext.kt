@@ -62,12 +62,9 @@ open class DefaultContext(
         messages.clear()
     }
 
-    override fun messages(): Iterable<Message> {
-        return messages.asIterable()
-    }
+    override fun messages(): Iterable<Message> = messages.asIterable()
 
     override var properties: Map<String, Any?> = mutableMapOf()
 }
 
-class SimpleContext(override val catalogId: String, override val profile: String, val uuid: String) :
-    DefaultContext(catalogId, profile, null, null)
+class SimpleContext(override val catalogId: String, override val profile: String, val uuid: String) : DefaultContext(catalogId, profile, null, null)

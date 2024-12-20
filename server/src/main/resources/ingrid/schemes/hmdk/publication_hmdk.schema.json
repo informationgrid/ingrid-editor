@@ -5,7 +5,7 @@
   "properties": {
     "properties": {
       "unevaluatedProperties": false,
-      "$ref": "../geo-dataset-base.schema.json#/definitions/propertiesGeoDataset",
+      "$ref": "../publication-base.schema.json#/definitions/propertiesPublication",
       "properties": {
         "publicationHmbTG": {
           "type": ["null", "boolean"]

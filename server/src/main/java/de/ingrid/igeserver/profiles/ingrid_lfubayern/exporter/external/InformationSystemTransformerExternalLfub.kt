@@ -23,8 +23,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.InformationSystemModelTransf
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubUseConstraints
 
-class InformationSystemTransformerExternalLfub(transformerConfig: TransformerConfig) :
-    InformationSystemModelTransformer(transformerConfig) {
+class InformationSystemTransformerExternalLfub(transformerConfig: TransformerConfig) : InformationSystemModelTransformer(transformerConfig) {
 
     private val docData = doc.data
 

@@ -123,9 +123,12 @@ export class SharedHmdk {
         hide: (field: FormlyFieldConfig) =>
           field.model.properties?.publicationHmbTG !== true &&
           field.model.properties?.isOpenData !== true,
-        "props.disabled":
-          "(field.model.properties?.publicationHmbTG !== true && field.model.properties?.isOpenData === true) || formState.disabled",
-        "props.required": "field.model.properties?.publicationHmbTG === true",
+        "props.disabled": (field: FormlyFieldConfig) =>
+          (field.model.properties?.publicationHmbTG !== true &&
+            field.model.properties?.isOpenData === true) ||
+          field.options.formState.disabled,
+        "props.required": (field: FormlyFieldConfig) =>
+          field.model.properties?.publicationHmbTG === true,
       },
       options: doc.getCodelistForSelect(
         "informationsgegenstand",
@@ -160,12 +163,14 @@ export class SharedHmdk {
         );
 
       // set Anwendungseinschränkungen to "Datenlizenz Deutschland Namensnennung"
-      field.model.resource.useConstraints = [
-        {
-          title: { key: "1" },
-          source: "Freie und Hansestadt Hamburg, zuständige Behörde",
-        },
-      ];
+      if (field.model.resource) {
+        field.model.resource.useConstraints = [
+          {
+            title: { key: "1" },
+            source: "Freie und Hansestadt Hamburg, zuständige Behörde",
+          },
+        ];
+      }
       // we need to set the model here and update it, since new form controls need to be created
       // by ngx-formly, because we update a repeat-component!
       field.options.formState.updateModel();
@@ -218,7 +223,7 @@ export class SharedHmdk {
   private handleDeactivateHmbTG(doc: IngridShared, field: FormlyFieldConfig) {
     function executeAction() {
       // remove all categories
-      field.form.get("openDataCategories").setValue([]);
+      field.form.get("openDataCategories")?.setValue([]);
       // remove all "Informationsgegenstände" (set to "ohne Veröffentlichungspflicht" if open data)
       field.form.get("informationHmbTG")?.setValue(
         field.model.properties?.isOpenData
@@ -294,7 +299,7 @@ export class SharedHmdk {
   hmdkHandleDeactivateOpenData(field: FormlyFieldConfig) {
     // remove "keine" from access constraints
     const accessConstraintsCtrl = field.form.get("resource.accessConstraints");
-    accessConstraintsCtrl.setValue(
+    accessConstraintsCtrl?.setValue(
       accessConstraintsCtrl.value.filter((entry: any) => entry.key !== "1"),
     );
 
@@ -302,10 +307,10 @@ export class SharedHmdk {
     const useConstraintsCtrl = field.form.get(
       "resource.useConstraints",
     ) as FormArray;
-    useConstraintsCtrl.clear();
+    useConstraintsCtrl?.clear();
 
     // remove all categories
-    field.form.get("openDataCategories").setValue([]);
+    field.form.get("openDataCategories")?.setValue([]);
     if (field.model.isHvd) field.form.get("isHvd").setValue(false);
     return of(true);
   }

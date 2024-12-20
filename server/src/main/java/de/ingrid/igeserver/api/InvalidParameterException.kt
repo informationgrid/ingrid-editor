@@ -34,8 +34,6 @@ open class InvalidParameterException : ClientException {
         /**
          * Factory method for invalid parameters
          */
-        fun withInvalidParameters(vararg parameterNames: String, cause: Throwable? = null): InvalidParameterException {
-            return InvalidParameterException(STATUS_CODE, ERROR_CODE, ERROR_TEXT_INVALID, mapOf("parameterNames" to parameterNames), cause)
-        }
+        fun withInvalidParameters(vararg parameterNames: String, cause: Throwable? = null): InvalidParameterException = InvalidParameterException(STATUS_CODE, ERROR_CODE, ERROR_TEXT_INVALID, mapOf("parameterNames" to parameterNames), cause)
     }
 }

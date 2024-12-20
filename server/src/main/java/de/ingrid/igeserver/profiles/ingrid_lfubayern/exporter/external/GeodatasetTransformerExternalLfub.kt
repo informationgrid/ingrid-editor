@@ -25,8 +25,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubGetDescriptiveKeywords
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubUseConstraints
 
-class GeodatasetTransformerExternalLfub(transformerConfig: TransformerConfig) :
-    GeodatasetModelTransformer(transformerConfig) {
+class GeodatasetTransformerExternalLfub(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
     private val docData = doc.data
 

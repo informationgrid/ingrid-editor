@@ -40,6 +40,7 @@ import org.springframework.security.acls.model.Sid
 import org.springframework.security.acls.model.SidRetrievalStrategy
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import java.util.concurrent.ConcurrentHashMap
 
 data class PermissionInfo(
     val canRead: Boolean = false,
@@ -55,6 +56,8 @@ class IgeAclService(
 ) {
 
     private val sidRetrievalStrategy: SidRetrievalStrategy = SidRetrievalStrategyImpl()
+
+    private val sidLocks = ConcurrentHashMap<Int, Any>()
 
     fun hasRightsForGroup(authentication: Authentication, group: Group): Boolean {
         if (authUtils.isAdmin(authentication)) {
@@ -166,15 +169,25 @@ class IgeAclService(
     }
 
     fun createAclForDocument(id: Int, parentId: Int?) {
+        // when multiple parallel create calls happen, we need to make sure to create an ACL with a unique ID
+        // otherwise it could happen, that two threads want to create a db-entry with the same id
+        val lock = sidLocks.computeIfAbsent(id) { Any() }
+
         // first create permission ACL
         val objIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, id)
-        val acl = (aclService as JdbcMutableAclService).createAcl(objIdentity)
+        synchronized(lock) {
+            try {
+                val acl = (aclService as JdbcMutableAclService).createAcl(objIdentity)
 
-        if (parentId != null) {
-            val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parentId)
-            val parentAcl = aclService.readAclById(parentObjIdentity)
-            acl.setParent(parentAcl)
-            (aclService as JdbcMutableAclService).updateAcl(acl)
+                if (parentId != null) {
+                    val parentObjIdentity = ObjectIdentityImpl(DocumentWrapper::class.java, parentId)
+                    val parentAcl = aclService.readAclById(parentObjIdentity)
+                    acl.setParent(parentAcl)
+                    (aclService as JdbcMutableAclService).updateAcl(acl)
+                }
+            } finally {
+                sidLocks.remove(id)
+            }
         }
     }
 
@@ -201,13 +214,12 @@ class IgeAclService(
      * Check if any group has root read access
      * @param groups list of groups
      */
-    fun hasRootReadAccess(groups: Set<Group>) =
-        groups.any {
-            listOf(
-                RootPermissionType.READ,
-                RootPermissionType.WRITE,
-            ).contains(it.permissions?.rootPermission)
-        }
+    fun hasRootReadAccess(groups: Set<Group>) = groups.any {
+        listOf(
+            RootPermissionType.READ,
+            RootPermissionType.WRITE,
+        ).contains(it.permissions?.rootPermission)
+    }
 }
 
 fun checkForRootPermissions(

@@ -36,8 +36,6 @@ open class UnauthenticatedException : ClientException {
         /**
          * Factory method for an unauthenticated user
          */
-        fun withUser(user: String, cause: Throwable? = null): UnauthenticatedException {
-            return UnauthenticatedException(STATUS_CODE, ERROR_CODE, "$ERROR_TEXT: $user", mapOf("user" to user), cause)
-        }
+        fun withUser(user: String, cause: Throwable? = null): UnauthenticatedException = UnauthenticatedException(STATUS_CODE, ERROR_CODE, "$ERROR_TEXT: $user", mapOf("user" to user), cause)
     }
 }

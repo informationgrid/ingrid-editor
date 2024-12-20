@@ -263,7 +263,6 @@ export class HistoryPlugin extends Plugin {
     ]);
     if (navigated) {
       this.ignoreNextPush = true;
-      console.log("Set from history plugin");
       this.generalStore.setExplicitActiveNode(
         new ShortTreeNode(<number>item.id, item.title),
         this.forAddress(),

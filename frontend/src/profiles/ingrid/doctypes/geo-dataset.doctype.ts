@@ -28,6 +28,8 @@ import {
   MetadataOption,
   MetadataOptionItem,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
+import { of } from "rxjs";
+import { dataOrigin } from "./geo-dataset.dataOrigin";
 
 @Injectable({
   providedIn: "root",
@@ -48,8 +50,9 @@ export class GeoDatasetDoctype extends IngridShared {
       identifier: true,
     },
     dynamicRequired: {
-      citation:
-        "formState.mainModel?.featureCatalogueDescription?.featureTypes?.length > 0",
+      citation: (field: FormlyFieldConfig) =>
+        field.options.formState.mainModel?.featureCatalogueDescription
+          ?.featureTypes?.length > 0,
       identifier: undefined,
       statement: undefined,
     },
@@ -69,13 +72,13 @@ export class GeoDatasetDoctype extends IngridShared {
 
   constructor() {
     super();
-    this.options.required.spatialSystems = true;
+    this.options.dynamicRequired.spatialSystems = () => true;
     this.options.required.useConstraints = true;
     this.options.required.extraInfoLangData = true;
-    this.options.dynamicRequired.dataFormat =
-      "formState.mainModel?.properties?.isInspireIdentified";
-    this.options.dynamicRequired.spatialScope =
-      "formState.mainModel?.properties?.isInspireIdentified";
+    this.options.dynamicRequired.dataFormat = (field: FormlyFieldConfig) =>
+      field.options.formState.mainModel?.properties?.isInspireIdentified;
+    this.options.dynamicRequired.spatialScope = (field: FormlyFieldConfig) =>
+      field.options.formState.mainModel?.properties?.isInspireIdentified;
   }
 
   protected metadataOptions(): MetadataOption[] {
@@ -114,12 +117,6 @@ export class GeoDatasetDoctype extends IngridShared {
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection({
         thesaurusTopics: true,
-        // TODO AW: activate subType only from geodataset
-        /*additionalGroup: this.addSelect("subType", "Datensatz/Datenserie", {
-          required: this.geodatasetOptions.required.subType,
-          options: this.getCodelistForSelect("525", "subType"),
-          codelistId: "525",
-        }),*/
       }),
       this.addKeywordsSection({
         priorityDataset: true,
@@ -147,7 +144,7 @@ export class GeoDatasetDoctype extends IngridShared {
           updateOn: "change",
           className: "flex-3 ",
           expressions: {
-            "props.hintStart": (field) => {
+            "props.hintStart": (field: FormlyFieldConfig) => {
               const value = field.formControl.value;
               if (!value) return "";
               return `ISO-Abbildung: ${this.getFormattedIdentifier(value)}`;
@@ -156,7 +153,7 @@ export class GeoDatasetDoctype extends IngridShared {
           },
           buttonConfig: {
             text: "Erzeuge Id",
-            onClick: (buttonConfig, field) => {
+            onClick: (_, field: FormlyFieldConfig) => {
               field.formControl.setValue(generateUUID());
               field.formControl.markAsDirty();
             },
@@ -174,9 +171,11 @@ export class GeoDatasetDoctype extends IngridShared {
             ),
             codelistId: "526",
             expressions: {
-              "props.required":
-                "formState.mainModel?.properties?.isInspireIdentified === 'conform'",
-              className: "field.props.required ? '' : 'optional'",
+              "props.required": (field: FormlyFieldConfig) =>
+                field.options.formState.mainModel?.properties
+                  ?.isInspireIdentified === "conform",
+              className: (field: FormlyFieldConfig) =>
+                field.props.required ? "" : "optional",
             },
           },
         ),
@@ -192,7 +191,7 @@ export class GeoDatasetDoctype extends IngridShared {
               codelistId: "515",
               showSearch: true,
               expressions: {
-                "props.required": (field) =>
+                "props.required": (field: FormlyFieldConfig) =>
                   field.model?.geometricObjectCount != null,
               },
             }),
@@ -201,7 +200,10 @@ export class GeoDatasetDoctype extends IngridShared {
             }),
           ],
           expressions: {
-            hide: '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "1")',
+            hide: (field: FormlyFieldConfig) =>
+              !field.options.formState.mainModel?.spatialRepresentationType?.find(
+                (x) => x.key === "1",
+              ),
           },
         }),
         this.addGroup(
@@ -261,7 +263,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   {
                     type: "number",
                     expressions: {
-                      "props.required": (field) =>
+                      "props.required": (field: FormlyFieldConfig) =>
                         isNotEmptyObject(field.form.value, ["type"]),
                     },
                     hasInlineContextHelp: true,
@@ -274,7 +276,7 @@ export class GeoDatasetDoctype extends IngridShared {
                   showSearch: true,
                   allowNoValue: true,
                   expressions: {
-                    "props.required": (field) =>
+                    "props.required": (field: FormlyFieldConfig) =>
                       isNotEmptyObject(field.form.value, ["type"]),
                   },
                   hasInlineContextHelp: true,
@@ -339,8 +341,9 @@ export class GeoDatasetDoctype extends IngridShared {
               {
                 wrappers: [],
                 fieldGroupClassName: "",
-                hideExpression:
-                  'formState.mainModel?.gridSpatialRepresentation?.type?.key !== "rectified"',
+                hideExpression: (field: FormlyFieldConfig) =>
+                  field.options.formState.mainModel?.gridSpatialRepresentation
+                    ?.type?.key !== "rectified",
               },
             ),
             this.addGroup(
@@ -380,15 +383,18 @@ export class GeoDatasetDoctype extends IngridShared {
               {
                 wrappers: [],
                 fieldGroupClassName: "",
-                hideExpression:
-                  'formState.mainModel?.gridSpatialRepresentation?.type?.key !== "referenced"',
+                hideExpression: (field: FormlyFieldConfig) =>
+                  field.options.formState.mainModel?.gridSpatialRepresentation
+                    ?.type?.key !== "referenced",
               },
             ),
           ],
           {
             fieldGroupClassName: "",
-            hideExpression:
-              '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "2")',
+            hideExpression: (field: FormlyFieldConfig) =>
+              !field.options.formState.mainModel?.spatialRepresentationType?.find(
+                (x) => x.key === "2",
+              ),
           },
         ),
         this.addResolutionFields(),
@@ -398,8 +404,8 @@ export class GeoDatasetDoctype extends IngridShared {
           "Darstellender Dienst",
           true,
           false,
-          "Dieser Datensatz wurde von keinem Geodatendienst referenziert",
-          "Die Referenz kann nur vom darstellenden Dienst entfernt werden",
+          "Dieser Datensatz wird von keinem Geodatendienst referenziert.",
+          "Die Referenz kann nur vom darstellenden Dienst entfernt werden.",
           {
             className: "optional",
             contextHelpId: "coupledResources",
@@ -408,10 +414,7 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [
             this.addGroupSimple("source", [
-              this.addRepeatList("descriptions", "Datengrundlage", {
-                className: "optional flex-1",
-                asAutocomplete: true,
-              }),
+              dataOrigin(this),
               this.addGroupSimple("processStep", [
                 this.addRepeatList("description", "Herstellungsprozess", {
                   className: "optional flex-1",
@@ -433,7 +436,8 @@ export class GeoDatasetDoctype extends IngridShared {
             fields: this.titleDateEditionFields("3535"),
             expressions: {
               "props.required": this.geodatasetOptions.dynamicRequired.citation,
-              className: "field.props.required ? '' : 'optional'",
+              className: (field: FormlyFieldConfig) =>
+                field.props.required ? "" : "optional",
             },
             contextHelpId: "keyCatalog",
           }),
@@ -467,7 +471,10 @@ export class GeoDatasetDoctype extends IngridShared {
               type: "number",
               className: "optional right-align",
               expressions: {
-                hide: '!formState.mainModel?.spatialRepresentationType?.find(x => x.key === "2")',
+                hide: (field: FormlyFieldConfig) =>
+                  !field.options.formState.mainModel?.spatialRepresentationType?.find(
+                    (x) => x.key === "2",
+                  ),
               },
               hasInlineContextHelp: true,
               wrappers: ["inline-help", "form-field", "addons"],

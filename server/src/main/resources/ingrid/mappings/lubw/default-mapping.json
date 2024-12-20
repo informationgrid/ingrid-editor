@@ -440,6 +440,10 @@
     },
     "sort_hash": {
       "type": "keyword"
+    },
+    "topic_categories": {
+      "type": "keyword",
+      "store": true
     }
   }
 }

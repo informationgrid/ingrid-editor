@@ -30,6 +30,7 @@ import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.utils.AuthUtils
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -61,9 +62,10 @@ class ResearchService(
     val aclService: IgeAclService,
     val authUtils: AuthUtils,
 ) {
-
-    val minimalColumns = listOf("uuid", "title", "type", "created", "modified", "contentmodified", "state")
-    val minimalWrapperColumns = listOf("wrapperid", "tags", "responsibleuser", "category")
+    val log = logger()
+    private final val minimalColumns =
+        listOf("uuid", "title", "type", "created", "modified", "contentmodified", "state", "catalog_id", "is_latest")
+    val minimalWrapperColumns = listOf("wrapperid", "tags", "responsibleuser", "category", "deleted", "wrapper_catalog_id")
     val minimalColumnsForSQL = minimalColumns.joinToString(",") { "document1.$it" }
 
     fun createFacetDefinitions(catalogType: String): Facets = profiles
@@ -84,7 +86,9 @@ class ResearchService(
             return ResearchResponse(0, emptyList())
         }
 
-        val sql = createQuery(catalogId, query, idsToSearchIn)
+        val sqlQuery = createQuery(catalogId, query, idsToSearchIn)
+        val restricted = restrictQueryOnCatalogAndNotDeleted(catalogId, sqlQuery)
+        val sql = addAdditionalSelectsToQuery(restricted)
 
         val termAsParameters = getParameters(query)
         val result = sendQuery(sql, termAsParameters, query.pagination)
@@ -112,7 +116,7 @@ class ResearchService(
     }
 
     private fun createQuery(catalogId: String, query: ResearchQuery, idsToSearchIn: List<Int>?): String = """
-            SELECT DISTINCT $minimalColumnsForSQL, document_wrapper.category, document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser
+            SELECT DISTINCT document1.*
             FROM catalog, document_wrapper Join document document1 on document_wrapper.uuid = document1.uuid
             ${determineJsonSearch(query.term)}
             ${determineWhereQuery(catalogId, query, idsToSearchIn)}
@@ -249,9 +253,7 @@ class ResearchService(
     }
 
     private fun getTotalHits(sql: String, termParameters: List<Any>): Int {
-        val countSQL = "SELECT count(DISTINCT document_wrapper.id) " + sql
-            .substring(sql.indexOf("FROM"))
-            .substringBeforeLast("ORDER BY")
+        val countSQL = sql.replace("SELECT sql_query.* FROM", "SELECT count(DISTINCT sql_query.wrapperid) FROM")
         val countQuery = entityManager.createNativeQuery(countSQL)
 
         termParameters.forEachIndexed { index, term ->
@@ -328,6 +330,7 @@ class ResearchService(
             throw ClientException.withReason(
                 (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage,
                 data = mapOf("sql" to finalQuery),
+                cause = error,
             )
         }
     }
@@ -342,41 +345,45 @@ class ResearchService(
     }
 
     private fun addAdditionalSelectsToQuery(query: String): String {
-        val fromIndex = query.indexOf("FROM")
+        val selectIndex = getSelectIndex(query)
         return """
-            ${
-            query.substring(
-                0,
-                fromIndex,
-            )
-        }, document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser ${
-            query.substring(
-                fromIndex,
-            )
-        }
+            ${query.substring(0, selectIndex)}
+            document_wrapper.id as wrapperid, document_wrapper.tags as tags, document_wrapper.responsible_user as responsibleUser,document_wrapper.category,document_wrapper.deleted,document_wrapper.catalog_id as wrapper_catalog_id, 
+            ${query.substring(selectIndex)}
         """.trimIndent()
     }
 
-    private fun restrictQueryOnCatalogAndNotDeleted(catalogId: String, sqlQuery: String): String {
-        val catalogFilter = createCatalogFilter(catalogId)
-        val notDeletedFilter = "document_wrapper.deleted = 0"
-        val isLatestFilter = "document1.is_latest = true"
-
-        val cleanSqlQuery = sqlQuery.replace("document1.*", minimalColumnsForSQL)
-
-        val fromIndex = cleanSqlQuery.indexOf("FROM")
-
-        return when (val whereIndex = cleanSqlQuery.indexOf("WHERE")) {
-            -1 -> """
-                ${cleanSqlQuery.substring(0, fromIndex + 4)} catalog, ${cleanSqlQuery.substring(fromIndex + 5)}
-                WHERE $catalogFilter AND $notDeletedFilter AND $isLatestFilter
-            """.trimIndent()
-
-            else -> """
-                ${cleanSqlQuery.substring(0, fromIndex + 4)} catalog, ${cleanSqlQuery.substring(fromIndex + 5, whereIndex + 5)}
-                $catalogFilter AND $notDeletedFilter AND $isLatestFilter AND
-                ${cleanSqlQuery.substring(whereIndex + 6)}
-            """.trimIndent()
+    private fun getSelectIndex(query: String): Int {
+        val selectIndex = query.indexOf("SELECT")
+        val selectDistinctIndex = query.indexOf("SELECT DISTINCT")
+        return if (selectIndex == selectDistinctIndex) {
+            selectDistinctIndex + 15
+        } else {
+            selectIndex + 6
         }
+    }
+
+    private fun restrictQueryOnCatalogAndNotDeleted(catalogId: String, sqlQuery: String): String {
+        val notDeletedFilter = "deleted = 0"
+        val isLatestFilter = "is_latest = true"
+
+        val selectIndex = getSelectIndex(sqlQuery)
+        var finalQuery = ""
+        if (sqlQuery.contains("document1.*")) {
+            finalQuery = sqlQuery.replace("document1.*", minimalColumnsForSQL)
+        } else {
+            finalQuery = sqlQuery.substring(0, selectIndex) +
+                minimalColumnsForSQL + "," +
+                sqlQuery.substring(selectIndex + 1)
+        }
+
+        return """
+            WITH sql_query AS ( $finalQuery )
+            SELECT sql_query.* FROM sql_query, catalog
+            WHERE sql_query.catalog_id = catalog.id AND sql_query.wrapper_catalog_id = catalog.id
+                AND catalog.identifier = '$catalogId' 
+                AND $notDeletedFilter 
+                AND $isLatestFilter
+        """.trimIndent()
     }
 }

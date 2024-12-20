@@ -2,7 +2,6 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.CoordinateType
 @import gg.jte.support.ForSupport
-@import java.util.List
 @import java.util.Map
 @import gg.jte.Content
 
@@ -338,6 +337,11 @@
     "spatial_ref_value.y1": ${page.getSpatialReferenceComponents(CoordinateType.Lat1)},
     "spatial_ref_value.x2": ${page.getSpatialReferenceComponents(CoordinateType.Lon2)},
     "spatial_ref_value.y2": ${page.getSpatialReferenceComponents(CoordinateType.Lat2)},
+    "topic_categories": [
+    @for(var entry : ForSupport.of(page.getTopicCategories()))
+        "${page.handleContent(entry.get())}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
 
     "t03_catalogue.create_time": "",
     "t01_object.is_adv_compatible": "",

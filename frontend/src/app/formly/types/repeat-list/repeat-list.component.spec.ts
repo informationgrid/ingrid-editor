@@ -41,6 +41,7 @@ import { TestKey } from "@angular/cdk/testing";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { getTranslocoModule } from "../../../transloco-testing.module";
 import { RepeatListComponent } from "./repeat-list.component";
+import { fakeAsync, tick } from "@angular/core/testing";
 
 describe("RepeatListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
@@ -100,34 +101,35 @@ describe("RepeatListComponent", () => {
       input = await loader.getHarness(MatInputHarness);
     });
 
-    it("should add a simple value", async () => {
+    it("should add a simple value", fakeAsync(async () => {
       spectator.detectChanges();
 
       checkItemCount(0);
       await input.setValue("test-simple");
       await (await input.host()).sendKeys(TestKey.ENTER);
+      detectAsync();
 
       checkItemCount(1);
       checkItemContent(0, "test-simple");
       expect(form.value.repeatListSimple).toEqual(["test-simple"]);
-    });
+    }));
 
-    it("should remove a simple value", async () => {
+    it("should remove a simple value", fakeAsync(async () => {
       spectator.setInput("model", { repeatListSimple: ["item 1"] });
-      spectator.detectChanges();
+      detectAsync();
 
       checkItemCount(1);
       removeItem(0);
 
       checkItemCount(0);
       expect(form.value.repeatListSimple).toEqual([]);
-    });
+    }));
 
-    it("should show multiple items", async () => {
+    it("should show multiple items", fakeAsync(async () => {
       spectator.setInput("model", {
         repeatListSimple: ["item 1", "item 2", "item 3"],
       });
-      spectator.detectChanges();
+      detectAsync();
 
       checkItemCount(3);
       checkItemContent(0, "item 1");
@@ -138,7 +140,7 @@ describe("RepeatListComponent", () => {
       checkItemCount(2);
       checkItemContent(0, "item 1");
       checkItemContent(1, "item 3");
-    });
+    }));
 
     it("should show a defined placeholder", async () => {
       const placeholder = "This is a test placeholder";
@@ -201,16 +203,16 @@ describe("RepeatListComponent", () => {
       checkDisabledOptions([true, false, false]);
     });
 
-    it("should remove an item", async () => {
+    it("should remove an item", fakeAsync(async () => {
       spectator.setInput("model", { repeatListCodelist: [{ key: "1" }] });
-      spectator.detectChanges();
+      detectAsync();
 
       removeItem(0);
 
       checkItemCount(0);
       expect(form.value.repeatListCodelist).toEqual([]);
       checkDisabledOptions([false, false, false]);
-    });
+    }));
 
     it("should show a defined placeholder", async () => {
       const placeholder = "This is a test placeholder";
@@ -346,11 +348,11 @@ describe("RepeatListComponent", () => {
       // checkDisabledOptions([false, false, false]);
     });
 
-    it("should remove a value", async () => {
+    it("should remove a value", fakeAsync(() => {
       spectator.setInput("model", {
         repeatListCodelist: [{ label: "remote 2", other: "b" }],
       });
-      spectator.detectChanges();
+      detectAsync();
 
       removeItem(0);
 
@@ -358,7 +360,7 @@ describe("RepeatListComponent", () => {
 
       expect(form.value.repeatListCodelist).toEqual([]);
       // checkDisabledOptions([false, false, false]);
-    });
+    }));
 
     it("should show a defined placeholder", async () => {
       const placeholder = "This is a test placeholder";
@@ -414,13 +416,13 @@ describe("RepeatListComponent", () => {
       checkItemContent(0, "Eins");
     });
 
-    it("should remove a chip", async () => {
+    it("should remove a chip", fakeAsync(async () => {
       spectator.setInput("model", { repeatListCodelist: [{ key: "1" }] });
-      spectator.detectChanges();
+      detectAsync();
 
       removeChip(0);
       checkItemCount(0);
-    });
+    }));
   });
 
   function checkDisabledOptions(values: boolean[]) {
@@ -454,6 +456,11 @@ describe("RepeatListComponent", () => {
     ] as HTMLElement;
 
     removeButton.click();
+    detectAsync();
+  }
+
+  function detectAsync() {
+    tick(10);
     spectator.detectChanges();
   }
 });

@@ -223,9 +223,6 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
             take(1),
             filter((codelist) => codelist.default && codelist.default != "-1"),
             tap((codelist) => {
-              console.debug(
-                `Setting default codelist value for: ${field.key} with: ${codelist.default}`,
-              );
               if (field.type === "ige-select") {
                 field.defaultValue = { key: codelist.default };
               } else if (field.type === "repeatList") {
@@ -272,6 +269,7 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       "autocomplete",
       "datepicker",
       "repeatList",
+      "repeatChip",
       "unit-input",
       // "table",
     ];
@@ -320,7 +318,12 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
       ) {
         field.type += "Print";
       }
+
+      if (field.type === "repeatDetailList") {
+        field.props.viewComponent = this.viewComponents[field.key as string];
+      }
     });
+
     // TODO: remove excludedTypes and use hideInPreview instead
     return fields
       ?.filter((field) => !excludedTypes.includes(<string>field.type))

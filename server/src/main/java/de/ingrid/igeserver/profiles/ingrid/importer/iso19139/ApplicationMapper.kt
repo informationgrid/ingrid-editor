@@ -23,9 +23,10 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
+import de.ingrid.mdek.upload.Config
 import org.apache.logging.log4j.kotlin.logger
 
-open class ApplicationMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
+open class ApplicationMapper(isoData: IsoImportData, config: Config) : GeneralMapper(isoData, config) {
 
     val log = logger()
     val identificationInfo = metadata.identificationInfo[0].dataIdentificationInfo
@@ -41,15 +42,13 @@ open class ApplicationMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         return KeyValue(entryId)
     }
 
-    fun getLanguages(): List<String> {
-        return identificationInfo?.language
-            ?.mapNotNull { it.code?.codeListValue }
-            ?.map {
-                iso639LanguageMapping[it]
-                    ?: throw ServerException.withReason("Could not map document language key: $it")
-            }
-            ?: emptyList()
-    }
+    fun getLanguages(): List<String> = identificationInfo?.language
+        ?.mapNotNull { it.code?.codeListValue }
+        ?.map {
+            iso639LanguageMapping[it]
+                ?: throw ServerException.withReason("Could not map document language key: $it")
+        }
+        ?: emptyList()
 
     fun getServiceType(): KeyValue? = null // not supported yet, even in export!
 

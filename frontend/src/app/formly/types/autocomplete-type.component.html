@@ -21,7 +21,7 @@
     </button>
 }
 <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn.bind(this)">
-    @for (option of filteredOptions; track itemId(option)) {
+    @for (option of filteredOptions(); track itemId(option)) {
         @if (option.key === "_SEPARATOR_") {
             <mat-divider class="space-bottom"></mat-divider>
         } @else {

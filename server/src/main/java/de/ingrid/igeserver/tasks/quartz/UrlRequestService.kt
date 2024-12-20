@@ -35,22 +35,20 @@ class UrlRequestService {
 
     private val log = logger()
 
-    fun getStatus(url: String): Int {
-        return try {
-            log.debug("Check URL '$url' ...")
-            val requestHead = createHttpRequest("HEAD", url)
-            var status = httpRequestSyncStatusCode(requestHead)
-            // if server responds with NOT ALLOWED try with GET request
-            if (status == 405) {
-                val requestGet = createHttpRequest("GET", url)
-                status = httpRequestSyncStatusCode(requestGet)
-            }
-            log.debug("Status of URL '$url' is $status")
-            status
-        } catch (e: Exception) {
-            log.debug("URL seems invalid: $url")
-            500
+    fun getStatus(url: String): Int = try {
+        log.debug("Check URL '$url' ...")
+        val requestHead = createHttpRequest("HEAD", url)
+        var status = httpRequestSyncStatusCode(requestHead)
+        // if server responds with NOT ALLOWED try with GET request
+        if (status == 405) {
+            val requestGet = createHttpRequest("GET", url)
+            status = httpRequestSyncStatusCode(requestGet)
         }
+        log.debug("Status of URL '$url' is $status")
+        status
+    } catch (e: Exception) {
+        log.debug("URL seems invalid: $url")
+        500
     }
 
     fun request(url: String): InputStream? {
@@ -97,15 +95,11 @@ class UrlRequestService {
         }
     }
 
-    private fun createHttpRequest(method: String, url: String): HttpRequest {
-        return HttpRequest.newBuilder()
-            .method(method, HttpRequest.BodyPublishers.noBody())
-            .uri(URI.create(url))
-            .timeout(Duration.ofSeconds(5))
-            .build()
-    }
+    private fun createHttpRequest(method: String, url: String): HttpRequest = HttpRequest.newBuilder()
+        .method(method, HttpRequest.BodyPublishers.noBody())
+        .uri(URI.create(url))
+        .timeout(Duration.ofSeconds(5))
+        .build()
 
-    fun isSuccessCode(status: Int): Boolean {
-        return status < 400
-    }
+    fun isSuccessCode(status: Int): Boolean = status < 400
 }

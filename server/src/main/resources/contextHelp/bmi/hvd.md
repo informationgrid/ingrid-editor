@@ -1,6 +1,6 @@
 ---
 # ID des GUI Elements
-id: hvd
+id: isHvd
 docType: OpenDataDoc
 profile: bmi
 

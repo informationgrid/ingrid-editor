@@ -71,7 +71,6 @@ export class SidebarComponent implements OnInit {
       const active = this.address
         ? this.generalStore.explicitActiveNodeAddress()
         : this.generalStore.explicitActiveNode();
-      // console.log("Sidebar effect", actives);
       this.activeTreeNode.next(active?.id ?? null);
     });
   }

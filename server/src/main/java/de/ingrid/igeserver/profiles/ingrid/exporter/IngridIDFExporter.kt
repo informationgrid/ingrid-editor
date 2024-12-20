@@ -105,7 +105,8 @@ class IngridIDFExporter(
     private fun getModelTransformer(json: Document, catalogId: String, exportOptions: ExportOptions): Any {
         val isAddress = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
 
-        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
+        val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
+        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
 
         val transformerClass = getModelTransformerClass(json.type)
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")

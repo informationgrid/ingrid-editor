@@ -22,17 +22,16 @@ package de.ingrid.igeserver.profiles.ingrid_lubw.importer
 import de.ingrid.igeserver.exports.iso.MDDataIdentification
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
+import de.ingrid.mdek.upload.Config
 
-class GeodatasetMapperLUBW(isoData: IsoImportData) : GeodatasetMapper(isoData) {
+class GeodatasetMapperLUBW(isoData: IsoImportData, config: Config) : GeodatasetMapper(isoData, config) {
 
     override fun getKeywords(): List<String> = super.getKeywords().filterNot { it.startsWith("oac: ") }
 
-    fun getOAC(): String? {
-        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
-            ?.flatMap { it.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
-            ?.find { it.startsWith("oac: ") }
-            ?.removePrefix("oac: ")
-    }
+    fun getOAC(): String? = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.flatMap { it.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+        ?.find { it.startsWith("oac: ") }
+        ?.removePrefix("oac: ")
 
     fun getEnvironmentDescription(): String? = (metadata.identificationInfo[0].identificationInfo as MDDataIdentification).environmentDescription?.value
 }

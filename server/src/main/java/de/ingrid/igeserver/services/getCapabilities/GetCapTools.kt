@@ -164,37 +164,33 @@ fun getUnionOfBoundingBoxes(boundingBoxesFromLayers: List<LocationBean>): Locati
  * @param epsgCode
  * @return CoordType
  */
-fun getCoordTypeByEPSGCode(epsgCode: String): CoordType? {
-    return when (epsgCode) {
-        COORDS_EPSG_WGS84 -> CoordType.COORDS_WGS84
-        COORDS_EPSG_CRS84 -> CoordType.COORDS_CRS84
-        COORDS_EPSG_WGS84_PM -> CoordType.COORDS_WGS84_PM
-        COORDS_EPSG_ETRS89_UTM31N -> CoordType.COORDS_ETRS89_UTM31N
-        COORDS_EPSG_ETRS89_UTM32N -> CoordType.COORDS_ETRS89_UTM32N
-        COORDS_EPSG_ETRS89_UTM33N -> CoordType.COORDS_ETRS89_UTM33N
-        COORDS_EPSG_ETRS89_UTM32N_ZE -> CoordType.COORDS_ETRS89_UTM32N_ZE
-        COORDS_EPSG_ETRS89_UTM33N_ZE -> CoordType.COORDS_ETRS89_UTM33N_ZE
-        COORDS_EPSG_ETRS89_UTM32N_NE -> CoordType.COORDS_ETRS89_UTM32N_NE
-        COORDS_EPSG_ETRS89_UTM33N_NE -> CoordType.COORDS_ETRS89_UTM33N_NE
-        COORDS_EPSG_ETRS89_UTM34N -> CoordType.COORDS_ETRS89_UTM34N
-        COORDS_EPSG_ETRS89_LCC -> CoordType.COORDS_ETRS89_LCC
-        COORDS_EPSG_ETRS89_LCC_DE -> CoordType.COORDS_ETRS89_LCC_DE
-        COORDS_EPSG_ETRS89_LAEA -> CoordType.COORDS_ETRS89_LAEA
-        COORDS_EPSG_GK2 -> CoordType.COORDS_GK2
-        COORDS_EPSG_GK3 -> CoordType.COORDS_GK3
-        COORDS_EPSG_GK4 -> CoordType.COORDS_GK4
-        COORDS_EPSG_GK5 -> CoordType.COORDS_GK5
-        COORDS_EPSG_GK2_EN -> CoordType.COORDS_GK2_EN
-        COORDS_EPSG_GK3_EN -> CoordType.COORDS_GK3_EN
-        COORDS_EPSG_GK4_EN -> CoordType.COORDS_GK4_EN
-        COORDS_EPSG_GK5_EN -> CoordType.COORDS_GK5_EN
-        else -> null
-    }
+fun getCoordTypeByEPSGCode(epsgCode: String): CoordType? = when (epsgCode) {
+    COORDS_EPSG_WGS84 -> CoordType.COORDS_WGS84
+    COORDS_EPSG_CRS84 -> CoordType.COORDS_CRS84
+    COORDS_EPSG_WGS84_PM -> CoordType.COORDS_WGS84_PM
+    COORDS_EPSG_ETRS89_UTM31N -> CoordType.COORDS_ETRS89_UTM31N
+    COORDS_EPSG_ETRS89_UTM32N -> CoordType.COORDS_ETRS89_UTM32N
+    COORDS_EPSG_ETRS89_UTM33N -> CoordType.COORDS_ETRS89_UTM33N
+    COORDS_EPSG_ETRS89_UTM32N_ZE -> CoordType.COORDS_ETRS89_UTM32N_ZE
+    COORDS_EPSG_ETRS89_UTM33N_ZE -> CoordType.COORDS_ETRS89_UTM33N_ZE
+    COORDS_EPSG_ETRS89_UTM32N_NE -> CoordType.COORDS_ETRS89_UTM32N_NE
+    COORDS_EPSG_ETRS89_UTM33N_NE -> CoordType.COORDS_ETRS89_UTM33N_NE
+    COORDS_EPSG_ETRS89_UTM34N -> CoordType.COORDS_ETRS89_UTM34N
+    COORDS_EPSG_ETRS89_LCC -> CoordType.COORDS_ETRS89_LCC
+    COORDS_EPSG_ETRS89_LCC_DE -> CoordType.COORDS_ETRS89_LCC_DE
+    COORDS_EPSG_ETRS89_LAEA -> CoordType.COORDS_ETRS89_LAEA
+    COORDS_EPSG_GK2 -> CoordType.COORDS_GK2
+    COORDS_EPSG_GK3 -> CoordType.COORDS_GK3
+    COORDS_EPSG_GK4 -> CoordType.COORDS_GK4
+    COORDS_EPSG_GK5 -> CoordType.COORDS_GK5
+    COORDS_EPSG_GK2_EN -> CoordType.COORDS_GK2_EN
+    COORDS_EPSG_GK3_EN -> CoordType.COORDS_GK3_EN
+    COORDS_EPSG_GK4_EN -> CoordType.COORDS_GK4_EN
+    COORDS_EPSG_GK5_EN -> CoordType.COORDS_GK5_EN
+    else -> null
 }
 
-fun transformToWGS84(coordsX: Double, coordsY: Double, coordsType: CoordType): DoubleArray {
-    return transform(coordsX, coordsY, coordsType, CoordType.COORDS_WGS84)
-}
+fun transformToWGS84(coordsX: Double, coordsY: Double, coordsType: CoordType): DoubleArray = transform(coordsX, coordsY, coordsType, CoordType.COORDS_WGS84)
 
 fun transform(coordsX: Double, coordsY: Double, inCoordType: CoordType, outCoordType: CoordType): DoubleArray {
     val src = doubleArrayOf(coordsX, coordsY)

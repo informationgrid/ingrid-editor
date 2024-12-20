@@ -210,8 +210,17 @@ export class RepeatListComponent
 
   ngOnInit(): void {
     this.formControl.valueChanges
-      .pipe(untilDestroyed(this), startWith(this.formControl.value))
-      .subscribe((data) => this.items.set(data ?? []));
+      .pipe(
+        startWith(this.formControl.value),
+        debounceTime(0),
+        untilDestroyed(this),
+      )
+      .subscribe((data) => {
+        // FIXME: defaultValue seems to get overridden when field initially hidden and becomes undefined
+        //        we need however an initial array, otherwise a select option will not be added!
+        this.formControl.patchValue(data || [], { emitEvent: false });
+        this.items.set(data || []);
+      });
 
     if (this.props.asSelect) {
       this.type = "select";
@@ -422,7 +431,7 @@ export class RepeatListComponent
     });
   }
 
-  removeItem(index: number, $event?: KeyboardEvent) {
+  removeItem(index: number, $event?: Event) {
     const item = this.model[this.field.key as string][index];
     this.formControl.patchValue(
       [...(this.formControl.value || [])].filter((_, idx) => idx !== index),
@@ -438,6 +447,7 @@ export class RepeatListComponent
 
     // focus next element when removed by keyboard
     if ($event) {
+      $event.stopImmediatePropagation();
       const nextElement = ($event.currentTarget as HTMLElement)
         ?.nextElementSibling as HTMLElement;
       nextElement?.focus();

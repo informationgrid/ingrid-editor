@@ -123,8 +123,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
           AND dw.uuid = :uuid
     """.trimIndent()
 
-    private fun countReplaceUrlSql(urlFields: List<String>): String {
-        return """
+    private fun countReplaceUrlSql(urlFields: List<String>): String = """
             SELECT doc.id
             FROM document doc, document_wrapper dw, catalog cat
             WHERE dw.uuid = doc.uuid 
@@ -135,8 +134,7 @@ abstract class ReferenceHandler(val entityManager: EntityManager) {
             AND cat.identifier = :catalogId 
             AND dw.uuid = :uuid
             AND (${urlFields.joinToString(" OR ") { """(doc.data\:\:text ilike CONCAT('%"$it"\: "',:uri, '"%'))""" }})
-        """.trimIndent()
-    }
+    """.trimIndent()
 }
 
 data class DocumentLinks(

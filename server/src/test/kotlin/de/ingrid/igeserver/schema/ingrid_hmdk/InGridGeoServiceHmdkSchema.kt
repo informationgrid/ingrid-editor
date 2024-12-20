@@ -38,6 +38,5 @@ class InGridGeoServiceHmdkSchema : AnnotationSpec() {
     }
 
     @Test
-    fun negativeTest() =
-        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/ingrid/geo-service.minimal.json")
+    fun negativeTest() = SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/ingrid/geo-service.minimal.json")
 }

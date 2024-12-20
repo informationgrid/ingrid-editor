@@ -66,8 +66,7 @@ class PostgreSQLLog4JAppender(
     @Value("PostgreSQL") name: String?,
     @Suppress("SpringJavaInjectionPointsAutowiringInspection") filter: Filter?,
     @Suppress("SpringJavaInjectionPointsAutowiringInspection") var table: String?,
-) :
-    AbstractAppender(name, filter, null, false, null) {
+) : AbstractAppender(name, filter, null, false, null) {
 
     companion object {
         // type column name used ot define the EmbeddedData type in the database

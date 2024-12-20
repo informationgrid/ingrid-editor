@@ -28,7 +28,6 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { DOCUMENT } from "@angular/common";
 import { IgeError } from "../../../models/ige-error";
 import { PluginService } from "../../../services/plugin/plugin.service";
-import { GeneralStore } from "../../../store/general.store";
 
 @Injectable()
 export class SavePlugin extends SaveBase {
@@ -49,14 +48,6 @@ export class SavePlugin extends SaveBase {
     super();
     inject(PluginService).registerPlugin(this);
 
-    effect(() => {
-      if (!this.formRegistered) return;
-      console.log(this.forAddress());
-      console.log(
-        "save plugin",
-        this.generalStore.getOpenedDocument(this.forAddress()),
-      );
-    });
     effect(() => {
       if (!this.formRegistered) return;
       const doc = this.generalStore.getOpenedDocument(this.forAddress());

@@ -47,10 +47,15 @@ export interface ConsolidateDialogData {
   id: number;
 }
 
-class Keywords {
-  gemet: Object[];
-  umthes: Object[];
-  free: Object[];
+export class Keyword {
+  id?: string;
+  label: string;
+  alternativeLabel?: string;
+}
+export class Keywords {
+  gemet?: Object[];
+  umthes?: Object[];
+  free?: Object[];
 }
 
 interface ThesaurusTypeInfo extends Array<any | ThesaurusResult[]> {
@@ -177,7 +182,6 @@ export class ConsolidateDialogComponent implements OnInit {
         this.isInspireIdentified,
       );
       analyzedKeywords = removeDuplicatesByValue(analyzedKeywords, "label");
-
       this.categorizeKeywords(analyzedKeywords);
       this.addAllKeywordStatuses();
       this.keepKeywordsFoundWithAlternativeLabel();
@@ -196,7 +200,7 @@ export class ConsolidateDialogComponent implements OnInit {
     for (let [thesaurus, [oldKeywords, _]] of this.keywordHierarchyMap) {
       this.keywordHierarchyMap.set(thesaurus, [
         oldKeywords,
-        analyzedKeywords.filter((keyword) => keyword.thesaurus === thesaurus),
+        analyzedKeywords?.filter((keyword) => keyword.thesaurus === thesaurus),
       ]);
     }
   }

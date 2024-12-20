@@ -78,17 +78,11 @@ class GroupService(
         }*/
     }
 
-    fun getAll(catalogId: String): List<Group> {
-        return groupRepo.findAllByCatalog_Identifier(catalogId, Sort.by(Sort.Direction.ASC, "name"))
-    }
+    fun getAll(catalogId: String): List<Group> = groupRepo.findAllByCatalog_Identifier(catalogId, Sort.by(Sort.Direction.ASC, "name"))
 
-    fun exists(catalogId: String, id: Int): Boolean {
-        return get(catalogId, id) != null
-    }
+    fun exists(catalogId: String, id: Int): Boolean = get(catalogId, id) != null
 
-    fun get(catalogId: String, id: Int): Group? {
-        return groupRepo.findAllByCatalog_IdentifierAndId(catalogId, id)
-    }
+    fun get(catalogId: String, id: Int): Group? = groupRepo.findAllByCatalog_IdentifierAndId(catalogId, id)
 
     @Transactional
     fun update(catalogId: String, id: Int, group: Group, updateAcls: Boolean): Group {
@@ -210,18 +204,16 @@ class GroupService(
             }
     }
 
-    private fun determinePermission(docPermission: JsonNode): List<Permission> {
-        return when (docPermission.get("permission").asText()) {
-            "writeTree" -> listOf(BasePermission.READ, BasePermission.ADMINISTRATION, BasePermission.WRITE)
-            "writeTreeExceptParent" -> listOf(
-                BasePermission.READ,
-                BasePermission.ADMINISTRATION,
-                CustomPermission.WRITE_ONLY_SUBTREE,
-            )
+    private fun determinePermission(docPermission: JsonNode): List<Permission> = when (docPermission.get("permission").asText()) {
+        "writeTree" -> listOf(BasePermission.READ, BasePermission.ADMINISTRATION, BasePermission.WRITE)
+        "writeTreeExceptParent" -> listOf(
+            BasePermission.READ,
+            BasePermission.ADMINISTRATION,
+            CustomPermission.WRITE_ONLY_SUBTREE,
+        )
 
-            "readTree" -> listOf(BasePermission.READ)
-            else -> listOf(BasePermission.READ)
-        }
+        "readTree" -> listOf(BasePermission.READ)
+        else -> listOf(BasePermission.READ)
     }
 
     fun remove(catalogId: String, id: Int) {

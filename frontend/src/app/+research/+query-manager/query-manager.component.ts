@@ -34,9 +34,11 @@ import { MatIcon } from "@angular/material/icon";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatIconButton } from "@angular/material/button";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
-import { AsyncPipe, DatePipe } from "@angular/common";
+import { DatePipe } from "@angular/common";
 import { DateAgoPipe } from "../../directives/date-ago.pipe";
 import { QueryStore } from "../../store/query/query.store";
+import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog.component";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "ige-query-manager",
@@ -52,13 +54,14 @@ import { QueryStore } from "../../store/query/query.store";
     MatMenuTrigger,
     MatMenu,
     MatMenuItem,
-    AsyncPipe,
     DatePipe,
     DateAgoPipe,
   ],
 })
 export class QueryManagerComponent implements OnInit {
   private queryStore = inject(QueryStore);
+  private snackBar = inject(MatSnackBar);
+  private researchService = inject(ResearchService);
 
   userQueries: Signal<QueryUI[]> = computed(() => {
     const queries = this.queryStore.userQueries();
@@ -83,7 +86,6 @@ export class QueryManagerComponent implements OnInit {
   constructor(
     private router: Router,
     private dialog: MatDialog,
-    private researchService: ResearchService,
     private configService: ConfigService,
   ) {
     this.queryTypes = [
@@ -151,5 +153,28 @@ export class QueryManagerComponent implements OnInit {
         canDelete: fn(q),
       };
     });
+  }
+
+  editQuery(id: number) {
+    this.dialog
+      .open(SaveQueryDialogComponent, {
+        hasBackdrop: true,
+        maxWidth: 600,
+        data: this.queryStore.entityMap()[id],
+      })
+      .afterClosed()
+      .subscribe((dialogOptions) => {
+        if (dialogOptions) {
+          this.researchService.updateQuery(id, dialogOptions).subscribe(() =>
+            this.snackBar.open(
+              `Suche '${dialogOptions.name}' aktualisiert`,
+              "",
+              {
+                panelClass: "green",
+              },
+            ),
+          );
+        }
+      });
   }
 }

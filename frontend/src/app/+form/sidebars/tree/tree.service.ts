@@ -71,7 +71,6 @@ export class TreeService {
    * @param id
    */
   selectTreeNode(isAddress: boolean, id: number) {
-    console.log("tree select node", id);
     this.generalStore.setExplicitActiveNode(
       new ShortTreeNode(id, "?"),
       isAddress,

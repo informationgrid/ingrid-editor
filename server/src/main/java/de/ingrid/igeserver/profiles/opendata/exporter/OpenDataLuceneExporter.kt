@@ -85,7 +85,7 @@ class OpenDataLuceneExporter(
     }
 
     private fun getMapper(type: OpenDataDocType, doc: Document, catalog: Catalog, options: ExportOptions): Map<String, Any> {
-        val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier)
+        val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier, catalog.settings.config.language ?: "de")
         val data = TransformerData(type, catalog.identifier, codelistTransformer, doc, options.tags)
 
         val transformer: Any = getTransformer(data)
