@@ -179,7 +179,7 @@ class CswtService(
     fun prepareException(exception: Exception): String {
         var errorMsg = exception.cause?.toString() ?: exception.toString()
         if (exception is ValidationException) {
-            val lastError: JsonErrorEntry? = (exception.data?.get("error") as List<JsonErrorEntry>)?.last()
+            val lastError: JsonErrorEntry? = (exception.data?.get("error") as List<JsonErrorEntry>?)?.lastOrNull()
             if (lastError != null) {
                 errorMsg += " (${lastError.error}, location: ${lastError.instanceLocation})"
             }
