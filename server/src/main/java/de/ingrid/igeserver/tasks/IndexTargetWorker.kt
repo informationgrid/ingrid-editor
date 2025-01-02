@@ -214,7 +214,7 @@ class IndexTargetWorker(
     @Throws(IOException::class)
     private fun getIPlugInfo(infoId: String, info: IPlugInfo, forAddress: Boolean): String {
         val plugId = "ige-ng_${plugInfo.catalog.identifier}"
-        val currentDate = OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
+        val currentDate = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"))
 
         return jacksonObjectMapper()
             .createObjectNode()
