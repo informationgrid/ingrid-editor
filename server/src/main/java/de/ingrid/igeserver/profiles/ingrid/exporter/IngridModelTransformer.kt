@@ -547,7 +547,7 @@ open class IngridModelTransformer(
 
     private val availabilityAccessConstraints = data.resource?.accessConstraints?.map {
         CharacterStringModel(
-            getValueFromCodelistData("6010", it.key!!)
+            getValueFromCodelistData("6010", it.key)
                 ?: codelists.getValue("6010", it) ?: "",
             getValueFromCodelistData("6010", it.key, "url"),
         )
@@ -616,8 +616,7 @@ open class IngridModelTransformer(
         }
     } ?: emptyList()
 
-    fun getCoupledResourceIdentifiers() =
-        model.data.service.coupledResources?.map { getCoupledResourceIdentifier(it) } ?: emptyList()
+    fun getCoupledResourceIdentifiers() = model.data.service.coupledResources?.map { getCoupledResourceIdentifier(it) } ?: emptyList()
 
     private fun getCoupledResourceIdentifier(
         it: CoupledResource,
@@ -653,8 +652,7 @@ open class IngridModelTransformer(
         emptyList()
     }
 
-    fun getReferingServiceUuid(service: CrossReference): String =
-        "${service.uuid}@@${service.objectName}@@${service.serviceUrl.orEmpty()}@@${this.citationURL}"
+    fun getReferingServiceUuid(service: CrossReference): String = "${service.uuid}@@${service.objectName}@@${service.serviceUrl.orEmpty()}@@${this.citationURL}"
 
     // TODO: move to specific doc types
     // information system or publication
@@ -1140,7 +1138,7 @@ open class IngridModelTransformer(
 
     fun isHvd(): Boolean = data.properties?.isHvd ?: false
 
-    fun getValueFromCodelistData(codelistId: String, key: String, field: String = "de"): String? {
+    fun getValueFromCodelistData(codelistId: String, key: String?, field: String = "de"): String? {
         val jsonData = codelists.getData(
             codelistId,
             key,
