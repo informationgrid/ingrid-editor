@@ -37,7 +37,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -51,7 +51,7 @@ import kotlin.reflect.KClass
 @Service
 class OpenDataIDFExporter(
     val codelistHandler: CodelistHandler,
-    val config: Config,
+    val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
     @Lazy val documentService: DocumentService,
 ) : IgeExporter {
@@ -113,7 +113,7 @@ class OpenDataIDFExporter(
 
         return if (isAddress) {
             transformerClass.constructors.first().call(
-                AddressTransformerConfig(catalogId, codelistTransformer, null, json, documentService, config, options.tags),
+                AddressTransformerConfig(catalogId, codelistTransformer, null, json, documentService, uploadConfig, options.tags),
             )
         } else {
             transformerClass.constructors.first().call(
@@ -121,7 +121,7 @@ class OpenDataIDFExporter(
                     ingridModel!!,
                     catalogId,
                     codelistTransformer,
-                    config,
+                    uploadConfig,
                     catalogService,
                     TransformerCache(),
                     json,

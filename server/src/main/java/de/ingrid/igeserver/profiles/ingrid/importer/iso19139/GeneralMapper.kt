@@ -35,7 +35,6 @@ import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.convertGml32ToWkt
-import de.ingrid.mdek.upload.Config
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeAlle
 import de.ingrid.utils.udk.TM_PeriodDurationToTimeInterval
 import de.ingrid.utils.udk.UtilsCountryCodelist
@@ -46,7 +45,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-open class GeneralMapper(val isoData: IsoImportData, val config: Config) {
+open class GeneralMapper(val isoData: IsoImportData) {
 
     private val log = logger()
 
@@ -371,7 +370,7 @@ open class GeneralMapper(val isoData: IsoImportData, val config: Config) {
 
     fun getGraphicOverviews(): List<PreviewGraphic> = metadata.identificationInfo[0].identificationInfo?.graphicOverview
         ?.map {
-            val isInternalStorage: Boolean = it.mdBrowseGraphic?.fileName?.value?.contains(config.uploadExternalUrl ?: "/documents/") ?: false
+            val isInternalStorage: Boolean = it.mdBrowseGraphic?.fileName?.value?.contains(isoData.uploadConfig.uploadExternalUrl ?: "/documents/") ?: false
             val fileName = if (isInternalStorage) {
                 it.mdBrowseGraphic?.fileName?.value?.substringAfterLast('/')
             } else {

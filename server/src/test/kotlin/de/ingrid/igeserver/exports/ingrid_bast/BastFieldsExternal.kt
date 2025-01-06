@@ -43,7 +43,7 @@ class BastFieldsExternal : GeodatasetBase() {
         this.exporter =
             IngridIdfExporterExternalBast(
                 this.codelistHandler,
-                this.config,
+                this.uploadConfig,
                 this.catalogService,
                 this.documentService,
             )

@@ -28,7 +28,7 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.uvp.exporter.model.UVPModel
 import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -38,7 +38,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 
 @Service
-class IDFExporter(val config: Config) : IgeExporter {
+class IDFExporter(val uploadConfig: UploadConfig) : IgeExporter {
 
     val log = logger()
 
@@ -84,7 +84,7 @@ class IDFExporter(val config: Config) : IgeExporter {
         return mapOf(
             "map" to mapOf(
                 "model" to mapper.convertValue(json, UVPModel::class.java).apply { init(catalogId) },
-                "docInfo" to DocInfo(catalogId, json.uuid, config.uploadExternalUrl),
+                "docInfo" to DocInfo(catalogId, json.uuid, uploadConfig.uploadExternalUrl),
             ),
         )
     }

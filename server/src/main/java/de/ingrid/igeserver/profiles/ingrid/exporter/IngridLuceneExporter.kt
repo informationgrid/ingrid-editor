@@ -36,7 +36,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -48,7 +48,7 @@ import org.unbescape.json.JsonEscape
 @Service
 class IngridLuceneExporter(
     val codelistHandler: CodelistHandler,
-    val config: Config,
+    val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
     @Lazy val documentService: DocumentService,
 ) {
@@ -152,7 +152,7 @@ class IngridLuceneExporter(
                     null,
                     data.doc,
                     documentService = documentService,
-                    config = config,
+                    uploadConfig = uploadConfig,
                     data.tags,
                 ),
             )
@@ -164,7 +164,7 @@ class IngridLuceneExporter(
                     data.mapper.convertValue(data.doc, IngridModel::class.java),
                     data.catalogIdentifier,
                     data.codelistTransformer,
-                    config,
+                    uploadConfig,
                     catalogService,
                     TransformerCache(),
                     data.doc,

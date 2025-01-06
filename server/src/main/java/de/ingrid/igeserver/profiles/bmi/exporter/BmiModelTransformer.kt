@@ -30,11 +30,11 @@ import de.ingrid.igeserver.profiles.bmi.exporter.model.AddressModel
 import de.ingrid.igeserver.profiles.bmi.exporter.model.BmiModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import org.apache.logging.log4j.kotlin.logger
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
-import java.util.Date
+import java.util.*
 
 val log = logger("BmiModelTransformer")
 
@@ -46,7 +46,7 @@ data class TransformerConfig(
     val model: BmiModel,
     val catalogIdentifier: String,
     val codelists: CodelistTransformer,
-    val config: Config,
+    val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
     val cache: TransformerCache,
     val doc: Document,
@@ -60,7 +60,7 @@ open class BmiModelTransformer(
     val model = transformerConfig.model
     val catalogIdentifier = transformerConfig.catalogIdentifier
     val codelists = transformerConfig.codelists
-    val config = transformerConfig.config
+    val config = transformerConfig.uploadConfig
     val catalogService = transformerConfig.catalogService
     val cache = transformerConfig.cache
     val doc = transformerConfig.doc
@@ -74,8 +74,7 @@ open class BmiModelTransformer(
     var addresses: List<AddressModel> = emptyList()
     var themes: List<String> = emptyList()
 
-    fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime?): String =
-        if (date == null) "" else formatter.format(Date.from(date.toInstant()))
+    fun formatDate(formatter: SimpleDateFormat, date: OffsetDateTime?): String = if (date == null) "" else formatter.format(Date.from(date.toInstant()))
 
     init {
         this.catalog = catalogService.getCatalogById(catalogIdentifier)
@@ -86,18 +85,17 @@ open class BmiModelTransformer(
 
     private fun toCodelistData(codelist: String, entry: KeyValue): String? = codelists.getData(codelist, entry.key)
 
-    private fun toAddressModel(it: AddressRefModel) =
-        jacksonObjectMapper().convertValue(
-            (
-                getLastPublishedDocument(it.ref ?: throw ServerException.withReason("Address-Reference UUID is NULL")) ?: Document().apply {
-                    data = jacksonObjectMapper().createObjectNode()
-                    type = "null-address"
-                    modified = OffsetDateTime.now()
-                    wrapperId = -1
-                }
-                ).data,
-            AddressModel::class.java,
-        ).apply { type = it.type?.key }
+    private fun toAddressModel(it: AddressRefModel) = jacksonObjectMapper().convertValue(
+        (
+            getLastPublishedDocument(it.ref ?: throw ServerException.withReason("Address-Reference UUID is NULL")) ?: Document().apply {
+                data = jacksonObjectMapper().createObjectNode()
+                type = "null-address"
+                modified = OffsetDateTime.now()
+                wrapperId = -1
+            }
+            ).data,
+        AddressModel::class.java,
+    ).apply { type = it.type?.key }
 
     private fun getLastPublishedDocument(uuid: String): Document? {
         if (cache.documents.containsKey(uuid)) return cache.documents[uuid]

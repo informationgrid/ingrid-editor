@@ -47,7 +47,7 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
         this.exporter =
             IngridIdfExporterExternalLfub(
                 this.codelistHandler,
-                this.config,
+                this.uploadConfig,
                 this.catalogService,
                 this.documentService,
             )

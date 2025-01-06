@@ -36,7 +36,7 @@ class GeometryContext : GeodatasetBase() {
         this.exporter =
             IngridIdfExporterUPSH(
                 this.codelistHandler,
-                this.config,
+                this.uploadConfig,
                 this.catalogService,
                 this.documentService,
             )
