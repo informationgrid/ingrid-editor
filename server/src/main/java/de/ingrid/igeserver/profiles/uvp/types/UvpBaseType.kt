@@ -27,10 +27,8 @@ import org.springframework.stereotype.Component
 abstract class UvpBaseType : EntityType() {
     override val profiles = arrayOf("uvp")
 
-    override fun getReferenceIds(doc: Document): List<String> {
-        return doc.data.path("pointOfContact").map { address ->
-            address.path("ref").textValue()
-        }
+    override fun getReferenceIds(doc: Document): List<String> = doc.data.path("pointOfContact").map { address ->
+        address.path("ref").textValue()
     }
 
     override fun getUploads(doc: Document): List<String> {

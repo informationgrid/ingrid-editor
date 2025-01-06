@@ -45,9 +45,7 @@ class IngridDistributionHelper(
             emptyList(),
         )
 
-    override fun canHandleDistribution(profile: String): Boolean {
-        return "ingrid" == profile
-    }
+    override fun canHandleDistribution(profile: String): Boolean = "ingrid" == profile
 
     override fun getDistributionDetails(document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
         val allDistributions = document.data["graphicOverviews"]

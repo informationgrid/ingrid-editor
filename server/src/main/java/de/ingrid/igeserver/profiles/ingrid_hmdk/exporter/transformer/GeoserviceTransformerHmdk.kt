@@ -27,8 +27,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.amendHMDKDescriptiveKeywords
 import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.getMapUrl
 
-class GeoserviceTransformerHmdk(transformerConfig: TransformerConfig) :
-    GeodataserviceModelTransformer(transformerConfig) {
+class GeoserviceTransformerHmdk(transformerConfig: TransformerConfig) : GeodataserviceModelTransformer(transformerConfig) {
     override fun getDescriptiveKeywords(): List<Thesaurus> =
         amendHMDKDescriptiveKeywords(doc.data, codelists, super.getDescriptiveKeywords())
 
@@ -45,8 +44,7 @@ class GeoserviceTransformerHmdk(transformerConfig: TransformerConfig) :
     override val mapLinkUrl = getMapUrl(doc, tags)
 }
 
-class GeoserviceTransformerHmdkMetaver(transformerConfig: TransformerConfig) :
-    GeodataserviceModelTransformer(transformerConfig) {
+class GeoserviceTransformerHmdkMetaver(transformerConfig: TransformerConfig) : GeodataserviceModelTransformer(transformerConfig) {
 
     override fun getCrossReference(
         uuid: String,

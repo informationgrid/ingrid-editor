@@ -53,9 +53,18 @@ class Distribution : Serializable {
             return false
         }
         val that = o as Distribution
-        return accessURL == that.accessURL && downloadURL == that.downloadURL && description == that.description && docType == that.docType && format.contentEquals(
-            that.format,
-        ) && issued == that.issued && mapLayerNames.contentEquals(that.mapLayerNames) && modified == that.modified && title == that.title && temporal == that.temporal
+        return accessURL == that.accessURL &&
+            downloadURL == that.downloadURL &&
+            description == that.description &&
+            docType == that.docType &&
+            format.contentEquals(
+                that.format,
+            ) &&
+            issued == that.issued &&
+            mapLayerNames.contentEquals(that.mapLayerNames) &&
+            modified == that.modified &&
+            title == that.title &&
+            temporal == that.temporal
     }
 
     override fun hashCode(): Int {
@@ -65,18 +74,16 @@ class Distribution : Serializable {
         return result
     }
 
-    override fun toString(): String {
-        return "Distribution{" +
-            "accessURL='" + accessURL + '\'' +
-            ", downloadURL='" + downloadURL + '\'' +
-            ", description='" + description + '\'' +
-            ", docType=" + docType +
-            ", format=" + format.contentToString() +
-            ", issued=" + issued +
-            ", mapLayerNames=" + mapLayerNames.contentToString() +
-            ", modified=" + modified +
-            ", title='" + title + '\'' +
-            ", temporal=" + temporal +
-            '}'
-    }
+    override fun toString(): String = "Distribution{" +
+        "accessURL='" + accessURL + '\'' +
+        ", downloadURL='" + downloadURL + '\'' +
+        ", description='" + description + '\'' +
+        ", docType=" + docType +
+        ", format=" + format.contentToString() +
+        ", issued=" + issued +
+        ", mapLayerNames=" + mapLayerNames.contentToString() +
+        ", modified=" + modified +
+        ", title='" + title + '\'' +
+        ", temporal=" + temporal +
+        '}'
 }

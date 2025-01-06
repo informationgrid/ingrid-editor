@@ -34,7 +34,5 @@ class ContexthelpApiController(val helpService: ContextHelpService) : Contexthel
         return ResponseEntity.ok(help)
     }
 
-    override fun listContextHelpIds(profile: String, docType: String): ResponseEntity<List<String>> {
-        return ResponseEntity.ok(helpService.getHelpIDs(profile, docType))
-    }
+    override fun listContextHelpIds(profile: String, docType: String): ResponseEntity<List<String>> = ResponseEntity.ok(helpService.getHelpIDs(profile, docType))
 }

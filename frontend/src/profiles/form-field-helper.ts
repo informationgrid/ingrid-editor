@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -980,7 +980,8 @@ export class FormFieldHelper {
 
   private initExpressions(expressions = {}) {
     return {
-      "props.disabled": "formState.disabled",
+      "props.disabled": (field: FormlyFieldConfig) =>
+        field.options?.formState?.disabled ?? false,
       ...expressions,
     };
   }

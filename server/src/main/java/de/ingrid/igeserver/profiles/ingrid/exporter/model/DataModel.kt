@@ -402,6 +402,12 @@ data class GridSpatialRepresentation(
     val georectified: Georectified?,
     val georeferenceable: Georeferenceable?,
 )
+fun GridSpatialRepresentation.isAllFieldsNullOrEmpty(): Boolean = (georectified == null || georectified.isAllFieldsNullOrEmpty()) &&
+    (georeferenceable == null || georeferenceable.isAllFieldsNullOrEmpty()) &&
+    cellGeometry == null &&
+    numberOfDimensions == null &&
+    transformationParameterAvailability == false &&
+    axesDimensionProperties.isNullOrEmpty()
 
 data class Georectified(
     val checkPointAvailability: Boolean? = false,
@@ -409,12 +415,19 @@ data class Georectified(
     val cornerPoints: String?,
     val pointInPixel: KeyValue?,
 )
+fun Georectified.isAllFieldsNullOrEmpty(): Boolean = checkPointAvailability == false &&
+    checkPointDescription.isNullOrEmpty() &&
+    cornerPoints.isNullOrEmpty() &&
+    pointInPixel == null
 
 data class Georeferenceable(
     val orientationParameterAvailability: Boolean? = false,
     val controlPointAvaliability: Boolean? = false,
     val parameters: String?,
 )
+fun Georeferenceable.isAllFieldsNullOrEmpty(): Boolean = orientationParameterAvailability == false &&
+    controlPointAvaliability == false &&
+    parameters.isNullOrEmpty()
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AxisDimensionProperties(

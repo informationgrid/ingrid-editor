@@ -114,22 +114,20 @@ class IndexTargetWorker(
         return isLast
     }
 
-    private fun indexPrePhase(): Pair<String?, String>? {
-        return try {
-            val newIndex = IndexService.getNextIndexName(categoryAlias)
+    private fun indexPrePhase(): Pair<String?, String>? = try {
+        val newIndex = IndexService.getNextIndexName(categoryAlias)
 
-            val oldIndex = config.target.getIndexNameFromAliasName(categoryAlias)
-            config.target.createIndex(
-                newIndex,
-                if (config.category == DocumentCategory.ADDRESS) "address" else "base",
-                catalogProfile.getElasticsearchMapping(""),
-                catalogProfile.getElasticsearchSetting(""),
-            )
-            Pair(oldIndex, newIndex)
-        } catch (ex: Exception) {
-            notify.addAndSendMessageError(message, ex, "Error during Index Pre-Phase: ")
-            null
-        }
+        val oldIndex = config.target.getIndexNameFromAliasName(categoryAlias)
+        config.target.createIndex(
+            newIndex,
+            if (config.category == DocumentCategory.ADDRESS) "address" else "base",
+            catalogProfile.getElasticsearchMapping(""),
+            catalogProfile.getElasticsearchSetting(""),
+        )
+        Pair(oldIndex, newIndex)
+    } catch (ex: Exception) {
+        notify.addAndSendMessageError(message, ex, "Error during Index Pre-Phase: ")
+        null
     }
 
     private fun updateMessageWithDocumentInfo(message: TargetMessage, totalHits: Long) {
@@ -216,7 +214,7 @@ class IndexTargetWorker(
     @Throws(IOException::class)
     private fun getIPlugInfo(infoId: String, info: IPlugInfo, forAddress: Boolean): String {
         val plugId = "ige-ng_${plugInfo.catalog.identifier}"
-        val currentDate = OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
+        val currentDate = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"))
 
         return jacksonObjectMapper()
             .createObjectNode()
@@ -255,9 +253,7 @@ class IndexTargetWorker(
             .toString()
     }
 
-    private fun convertToElasticDocument(doc: Any): ElasticDocument {
-        return jacksonObjectMapper().readValue(doc.toString(), ElasticDocument::class.java)
-    }
+    private fun convertToElasticDocument(doc: Any): ElasticDocument = jacksonObjectMapper().readValue(doc.toString(), ElasticDocument::class.java)
 
     private fun prepareIPlugName(infoId: String): String {
         val splitted = infoId.split(":")

@@ -42,15 +42,13 @@ open class ApplicationMapper(isoData: IsoImportData, config: Config) : GeneralMa
         return KeyValue(entryId)
     }
 
-    fun getLanguages(): List<String> {
-        return identificationInfo?.language
-            ?.mapNotNull { it.code?.codeListValue }
-            ?.map {
-                iso639LanguageMapping[it]
-                    ?: throw ServerException.withReason("Could not map document language key: $it")
-            }
-            ?: emptyList()
-    }
+    fun getLanguages(): List<String> = identificationInfo?.language
+        ?.mapNotNull { it.code?.codeListValue }
+        ?.map {
+            iso639LanguageMapping[it]
+                ?: throw ServerException.withReason("Could not map document language key: $it")
+        }
+        ?: emptyList()
 
     fun getServiceType(): KeyValue? = null // not supported yet, even in export!
 

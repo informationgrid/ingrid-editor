@@ -26,8 +26,7 @@ import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOpti
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 
-class GeodatasetTransformerExternalBast(transformerConfig: TransformerConfig) :
-    GeodatasetModelTransformer(transformerConfig) {
+class GeodatasetTransformerExternalBast(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
     private val docData = doc.data
 

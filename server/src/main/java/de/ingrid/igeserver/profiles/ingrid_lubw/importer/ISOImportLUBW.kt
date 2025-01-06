@@ -32,8 +32,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class ISOImportLUBW(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val config: Config) :
-    ISOImportProfile {
+class ISOImportLUBW(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val config: Config) : ISOImportProfile {
     override fun handle(catalogId: String, data: Metadata, addressMaps: MutableMap<String, String>): ImportProfileData? {
         val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps, researchService)
 

@@ -8,9 +8,9 @@ import static org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 
 buildscript {
     ext.kotlin_version = '2.0.21'
-    ext.spring_boot_version = '3.3.5'
+    ext.spring_boot_version = '3.3.6'
     ext.kotest_version = '5.9.1'
-    ext.jte_version = '3.1.13'
+    ext.jte_version = '3.1.15'
     ext.geotools_version = '28.2'
     ext['log4j2.version'] = '2.23.1'
 }
@@ -23,7 +23,7 @@ plugins {
     id "org.jetbrains.kotlin.plugin.noarg" version "$kotlin_version"
     id "org.jetbrains.kotlin.plugin.allopen" version "$kotlin_version"
     id "org.springframework.boot" version "$spring_boot_version"
-    id "io.spring.dependency-management" version "1.1.6"
+    id "io.spring.dependency-management" version "1.1.7"
     id 'idea'
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.4.4'
@@ -32,7 +32,7 @@ plugins {
     id "com.github.ben-manes.versions" version "0.51.0"
     id "gg.jte.gradle" version "$jte_version"
     id "org.hibernate.orm" version "6.5.2.Final"
-    id "org.jlleitschuh.gradle.ktlint" version "12.1.1"
+    id "org.jlleitschuh.gradle.ktlint" version "12.1.2"
     id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
 }
 
@@ -134,13 +134,13 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     // JSON schema validation
-    implementation 'com.networknt:json-schema-validator:1.5.2'
+    implementation 'com.networknt:json-schema-validator:1.5.4'
 
     // Keycloak
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.keycloak:keycloak-admin-client:26.0.1'
+    implementation 'org.keycloak:keycloak-admin-client:26.0.3'
 
     // OpenAI
     // import Kotlin API client BOM

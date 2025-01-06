@@ -31,9 +31,7 @@ data class Message(val creator: Any, val message: String) {
 
     val created: OffsetDateTime? = dateService?.now()
 
-    override fun toString(): String {
-        return message + " [" + dateFormat.format(created) + " from " + creator.toString() + "]"
-    }
+    override fun toString(): String = message + " [" + dateFormat.format(created) + " from " + creator.toString() + "]"
 
     companion object {
         val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")

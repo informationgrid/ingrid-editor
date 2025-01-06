@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -117,7 +117,7 @@ export class CatalogService {
         tap((response: HttpResponse<Blob>) => {
           const downloadLink = document.createElement("a");
           downloadLink.href = window.URL.createObjectURL(response.body);
-          downloadLink.setAttribute("download", "testexport.json");
+          downloadLink.setAttribute("download", "catalog_export.json");
           document.body.appendChild(downloadLink);
           downloadLink.click();
           downloadLink.remove();

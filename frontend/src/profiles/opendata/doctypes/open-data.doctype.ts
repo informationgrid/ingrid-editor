@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -265,7 +265,9 @@ export class OpenDataDoctype extends BaseDoctype {
             fieldLabel: "Datum",
             required: true,
             expressions: {
-              hide: "model?.rangeType?.key == null || model?.rangeType?.key === 'range'",
+              hide: (field: FormlyFieldConfig) =>
+                field.model?.rangeType?.key == null ||
+                field.model?.rangeType?.key === "range",
             },
           }),
           this.addDateRange("timeSpanRange", null, {
@@ -273,7 +275,8 @@ export class OpenDataDoctype extends BaseDoctype {
             fieldLabel: "Datum",
             required: true,
             expressions: {
-              hide: "model?.rangeType?.key !== 'range'",
+              hide: (field: FormlyFieldConfig) =>
+                field.model?.rangeType?.key !== "range",
             },
           }),
         ]),

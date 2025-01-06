@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -26,16 +26,17 @@ import {
   CodelistEntry,
   CodelistEntryBackend,
 } from "../../store/codelist/codelist.model";
-import { combineLatest, Observable, Subject, throwError } from "rxjs";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
-  catchError,
+  bufferTime,
+  combineLatest,
+  concatMap,
   distinct,
-  filter,
-  map,
-  switchMap,
-  tap,
-} from "rxjs/operators";
+  Observable,
+  Subject,
+  throwError,
+} from "rxjs";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { catchError, filter, map, tap } from "rxjs/operators";
 import { HttpErrorResponse } from "@angular/common/http";
 import { IgeError } from "../../models/ige-error";
 import { CodelistStore } from "../../store/codelist/codelist.store";
@@ -92,7 +93,7 @@ export class CodelistService {
   private codelistStore$ = toObservable(this.store.entityMap);
   private catalogLanguage$ = toObservable(this.generalStore.catalogLanguage);
 
-  private requestedCodelists = new Subject<string[]>();
+  private requestedCodelists = new Subject<string>();
 
   static mapToSelect = (
     codelist: Codelist,
@@ -159,7 +160,6 @@ export class CodelistService {
   }
 
   private queue = [];
-  private batchProcessed = true;
 
   private static favorites: { [x: string]: string[] } = {};
 
@@ -171,15 +171,17 @@ export class CodelistService {
     this.requestedCodelists
       .pipe(
         untilDestroyed(this),
-        // ignore multiple same ids
-        distinct(),
-        // mark already as processed so that incoming codelists trigger a new event
-        tap(() => (this.batchProcessed = true)),
+        // Collect IDs within a time window of 100ms
+        bufferTime(100),
         filter((ids) => ids.length > 0),
-        switchMap((ids) => this.requestCodelists(ids)),
-        map((codelists) => this.prepareCodelists(codelists)),
-        tap((codelists) => this.store.addCodelists(codelists)),
-        tap(() => this.generalStore.setCodelistsLoaded()),
+        distinct(),
+        concatMap((ids) =>
+          this.requestCodelists(ids).pipe(
+            map((codelists) => this.prepareCodelists(codelists)),
+            tap((codelists) => this.store.addCodelists(codelists)),
+            tap(() => this.generalStore.setCodelistsLoaded()),
+          ),
+        ),
       )
       .subscribe();
   }
@@ -188,19 +190,7 @@ export class CodelistService {
     if (this.queue.indexOf(id) !== -1) return;
 
     this.queue.push(id);
-
-    if (!this.batchProcessed) return;
-
-    const interval = setInterval(() => {
-      if (this.batchProcessed && this.queue.length > 0) {
-        this.batchProcessed = false;
-        this.requestedCodelists.next([...this.queue]);
-        this.queue = [];
-      }
-      if (this.queue.length === 0) {
-        clearInterval(interval);
-      }
-    }, 100);
+    this.requestedCodelists.next(id);
   }
 
   update(): Observable<Codelist[]> {

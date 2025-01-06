@@ -39,12 +39,8 @@ class IsReferencedException(
         /**
          * Factory method for an arbitrary reason
          */
-        fun byUuids(uuids: List<String>): IsReferencedException {
-            return IsReferencedException(STATUS_CODE, ERROR_CODE, ERROR_TEXT, mapOf("uuids" to uuids))
-        }
+        fun byUuids(uuids: List<String>): IsReferencedException = IsReferencedException(STATUS_CODE, ERROR_CODE, ERROR_TEXT, mapOf("uuids" to uuids))
 
-        fun addressByPublishedDatasets(uuids: List<String>): IsReferencedException {
-            return IsReferencedException(STATUS_CODE, ERROR_CODE_ADDRESS_UNPUBLISH, ERROR_TEXT_ADDRESS, mapOf("uuids" to uuids))
-        }
+        fun addressByPublishedDatasets(uuids: List<String>): IsReferencedException = IsReferencedException(STATUS_CODE, ERROR_CODE_ADDRESS_UNPUBLISH, ERROR_TEXT_ADDRESS, mapOf("uuids" to uuids))
     }
 }

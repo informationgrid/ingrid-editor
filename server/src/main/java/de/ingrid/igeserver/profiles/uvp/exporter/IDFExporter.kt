@@ -66,22 +66,18 @@ class IDFExporter(val config: Config) : IgeExporter {
         return prettyXml
     }
 
-    private fun getTemplateForDoctype(type: String): String {
-        return when (type) {
-            "UvpApprovalProcedureDoc" -> "export/uvp/idf/idf-approval.jte"
-            "UvpNegativePreliminaryAssessmentDoc" -> "export/uvp/idf/idf-negative.jte"
-            "UvpForeignProjectDoc" -> "export/uvp/idf/idf-foreign.jte"
-            "UvpSpatialPlanningProcedureDoc" -> "export/uvp/idf/idf-spatialOrLine.jte"
-            "UvpLineDeterminationDoc" -> "export/uvp/idf/idf-spatialOrLine.jte"
-            else -> {
-                throw ServerException.withReason("Cannot get template for type: $type")
-            }
+    private fun getTemplateForDoctype(type: String): String = when (type) {
+        "UvpApprovalProcedureDoc" -> "export/uvp/idf/idf-approval.jte"
+        "UvpNegativePreliminaryAssessmentDoc" -> "export/uvp/idf/idf-negative.jte"
+        "UvpForeignProjectDoc" -> "export/uvp/idf/idf-foreign.jte"
+        "UvpSpatialPlanningProcedureDoc" -> "export/uvp/idf/idf-spatialOrLine.jte"
+        "UvpLineDeterminationDoc" -> "export/uvp/idf/idf-spatialOrLine.jte"
+        else -> {
+            throw ServerException.withReason("Cannot get template for type: $type")
         }
     }
 
-    override fun toString(exportedObject: Any): String {
-        return exportedObject.toString()
-    }
+    override fun toString(exportedObject: Any): String = exportedObject.toString()
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
         val mapper = ObjectMapper().registerKotlinModule()

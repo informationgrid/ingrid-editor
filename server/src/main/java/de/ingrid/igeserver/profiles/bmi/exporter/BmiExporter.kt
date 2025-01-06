@@ -79,9 +79,7 @@ class BmiExporter(
         return output.toString()
     }
 
-    override fun toString(exportedObject: Any): String {
-        return exportedObject.toString()
-    }
+    override fun toString(exportedObject: Any): String = exportedObject.toString()
 
     private fun getMapFromObject(json: Document, catalogId: String, options: ExportOptions): Map<String, Any> {
         val modelTransformer = getModelTransformer(json, catalogId, options)
@@ -92,9 +90,7 @@ class BmiExporter(
         )
     }
 
-    private fun getBmiModel(json: Document, catalogId: String): BmiModel {
-        return jacksonObjectMapper().convertValue(json, BmiModel::class.java)
-    }
+    private fun getBmiModel(json: Document, catalogId: String): BmiModel = jacksonObjectMapper().convertValue(json, BmiModel::class.java)
 
     private fun getModelTransformer(json: Document, catalogId: String, exportOptions: ExportOptions): Any {
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"

@@ -26,8 +26,7 @@ import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubGetDescriptive
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubUseConstraints
 import de.ingrid.igeserver.utils.getString
 
-class GeoserviceTransformerLfub(transformerConfig: TransformerConfig) :
-    GeodataserviceModelTransformer(transformerConfig) {
+class GeoserviceTransformerLfub(transformerConfig: TransformerConfig) : GeodataserviceModelTransformer(transformerConfig) {
 
     private val docData = doc.data
 

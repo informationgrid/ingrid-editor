@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2024 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 package de.ingrid.igeserver.catalogTransfer
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -10,6 +29,7 @@ import de.ingrid.igeserver.imports.CatalogImportService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.igeserver.utils.FileUploadHandler
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.core.test.TestCase
@@ -32,7 +52,8 @@ class CatalogTransferTest : ShouldSpec() {
     private val catalogImportService = CatalogImportService(entityManager, transactionManager, groupService, catalogService, mockk())
     private val catalogExportService = CatalogExportService(entityManager, transactionManager, catalogService)
     private val authUtils = mockk<AuthUtils>(relaxed = true)
-    private val catalogApiController = CatalogApiController(catalogService, mockk(), mockk(), catalogImportService, catalogExportService, authUtils)
+    private val fileUploadHandler = mockk<FileUploadHandler>(relaxed = true)
+    private val catalogApiController = CatalogApiController(catalogService, mockk(), mockk(), catalogImportService, catalogExportService, authUtils, fileUploadHandler)
 
     override suspend fun beforeEach(testCase: TestCase) {
         clearAllMocks()

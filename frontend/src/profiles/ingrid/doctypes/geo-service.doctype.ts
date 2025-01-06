@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,7 +19,7 @@
  */
 import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { distinctUntilKeyChanged, filter, tap } from "rxjs/operators";
 import { BehaviorSubject } from "rxjs";
@@ -57,7 +57,7 @@ export class GeoServiceDoctype extends IngridShared {
 
   constructor() {
     super();
-    this.options.required.spatialSystems = true;
+    this.options.dynamicRequired.spatialSystems = () => true;
     this.options.required.useConstraints = true;
   }
 
@@ -140,7 +140,9 @@ export class GeoServiceDoctype extends IngridShared {
                     click: (field: FormlyFieldConfig) =>
                       this.showAtomFeedInfo(field),
                     expressions: {
-                      hide: "formState.mainModel?.service?.type?.key !== '3'",
+                      hide: (field: FormlyFieldConfig) =>
+                        field.options.formState.mainModel?.service?.type
+                          ?.key !== "3",
                     },
                   },
                 ),
@@ -184,9 +186,11 @@ export class GeoServiceDoctype extends IngridShared {
                   },
                 },
                 expressions: {
-                  "props.required":
-                    "formState.mainModel?.service?.couplingType?.key === 'tight'",
-                  className: "field.props.required ? '' : 'optional'",
+                  "props.required": (field: FormlyFieldConfig) =>
+                    field.options.formState.mainModel?.service?.couplingType
+                      ?.key === "tight",
+                  className: (field: FormlyFieldConfig) =>
+                    field.props.required ? "" : "optional",
                 },
               },
               this.addSelectInline("couplingType", "Kopplungstyp", {
@@ -200,16 +204,20 @@ export class GeoServiceDoctype extends IngridShared {
                 hasInlineContextHelp: true,
                 wrappers: ["inline-help", "form-field"],
                 expressions: {
-                  hide: "!formState.mainModel?.service?.coupledResources?.length",
+                  hide: (field: FormlyFieldConfig) =>
+                    !field.options.formState.mainModel?.service
+                      ?.coupledResources?.length,
                 },
               }),
             ],
             {
               contextHelpId: "shownData",
               expressions: {
-                "props.required":
-                  "formState.mainModel?.service?.couplingType?.key === 'tight'",
-                className: "field.props.required ? '' : 'optional'",
+                "props.required": (field: FormlyFieldConfig) =>
+                  field.options.formState.mainModel?.service?.couplingType
+                    ?.key === "tight",
+                className: (field: FormlyFieldConfig) =>
+                  field.props.required ? "" : "optional",
               },
             },
           ),

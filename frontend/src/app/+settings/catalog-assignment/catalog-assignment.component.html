@@ -22,7 +22,7 @@
             style="max-width: 460px"
             placeholder="Katalog auswählen..."
             (reset)="selectedCatalogId = null"
-            (optionSelect)="selectedCatalogId = $event.id"
+            (optionSelect)="selectedCatalogId = $event.value"
         ></ige-filter-select>
         <button
             style="max-width: 460px"

@@ -38,11 +38,7 @@ class Agent : Serializable {
         return name == agent.name && type == agent.type
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(name, type)
-    }
+    override fun hashCode(): Int = Objects.hash(name, type)
 
-    override fun toString(): String {
-        return "Agent{name=$name, type=$type}"
-    }
+    override fun toString(): String = "Agent{name=$name, type=$type}"
 }

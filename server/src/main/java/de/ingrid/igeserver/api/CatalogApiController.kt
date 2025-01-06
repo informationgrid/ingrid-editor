@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.api
 
+import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -35,7 +36,8 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.utils.AuthUtils
-import jakarta.validation.Valid
+import de.ingrid.igeserver.utils.FileUploadHandler
+import org.apache.logging.log4j.kotlin.logger
 import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
 import org.springframework.http.HttpHeaders.CONTENT_DISPOSITION
 import org.springframework.http.HttpStatus
@@ -58,7 +60,9 @@ class CatalogApiController(
     val catalogImportService: CatalogImportService,
     val catalogExportService: CatalogExportService,
     val authUtils: AuthUtils,
+    val fileUploadHandler: FileUploadHandler,
 ) : CatalogApi {
+    val log = logger()
 
     override fun catalogs(principal: Principal): ResponseEntity<List<Catalog>> {
         val catalogs = catalogService.getCatalogsForPrincipal(principal)
@@ -137,19 +141,39 @@ class CatalogApiController(
 
     override fun catalogImport(
         principal: Principal,
-        file: @Valid MultipartFile,
+        file: MultipartFile,
+        flowChunkNumber: Int,
+        flowTotalChunks: Int,
+        flowCurrentChunkSize: Long,
+        flowTotalSize: Long,
+        flowIdentifier: String,
+        flowFilename: String,
     ): ResponseEntity<Unit> {
         authUtils.isSuperAdmin(principal).ifFalse {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .build()
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
-        val exportedCatalog: ExportedCatalog = jacksonObjectMapper().readValue(file.inputStream)
-
-        catalogImportService.importCatalog(
-            exportedCatalog,
+        val combinedFile = fileUploadHandler.handleChunk(
+            file = file,
+            flowChunkNumber = flowChunkNumber,
+            flowTotalChunks = flowTotalChunks,
+            flowIdentifier = flowIdentifier,
+            flowFilename = flowFilename,
         )
-        return ResponseEntity.ok().build()
+
+        combinedFile?.let {
+            // Actual Import
+            val exportedCatalog: ExportedCatalog = jacksonObjectMapper()
+                .enable(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION)
+                .readValue(it.toFile())
+            catalogImportService.importCatalog(exportedCatalog)
+
+            fileUploadHandler.cleanup(flowIdentifier)
+            return ResponseEntity.ok().build()
+        }
+
+        // Not every chunk uploaded yet
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build()
     }
 
     override fun catalogExport(principal: Principal, catalogIdentifier: String): ResponseEntity<ByteArray?> {

@@ -31,8 +31,7 @@ import org.springframework.stereotype.Component
 @Component
 class PostUploadReverter(
     val storage: Storage,
-) :
-    Filter<PostRevertPayload> {
+) : Filter<PostRevertPayload> {
 
     override val profiles = emptyArray<String>()
 
