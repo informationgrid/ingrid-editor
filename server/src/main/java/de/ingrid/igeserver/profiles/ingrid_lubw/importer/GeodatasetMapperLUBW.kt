@@ -22,9 +22,9 @@ package de.ingrid.igeserver.profiles.ingrid_lubw.importer
 import de.ingrid.igeserver.exports.iso.MDDataIdentification
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 
-class GeodatasetMapperLUBW(isoData: IsoImportData, config: Config) : GeodatasetMapper(isoData, config) {
+class GeodatasetMapperLUBW(isoData: IsoImportData, uploadConfig: UploadConfig) : GeodatasetMapper(isoData, uploadConfig) {
 
     override fun getKeywords(): List<String> = super.getKeywords().filterNot { it.startsWith("oac: ") }
 

@@ -21,9 +21,9 @@ package de.ingrid.igeserver.profiles.ingrid.importer.iso19139
 
 import de.ingrid.igeserver.exports.iso.OperatesOn
 import de.ingrid.igeserver.model.KeyValue
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 
-open class GeoserviceMapper(isoData: IsoImportData, config: Config) : GeneralMapper(isoData, config) {
+open class GeoserviceMapper(isoData: IsoImportData, uploadConfig: UploadConfig) : GeneralMapper(isoData, uploadConfig) {
 
     val info = metadata.identificationInfo[0].identificationInfo
 

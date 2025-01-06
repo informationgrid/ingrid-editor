@@ -55,7 +55,7 @@ import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getString
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.kotlin.util.suffixIfNot
 import org.unbescape.json.JsonEscape
@@ -71,7 +71,7 @@ data class TransformerConfig(
     val model: IngridModel,
     val catalogIdentifier: String,
     val codelists: CodelistTransformer,
-    val config: Config,
+    val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
     val cache: TransformerCache,
     val doc: Document,
@@ -85,7 +85,7 @@ open class IngridModelTransformer(
     val model = transformerConfig.model
     val catalogIdentifier = transformerConfig.catalogIdentifier
     val codelists = transformerConfig.codelists
-    val config = transformerConfig.config
+    val config = transformerConfig.uploadConfig
     val catalogService = transformerConfig.catalogService
     val cache = transformerConfig.cache
     val doc = transformerConfig.doc

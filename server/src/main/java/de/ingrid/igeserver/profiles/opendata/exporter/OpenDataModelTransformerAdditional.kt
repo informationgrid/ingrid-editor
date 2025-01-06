@@ -25,13 +25,13 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 
 class OpenDataModelTransformerAdditional(
     val doc: Document,
     val codelistHandler: CodelistHandler,
     val catalogId: String,
-    val config: Config,
+    val uploadConfig: UploadConfig,
 ) {
     fun getDistributions(): List<Distribution> = doc.data.get("distributions")?.map { dist ->
         Distribution(
@@ -90,7 +90,7 @@ class OpenDataModelTransformerAdditional(
     private fun getDownloadLink(dist: JsonNode, uuid: String): String = if (dist.getBoolean("link.asLink") == true) {
         dist.getString("link.uri") ?: "" // TODO encode uri
     } else {
-        "${config.uploadExternalUrl}$catalogId/$uuid/${dist.getString("link.uri")}"
+        "${uploadConfig.uploadExternalUrl}$catalogId/$uuid/${dist.getString("link.uri")}"
     }
 
     private fun mapAvailability(key: String?): String {

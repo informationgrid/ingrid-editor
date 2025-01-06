@@ -21,9 +21,9 @@ package de.ingrid.igeserver.profiles.ingrid_lfubayern.importer
 
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ApplicationMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 
-class ApplicationMapperLfUBayern(isoData: IsoImportData, config: Config) : ApplicationMapper(isoData, config) {
+class ApplicationMapperLfUBayern(isoData: IsoImportData, uploadConfig: UploadConfig) : ApplicationMapper(isoData, uploadConfig) {
 
     init {
         fieldToCodelist.referenceFileFormat = "20002"

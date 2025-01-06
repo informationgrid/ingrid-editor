@@ -34,10 +34,10 @@ import java.util.Map;
 
 @Configuration
 @ConfigurationProperties("upload")
-public class Config {
+public class UploadConfig {
 
     @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(Config.class);
+    private static final Log log = LogFactory.getLog(UploadConfig.class);
 
     /**
      * UPLOAD

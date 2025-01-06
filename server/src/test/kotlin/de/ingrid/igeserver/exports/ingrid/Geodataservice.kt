@@ -32,7 +32,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.SpringContext
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import initDocumentMocks
 import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.ShouldSpec
@@ -56,7 +56,7 @@ class Geodataservice : ShouldSpec() {
 
     private val codelistHandler = mockk<CodelistHandler>()
     private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
-    private val config = mockk<Config>()
+    private val uploadConfig = mockk<UploadConfig>()
 
     private lateinit var exporter: IngridIDFExporter
     private lateinit var indexExporter: IngridIndexExporter
@@ -64,8 +64,8 @@ class Geodataservice : ShouldSpec() {
 
     override suspend fun beforeSpec(spec: Spec) {
         clearAllMocks()
-        this.exporter = IngridIDFExporter(codelistHandler, config, catalogService, documentService)
-        this.luceneExporter = IngridLuceneExporter(codelistHandler, config, catalogService, documentService)
+        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService)
+        this.luceneExporter = IngridLuceneExporter(codelistHandler, uploadConfig, catalogService, documentService)
         this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)
 
         mockkObject(SpringContext.Companion)

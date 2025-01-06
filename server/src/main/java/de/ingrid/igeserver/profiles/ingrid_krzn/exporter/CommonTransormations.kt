@@ -58,6 +58,6 @@ fun getInternalReferences(modelTransformer: IngridModelTransformer, codelists: C
     )
 }
 
-fun getPortalUrl(transformerConfig: TransformerConfig): String = URI(transformerConfig.config.uploadExternalUrl).let {
+fun getPortalUrl(transformerConfig: TransformerConfig): String = URI(transformerConfig.uploadConfig.uploadExternalUrl).let {
     if (it.scheme == null) "" else it.scheme + "://" + it.host
 }

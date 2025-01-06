@@ -20,7 +20,7 @@
 package de.ingrid.igeserver.tasks
 
 import de.ingrid.igeserver.mail.EmailServiceImpl
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import de.ingrid.mdek.upload.storage.validate.VirusFoundException
 import de.ingrid.mdek.upload.storage.validate.VirusScanException
 import org.apache.logging.log4j.Level
@@ -37,7 +37,7 @@ import java.nio.file.StandardCopyOption
 @Component
 class UploadVirusScanTask(
     private var emailService: EmailServiceImpl,
-    private val uploadSettings: Config,
+    private val uploadSettings: UploadConfig,
 ) {
     val log = logger()
     val emailReportSubject = "[IGE-NG] Virus Scan Report"
