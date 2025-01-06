@@ -34,13 +34,13 @@ import org.springframework.stereotype.Service
 @Service
 class ISOImportUPSH(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig) : ISOImportProfile {
     override fun handle(catalogId: String, data: Metadata, addressMaps: MutableMap<String, String>): ImportProfileData? {
-        val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps, researchService)
+        val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps, researchService, uploadConfig)
 
         return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset" -> {
                 ImportProfileData(
                     "imports/ingrid-up-sh/geodataset.jte",
-                    GeodatasetMapper(isoData, uploadConfig),
+                    GeodatasetMapper(isoData),
                 )
             }
 

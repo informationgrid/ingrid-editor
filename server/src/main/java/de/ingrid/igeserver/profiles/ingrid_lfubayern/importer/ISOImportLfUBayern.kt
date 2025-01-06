@@ -33,34 +33,34 @@ import org.springframework.stereotype.Service
 @Service
 class ISOImportLfUBayern(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig) : ISOImportProfile {
     override fun handle(catalogId: String, data: Metadata, addressMaps: MutableMap<String, String>): ImportProfileData? {
-        val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps, researchService)
+        val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps, researchService, uploadConfig)
 
         return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "service" -> {
                 ImportProfileData(
                     "imports/ingrid-lfubayern/geoservice.jte",
-                    GeoserviceMapperLfUBayern(isoData, uploadConfig),
+                    GeoserviceMapperLfUBayern(isoData),
                 )
             }
 
             "dataset" -> {
                 ImportProfileData(
                     "imports/ingrid-lfubayern/geodataset.jte",
-                    GeodatasetMapperLfUBayern(isoData, uploadConfig),
+                    GeodatasetMapperLfUBayern(isoData),
                 )
             }
 
             "series" -> {
                 ImportProfileData(
                     "imports/ingrid-lfubayern/geodataset.jte",
-                    GeodatasetMapperLfUBayern(isoData, uploadConfig),
+                    GeodatasetMapperLfUBayern(isoData),
                 )
             }
 
             "application" -> {
                 ImportProfileData(
                     "imports/ingrid-lfubayern/application.jte",
-                    ApplicationMapperLfUBayern(isoData, uploadConfig),
+                    ApplicationMapperLfUBayern(isoData),
                 )
             }
 

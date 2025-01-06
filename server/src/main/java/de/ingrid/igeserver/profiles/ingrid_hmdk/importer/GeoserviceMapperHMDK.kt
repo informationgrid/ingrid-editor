@@ -22,9 +22,8 @@ package de.ingrid.igeserver.profiles.ingrid_hmdk.importer
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeoserviceMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
-import de.ingrid.mdek.upload.UploadConfig
 
-class GeoserviceMapperHMDK(isoData: IsoImportData, uploadConfig: UploadConfig) : GeoserviceMapper(isoData, uploadConfig) {
+class GeoserviceMapperHMDK(isoData: IsoImportData) : GeoserviceMapper(isoData) {
 
     val publicationHmbTG = containsKeyword("hmbtg")
 

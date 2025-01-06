@@ -22,9 +22,8 @@ package de.ingrid.igeserver.profiles.ingrid_lfubayern.importer
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeoserviceMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
-import de.ingrid.mdek.upload.UploadConfig
 
-class GeoserviceMapperLfUBayern(isoData: IsoImportData, uploadConfig: UploadConfig) : GeoserviceMapper(isoData, uploadConfig) {
+class GeoserviceMapperLfUBayern(isoData: IsoImportData) : GeoserviceMapper(isoData) {
 
     init {
         fieldToCodelist.referenceFileFormat = "20002"
