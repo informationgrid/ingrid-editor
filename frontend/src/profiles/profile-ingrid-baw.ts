@@ -18,15 +18,13 @@
  * limitations under the Licence.
  */
 import { Component, inject, NgModule } from "@angular/core";
-import { InGridComponent, InGridDoctype } from "./profile-ingrid";
+import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeBaw } from "./ingrid-baw/doctypes/geo-dataset.doctype";
 import { GeoServiceDoctypeBaw } from "./ingrid-baw/doctypes/geo-service.doctype";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../app/services/event/doc-events.service";
-import { TreeQuery } from "../app/store/tree/tree.query";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { SoftwareDoctypeBaw } from "./ingrid-baw/doctypes/software.doctype";
-import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CommonFieldsBaw } from "./ingrid-baw/doctypes/common-fields";
 import { ProjectDoctypeBaw } from "./ingrid-baw/doctypes/project.doctype";
 import { PublicationDoctypeBaw } from "./ingrid-baw/doctypes/publication.doctype";
@@ -45,7 +43,6 @@ class InGridBawComponent extends InGridComponent {
 
   dialog = inject(MatDialog);
   docEvents = inject(DocEventsService);
-  treeQuery = inject(TreeQuery);
   common = inject(CommonFieldsBaw);
 
   protected getDocTypes = () => [
