@@ -40,36 +40,6 @@ public class Config {
     private static final Log log = LogFactory.getLog(Config.class);
 
     /**
-     * MAIL
-     */
-    @Value("${system.mail.receiver:}")
-    public String systemMailReceiver;
-
-    @Value("${workflow.mail.sender:}")
-    public String workflowMailSender;
-
-    @Value("${workflow.mail.receiver:}")
-    public String workflowMailReceiver;
-
-    @Value("${workflow.mail.smtp:}")
-    public String workflowMailSmtpHost;
-
-    @Value("${workflow.mail.smtp.user:}")
-    public String workflowMailSmtpUser;
-
-    @Value("${workflow.mail.smtp.password:}")
-    public String workflowMailSmtpPassword;
-
-    @Value("${workflow.mail.smtp.port:}")
-    public String workflowMailSmtpPort;
-
-    @Value("${workflow.mail.smtp.ssl:false}")
-    public boolean workflowMailSmtpSSL;
-
-    @Value("${workflow.mail.smtp.protocol:smtp}")
-    public String workflowMailSmtpProtocol;
-
-    /**
      * UPLOAD
      */
     @Value("${upload.impl:de.ingrid.mdek.upload.storage.impl.FileSystemStorage}")
