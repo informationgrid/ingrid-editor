@@ -102,7 +102,10 @@ export class GeoServiceDoctype extends IngridShared {
             asSelect: true,
             showSearch: true,
             required: this.geoServiceOptions.required.classification,
-            options: this.getCodelistForSelect("5200", "classification"),
+            options: this.getCodelistForSelect(
+              "5200",
+              "service.classification",
+            ),
             codelistId: "5200",
           }),
           this.addGroup(null, null, [
@@ -112,7 +115,7 @@ export class GeoServiceDoctype extends IngridShared {
                 this.addSelectInline("type", "Art des Dienstes", {
                   required: true,
                   showSearch: true,
-                  options: this.getCodelistForSelect("5100", "type"),
+                  options: this.getCodelistForSelect("5100", "service.type"),
                   codelistId: "5100",
                   hasInlineContextHelp: true,
                   contextHelpId: "serviceType",
