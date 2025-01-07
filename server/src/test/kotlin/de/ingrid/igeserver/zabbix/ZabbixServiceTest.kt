@@ -35,7 +35,7 @@ import java.util.concurrent.Flow
 
 class ZabbixServiceTest : ShouldSpec() {
 
-    val props = ZabbixProperties("", "", "https://abc.de", "", emptyList(), "", 0)
+    val props = ZabbixProperties("", "", "https://abc.de", "", emptyList(), "", 0, "")
     val service = ZabbixService(props)
     val x = mockkStatic(HttpClient::newBuilder)
     val httpClientMock = mockk<HttpClient>(relaxed = true)
@@ -143,7 +143,9 @@ class ZabbixServiceTest : ShouldSpec() {
         }
     }
 
-    private fun prepareZabbixData(uploads: List<ZabbixModel.Upload>): ZabbixModel.ZabbixData = ZabbixModel.ZabbixData("", "", "", "", uploads)
+    private fun prepareZabbixData(uploads: List<ZabbixModel.Upload>): ZabbixModel.ZabbixData {
+        return ZabbixModel.ZabbixData("", "", "", "", "", "", uploads)
+    }
 
     private fun getRequestParameter(request: HttpRequest): String {
         val res = (request.bodyPublisher().get())

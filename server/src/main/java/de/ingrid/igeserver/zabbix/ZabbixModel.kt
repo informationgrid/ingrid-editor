@@ -91,6 +91,8 @@ class ZabbixModel {
         val uuid: String,
         val documentTitle: String,
         val documentURL: String,
+        val addressName: String,
+        val addressMail: String,
         val uploads: List<Upload>,
     )
 
@@ -130,5 +132,33 @@ class ZabbixModel {
         val docUrl: String,
         val docUuid: String,
         val severity: String,
+    )
+
+    data class User(
+        val jsonrpc: String = JSONRPC,
+        val method: String,
+        val params: UserParams,
+        val auth: String?,
+        val id: Int,
+    )
+
+    data class UserParams(
+        val username: String,
+        val passwd: String,
+        val roleid: String,
+        val usrgrps: List<UserGroup>,
+        val medias: List<Media>,
+    )
+
+    data class UserGroup(
+        val usrgrpid: String,
+    )
+
+    data class Media(
+        val mediatypeid: String,
+        val sendto: String,
+        val active: Int,
+        val severity: Int,
+        val period: String,
     )
 }
