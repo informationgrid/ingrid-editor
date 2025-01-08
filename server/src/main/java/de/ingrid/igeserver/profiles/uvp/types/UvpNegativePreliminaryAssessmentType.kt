@@ -22,7 +22,7 @@ package de.ingrid.igeserver.profiles.uvp.types
 import org.springframework.stereotype.Component
 
 @Component
-class UvpNegativePreliminaryAssessmentType() : UvpBaseType() {
+class UvpNegativePreliminaryAssessmentType : UvpBaseType() {
     override val className = "UvpNegativePreliminaryAssessmentDoc"
 
     override val jsonSchema = "/uvp/schemes/negative-preliminary-assessment.schema.json"

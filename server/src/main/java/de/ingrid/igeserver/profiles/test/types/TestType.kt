@@ -31,7 +31,5 @@ class TestType : EntityType() {
 
     val log = logger()
 
-    override fun usedInProfile(profileId: String): Boolean {
-        return false
-    }
+    override fun usedInProfile(profileId: String): Boolean = false
 }

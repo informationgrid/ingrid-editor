@@ -45,7 +45,7 @@ class HmdkFields : GeodatasetBase() {
         this.exporter =
             IngridIdfExporterHmdk(
                 this.codelistHandler,
-                this.config,
+                this.uploadConfig,
                 this.catalogService,
                 this.documentService,
             )

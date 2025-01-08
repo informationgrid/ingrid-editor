@@ -82,24 +82,20 @@ val sqlNegativeDecisionDocsWithDraft = """
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
 """.trimIndent()
 
-fun getUrlsFromJsonField(json: JsonNode): List<UploadInfo> {
-    return (
-        getUrlsFromJsonFieldTable(json, "applicationDocs") +
-            getUrlsFromJsonFieldTable(json, "announcementDocs") +
-            getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs") +
-            getUrlsFromJsonFieldTable(json, "furtherDocs") +
-            getUrlsFromJsonFieldTable(json, "considerationDocs") +
-            getUrlsFromJsonFieldTable(json, "approvalDocs") +
-            getUrlsFromJsonFieldTable(json, "decisionDocs")
-        )
-}
+fun getUrlsFromJsonField(json: JsonNode): List<UploadInfo> = (
+    getUrlsFromJsonFieldTable(json, "applicationDocs") +
+        getUrlsFromJsonFieldTable(json, "announcementDocs") +
+        getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs") +
+        getUrlsFromJsonFieldTable(json, "furtherDocs") +
+        getUrlsFromJsonFieldTable(json, "considerationDocs") +
+        getUrlsFromJsonFieldTable(json, "approvalDocs") +
+        getUrlsFromJsonFieldTable(json, "decisionDocs")
+    )
 
-fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadInfo> {
-    return json.get(tableField)
-        ?.filter { !it.get("downloadURL").get("asLink").asBoolean() }
-        ?.map { mapToUploadInfo(it) }
-        ?: emptyList()
-}
+fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadInfo> = json.get(tableField)
+    ?.filter { !it.get("downloadURL").get("asLink").asBoolean() }
+    ?.map { mapToUploadInfo(it) }
+    ?: emptyList()
 
 private fun mapToUploadInfo(it: JsonNode): UploadInfo {
     val validUntilDateField = it.get("validUntil")

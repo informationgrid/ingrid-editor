@@ -25,29 +25,27 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 
 class OpenDataModelTransformerAdditional(
     val doc: Document,
     val codelistHandler: CodelistHandler,
     val catalogId: String,
-    val config: Config,
+    val uploadConfig: UploadConfig,
 ) {
-    fun getDistributions(): List<Distribution> {
-        return doc.data.get("distributions")?.map { dist ->
-            Distribution(
-                dist.getStringOrEmpty("format.key"),
-                getDownloadLink(dist, doc.uuid),
-                dist.getStringOrEmpty("modified"),
-                dist.getStringOrEmpty("title"),
-                dist.getStringOrEmpty("description"),
-                mapLicense(dist.getString("license.key")),
-                dist.getStringOrEmpty("byClause"),
-                dist.get("languages").mapNotNull { mapLanguage(it) },
-                mapAvailability(dist.getStringOrEmpty("availability.key")),
-            )
-        } ?: emptyList()
-    }
+    fun getDistributions(): List<Distribution> = doc.data.get("distributions")?.map { dist ->
+        Distribution(
+            dist.getStringOrEmpty("format.key"),
+            getDownloadLink(dist, doc.uuid),
+            dist.getStringOrEmpty("modified"),
+            dist.getStringOrEmpty("title"),
+            dist.getStringOrEmpty("description"),
+            mapLicense(dist.getString("license.key")),
+            dist.getStringOrEmpty("byClause"),
+            dist.get("languages").mapNotNull { mapLanguage(it) },
+            mapAvailability(dist.getStringOrEmpty("availability.key")),
+        )
+    } ?: emptyList()
     fun getHierarchyParent() = doc.data.getString("_parent") ?: ""
     fun getUuid() = doc.uuid
     fun getTitle() = doc.title?.trim() ?: ""
@@ -89,12 +87,10 @@ class OpenDataModelTransformerAdditional(
     fun getTemporalStart(): String? = null
     fun getTemporalEnd(): String? = null
 
-    private fun getDownloadLink(dist: JsonNode, uuid: String): String {
-        return if (dist.getBoolean("link.asLink") == true) {
-            dist.getString("link.uri") ?: "" // TODO encode uri
-        } else {
-            "${config.uploadExternalUrl}$catalogId/$uuid/${dist.getString("link.uri")}"
-        }
+    private fun getDownloadLink(dist: JsonNode, uuid: String): String = if (dist.getBoolean("link.asLink") == true) {
+        dist.getString("link.uri") ?: "" // TODO encode uri
+    } else {
+        "${uploadConfig.uploadExternalUrl}$catalogId/$uuid/${dist.getString("link.uri")}"
     }
 
     private fun mapAvailability(key: String?): String {
@@ -108,9 +104,7 @@ class OpenDataModelTransformerAdditional(
         return License(licenseKey, value!!)
     }
 
-    private fun mapLanguage(it: JsonNode): String? {
-        return codelistHandler.getCatalogCodelistValue(catalogId, "20007", it.getString("key")!!)
-    }
+    private fun mapLanguage(it: JsonNode): String? = codelistHandler.getCatalogCodelistValue(catalogId, "20007", it.getString("key")!!)
 }
 
 data class Distribution(

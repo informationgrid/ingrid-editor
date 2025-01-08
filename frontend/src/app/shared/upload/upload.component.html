@@ -1,4 +1,4 @@
-<ng-container #flow="flow" [flowConfig]="flowConfig"></ng-container>
+<ng-container #flow="flow" [flowConfig]="flowConfig()"></ng-container>
 
 <div
     [class.no-drop-zone]="showOnlyProgress"
@@ -13,7 +13,7 @@
                 @if (infoText) {
                     <div>{{ infoText }}</div>
                 }
-                <div class="strong">Datei(en) zum Hochladen hier ablegen</div>
+                <div class="strong">{{ dropZoneText() }}</div>
                 <mat-icon class="upload light" svgIcon="upload"></mat-icon>
                 <div class="alternative-text">oder</div>
                 <button

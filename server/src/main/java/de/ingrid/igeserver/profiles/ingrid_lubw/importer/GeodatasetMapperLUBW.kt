@@ -27,12 +27,10 @@ class GeodatasetMapperLUBW(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
     override fun getKeywords(): List<String> = super.getKeywords().filterNot { it.startsWith("oac: ") }
 
-    fun getOAC(): String? {
-        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
-            ?.flatMap { it.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
-            ?.find { it.startsWith("oac: ") }
-            ?.removePrefix("oac: ")
-    }
+    fun getOAC(): String? = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.flatMap { it.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+        ?.find { it.startsWith("oac: ") }
+        ?.removePrefix("oac: ")
 
     fun getEnvironmentDescription(): String? = (metadata.identificationInfo[0].identificationInfo as MDDataIdentification).environmentDescription?.value
 }

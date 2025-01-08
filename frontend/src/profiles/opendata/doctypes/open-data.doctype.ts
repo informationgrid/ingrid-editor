@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -162,7 +162,10 @@ export class OpenDataDoctype extends BaseDoctype {
               }),
               this.addSelectInline("format", "Format", {
                 showSearch: true,
-                options: this.getCodelistForSelect("20003", "type").pipe(
+                options: this.getCodelistForSelect(
+                  "20003",
+                  "distributions.type",
+                ).pipe(
                   map((data) => {
                     return data;
                   }),
@@ -175,7 +178,10 @@ export class OpenDataDoctype extends BaseDoctype {
                 view: "chip",
                 asSelect: true,
                 placeholder: "Sprachen",
-                options: this.getCodelistForSelect("20007", "null"),
+                options: this.getCodelistForSelect(
+                  "20007",
+                  "distributions.languages",
+                ),
                 codelistId: "20007",
                 wrappers: ["inline-help"],
                 hasInlineContextHelp: true,
@@ -189,7 +195,10 @@ export class OpenDataDoctype extends BaseDoctype {
               this.addSelectInline("license", "Lizenz", {
                 required: true,
                 showSearch: true,
-                options: this.getCodelistForSelect("20004", "null"),
+                options: this.getCodelistForSelect(
+                  "20004",
+                  "distributions.license",
+                ),
                 codelistId: "20004",
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
@@ -203,7 +212,10 @@ export class OpenDataDoctype extends BaseDoctype {
                 },
               ),
               this.addSelectInline("availability", "geplante Verfügbarkeit", {
-                options: this.getCodelistForSelect("20005", "null"),
+                options: this.getCodelistForSelect(
+                  "20005",
+                  "distributions.availability",
+                ),
                 codelistId: "20005",
                 wrappers: ["inline-help", "form-field"],
                 hasInlineContextHelp: true,
@@ -241,7 +253,10 @@ export class OpenDataDoctype extends BaseDoctype {
           "politicalGeocodingLevel",
           "Ebene der geopolitischen Abdeckung",
           {
-            options: this.getCodelistForSelect("20006", "null"),
+            options: this.getCodelistForSelect(
+              "20006",
+              "politicalGeocodingLevel",
+            ),
             codelistId: "20006",
           },
         ),
@@ -265,7 +280,9 @@ export class OpenDataDoctype extends BaseDoctype {
             fieldLabel: "Datum",
             required: true,
             expressions: {
-              hide: "model?.rangeType?.key == null || model?.rangeType?.key === 'range'",
+              hide: (field: FormlyFieldConfig) =>
+                field.model?.rangeType?.key == null ||
+                field.model?.rangeType?.key === "range",
             },
           }),
           this.addDateRange("timeSpanRange", null, {
@@ -273,7 +290,8 @@ export class OpenDataDoctype extends BaseDoctype {
             fieldLabel: "Datum",
             required: true,
             expressions: {
-              hide: "model?.rangeType?.key !== 'range'",
+              hide: (field: FormlyFieldConfig) =>
+                field.model?.rangeType?.key !== "range",
             },
           }),
         ]),

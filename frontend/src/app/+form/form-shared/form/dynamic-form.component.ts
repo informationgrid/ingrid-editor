@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -167,7 +167,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private readonly: boolean;
   private loadSubscription: Subscription[] = [];
-  showBlocker = false;
+  showBlocker = signal<boolean>(false);
   isStickyHeader = false;
   numberOfErrors = 0;
   showValidationErrors = false;
@@ -294,7 +294,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // during save
     this.docEvents
       .beforeSave$(this.address)
-      .subscribe(() => (this.showBlocker = true));
+      .subscribe(() => this.showBlocker.set(true));
 
     // reset dirty flag after save
     this.docEvents.afterSave$(this.address).subscribe((data) => {
@@ -305,7 +305,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.documentService.documentOperationFinished$
       .pipe(untilDestroyed(this))
-      .subscribe((finished) => (this.showBlocker = !finished));
+      .subscribe((finished) => this.showBlocker.set(!finished));
 
     this.initScrollBehavior();
   }

@@ -33,7 +33,7 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -49,7 +49,7 @@ class OpenDataExporter(
     @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
     val ingridIndexExporter: IngridIndexExporter,
     val codelistHandler: CodelistHandler,
-    val uploadConfig: Config,
+    val uploadConfig: UploadConfig,
 ) : IgeExporter {
 
     val log = logger()

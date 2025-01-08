@@ -112,32 +112,24 @@ class IndexExporterAddress(
         return getParentTitle(parent.parent) + (publishedDoc.title ?: "")
     }
 
-    private fun getCommTypeKeys(doc: Document): ArrayNode {
-        return jacksonObjectMapper().createArrayNode().apply {
-            doc.data.get("contact")
-                .map { it.get("type").get("key").textValue() }
-                .forEach { add(it) }
-        }
+    private fun getCommTypeKeys(doc: Document): ArrayNode = jacksonObjectMapper().createArrayNode().apply {
+        doc.data.get("contact")
+            .map { it.get("type").get("key").textValue() }
+            .forEach { add(it) }
     }
 
-    private fun getCommTypeValues(doc: Document): ArrayNode {
-        return jacksonObjectMapper().createArrayNode().apply {
-            doc.data.get("contact")
-                .map { it.get("type").get("key").textValue() }
-                .map { codelistService.getCodeListValue("4430", it, "de") }
-                .forEach { add(it) }
-        }
+    private fun getCommTypeValues(doc: Document): ArrayNode = jacksonObjectMapper().createArrayNode().apply {
+        doc.data.get("contact")
+            .map { it.get("type").get("key").textValue() }
+            .map { codelistService.getCodeListValue("4430", it, "de") }
+            .forEach { add(it) }
     }
 
-    private fun getCommValues(doc: Document): ArrayNode {
-        return jacksonObjectMapper().createArrayNode().apply {
-            doc.data.get("contact")
-                .map { it.get("connection").textValue() }
-                .forEach { add(it) }
-        }
+    private fun getCommValues(doc: Document): ArrayNode = jacksonObjectMapper().createArrayNode().apply {
+        doc.data.get("contact")
+            .map { it.get("connection").textValue() }
+            .forEach { add(it) }
     }
 
-    override fun toString(exportedObject: Any): String {
-        return exportedObject.toString()
-    }
+    override fun toString(exportedObject: Any): String = exportedObject.toString()
 }

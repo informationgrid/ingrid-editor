@@ -35,7 +35,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
@@ -83,36 +83,34 @@ class IngridExporterHmdkMetaver(
 @Service
 class IngridIdfExporterHmdk(
     codelistHandler: CodelistHandler,
-    config: Config,
+    uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
+) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService) {
 
-    override fun getModelTransformerClass(docType: String): KClass<out Any>? =
-        getHmdkModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getHmdkModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
 }
 
 @Service
 class IngridIdfExporterHmdkMetaver(
     codelistHandler: CodelistHandler,
-    config: Config,
+    uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
+) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService) {
 
-    override fun getModelTransformerClass(docType: String): KClass<out Any>? =
-        getHmdkModelMetaverTransformerClass(docType) ?: super.getModelTransformerClass(docType)
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getHmdkModelMetaverTransformerClass(docType) ?: super.getModelTransformerClass(docType)
 }
 
 @Service
 class IngridLuceneExporterHmdk(
     codelistHandler: CodelistHandler,
-    config: Config,
+    uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
 ) : IngridLuceneExporter(
     codelistHandler,
-    config,
+    uploadConfig,
     catalogService,
     documentService,
 ) {
@@ -127,7 +125,7 @@ class IngridLuceneExporterHmdk(
                         data.mapper.convertValue(data.doc, IngridModel::class.java),
                         data.catalogIdentifier,
                         data.codelistTransformer,
-                        config,
+                        uploadConfig,
                         catalogService,
                         TransformerCache(),
                         data.doc,

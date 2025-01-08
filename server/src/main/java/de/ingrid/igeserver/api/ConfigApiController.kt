@@ -51,30 +51,24 @@ class ConfigApiController(
     @Value("\${frontend.keycloak.enable}")
     var keycloakEnabled: Boolean = true
 
-    override fun get(): ResponseEntity<FrontendConfiguration> {
-        return ResponseEntity.ok().body(
-            FrontendConfiguration(
-                keycloakUrl = keycloakUrlFrontend,
-                keycloakRealm = keycloakRealm,
-                keycloakClientId = keycloakClientId,
-                keycloakEnabled = keycloakEnabled,
-                supportEmail = supportEmail,
-            ),
-        )
-    }
+    override fun get(): ResponseEntity<FrontendConfiguration> = ResponseEntity.ok().body(
+        FrontendConfiguration(
+            keycloakUrl = keycloakUrlFrontend,
+            keycloakRealm = keycloakRealm,
+            keycloakClientId = keycloakClientId,
+            keycloakEnabled = keycloakEnabled,
+            supportEmail = supportEmail,
+        ),
+    )
 
-    override fun getConnections(): ResponseEntity<ConnectionConfig> {
-        return ResponseEntity.ok().body(
-            ConnectionConfig(
-                settingsService.getIBusConfig(),
-                settingsService.getElasticConfig(),
-            ),
-        )
-    }
+    override fun getConnections(): ResponseEntity<ConnectionConfig> = ResponseEntity.ok().body(
+        ConnectionConfig(
+            settingsService.getIBusConfig(),
+            settingsService.getElasticConfig(),
+        ),
+    )
 
-    override fun isConnected(id: String): ResponseEntity<Boolean> {
-        return ResponseEntity.ok().body(connectionService.isConnected(id))
-    }
+    override fun isConnected(id: String): ResponseEntity<Boolean> = ResponseEntity.ok().body(connectionService.isConnected(id))
 
     override fun setConnections(config: ConnectionConfig): ResponseEntity<ConnectionConfig> {
         config.ibus?.let {

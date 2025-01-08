@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,6 +19,7 @@
  */
 import { FormFieldHelper } from "../../form-field-helper";
 import { GeometryContextDialogComponent } from "./geometry-context-dialog.component";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 export function geometryContextFields() {
   const fieldHelper = new FormFieldHelper();
@@ -53,14 +54,17 @@ export function geometryContextFields() {
       ],
       {
         fieldGroupClassName: "flex-row gap-12",
-        hideExpression:
-          "!model.featureType || model.featureType?.key === 'nominal' || model.featureType?.key === 'other'",
+        hideExpression: (field: FormlyFieldConfig) =>
+          !field.model.featureType ||
+          field.model.featureType?.key === "nominal" ||
+          field.model.featureType?.key === "other",
       },
     ),
     fieldHelper.addInputInline("unit", "Einheit", {
       required: true,
       expressions: {
-        hide: "model.featureType?.key !== 'scalar'",
+        hide: (field: FormlyFieldConfig) =>
+          field.model.featureType?.key !== "scalar",
       },
     }),
     fieldHelper.addRepeat("attributes", "Attribute", {

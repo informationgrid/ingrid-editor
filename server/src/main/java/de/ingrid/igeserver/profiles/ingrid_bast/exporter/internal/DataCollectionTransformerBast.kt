@@ -27,8 +27,7 @@ import de.ingrid.igeserver.profiles.ingrid_bast.exporter.getBastKeywords
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 
-class DataCollectionTransformerBast(transformerConfig: TransformerConfig) :
-    DataCollectionModelTransformer(transformerConfig) {
+class DataCollectionTransformerBast(transformerConfig: TransformerConfig) : DataCollectionModelTransformer(transformerConfig) {
 
     private val docData = doc.data
 

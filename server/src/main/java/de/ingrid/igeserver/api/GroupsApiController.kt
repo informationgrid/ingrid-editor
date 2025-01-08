@@ -104,10 +104,11 @@ class GroupsApiController(
         principalId: String,
         principal: Principal,
         group: Group,
-    ) = group.manager?.userId == principalId || igeAclService.hasRightsForGroup(
-        principal as Authentication,
-        group,
-    )
+    ) = group.manager?.userId == principalId ||
+        igeAclService.hasRightsForGroup(
+            principal as Authentication,
+            group,
+        )
 
     private fun userBelongsToGroup(
         userGroupIds: List<Int>,

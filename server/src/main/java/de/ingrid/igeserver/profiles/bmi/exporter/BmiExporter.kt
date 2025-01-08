@@ -30,7 +30,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -43,7 +43,7 @@ import org.unbescape.json.JsonEscape
 @Service
 class BmiExporter(
     val codelistHandler: CodelistHandler,
-    val config: Config,
+    val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
     @Lazy val documentService: DocumentService,
 ) : IgeExporter {
@@ -79,9 +79,7 @@ class BmiExporter(
         return output.toString()
     }
 
-    override fun toString(exportedObject: Any): String {
-        return exportedObject.toString()
-    }
+    override fun toString(exportedObject: Any): String = exportedObject.toString()
 
     private fun getMapFromObject(json: Document, catalogId: String, options: ExportOptions): Map<String, Any> {
         val modelTransformer = getModelTransformer(json, catalogId, options)
@@ -92,9 +90,7 @@ class BmiExporter(
         )
     }
 
-    private fun getBmiModel(json: Document, catalogId: String): BmiModel {
-        return jacksonObjectMapper().convertValue(json, BmiModel::class.java)
-    }
+    private fun getBmiModel(json: Document, catalogId: String): BmiModel = jacksonObjectMapper().convertValue(json, BmiModel::class.java)
 
     private fun getModelTransformer(json: Document, catalogId: String, exportOptions: ExportOptions): Any {
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
@@ -105,7 +101,7 @@ class BmiExporter(
                 getBmiModel(json, catalogId),
                 catalogId,
                 codelistTransformer,
-                config,
+                uploadConfig,
                 catalogService,
                 TransformerCache(),
                 json,

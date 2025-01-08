@@ -26,7 +26,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import initDocumentMocks
 import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.ShouldSpec
@@ -44,13 +44,13 @@ class PartialExports : ShouldSpec() {
     // this bean must be mocked, although it might not be used in this class
     private val catalogService = mockk<CatalogService>()
     private val codelistHandler = mockk<CodelistHandler>()
-    private val config = mockk<Config>()
+    private val uploadConfig = mockk<UploadConfig>()
 
     private lateinit var exporter: IngridIDFExporter
 
     override suspend fun beforeSpec(spec: Spec) {
         clearAllMocks()
-        this.exporter = IngridIDFExporter(this.codelistHandler, this.config, this.catalogService, this.documentService)
+        this.exporter = IngridIDFExporter(this.codelistHandler, this.uploadConfig, this.catalogService, this.documentService)
 
         every { codelistHandler.getCatalogCodelistValue(this.any(), this.any(), this.any()) } answers {
             val codelistId = this.secondArg<String>()
@@ -130,6 +130,44 @@ class PartialExports : ShouldSpec() {
             )
 
             result shouldContain IDF_REFERENCES
+        }
+
+        should("export distributor but not in contact") {
+
+            val context = jacksonObjectMapper().readTree(
+                """{
+                    "pointOfContact": [
+                      {
+                        "type": {
+                          "key": "12"
+                        },
+                        "ref": "14a37ded-4ca5-4677-bfed-3607bed3071d"
+                      },
+                      {
+                        "type": {
+                          "key": "5"
+                        },
+                        "ref": "25d56d6c-ed8d-4589-8c14-f8cfcb669115"
+                      },
+                      {
+                        "type": {
+                          "key": "7"
+                        },
+                        "ref": "fc521f66-0f47-45fb-ae42-b14fc669942e"
+                      }
+                    ]
+                    }
+                """.trimIndent(),
+            ) as ObjectNode
+
+            val result = exportJsonToXML(
+                exporter,
+                "/export/ingrid/geo-service.minimal.sample.json",
+                context,
+            )
+
+            result shouldContain POINTOFCONTACT_WITHOUT_DISTRIBUTOR
+            result shouldContain DISTRIBUTOR
         }
     }
 }

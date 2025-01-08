@@ -57,12 +57,10 @@ class SNSUbaUmthesThesaurus : ThesaurusService() {
         )
     }
 
-    private fun convertType(searchType: ThesaurusSearchType): String {
-        return when (searchType) {
-            ThesaurusSearchType.EXACT -> "exact"
-            ThesaurusSearchType.BEGINS_WITH -> "begins_with"
-            ThesaurusSearchType.ENDS_WITH -> "ends_with"
-            ThesaurusSearchType.CONTAINS -> "contains"
-        }
+    private fun convertType(searchType: ThesaurusSearchType): String = when (searchType) {
+        ThesaurusSearchType.EXACT -> "exact"
+        ThesaurusSearchType.BEGINS_WITH -> "begins_with"
+        ThesaurusSearchType.ENDS_WITH -> "ends_with"
+        ThesaurusSearchType.CONTAINS -> "contains"
     }
 }

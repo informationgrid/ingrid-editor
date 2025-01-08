@@ -19,8 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
-open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) :
-    IngridModelTransformer(transformerConfig) {
+open class GeodataserviceModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
     override val hierarchyLevel = "service"
     override val hierarchyLevelName = "service"

@@ -92,11 +92,9 @@ class Migration : ApplicationRunner {
         }
     }
 
-    private fun getStrategiesAfter(version: String): List<MigrationStrategy> {
-        return migrationStrategies
-            .filter { it.compareWithVersion(version) == VersionCompare.HIGHER }
-            .sortedBy { it.version }
-    }
+    private fun getStrategiesAfter(version: String): List<MigrationStrategy> = migrationStrategies
+        .filter { it.compareWithVersion(version) == VersionCompare.HIGHER }
+        .sortedBy { it.version }
 
     private fun getVersion(): String {
         val info = versionRepo.findById(1).get()

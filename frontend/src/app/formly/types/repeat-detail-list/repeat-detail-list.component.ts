@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -55,7 +55,7 @@ import {
   AddButtonOptions,
 } from "../../../shared/add-button/add-button.component";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { debounceTime } from "rxjs/operators";
+import { debounceTime, startWith } from "rxjs/operators";
 
 interface RepeatDetailListProps extends FormlyFieldProps {
   titleField: string;
@@ -97,7 +97,11 @@ export class RepeatDetailListComponent
 
   ngOnInit(): void {
     this.formControl.valueChanges
-      .pipe(untilDestroyed(this), debounceTime(0))
+      .pipe(
+        untilDestroyed(this),
+        startWith(this.formControl.value),
+        debounceTime(0),
+      )
       .subscribe((items) => this.previewItems.set(items));
   }
 

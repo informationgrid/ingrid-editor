@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -25,7 +25,7 @@ import {
 import { Observable } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { CatalogDataService } from "./catalog-data.service";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpResponse } from "@angular/common/http";
 import { Catalog } from "./catalog.model";
 import { CatalogStore } from "../../store/catalog/catalog.store";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -105,6 +105,26 @@ export class CatalogService {
         CatalogService.prepareForBackend(catalog),
       )
       .pipe(tap(() => this.getCatalogs().subscribe()));
+  }
+
+  exportCatalog(id: string) {
+    this.http
+      .post(this.configuration.backendUrl + `catalogs/export/${id}`, null, {
+        responseType: "blob",
+        observe: "response",
+      })
+      .pipe(
+        tap((response: HttpResponse<Blob>) => {
+          const downloadLink = document.createElement("a");
+          downloadLink.href = window.URL.createObjectURL(response.body);
+          downloadLink.setAttribute("download", "catalog_export.json");
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          downloadLink.remove();
+        }),
+        map((): void => null),
+      )
+      .subscribe();
   }
 
   setCatalogAdmin(catalogName: string, userIds: string[]) {

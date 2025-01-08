@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -123,9 +123,12 @@ export class SharedHmdk {
         hide: (field: FormlyFieldConfig) =>
           field.model.properties?.publicationHmbTG !== true &&
           field.model.properties?.isOpenData !== true,
-        "props.disabled":
-          "(field.model.properties?.publicationHmbTG !== true && field.model.properties?.isOpenData === true) || formState.disabled",
-        "props.required": "field.model.properties?.publicationHmbTG === true",
+        "props.disabled": (field: FormlyFieldConfig) =>
+          (field.model.properties?.publicationHmbTG !== true &&
+            field.model.properties?.isOpenData === true) ||
+          field.options.formState.disabled,
+        "props.required": (field: FormlyFieldConfig) =>
+          field.model.properties?.publicationHmbTG === true,
       },
       options: doc.getCodelistForSelect(
         "informationsgegenstand",

@@ -22,7 +22,7 @@ package de.ingrid.igeserver.profiles.uvp.types
 import org.springframework.stereotype.Component
 
 @Component
-class UvpApprovalProcedureType() : UvpBaseType() {
+class UvpApprovalProcedureType : UvpBaseType() {
     override val className = "UvpApprovalProcedureDoc"
 
     override val jsonSchema = "/uvp/schemes/approval-procedure.schema.json"

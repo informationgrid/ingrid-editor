@@ -28,7 +28,5 @@ class MarkdownContextHelpItem(val markDownFilename: Path) {
      */
     var title: String? = null
 
-    override fun toString(): String {
-        return "MarkdownContextHelpItem: {markDownFilename: $markDownFilename; title: $title}"
-    }
+    override fun toString(): String = "MarkdownContextHelpItem: {markDownFilename: $markDownFilename; title: $title}"
 }

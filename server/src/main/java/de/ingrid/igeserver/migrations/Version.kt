@@ -38,9 +38,7 @@ class Version(inputVersion: String) : Comparable<Version> {
             0
         }
 
-    override fun toString(): String {
-        return version
-    }
+    override fun toString(): String = version
 
     init {
         require(inputVersion.matches("[0-9]+(\\.[0-9]+)*".toRegex())) { "Invalid version format" }

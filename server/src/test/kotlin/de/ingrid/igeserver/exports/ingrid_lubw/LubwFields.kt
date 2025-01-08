@@ -40,7 +40,7 @@ class LubwFields : GeodatasetBase() {
         this.exporter =
             IngridIdfExporterLubw(
                 this.codelistHandler,
-                this.config,
+                this.uploadConfig,
                 this.catalogService,
                 this.documentService,
             )

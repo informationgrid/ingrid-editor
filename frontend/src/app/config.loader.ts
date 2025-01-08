@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -127,7 +127,7 @@ export function ConfigLoader(
         )
           .then(() => configService.getCurrentUserInfo())
           .then((info) => {
-            const language = info.currentCatalog.settings.config.language;
+            const language = info.currentCatalog.settings?.config.language;
             if (language) generalStore.setCatalogLanguage(language);
           });
         return;
@@ -158,7 +158,7 @@ export function ConfigLoader(
       await configService.load();
       await initializeKeycloakAndGetUserInfo(authFactory, configService);
       const language =
-        configService.$userInfo.value.currentCatalog.settings.config.language;
+        configService.$userInfo.value.currentCatalog.settings?.config.language;
       if (language) generalStore.setCatalogLanguage(language);
       await firstValueFrom(translocoService.load("de"));
       await redirectToCatalogSpecificRoute(router, dialog);

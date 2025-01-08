@@ -158,6 +158,9 @@
                                         class="menu-button"
                                         matTooltip="Bearbeiten"
                                         [matMenuTriggerFor]="tableRowAction"
+                                        (click)="
+                                            $event.stopImmediatePropagation()
+                                        "
                                     >
                                         <mat-icon svgIcon="Mehr"></mat-icon>
                                     </button>

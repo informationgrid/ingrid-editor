@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -118,20 +118,23 @@ export class CatalogCodelistsComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {
-    effect(() => {
-      if (this.codelistSelect?.value) {
-        const option = this.filteredOptions().find(
-          (item) => item.id === this.codelistSelect.value.id,
-        );
-        if (!option) {
+    effect(
+      () => {
+        if (this.codelistSelect?.value) {
+          const option = this.filteredOptions().find(
+            (item) => item.id === this.codelistSelect.value.id,
+          );
+          if (!option) {
+            this.codelistSelect.setValue(this.filteredOptions()[0]);
+            this.selectCodelist(this.filteredOptions()[0]);
+          }
+        } else if (this.filteredOptions().length > 0) {
           this.codelistSelect.setValue(this.filteredOptions()[0]);
           this.selectCodelist(this.filteredOptions()[0]);
         }
-      } else if (this.filteredOptions().length > 0) {
-        this.codelistSelect.setValue(this.filteredOptions()[0]);
-        this.selectCodelist(this.filteredOptions()[0]);
-      }
-    });
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   ngOnInit(): void {

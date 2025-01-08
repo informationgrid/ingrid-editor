@@ -100,3 +100,154 @@ const val ADDRESS_HIERARCHY_WITH_NO_POSITION_NAME_SET = """
                 <gco:CharacterString>Sub-Organization</gco:CharacterString>
             </gmd:positionName>
 """
+
+const val POINTOFCONTACT_WITHOUT_DISTRIBUTOR = """
+                    <gmd:pointOfContact>
+                        <idf:idfResponsibleParty type="2" uuid="fc521f66-0f47-45fb-ae42-b14fc669942e">
+                            <gmd:individualName>
+                                <gco:CharacterString>Musterfrau, Max, Frau Dr.</gco:CharacterString>
+                            </gmd:individualName>
+                            <gmd:organisationName>
+                                <gco:CharacterString>Wemove Test</gco:CharacterString>
+                            </gmd:organisationName>
+                            <gmd:positionName>
+                                <gco:CharacterString>Position/nachgeordnete Abteilung</gco:CharacterString>
+                            </gmd:positionName>
+                            <gmd:contactInfo>
+                                <gmd:CI_Contact>
+                                    <gmd:phone>
+                                        <gmd:CI_Telephone>
+                                            <gmd:voice>
+                                                <gco:CharacterString>123456789</gco:CharacterString>
+                                            </gmd:voice>
+                                            <gmd:facsimile>
+                                                <gco:CharacterString>123456789</gco:CharacterString>
+                                            </gmd:facsimile>
+                                        </gmd:CI_Telephone>
+                                    </gmd:phone>
+                                    <gmd:address>
+                                        <gmd:CI_Address>
+                                            <gmd:deliveryPoint>
+                                                <gco:CharacterString>Postbox 30151, 60314 Frankfurt am Main</gco:CharacterString>
+                                            </gmd:deliveryPoint>
+                                            <gmd:deliveryPoint>
+                                                <gco:CharacterString>Musterfrau Str.</gco:CharacterString>
+                                            </gmd:deliveryPoint>
+                                            <gmd:city>
+                                                <gco:CharacterString>Frankfurt am Main</gco:CharacterString>
+                                            </gmd:city>
+                                            <gmd:administrativeArea>
+                                                <gco:CharacterString>Hessen</gco:CharacterString>
+                                            </gmd:administrativeArea>
+                                            <gmd:postalCode>
+                                                <gco:CharacterString>60314</gco:CharacterString>
+                                            </gmd:postalCode>
+                                            <gmd:country>
+                                                <gco:CharacterString>DEU</gco:CharacterString>
+                                            </gmd:country>
+                                            <gmd:electronicMailAddress>
+                                                <gco:CharacterString>musterfrau@wemove.com</gco:CharacterString>
+                                            </gmd:electronicMailAddress>
+                                        </gmd:CI_Address>
+                                    </gmd:address>
+                                    <gmd:onlineResource>
+                                        <gmd:CI_OnlineResource>
+                                            <gmd:linkage>
+                                                <gmd:URL>https://musterfrau.com</gmd:URL>
+                                            </gmd:linkage>
+                                        </gmd:CI_OnlineResource>
+                                    </gmd:onlineResource>
+                                    <gmd:hoursOfService>
+                                        <gco:CharacterString>Servicezeiten</gco:CharacterString>
+                                    </gmd:hoursOfService>
+                                </gmd:CI_Contact>
+                            </gmd:contactInfo>
+                            <gmd:role>
+                                <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact"/>
+                            </gmd:role>
+                            <idf:hierarchyParty uuid="25d56d6c-ed8d-4589-8c14-f8cfcb669115">
+                                <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
+                                <idf:addressType>0</idf:addressType>
+                            </idf:hierarchyParty>
+                            <idf:hierarchyParty uuid="fc521f66-0f47-45fb-ae42-b14fc669942e">
+                                <idf:addressIndividualName>Musterfrau, Max, Frau Dr.</idf:addressIndividualName>
+                                <idf:addressType>2</idf:addressType>
+                            </idf:hierarchyParty>
+                        </idf:idfResponsibleParty>
+                    </gmd:pointOfContact>
+"""
+const val DISTRIBUTOR = """
+                    <gmd:distributor>
+                        <gmd:MD_Distributor>
+                            <gmd:distributorContact>
+                                <idf:idfResponsibleParty type="0" uuid="25d56d6c-ed8d-4589-8c14-f8cfcb669115">
+                                    <gmd:organisationName>
+                                        <gco:CharacterString>Wemove Test</gco:CharacterString>
+                                    </gmd:organisationName>
+                                    <gmd:positionName>
+                                        <gco:CharacterString>Position/nachgeordnete Abteilung</gco:CharacterString>
+                                    </gmd:positionName>
+                                    <gmd:contactInfo>
+                                        <gmd:CI_Contact>
+                                            <gmd:phone>
+                                                <gmd:CI_Telephone>
+                                                    <gmd:voice>
+                                                        <gco:CharacterString>0123456789</gco:CharacterString>
+                                                    </gmd:voice>
+                                                    <gmd:facsimile>
+                                                        <gco:CharacterString>0123456789</gco:CharacterString>
+                                                    </gmd:facsimile>
+                                                </gmd:CI_Telephone>
+                                            </gmd:phone>
+                                            <gmd:address>
+                                                <gmd:CI_Address>
+                                                    <gmd:deliveryPoint>
+                                                        <gco:CharacterString>Postbox 60445, 60314 Frankfurt am Main</gco:CharacterString>
+                                                    </gmd:deliveryPoint>
+                                                    <gmd:deliveryPoint>
+                                                        <gco:CharacterString>Hanauer Landstr. 52</gco:CharacterString>
+                                                    </gmd:deliveryPoint>
+                                                    <gmd:city>
+                                                        <gco:CharacterString>Frankfurt am Main</gco:CharacterString>
+                                                    </gmd:city>
+                                                    <gmd:administrativeArea>
+                                                        <gco:CharacterString>Hessen</gco:CharacterString>
+                                                    </gmd:administrativeArea>
+                                                    <gmd:postalCode>
+                                                        <gco:CharacterString>60314</gco:CharacterString>
+                                                    </gmd:postalCode>
+                                                    <gmd:country>
+                                                        <gco:CharacterString>DEU</gco:CharacterString>
+                                                    </gmd:country>
+                                                    <gmd:electronicMailAddress>
+                                                        <gco:CharacterString>mustermann@wemove.com</gco:CharacterString>
+                                                    </gmd:electronicMailAddress>
+                                                </gmd:CI_Address>
+                                            </gmd:address>
+                                            <gmd:onlineResource>
+                                                <gmd:CI_OnlineResource>
+                                                    <gmd:linkage>
+                                                        <gmd:URL>https://wemove.com</gmd:URL>
+                                                    </gmd:linkage>
+                                                </gmd:CI_OnlineResource>
+                                            </gmd:onlineResource>
+                                            <gmd:hoursOfService>
+                                                <gco:CharacterString>Servicezeiten</gco:CharacterString>
+                                            </gmd:hoursOfService>
+                                        </gmd:CI_Contact>
+                                    </gmd:contactInfo>
+                                    <gmd:role>
+                                        <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="distributor"/>
+                                    </gmd:role>
+                                    <idf:hierarchyParty uuid="25d56d6c-ed8d-4589-8c14-f8cfcb669115">
+                                        <idf:addressOrganisationName>Wemove Test</idf:addressOrganisationName>
+                                        <idf:addressType>0</idf:addressType>
+                                    </idf:hierarchyParty>
+                                </idf:idfResponsibleParty>
+                            </gmd:distributorContact>
+                            <gmd:distributionOrderProcess>
+                                <gmd:MD_StandardOrderProcess/>
+                            </gmd:distributionOrderProcess>
+                        </gmd:MD_Distributor>
+                    </gmd:distributor>
+"""

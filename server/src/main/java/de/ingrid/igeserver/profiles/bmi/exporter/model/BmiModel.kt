@@ -124,17 +124,15 @@ data class BmiModel(
             return null
         }
 
-    fun getCodelistValue(catalogId: String, codelistId: String, key: String?, value: String?): String {
-        return if (key == null) {
-            value ?: ""
-        } else {
-            val codelistValue = codelistHandler?.getCatalogCodelistValue(catalogId, codelistId, key)
-            if (codelistValue == null) {
-                // TODO: use logger
-                println("Codelist-Value not found for '$key' in list '$codelistId'")
-            }
-            codelistValue ?: ""
+    fun getCodelistValue(catalogId: String, codelistId: String, key: String?, value: String?): String = if (key == null) {
+        value ?: ""
+    } else {
+        val codelistValue = codelistHandler?.getCatalogCodelistValue(catalogId, codelistId, key)
+        if (codelistValue == null) {
+            // TODO: use logger
+            println("Codelist-Value not found for '$key' in list '$codelistId'")
         }
+        codelistValue ?: ""
     }
 
     fun isValid(): Boolean {

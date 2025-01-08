@@ -92,8 +92,32 @@ open class GeneralMapper(val isoData: IsoImportData) {
         val distributors = metadata.distributionInfo?.mdDistribution?.distributor?.map {
             it.mdDistributor.distributorContact
         } ?: emptyList()
+        val featureCatalogContacts =
+            metadata.contentInfo?.get(0)?.mdFeatureCatalogueDescription?.featureCatalogueCitation?.get(0)?.citation?.citedResponsibleParty
+                ?: emptyList()
+        val domainConsistencyContacts = metadata.dataQualityInfo?.get(0)?.dqDataQuality?.report?.get(0)?.let {
+            listOf(
+                it.dqTemporalValidity,
+                it.dqTemporalConsistency,
+                it.dqAccuracyOfATimeMeasurement,
+                it.dqQuantitativeAttributeAccuracy,
+                it.dqNonQuantitativeAttributeAccuracy,
+                it.dqThematicClassificationCorrectness,
+                it.dqRelativeInternalPositionalAccuracy,
+                it.dqGriddedDataPositionalAccuracy,
+                it.dqAbsoluteExternalPositionalAccuracy,
+                it.dqTopologicalConsistency,
+                it.dqFormatConsistency,
+                it.dqDomainConsistency,
+                it.dqConceptualConsistency,
+                it.dqCompletenessOmission,
+                it.dqCompletenessCommission,
+            ).flatMap { item ->
+                item?.result?.dqConformanceResult?.specification?.citation?.citedResponsibleParty ?: emptyList()
+            }
+        } ?: emptyList()
 
-        (mainContact + additionalContacts + distributors).flatMapIndexed { index: Int, contact: Contact ->
+        (mainContact + additionalContacts + distributors + featureCatalogContacts + domainConsistencyContacts).flatMapIndexed { index: Int, contact: Contact ->
             val individualName = extractPersonInfo(contact.responsibleParty?.individualName?.value)
             val organization = contact.responsibleParty?.organisationName?.value
             val communications = getCommunications(contact.responsibleParty?.contactInfo?.ciContact)
@@ -145,10 +169,12 @@ open class GeneralMapper(val isoData: IsoImportData) {
                     // so we skip this "empty" address
                     if (organization == null) return@flatMapIndexed parents
                     uuid = findOrganisationUuid(organization)
-                        ?: uuid ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[organization] = newUuid }
+                        ?: uuid ?: UUID.randomUUID().toString()
+                        .also { newUuid -> isoData.addressMaps[organization] = newUuid }
                 } else {
                     uuid = findPersonUuid(individualName)
-                        ?: uuid ?: UUID.randomUUID().toString().also { newUuid -> isoData.addressMaps[getPersonIdentifier(individualName)] = newUuid }
+                        ?: uuid ?: UUID.randomUUID().toString()
+                        .also { newUuid -> isoData.addressMaps[getPersonIdentifier(individualName)] = newUuid }
                 }
             } else {
                 val identifier = if (individualName != null) getPersonIdentifier(individualName) else organization
@@ -344,7 +370,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     fun getGraphicOverviews(): List<PreviewGraphic> = metadata.identificationInfo[0].identificationInfo?.graphicOverview
         ?.map {
-            val isInternalStorage: Boolean = it.mdBrowseGraphic?.fileName?.value?.contains("/documents/") ?: false
+            val isInternalStorage: Boolean = it.mdBrowseGraphic?.fileName?.value?.contains(isoData.uploadConfig.uploadExternalUrl ?: "/documents/") ?: false
             val fileName = if (isInternalStorage) {
                 it.mdBrowseGraphic?.fileName?.value?.substringAfterLast('/')
             } else {
@@ -643,9 +669,9 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 ?.filter { transferOption.mdDigitalTransferOptions.unitsOfDistribution?.value == "MB" }
                 ?.mapNotNull { it.ciOnlineResource }
                 ?.map { resource ->
-                    val codeListValue = resource.function?.code?.codeListValue
+                    val fileFormatCode = resource.applicationProfile?.value
                     val typeId =
-                        if (codeListValue == null) null else codeListService.getCodeListEntryId("2000", codeListValue, "iso")
+                        if (fileFormatCode == null) null else codeListService.getCodeListEntryId("1320", fileFormatCode, "de")
                     val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
                     val fileName = resource.linkage.url?.substringAfterLast('/') ?: ""
                     val sizeInBytes = transferOption.mdDigitalTransferOptions.transferSize?.value?.times(1_000_000)

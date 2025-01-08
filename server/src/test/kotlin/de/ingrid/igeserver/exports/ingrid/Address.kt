@@ -26,7 +26,7 @@ import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import initDocumentMocks
 import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.ShouldSpec
@@ -46,12 +46,12 @@ class Address : ShouldSpec() {
     private val catalogService = mockk<CatalogService>()
 
     private val codelistHandler = mockk<CodelistHandler>()
-    private val config = mockk<Config>()
+    private val uploadConfig = mockk<UploadConfig>()
 
     private lateinit var exporter: IngridIDFExporter
 
     override suspend fun beforeSpec(spec: Spec) {
-        this.exporter = IngridIDFExporter(codelistHandler, config, catalogService, documentService)
+        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService)
 
         every { codelistHandler.getCatalogCodelistValue(any(), any(), any()) } answers {
             val codelistId = secondArg<String>()

@@ -41,8 +41,7 @@ class PostDefaultDocumentUnpublisher(
     var auditLogger: AuditLogger,
     @Lazy var documentService: DocumentService,
     val indexTask: IndexingTask,
-) :
-    Filter<PostUnpublishPayload> {
+) : Filter<PostUnpublishPayload> {
 
     private val log = logger()
 
