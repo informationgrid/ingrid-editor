@@ -284,10 +284,10 @@
         "unevaluatedProperties": false,
         "properties": {
           "moreInfo": {
-            "type": "string"
+            "type": ["string", "null"]
           },
           "parameter": {
-            "type": "string"
+            "type": ["string", "null"]
           }
         }
       }
