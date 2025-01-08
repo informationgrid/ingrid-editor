@@ -916,6 +916,11 @@ open class IngridModelTransformer(
                 "Dienst \"${model.title}\" (GetCapabilities)",
                 it.methodCall ?: throw ServerException.withReason("Operation URL is NULL"),
                 it.description,
+                serviceType = getServiceType(data.service.type),
+                serviceversion = getVersion(
+                    data.service.version?.firstOrNull(),
+                    data.service.type?.key,
+                ),
             )
         }
         ?: emptyList()
