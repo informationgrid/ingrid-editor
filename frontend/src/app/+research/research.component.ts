@@ -31,17 +31,17 @@ import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 
 @UntilDestroy()
 @Component({
-    selector: "ige-research",
-    templateUrl: "./research.component.html",
-    styleUrls: ["./research.component.scss"],
-    imports: [
-        MatTabNav,
-        MatTabLink,
-        RouterLinkActive,
-        RouterLink,
-        MatTabNavPanel,
-        RouterOutlet,
-    ]
+  selector: "ige-research",
+  templateUrl: "./research.component.html",
+  styleUrls: ["./research.component.scss"],
+  imports: [
+    MatTabNav,
+    MatTabLink,
+    RouterLinkActive,
+    RouterLink,
+    MatTabNavPanel,
+    RouterOutlet,
+  ],
 })
 export class ResearchComponent {
   tabs: Tab[];

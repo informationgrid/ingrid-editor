@@ -44,17 +44,17 @@ import { MatIcon } from "@angular/material/icon";
 
 @UntilDestroy()
 @Component({
-    selector: "ige-new-user-dialog",
-    templateUrl: "./new-user-dialog.component.html",
-    styleUrls: ["./new-user-dialog.component.scss"],
-    imports: [
-        DialogTemplateComponent,
-        ReactiveFormsModule,
-        MatProgressSpinner,
-        FormlyModule,
-        MatButton,
-        MatIcon,
-    ]
+  selector: "ige-new-user-dialog",
+  templateUrl: "./new-user-dialog.component.html",
+  styleUrls: ["./new-user-dialog.component.scss"],
+  imports: [
+    DialogTemplateComponent,
+    ReactiveFormsModule,
+    MatProgressSpinner,
+    FormlyModule,
+    MatButton,
+    MatIcon,
+  ],
 })
 export class NewUserDialogComponent implements OnInit {
   userSub: Subscription;

@@ -41,20 +41,20 @@ export interface AddButtonOptions {
 }
 
 @Component({
-    selector: "ige-add-button",
-    templateUrl: "./add-button.component.html",
-    styleUrls: ["./add-button.component.scss"],
-    imports: [
-        MatButton,
-        NgTemplateOutlet,
-        MatTooltip,
-        MatMenuTrigger,
-        MatMenu,
-        MatMenuItem,
-        TranslocoDirective,
-        MatError,
-        MatIcon,
-    ]
+  selector: "ige-add-button",
+  templateUrl: "./add-button.component.html",
+  styleUrls: ["./add-button.component.scss"],
+  imports: [
+    MatButton,
+    NgTemplateOutlet,
+    MatTooltip,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    TranslocoDirective,
+    MatError,
+    MatIcon,
+  ],
 })
 export class AddButtonComponent implements OnInit {
   @Input() buttonType: "stroked" | "flat" | "menu" = "stroked";

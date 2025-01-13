@@ -52,18 +52,18 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-    selector: "ige-search-input",
-    templateUrl: "./search-input.component.html",
-    styleUrls: ["./search-input.component.scss"],
-    imports: [
-        MatInputModule,
-        ReactiveFormsModule,
-        MatAutocompleteModule,
-        MatProgressSpinnerModule,
-        MatIconModule,
-        MatButtonModule,
-        FocusDirective,
-    ]
+  selector: "ige-search-input",
+  templateUrl: "./search-input.component.html",
+  styleUrls: ["./search-input.component.scss"],
+  imports: [
+    MatInputModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
+    MatButtonModule,
+    FocusDirective,
+  ],
 })
 export class SearchInputComponent {
   @Input() searchSub: Subscription;

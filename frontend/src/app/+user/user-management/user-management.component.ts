@@ -34,17 +34,17 @@ import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 
 @UntilDestroy()
 @Component({
-    selector: "ige-user-management",
-    templateUrl: "./user-management.component.html",
-    styleUrls: ["./user-management.component.scss"],
-    imports: [
-        MatTabNav,
-        MatTabLink,
-        RouterLinkActive,
-        RouterLink,
-        MatTabNavPanel,
-        RouterOutlet,
-    ]
+  selector: "ige-user-management",
+  templateUrl: "./user-management.component.html",
+  styleUrls: ["./user-management.component.scss"],
+  imports: [
+    MatTabNav,
+    MatTabLink,
+    RouterLinkActive,
+    RouterLink,
+    MatTabNavPanel,
+    RouterOutlet,
+  ],
 })
 export class UserManagementComponent implements OnInit {
   currentComponent: UserComponent | GroupComponent;

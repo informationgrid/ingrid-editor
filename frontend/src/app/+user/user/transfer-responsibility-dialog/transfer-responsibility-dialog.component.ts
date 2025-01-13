@@ -37,19 +37,19 @@ import { IgeError } from "../../../models/ige-error";
 import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
 
 @Component({
-    selector: "ige-transfer-responsibility-dialog",
-    templateUrl: "./transfer-responsibility-dialog.component.html",
-    styleUrls: ["./transfer-responsibility-dialog.component.scss"],
-    imports: [
-        UserTableComponent,
-        CdkDrag,
-        MatDialogModule,
-        MatButtonModule,
-        MatIconModule,
-        MatProgressSpinnerModule,
-        CdkDragHandle,
-        SearchInputComponent,
-    ]
+  selector: "ige-transfer-responsibility-dialog",
+  templateUrl: "./transfer-responsibility-dialog.component.html",
+  styleUrls: ["./transfer-responsibility-dialog.component.scss"],
+  imports: [
+    UserTableComponent,
+    CdkDrag,
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    CdkDragHandle,
+    SearchInputComponent,
+  ],
 })
 export class TransferResponsibilityDialogComponent implements OnInit {
   oldUser: User;

@@ -73,28 +73,28 @@ export enum TreeActionType {
 
 @UntilDestroy()
 @Component({
-    selector: "ige-tree",
-    templateUrl: "./tree.component.html",
-    styleUrls: ["./tree.component.scss"],
-    providers: [DynamicDatabase],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        TranslocoDirective,
-        TreeHeaderComponent,
-        MatIcon,
-        MatTree,
-        MatTreeNodeDef,
-        MatTreeNode,
-        MatTreeNodePadding,
-        CdkMonitorFocus,
-        MatIconButton,
-        MatTreeNodeToggle,
-        MatCheckbox,
-        DocumentIconComponent,
-        MatTooltip,
-        MatProgressSpinner,
-        EmptyNavigationComponent,
-    ]
+  selector: "ige-tree",
+  templateUrl: "./tree.component.html",
+  styleUrls: ["./tree.component.scss"],
+  providers: [DynamicDatabase],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    TranslocoDirective,
+    TreeHeaderComponent,
+    MatIcon,
+    MatTree,
+    MatTreeNodeDef,
+    MatTreeNode,
+    MatTreeNodePadding,
+    CdkMonitorFocus,
+    MatIconButton,
+    MatTreeNodeToggle,
+    MatCheckbox,
+    DocumentIconComponent,
+    MatTooltip,
+    MatProgressSpinner,
+    EmptyNavigationComponent,
+  ],
 })
 export class TreeComponent implements OnInit {
   @Input() forAddresses: boolean;

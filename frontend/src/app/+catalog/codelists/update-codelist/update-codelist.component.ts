@@ -53,29 +53,29 @@ import { MatDivider } from "@angular/material/divider";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 
 @Component({
-    selector: "ige-update-codelist",
-    templateUrl: "./update-codelist.component.html",
-    styleUrls: ["./update-codelist.component.scss"],
-    imports: [
-        CdkDrag,
-        CdkDragHandle,
-        MatIconButton,
-        MatDialogClose,
-        MatIcon,
-        MatDialogTitle,
-        CdkScrollable,
-        MatDialogContent,
-        ReactiveFormsModule,
-        MatFormField,
-        MatLabel,
-        MatInput,
-        FocusDirective,
-        MatError,
-        MatDivider,
-        AddButtonComponent,
-        MatDialogActions,
-        MatButton,
-    ]
+  selector: "ige-update-codelist",
+  templateUrl: "./update-codelist.component.html",
+  styleUrls: ["./update-codelist.component.scss"],
+  imports: [
+    CdkDrag,
+    CdkDragHandle,
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    FocusDirective,
+    MatError,
+    MatDivider,
+    AddButtonComponent,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class UpdateCodelistComponent implements OnInit {
   @ViewChild("contextCodeListContainer") container: ElementRef;

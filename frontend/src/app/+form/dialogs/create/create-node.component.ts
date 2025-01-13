@@ -77,29 +77,29 @@ export interface CreateOptions {
 
 @UntilDestroy()
 @Component({
-    templateUrl: "./create-node.component.html",
-    styleUrls: ["./create-node.component.scss"],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        CdkDrag,
-        CdkDragHandle,
-        MatIconButton,
-        MatDialogClose,
-        MatIcon,
-        MatDialogTitle,
-        MatDialogContent,
-        MatTabGroup,
-        MatTab,
-        ReactiveFormsModule,
-        DocumentTemplateComponent,
-        NgTemplateOutlet,
-        AddressTemplateComponent,
-        DestinationSelectionComponent,
-        MatDialogActions,
-        MatButton,
-        TranslocoDirective,
-        BreadcrumbComponent,
-    ]
+  templateUrl: "./create-node.component.html",
+  styleUrls: ["./create-node.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CdkDrag,
+    CdkDragHandle,
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    MatDialogContent,
+    MatTabGroup,
+    MatTab,
+    ReactiveFormsModule,
+    DocumentTemplateComponent,
+    NgTemplateOutlet,
+    AddressTemplateComponent,
+    DestinationSelectionComponent,
+    MatDialogActions,
+    MatButton,
+    TranslocoDirective,
+    BreadcrumbComponent,
+  ],
 })
 export class CreateNodeComponent implements OnInit {
   private generalStore = inject(GeneralStore);

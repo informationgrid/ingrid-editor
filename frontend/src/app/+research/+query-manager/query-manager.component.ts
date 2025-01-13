@@ -41,21 +41,21 @@ import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog
 import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
-    selector: "ige-query-manager",
-    templateUrl: "./query-manager.component.html",
-    styleUrls: ["./query-manager.component.scss"],
-    imports: [
-        PageTemplateComponent,
-        CardBoxComponent,
-        MatIcon,
-        MatTooltip,
-        MatIconButton,
-        MatMenuTrigger,
-        MatMenu,
-        MatMenuItem,
-        DatePipe,
-        DateAgoPipe,
-    ]
+  selector: "ige-query-manager",
+  templateUrl: "./query-manager.component.html",
+  styleUrls: ["./query-manager.component.scss"],
+  imports: [
+    PageTemplateComponent,
+    CardBoxComponent,
+    MatIcon,
+    MatTooltip,
+    MatIconButton,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    DatePipe,
+    DateAgoPipe,
+  ],
 })
 export class QueryManagerComponent implements OnInit {
   private queryStore = inject(QueryStore);

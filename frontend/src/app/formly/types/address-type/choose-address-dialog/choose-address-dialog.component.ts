@@ -76,23 +76,23 @@ export interface ChooseAddressResponse {
 
 @UntilDestroy()
 @Component({
-    selector: "ige-choose-address-dialog",
-    templateUrl: "./choose-address-dialog.component.html",
-    styleUrls: ["./choose-address-dialog.component.scss"],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        CdkDrag,
-        CdkDragHandle,
-        MatIconButton,
-        MatDialogClose,
-        MatIcon,
-        MatDialogTitle,
-        MatDialogContent,
-        TreeComponent,
-        DocumentListItemComponent,
-        MatDialogActions,
-        MatButton,
-    ]
+  selector: "ige-choose-address-dialog",
+  templateUrl: "./choose-address-dialog.component.html",
+  styleUrls: ["./choose-address-dialog.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CdkDrag,
+    CdkDragHandle,
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    MatDialogContent,
+    TreeComponent,
+    DocumentListItemComponent,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   private codelistStore = inject(CodelistStore);

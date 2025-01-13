@@ -41,27 +41,27 @@ import { map } from "rxjs/operators";
 import { BreadcrumbComponent } from "../../../+form/form-info/breadcrumb/breadcrumb.component";
 
 @Component({
-    selector: "permission-table",
-    templateUrl: "./permission-table.component.html",
-    styleUrls: ["./permission-table.component.scss"],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => PermissionTableComponent),
-            multi: true,
-        },
-        DynamicDatabase,
-    ],
-    imports: [
-        PermissionLegendsComponent,
-        MatTableModule,
-        MatIconModule,
-        MatMenuModule,
-        MatButtonModule,
-        MatTooltipModule,
-        TranslocoModule,
-        BreadcrumbComponent,
-    ]
+  selector: "permission-table",
+  templateUrl: "./permission-table.component.html",
+  styleUrls: ["./permission-table.component.scss"],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => PermissionTableComponent),
+      multi: true,
+    },
+    DynamicDatabase,
+  ],
+  imports: [
+    PermissionLegendsComponent,
+    MatTableModule,
+    MatIconModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatTooltipModule,
+    TranslocoModule,
+    BreadcrumbComponent,
+  ],
 })
 export class PermissionTableComponent implements ControlValueAccessor {
   @Input() label: string;

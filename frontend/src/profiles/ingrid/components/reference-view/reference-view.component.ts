@@ -40,10 +40,10 @@ interface ReferenceItemInternal extends ReferenceItem {
 }
 
 @Component({
-    selector: "ige-reference-view",
-    imports: [CodelistPipe, AsyncPipe],
-    templateUrl: "./reference-view.component.html",
-    styleUrl: "./reference-view.component.scss"
+  selector: "ige-reference-view",
+  imports: [CodelistPipe, AsyncPipe],
+  templateUrl: "./reference-view.component.html",
+  styleUrl: "./reference-view.component.scss",
 })
 export class ReferenceViewComponent {
   item = input<ReferenceItemUrl | ReferenceItemInternal>();

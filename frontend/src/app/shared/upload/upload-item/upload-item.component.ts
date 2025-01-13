@@ -28,18 +28,18 @@ import { DecimalPipe } from "@angular/common";
 import { SizePipe } from "../../../directives/size.pipe";
 
 @Component({
-    selector: "ige-upload-item",
-    templateUrl: "./upload-item.component.html",
-    styleUrls: ["./upload-item.component.scss"],
-    imports: [
-        MatProgressSpinner,
-        MatIcon,
-        MatIconButton,
-        MatProgressBar,
-        MatButton,
-        DecimalPipe,
-        SizePipe,
-    ]
+  selector: "ige-upload-item",
+  templateUrl: "./upload-item.component.html",
+  styleUrls: ["./upload-item.component.scss"],
+  imports: [
+    MatProgressSpinner,
+    MatIcon,
+    MatIconButton,
+    MatProgressBar,
+    MatButton,
+    DecimalPipe,
+    SizePipe,
+  ],
 })
 export class UploadItemComponent {
   file = input<TransfersWithErrorInfo>();

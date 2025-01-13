@@ -30,17 +30,17 @@ import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 
 @UntilDestroy()
 @Component({
-    selector: "ige-reports",
-    templateUrl: "./reports.component.html",
-    styleUrls: ["./reports.component.scss"],
-    imports: [
-        MatTabNav,
-        MatTabLink,
-        RouterLinkActive,
-        RouterLink,
-        MatTabNavPanel,
-        RouterOutlet,
-    ]
+  selector: "ige-reports",
+  templateUrl: "./reports.component.html",
+  styleUrls: ["./reports.component.scss"],
+  imports: [
+    MatTabNav,
+    MatTabLink,
+    RouterLinkActive,
+    RouterLink,
+    MatTabNavPanel,
+    RouterOutlet,
+  ],
 })
 export class ReportsComponent {
   tabs = [];

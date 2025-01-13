@@ -48,19 +48,19 @@ export interface PermissionDialogData {
 }
 
 @Component({
-    selector: "ige-access-dialog",
-    templateUrl: "./permissions-dialog.component.html",
-    styleUrls: ["./permissions-dialog.component.scss"],
-    imports: [
-        UserTableComponent,
-        CdkDrag,
-        MatDialogModule,
-        MatButtonModule,
-        MatIconModule,
-        MatProgressSpinnerModule,
-        CdkDragHandle,
-        SearchInputComponent,
-    ]
+  selector: "ige-access-dialog",
+  templateUrl: "./permissions-dialog.component.html",
+  styleUrls: ["./permissions-dialog.component.scss"],
+  imports: [
+    UserTableComponent,
+    CdkDrag,
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    CdkDragHandle,
+    SearchInputComponent,
+  ],
 })
 export class PermissionsDialogComponent implements OnInit {
   id: number;

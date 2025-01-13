@@ -25,10 +25,10 @@ import { MatButton } from "@angular/material/button";
 import { DatePipe } from "@angular/common";
 
 @Component({
-    selector: "ige-publish-pending",
-    templateUrl: "./publish-pending.component.html",
-    styleUrls: ["./publish-pending.component.scss"],
-    imports: [TranslocoDirective, MatButton, DatePipe]
+  selector: "ige-publish-pending",
+  templateUrl: "./publish-pending.component.html",
+  styleUrls: ["./publish-pending.component.scss"],
+  imports: [TranslocoDirective, MatButton, DatePipe],
 })
 export class PublishPendingComponent implements OnInit {
   @Input() metadata: Metadata;

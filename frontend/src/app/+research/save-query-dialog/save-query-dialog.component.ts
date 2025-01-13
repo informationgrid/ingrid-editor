@@ -37,26 +37,26 @@ import { MatCheckbox } from "@angular/material/checkbox";
 import { Query } from "../../store/query/query.model";
 
 @Component({
-    selector: "ige-save-query-dialog",
-    templateUrl: "./save-query-dialog.component.html",
-    styleUrls: ["./save-query-dialog.component.scss"],
-    imports: [
-        MatIconButton,
-        MatDialogClose,
-        MatIcon,
-        MatDialogTitle,
-        CdkScrollable,
-        MatDialogContent,
-        MatFormField,
-        MatLabel,
-        MatInput,
-        ReactiveFormsModule,
-        FocusDirective,
-        FormsModule,
-        MatCheckbox,
-        MatDialogActions,
-        MatButton,
-    ]
+  selector: "ige-save-query-dialog",
+  templateUrl: "./save-query-dialog.component.html",
+  styleUrls: ["./save-query-dialog.component.scss"],
+  imports: [
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    ReactiveFormsModule,
+    FocusDirective,
+    FormsModule,
+    MatCheckbox,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class SaveQueryDialogComponent implements OnInit {
   model: SaveQueryDialogResponse = {

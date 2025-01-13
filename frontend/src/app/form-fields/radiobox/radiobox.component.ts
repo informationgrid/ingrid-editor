@@ -37,11 +37,11 @@ export const RADIOBOX_CONTROL_VALUE_ACCESSOR = {
 };
 
 @Component({
-    selector: "ige-radiobox",
-    templateUrl: "./radiobox.component.html",
-    styleUrls: ["./radiobox.component.css"],
-    providers: [RADIOBOX_CONTROL_VALUE_ACCESSOR],
-    imports: [MatRadioGroup, ReactiveFormsModule, FormsModule, MatRadioButton]
+  selector: "ige-radiobox",
+  templateUrl: "./radiobox.component.html",
+  styleUrls: ["./radiobox.component.css"],
+  providers: [RADIOBOX_CONTROL_VALUE_ACCESSOR],
+  imports: [MatRadioGroup, ReactiveFormsModule, FormsModule, MatRadioButton],
 })
 export class RadioboxComponent implements ControlValueAccessor, OnInit {
   @Input() options: any[];

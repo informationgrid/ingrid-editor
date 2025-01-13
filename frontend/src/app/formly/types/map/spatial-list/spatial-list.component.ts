@@ -52,20 +52,20 @@ export interface SpatialLocationWithColor extends SpatialLocation {
 
 @UntilDestroy()
 @Component({
-    selector: "ige-spatial-list",
-    templateUrl: "./spatial-list.component.html",
-    styleUrls: ["./spatial-list.component.scss"],
-    imports: [
-        MatIcon,
-        TranslocoDirective,
-        MatLine,
-        MatIconButton,
-        MatTooltip,
-        MatMenuTrigger,
-        MatMenu,
-        MatMenuItem,
-        DecimalPipe,
-    ]
+  selector: "ige-spatial-list",
+  templateUrl: "./spatial-list.component.html",
+  styleUrls: ["./spatial-list.component.scss"],
+  imports: [
+    MatIcon,
+    TranslocoDirective,
+    MatLine,
+    MatIconButton,
+    MatTooltip,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    DecimalPipe,
+  ],
 })
 export class SpatialListComponent implements OnInit {
   @Input() locations: Observable<SpatialLocationWithColor[]>;

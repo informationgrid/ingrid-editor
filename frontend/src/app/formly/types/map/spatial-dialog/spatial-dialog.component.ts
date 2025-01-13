@@ -64,28 +64,28 @@ interface LocationType {
 
 @UntilDestroy()
 @Component({
-    selector: "ige-spatial-dialog",
-    templateUrl: "./spatial-dialog.component.html",
-    styleUrls: ["./spatial-dialog.component.scss"],
-    imports: [
-        MatIconButton,
-        MatDialogClose,
-        MatIcon,
-        MatDialogTitle,
-        CdkScrollable,
-        MatDialogContent,
-        MatFormField,
-        MatSelect,
-        MatOption,
-        FreeSpatialComponent,
-        WktSpatialComponent,
-        GeothesaurusWfsgndeComponent,
-        MatInput,
-        ReactiveFormsModule,
-        CoordinatesSpatialComponent,
-        MatDialogActions,
-        MatButton,
-    ]
+  selector: "ige-spatial-dialog",
+  templateUrl: "./spatial-dialog.component.html",
+  styleUrls: ["./spatial-dialog.component.scss"],
+  imports: [
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    MatFormField,
+    MatSelect,
+    MatOption,
+    FreeSpatialComponent,
+    WktSpatialComponent,
+    GeothesaurusWfsgndeComponent,
+    MatInput,
+    ReactiveFormsModule,
+    CoordinatesSpatialComponent,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class SpatialDialogComponent implements OnInit, AfterViewInit {
   @ViewChild("leafletDlg") leaflet: ElementRef;

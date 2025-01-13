@@ -32,17 +32,17 @@ export interface PublicationTypeDialogOptions {
 }
 
 @Component({
-    selector: "ige-publication-type.dialog",
-    templateUrl: "./publication-type.dialog.html",
-    styleUrls: ["./publication-type.dialog.scss"],
-    imports: [
-        DialogTemplateComponent,
-        MatRadioGroup,
-        ReactiveFormsModule,
-        FormsModule,
-        MatRadioButton,
-        MatIcon,
-    ]
+  selector: "ige-publication-type.dialog",
+  templateUrl: "./publication-type.dialog.html",
+  styleUrls: ["./publication-type.dialog.scss"],
+  imports: [
+    DialogTemplateComponent,
+    MatRadioGroup,
+    ReactiveFormsModule,
+    FormsModule,
+    MatRadioButton,
+    MatIcon,
+  ],
 })
 export class PublicationTypeDialog {
   options = this.value.options;

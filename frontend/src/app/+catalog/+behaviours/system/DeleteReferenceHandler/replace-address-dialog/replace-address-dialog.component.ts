@@ -48,25 +48,24 @@ export interface ReplaceAddressDialogData {
 }
 
 @Component({
-    selector: "ige-replace-address-dialog",
-    templateUrl: "./replace-address-dialog.component.html",
-    styleUrls: ["./replace-address-dialog.component.scss"],
-    imports: [
-        TranslocoDirective,
-        CdkDrag,
-        CdkDragHandle,
-        MatIconButton,
-        MatDialogClose,
-        MatIcon,
-        MatDialogTitle,
-        CdkScrollable,
-        MatDialogContent,
-        MatTabGroup,
-        MatTab,
-        TreeComponent,
-        MatDialogActions,
-        MatButton,
-    ]
+  selector: "ige-replace-address-dialog",
+  templateUrl: "./replace-address-dialog.component.html",
+  styleUrls: ["./replace-address-dialog.component.scss"],
+  imports: [
+    TranslocoDirective,
+    CdkDrag,
+    CdkDragHandle,
+    MatIconButton,
+    MatDialogClose,
+    MatIcon,
+    MatDialogTitle,
+    MatDialogContent,
+    MatTabGroup,
+    MatTab,
+    TreeComponent,
+    MatDialogActions,
+    MatButton,
+  ],
 })
 export class ReplaceAddressDialogComponent implements OnInit {
   page = 0;

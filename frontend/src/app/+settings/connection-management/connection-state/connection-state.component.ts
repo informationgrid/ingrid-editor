@@ -29,11 +29,11 @@ export interface ConnectionStateInfo {
 }
 
 @Component({
-    selector: "ige-connection-state",
-    imports: [MatIcon, MatTooltip, MatProgressSpinner],
-    templateUrl: "./connection-state.component.html",
-    styleUrl: "./connection-state.component.scss",
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: "ige-connection-state",
+  imports: [MatIcon, MatTooltip, MatProgressSpinner],
+  templateUrl: "./connection-state.component.html",
+  styleUrl: "./connection-state.component.scss",
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConnectionStateComponent {
   connectionStates = input.required<ConnectionStateInfo[]>();

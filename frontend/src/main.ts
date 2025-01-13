@@ -379,9 +379,17 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
     // make sure we are authenticated by keycloak before bootstrap
     provideAppInitializer(() => {
-        const initializerFn = (ConfigLoader)(inject(ConfigService), inject(AuthenticationFactory), inject(Router), inject(HttpClient), inject(MatDialog), inject(TranslocoService), inject(GeneralStore));
-        return initializerFn();
-      }),
+      const initializerFn = ConfigLoader(
+        inject(ConfigService),
+        inject(AuthenticationFactory),
+        inject(Router),
+        inject(HttpClient),
+        inject(MatDialog),
+        inject(TranslocoService),
+        inject(GeneralStore),
+      );
+      return initializerFn();
+    }),
     // set locale for dates
     {
       provide: LOCALE_ID,

@@ -30,7 +30,7 @@ import { MatIcon } from "@angular/material/icon";
 import { MatButton } from "@angular/material/button";
 
 @Component({
-    template: `
+  template: `
     <div class="display-flex flex-row">
       <mat-icon class="success-color" style="margin-right: 12px"
         >check_circle_outline</mat-icon
@@ -54,7 +54,7 @@ import { MatButton } from "@angular/material/button";
       </span>
     </div>
   `,
-    imports: [MatIcon, MatSnackBarActions, MatButton, MatSnackBarAction]
+  imports: [MatIcon, MatSnackBarActions, MatButton, MatSnackBarAction],
 })
 export class ThesaurusReportComponent implements OnInit {
   snackBarRef = inject(MatSnackBarRef);

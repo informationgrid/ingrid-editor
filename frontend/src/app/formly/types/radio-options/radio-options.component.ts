@@ -32,10 +32,10 @@ interface RadioOption {
 
 @UntilDestroy()
 @Component({
-    selector: "ige-radio-options",
-    imports: [CommonModule, MatRadioGroup, MatRadioButton, FormsModule],
-    templateUrl: "./radio-options.component.html",
-    styleUrl: "./radio-options.component.scss"
+  selector: "ige-radio-options",
+  imports: [CommonModule, MatRadioGroup, MatRadioButton, FormsModule],
+  templateUrl: "./radio-options.component.html",
+  styleUrl: "./radio-options.component.scss",
 })
 export class RadioOptionsComponent
   extends FieldType<FieldTypeConfig>

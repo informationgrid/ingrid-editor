@@ -31,16 +31,16 @@ import {
 
 @UntilDestroy()
 @Component({
-    templateUrl: "./overview.component.html",
-    styleUrls: ["./overview.component.scss"],
-    imports: [
-        MatTabNav,
-        MatTabLink,
-        RouterLinkActive,
-        RouterLink,
-        MatTabNavPanel,
-        RouterOutlet,
-    ]
+  templateUrl: "./overview.component.html",
+  styleUrls: ["./overview.component.scss"],
+  imports: [
+    MatTabNav,
+    MatTabLink,
+    RouterLinkActive,
+    RouterLink,
+    MatTabNavPanel,
+    RouterOutlet,
+  ],
 })
 export class OverviewComponent implements OnInit {
   @ViewChild("navigation") tabNav: MatTabNav;

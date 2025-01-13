@@ -58,10 +58,10 @@ export interface LinkInfo {
 
 @UntilDestroy()
 @Component({
-    selector: "ige-upload-files-dialog",
-    templateUrl: "./upload-files-dialog.component.html",
-    styleUrls: ["./upload-files-dialog.component.scss"],
-    imports: [DialogTemplateComponent, UploadComponent, MatSlideToggle]
+  selector: "ige-upload-files-dialog",
+  templateUrl: "./upload-files-dialog.component.html",
+  styleUrls: ["./upload-files-dialog.component.scss"],
+  imports: [DialogTemplateComponent, UploadComponent, MatSlideToggle],
 })
 export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   chosenFiles: TransfersWithErrorInfo[] = [];

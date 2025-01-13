@@ -29,10 +29,10 @@ export interface Option {
 }
 
 @Component({
-    selector: "ige-option-list",
-    templateUrl: "./option-list.component.html",
-    styleUrls: ["./option-list.component.scss"],
-    imports: [MatRadioModule, MatDividerModule, FormsModule]
+  selector: "ige-option-list",
+  templateUrl: "./option-list.component.html",
+  styleUrls: ["./option-list.component.scss"],
+  imports: [MatRadioModule, MatDividerModule, FormsModule],
 })
 export class OptionListComponent implements OnInit {
   @Input() options: Option[];
