@@ -2284,16 +2284,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@flowjs/ngx-flow@npm:^0.8.1":
-  version: 0.8.1
-  resolution: "@flowjs/ngx-flow@npm:0.8.1"
+"@flowjs/ngx-flow@npm:^18.0.1":
+  version: 18.0.1
+  resolution: "@flowjs/ngx-flow@npm:18.0.1"
   dependencies:
-    tslib: "npm:^2.2.0"
+    tslib: "npm:^2.3.0"
   peerDependencies:
-    "@angular/common": ^17.1.3
-    "@angular/core": ^17.1.3
+    "@angular/common": ^18.0.0
+    "@angular/core": ^18.0.0
     "@flowjs/flow.js": ^2.13.0
-  checksum: 10c0/83e8cf119f76e8e0f55957ba8e4c6803d5af0d0aec938f59eb71b32f05bb7ce18448368928b459db66dc92299844d322fb87e3f0cb9581757b00edcdb1e85bd0
+  checksum: 10c0/35cbf297c41e1626e4f6cb7085158f944c1783d70f4fbc473bdc0a3b816a13737797db75b710b5a7383a49ed2f833fdf620031ae6fad1eb47e2a8a7ae04ac7f9
   languageName: node
   linkType: hard
 
@@ -3010,18 +3010,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ngrx/signals@npm:18.1.1":
-  version: 18.1.1
-  resolution: "@ngrx/signals@npm:18.1.1"
+"@ngrx/signals@npm:19.0.0":
+  version: 19.0.0
+  resolution: "@ngrx/signals@npm:19.0.0"
   dependencies:
     tslib: "npm:^2.3.0"
   peerDependencies:
-    "@angular/core": ^18.0.0
+    "@angular/core": ^19.0.0
     rxjs: ^6.5.3 || ^7.4.0
   peerDependenciesMeta:
     rxjs:
       optional: true
-  checksum: 10c0/901331f6dd3ca4c159ef17aea952fe2552ce2f27b9071f3e0ed6edb4377ff442c0240b9a0a76cce6b5032637564bfcb0615d97c888bff0ce74a69613e92ba375
+  checksum: 10c0/fb0edc9549f32924bc3fae3391e9d2216297d82a8ba1153d9e95d6803950c2e99a5fcc2eb84ac8957349e9f87186ddab22d7038b18368ead60c028ae72a06b7f
   languageName: node
   linkType: hard
 
@@ -4149,12 +4149,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet@npm:^1.9.15":
-  version: 1.9.15
-  resolution: "@types/leaflet@npm:1.9.15"
+"@types/leaflet@npm:^1.9.16":
+  version: 1.9.16
+  resolution: "@types/leaflet@npm:1.9.16"
   dependencies:
     "@types/geojson": "npm:*"
-  checksum: 10c0/6537da4107f833e38359ca9e98e2c161d686af58ff8873c65c102e146b881761ca6212b08fae4e755380ee001073f856ee46c5ea25592a53f39e2b9e5d934d42
+  checksum: 10c0/80403093b918ed19911997dc8ebe1aac44f49ada065f5b60ea451f6b8c92ffc942ef49706f7faa1a4e7c62824390a44d407bd5b1a9cfbbaea82c1501129c919a
   languageName: node
   linkType: hard
 
@@ -4188,12 +4188,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.17.10":
-  version: 20.17.10
-  resolution: "@types/node@npm:20.17.10"
+"@types/node@npm:^20.17.12":
+  version: 20.17.12
+  resolution: "@types/node@npm:20.17.12"
   dependencies:
     undici-types: "npm:~6.19.2"
-  checksum: 10c0/458ec725319e57d4692cbb56d81f1a90f9074cef9ec185c59e6f6c557a3d2ded57c5e443b1e82eba923d53dda4db18797fb131ee6e46fdb3d7d2f54d54aaebe3
+  checksum: 10c0/340b65a11e4486e597163991532a08e525beee40f082cf73dc830c060426fa9ea8690a4e3931d91375e946816a884d6140d96e99ac048b51f280f21cc70d22ed
   languageName: node
   linkType: hard
 
@@ -5296,10 +5296,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:~5.3.0":
-  version: 5.3.0
-  resolution: "chalk@npm:5.3.0"
-  checksum: 10c0/8297d436b2c0f95801103ff2ef67268d362021b8210daf8ddbe349695333eb3610a71122172ff3b0272f1ef2cf7cc2c41fdaa4715f52e49ffe04c56340feed09
+"chalk@npm:~5.4.1":
+  version: 5.4.1
+  resolution: "chalk@npm:5.4.1"
+  checksum: 10c0/b23e88132c702f4855ca6d25cb5538b1114343e41472d5263ee8a37cccfccd9c4216d111e1097c6a27830407a1dc81fecdf2a56f2c63033d4dbbd88c10b0dcef
   languageName: node
   linkType: hard
 
@@ -6005,10 +6005,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"diff@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "diff@npm:5.2.0"
-  checksum: 10c0/aed0941f206fe261ecb258dc8d0ceea8abbde3ace5827518ff8d302f0fc9cc81ce116c4d8f379151171336caf0516b79e01abdc1ed1201b6440d895a66689eb4
+"diff@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "diff@npm:7.0.0"
+  checksum: 10c0/251fd15f85ffdf814cfc35a728d526b8d2ad3de338dcbd011ac6e57c461417090766b28995f8ff733135b5fbc3699c392db1d5e27711ac4e00244768cd1d577b
   languageName: node
   linkType: hard
 
@@ -7643,13 +7643,13 @@ __metadata:
     "@angular/platform-browser-dynamic": "npm:^19.0.6"
     "@angular/router": "npm:^19.0.6"
     "@flowjs/flow.js": "npm:^2.14.1"
-    "@flowjs/ngx-flow": "npm:^0.8.1"
+    "@flowjs/ngx-flow": "npm:^18.0.1"
     "@geoman-io/leaflet-geoman-free": "npm:^2.15.0"
     "@ngneat/dirty-check-forms": "npm:^3.0.3"
     "@ngneat/spectator": "npm:^16.0.0"
     "@ngneat/transloco": "npm:6.0.4"
     "@ngneat/until-destroy": "npm:^10.0.0"
-    "@ngrx/signals": "npm:18.1.1"
+    "@ngrx/signals": "npm:19.0.0"
     "@ngx-formly/core": "npm:6.3.12"
     "@ngx-formly/material": "npm:6.3.12"
     "@stomp/rx-stomp": "npm:^2.0.0"
@@ -7658,14 +7658,14 @@ __metadata:
     "@types/file-saver-es": "npm:~2.0.3"
     "@types/flowjs": "npm:~2.13.14"
     "@types/jasmine": "npm:~5.1.5"
-    "@types/leaflet": "npm:^1.9.15"
-    "@types/node": "npm:^20.17.10"
+    "@types/leaflet": "npm:^1.9.16"
+    "@types/node": "npm:^20.17.12"
     "@types/terraformer__wkt": "npm:^2.0.3"
     angular-split: "npm:^18.0.0"
     cronstrue: "npm:^2.52.0"
-    diff: "npm:^5.2.0"
+    diff: "npm:^7.0.0"
     file-saver-es: "npm:^2.0.5"
-    jasmine-core: "npm:^5.2.0"
+    jasmine-core: "npm:^5.5.0"
     jasmine-reporters: "npm:^2.5.2"
     jasmine-spec-reporter: "npm:~7.0.0"
     karma: "npm:~6.4.4"
@@ -7676,10 +7676,10 @@ __metadata:
     karma-jasmine-html-reporter: "npm:^2.1.0"
     karma-junit-reporter: "npm:^2.0.1"
     karma-sourcemap-loader: "npm:^0.4.0"
-    keycloak-angular: "npm:^16.1.0"
+    keycloak-angular: "npm:^19.0.2"
     keycloak-js: "npm:25.0.6"
     leaflet: "npm:^1.9.4"
-    lint-staged: "npm:^15.2.11"
+    lint-staged: "npm:^15.3.0"
     material-design-icons-iconfont: "npm:^6.7.0"
     ngx-mat-select-search: "npm:^7.0.9"
     prettier: "npm:3.4.2"
@@ -8316,10 +8316,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jasmine-core@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "jasmine-core@npm:5.2.0"
-  checksum: 10c0/eac5298932fef389071529d55b8b4554646cb0094c765dac48d041e7e0c70822b0a3d831acaeec5b47ce0f0c90cad8e6926202ec67804638b4e5bf89a43def3e
+"jasmine-core@npm:^5.5.0":
+  version: 5.5.0
+  resolution: "jasmine-core@npm:5.5.0"
+  checksum: 10c0/9914f45ce6bcc016d61ee591a8a71dd0d88902ddf5fa887b11966040ce0916379bc4d5f446c07c58226b16f8a0f9719fa201cd92a3f07b02e8c8aa4169448600
   languageName: node
   linkType: hard
 
@@ -8639,17 +8639,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keycloak-angular@npm:^16.1.0":
-  version: 16.1.0
-  resolution: "keycloak-angular@npm:16.1.0"
+"keycloak-angular@npm:^19.0.2":
+  version: 19.0.2
+  resolution: "keycloak-angular@npm:19.0.2"
   dependencies:
     tslib: "npm:^2.3.1"
   peerDependencies:
-    "@angular/common": ^18
-    "@angular/core": ^18
-    "@angular/router": ^18
+    "@angular/common": ^19
+    "@angular/core": ^19
+    "@angular/router": ^19
     keycloak-js: ^18 || ^19 || ^20 || ^21 || ^22 || ^23 || ^24 || ^25 || ^26
-  checksum: 10c0/c6718a0cf21c78ae443c84253746b985eccd4e5db948f478eef9f48246c70b41abb00dfa757ee9326616a4bea656fed2d5e8a5e25e8e91611fe6cbce36fb32cc
+  checksum: 10c0/068138619ce7970b9b90e4eea903918fdeb3a387707658cd72641a638bb26964692518de70d2446741ecaf11324a45169bb7d99e5642f61b1ed41923c95292b0
   languageName: node
   linkType: hard
 
@@ -8766,11 +8766,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^15.2.11":
-  version: 15.2.11
-  resolution: "lint-staged@npm:15.2.11"
+"lint-staged@npm:^15.3.0":
+  version: 15.3.0
+  resolution: "lint-staged@npm:15.3.0"
   dependencies:
-    chalk: "npm:~5.3.0"
+    chalk: "npm:~5.4.1"
     commander: "npm:~12.1.0"
     debug: "npm:~4.4.0"
     execa: "npm:~8.0.1"
@@ -8782,7 +8782,7 @@ __metadata:
     yaml: "npm:~2.6.1"
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10c0/28e2ad08b90460cc18398a023eaf93954d7753f958c2b889ead2d9305407d7b4ef0ee007875410d6ce1df758007fda77e079c82eb79c9ce684fba71e6f7d0452
+  checksum: 10c0/1ddf9488c523c0b65c85b755428d4ad74fac3aa6ccb2e28e9bff5b8d86503158fe241d20d5433a11146872050b43580644901a5ef4c924b1ad7017c224a07339
   languageName: node
   linkType: hard
 

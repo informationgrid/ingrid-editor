@@ -28,7 +28,7 @@ import { Observable, Subscription, timer } from "rxjs";
 import { filter, scan, take, takeWhile } from "rxjs/operators";
 import { ModalService } from "./modal/modal.service";
 import { IgeError } from "../models/ige-error";
-import { KeycloakEventType, KeycloakService } from "keycloak-angular";
+import { KeycloakEventTypeLegacy, KeycloakService } from "keycloak-angular";
 import { StorageService } from "../../storage.service";
 import { AuthenticationFactory } from "../security/auth.factory";
 import { GeneralStore } from "../store/general.store";
@@ -50,7 +50,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     this.initListener();
     this.keycloak.keycloakEvents$
       .pipe(
-        filter((item) => item.type === KeycloakEventType.OnAuthSuccess),
+        filter((item) => item.type === KeycloakEventTypeLegacy.OnAuthSuccess),
         take(1),
       )
       .subscribe(() => this.resetSessionTimeout());
@@ -135,7 +135,9 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
 
     this.keycloak.keycloakEvents$
       .pipe(
-        filter((item) => item.type === KeycloakEventType.OnAuthRefreshSuccess),
+        filter(
+          (item) => item.type === KeycloakEventTypeLegacy.OnAuthRefreshSuccess,
+        ),
       )
       .subscribe(() => {
         this.storageService.store(
