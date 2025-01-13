@@ -47,13 +47,10 @@ export class DynamicDatabase {
   private isAddress = false;
 
   constructor(private docService: DocumentService) {
-    effect(
-      () => {
-        const info = this.generalStore.getDatasetsChanged(this.isAddress);
-        if (info) this.treeUpdates.next(info);
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      const info = this.generalStore.getDatasetsChanged(this.isAddress);
+      if (info) this.treeUpdates.next(info);
+    });
   }
 
   init(forAdresses: boolean): void {

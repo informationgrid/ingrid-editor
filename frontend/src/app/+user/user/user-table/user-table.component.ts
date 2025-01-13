@@ -58,21 +58,21 @@ import { ExportService } from "../../../services/export.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
-    selector: "user-table",
-    templateUrl: "./user-table.component.html",
-    styleUrls: ["../../table.styles.scss"],
-    imports: [
-        MatTableModule,
-        MatIconModule,
-        MatSortModule,
-        MatButtonModule,
-        MatMenuModule,
-        MatProgressSpinnerModule,
-        MatPaginatorModule,
-        PermissionLegendsComponent,
-        TranslocoModule,
-        MatTooltipModule,
-    ]
+  selector: "user-table",
+  templateUrl: "./user-table.component.html",
+  styleUrls: ["../../table.styles.scss"],
+  imports: [
+    MatTableModule,
+    MatIconModule,
+    MatSortModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
+    PermissionLegendsComponent,
+    TranslocoModule,
+    MatTooltipModule,
+  ],
 })
 export class UserTableComponent
   extends GeneralTable
@@ -133,23 +133,17 @@ export class UserTableComponent
       return combined.includes(filterValue.trim().toLowerCase());
     };
 
-    effect(
-      () => {
-        this.handleSelectedUserChange();
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      this.handleSelectedUserChange();
+    });
 
-    effect(
-      () => {
-        if (this.users() === null) return;
-        this.selection.clear();
-        this.dataSource.data = this.users();
-        this.isLoading.set(false);
-        this.handleSelectedUserChange();
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      if (this.users() === null) return;
+      this.selection.clear();
+      this.dataSource.data = this.users();
+      this.isLoading.set(false);
+      this.handleSelectedUserChange();
+    });
 
     effect(() => {
       this.dataSource.filter = this.query();

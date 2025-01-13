@@ -66,27 +66,27 @@ import { toSignal } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
-    selector: "ige-user-manager",
-    templateUrl: "./user.component.html",
-    styleUrls: ["../user.styles.scss"],
-    imports: [
-        MatToolbar,
-        MatToolbarRow,
-        SearchInputComponent,
-        MatButton,
-        MatTooltip,
-        MatIcon,
-        AngularSplitModule,
-        UserTableComponent,
-        MatProgressSpinner,
-        MatIconButton,
-        MatMenuTrigger,
-        MatMenu,
-        MatMenuItem,
-        HeaderMoreComponent,
-        FormlyModule,
-    ],
-    providers: [UserManagementService]
+  selector: "ige-user-manager",
+  templateUrl: "./user.component.html",
+  styleUrls: ["../user.styles.scss"],
+  imports: [
+    MatToolbar,
+    MatToolbarRow,
+    SearchInputComponent,
+    MatButton,
+    MatTooltip,
+    MatIcon,
+    AngularSplitModule,
+    UserTableComponent,
+    MatProgressSpinner,
+    MatIconButton,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    HeaderMoreComponent,
+    FormlyModule,
+  ],
+  providers: [UserManagementService],
 })
 export class UserComponent implements OnInit {
   private groupStore = inject(GroupStore);
@@ -129,18 +129,15 @@ export class UserComponent implements OnInit {
     private formMenuService: FormMenuService,
     private snackBar: MatSnackBar,
   ) {
-    effect(
-      () => {
-        const user = this.userService.selectedUser$();
-        // set user in case we come from another page
-        // TODO: should be done with URL-parameter to load the user like it's done on document page
-        if (!user) return;
+    effect(() => {
+      const user = this.userService.selectedUser$();
+      // set user in case we come from another page
+      // TODO: should be done with URL-parameter to load the user like it's done on document page
+      if (!user) return;
 
-        this.explicitUserLogin.set(user.login);
-        if (this.loadedUser()?.id !== user.id) this.loadUser(user.id);
-      },
-      { allowSignalWrites: true },
-    );
+      this.explicitUserLogin.set(user.login);
+      if (this.loadedUser()?.id !== user.id) this.loadUser(user.id);
+    });
   }
 
   ngOnInit() {
