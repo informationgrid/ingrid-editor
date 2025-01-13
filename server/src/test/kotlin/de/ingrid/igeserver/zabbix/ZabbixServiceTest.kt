@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -147,9 +147,7 @@ class ZabbixServiceTest : ShouldSpec() {
         }
     }
 
-    private fun prepareZabbixData(uploads: List<ZabbixModel.Upload>): ZabbixModel.ZabbixData {
-        return ZabbixModel.ZabbixData("", "", "", "", "", "", uploads)
-    }
+    private fun prepareZabbixData(uploads: List<ZabbixModel.Upload>): ZabbixModel.ZabbixData = ZabbixModel.ZabbixData("", "", "", "", "", "", uploads)
 
     private fun getRequestParameter(request: HttpRequest): String {
         val res = (request.bodyPublisher().get())

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -263,8 +263,7 @@ class ZabbixService(
         }
     }
 
-    private fun deleteZabbixJob(documentsToDelete: List<ZabbixModel.Upload>) =
-        documentsToDelete.forEach { document -> deleteWebscenario(listOf(document.webscenarioId)) }
+    private fun deleteZabbixJob(documentsToDelete: List<ZabbixModel.Upload>) = documentsToDelete.forEach { document -> deleteWebscenario(listOf(document.webscenarioId)) }
 
     private fun createHostgroup(name: String): String {
         val params = ZabbixModel.CreateParams(name)
@@ -338,8 +337,7 @@ class ZabbixService(
         return response.get("result").map { getProblem(it) }
     }
 
-    private fun getTag(item: JsonNode, tagName: String) =
-        item.get("tags").filter { it.get("tag")?.asText() == tagName }.map { it.get("value") }[0].asText()
+    private fun getTag(item: JsonNode, tagName: String) = item.get("tags").filter { it.get("tag")?.asText() == tagName }.map { it.get("value") }[0].asText()
 
     private fun getProblem(item: JsonNode) = ZabbixModel.Problem(
         eventid = item.get("eventid").asText(),
@@ -441,8 +439,7 @@ class ZabbixService(
 
     private fun getFromResultArray(response: JsonNode, field: String) = response.get("result").get(0).get(field)
 
-    private fun getFromStepsAsString(response: JsonNode, field: String) =
-        response.get("steps").get(0).get(field).asText()
+    private fun getFromStepsAsString(response: JsonNode, field: String) = response.get("steps").get(0).get(field).asText()
 
     private fun shortenString(name: String, length: Int, onlyEnd: Boolean = false): String {
         val delimiter = ".."

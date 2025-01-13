@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -76,12 +76,11 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
         return null
     }
 
-    fun getWktCoordinatesISO(): String? =
-        if (this.wkt != null) {
-            convertWktToGml32(this.wkt)
-        } else {
-            null
-        }
+    fun getWktCoordinatesISO(): String? = if (this.wkt != null) {
+        convertWktToGml32(this.wkt)
+    } else {
+        null
+    }
 
     private fun getWktType(): String? {
         if (this.wkt != null) {

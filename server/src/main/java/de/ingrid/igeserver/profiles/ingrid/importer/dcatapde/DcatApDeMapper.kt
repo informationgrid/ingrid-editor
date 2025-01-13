@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -68,6 +68,5 @@ class DcatApDeMapper(val catalogId: String, val model: RecordPLUProperties, val 
 
     fun getContactTitle(contact: Contact): String = contact.hasOrganizationName ?: contact.fn ?: ""
 
-    fun formatDate(date: Instant?): String =
-        if (date == null) "" else formatterISO.format(Date.from(date))
+    fun formatDate(date: Instant?): String = if (date == null) "" else formatterISO.format(Date.from(date))
 }
