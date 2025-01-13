@@ -163,8 +163,7 @@ class GroupService(
         catalogId: String,
         datasetId: Int,
         permission: Permission = BasePermission.READ,
-    ): Set<User> =
-        getGroupsWithAccess(catalogId, datasetId, permission).flatMap { getUsersOfGroup(it.id!!, principal) }.toSet()
+    ): Set<User> = getGroupsWithAccess(catalogId, datasetId, permission).flatMap { getUsersOfGroup(it.id!!, principal) }.toSet()
 
     private fun getAllDocPermissions(group: Group): List<JsonNode> {
         val docs = group.permissions?.documents ?: emptyList()
@@ -236,8 +235,7 @@ class GroupService(
     }
 
     fun getUserIdsOfGroup(id: Int, principal: Principal): List<String> = getUserIdsOfGroup(id, principal, emptyList())
-    fun getUserIdsOfGroup(id: Int, principal: Principal, ignoredRoles: List<String>): List<String> =
-        userRepo.findByGroups_Id(id).filterNot { ignoredRoles.contains(it.role?.name) }.map { it.userId }
+    fun getUserIdsOfGroup(id: Int, principal: Principal, ignoredRoles: List<String>): List<String> = userRepo.findByGroups_Id(id).filterNot { ignoredRoles.contains(it.role?.name) }.map { it.userId }
 
     fun removeDocFromGroups(catalogId: String, docId: Int) {
         var wasUpdated = false
