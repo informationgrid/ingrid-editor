@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 .empty-navigation-wrapper {
   .navigation-title {
@@ -7,11 +7,11 @@
   }
 
   .empty-text-wrapper {
-    border-top: 1px solid $ige-background-bar;
-    border-bottom: 1px solid $ige-background-bar;
+    border-top: 1px solid vars.$ige-background-bar;
+    border-bottom: 1px solid vars.$ige-background-bar;
     font-size: 14px;
     height: 49px;
     line-height: 49px;
-    color: $ige-hint-color;
+    color: vars.$ige-hint-color;
   }
 }

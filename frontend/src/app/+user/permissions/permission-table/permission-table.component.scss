@@ -1,7 +1,8 @@
-@import "src/variables";
+@use "src/variables" as vars;
+@use "sass:color";
 
 table {
-  background: $ige-background;
+  background: vars.$ige-background;
 }
 
 .thin-column {
@@ -17,7 +18,7 @@ td {
 
 .mat-mdc-row .menu-button {
   margin-right: 7px;
-  background: $ige-background;
+  background: vars.$ige-background;
 }
 
 /* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
@@ -25,17 +26,17 @@ mat-button {
   user-select: none;
   margin: 1px;
   padding: 6px;
-  color: $ige-hint-color;
-  background: $ige-background-bar;
+  color: vars.$ige-hint-color;
+  background: vars.$ige-background-bar;
   ::ng-deep svg path {
-    fill: $ige-hint-color;
+    fill: vars.$ige-hint-color;
   }
 
   vertical-align: middle;
 
   &.active {
     color: white;
-    background: $ige-check-color;
+    background: vars.$ige-check-color;
     ::ng-deep svg path {
       fill: white;
     }
@@ -44,12 +45,12 @@ mat-button {
   &:not(.disabled) {
     cursor: pointer;
     &:hover {
-      color: darken($ige-hint-color, 5%);
-      background: darken($ige-background-bar, 5%);
+      color: color.adjust(vars.$ige-hint-color, $lightness: -5%);
+      background: color.adjust(vars.$ige-background-bar, $lightness: -5%);
 
       &.active {
-        color: darken(white, 5%);
-        background: darken($ige-check-color, 5%);
+        color: color.adjust(white, $lightness: -5%);
+        background: color.adjust(vars.$ige-check-color, $lightness: -5%);
       }
     }
   }
@@ -103,13 +104,16 @@ td mat-button:first-of-type {
 }
 
 .add-permission-button {
-  color: $ige-secondary;
+  color: vars.$ige-secondary;
   padding-right: 24px;
 }
 
 .root-permission {
-  background: $error-background;
+  background: vars.$error-background;
   &:hover {
-    background: darken($error-background, 5%) !important;
+    background: color.adjust(
+      vars.$error-background,
+      $lightness: -5%
+    ) !important;
   }
 }

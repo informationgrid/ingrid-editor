@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 .padding-btn {
   padding: 0 10px !important;
@@ -24,7 +24,7 @@
 
   h3 {
     width: 272px;
-    color: $ige-primary;
+    color: vars.$ige-primary;
     margin-top: 0;
     font-weight: normal;
     font-size: 24px;
@@ -51,6 +51,10 @@
 .mat-divider {
   border: 0;
   height: 4px !important;
-  background: linear-gradient(90deg, $ige-background-bar, $ige-background);
+  background: linear-gradient(
+    90deg,
+    vars.$ige-background-bar,
+    vars.$ige-background
+  );
   margin: 40px -24px 20px -36px;
 }

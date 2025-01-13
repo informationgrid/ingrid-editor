@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 .help {
   padding-top: 20px;
@@ -6,7 +6,7 @@
   mat-icon {
     margin-right: 12px;
     border-radius: 50%;
-    background-color: $ige-background;
+    background-color: vars.$ige-background;
   }
 
   .legend {

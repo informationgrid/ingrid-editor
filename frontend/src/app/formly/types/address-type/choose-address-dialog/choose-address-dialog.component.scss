@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   .mat-mdc-dialog-content {
@@ -17,7 +17,7 @@
   }
 
   ::ng-deep mat-tree-node.folder.active {
-    background: $ige-background !important;
+    background: vars.$ige-background !important;
   }
 }
 
@@ -33,7 +33,7 @@ ige-tree {
 
 .selection-divider {
   height: 1px;
-  background: $ige-primary;
+  background: vars.$ige-primary;
 }
 
 .chosen-address {

@@ -37,7 +37,6 @@ import { LinkDialogComponent } from "../table/link-dialog/link-dialog.component"
 import {
   CdkDrag,
   CdkDragDrop,
-  CdkDragPreview,
   CdkDropList,
   moveItemInArray,
 } from "@angular/cdk/drag-drop";
@@ -48,7 +47,6 @@ import {
 } from "../table/form-dialog/form-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { MatCardModule } from "@angular/material/card";
-import { AsyncPipe, NgOptimizedImage } from "@angular/common";
 import { MatIconModule } from "@angular/material/icon";
 import { ConfigService } from "../../../services/config/config.service";
 import { UploadService } from "../../../shared/upload/upload.service";
@@ -61,20 +59,17 @@ import { FormStateService } from "../../../+form/form-state.service";
 
 @UntilDestroy()
 @Component({
-    selector: "ige-repeat",
-    templateUrl: "./preview-image.component.html",
-    styleUrls: ["./preview-image.component.scss"],
-    imports: [
-        MatButtonModule,
-        CdkDropList,
-        CdkDrag,
-        CdkDragPreview,
-        MatCardModule,
-        NgOptimizedImage,
-        MatIconModule,
-        AsyncPipe,
-        MatTooltipModule,
-    ]
+  selector: "ige-repeat",
+  templateUrl: "./preview-image.component.html",
+  styleUrls: ["./preview-image.component.scss"],
+  imports: [
+    MatButtonModule,
+    CdkDropList,
+    CdkDrag,
+    MatCardModule,
+    MatIconModule,
+    MatTooltipModule,
+  ],
 })
 export class PreviewImageComponent extends FieldArrayType implements OnInit {
   private dialog = inject(MatDialog);

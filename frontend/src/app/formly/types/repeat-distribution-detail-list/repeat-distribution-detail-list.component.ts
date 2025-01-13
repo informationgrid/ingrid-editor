@@ -36,7 +36,7 @@ import {
   CdkDropList,
 } from "@angular/cdk/drag-drop";
 import { MatListModule } from "@angular/material/list";
-import { AsyncPipe, JsonPipe, KeyValuePipe, NgForOf } from "@angular/common";
+import { AsyncPipe, KeyValuePipe, NgForOf } from "@angular/common";
 
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
@@ -50,7 +50,6 @@ import { filter, startWith } from "rxjs/operators";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
 import { FormStateService } from "../../../+form/form-state.service";
-import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import { CodelistPipe } from "../../../directives/codelist.pipe";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
@@ -69,28 +68,26 @@ interface RepeatDistributionDetailListProps extends FormlyFieldProps {
 
 @UntilDestroy()
 @Component({
-    selector: "ige-repeat-distribution-detail-list",
-    templateUrl: "./repeat-distribution-detail-list.component.html",
-    styleUrls: ["./repeat-distribution-detail-list.component.scss"],
-    imports: [
-        AsyncPipe,
-        CdkDrag,
-        CdkDropList,
-        CdkDragHandle,
-        CodelistPipe,
-        MatDialogModule,
-        MatIconModule,
-        MatListModule,
-        MatMenuModule,
-        MatExpansionModule,
-        AddButtonComponent,
-        MatButtonModule,
-        FormErrorComponent,
-        KeyValuePipe,
-        MatTooltipModule,
-        JsonPipe,
-        NgForOf,
-    ]
+  selector: "ige-repeat-distribution-detail-list",
+  templateUrl: "./repeat-distribution-detail-list.component.html",
+  styleUrls: ["./repeat-distribution-detail-list.component.scss"],
+  imports: [
+    AsyncPipe,
+    CdkDrag,
+    CdkDropList,
+    CdkDragHandle,
+    CodelistPipe,
+    MatDialogModule,
+    MatIconModule,
+    MatListModule,
+    MatMenuModule,
+    MatExpansionModule,
+    MatButtonModule,
+    FormErrorComponent,
+    KeyValuePipe,
+    MatTooltipModule,
+    NgForOf,
+  ],
 })
 export class RepeatDistributionDetailListComponent
   extends FieldType<FieldTypeConfig<RepeatDistributionDetailListProps>>

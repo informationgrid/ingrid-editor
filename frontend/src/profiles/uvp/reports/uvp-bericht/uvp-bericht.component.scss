@@ -1,4 +1,4 @@
-@import "src/variables.scss";
+@use "src/variables" as vars;
 
 :host {
   display: flex;
@@ -7,7 +7,7 @@
   overflow: auto;
 }
 .main-content ::ng-deep .circle-3 {
-  stroke: $ige-background !important;
+  stroke: vars.$ige-background !important;
 }
 
 .chart-container {
@@ -46,7 +46,7 @@
     padding: 0;
 
     &.marker ::ng-deep .coloring {
-      fill: $ige-check-color;
+      fill: vars.$ige-check-color;
     }
   }
 

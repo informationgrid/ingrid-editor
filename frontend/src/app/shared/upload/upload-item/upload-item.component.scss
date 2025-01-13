@@ -1,9 +1,9 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   display: block;
   padding: 12px 16px;
-  border-top: 1px solid $ige-background-bar;
+  border-top: 1px solid vars.$ige-background-bar;
 
   .main {
     display: flex;

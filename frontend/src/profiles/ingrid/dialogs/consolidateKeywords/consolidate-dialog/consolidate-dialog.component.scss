@@ -1,4 +1,4 @@
-@import "src/variables.scss";
+@use "src/variables" as vars;
 
 .keyword-section {
   margin-top: 12px;
@@ -42,7 +42,7 @@
     font-size: 18px; /* Ensure the icon size is appropriate */
     border-radius: 50%;
     vertical-align: middle; /* Align the icon with the text */
-    //background-color: $ige-background;
+    //background-color: vars.$ige-background;
   }
 }
 
@@ -53,7 +53,7 @@
   mat-icon {
     margin-right: 12px;
     border-radius: 50%;
-    background-color: $ige-background;
+    background-color: vars.$ige-background;
   }
 }
 

@@ -1,7 +1,7 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
-  background-color: $ige-background;
+  background-color: vars.$ige-background;
 
   ::ng-deep .anchor-navigation {
     transition: padding 0.2s linear;
@@ -13,7 +13,7 @@
     width: 26px;
     height: 26px;
     line-height: 24px;
-    background-color: $ige-background-bar;
+    background-color: vars.$ige-background-bar;
   }
 }
 

@@ -23,7 +23,7 @@ import {
   OnInit,
   signal,
 } from "@angular/core";
-import { MatFormField, MatInput, MatSuffix } from "@angular/material/input";
+import { MatInput, MatSuffix } from "@angular/material/input";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatIcon } from "@angular/material/icon";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -33,9 +33,8 @@ import {
 } from "../../../services/codelist/codelist.service";
 import { FieldType } from "@ngx-formly/material/form-field";
 import { FieldTypeConfig, FormlyFieldProps } from "@ngx-formly/core";
-import { AsyncPipe } from "@angular/common";
 import { Observable, of } from "rxjs";
-import { debounceTime, startWith, take } from "rxjs/operators";
+import { debounceTime, startWith } from "rxjs/operators";
 import { BackendOption } from "../../../store/codelist/codelist.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
@@ -45,21 +44,19 @@ interface UnitInput extends FormlyFieldProps {
 
 @UntilDestroy()
 @Component({
-    selector: "ige-unit-input",
-    imports: [
-        MatInput,
-        MatSuffix,
-        MatFormField,
-        MatMenu,
-        MatMenuItem,
-        MatMenuTrigger,
-        MatIcon,
-        ReactiveFormsModule,
-        AsyncPipe,
-    ],
-    templateUrl: "./unit-input.component.html",
-    styleUrl: "./unit-input.component.scss",
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: "ige-unit-input",
+  imports: [
+    MatInput,
+    MatSuffix,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger,
+    MatIcon,
+    ReactiveFormsModule,
+  ],
+  templateUrl: "./unit-input.component.html",
+  styleUrl: "./unit-input.component.scss",
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UnitInputComponent
   extends FieldType<FieldTypeConfig<UnitInput>>

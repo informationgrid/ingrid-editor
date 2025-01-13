@@ -1,7 +1,7 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
-  background-color: $ige-background;
+  background-color: vars.$ige-background;
   display: block;
 }
 

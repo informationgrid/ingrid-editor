@@ -1,5 +1,5 @@
 /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host ::ng-deep .mat-form-field-wrapper {
   padding: 0 !important;
@@ -12,7 +12,7 @@
 }
 
 button.hint {
-  background-color: $ige-background;
+  background-color: vars.$ige-background;
   margin-right: 8px;
 }
 
@@ -21,7 +21,7 @@ button.hint {
   line-height: 18px;
   letter-spacing: 0.4px;
   padding: 6px !important;
-  color: $ige-hint-color;
+  color: vars.$ige-hint-color;
 }
 
 .btn-analyze {

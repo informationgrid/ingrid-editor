@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   display: flex;
@@ -13,7 +13,7 @@
 }
 
 .mat-mdc-card-title {
-  color: $ige-primary;
+  color: vars.$ige-primary;
 }
 
 .card-header {
@@ -31,7 +31,7 @@
 
 .mat-mdc-card {
   &.selected {
-    border: 1px solid $ige-primary;
+    border: 1px solid vars.$ige-primary;
   }
 
   &:hover {
@@ -56,7 +56,7 @@
 }
 
 .selected {
-  background-color: $ige-mark-color;
+  background-color: vars.$ige-mark-color;
 }
 
 .content {
