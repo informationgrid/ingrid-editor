@@ -48,7 +48,6 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
   selector: "ige-ibus-management",
   templateUrl: "./connection-management.component.html",
   styleUrls: ["./connection-management.component.scss"],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormlyModule,

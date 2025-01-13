@@ -30,7 +30,6 @@ import { FormlyModule } from "@ngx-formly/core";
   selector: "ige-configuration",
   templateUrl: "./configuration.component.html",
   styleUrls: ["./configuration.component.scss"],
-  standalone: true,
   imports: [PageTemplateComponent, MatButton, FormlyModule],
 })
 export class ConfigurationComponent implements OnInit {

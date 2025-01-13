@@ -48,7 +48,6 @@ import { GeneralStore } from "../store/general.store";
   selector: "ige-main-header",
   templateUrl: "./main-header.component.html",
   styleUrls: ["./main-header.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     MatToolbar,

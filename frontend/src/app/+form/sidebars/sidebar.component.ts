@@ -41,11 +41,10 @@ import { UiStore } from "../../store/ui.store";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-sidebar",
-  templateUrl: "./sidebar.component.html",
-  styleUrls: ["./sidebar.component.scss"],
-  standalone: true,
-  imports: [TreeComponent],
+    selector: "ige-sidebar",
+    templateUrl: "./sidebar.component.html",
+    styleUrls: ["./sidebar.component.scss"],
+    imports: [TreeComponent]
 })
 export class SidebarComponent implements OnInit {
   @Input() address = false;

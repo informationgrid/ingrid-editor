@@ -27,11 +27,10 @@ interface Legend {
 }
 
 @Component({
-  selector: "permission-legends",
-  templateUrl: "./permission-legends.component.html",
-  styleUrls: ["./permission-legends.component.scss"],
-  imports: [MatIconModule],
-  standalone: true,
+    selector: "permission-legends",
+    templateUrl: "./permission-legends.component.html",
+    styleUrls: ["./permission-legends.component.scss"],
+    imports: [MatIconModule]
 })
 export class PermissionLegendsComponent implements OnInit {
   @Input() showReadLegend = true;

@@ -31,17 +31,16 @@ import { UiStore } from "../../../../store/ui.store";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-quick-navbar",
-  templateUrl: "./quick-navbar.component.html",
-  styleUrls: ["./quick-navbar.component.scss"],
-  standalone: true,
-  imports: [
-    DocumentIconComponent,
-    HeaderNavigationComponent,
-    FormMessageComponent,
-    ErrorPanelComponent,
-    MatSlideToggle,
-  ],
+    selector: "ige-quick-navbar",
+    templateUrl: "./quick-navbar.component.html",
+    styleUrls: ["./quick-navbar.component.scss"],
+    imports: [
+        DocumentIconComponent,
+        HeaderNavigationComponent,
+        FormMessageComponent,
+        ErrorPanelComponent,
+        MatSlideToggle,
+    ]
 })
 export class QuickNavbarComponent {
   @Input() sections: string[] = [];

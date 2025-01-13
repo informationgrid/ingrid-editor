@@ -46,7 +46,6 @@ import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Group } from "../../../models/user-group";
 import { firstValueFrom } from "rxjs";
-import { filter } from "rxjs/operators";
 import { GeneralTable } from "../../general.table";
 import { GroupService } from "../../../services/role/group.service";
 import {
@@ -63,7 +62,6 @@ import { MatButton } from "@angular/material/button";
   selector: "groups-table",
   templateUrl: "./groups-table.component.html",
   styleUrls: ["../../table.styles.scss"],
-  standalone: true,
   imports: [
     MatTable,
     MatSort,

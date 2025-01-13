@@ -25,7 +25,6 @@ import { MatIcon } from "@angular/material/icon";
   selector: "ige-action-button",
   templateUrl: "./action-button.component.html",
   styleUrls: ["./action-button.component.scss"],
-  standalone: true,
   imports: [MatButton, MatIcon],
 })
 export class ActionButtonComponent implements OnInit {

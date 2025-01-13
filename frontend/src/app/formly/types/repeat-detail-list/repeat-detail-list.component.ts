@@ -66,26 +66,25 @@ interface RepeatDetailListProps extends FormlyFieldProps {
 
 @UntilDestroy()
 @Component({
-  selector: "ige-repeat-detail-list",
-  templateUrl: "./repeat-detail-list.component.html",
-  styleUrls: ["./repeat-detail-list.component.scss"],
-  imports: [
-    CdkDrag,
-    CdkDropList,
-    CdkDragHandle,
-    MatDialogModule,
-    MatIconModule,
-    MatListModule,
-    MatMenuModule,
-    AddButtonComponent,
-    MatButtonModule,
-    FormErrorComponent,
-    FormlyModule,
-    MatTooltipModule,
-    NgComponentOutlet,
-  ],
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: "ige-repeat-detail-list",
+    templateUrl: "./repeat-detail-list.component.html",
+    styleUrls: ["./repeat-detail-list.component.scss"],
+    imports: [
+        CdkDrag,
+        CdkDropList,
+        CdkDragHandle,
+        MatDialogModule,
+        MatIconModule,
+        MatListModule,
+        MatMenuModule,
+        AddButtonComponent,
+        MatButtonModule,
+        FormErrorComponent,
+        FormlyModule,
+        MatTooltipModule,
+        NgComponentOutlet,
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RepeatDetailListComponent
   extends FieldType<FieldTypeConfig<RepeatDetailListProps>>

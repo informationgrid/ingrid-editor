@@ -78,7 +78,6 @@ import { CodelistStore } from "../../store/codelist/codelist.store";
     MatDivider,
     PageTemplateComponent,
   ],
-  standalone: true,
 })
 export class CatalogCodelistsComponent implements OnInit {
   private codelistStore = inject(CodelistStore);

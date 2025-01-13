@@ -35,17 +35,16 @@ import { EmailformComponent } from "../../emailform/emailform.component";
 import { AsyncPipe } from "@angular/common";
 
 @Component({
-  selector: "ige-profile",
-  templateUrl: "./profile.component.html",
-  styleUrls: ["./profile.component.scss"],
-  standalone: true,
-  imports: [
-    PageTemplateNoHeaderComponent,
-    MatIcon,
-    MatButton,
-    EmailformComponent,
-    AsyncPipe,
-  ],
+    selector: "ige-profile",
+    templateUrl: "./profile.component.html",
+    styleUrls: ["./profile.component.scss"],
+    imports: [
+        PageTemplateNoHeaderComponent,
+        MatIcon,
+        MatButton,
+        EmailformComponent,
+        AsyncPipe,
+    ]
 })
 export class ProfileComponent implements OnInit {
   constructor(

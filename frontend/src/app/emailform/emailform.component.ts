@@ -41,7 +41,6 @@ import { MatButton } from "@angular/material/button";
   selector: "ige-emailform",
   templateUrl: "./emailform.component.html",
   styleUrls: ["./emailform.component.scss"],
-  standalone: true,
   imports: [ReactiveFormsModule, MatFormField, MatInput, MatError, MatButton],
 })
 export class EmailformComponent implements OnInit {

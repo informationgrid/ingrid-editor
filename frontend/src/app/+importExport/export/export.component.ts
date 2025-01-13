@@ -63,7 +63,6 @@ import { AsyncPipe } from "@angular/common";
   selector: "ige-export",
   templateUrl: "./export.component.html",
   styleUrls: ["./export.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     PageTemplateComponent,

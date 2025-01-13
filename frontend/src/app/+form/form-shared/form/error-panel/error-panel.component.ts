@@ -38,7 +38,6 @@ import { forkJoin, timer } from "rxjs";
     ]),
   ],
   imports: [MatIconModule, MatButtonModule],
-  standalone: true,
 })
 export class ErrorPanelComponent implements OnInit {
   @Input() numErrors = 0;

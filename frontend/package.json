@@ -20,16 +20,16 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^18.2.13",
+    "@angular/animations": "^19.0.6",
     "@angular/cdk": "^18.2.14",
-    "@angular/common": "^18.2.13",
-    "@angular/compiler": "^18.2.13",
-    "@angular/core": "^18.2.13",
-    "@angular/forms": "^18.2.13",
+    "@angular/common": "^19.0.6",
+    "@angular/compiler": "^19.0.6",
+    "@angular/core": "^19.0.6",
+    "@angular/forms": "^19.0.6",
     "@angular/material": "^18.2.14",
-    "@angular/platform-browser": "^18.2.13",
-    "@angular/platform-browser-dynamic": "^18.2.13",
-    "@angular/router": "^18.2.13",
+    "@angular/platform-browser": "^19.0.6",
+    "@angular/platform-browser-dynamic": "^19.0.6",
+    "@angular/router": "^19.0.6",
     "@flowjs/flow.js": "^2.14.1",
     "@flowjs/ngx-flow": "^0.8.1",
     "@geoman-io/leaflet-geoman-free": "^2.15.0",
@@ -53,12 +53,12 @@
     "ngx-mat-select-search": "^7.0.9",
     "rxjs": "^7.8.1",
     "tslib": "^2.6.2",
-    "zone.js": "~0.14.10"
+    "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^18.2.12",
-    "@angular/cli": "^18.2.12",
-    "@angular/compiler-cli": "^18.2.13",
+    "@angular-devkit/build-angular": "^19.0.7",
+    "@angular/cli": "^19.0.7",
+    "@angular/compiler-cli": "^19.0.6",
     "@ngneat/spectator": "^16.0.0",
     "@types/file-saver-es": "~2.0.3",
     "@types/flowjs": "~2.13.14",
@@ -81,7 +81,7 @@
     "prettier": "3.4.2",
     "source-map-explorer": "^2.5.3",
     "stop-only": "^3.4.2",
-    "typescript": "~5.4.5"
+    "typescript": "~5.6.3"
   },
   "engines": {
     "npm": "please-use-yarn",

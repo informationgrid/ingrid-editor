@@ -31,18 +31,17 @@ import { ProfileService } from "../services/profile.service";
 import { ConfigService } from "../services/config/config.service";
 
 @Component({
-  selector: "settings",
-  templateUrl: "./settings.component.html",
-  styleUrls: ["./settings.component.scss"],
-  standalone: true,
-  imports: [
-    MatTabNav,
-    MatTabLink,
-    RouterLinkActive,
-    RouterLink,
-    MatTabNavPanel,
-    RouterOutlet,
-  ],
+    selector: "settings",
+    templateUrl: "./settings.component.html",
+    styleUrls: ["./settings.component.scss"],
+    imports: [
+        MatTabNav,
+        MatTabLink,
+        RouterLinkActive,
+        RouterLink,
+        MatTabNavPanel,
+        RouterOutlet,
+    ]
 })
 export class SettingsComponent implements OnInit {
   tabs: Tab[];

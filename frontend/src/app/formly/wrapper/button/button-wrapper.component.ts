@@ -25,7 +25,6 @@ import { MatButton } from "@angular/material/button";
   selector: "ige-button",
   templateUrl: "./button-wrapper.component.html",
   styleUrls: ["./button-wrapper.component.scss"],
-  standalone: true,
   imports: [MatButton],
 })
 export class ButtonWrapperComponent extends FieldWrapper {

@@ -43,17 +43,16 @@ import { MatHint } from "@angular/material/form-field";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-referenced-documents-type",
-  templateUrl: "./referenced-documents-type.component.html",
-  styleUrls: ["./referenced-documents-type.component.scss"],
-  standalone: true,
-  imports: [
-    MatButton,
-    MatProgressSpinner,
-    MatPaginator,
-    DocumentListItemComponent,
-    MatHint,
-  ],
+    selector: "ige-referenced-documents-type",
+    templateUrl: "./referenced-documents-type.component.html",
+    styleUrls: ["./referenced-documents-type.component.scss"],
+    imports: [
+        MatButton,
+        MatProgressSpinner,
+        MatPaginator,
+        DocumentListItemComponent,
+        MatHint,
+    ]
 })
 export class ReferencedDocumentsTypeComponent
   extends FieldType<FieldTypeConfig>

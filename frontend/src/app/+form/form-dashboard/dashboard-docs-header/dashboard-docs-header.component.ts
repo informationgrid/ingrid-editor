@@ -28,7 +28,6 @@ import { ActionButtonComponent } from "../../../shared/action-button/action-butt
   selector: "dashboard-docs-header",
   templateUrl: "./dashboard-docs-header.component.html",
   styleUrls: ["./dashboard-docs-header.component.scss"],
-  standalone: true,
   imports: [TranslocoDirective, ActionButtonComponent],
 })
 export class DashboardDocsHeaderComponent implements OnInit {

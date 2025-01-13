@@ -53,18 +53,17 @@ interface AddressDocumentAbstract extends DocumentAbstract {
 
 @UntilDestroy()
 @Component({
-  selector: "ige-address-template",
-  templateUrl: "./address-template.component.html",
-  styleUrls: ["./address-template.component.scss"],
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ReactiveFormsModule,
-    MatFormField,
-    MatInput,
-    FocusDirective,
-    DocumentListItemComponent,
-  ],
+    selector: "ige-address-template",
+    templateUrl: "./address-template.component.html",
+    styleUrls: ["./address-template.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        ReactiveFormsModule,
+        MatFormField,
+        MatInput,
+        FocusDirective,
+        DocumentListItemComponent,
+    ]
 })
 export class AddressTemplateComponent implements OnInit {
   private profileStore = inject(ProfileStore);

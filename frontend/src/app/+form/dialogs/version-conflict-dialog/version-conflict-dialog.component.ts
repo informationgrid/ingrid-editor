@@ -30,16 +30,15 @@ import { ConfigService } from "../../../services/config/config.service";
 export type VersionConflictChoice = "cancel" | "force" | "reload";
 
 @Component({
-  selector: "ige-version-conflict-dialog",
-  templateUrl: "./version-conflict-dialog.component.html",
-  styleUrls: ["./version-conflict-dialog.component.scss"],
-  standalone: true,
-  imports: [
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    OptionListComponent,
-  ],
+    selector: "ige-version-conflict-dialog",
+    templateUrl: "./version-conflict-dialog.component.html",
+    styleUrls: ["./version-conflict-dialog.component.scss"],
+    imports: [
+        MatDialogModule,
+        MatButtonModule,
+        MatIconModule,
+        OptionListComponent,
+    ]
 })
 export class VersionConflictDialogComponent implements OnInit {
   private allowForceOverwrite =

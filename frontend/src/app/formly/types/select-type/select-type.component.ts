@@ -44,22 +44,21 @@ import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabell
 
 @UntilDestroy()
 @Component({
-  selector: "ige-select-type",
-  templateUrl: "./select-type.component.html",
-  styleUrls: ["./select-type.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  imports: [
-    MatOption,
-    MatPseudoCheckbox,
-    MatSelect,
-    ReactiveFormsModule,
-    FormlyModule,
-    NgxMatSelectSearchModule,
-    NgTemplateOutlet,
-    MatDivider,
-    FieldToAiraLabelledbyPipe,
-  ],
+    selector: "ige-select-type",
+    templateUrl: "./select-type.component.html",
+    styleUrls: ["./select-type.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        MatOption,
+        MatPseudoCheckbox,
+        MatSelect,
+        ReactiveFormsModule,
+        FormlyModule,
+        NgxMatSelectSearchModule,
+        NgTemplateOutlet,
+        MatDivider,
+        FieldToAiraLabelledbyPipe,
+    ]
 })
 export class SelectTypeComponent
   extends FieldType<FieldTypeConfig>

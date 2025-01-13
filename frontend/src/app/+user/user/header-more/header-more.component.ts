@@ -45,7 +45,6 @@ import { DatePipe } from "@angular/common";
     ]),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [ReactiveFormsModule, DatePipe],
 })
 export class HeaderMoreComponent implements OnInit {

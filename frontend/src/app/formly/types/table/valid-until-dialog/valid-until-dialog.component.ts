@@ -40,27 +40,26 @@ import {
 } from "@angular/material/datepicker";
 
 @Component({
-  selector: "ige-valid-until-dialog",
-  templateUrl: "./valid-until-dialog.component.html",
-  styleUrls: ["./valid-until-dialog.component.scss"],
-  standalone: true,
-  imports: [
-    MatIconButton,
-    MatDialogClose,
-    MatIcon,
-    MatDialogTitle,
-    CdkScrollable,
-    MatDialogContent,
-    MatFormField,
-    MatLabel,
-    MatInput,
-    MatDatepickerInput,
-    MatDatepickerToggle,
-    MatSuffix,
-    MatDatepicker,
-    MatDialogActions,
-    MatButton,
-  ],
+    selector: "ige-valid-until-dialog",
+    templateUrl: "./valid-until-dialog.component.html",
+    styleUrls: ["./valid-until-dialog.component.scss"],
+    imports: [
+        MatIconButton,
+        MatDialogClose,
+        MatIcon,
+        MatDialogTitle,
+        CdkScrollable,
+        MatDialogContent,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatDatepickerInput,
+        MatDatepickerToggle,
+        MatSuffix,
+        MatDatepicker,
+        MatDialogActions,
+        MatButton,
+    ]
 })
 export class ValidUntilDialogComponent implements OnInit {
   private date: Date = null;

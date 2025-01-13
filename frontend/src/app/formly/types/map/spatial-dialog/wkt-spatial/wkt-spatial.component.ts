@@ -39,22 +39,21 @@ import { MatButton } from "@angular/material/button";
 import { FormErrorComponent } from "../../../../../+form/form-shared/ige-form-error/form-error.component";
 
 @Component({
-  selector: "ige-wkt-spatial",
-  templateUrl: "./wkt-spatial.component.html",
-  styleUrls: ["./wkt-spatial.component.scss"],
-  standalone: true,
-  imports: [
-    TranslocoDirective,
-    MatFormField,
-    MatInput,
-    FocusDirective,
-    HelpContextButtonComponent,
-    MatSuffix,
-    MatProgressSpinner,
-    MatButton,
-    FormErrorComponent,
-    MatHint,
-  ],
+    selector: "ige-wkt-spatial",
+    templateUrl: "./wkt-spatial.component.html",
+    styleUrls: ["./wkt-spatial.component.scss"],
+    imports: [
+        TranslocoDirective,
+        MatFormField,
+        MatInput,
+        FocusDirective,
+        HelpContextButtonComponent,
+        MatSuffix,
+        MatProgressSpinner,
+        MatButton,
+        FormErrorComponent,
+        MatHint,
+    ]
 })
 export class WktSpatialComponent implements OnInit, OnDestroy {
   @Input() map: Map;

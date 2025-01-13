@@ -43,22 +43,21 @@ import { AddressTreeStore } from "../../../store/address-tree/address-tree.store
 import { TreeStore } from "../../../store/tree/tree.store";
 
 @Component({
-  selector: "permission-add-dialog",
-  templateUrl: "./permission-add-dialog.component.html",
-  styleUrls: ["./permission-add-dialog.component.scss"],
-  standalone: true,
-  imports: [
-    CdkDrag,
-    CdkDragHandle,
-    MatIconButton,
-    MatDialogClose,
-    MatIcon,
-    MatDialogTitle,
-    MatDialogContent,
-    TreeComponent,
-    MatDialogActions,
-    MatButton,
-  ],
+    selector: "permission-add-dialog",
+    templateUrl: "./permission-add-dialog.component.html",
+    styleUrls: ["./permission-add-dialog.component.scss"],
+    imports: [
+        CdkDrag,
+        CdkDragHandle,
+        MatIconButton,
+        MatDialogClose,
+        MatIcon,
+        MatDialogTitle,
+        MatDialogContent,
+        TreeComponent,
+        MatDialogActions,
+        MatButton,
+    ]
 })
 export class PermissionAddDialogComponent implements OnInit {
   @Input() forAddress = this.data?.forAddress;

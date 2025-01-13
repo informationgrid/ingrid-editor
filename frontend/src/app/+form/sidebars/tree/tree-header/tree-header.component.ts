@@ -44,22 +44,21 @@ import { AsyncPipe } from "@angular/common";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-tree-header",
-  templateUrl: "./tree-header.component.html",
-  styleUrls: ["./tree-header.component.scss"],
-  standalone: true,
-  imports: [
-    MatCheckbox,
-    MatTooltip,
-    MatIconButton,
-    MatSuffix,
-    MatIcon,
-    SearchInputComponent,
-    MatAutocomplete,
-    MatOption,
-    DocumentListItemComponent,
-    AsyncPipe,
-  ],
+    selector: "ige-tree-header",
+    templateUrl: "./tree-header.component.html",
+    styleUrls: ["./tree-header.component.scss"],
+    imports: [
+        MatCheckbox,
+        MatTooltip,
+        MatIconButton,
+        MatSuffix,
+        MatIcon,
+        SearchInputComponent,
+        MatAutocomplete,
+        MatOption,
+        DocumentListItemComponent,
+        AsyncPipe,
+    ]
 })
 export class TreeHeaderComponent implements OnInit {
   @Input() showReloadButton = false;

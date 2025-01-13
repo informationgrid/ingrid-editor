@@ -45,22 +45,21 @@ interface UnitInput extends FormlyFieldProps {
 
 @UntilDestroy()
 @Component({
-  selector: "ige-unit-input",
-  standalone: true,
-  imports: [
-    MatInput,
-    MatSuffix,
-    MatFormField,
-    MatMenu,
-    MatMenuItem,
-    MatMenuTrigger,
-    MatIcon,
-    ReactiveFormsModule,
-    AsyncPipe,
-  ],
-  templateUrl: "./unit-input.component.html",
-  styleUrl: "./unit-input.component.scss",
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: "ige-unit-input",
+    imports: [
+        MatInput,
+        MatSuffix,
+        MatFormField,
+        MatMenu,
+        MatMenuItem,
+        MatMenuTrigger,
+        MatIcon,
+        ReactiveFormsModule,
+        AsyncPipe,
+    ],
+    templateUrl: "./unit-input.component.html",
+    styleUrl: "./unit-input.component.scss",
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UnitInputComponent
   extends FieldType<FieldTypeConfig<UnitInput>>

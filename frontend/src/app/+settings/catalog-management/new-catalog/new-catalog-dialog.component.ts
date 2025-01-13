@@ -43,27 +43,26 @@ export interface CatalogSettings {
 }
 
 @Component({
-  templateUrl: "new-catalog-dialog.component.html",
-  standalone: true,
-  imports: [
-    CdkDrag,
-    CdkDragHandle,
-    MatIconButton,
-    MatDialogClose,
-    MatIcon,
-    MatDialogTitle,
-    MatDialogContent,
-    ReactiveFormsModule,
-    FormsModule,
-    MatFormField,
-    MatLabel,
-    MatInput,
-    FocusDirective,
-    MatSelect,
-    MatOption,
-    MatDialogActions,
-    MatButton,
-  ],
+    templateUrl: "new-catalog-dialog.component.html",
+    imports: [
+        CdkDrag,
+        CdkDragHandle,
+        MatIconButton,
+        MatDialogClose,
+        MatIcon,
+        MatDialogTitle,
+        MatDialogContent,
+        ReactiveFormsModule,
+        FormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        FocusDirective,
+        MatSelect,
+        MatOption,
+        MatDialogActions,
+        MatButton,
+    ]
 })
 export class NewCatalogDialogComponent {
   model: CatalogSettings = {};

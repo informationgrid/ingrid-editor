@@ -25,7 +25,6 @@ import { NgIf } from "@angular/common";
   selector: "ige-header-navigation",
   templateUrl: "./header-navigation.component.html",
   styleUrls: ["./header-navigation.component.scss"],
-  standalone: true,
   imports: [MatButton, NgIf],
 })
 export class HeaderNavigationComponent implements OnInit {

@@ -47,7 +47,6 @@ import { HeaderMoreComponent } from "../header-more/header-more.component";
   templateUrl: "./header-title-row.component.html",
   styleUrls: ["./header-title-row.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     TranslocoDirective,
     DocumentIconComponent,

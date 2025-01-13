@@ -20,7 +20,6 @@
 import { Component, OnInit } from "@angular/core";
 import { MessageService } from "../../services/messages/message.service";
 import { MessageFormatBackend } from "../../services/messages/message";
-import { tap } from "rxjs/operators";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { UntypedFormGroup } from "@angular/forms";
 import { messagesFields } from "./formly-fields";
@@ -57,7 +56,6 @@ import { MatIcon } from "@angular/material/icon";
   selector: "ige-messages-management",
   templateUrl: "./messages-management.component.html",
   styleUrls: ["./messages-management.component.scss"],
-  standalone: true,
   imports: [
     PageTemplateComponent,
     AddButtonComponent,

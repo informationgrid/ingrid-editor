@@ -49,10 +49,9 @@ export interface SelectServiceResponse {
 }
 
 @Component({
-  templateUrl: "./selector-service-dialog.component.html",
-  styleUrl: "./selector-service-dialog.component.scss",
-  imports: [DialogTemplateComponent, TreeComponent, FormlyModule],
-  standalone: true,
+    templateUrl: "./selector-service-dialog.component.html",
+    styleUrl: "./selector-service-dialog.component.scss",
+    imports: [DialogTemplateComponent, TreeComponent, FormlyModule]
 })
 export class SelectorServiceDialogComponent {
   private treeStore = inject(TreeStore);

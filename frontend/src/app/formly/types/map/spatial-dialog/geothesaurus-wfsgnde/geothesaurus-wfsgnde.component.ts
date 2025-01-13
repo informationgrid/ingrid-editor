@@ -57,21 +57,20 @@ interface GeoThesaurusResult {
 
 @UntilDestroy()
 @Component({
-  selector: "ige-geothesaurus-wfsgnde",
-  templateUrl: "./geothesaurus-wfsgnde.component.html",
-  styleUrls: [
-    "../free-spatial/free-spatial.component.scss",
-    "./geothesaurus-wfsgnde.component.scss",
-  ],
-  standalone: true,
-  imports: [
-    MatDividerModule,
-    MatListModule,
-    MatRadioModule,
-    SearchInputComponent,
-    MatCheckboxModule,
-    FormsModule,
-  ],
+    selector: "ige-geothesaurus-wfsgnde",
+    templateUrl: "./geothesaurus-wfsgnde.component.html",
+    styleUrls: [
+        "../free-spatial/free-spatial.component.scss",
+        "./geothesaurus-wfsgnde.component.scss",
+    ],
+    imports: [
+        MatDividerModule,
+        MatListModule,
+        MatRadioModule,
+        SearchInputComponent,
+        MatCheckboxModule,
+        FormsModule,
+    ]
 })
 export class GeothesaurusWfsgndeComponent implements OnInit {
   @Input() map: Map;

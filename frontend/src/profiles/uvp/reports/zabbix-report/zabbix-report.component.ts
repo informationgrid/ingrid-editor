@@ -38,23 +38,22 @@ import { MatIcon } from "@angular/material/icon";
 
 @UntilDestroy()
 @Component({
-  selector: "zabbix-report",
-  templateUrl: "./zabbix-report.component.html",
-  styleUrls: ["./zabbix-report.component.scss"],
-  standalone: true,
-  imports: [
-    DatePipe,
-    MatMenuModule,
-    MatPaginatorModule,
-    MatTableModule,
-    MatSortModule,
-    MatProgressSpinner,
-    PageTemplateNoHeaderComponent,
-    CardBoxComponent,
-    MatTooltip,
-    DateAgoPipe,
-    MatIcon,
-  ],
+    selector: "zabbix-report",
+    templateUrl: "./zabbix-report.component.html",
+    styleUrls: ["./zabbix-report.component.scss"],
+    imports: [
+        DatePipe,
+        MatMenuModule,
+        MatPaginatorModule,
+        MatTableModule,
+        MatSortModule,
+        MatProgressSpinner,
+        PageTemplateNoHeaderComponent,
+        CardBoxComponent,
+        MatTooltip,
+        DateAgoPipe,
+        MatIcon,
+    ]
 })
 export class ZabbixReportComponent implements AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;

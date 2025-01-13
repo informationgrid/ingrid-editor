@@ -94,7 +94,6 @@ import { BehaviourService } from "../../../services/behavior/behaviour.service";
   selector: "ige-form-wrapper",
   templateUrl: "./dynamic-form.component.html",
   styleUrls: ["./dynamic-form.component.scss"],
-  standalone: true,
   imports: [
     FormToolbarComponent,
     AngularSplitModule,

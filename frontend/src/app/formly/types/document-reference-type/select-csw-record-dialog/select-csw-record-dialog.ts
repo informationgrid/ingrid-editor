@@ -57,21 +57,20 @@ export interface SelectCswRecordData {
 
 @UntilDestroy()
 @Component({
-  selector: "ige-select-csw-record-dialog",
-  templateUrl: "./select-csw-record-dialog.html",
-  styleUrls: ["./select-csw-record-dialog.scss"],
-  standalone: true,
-  imports: [
-    DialogTemplateComponent,
-    FormlyModule,
-    MatFormField,
-    MatLabel,
-    MatInput,
-    ReactiveFormsModule,
-    FocusDirective,
-    MatError,
-    FormErrorComponent,
-  ],
+    selector: "ige-select-csw-record-dialog",
+    templateUrl: "./select-csw-record-dialog.html",
+    styleUrls: ["./select-csw-record-dialog.scss"],
+    imports: [
+        DialogTemplateComponent,
+        FormlyModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        ReactiveFormsModule,
+        FocusDirective,
+        MatError,
+        FormErrorComponent,
+    ]
 })
 export class SelectCswRecordDialog implements OnInit {
   urlControl = new FormControl<string>("https://", [

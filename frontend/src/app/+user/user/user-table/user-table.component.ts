@@ -58,22 +58,21 @@ import { ExportService } from "../../../services/export.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
-  selector: "user-table",
-  templateUrl: "./user-table.component.html",
-  styleUrls: ["../../table.styles.scss"],
-  imports: [
-    MatTableModule,
-    MatIconModule,
-    MatSortModule,
-    MatButtonModule,
-    MatMenuModule,
-    MatProgressSpinnerModule,
-    MatPaginatorModule,
-    PermissionLegendsComponent,
-    TranslocoModule,
-    MatTooltipModule,
-  ],
-  standalone: true,
+    selector: "user-table",
+    templateUrl: "./user-table.component.html",
+    styleUrls: ["../../table.styles.scss"],
+    imports: [
+        MatTableModule,
+        MatIconModule,
+        MatSortModule,
+        MatButtonModule,
+        MatMenuModule,
+        MatProgressSpinnerModule,
+        MatPaginatorModule,
+        PermissionLegendsComponent,
+        TranslocoModule,
+        MatTooltipModule,
+    ]
 })
 export class UserTableComponent
   extends GeneralTable

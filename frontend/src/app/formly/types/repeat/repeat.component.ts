@@ -57,21 +57,20 @@ export interface RepeatProps extends FormlyFieldProps {
 
 @UntilDestroy()
 @Component({
-  selector: "ige-repeat",
-  templateUrl: "./repeat.component.html",
-  styleUrls: ["./repeat.component.scss"],
-  standalone: true,
-  imports: [
-    FormErrorComponent,
-    FormlyModule,
-    CdkDropList,
-    CdkDrag,
-    MatIcon,
-    CdkDragHandle,
-    MatTooltip,
-    MatIconButton,
-    AddButtonComponent,
-  ],
+    selector: "ige-repeat",
+    templateUrl: "./repeat.component.html",
+    styleUrls: ["./repeat.component.scss"],
+    imports: [
+        FormErrorComponent,
+        FormlyModule,
+        CdkDropList,
+        CdkDrag,
+        MatIcon,
+        CdkDragHandle,
+        MatTooltip,
+        MatIconButton,
+        AddButtonComponent,
+    ]
 })
 export class RepeatComponent
   extends FieldArrayType<FieldTypeConfig<RepeatProps>>

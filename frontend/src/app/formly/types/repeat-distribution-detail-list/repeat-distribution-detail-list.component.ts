@@ -69,29 +69,28 @@ interface RepeatDistributionDetailListProps extends FormlyFieldProps {
 
 @UntilDestroy()
 @Component({
-  selector: "ige-repeat-distribution-detail-list",
-  templateUrl: "./repeat-distribution-detail-list.component.html",
-  styleUrls: ["./repeat-distribution-detail-list.component.scss"],
-  imports: [
-    AsyncPipe,
-    CdkDrag,
-    CdkDropList,
-    CdkDragHandle,
-    CodelistPipe,
-    MatDialogModule,
-    MatIconModule,
-    MatListModule,
-    MatMenuModule,
-    MatExpansionModule,
-    AddButtonComponent,
-    MatButtonModule,
-    FormErrorComponent,
-    KeyValuePipe,
-    MatTooltipModule,
-    JsonPipe,
-    NgForOf,
-  ],
-  standalone: true,
+    selector: "ige-repeat-distribution-detail-list",
+    templateUrl: "./repeat-distribution-detail-list.component.html",
+    styleUrls: ["./repeat-distribution-detail-list.component.scss"],
+    imports: [
+        AsyncPipe,
+        CdkDrag,
+        CdkDropList,
+        CdkDragHandle,
+        CodelistPipe,
+        MatDialogModule,
+        MatIconModule,
+        MatListModule,
+        MatMenuModule,
+        MatExpansionModule,
+        AddButtonComponent,
+        MatButtonModule,
+        FormErrorComponent,
+        KeyValuePipe,
+        MatTooltipModule,
+        JsonPipe,
+        NgForOf,
+    ]
 })
 export class RepeatDistributionDetailListComponent
   extends FieldType<FieldTypeConfig<RepeatDistributionDetailListProps>>

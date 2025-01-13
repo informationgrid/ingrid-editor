@@ -57,7 +57,6 @@ import { MatIconButton } from "@angular/material/button";
     MatIconButton,
     MatMenuItem,
   ],
-  standalone: true,
 })
 export class CodelistPresenterComponent implements OnInit {
   codelist = input<Codelist>();

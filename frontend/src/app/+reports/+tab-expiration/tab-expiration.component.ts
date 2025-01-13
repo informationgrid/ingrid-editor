@@ -51,22 +51,21 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
 
 @UntilDestroy()
 @Component({
-  selector: "ige-tab-expiration",
-  templateUrl: "./tab-expiration.component.html",
-  styleUrls: ["./tab-expiration.component.scss"],
-  standalone: true,
-  imports: [
-    MatCheckboxModule,
-    ExpirationTableComponent,
-    MatButtonModule,
-    MatDividerModule,
-    MatTabsModule,
-    MatProgressSpinnerModule,
-    AsyncPipe,
-    NgTemplateOutlet,
-    FormsModule,
-    PageTemplateComponent,
-  ],
+    selector: "ige-tab-expiration",
+    templateUrl: "./tab-expiration.component.html",
+    styleUrls: ["./tab-expiration.component.scss"],
+    imports: [
+        MatCheckboxModule,
+        ExpirationTableComponent,
+        MatButtonModule,
+        MatDividerModule,
+        MatTabsModule,
+        MatProgressSpinnerModule,
+        AsyncPipe,
+        NgTemplateOutlet,
+        FormsModule,
+        PageTemplateComponent,
+    ]
 })
 export class TabExpirationComponent implements OnInit {
   currentUserId: number;

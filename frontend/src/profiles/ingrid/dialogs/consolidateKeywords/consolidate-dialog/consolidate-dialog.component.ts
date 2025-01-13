@@ -64,20 +64,19 @@ interface ThesaurusTypeInfo extends Array<any | ThesaurusResult[]> {
 }
 
 @Component({
-  selector: "consolidate-keywords-dialog",
-  templateUrl: "./consolidate-dialog.component.html",
-  styleUrls: ["./consolidate-dialog.component.scss"],
-  imports: [
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatChip,
-    MatChipListbox,
-    NgClass,
-    DialogTemplateComponent,
-  ],
-  standalone: true,
+    selector: "consolidate-keywords-dialog",
+    templateUrl: "./consolidate-dialog.component.html",
+    styleUrls: ["./consolidate-dialog.component.scss"],
+    imports: [
+        MatDialogModule,
+        MatButtonModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        MatChip,
+        MatChipListbox,
+        NgClass,
+        DialogTemplateComponent,
+    ]
 })
 export class ConsolidateDialogComponent implements OnInit {
   private codelistStore = inject(CodelistStore);

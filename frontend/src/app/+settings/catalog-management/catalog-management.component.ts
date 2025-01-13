@@ -49,7 +49,6 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   selector: "ige-catalog-management",
   templateUrl: "./catalog-management.component.html",
   styleUrls: ["./catalog-management.component.scss"],
-  standalone: true,
   imports: [
     PageTemplateComponent,
     AddButtonComponent,

@@ -49,7 +49,6 @@ import { GeneralStore } from "../store/general.store";
 @Component({
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     QuickSearchComponent,

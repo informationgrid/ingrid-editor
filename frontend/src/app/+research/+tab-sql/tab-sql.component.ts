@@ -41,18 +41,17 @@ import { toObservable } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-tab-sql",
-  templateUrl: "./tab-sql.component.html",
-  styleUrls: ["./tab-sql.component.scss"],
-  standalone: true,
-  imports: [
-    PageTemplateComponent,
-    MatButton,
-    MatInput,
-    ReactiveFormsModule,
-    MatFormField,
-    ResultTableComponent,
-  ],
+    selector: "ige-tab-sql",
+    templateUrl: "./tab-sql.component.html",
+    styleUrls: ["./tab-sql.component.scss"],
+    imports: [
+        PageTemplateComponent,
+        MatButton,
+        MatInput,
+        ReactiveFormsModule,
+        MatFormField,
+        ResultTableComponent,
+    ]
 })
 export class TabSqlComponent implements OnInit {
   private generalStore = inject(GeneralStore);

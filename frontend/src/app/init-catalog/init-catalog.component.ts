@@ -24,7 +24,6 @@ import { RouterOutlet } from "@angular/router";
   selector: "ige-init-catalog",
   templateUrl: "./init-catalog.component.html",
   styleUrls: ["./init-catalog.component.scss"],
-  standalone: true,
   imports: [RouterOutlet],
 })
 export class InitCatalogComponent {}

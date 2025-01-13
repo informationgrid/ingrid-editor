@@ -53,25 +53,24 @@ export interface ResolvedAddressWithType {
 }
 
 @Component({
-  selector: "ige-address-card",
-  templateUrl: "./address-card.component.html",
-  styleUrls: ["./address-card.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatCard,
-    MatTooltip,
-    MatCardContent,
-    NgTemplateOutlet,
-    AsyncPipe,
-    MatMenuTrigger,
-    MatIcon,
-    MatMenu,
-    MatMenuItem,
-    MatIconButton,
-    DocumentIconComponent,
-    CodelistPipe,
-  ],
-  standalone: true,
+    selector: "ige-address-card",
+    templateUrl: "./address-card.component.html",
+    styleUrls: ["./address-card.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        MatCard,
+        MatTooltip,
+        MatCardContent,
+        NgTemplateOutlet,
+        AsyncPipe,
+        MatMenuTrigger,
+        MatIcon,
+        MatMenu,
+        MatMenuItem,
+        MatIconButton,
+        DocumentIconComponent,
+        CodelistPipe,
+    ]
 })
 export class AddressCardComponent implements OnInit {
   address = input.required<ResolvedAddressWithType>();

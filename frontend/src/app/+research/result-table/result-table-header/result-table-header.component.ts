@@ -23,11 +23,10 @@ import { MatDivider } from "@angular/material/divider";
 import { MatButton } from "@angular/material/button";
 
 @Component({
-  selector: "ige-result-table-header",
-  templateUrl: "./result-table-header.component.html",
-  styleUrls: ["./result-table-header.component.scss"],
-  standalone: true,
-  imports: [MatProgressSpinner, MatDivider, MatButton],
+    selector: "ige-result-table-header",
+    templateUrl: "./result-table-header.component.html",
+    styleUrls: ["./result-table-header.component.scss"],
+    imports: [MatProgressSpinner, MatDivider, MatButton]
 })
 export class ResultTableHeaderComponent implements OnInit {
   @Input() isLoading = false;

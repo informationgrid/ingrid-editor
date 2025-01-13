@@ -27,17 +27,16 @@ import { MatIconModule } from "@angular/material/icon";
 import { TimePipe } from "../../directives/time.pipe";
 
 @Component({
-  selector: "ige-session-timeout-info",
-  templateUrl: "./session-timeout-info.component.html",
-  styleUrls: ["./session-timeout-info.component.scss"],
-  standalone: true,
-  imports: [
-    A11yModule,
-    MatButtonModule,
-    MatTooltipModule,
-    MatIconModule,
-    TimePipe,
-  ],
+    selector: "ige-session-timeout-info",
+    templateUrl: "./session-timeout-info.component.html",
+    styleUrls: ["./session-timeout-info.component.scss"],
+    imports: [
+        A11yModule,
+        MatButtonModule,
+        MatTooltipModule,
+        MatIconModule,
+        TimePipe,
+    ]
 })
 export class SessionTimeoutInfoComponent implements OnInit {
   @Input() timeout: number;

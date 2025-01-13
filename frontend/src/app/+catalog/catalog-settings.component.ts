@@ -35,7 +35,6 @@ import { UntilDestroy } from "@ngneat/until-destroy";
   selector: "ige-catalog-settings",
   templateUrl: "./catalog-settings.component.html",
   styleUrls: ["./catalog-settings.component.scss"],
-  standalone: true,
   imports: [
     MatTabNav,
     MatTabLink,

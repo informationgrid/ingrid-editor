@@ -51,17 +51,16 @@ import { AsyncPipe } from "@angular/common";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-file-upload",
-  templateUrl: "./upload.component.html",
-  styleUrls: ["./upload.component.scss"],
-  animations: [
-    trigger("fadeInOut", [
-      state("in", style({ opacity: 100 })),
-      transition("* => void", [animate(300, style({ opacity: 0 }))]),
-    ]),
-  ],
-  standalone: true,
-  imports: [NgxFlowModule, MatIcon, MatButton, UploadItemComponent, AsyncPipe],
+    selector: "ige-file-upload",
+    templateUrl: "./upload.component.html",
+    styleUrls: ["./upload.component.scss"],
+    animations: [
+        trigger("fadeInOut", [
+            state("in", style({ opacity: 100 })),
+            transition("* => void", [animate(300, style({ opacity: 0 }))]),
+        ]),
+    ],
+    imports: [NgxFlowModule, MatIcon, MatButton, UploadItemComponent, AsyncPipe]
 })
 export class UploadComponent implements AfterViewInit {
   /** Link text */

@@ -36,14 +36,12 @@ import { Observable } from "rxjs";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatIcon } from "@angular/material/icon";
 import { MatIconButton } from "@angular/material/button";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { AsyncPipe } from "@angular/common";
 
 @Component({
   selector: "ige-context-help",
   templateUrl: "./context-help.component.html",
   styleUrls: ["./context-help.component.scss"],
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,
@@ -51,7 +49,6 @@ import { AsyncPipe } from "@angular/common";
     MatDialogTitle,
     MatIconButton,
     MatDialogClose,
-    CdkScrollable,
     MatDialogContent,
     AsyncPipe,
   ],

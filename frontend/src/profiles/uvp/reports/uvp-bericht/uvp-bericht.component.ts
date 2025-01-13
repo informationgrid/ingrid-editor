@@ -34,20 +34,19 @@ import { MatButton } from "@angular/material/button";
 
 @UntilDestroy()
 @Component({
-  selector: "uvp-bericht",
-  templateUrl: "./uvp-bericht.component.html",
-  styleUrls: ["./uvp-bericht.component.scss"],
-  standalone: true,
-  imports: [
-    MatTableModule,
-    MatSortModule,
-    PageTemplateNoHeaderComponent,
-    CardBoxComponent,
-    ReactiveFormsModule,
-    FacetsComponent,
-    MatIcon,
-    MatButton,
-  ],
+    selector: "uvp-bericht",
+    templateUrl: "./uvp-bericht.component.html",
+    styleUrls: ["./uvp-bericht.component.scss"],
+    imports: [
+        MatTableModule,
+        MatSortModule,
+        PageTemplateNoHeaderComponent,
+        CardBoxComponent,
+        ReactiveFormsModule,
+        FacetsComponent,
+        MatIcon,
+        MatButton,
+    ]
 })
 export class UvpBerichtComponent implements AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;

@@ -29,11 +29,10 @@ import { FormStateService } from "../../../+form/form-state.service";
 import { MatButton } from "@angular/material/button";
 
 @Component({
-  selector: "ige-update-get-capabilities",
-  templateUrl: "./update-get-capabilities.component.html",
-  styleUrls: ["./update-get-capabilities.component.scss"],
-  standalone: true,
-  imports: [MatButton],
+    selector: "ige-update-get-capabilities",
+    templateUrl: "./update-get-capabilities.component.html",
+    styleUrls: ["./update-get-capabilities.component.scss"],
+    imports: [MatButton]
 })
 export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {
   constructor(

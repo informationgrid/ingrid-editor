@@ -29,7 +29,6 @@ import { DatePipe } from "@angular/common";
   selector: "ige-job-handler-header",
   templateUrl: "./job-handler-header.component.html",
   styleUrls: ["./job-handler-header.component.scss"],
-  standalone: true,
   imports: [MatIcon, MatTooltip, MatProgressSpinner, MatIconButton, DatePipe],
 })
 export class JobHandlerHeaderComponent {

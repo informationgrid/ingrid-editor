@@ -66,28 +66,27 @@ import { toSignal } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-user-manager",
-  templateUrl: "./user.component.html",
-  styleUrls: ["../user.styles.scss"],
-  standalone: true,
-  imports: [
-    MatToolbar,
-    MatToolbarRow,
-    SearchInputComponent,
-    MatButton,
-    MatTooltip,
-    MatIcon,
-    AngularSplitModule,
-    UserTableComponent,
-    MatProgressSpinner,
-    MatIconButton,
-    MatMenuTrigger,
-    MatMenu,
-    MatMenuItem,
-    HeaderMoreComponent,
-    FormlyModule,
-  ],
-  providers: [UserManagementService],
+    selector: "ige-user-manager",
+    templateUrl: "./user.component.html",
+    styleUrls: ["../user.styles.scss"],
+    imports: [
+        MatToolbar,
+        MatToolbarRow,
+        SearchInputComponent,
+        MatButton,
+        MatTooltip,
+        MatIcon,
+        AngularSplitModule,
+        UserTableComponent,
+        MatProgressSpinner,
+        MatIconButton,
+        MatMenuTrigger,
+        MatMenu,
+        MatMenuItem,
+        HeaderMoreComponent,
+        FormlyModule,
+    ],
+    providers: [UserManagementService]
 })
 export class UserComponent implements OnInit {
   private groupStore = inject(GroupStore);

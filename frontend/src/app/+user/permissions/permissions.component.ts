@@ -33,24 +33,23 @@ import { TranslocoModule } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-permissions",
-  templateUrl: "./permissions.component.html",
-  styleUrls: ["./permissions.component.scss"],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => PermissionsComponent),
-      multi: true,
-    },
-  ],
-  imports: [
-    ReactiveFormsModule,
-    MatSlideToggleModule,
-    MatIconModule,
-    PermissionTableComponent,
-    TranslocoModule,
-  ],
-  standalone: true,
+    selector: "ige-permissions",
+    templateUrl: "./permissions.component.html",
+    styleUrls: ["./permissions.component.scss"],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => PermissionsComponent),
+            multi: true,
+        },
+    ],
+    imports: [
+        ReactiveFormsModule,
+        MatSlideToggleModule,
+        MatIconModule,
+        PermissionTableComponent,
+        TranslocoModule,
+    ]
 })
 export class PermissionsComponent implements OnInit, ControlValueAccessor {
   private onChange: (x: any) => {};

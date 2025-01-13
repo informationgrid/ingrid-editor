@@ -62,22 +62,21 @@ interface UrlReference extends Reference {
 
 @UntilDestroy()
 @Component({
-  selector: "ige-document-reference-selector",
-  templateUrl: "./document-reference-selector.component.html",
-  styleUrl: "./document-reference-selector.component.scss",
-  standalone: true,
-  imports: [
-    FormErrorComponent,
-    DocumentIconComponent,
-    MatIcon,
-    MatIconButton,
-    MatMenu,
-    FormlyModule,
-    MatMenuTrigger,
-    MatProgressSpinner,
-    MatMenuItem,
-    MatButton,
-  ],
+    selector: "ige-document-reference-selector",
+    templateUrl: "./document-reference-selector.component.html",
+    styleUrl: "./document-reference-selector.component.scss",
+    imports: [
+        FormErrorComponent,
+        DocumentIconComponent,
+        MatIcon,
+        MatIconButton,
+        MatMenu,
+        FormlyModule,
+        MatMenuTrigger,
+        MatProgressSpinner,
+        MatMenuItem,
+        MatButton,
+    ]
 })
 export class DocumentReferenceSelectorComponent
   extends FieldType<FieldTypeConfig>

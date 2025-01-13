@@ -33,7 +33,6 @@ import { Catalog } from "../../+catalog/services/catalog.model";
   selector: "ige-catalog-assignment",
   templateUrl: "./catalog-assignment.component.html",
   styleUrls: ["./catalog-assignment.component.scss"],
-  standalone: true,
   imports: [PageTemplateComponent, FilterSelectComponent, MatButton],
 })
 export class CatalogAssignmentComponent {

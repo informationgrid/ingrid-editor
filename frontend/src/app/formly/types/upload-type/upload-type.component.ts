@@ -39,11 +39,10 @@ interface LinkType {
 
 @UntilDestroy()
 @Component({
-  selector: "ige-upload-type",
-  templateUrl: "./upload-type.component.html",
-  styleUrls: ["./upload-type.component.scss"],
-  standalone: true,
-  imports: [MatInput, ReactiveFormsModule],
+    selector: "ige-upload-type",
+    templateUrl: "./upload-type.component.html",
+    styleUrls: ["./upload-type.component.scss"],
+    imports: [MatInput, ReactiveFormsModule]
 })
 export class UploadTypeComponent
   extends FieldType<FieldTypeConfig>

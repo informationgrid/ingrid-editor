@@ -61,21 +61,20 @@ import { FormStateService } from "../../../+form/form-state.service";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-repeat",
-  templateUrl: "./preview-image.component.html",
-  styleUrls: ["./preview-image.component.scss"],
-  standalone: true,
-  imports: [
-    MatButtonModule,
-    CdkDropList,
-    CdkDrag,
-    CdkDragPreview,
-    MatCardModule,
-    NgOptimizedImage,
-    MatIconModule,
-    AsyncPipe,
-    MatTooltipModule,
-  ],
+    selector: "ige-repeat",
+    templateUrl: "./preview-image.component.html",
+    styleUrls: ["./preview-image.component.scss"],
+    imports: [
+        MatButtonModule,
+        CdkDropList,
+        CdkDrag,
+        CdkDragPreview,
+        MatCardModule,
+        NgOptimizedImage,
+        MatIconModule,
+        AsyncPipe,
+        MatTooltipModule,
+    ]
 })
 export class PreviewImageComponent extends FieldArrayType implements OnInit {
   private dialog = inject(MatDialog);

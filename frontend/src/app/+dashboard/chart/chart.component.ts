@@ -26,12 +26,11 @@ import { DecimalPipe } from "@angular/common";
  */
 @UntilDestroy()
 @Component({
-  selector: "ige-chart",
-  templateUrl: "./chart.component.html",
-  styleUrls: ["./chart.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  imports: [DecimalPipe],
+    selector: "ige-chart",
+    templateUrl: "./chart.component.html",
+    styleUrls: ["./chart.component.scss"],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [DecimalPipe]
 })
 export class ChartComponent {
   @Input() set data(values: number[]) {

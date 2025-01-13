@@ -38,7 +38,6 @@ import { MatDivider } from "@angular/material/divider";
   selector: "form-toolbar",
   templateUrl: "./form-toolbar.component.html",
   styleUrls: ["./form-toolbar.component.scss"],
-  standalone: true,
   imports: [
     MatToolbar,
     MatToolbarRow,

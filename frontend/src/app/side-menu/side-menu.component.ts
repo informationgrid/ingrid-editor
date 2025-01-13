@@ -40,32 +40,31 @@ import { AsyncPipe } from "@angular/common";
 import { UiStore } from "../store/ui.store";
 
 @Component({
-  selector: "ige-side-menu",
-  templateUrl: "./side-menu.component.html",
-  styleUrls: ["./side-menu.component.scss"],
-  animations: [
-    trigger("toggle", [
-      transition("collapsed => expanded", [
-        style({ width: 56 }),
-        animate("300ms ease-in", style({ width: 300 })),
-      ]),
-      transition("* => collapsed", [
-        style({ width: 300 }),
-        animate("300ms ease-out", style({ width: 56 })),
-      ]),
-    ]),
-  ],
-  standalone: true,
-  imports: [
-    TranslocoDirective,
-    MatNavList,
-    MatListItem,
-    MatTooltip,
-    MatIcon,
-    MatListItemIcon,
-    MatListItemTitle,
-    AsyncPipe,
-  ],
+    selector: "ige-side-menu",
+    templateUrl: "./side-menu.component.html",
+    styleUrls: ["./side-menu.component.scss"],
+    animations: [
+        trigger("toggle", [
+            transition("collapsed => expanded", [
+                style({ width: 56 }),
+                animate("300ms ease-in", style({ width: 300 })),
+            ]),
+            transition("* => collapsed", [
+                style({ width: 300 }),
+                animate("300ms ease-out", style({ width: 56 })),
+            ]),
+        ]),
+    ],
+    imports: [
+        TranslocoDirective,
+        MatNavList,
+        MatListItem,
+        MatTooltip,
+        MatIcon,
+        MatListItemIcon,
+        MatListItemTitle,
+        AsyncPipe,
+    ]
 })
 export class SideMenuComponent implements OnInit {
   private uiStore = inject(UiStore);

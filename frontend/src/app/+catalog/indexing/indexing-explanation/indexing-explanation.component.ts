@@ -17,13 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { Component, EventEmitter, Output } from "@angular/core";
 import { MatChip, MatChipListbox } from "@angular/material/chips";
 
 @Component({
   selector: "ige-indexing-explanation",
-  standalone: true,
   imports: [MatChipListbox, MatChip],
   templateUrl: "./indexing-explanation.component.html",
   styleUrl: "./indexing-explanation.component.scss",

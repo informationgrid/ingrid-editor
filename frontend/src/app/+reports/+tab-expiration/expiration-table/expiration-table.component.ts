@@ -39,7 +39,6 @@ import { FullNamePipe } from "../../../directives/full-name.pipe";
   selector: "ige-expiration-table",
   templateUrl: "./expiration-table.component.html",
   styleUrls: ["./expiration-table.component.scss"],
-  standalone: true,
   imports: [
     MatTableModule,
     MatSortModule,

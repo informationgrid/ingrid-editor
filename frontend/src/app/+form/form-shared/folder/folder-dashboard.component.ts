@@ -39,7 +39,6 @@ import { AddressTreeStore } from "../../../store/address-tree/address-tree.store
   selector: "ige-folder-dashboard",
   templateUrl: "./folder-dashboard.component.html",
   styleUrls: ["./folder-dashboard.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     ActionButtonComponent,

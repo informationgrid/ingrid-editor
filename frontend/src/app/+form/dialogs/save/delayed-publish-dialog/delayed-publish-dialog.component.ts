@@ -34,7 +34,6 @@ import {
 import { ModalService } from "../../../../services/modal/modal.service";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import {
   MatFormField,
   MatLabel,
@@ -51,13 +50,11 @@ import { FocusDirective } from "../../../../directives/focus.directive";
 @Component({
   selector: "delayed-publish-dialog",
   templateUrl: "./delayed-publish-dialog.component.html",
-  standalone: true,
   imports: [
     MatIconButton,
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     ReactiveFormsModule,
     MatFormField,

@@ -36,18 +36,17 @@ import { escapeRegExp } from "../../shared/utils";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-quick-search",
-  templateUrl: "./quick-search.component.html",
-  styleUrls: ["./quick-search.component.scss"],
-  standalone: true,
-  imports: [
-    SearchInputComponent,
-    MatAutocomplete,
-    MatOption,
-    MatIcon,
-    MatOptgroup,
-    DocumentListItemComponent,
-  ],
+    selector: "ige-quick-search",
+    templateUrl: "./quick-search.component.html",
+    styleUrls: ["./quick-search.component.scss"],
+    imports: [
+        SearchInputComponent,
+        MatAutocomplete,
+        MatOption,
+        MatIcon,
+        MatOptgroup,
+        DocumentListItemComponent,
+    ]
 })
 export class QuickSearchComponent implements OnInit {
   @Output() selectDoc = new EventEmitter<string>();

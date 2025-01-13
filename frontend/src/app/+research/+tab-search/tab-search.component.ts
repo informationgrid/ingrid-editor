@@ -53,23 +53,22 @@ import { toObservable } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-tab-search",
-  templateUrl: "./tab-search.component.html",
-  styleUrls: ["./tab-search.component.scss"],
-  standalone: true,
-  imports: [
-    TranslocoDirective,
-    PageTemplateComponent,
-    ReactiveFormsModule,
-    FacetsComponent,
-    MatFormField,
-    MatPrefix,
-    MatSelect,
-    MatOption,
-    SearchInputComponent,
-    MatButton,
-    ResultTableComponent,
-  ],
+    selector: "ige-tab-search",
+    templateUrl: "./tab-search.component.html",
+    styleUrls: ["./tab-search.component.scss"],
+    imports: [
+        TranslocoDirective,
+        PageTemplateComponent,
+        ReactiveFormsModule,
+        FacetsComponent,
+        MatFormField,
+        MatPrefix,
+        MatSelect,
+        MatOption,
+        SearchInputComponent,
+        MatButton,
+        ResultTableComponent,
+    ]
 })
 export class TabSearchComponent implements OnInit {
   private generalStore = inject(GeneralStore);

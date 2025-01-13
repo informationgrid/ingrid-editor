@@ -18,11 +18,12 @@
  * limitations under the Licence.
  */
 import {
-  APP_INITIALIZER,
   enableProdMode,
   ErrorHandler,
   importProvidersFrom,
+  inject,
   LOCALE_ID,
+  provideAppInitializer,
 } from "@angular/core";
 
 import { ConfigLoader } from "./app/config.loader";
@@ -377,20 +378,10 @@ bootstrapApplication(AppComponent, {
     ),
     provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
     // make sure we are authenticated by keycloak before bootstrap
-    {
-      provide: APP_INITIALIZER,
-      useFactory: ConfigLoader,
-      deps: [
-        ConfigService,
-        AuthenticationFactory,
-        Router,
-        HttpClient,
-        MatDialog,
-        TranslocoService,
-        GeneralStore,
-      ],
-      multi: true,
-    },
+    provideAppInitializer(() => {
+        const initializerFn = (ConfigLoader)(inject(ConfigService), inject(AuthenticationFactory), inject(Router), inject(HttpClient), inject(MatDialog), inject(TranslocoService), inject(GeneralStore));
+        return initializerFn();
+      }),
     // set locale for dates
     {
       provide: LOCALE_ID,

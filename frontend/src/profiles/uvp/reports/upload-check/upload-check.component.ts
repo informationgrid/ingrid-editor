@@ -26,11 +26,10 @@ import { RouterLink } from "@angular/router";
 import { MatButton } from "@angular/material/button";
 
 @Component({
-  selector: "ige-upload-check",
-  templateUrl: "./upload-check.component.html",
-  styleUrls: ["./upload-check.component.scss"],
-  standalone: true,
-  imports: [MatCheckboxModule, KeyValuePipe, RouterLink, MatButton],
+    selector: "ige-upload-check",
+    templateUrl: "./upload-check.component.html",
+    styleUrls: ["./upload-check.component.scss"],
+    imports: [MatCheckboxModule, KeyValuePipe, RouterLink, MatButton]
 })
 export class UploadCheckComponent implements OnInit {
   private result: any[];

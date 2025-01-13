@@ -38,7 +38,6 @@ import { MatAnchor, MatButton, MatIconButton } from "@angular/material/button";
   selector: "error-dialog",
   templateUrl: "error-dialog.component.html",
   styleUrls: ["error-dialog.component.scss"],
-  standalone: true,
   imports: [
     MatIcon,
     MatDialogContent,

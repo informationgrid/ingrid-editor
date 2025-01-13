@@ -42,7 +42,6 @@ import { MatOption } from "@angular/material/core";
   selector: "ige-formly-autocomplete-type",
   templateUrl: "./autocomplete-type.component.html",
   styleUrls: ["./autocomplete-type.component.scss"],
-  standalone: true,
   imports: [
     MatInput,
     MatAutocompleteTrigger,

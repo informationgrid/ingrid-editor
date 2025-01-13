@@ -38,20 +38,19 @@ import { MatIcon } from "@angular/material/icon";
 
 @UntilDestroy()
 @Component({
-  selector: "ige-uvp-sections",
-  templateUrl: "./uvp-sections.component.html",
-  styleUrls: ["./uvp-sections.component.scss"],
-  standalone: true,
-  imports: [
-    FormlyModule,
-    MatIconButton,
-    MatTooltip,
-    MatMenuTrigger,
-    MatIcon,
-    MatMenu,
-    MatMenuItem,
-    MatButton,
-  ],
+    selector: "ige-uvp-sections",
+    templateUrl: "./uvp-sections.component.html",
+    styleUrls: ["./uvp-sections.component.scss"],
+    imports: [
+        FormlyModule,
+        MatIconButton,
+        MatTooltip,
+        MatMenuTrigger,
+        MatIcon,
+        MatMenu,
+        MatMenuItem,
+        MatButton,
+    ]
 })
 export class UvpSectionsComponent extends FieldArrayType implements OnInit {
   markSection = {};

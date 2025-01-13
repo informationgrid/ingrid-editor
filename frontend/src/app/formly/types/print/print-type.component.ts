@@ -28,11 +28,10 @@ import { DocumentService } from "../../../services/document/document.service";
 import { CodelistPipe } from "../../../directives/codelist.pipe";
 
 @Component({
-  selector: "ige-print-type",
-  templateUrl: "./print-type.component.html",
-  styleUrls: ["./print-type.component.scss"],
-  imports: [DatePipe, AsyncPipe, CodelistPipe],
-  standalone: true,
+    selector: "ige-print-type",
+    templateUrl: "./print-type.component.html",
+    styleUrls: ["./print-type.component.scss"],
+    imports: [DatePipe, AsyncPipe, CodelistPipe]
 })
 export class PrintTypeComponent
   extends FieldType<FieldTypeConfig>

@@ -18,7 +18,6 @@
  * limitations under the Licence.
  */
 import {
-  AfterViewInit,
   Component,
   computed,
   effect,
@@ -75,7 +74,6 @@ import { UiStore } from "../../store/ui.store";
   selector: "ige-group-manager",
   templateUrl: "./group.component.html",
   styleUrls: ["../user.styles.scss"],
-  standalone: true,
   imports: [
     MatToolbar,
     MatToolbarRow,

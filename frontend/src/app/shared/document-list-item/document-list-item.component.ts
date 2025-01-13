@@ -48,7 +48,6 @@ import { DateAgoPipe } from "../../directives/date-ago.pipe";
   selector: "ige-document-list-item",
   templateUrl: "./document-list-item.component.html",
   styleUrls: ["./document-list-item.component.scss"],
-  standalone: true,
   imports: [
     MatSelectionList,
     NgFor,

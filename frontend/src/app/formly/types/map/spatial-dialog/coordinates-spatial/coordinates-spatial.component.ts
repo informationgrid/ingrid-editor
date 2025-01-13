@@ -45,7 +45,6 @@ import { MatInput } from "@angular/material/input";
   selector: "ige-coordinates-spatial",
   templateUrl: "./coordinates-spatial.component.html",
   styleUrls: ["./coordinates-spatial.component.scss"],
-  standalone: true,
   imports: [ReactiveFormsModule, MatFormField, MatLabel, MatInput],
 })
 export class CoordinatesSpatialComponent

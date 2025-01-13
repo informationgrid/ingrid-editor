@@ -32,9 +32,9 @@ import { MatButtonModule } from "@angular/material/button";
 import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-template.component";
 
 @Component({
-  templateUrl: "print-view-dialog.component.html",
-  styles: [
-    `
+    templateUrl: "print-view-dialog.component.html",
+    styles: [
+        `
       mat-button-toggle-group {
         font-size: 14px;
         border: none;
@@ -44,17 +44,16 @@ import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-
         margin: auto !important;
       }
     `,
-  ],
-  imports: [
-    MatDialogModule,
-    MatIconModule,
-    MatButtonToggleModule,
-    FormlyModule,
-    AngularSplitModule,
-    MatButtonModule,
-    DialogTemplateComponent,
-  ],
-  standalone: true,
+    ],
+    imports: [
+        MatDialogModule,
+        MatIconModule,
+        MatButtonToggleModule,
+        FormlyModule,
+        AngularSplitModule,
+        MatButtonModule,
+        DialogTemplateComponent,
+    ]
 })
 export class PrintViewDialogComponent {
   profile: any;
