@@ -2954,19 +2954,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ngneat/spectator@npm:^16.0.0":
-  version: 16.0.0
-  resolution: "@ngneat/spectator@npm:16.0.0"
+"@ngneat/spectator@npm:^19.3.0":
+  version: 19.3.0
+  resolution: "@ngneat/spectator@npm:19.3.0"
   dependencies:
     "@testing-library/dom": "npm:^8.11.0"
-    jquery: "npm:3.6.4"
+    jquery: "npm:^3.7.1"
     replace-in-file: "npm:6.2.0"
     tslib: "npm:^2.6.2"
   peerDependencies:
-    "@angular/animations": ">= 17.0.0"
-    "@angular/common": ">= 17.0.0"
-    "@angular/router": ">= 17.0.0"
-  checksum: 10c0/03a40469de83faf6c59c6aa6b0257dc4d5ab9c49ea4f0fadedea0940742d1ae9f3ee15d8b52a8d58405031f0ee65e49180c0904d99ffa3c867881f2f77a53c23
+    "@angular/animations": ">= 18.0.0"
+    "@angular/common": ">= 18.0.0"
+    "@angular/router": ">= 18.0.0"
+  checksum: 10c0/8a50965f94d25329b29d6d022ad792a6d7be42c2f5ea77940c73344985b03ce85c8d43dffa9a7818ef0ae0df8b78e34f39fee0573d0e584700ba4e8026971d04
   languageName: node
   linkType: hard
 
@@ -7646,7 +7646,7 @@ __metadata:
     "@flowjs/ngx-flow": "npm:^18.0.1"
     "@geoman-io/leaflet-geoman-free": "npm:^2.15.0"
     "@ngneat/dirty-check-forms": "npm:^3.0.3"
-    "@ngneat/spectator": "npm:^16.0.0"
+    "@ngneat/spectator": "npm:^19.3.0"
     "@ngneat/transloco": "npm:6.0.4"
     "@ngneat/until-destroy": "npm:^10.0.0"
     "@ngrx/signals": "npm:19.0.0"
@@ -8362,10 +8362,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jquery@npm:3.6.4":
-  version: 3.6.4
-  resolution: "jquery@npm:3.6.4"
-  checksum: 10c0/2429baf39338803702900e64f10a11283d7660961ea8ee59d26c0bcba4769273835d81d69628fec898830b6d0e4cde05832ec38fdf37a51e7d004bc4f97a4862
+"jquery@npm:^3.7.1":
+  version: 3.7.1
+  resolution: "jquery@npm:3.7.1"
+  checksum: 10c0/808cfbfb758438560224bf26e17fcd5afc7419170230c810dd11f5c1792e2263e2970cca8d659eb84fcd9acc301edb6d310096e450277d54be4f57071b0c82d9
   languageName: node
   linkType: hard
 

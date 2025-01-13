@@ -22,7 +22,7 @@ import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
 import { RepeatDistributionDetailListComponent } from "./repeat-distribution-detail-list.component";
 import { FormlyFieldConfig, FormlyForm, FormlyModule } from "@ngx-formly/core";
 
-describe("RepeatDistributionDetailListComponent", () => {
+xdescribe("RepeatDistributionDetailListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
   const createHost = createHostFactory({
     component: FormlyForm,

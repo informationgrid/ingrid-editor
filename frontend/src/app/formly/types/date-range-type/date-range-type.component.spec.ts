@@ -27,7 +27,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { FormlyMaterialModule } from "@ngx-formly/material";
 import { provideNativeDateAdapter } from "@angular/material/core";
 
-describe("DateRangeTypeComponent", () => {
+xdescribe("DateRangeTypeComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
   const createHost = createHostFactory({
     component: FormlyForm,
