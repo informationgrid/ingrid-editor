@@ -1,8 +1,10 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { ObjectAttributesDialogComponent } from "../dialogs/object-attributes-dialog/object-attributes-dialog.component";
 import { GeometriesDialogComponent } from "../dialogs/geometries-dialog/geometries-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
+import { BatchEditObjectAttributesComponent } from "../dialogs/batch-edit-object-attributes/batch-edit-object-attributes.component";
 
 @Injectable({
   providedIn: "root",
@@ -92,7 +94,12 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
           {
             label: "Ändern",
             click: (item) => {
-              console.log("Action!", item);
+              this.dialog
+                .open(BatchEditObjectAttributesComponent)
+                .afterClosed()
+                .subscribe((result) => {
+                  console.log("Action!", result);
+                });
             },
           },
         ],
