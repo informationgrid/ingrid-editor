@@ -36,14 +36,10 @@ import {
 import { SelectionModel } from "@angular/cdk/collections";
 import {
   MatCell,
-  MatCellDef,
   MatColumnDef,
   MatHeaderCell,
-  MatHeaderCellDef,
   MatHeaderRow,
-  MatHeaderRowDef,
   MatRow,
-  MatRowDef,
   MatTable,
   MatTableDataSource,
 } from "@angular/material/table";
@@ -89,6 +85,7 @@ export interface TableProps {
   required?: boolean;
   // TODO: should be moved to UVP profile
   batchValidUntil?: any;
+  batchActions?: any[];
 }
 
 @UntilDestroy()
@@ -109,9 +106,7 @@ export interface TableProps {
     CdkDropList,
     CdkDrag,
     MatColumnDef,
-    MatHeaderCellDef,
     MatHeaderCell,
-    MatCellDef,
     MatCell,
     CdkDragHandle,
     MatIconButton,
@@ -119,9 +114,7 @@ export interface TableProps {
     MatMenuTrigger,
     MatMenu,
     MatMenuItem,
-    MatHeaderRowDef,
     MatHeaderRow,
-    MatRowDef,
     MatRow,
     AddButtonComponent,
   ],

@@ -148,6 +148,7 @@ export interface TableOptions extends Options {
   validators?: any;
   supportUpload?: boolean;
   dialog?: any;
+  batchActions?: any[];
 }
 
 export interface CheckboxOptions extends Options {
@@ -725,6 +726,7 @@ export class FormFieldHelper {
         batchValidUntil: options?.batchValidUntil,
         supportUpload: options?.supportUpload ?? true,
         dialog: options?.dialog,
+        batchActions: options?.batchActions ?? [],
       },
       validators: options?.validators,
       expressions: expressions,

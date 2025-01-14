@@ -73,6 +73,19 @@
                         Gültig bis ändern
                     </button>
                 }
+                @for (action of props.batchActions; track action) {
+                    <button
+                        type="button"
+                        mat-button
+                        (click)="action.click(selection.selected)"
+                        [disabled]="selection.isEmpty()"
+                    >
+                        @if (action.icon) {
+                            <mat-icon>{{ action.icon }}</mat-icon>
+                        }
+                        {{ action.label }}
+                    </button>
+                }
             </div>
         }
 
@@ -113,7 +126,7 @@
                                 ></mat-header-cell>
                                 <mat-cell
                                     *matCellDef="let element"
-                                    class="select-controls"
+                                    class="select-controls flex align-items-center"
                                 >
                                     <mat-icon
                                         cdkDragHandle

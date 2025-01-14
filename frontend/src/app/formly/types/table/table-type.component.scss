@@ -18,7 +18,7 @@ mat-table {
 
 .mat-column-_select_ {
   width: 80px;
-  flex: unset;
+  //flex: unset;
 }
 
 .container {
@@ -66,7 +66,7 @@ ige-form-label {
     padding-top: 6px;
     padding-bottom: 6px;
     word-break: break-all;
-    align-items: baseline;
+    //align-items: baseline;
   }
 
   ::ng-deep .disabled mat-cell {
@@ -98,4 +98,5 @@ ige-add-button {
 
 .cdk-drag-handle {
   cursor: move;
+  margin: 8px 0;
 }
