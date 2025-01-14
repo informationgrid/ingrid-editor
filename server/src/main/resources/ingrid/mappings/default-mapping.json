@@ -391,6 +391,10 @@
       "type": "keyword",
       "store": true
     },
+    "is_hvd": {
+      "type": "keyword",
+      "store": true
+    },
     "wkt_geo": {
       "type": "geo_shape"
     },
@@ -400,6 +404,10 @@
     },
     "sort_hash": {
       "type": "keyword"
+    },
+    "topic_categories": {
+      "type": "keyword",
+      "store": true
     }
   }
 }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -220,7 +220,25 @@ data class ServiceUrl(
     var applicationProfile: String? = null,
     var functionValue: String? = null,
     val isIdfResource: Boolean = true,
-)
+    val serviceType: String? = null,
+    val serviceversion: String? = null,
+) {
+    data class Protocol(val id: String, val label: String)
+
+    // See for mapping: https://inspire.ec.europa.eu/metadata-codelist/ProtocolValue
+    private val protocolMap = mapOf(
+//        "discovery" to Protocol("", ""),
+        "view" to Protocol("wms", "OGC Web Map Service"),
+        "download" to Protocol("wfs", "OGC Web Feature Service"),
+//        "transformation" to Protocol("", ""),
+//        "invoke" to Protocol("", ""),
+//        "other" to Protocol("", ""),
+    )
+    fun getProtocol(): Protocol? {
+        if (serviceType == null) return null
+        return protocolMap[serviceType]
+    }
+}
 
 data class AttachedField(
     val listId: String,
@@ -255,13 +273,25 @@ data class DataQualityLineage(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataQualityLineageSource(
-    val descriptions: List<KeyValue>?,
+    val descriptions: List<LineageSourceDescription>?,
     val processStep: ProcessStep?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ProcessStep(
     val description: List<KeyValue>?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class LineageSourceDescription(
+    val _type: String,
+    val value: String,
+    val title: String?,
+    val identifier: String?,
+    val date: String?,
+    val dateType: KeyValue?,
+    val uuidRef: String?,
+    val url: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -372,6 +402,12 @@ data class GridSpatialRepresentation(
     val georectified: Georectified?,
     val georeferenceable: Georeferenceable?,
 )
+fun GridSpatialRepresentation.isAllFieldsNullOrEmpty(): Boolean = (georectified == null || georectified.isAllFieldsNullOrEmpty()) &&
+    (georeferenceable == null || georeferenceable.isAllFieldsNullOrEmpty()) &&
+    cellGeometry == null &&
+    numberOfDimensions == null &&
+    transformationParameterAvailability == false &&
+    axesDimensionProperties.isNullOrEmpty()
 
 data class Georectified(
     val checkPointAvailability: Boolean? = false,
@@ -379,12 +415,19 @@ data class Georectified(
     val cornerPoints: String?,
     val pointInPixel: KeyValue?,
 )
+fun Georectified.isAllFieldsNullOrEmpty(): Boolean = checkPointAvailability == false &&
+    checkPointDescription.isNullOrEmpty() &&
+    cornerPoints.isNullOrEmpty() &&
+    pointInPixel == null
 
 data class Georeferenceable(
     val orientationParameterAvailability: Boolean? = false,
     val controlPointAvaliability: Boolean? = false,
     val parameters: String?,
 )
+fun Georeferenceable.isAllFieldsNullOrEmpty(): Boolean = orientationParameterAvailability == false &&
+    controlPointAvaliability == false &&
+    parameters.isNullOrEmpty()
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AxisDimensionProperties(

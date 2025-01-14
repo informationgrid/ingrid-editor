@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -56,7 +56,6 @@ import { toObservable } from "@angular/core/rxjs-interop";
   selector: "ige-tab-search",
   templateUrl: "./tab-search.component.html",
   styleUrls: ["./tab-search.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     PageTemplateComponent,

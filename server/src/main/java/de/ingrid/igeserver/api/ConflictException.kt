@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -39,16 +39,10 @@ open class ConflictException : ClientException {
         /**
          * Factory method for an arbitrary reason
          */
-        fun withReason(reason: String, cause: Throwable? = null): ConflictException {
-            return ConflictException(STATUS_CODE, ERROR_CODE, reason, null, cause)
-        }
+        fun withReason(reason: String, cause: Throwable? = null): ConflictException = ConflictException(STATUS_CODE, ERROR_CODE, reason, null, cause)
 
-        fun withMoveConflict(reason: String, cause: Throwable? = null): ConflictException {
-            return ConflictException(STATUS_CODE, ERROR_CODE_MOVING, reason, null, cause)
-        }
+        fun withMoveConflict(reason: String, cause: Throwable? = null): ConflictException = ConflictException(STATUS_CODE, ERROR_CODE_MOVING, reason, null, cause)
 
-        fun withCopyConflict(reason: String, cause: Throwable? = null): ConflictException {
-            return ConflictException(STATUS_CODE, ERROR_CODE_COPYING, reason, null, cause)
-        }
+        fun withCopyConflict(reason: String, cause: Throwable? = null): ConflictException = ConflictException(STATUS_CODE, ERROR_CODE_COPYING, reason, null, cause)
     }
 }

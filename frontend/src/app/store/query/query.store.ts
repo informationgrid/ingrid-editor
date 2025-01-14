@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -28,6 +28,7 @@ import {
   addEntity,
   removeEntity,
   setAllEntities,
+  updateEntity,
   withEntities,
 } from "@ngrx/signals/entities";
 import { computed } from "@angular/core";
@@ -52,6 +53,9 @@ export const QueryStore = signalStore(
     },
     remove(id: string): void {
       patchState(store, removeEntity(id));
+    },
+    update(id: number, query: Query): void {
+      patchState(store, updateEntity({ id: id, changes: query }));
     },
   })),
 );

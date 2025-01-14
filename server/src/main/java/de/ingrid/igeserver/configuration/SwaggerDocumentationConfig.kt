@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -124,11 +124,10 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
     }
 
     class StringToEnumConverterFactory : ConverterFactory<String, Enum<*>> {
-        override fun <T : Enum<*>> getConverter(targetType: Class<T>): Converter<String, T> =
-            Converter { source ->
-                targetType.enumConstants.find { it.name == source.uppercase() }
-                    ?: throw IllegalArgumentException("No enum constant ${targetType.simpleName}.${source.uppercase()}")
-            }
+        override fun <T : Enum<*>> getConverter(targetType: Class<T>): Converter<String, T> = Converter { source ->
+            targetType.enumConstants.find { it.name == source.uppercase() }
+                ?: throw IllegalArgumentException("No enum constant ${targetType.simpleName}.${source.uppercase()}")
+        }
     }
 
     override fun addFormatters(registry: FormatterRegistry) {

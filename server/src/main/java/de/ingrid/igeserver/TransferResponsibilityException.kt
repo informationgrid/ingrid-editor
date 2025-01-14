@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -37,8 +37,6 @@ open class TransferResponsibilityException : IgeException {
         /**
          * Factory method for an arbitrary reason
          */
-        fun withReason(reason: String, cause: Throwable? = null, data: Map<String, Any?>? = null): TransferResponsibilityException {
-            return TransferResponsibilityException(STATUS_CODE, ERROR_CODE, reason, data, cause)
-        }
+        fun withReason(reason: String, cause: Throwable? = null, data: Map<String, Any?>? = null): TransferResponsibilityException = TransferResponsibilityException(STATUS_CODE, ERROR_CODE, reason, data, cause)
     }
 }

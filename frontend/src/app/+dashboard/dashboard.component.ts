@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,18 +17,24 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  Signal,
+  signal,
+} from "@angular/core";
 import { ConfigService } from "../services/config/config.service";
 import { DocumentService } from "../services/document/document.service";
 import { DocumentAbstract } from "../store/document/document.model";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import {
   CreateNodeComponent,
   CreateOptions,
 } from "../+form/dialogs/create/create-node.component";
-import { map } from "rxjs/operators";
 import { MessageService } from "../services/messages/message.service";
 import { Message } from "../services/messages/message";
 import { TranslocoDirective } from "@ngneat/transloco";
@@ -39,12 +45,10 @@ import { ChartComponent } from "./chart/chart.component";
 import { DocumentListItemComponent } from "../shared/document-list-item/document-list-item.component";
 import { AsyncPipe } from "@angular/common";
 import { GeneralStore } from "../store/general.store";
-import { toObservable } from "@angular/core/rxjs-interop";
 
 @Component({
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     QuickSearchComponent,
@@ -61,15 +65,15 @@ export class DashboardComponent implements OnInit {
   canCreateAddress: boolean;
   canCreateDataset: boolean;
   canImport: boolean;
-  recentDocs$: Observable<DocumentAbstract[]> = toObservable(
-    this.generalStore.latestDocuments,
-  ).pipe(map((docs) => docs.slice(0, 5)));
-  recentPublishedDocs$: Observable<DocumentAbstract[]> = toObservable(
-    this.generalStore.latestPublishedDocuments,
-  ).pipe(map((docs) => docs.slice(0, 5)));
-  oldestExpiredDocs$: Observable<DocumentAbstract[]> = toObservable(
-    this.generalStore.oldestExpiredDocuments,
-  ).pipe(map((docs) => docs.slice(0, 5)));
+  recentDocs: Signal<DocumentAbstract[]> = computed(() => {
+    return this.generalStore.latestDocuments().slice(0, 5);
+  });
+  recentPublishedDocs: Signal<DocumentAbstract[]> = computed(() => {
+    return this.generalStore.latestPublishedDocuments().slice(0, 5);
+  });
+  oldestExpiredDocs: Signal<DocumentAbstract[]> = computed(() => {
+    return this.generalStore.oldestExpiredDocuments().slice(0, 5);
+  });
   chartDataPublished = signal<number[]>(null);
   messages$: BehaviorSubject<Message[]>;
 

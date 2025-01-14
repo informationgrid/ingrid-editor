@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -104,10 +104,11 @@ class GroupsApiController(
         principalId: String,
         principal: Principal,
         group: Group,
-    ) = group.manager?.userId == principalId || igeAclService.hasRightsForGroup(
-        principal as Authentication,
-        group,
-    )
+    ) = group.manager?.userId == principalId ||
+        igeAclService.hasRightsForGroup(
+            principal as Authentication,
+            group,
+        )
 
     private fun userBelongsToGroup(
         userGroupIds: List<Int>,

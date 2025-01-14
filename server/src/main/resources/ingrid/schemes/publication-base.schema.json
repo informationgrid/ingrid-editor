@@ -2,15 +2,19 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/publicationBase",
   "type": "object",
-  "properties": {
-    "properties": {
+  "definitions": {
+    "propertiesPublication": {
       "type": "object",
-      "unevaluatedProperties": false,
       "properties": {
         "isOpenData": {
           "type": ["null", "boolean"]
         }
       }
+    }
+  },
+  "properties": {
+    "properties": {
+      "$ref": "#/definitions/propertiesPublication"
     },
     "_uuid": {
       "type": "string"

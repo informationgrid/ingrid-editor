@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   // overflow leads to scrollbars in firefox when switching to tab search with a remembered location
@@ -61,5 +61,5 @@ ige-add-button {
 
 .toggle {
   margin-top: 10px;
-  color: $ige-placeholder-color;
+  color: vars.$ige-placeholder-color;
 }

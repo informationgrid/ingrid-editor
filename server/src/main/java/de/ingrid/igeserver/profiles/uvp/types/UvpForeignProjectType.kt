@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,7 +22,7 @@ package de.ingrid.igeserver.profiles.uvp.types
 import org.springframework.stereotype.Component
 
 @Component
-class UvpForeignProjectType() : UvpBaseType() {
+class UvpForeignProjectType : UvpBaseType() {
     override val className = "UvpForeignProjectDoc"
 
     override val jsonSchema = "/uvp/schemes/foreign-project.schema.json"

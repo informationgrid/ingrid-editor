@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -39,7 +39,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import kotlin.reflect.KClass
@@ -68,13 +68,12 @@ class IngridExporterExternalLfub(
 @Service
 class IngridIdfExporterExternalLfub(
     codelistHandler: CodelistHandler,
-    config: Config,
+    uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
+) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService) {
 
-    override fun getModelTransformerClass(docType: String): KClass<out Any>? =
-        getLfuBayernExternalTransformer(docType) ?: super.getModelTransformerClass(docType)
+    override fun getModelTransformerClass(docType: String): KClass<out Any>? = getLfuBayernExternalTransformer(docType) ?: super.getModelTransformerClass(docType)
 
     override fun getIngridModel(doc: Document, catalogId: String): IngridModel {
         val uuid = getUuidAnonymous(catalogId)
@@ -88,12 +87,12 @@ class IngridIdfExporterExternalLfub(
 @Service
 class IngridLuceneExporterExternalLfub(
     codelistHandler: CodelistHandler,
-    config: Config,
+    uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
 ) : IngridLuceneExporter(
     codelistHandler,
-    config,
+    uploadConfig,
     catalogService,
     documentService,
 ) {
@@ -114,7 +113,7 @@ class IngridLuceneExporterExternalLfub(
                             model,
                             data.catalogIdentifier,
                             data.codelistTransformer,
-                            config,
+                            uploadConfig,
                             catalogService,
                             TransformerCache(),
                             data.doc,
@@ -163,9 +162,8 @@ private fun anonymizeAddresses(model: IngridModel, uuid: String) {
     }
 }
 
-private fun getUuidAnonymous(catalogId: String) =
-    behaviourService?.get(catalogId, "plugin.lfubayern.anonymous.address")?.data?.get("uuid") as String?
-        ?: ""
+private fun getUuidAnonymous(catalogId: String) = behaviourService?.get(catalogId, "plugin.lfubayern.anonymous.address")?.data?.get("uuid") as String?
+    ?: ""
 
 private fun removeOfflineAccessReferences(data: DataModel) {
     data.references = data.references?.filter {

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -36,14 +36,12 @@ import { Observable } from "rxjs";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatIcon } from "@angular/material/icon";
 import { MatIconButton } from "@angular/material/button";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { AsyncPipe } from "@angular/common";
 
 @Component({
   selector: "ige-context-help",
   templateUrl: "./context-help.component.html",
   styleUrls: ["./context-help.component.scss"],
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,
@@ -51,7 +49,6 @@ import { AsyncPipe } from "@angular/common";
     MatDialogTitle,
     MatIconButton,
     MatDialogClose,
-    CdkScrollable,
     MatDialogContent,
     AsyncPipe,
   ],

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -47,9 +47,7 @@ class IngridIndexExporter(
     val documentWrapperRepository: DocumentWrapperRepository,
 ) : IgeExporter {
 
-    override fun exportSql(catalogId: String): String {
-        return "${super.exportSql(catalogId)} AND document.data ->> 'hideAddress' IS DISTINCT FROM 'true'"
-    }
+    override fun exportSql(catalogId: String): String = "${super.exportSql(catalogId)} AND document.data ->> 'hideAddress' IS DISTINCT FROM 'true'"
 
     private val typeId = "indexInGridIDF"
 

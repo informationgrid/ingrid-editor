@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -44,7 +44,6 @@ import { UiStore } from "../../store/ui.store";
   selector: "ige-sidebar",
   templateUrl: "./sidebar.component.html",
   styleUrls: ["./sidebar.component.scss"],
-  standalone: true,
   imports: [TreeComponent],
 })
 export class SidebarComponent implements OnInit {
@@ -71,7 +70,6 @@ export class SidebarComponent implements OnInit {
       const active = this.address
         ? this.generalStore.explicitActiveNodeAddress()
         : this.generalStore.explicitActiveNode();
-      // console.log("Sidebar effect", actives);
       this.activeTreeNode.next(active?.id ?? null);
     });
   }

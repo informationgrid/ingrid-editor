@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -24,9 +24,7 @@ import {
   MetadataOptionItem,
   MetadataOptionItems,
 } from "../metadata-type.component";
-import { MatButton } from "@angular/material/button";
-import { MatIcon } from "@angular/material/icon";
-import { AsyncPipe, JsonPipe } from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { map } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 import {
@@ -41,15 +39,7 @@ interface PropertyItem {
 
 @Component({
   selector: "ige-metadata-type-short",
-  standalone: true,
-  imports: [
-    MatButton,
-    MatIcon,
-    MatChipOption,
-    MatChipListbox,
-    JsonPipe,
-    AsyncPipe,
-  ],
+  imports: [MatChipOption, MatChipListbox, AsyncPipe],
   templateUrl: "./metadata-type-short.component.html",
   styleUrl: "./metadata-type-short.component.scss",
 })

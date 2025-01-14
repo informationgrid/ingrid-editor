@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 .option-row {
   gap: 16px;
@@ -21,11 +21,11 @@ ige-metadata-type-short + button {
 
 mat-chip-listbox {
   mat-chip-option.mat-mdc-chip-selected {
-    background-color: $ige-mark-color !important;
+    background-color: vars.$ige-mark-color !important;
   }
 
   button.small-icon-button {
-    box-shadow: 0 0 0 1px $ige-text-color;
+    box-shadow: 0 0 0 1px vars.$ige-text-color;
     opacity: 0.3;
 
     &:hover {

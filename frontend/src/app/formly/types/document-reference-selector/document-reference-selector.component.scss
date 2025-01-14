@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 .ref-selector-container {
   min-height: 50px;
@@ -13,7 +13,7 @@
 
   ul {
     margin: 5px;
-    color: $ige-comment-color;
+    color: vars.$ige-comment-color;
   }
 
   .title {

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -80,7 +80,6 @@ import { MatIcon } from "@angular/material/icon";
   templateUrl: "./result-table.component.html",
   styleUrls: ["./result-table.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     NgIf,
     ResultTableHeaderComponent,
@@ -221,6 +220,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
 
   downloadTable() {
     const rows: string[][] = [];
+    const additionalHeader = Object.keys(this.dataSource.data[0].additional);
     rows.push([
       "ID",
       "Veröffentlichungsstatus",
@@ -228,6 +228,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
       "Typ",
       "Titel",
       "Aktualität",
+      ...additionalHeader,
     ]);
     for (const doc of this.dataSource.data) rows.push(this.buildRowByDoc(doc));
     this.exportService.exportCsv(rows, { exportName: "research" });
@@ -241,6 +242,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
       this.translocoService.translate(`docType.${doc._type}`),
       doc.title,
       doc._contentModified,
+      ...Object.values(doc.additional),
     ];
   }
 }

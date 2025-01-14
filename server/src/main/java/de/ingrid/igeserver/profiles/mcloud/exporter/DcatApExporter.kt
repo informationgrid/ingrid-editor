@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -57,7 +57,5 @@ class DcatApExporter : IgeExporter {
         return writer.toString().replace("\\s+\n".toRegex(), "\n")
     }
 
-    private fun getMapFromObject(json: Document): Map<String, Any> {
-        return mapOf("model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java))
-    }
+    private fun getMapFromObject(json: Document): Map<String, Any> = mapOf("model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java))
 }

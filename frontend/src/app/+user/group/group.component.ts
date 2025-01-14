@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -18,7 +18,6 @@
  * limitations under the Licence.
  */
 import {
-  AfterViewInit,
   Component,
   computed,
   effect,
@@ -75,7 +74,6 @@ import { UiStore } from "../../store/ui.store";
   selector: "ige-group-manager",
   templateUrl: "./group.component.html",
   styleUrls: ["../user.styles.scss"],
-  standalone: true,
   imports: [
     MatToolbar,
     MatToolbarRow,

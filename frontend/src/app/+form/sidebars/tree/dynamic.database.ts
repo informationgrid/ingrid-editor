@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -47,13 +47,10 @@ export class DynamicDatabase {
   private isAddress = false;
 
   constructor(private docService: DocumentService) {
-    effect(
-      () => {
-        const info = this.generalStore.getDatasetsChanged(this.isAddress);
-        if (info) this.treeUpdates.next(info);
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      const info = this.generalStore.getDatasetsChanged(this.isAddress);
+      if (info) this.treeUpdates.next(info);
+    });
   }
 
   init(forAdresses: boolean): void {

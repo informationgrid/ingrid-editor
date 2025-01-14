@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -47,7 +47,6 @@ export interface SelectServiceResponse {
   templateUrl: "./select-geo-dataset-dialog.component.html",
   styleUrls: ["./select-geo-dataset-dialog.component.scss"],
   imports: [FormlyModule, DialogTemplateComponent, TreeComponent],
-  standalone: true,
 })
 export class SelectGeoDatasetDialog {
   private documentService = inject(DocumentService);

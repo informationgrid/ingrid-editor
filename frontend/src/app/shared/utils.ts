@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -205,7 +205,6 @@ export class JsonDiffMerge {
       ) {
         // Dates must be in ISO string format and not as an object for the json merge to succeed (otherwise it will try and walk properties on the date object and merge those)
         obj2[property] = obj2[property].toISOString();
-        console.log("- Date object converted to ISO date string: " + property);
       }
 
       if (
@@ -499,12 +498,6 @@ export class JsonDiffMerge {
         ) {
           // Dates must be in ISO string format and not as an object for the json merge to succeed (otherwise it will try and walk properties on the date object and merge those)
           nodeEdits[property] = nodeEdits[property].toISOString();
-          console.log(
-            "- Date object converted to ISO date string: " +
-              path +
-              "." +
-              property,
-          );
         }
 
         var originalObjectAtKey = null;

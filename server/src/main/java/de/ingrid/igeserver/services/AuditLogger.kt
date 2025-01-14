@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -108,9 +108,7 @@ class AuditLogger {
     /**
      * Get the logger with the given name
      */
-    private fun getLogger(name: String?): KotlinLogger {
-        return if (!name.isNullOrBlank()) logger(name) else logger(DEFAULT_LOGGER)
-    }
+    private fun getLogger(name: String?): KotlinLogger = if (!name.isNullOrBlank()) logger(name) else logger(DEFAULT_LOGGER)
 
     /**
      * Create a log message from the given data
@@ -122,16 +120,14 @@ class AuditLogger {
         data: JsonNode?,
         catalogIdentifier: String? = null,
         principal: Principal? = userService.getCurrentPrincipal(),
-    ): JsonNode {
-        return jacksonObjectMapper().createObjectNode().apply {
-            put(RECORD_TYPE, RECORD_TYPE_VALUE)
-            put(CATEGORY, category)
-            put(ACTION, action)
-            put(ACTOR, principal?.let { userService.getName(it) } ?: "unknown")
-            put(TIME, dateService.now().toString())
-            put(TARGET, target)
-            replace(DATA, data)
-            put(CATALOG_IDENTIFIER, catalogIdentifier)
-        }
+    ): JsonNode = jacksonObjectMapper().createObjectNode().apply {
+        put(RECORD_TYPE, RECORD_TYPE_VALUE)
+        put(CATEGORY, category)
+        put(ACTION, action)
+        put(ACTOR, principal?.let { userService.getName(it) } ?: "unknown")
+        put(TIME, dateService.now().toString())
+        put(TARGET, target)
+        replace(DATA, data)
+        put(CATALOG_IDENTIFIER, catalogIdentifier)
     }
 }

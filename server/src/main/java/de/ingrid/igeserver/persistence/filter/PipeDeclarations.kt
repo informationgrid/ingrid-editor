@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -65,8 +65,7 @@ open class PrePersistencePayload(
     catalogIdentifier: String,
     document: Document,
     wrapper: DocumentWrapper,
-) :
-    PersistencePayload(action, type, catalogIdentifier, document, wrapper) {
+) : PersistencePayload(action, type, catalogIdentifier, document, wrapper) {
     constructor(action: Action, type: EntityType, catalogIdentifier: String, document: Document) : this(
         action,
         type,
@@ -85,8 +84,7 @@ open class PostPersistencePayload(
     catalogIdentifier: String,
     document: Document,
     wrapper: DocumentWrapper,
-) :
-    PersistencePayload(action, type, catalogIdentifier, document, wrapper)
+) : PersistencePayload(action, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data before inserting the document
@@ -98,8 +96,7 @@ open class PreCreatePayload(
     val parentId: Int?,
     val category: String,
     val initiator: InitiatorAction,
-) :
-    PrePersistencePayload(Action.CREATE, type, catalogIdentifier, document)
+) : PrePersistencePayload(Action.CREATE, type, catalogIdentifier, document)
 
 /**
  * Payload holding document data after inserting the document
@@ -109,20 +106,17 @@ open class PostCreatePayload(
     catalogIdentifier: String,
     document: Document,
     wrapper: DocumentWrapper,
-) :
-    PostPersistencePayload(Action.CREATE, type, catalogIdentifier, document, wrapper)
+) : PostPersistencePayload(Action.CREATE, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data before updating the document
  */
-open class PreUpdatePayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) :
-    PrePersistencePayload(Action.UPDATE, type, catalogIdentifier, document, wrapper)
+open class PreUpdatePayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) : PrePersistencePayload(Action.UPDATE, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data after updating the document
  */
-open class PostUpdatePayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) :
-    PostPersistencePayload(Action.UPDATE, type, catalogIdentifier, document, wrapper)
+open class PostUpdatePayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) : PostPersistencePayload(Action.UPDATE, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data before publishing the document
@@ -132,14 +126,12 @@ open class PrePublishPayload(
     catalogIdentifier: String,
     document: Document,
     wrapper: DocumentWrapper,
-) :
-    PrePersistencePayload(Action.PUBLISH, type, catalogIdentifier, document, wrapper)
+) : PrePersistencePayload(Action.PUBLISH, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data after publishing the document
  */
-open class PostPublishPayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) :
-    PostPersistencePayload(Action.PUBLISH, type, catalogIdentifier, document, wrapper)
+open class PostPublishPayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) : PostPersistencePayload(Action.PUBLISH, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data before unpublishing the document
@@ -149,38 +141,32 @@ open class PreUnpublishPayload(
     catalogIdentifier: String,
     document: Document,
     wrapper: DocumentWrapper,
-) :
-    PrePersistencePayload(Action.UNPUBLISH, type, catalogIdentifier, document, wrapper)
+) : PrePersistencePayload(Action.UNPUBLISH, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data after unpublishing the document
  */
-open class PostUnpublishPayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) :
-    PostPersistencePayload(Action.UNPUBLISH, type, catalogIdentifier, document, wrapper)
+open class PostUnpublishPayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) : PostPersistencePayload(Action.UNPUBLISH, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data before revoking the working copy
  */
-open class PreRevertPayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) :
-    PrePersistencePayload(Action.REVERT, type, catalogIdentifier, document, wrapper)
+open class PreRevertPayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) : PrePersistencePayload(Action.REVERT, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data after revoking the working copy
  */
-open class PostRevertPayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) :
-    PostPersistencePayload(Action.REVERT, type, catalogIdentifier, document, wrapper)
+open class PostRevertPayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) : PostPersistencePayload(Action.REVERT, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data before deleting the document
  */
-open class PreDeletePayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) :
-    PrePersistencePayload(Action.DELETE, type, catalogIdentifier, document, wrapper)
+open class PreDeletePayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) : PrePersistencePayload(Action.DELETE, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding document data after deleting the document
  */
-open class PostDeletePayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) :
-    PostPersistencePayload(Action.DELETE, type, catalogIdentifier, document, wrapper)
+open class PostDeletePayload(type: EntityType, catalogIdentifier: String, document: Document, wrapper: DocumentWrapper) : PostPersistencePayload(Action.DELETE, type, catalogIdentifier, document, wrapper)
 
 /**
  * Payload holding index data after indexing the document

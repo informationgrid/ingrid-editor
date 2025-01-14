@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -26,11 +26,7 @@ import {
 } from "@ngx-formly/core";
 import { FormLabelComponent } from "../../wrapper/form-label/form-label.component";
 import { AsyncPipe, NgIf, NgTemplateOutlet } from "@angular/common";
-import {
-  MatChip,
-  MatChipListbox,
-  MatChipOption,
-} from "@angular/material/chips";
+import { MatChipListbox, MatChipOption } from "@angular/material/chips";
 import {
   AbstractControl,
   FormControl,
@@ -87,12 +83,10 @@ export interface MetadataOptionItem {
 
 @Component({
   selector: "ige-metadata-type",
-  standalone: true,
   imports: [
     FormLabelComponent,
     NgIf,
     MatChipListbox,
-    MatChip,
     MatChipOption,
     ReactiveFormsModule,
     FormErrorComponent,

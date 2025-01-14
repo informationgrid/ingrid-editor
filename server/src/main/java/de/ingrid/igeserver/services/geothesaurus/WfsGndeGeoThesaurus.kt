@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -97,13 +97,11 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         return resolveTypeReferences(result)
     }
 
-    private fun resolveTypeReferences(spatials: List<SpatialResponse>): List<SpatialResponse> {
-        return spatials.map { spatial ->
-            if (spatial.type.startsWith("#")) {
-                spatial.type = spatials.find { it.typeId == spatial.type.substring(1) }?.type!!
-            }
-            spatial
+    private fun resolveTypeReferences(spatials: List<SpatialResponse>): List<SpatialResponse> = spatials.map { spatial ->
+        if (spatial.type.startsWith("#")) {
+            spatial.type = spatials.find { it.typeId == spatial.type.substring(1) }?.type!!
         }
+        spatial
     }
 
     private fun mapToSpatial(featureMember: JsonNode?, maxReached: Boolean): SpatialResponse? {
@@ -121,9 +119,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         )
     }
 
-    private fun getARS(featureMember: JsonNode): String? {
-        return featureMember.get("hatArs")?.get("Ars")?.get("ars")?.asText()
-    }
+    private fun getARS(featureMember: JsonNode): String? = featureMember.get("hatArs")?.get("Ars")?.get("ars")?.asText()
 
     private fun getType(featureMember: JsonNode): Pair<String, String?> {
         val href = featureMember.get("hatObjektart")?.get("href")?.asText()
@@ -142,9 +138,7 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
         return getBBoxFromBoundedByElement(posListLower!!, posListUpper!!)
     }
 
-    private fun getBBoxFromBoundedByElement(lower: List<String>, upper: List<String>): BoundingBox {
-        return BoundingBox(lower[1].toFloat(), lower[0].toFloat(), upper[1].toFloat(), upper[0].toFloat())
-    }
+    private fun getBBoxFromBoundedByElement(lower: List<String>, upper: List<String>): BoundingBox = BoundingBox(lower[1].toFloat(), lower[0].toFloat(), upper[1].toFloat(), upper[0].toFloat())
 
     private fun mapName(featureMember: JsonNode): String? {
         val endonyms = featureMember.get("hatEndonym")
@@ -166,11 +160,9 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
     }?.get("Endonym")?.get("name")?.asText()
 }
 
-private fun convertType(searchType: ThesaurusSearchType, term: String): String {
-    return when (searchType) {
-        ThesaurusSearchType.EXACT -> term
-        ThesaurusSearchType.BEGINS_WITH -> "$term*"
-        ThesaurusSearchType.ENDS_WITH -> "*$term"
-        ThesaurusSearchType.CONTAINS -> "*$term*"
-    }
+private fun convertType(searchType: ThesaurusSearchType, term: String): String = when (searchType) {
+    ThesaurusSearchType.EXACT -> term
+    ThesaurusSearchType.BEGINS_WITH -> "$term*"
+    ThesaurusSearchType.ENDS_WITH -> "*$term"
+    ThesaurusSearchType.CONTAINS -> "*$term*"
 }

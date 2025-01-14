@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -31,17 +31,11 @@ class MessageService(
     private val catalogService: CatalogService,
 ) {
 
-    fun get(catalogId: String?): List<Message> {
-        return messageRepo.findAllByCatalog_Identifier(catalogId)
-    }
+    fun get(catalogId: String?): List<Message> = messageRepo.findAllByCatalog_Identifier(catalogId)
 
-    fun getById(id: Int): Optional<Message> {
-        return messageRepo.findById(id)
-    }
+    fun getById(id: Int): Optional<Message> = messageRepo.findById(id)
 
-    fun getAll(): List<Message> {
-        return messageRepo.findAll()
-    }
+    fun getAll(): List<Message> = messageRepo.findAll()
 
     fun save(
         message: de.ingrid.igeserver.model.Message,

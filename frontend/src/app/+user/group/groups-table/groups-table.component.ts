@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -46,7 +46,6 @@ import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Group } from "../../../models/user-group";
 import { firstValueFrom } from "rxjs";
-import { filter } from "rxjs/operators";
 import { GeneralTable } from "../../general.table";
 import { GroupService } from "../../../services/role/group.service";
 import {
@@ -63,7 +62,6 @@ import { MatButton } from "@angular/material/button";
   selector: "groups-table",
   templateUrl: "./groups-table.component.html",
   styleUrls: ["../../table.styles.scss"],
-  standalone: true,
   imports: [
     MatTable,
     MatSort,

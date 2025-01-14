@@ -295,6 +295,21 @@
         "explanation": ""
       }
     ],
+    "fileReferences": [
+      {
+        "link": {
+          "uri": "placeholder.pdf",
+          "value": "placeholder.pdf",
+          "asLink": false,
+          "sizeInBytes": 43143
+        },
+        "title": "Platzhalter Titel",
+        "format": {
+          "key": "5"
+        },
+        "description": "Platzhalter Beschreibung"
+      }
+    ],
     "metadata": {
       "language": {
         "key": "150"
@@ -360,8 +375,15 @@
         "source": {
           "descriptions": [
             {
-              "key": null,
-              "value": "Meine Datengrundlage"
+              "value": "Meine Datengrundlage",
+              "_type": "freeDescription"
+            },
+            {
+              "value": "Beschreibung der Datengrundlage eines Geodatensatzes",
+              "date": "2024-11-18T23:00:00.000Z",
+              "dateType": { "key": "1" },
+              "uuidRef": "00000000-0000-0000-0000-000000000000",
+              "_type": "internalDataOrigin"
             }
           ],
           "processStep": {

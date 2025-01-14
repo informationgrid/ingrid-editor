@@ -1,10 +1,10 @@
 <!--<cdk-virtual-scroll-viewport itemSize="60" class="virtual-viewport">-->
-@if (_codelist) {
+@if (codelist()) {
     <mat-accordion class="entry-list">
-        @for (entry of _codelist.entries; track entry) {
+        @for (entry of sortedEntries(); track entry.id) {
             <mat-expansion-panel
                 hideToggle
-                [class.default]="_codelist.default === entry.id"
+                [class.default]="codelist().default === entry.id"
                 (opened)="showMore[entry.id] = true"
                 (closed)="showMore[entry.id] = false"
             >
@@ -19,7 +19,7 @@
                         </div>
                     </mat-panel-title>
                     <mat-panel-description>
-                        @if (_codelist.default === entry.id) {
+                        @if (codelist().default === entry.id) {
                             <div class="default-item">Defaultwert</div>
                         }
                         <div>
@@ -39,7 +39,7 @@
                                     >keyboard_arrow_down
                                 </mat-icon>
                             </button>
-                            @if (!hideMenu) {
+                            @if (!hideMenu()) {
                                 <button
                                     mat-icon-button
                                     class="menu-button"
@@ -59,21 +59,21 @@
                                         (click)="asFavorite.emit(entry)"
                                     >
                                         {{
-                                            favoriteEntryIds.indexOf(
+                                            favoriteEntryIds().indexOf(
                                                 entry.id
                                             ) >= 0
                                                 ? "Favorit entfernen"
                                                 : "Als Favorit setzen"
                                         }}
                                     </button>
-                                    @if (_codelist.isCatalog) {
+                                    @if (codelist().isCatalog) {
                                         <button
                                             mat-menu-item
                                             (click)="edit.emit(entry)"
                                         >
                                             Bearbeiten
                                         </button>
-                                        @if (_codelist.default !== entry.id) {
+                                        @if (codelist().default !== entry.id) {
                                             <button
                                                 mat-menu-item
                                                 (click)="setDefault.emit(entry)"
@@ -81,7 +81,7 @@
                                                 Als Defaultwert übernehmen
                                             </button>
                                         }
-                                        @if (_codelist.default === entry.id) {
+                                        @if (codelist().default === entry.id) {
                                             <button
                                                 mat-menu-item
                                                 (click)="setDefault.emit(null)"
@@ -106,8 +106,8 @@
                     <div>{{ entry.description }}</div>
                     <div>data: {{ entry.data }}</div>
                     @for (
-                        entryField of entryFields[entry.id];
-                        track entryField
+                        entryField of entryFields()[entry.id];
+                        track entryField[0]
                     ) {
                         <div>{{ entryField[0] }}: {{ entryField[1] }}</div>
                     }

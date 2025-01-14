@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -47,10 +47,15 @@ export interface ConsolidateDialogData {
   id: number;
 }
 
-class Keywords {
-  gemet: Object[];
-  umthes: Object[];
-  free: Object[];
+export class Keyword {
+  id?: string;
+  label: string;
+  alternativeLabel?: string;
+}
+export class Keywords {
+  gemet?: Object[];
+  umthes?: Object[];
+  free?: Object[];
 }
 
 interface ThesaurusTypeInfo extends Array<any | ThesaurusResult[]> {
@@ -72,7 +77,6 @@ interface ThesaurusTypeInfo extends Array<any | ThesaurusResult[]> {
     NgClass,
     DialogTemplateComponent,
   ],
-  standalone: true,
 })
 export class ConsolidateDialogComponent implements OnInit {
   private codelistStore = inject(CodelistStore);
@@ -177,7 +181,6 @@ export class ConsolidateDialogComponent implements OnInit {
         this.isInspireIdentified,
       );
       analyzedKeywords = removeDuplicatesByValue(analyzedKeywords, "label");
-
       this.categorizeKeywords(analyzedKeywords);
       this.addAllKeywordStatuses();
       this.keepKeywordsFoundWithAlternativeLabel();
@@ -196,7 +199,7 @@ export class ConsolidateDialogComponent implements OnInit {
     for (let [thesaurus, [oldKeywords, _]] of this.keywordHierarchyMap) {
       this.keywordHierarchyMap.set(thesaurus, [
         oldKeywords,
-        analyzedKeywords.filter((keyword) => keyword.thesaurus === thesaurus),
+        analyzedKeywords?.filter((keyword) => keyword.thesaurus === thesaurus),
       ]);
     }
   }

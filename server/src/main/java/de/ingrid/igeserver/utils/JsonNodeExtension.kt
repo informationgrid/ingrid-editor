@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -25,37 +25,27 @@ import de.ingrid.igeserver.model.KeyValue
 /**
  * Get the text value of a given path in a JsonNode. The path is delimited by a "."
  */
-fun JsonNode.getString(path: String): String? {
-    return path.split(".")
-        .fold<String, JsonNode?>(this) { node, fieldName ->
-            node?.get(fieldName)
-        }?.let { if (it.isNull) null else it.asText() }
-}
+fun JsonNode.getString(path: String): String? = path.split(".")
+    .fold<String, JsonNode?>(this) { node, fieldName ->
+        node?.get(fieldName)
+    }?.let { if (it.isNull) null else it.asText() }
 
-fun JsonNode.getBoolean(path: String): Boolean? {
-    return path.split(".")
-        .fold<String, JsonNode?>(this) { node, fieldName ->
-            node?.get(fieldName)
-        }?.let { if (it.isNull) null else it.asBoolean() }
-}
+fun JsonNode.getBoolean(path: String): Boolean? = path.split(".")
+    .fold<String, JsonNode?>(this) { node, fieldName ->
+        node?.get(fieldName)
+    }?.let { if (it.isNull) null else it.asBoolean() }
 
-fun JsonNode.getDouble(path: String): Double? {
-    return path.split(".")
-        .fold<String, JsonNode?>(this) { node, fieldName ->
-            node?.get(fieldName)
-        }?.let { if (it.isNull) null else it.asDouble() }
-}
+fun JsonNode.getDouble(path: String): Double? = path.split(".")
+    .fold<String, JsonNode?>(this) { node, fieldName ->
+        node?.get(fieldName)
+    }?.let { if (it.isNull) null else it.asDouble() }
 
-fun JsonNode.getStringOrEmpty(path: String): String {
-    return this.getString(path) ?: ""
-}
+fun JsonNode.getStringOrEmpty(path: String): String = this.getString(path) ?: ""
 
-fun JsonNode.getPath(path: String): JsonNode? {
-    return path.split(".")
-        .fold<String, JsonNode?>(this) { node, fieldName ->
-            node?.get(fieldName)
-        }
-}
+fun JsonNode.getPath(path: String): JsonNode? = path.split(".")
+    .fold<String, JsonNode?>(this) { node, fieldName ->
+        node?.get(fieldName)
+    }
 
 fun JsonNode.mapToKeyValue(): KeyValue? {
     if (this.isNull) return null

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -39,7 +39,7 @@ class QueryService(
             .filter { it.global || it.user?.userId == userId }
     }
 
-    fun saveQuery(userId: String?, catalogId: String, data: Query): Query {
+    fun save(userId: String?, catalogId: String, data: Query): Query {
         if (userId != null) {
             data.user = user.findByUserId(userId)
         }
@@ -49,7 +49,17 @@ class QueryService(
         return query.save(data)
     }
 
-    fun removeQueryForUser(id: Int) {
+    fun update(queryId: Int, data: Query): Query {
+        val current = query.findById(queryId).get()
+        current.name = data.name
+        current.description = data.description
+        current.global = data.global
+        current.modified = dateService.now()
+
+        return query.save(current)
+    }
+
+    fun remove(id: Int) {
         query.deleteById(id)
     }
 }

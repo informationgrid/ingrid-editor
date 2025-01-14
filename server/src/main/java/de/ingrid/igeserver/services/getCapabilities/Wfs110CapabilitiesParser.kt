@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,19 +19,14 @@
  */
 package de.ingrid.igeserver.services.getCapabilities
 
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.Wfs110NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 import javax.xml.xpath.XPathExpressionException
 
-class Wfs110CapabilitiesParser(
-    codelistHandler: CodelistHandler,
-    private val researchService: ResearchService,
-    catalogId: String,
-) :
-    GeneralCapabilitiesParser(XPathUtils(Wfs110NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
+class Wfs110CapabilitiesParser(params: CapabilitiesParameter) :
+    GeneralCapabilitiesParser(XPathUtils(Wfs110NamespaceContext()), params),
+    ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.1.0" to "1", "2.0" to "2")
 
@@ -39,35 +34,33 @@ class Wfs110CapabilitiesParser(
      * @see de.ingrid.mdek.dwr.services.capabilities.ICapabilityDocument#setTitle(org.w3c.dom.Document)
      */
     @Throws(XPathExpressionException::class)
-    override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        return CapabilitiesBean().apply {
-            serviceType = "WFS"
-            dataServiceType = "3" // download
-            title = xPathUtils.getString(doc, XPATH_EXP_WFS_TITLE)
-            description = xPathUtils.getString(doc, XPATH_EXP_WFS_ABSTRACT)
-            val versionList = getNodesContentAsList(doc, XPATH_EXP_WFS_VERSION)
-            versions = mapVersionsFromCodelist("5153", versionList, versionSyslistMap)
-            fees = getKeyValueForPath(doc, XPATH_EXP_WFS_FEES, "6500")
-            accessConstraints =
-                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WFS_ACCESS_CONSTRAINTS))
-            onlineResources =
-                getOnlineResources(doc, XPATH_EXP_WFS_ONLINE_RESOURCE)
-            addExtendedCapabilities(this, doc, XPATH_EXP_WFS_EXTENDED_CAPABILITIES)
-            keywords += (
-                getKeywords(doc, XPATH_EXP_WFS_KEYWORDS) + getKeywords(
-                    doc,
-                    XPATH_EXP_WFS_KEYWORDS_FEATURE_TYPE,
-                )
-                ).distinctBy { it.lowercase() }
-            boundingBoxes = getBoundingBoxesFromLayers(doc)
-            spatialReferenceSystems = getSpatialReferenceSystems(
+    override fun getCapabilitiesData(doc: Document): CapabilitiesBean = CapabilitiesBean().apply {
+        serviceType = "WFS"
+        dataServiceType = "3" // download
+        title = xPathUtils.getString(doc, XPATH_EXP_WFS_TITLE)
+        description = xPathUtils.getString(doc, XPATH_EXP_WFS_ABSTRACT)
+        val versionList = getNodesContentAsList(doc, XPATH_EXP_WFS_VERSION)
+        versions = mapVersionsFromCodelist("5153", versionList, versionSyslistMap)
+        fees = getKeyValueForPath(doc, XPATH_EXP_WFS_FEES, "6500")
+        accessConstraints =
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WFS_ACCESS_CONSTRAINTS))
+        onlineResources =
+            getOnlineResources(doc, XPATH_EXP_WFS_ONLINE_RESOURCE)
+        addExtendedCapabilities(this, doc, XPATH_EXP_WFS_EXTENDED_CAPABILITIES)
+        keywords += (
+            getKeywords(doc, XPATH_EXP_WFS_KEYWORDS) + getKeywords(
                 doc,
-                "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:DefaultSRS",
-                "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherSRS",
+                XPATH_EXP_WFS_KEYWORDS_FEATURE_TYPE,
             )
-            address = getAddress(doc)
-            operations = getOperations(doc)
-        }
+            ).distinctBy { it.lowercase() }
+        boundingBoxes = getBoundingBoxesFromLayers(doc)
+        spatialReferenceSystems = getSpatialReferenceSystems(
+            doc,
+            "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:DefaultSRS",
+            "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherSRS",
+        )
+        address = getAddress(doc)
+        operations = getOperations(doc)
     }
 
     private fun getOperations(doc: Document): List<OperationBean> {
@@ -85,7 +78,7 @@ class Wfs110CapabilitiesParser(
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "GetCapabilities", "de"),
                 "GetCapabilities",
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
@@ -107,7 +100,7 @@ class Wfs110CapabilitiesParser(
         )
         if (describeFeatureTypeOp.addressList!!.isNotEmpty()) {
             describeFeatureTypeOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "DescribeFeatureType", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "DescribeFeatureType", "de"),
                 "DescribeFeatureType",
             )
             describeFeatureTypeOp.methodCall = "DescribeFeatureType"
@@ -129,7 +122,7 @@ class Wfs110CapabilitiesParser(
         )
         if (getFeatureOp.addressList!!.isNotEmpty()) {
             getFeatureOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetFeature", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "GetFeature", "de"),
                 "GetFeature",
             )
             getFeatureOp.methodCall = "GetFeature"
@@ -151,7 +144,7 @@ class Wfs110CapabilitiesParser(
         )
         if (getGmlObjectOp.addressList!!.isNotEmpty()) {
             getGmlObjectOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "GetGmlObject", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "GetGmlObject", "de"),
                 "GetGmlObject",
             )
             getGmlObjectOp.methodCall = "GetGmlObject"
@@ -173,7 +166,7 @@ class Wfs110CapabilitiesParser(
         )
         if (lockFeatureOp.addressList!!.isNotEmpty()) {
             lockFeatureOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "LockFeature", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "LockFeature", "de"),
                 "LockFeature",
             )
             lockFeatureOp.methodCall = "LockFeature"
@@ -195,7 +188,7 @@ class Wfs110CapabilitiesParser(
         )
         if (transactionOp.addressList!!.isNotEmpty()) {
             transactionOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5120", "Transaction", "de"),
+                params.codelistHandler.getCodeListEntryId("5120", "Transaction", "de"),
                 "Transaction",
             )
             transactionOp.methodCall = "Transaction"
@@ -255,7 +248,7 @@ class Wfs110CapabilitiesParser(
         )
 
         // try to find address in database and set the uuid if found
-        searchForAddress(researchService, catalogId, address)
+        searchForAddress(params.researchService, params.catalogId, address)
 
         address.street = xPathUtils.getString(
             doc,

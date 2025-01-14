@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -27,7 +27,10 @@ import { Observable } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { FacetQuery, Query, SqlQuery } from "../store/query/query.model";
 import { BackendQuery } from "./backend-query.model";
-import { BackendStoreQuery } from "./backend-store-query.model";
+import {
+  BackendStoreQuery,
+  BackendUpdateStoreQuery,
+} from "./backend-store-query.model";
 import { ProfileService } from "../services/profile.service";
 import { SaveQueryDialogResponse } from "./save-query-dialog/save-query-dialog.response";
 import { IgeDocument } from "../models/ige-document";
@@ -202,6 +205,21 @@ export class ResearchService {
       );
   }
 
+  updateQuery(
+    id: number,
+    dialogOptions: SaveQueryDialogResponse,
+  ): Observable<SqlQuery | FacetQuery> {
+    return this.http
+      .put<BackendStoreQuery>(
+        `${this.configuration.backendUrl}search/query/${id}`,
+        this.prepareUpdateQuery(id, dialogOptions),
+      )
+      .pipe(
+        map((response) => this.convertToFrontendQuery(response)),
+        tap((response) => this.queryStore.update(id, response)),
+      );
+  }
+
   convertToFrontendQuery(query: BackendStoreQuery): SqlQuery | FacetQuery {
     const base = <Query>{
       id: query.id,
@@ -313,5 +331,17 @@ export class ResearchService {
           throw new IgeError(JSON.parse(error.error)?.errorText);
         }),
       );
+  }
+
+  private prepareUpdateQuery(
+    id: number,
+    data: SaveQueryDialogResponse,
+  ): BackendUpdateStoreQuery {
+    return {
+      id: id,
+      name: data.name,
+      description: data.description,
+      global: data.forCatalog,
+    };
   }
 }

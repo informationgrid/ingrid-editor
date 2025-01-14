@@ -1,7 +1,8 @@
-@import "src/variables";
-@import "src/material.override";
-@import "src/styles-print";
-@import "src/styles-outline";
+@use "sass:color";
+@use "src/variables" as vars;
+@use "src/material.override";
+@use "src/styles-print";
+@use "src/styles-outline";
 
 html,
 body {
@@ -24,7 +25,7 @@ body {
 a {
   font-size: 14px;
   font-weight: 500;
-  color: $ige-secondary;
+  color: vars.$ige-secondary;
   text-decoration: none;
   text-transform: uppercase;
 
@@ -34,12 +35,12 @@ a {
 
   &:hover {
     text-decoration: none;
-    color: lighten($ige-secondary, 20%);
+    color: color.adjust(vars.$ige-secondary, $lightness: 20%);
   }
 }
 
 .user-popup mat-icon path {
-  fill: $ige-primary;
+  fill: vars.$ige-primary;
 }
 
 .mat-mdc-menu-panel.user-popup-menu {
@@ -57,7 +58,7 @@ button.button-with-text {
   .mdc-button__label {
     display: flex;
     align-items: center;
-    color: $ige-secondary;
+    color: vars.$ige-secondary;
   }
 
   &.primary .mdc-button__label {
@@ -128,7 +129,7 @@ button.button-next-to-input {
   border-top-left-radius: 0;
 
   &:hover {
-    background-color: lighten($ige-secondary, 8%);
+    background-color: color.adjust(vars.$ige-secondary, $lightness: 8%);
   }
 }
 
@@ -163,7 +164,7 @@ button.button-next-to-input {
 
 h1 {
   font-size: 48px;
-  color: $ige-primary;
+  color: vars.$ige-primary;
   font-weight: normal;
 }
 
@@ -172,7 +173,7 @@ h1 {
 }
 
 .highlight {
-  background-color: $ige-mark-color;
+  background-color: vars.$ige-mark-color;
 }
 
 .mat-mdc-card {
@@ -200,7 +201,7 @@ h1 {
 
 .mat-mdc-list.hover-list {
   .mat-mdc-list-item:hover {
-    background-color: darken(white, 4%);
+    background-color: color.adjust(white, $lightness: -4%);
   }
 }
 
@@ -213,7 +214,7 @@ h1 {
 }
 
 /*.text-card-title.mat-mdc-card-title {
-  color: $ige-primary;
+  color: vars.$ige-primary;
   text-align: center;
   letter-spacing: 0.74px;
   padding: 2px 0 6px;
@@ -238,7 +239,10 @@ h1 {
   background: rgba(0, 0, 0, 0.04) !important;
 
   &.dark {
-    background-color: darken($ige-background-bar, 5%) !important;
+    background-color: color.adjust(
+      vars.$ige-background-bar,
+      $lightness: -5%
+    ) !important;
   }
 }
 
@@ -246,17 +250,17 @@ h1 {
   cursor: pointer;
 
   a:hover {
-    color: $ige-primary;
+    color: vars.$ige-primary;
   }
 }
 
 .clickable-text {
   cursor: pointer;
-  color: $ige-secondary;
+  color: vars.$ige-secondary;
   //font-weight: 500;
 
   &:hover {
-    color: lighten($ige-secondary, 20%);
+    color: color.adjust(vars.$ige-secondary, $lightness: 20%);
   }
 }
 
@@ -310,7 +314,7 @@ h1 {
 }
 
 ige-section-wrapper > h2 {
-  color: $ige-primary;
+  color: vars.$ige-primary;
   margin-top: 0;
   margin-bottom: 16px;
   font-weight: normal;
@@ -322,7 +326,7 @@ ige-section-wrapper > h2 {
   font-weight: normal;
   letter-spacing: 0.4px;
 
-  color: $ige-secondary !important;
+  color: vars.$ige-secondary !important;
   padding: 0 10px;
   text-transform: none;
 }
@@ -333,7 +337,7 @@ ige-tree-header ige-search-input .mat-mdc-form-field-subscript-wrapper {
 
 .shortcut {
   padding-bottom: 24px;
-  color: $ige-secondary;
+  color: vars.$ige-secondary;
   /*TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version.*/
   /*.mat-button-wrapper {
     letter-spacing: 1.25px;
@@ -350,7 +354,7 @@ ige-tree-header ige-search-input .mat-mdc-form-field-subscript-wrapper {
   font-size: 14px;
   font-weight: 500;
   vertical-align: middle;
-  //color: $ige-secondary;
+  //color: vars.$ige-secondary;
 }
 
 main-menu .mat-toolbar-row {
@@ -366,10 +370,13 @@ main-menu .mat-toolbar-multiple-rows {
 }
 
 mat-list-option.selected {
-  background-color: $ige-mark-color !important;
+  background-color: vars.$ige-mark-color !important;
 
   &:hover {
-    background-color: darken($ige-mark-color, 5%) !important;
+    background-color: color.adjust(
+      vars.$ige-mark-color,
+      $lightness: -5%
+    ) !important;
   }
 }
 
@@ -411,7 +418,7 @@ form-toolbar + div {
 
 .btn.btn-xs {
   /*// line-height: ensure proper height of button next to extra small input*/
-  /*@include button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius);*/
+  /*@include button-size(vars.$padding-y, vars.$padding-x, vars.$font-size, vars.$line-height, vars.$border-radius);*/
   font-size: 0.5rem;
   padding: 8px;
 }
@@ -427,10 +434,10 @@ form-toolbar + div {
   padding: 12px 24px;
   margin-bottom: 12px;
   font-size: 16px;
-  color: $error-color;
+  color: vars.$error-color;
   letter-spacing: 0.4px;
   font-weight: 400;
-  background-color: $error-background;
+  background-color: vars.$error-background;
 }
 
 @keyframes slideIn {
@@ -725,7 +732,7 @@ formly-form:last-of-type(formly-field) > formly-field:last-of-type {
 }*/
 
 ige-root .mat-drawer-container {
-  background-color: $ige-background;
+  background-color: vars.$ige-background;
 }
 
 .mat-icon.animated {
@@ -751,11 +758,11 @@ ige-root .mat-drawer-container {
     }
 
     svg .coloring {
-      fill: $ige-icon-color;
+      fill: vars.$ige-icon-color;
     }
 
     &.working svg .coloring {
-      fill: $state-working-color;
+      fill: vars.$state-working-color;
     }
 
     &.workingWithPublished svg .coloring {
@@ -765,20 +772,20 @@ ige-root .mat-drawer-container {
 
   + .document-icon-tag {
     border-radius: 50%;
-    border: 1px solid $ige-background;
+    border: 1px solid vars.$ige-background;
 
     &.intranet {
-      background-color: $ige-primary;
+      background-color: vars.$ige-primary;
     }
 
     &.amtsintern {
-      background-color: $error-color;
+      background-color: vars.$error-color;
     }
   }
 }
 
 .mat-icon.light svg .coloring {
-  fill: $ige-mark-color;
+  fill: vars.$ige-mark-color;
 }
 
 .dragged .mat-icon.light svg .coloring {
@@ -787,11 +794,11 @@ ige-root .mat-drawer-container {
 
 svg {
   .coloring {
-    fill: $ige-icon-color;
+    fill: vars.$ige-icon-color;
   }
 
   .coloring-stroke {
-    stroke: $ige-icon-color;
+    stroke: vars.$ige-icon-color;
   }
 }
 
@@ -812,22 +819,22 @@ svg {
 
 .gray {
   &:hover .coloring {
-    fill: darken($ige-comment-color, 5%);
+    fill: color.adjust(vars.$ige-comment-color, $lightness: -5%);
   }
 
   .coloring {
-    fill: $ige-comment-color;
+    fill: vars.$ige-comment-color;
   }
 }
 
 .green {
   .coloring {
-    fill: $ige-check-color;
+    fill: vars.$ige-check-color;
   }
 }
 
 .no-selection-text {
-  color: $ige-hint-color;
+  color: vars.$ige-hint-color;
   user-select: none;
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -877,14 +884,17 @@ ige-form-label + * {
 
   &.menu-button:enabled {
     &:hover {
-      background-color: $ige-background-bar;
+      background-color: vars.$ige-background-bar;
     }
 
     &.dark {
-      background-color: $ige-background-bar;
+      background-color: vars.$ige-background-bar;
 
       &:hover {
-        background-color: darken($ige-background-bar, 5%) !important;
+        background-color: color.adjust(
+          vars.$ige-background-bar,
+          $lightness: -5%
+        ) !important;
       }
     }
   }
@@ -922,7 +932,7 @@ ige-context-help .mat-mdc-dialog-content {
 // Icons
 
 mat-icon.mark-color .coloring {
-  fill: $ige-check-color;
+  fill: vars.$ige-check-color;
 }
 
 .mat-icon.big-icon {
@@ -933,11 +943,11 @@ mat-icon.mark-color .coloring {
 }
 
 .success-color {
-  color: $ige-check-color;
+  color: vars.$ige-check-color;
 }
 
 .error-color.error-color {
-  color: $error-color;
+  color: vars.$error-color;
 }
 
 .dlg-field-label {
@@ -950,7 +960,7 @@ mat-icon.mark-color .coloring {
 }
 
 .dlg-field-hero-label {
-  color: $ige-primary;
+  color: vars.$ige-primary;
   font-size: 24px;
   line-height: 30px;
   padding: 24px 0;
@@ -963,7 +973,7 @@ mat-icon.mark-color .coloring {
   }
 
   .mat-mdc-tab-links {
-    background-color: $ige-secondary-dark;
+    background-color: vars.$ige-secondary-dark;
   }
 
   .mat-mdc-tab-link {
@@ -971,7 +981,7 @@ mat-icon.mark-color .coloring {
     height: 56px !important;
 
     &:hover {
-      background: lighten($ige-secondary, 8%);
+      background: color.adjust(vars.$ige-secondary, $lightness: -8%);
     }
 
     .mdc-tab__text-label {
@@ -988,8 +998,8 @@ mat-icon.mark-color .coloring {
   }
 
   .mdc-tab-indicator__content {
-    border-color: $ige-background !important;
-    background-color: $ige-background !important;
+    border-color: vars.$ige-background !important;
+    background-color: vars.$ige-background !important;
     height: 6px;
   }
 }
@@ -998,7 +1008,7 @@ mat-icon.mark-color .coloring {
   height: 100%;
 
   & > .mat-mdc-tab-header {
-    background-color: $ige-secondary-dark;
+    background-color: vars.$ige-secondary-dark;
     border-bottom: none;
     height: 56px;
     /*TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
@@ -1022,7 +1032,7 @@ mat-icon.mark-color .coloring {
     }
 
     .mat-ink-bar {
-      background-color: $ige-background !important;
+      background-color: vars.$ige-background !important;
       height: 6px;
     }
   }
@@ -1117,15 +1127,15 @@ mat-icon.mark-color .coloring {
 
 .cdk-drag-handle {
   cursor: move;
-  color: $ige-hint-color;
+  color: vars.$ige-hint-color;
 
   &:hover {
-    color: $ige-secondary;
+    color: vars.$ige-secondary;
   }
 }
 
 .legend {
-  color: $ige-placeholder-color;
+  color: vars.$ige-placeholder-color;
   font-size: 14px;
 
   mat-icon {
@@ -1138,7 +1148,7 @@ mat-icon.mark-color .coloring {
   }
 
   svg path {
-    fill: $ige-placeholder-color;
+    fill: vars.$ige-placeholder-color;
   }
 }
 
@@ -1152,10 +1162,13 @@ mat-icon.wide-icon-26px {
 
 /* TABLE */
 .mat-mdc-table .mat-mdc-row:hover {
-  background-color: darken(#ffffff, 5%) !important;
+  background-color: color.adjust(#ffffff, $lightness: -5%) !important;
 
   &.selected {
-    background-color: darken($ige-mark-color, 5%) !important;
+    background-color: color.adjust(
+      vars.$ige-mark-color,
+      $lightness: -5%
+    ) !important;
   }
 
   .menu-button {
@@ -1164,7 +1177,7 @@ mat-icon.wide-icon-26px {
 }
 
 .mat-mdc-table.dark .mat-mdc-row:hover {
-  background-color: darken($ige-background, 5%);
+  background-color: color.adjust(vars.$ige-background, $lightness: -5%);
 }
 
 /* RADIO */
@@ -1186,25 +1199,25 @@ mat-icon.wide-icon-26px {
 .comment {
   font-size: 14px;
   line-height: 22px;
-  color: $ige-hint-color;
+  color: vars.$ige-hint-color;
 }
 
 .comment-field {
-  color: $ige-hint-color;
+  color: vars.$ige-hint-color;
 }
 
 .no-fields-selected-notice {
   display: flex;
   align-items: center;
-  background-color: $ige-mark-color;
-  color: $ige-primary;
+  background-color: vars.$ige-mark-color;
+  color: vars.$ige-primary;
   padding: 0 15px;
   margin-bottom: 5px;
   min-height: 40px;
 
   &.warn {
-    background-color: $error-background;
-    color: $error-color;
+    background-color: vars.$error-background;
+    color: vars.$error-color;
   }
 
   span {
@@ -1218,7 +1231,7 @@ mat-icon.wide-icon-26px {
   border-radius: 50%;
 
   &.gray {
-    background-color: $ige-background;
+    background-color: vars.$ige-background;
   }
 }
 
@@ -1267,7 +1280,7 @@ mat-icon.wide-icon-26px {
 
   .mat-mdc-menu-item {
     font-size: 16px;
-    color: $ige-text-color;
+    color: vars.$ige-text-color;
     height: 44px;
   }
 
@@ -1276,7 +1289,7 @@ mat-icon.wide-icon-26px {
   }*/
 
   .category-item {
-    //color: $ige-hint-color;
+    //color: vars.$ige-hint-color;
     font-size: 14px;
     text-transform: uppercase;
   }
@@ -1286,7 +1299,7 @@ mat-icon.wide-icon-26px {
   }*/
 
   .versioninfo {
-    color: $ige-hint-color;
+    color: vars.$ige-hint-color;
     font-size: 14px;
     line-height: 18px;
     padding: 16px;
@@ -1331,7 +1344,7 @@ table.big-font {
   ige-spatial-list,
   formly-field-mat-datepicker,
   .mat-mdc-radio-group {
-    background: $error-background !important;
+    background: vars.$error-background !important;
   }
 }
 
@@ -1341,7 +1354,7 @@ table.big-font {
   ige-spatial-list,
   formly-field-mat-datepicker,
   .mat-mdc-radio-group {
-    background: $ige-check-background-color !important;
+    background: vars.$ige-check-background-color !important;
   }
 }
 

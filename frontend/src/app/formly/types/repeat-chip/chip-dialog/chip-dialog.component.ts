@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -31,7 +31,6 @@ import { MatListOption, MatSelectionList } from "@angular/material/list";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatDivider } from "@angular/material/divider";
 import { AsyncPipe } from "@angular/common";
@@ -45,7 +44,6 @@ export interface ChipDialogData {
   selector: "ige-chip-dialog",
   templateUrl: "./chip-dialog.component.html",
   styleUrls: ["./chip-dialog.component.scss"],
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,
@@ -53,7 +51,6 @@ export interface ChipDialogData {
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     MatSelectionList,
     ReactiveFormsModule,

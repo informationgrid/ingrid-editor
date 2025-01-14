@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -39,24 +39,16 @@ class AuthUtilsMock : AuthUtils {
         return config.logins?.get(config.currentUser) ?: "unknown"
     }
 
-    override fun getFullNameFromPrincipal(principal: Principal): String {
-        return "${config.firstName?.get(config.currentUser)} ${config.lastName?.get(config.currentUser)}"
-    }
+    override fun getFullNameFromPrincipal(principal: Principal): String = "${config.firstName?.get(config.currentUser)} ${config.lastName?.get(config.currentUser)}"
 
     override fun containsRole(principal: Principal, role: String): Boolean {
         principal as Authentication
         return principal.authorities.any { it.authority == role }
     }
 
-    override fun isAdmin(principal: Principal): Boolean {
-        return containsRole(principal, "cat-admin") || containsRole(principal, "ige-super-admin")
-    }
+    override fun isAdmin(principal: Principal): Boolean = containsRole(principal, "cat-admin") || containsRole(principal, "ige-super-admin")
 
-    override fun isSuperAdmin(principal: Principal): Boolean {
-        return containsRole(principal, "ige-super-admin")
-    }
+    override fun isSuperAdmin(principal: Principal): Boolean = containsRole(principal, "ige-super-admin")
 
-    override fun getCurrentUserRoles(catalogId: String): Set<Group> {
-        return emptySet()
-    }
+    override fun getCurrentUserRoles(catalogId: String): Set<Group> = emptySet()
 }

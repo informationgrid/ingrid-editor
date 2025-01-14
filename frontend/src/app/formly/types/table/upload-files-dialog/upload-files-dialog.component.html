@@ -1,5 +1,5 @@
 <ige-dialog-template
-    label="Datei(en) hochladen"
+    [label]="dialogTitle()"
     contentColor="#f3f3f3"
     (submit)="submit()"
     (cancel)="cancel()"
@@ -7,12 +7,13 @@
 >
     <ng-container content>
         <ige-file-upload
-            [target]="targetUrl"
+            [target]="targetUrl()"
             [infoText]="infoText"
             [allowedUploadTypes]="allowedUploadTypes"
             (chosenFiles)="updateChosenFiles($event)"
             (removeFile)="removeUploadedFile($event)"
             (complete)="handleUploadComplete()"
+            [multiple]="multiple()"
             [enableFileUploadOverride]="enableFileUploadOverride()"
             [enableFileUploadReuse]="enableFileUploadReuse()"
             [enableFileUploadRename]="enableFileUploadRename()"

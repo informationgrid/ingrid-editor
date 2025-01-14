@@ -1,15 +1,20 @@
-@import "src/variables";
+@use "src/variables" as vars;
+
 .mat-icon {
   vertical-align: bottom;
 
   ::ng-deep path {
-    fill: $ige-secondary;
+    fill: vars.$ige-secondary;
   }
 }
 
 .mat-divider {
   border: 0;
   height: 4px;
-  background: linear-gradient(90deg, $ige-background-bar, $ige-background);
+  background: linear-gradient(
+    90deg,
+    vars.$ige-background-bar,
+    vars.$ige-background
+  );
   margin: 12px -24px 20px -36px;
 }

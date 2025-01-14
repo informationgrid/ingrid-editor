@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -241,8 +241,7 @@ class DocumentService(
     }
 
     // TODO: consolidate function findChildrenDocs and findChildren
-    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentData> =
-        findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
+    fun findChildrenDocs(catalogId: String, parentId: Int?, isAddress: Boolean): FindAllResults<DocumentData> = findChildren(catalogId, parentId, if (isAddress) DocumentCategory.ADDRESS else DocumentCategory.DATA)
 
     fun findChildren(
         catalogId: String,
@@ -321,8 +320,7 @@ class DocumentService(
         } ?: throw ServerException.withReason("DocumentType '$docType' not known in this profile: $profile")
     }
 
-    fun isAddress(docType: String): Boolean =
-        checkNotNull(documentTypes.find { it.className == docType }?.category) == DocumentCategory.ADDRESS.value
+    fun isAddress(docType: String): Boolean = checkNotNull(documentTypes.find { it.className == docType }?.category) == DocumentCategory.ADDRESS.value
 
     @Transactional
     fun createDocument(
@@ -802,8 +800,7 @@ class DocumentService(
         return finalDoc
     }
 
-    fun getPendingDocument(catalogId: String, uuid: String): Document =
-        docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DocumentState.PENDING)
+    fun getPendingDocument(catalogId: String, uuid: String): Document = docRepo.getByCatalog_IdentifierAndUuidAndState(catalogId, uuid, DocumentState.PENDING)
 
     fun unpublishDocument(principal: Principal, catalogId: String, id: Int): DocumentData {
         // remove publish
@@ -876,12 +873,11 @@ class DocumentService(
     }
 
     @Deprecated("Is not secured")
-    fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> =
-        if (includeFolders) {
-            docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
-        } else {
-            docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
-        }
+    fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> = if (includeFolders) {
+        docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
+    } else {
+        docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
+    }
 
     fun isAddress(wrapper: DocumentWrapper): Boolean = wrapper.category == DocumentCategory.ADDRESS.value
 
@@ -990,8 +986,7 @@ class DocumentService(
         updatePathForAllChildren(catalogId, newPath, wrapperId)
     }
 
-    private fun getPathFromWrapper(id: Int) =
-        getWrapperByDocumentId(id).path
+    private fun getPathFromWrapper(id: Int) = getWrapperByDocumentId(id).path
 
     private fun updatePathForAllChildren(catalogId: String, path: List<Int>, id: Int) {
         findChildrenWrapper(catalogId, id).hits

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -44,7 +44,6 @@ import { toObservable } from "@angular/core/rxjs-interop";
   selector: "ige-tab-sql",
   templateUrl: "./tab-sql.component.html",
   styleUrls: ["./tab-sql.component.scss"],
-  standalone: true,
   imports: [
     PageTemplateComponent,
     MatButton,
@@ -56,6 +55,7 @@ import { toObservable } from "@angular/core/rxjs-interop";
 })
 export class TabSqlComponent implements OnInit {
   private generalStore = inject(GeneralStore);
+  private snackBar = inject(MatSnackBar);
 
   sql = new UntypedFormControl("");
   request = new FormControl<string>("");
@@ -74,7 +74,6 @@ export class TabSqlComponent implements OnInit {
   constructor(
     private researchService: ResearchService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar,
     private config: ConfigService,
   ) {}
 
@@ -164,8 +163,8 @@ export class TabSqlComponent implements OnInit {
           ? answer.substring(start)
           : answer.substring(start, end);
     return (
-      "SELECT document1.*, document_wrapper.category FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid " +
-      adaptedAnswer
+      "SELECT document1.* FROM document_wrapper JOIN document document1 ON document_wrapper.uuid=document1.uuid " +
+      adaptedAnswer.replace(";", "")
     );
   }
 }

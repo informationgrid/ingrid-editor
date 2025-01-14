@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -18,11 +18,12 @@
  * limitations under the Licence.
  */
 import {
-  APP_INITIALIZER,
   enableProdMode,
   ErrorHandler,
   importProvidersFrom,
+  inject,
   LOCALE_ID,
+  provideAppInitializer,
 } from "@angular/core";
 
 import { ConfigLoader } from "./app/config.loader";
@@ -141,6 +142,7 @@ import { MetadataTypeComponent } from "./app/formly/types/metadata-type/metadata
 import { MatDatepickerIntl } from "@angular/material/datepicker";
 import { GermanDateIntl } from "./app/services/german-date.intl";
 import { RadioOptionsComponent } from "./app/formly/types/radio-options/radio-options.component";
+import { GeneralStore } from "./app/store/general.store";
 
 if (environment.production) {
   enableProdMode();
@@ -286,6 +288,10 @@ bootstrapApplication(AppComponent, {
             component: PrintTypeComponent,
           },
           {
+            name: "repeatChipPrint",
+            component: PrintTypeComponent,
+          },
+          {
             name: "tablePrint",
             component: PrintTypeComponent,
           },
@@ -372,19 +378,18 @@ bootstrapApplication(AppComponent, {
     ),
     provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
     // make sure we are authenticated by keycloak before bootstrap
-    {
-      provide: APP_INITIALIZER,
-      useFactory: ConfigLoader,
-      deps: [
-        ConfigService,
-        AuthenticationFactory,
-        Router,
-        HttpClient,
-        MatDialog,
-        TranslocoService,
-      ],
-      multi: true,
-    },
+    provideAppInitializer(() => {
+      const initializerFn = ConfigLoader(
+        inject(ConfigService),
+        inject(AuthenticationFactory),
+        inject(Router),
+        inject(HttpClient),
+        inject(MatDialog),
+        inject(TranslocoService),
+        inject(GeneralStore),
+      );
+      return initializerFn();
+    }),
     // set locale for dates
     {
       provide: LOCALE_ID,

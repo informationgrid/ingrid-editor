@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2021-2024 wemove digital solutions GmbH
+ * Copyright (C) 2021-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the

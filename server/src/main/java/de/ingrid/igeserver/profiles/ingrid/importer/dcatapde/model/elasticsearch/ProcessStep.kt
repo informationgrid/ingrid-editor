@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2022-2024 wemove digital solutions GmbH
+ * Copyright (C) 2022-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -47,18 +47,14 @@ class ProcessStep : Serializable {
         return identifier == that.identifier && passNumber == that.passNumber && processStepType == that.processStepType && temporal == that.temporal && title == that.title && distributions == that.distributions
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(identifier, passNumber, processStepType, temporal, title, distributions)
-    }
+    override fun hashCode(): Int = Objects.hash(identifier, passNumber, processStepType, temporal, title, distributions)
 
-    override fun toString(): String {
-        return "ProcessStep{" +
-            "identifier='" + identifier + '\'' +
-            ", passNumber='" + passNumber + '\'' +
-            ", processStepType=" + processStepType +
-            ", temporal=" + temporal +
-            ", title='" + title + '\'' +
-            ", distributions=" + distributions +
-            '}'
-    }
+    override fun toString(): String = "ProcessStep{" +
+        "identifier='" + identifier + '\'' +
+        ", passNumber='" + passNumber + '\'' +
+        ", processStepType=" + processStepType +
+        ", temporal=" + temporal +
+        ", title='" + title + '\'' +
+        ", distributions=" + distributions +
+        '}'
 }

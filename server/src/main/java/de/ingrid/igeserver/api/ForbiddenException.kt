@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -36,12 +36,8 @@ open class ForbiddenException : ClientException {
         /**
          * Factory method for an unauthorized user
          */
-        fun withUser(user: String, cause: Throwable? = null): ForbiddenException {
-            return ForbiddenException(STATUS_CODE, ERROR_CODE, "$ERROR_TEXT: $user", mapOf("user" to user), cause)
-        }
+        fun withUser(user: String, cause: Throwable? = null): ForbiddenException = ForbiddenException(STATUS_CODE, ERROR_CODE, "$ERROR_TEXT: $user", mapOf("user" to user), cause)
 
-        fun withAccessRights(message: String, cause: Throwable? = null): ForbiddenException {
-            return ForbiddenException(STATUS_CODE, ERROR_CODE, message, null, cause)
-        }
+        fun withAccessRights(message: String, cause: Throwable? = null): ForbiddenException = ForbiddenException(STATUS_CODE, ERROR_CODE, message, null, cause)
     }
 }

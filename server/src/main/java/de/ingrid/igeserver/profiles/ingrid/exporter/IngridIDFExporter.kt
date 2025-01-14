@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -34,7 +34,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -48,7 +48,7 @@ import kotlin.reflect.KClass
 @Service
 class IngridIDFExporter(
     val codelistHandler: CodelistHandler,
-    val config: Config,
+    val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
     @Lazy val documentService: DocumentService,
 ) : IgeExporter {
@@ -105,14 +105,15 @@ class IngridIDFExporter(
     private fun getModelTransformer(json: Document, catalogId: String, exportOptions: ExportOptions): Any {
         val isAddress = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
 
-        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId)
+        val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
+        val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
 
         val transformerClass = getModelTransformerClass(json.type)
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
         return if (isAddress) {
             transformerClass.constructors.first().call(
-                AddressTransformerConfig(catalogId, codelistTransformer, null, json, documentService, config, exportOptions.tags),
+                AddressTransformerConfig(catalogId, codelistTransformer, null, json, documentService, uploadConfig, exportOptions.tags),
             )
         } else {
             transformerClass.constructors.first().call(
@@ -120,7 +121,7 @@ class IngridIDFExporter(
                     getIngridModel(json, catalogId),
                     catalogId,
                     codelistTransformer,
-                    config,
+                    uploadConfig,
                     catalogService,
                     TransformerCache(),
                     json,

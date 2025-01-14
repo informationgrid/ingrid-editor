@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -25,7 +25,6 @@ import { FormDashboardComponent } from "../form-dashboard/form-dashboard.compone
   selector: "ige-form",
   templateUrl: "./form.component.html",
   styleUrls: ["./form.component.scss"],
-  standalone: true,
   imports: [DynamicFormComponent, FormDashboardComponent],
 })
 export class FormComponent {}

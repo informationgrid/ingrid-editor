@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -41,13 +41,13 @@ interface Extension {
      * Check if the extension is used in the given profile
      * @param profileId Name of the profile (null, if unspecified)
      */
-    fun usedInProfile(profileId: String?): Boolean {
-        return profiles != null && // not deactivated
-            (
-                // no profiles specified for extension -> match all given profiles
-                profiles!!.isEmpty() ||
-                    // profiles specified for extension -> match only specific profile
-                    profiles!!.isNotEmpty() && profileId in profiles!!
-                )
-    }
+    fun usedInProfile(profileId: String?): Boolean = profiles != null &&
+        // not deactivated
+        (
+            // no profiles specified for extension -> match all given profiles
+            profiles!!.isEmpty() ||
+                // profiles specified for extension -> match only specific profile
+                profiles!!.isNotEmpty() &&
+                profileId in profiles!!
+            )
 }

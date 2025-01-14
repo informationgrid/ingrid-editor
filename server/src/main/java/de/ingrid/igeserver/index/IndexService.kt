@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -105,11 +105,9 @@ class IndexService(
         }
     }
 
-    private fun getIndexConfigurations(): List<IndexConfig> =
-        catalogRepo.findAll().mapNotNull { getConfigFromDatabase(it) }
+    private fun getIndexConfigurations(): List<IndexConfig> = catalogRepo.findAll().mapNotNull { getConfigFromDatabase(it) }
 
-    private fun getConfigFromDatabase(catalog: Catalog): IndexConfig? =
-        catalog.settings.indexCronPattern?.let { IndexConfig(catalog.identifier, "IGNORE", it.trim()) }
+    private fun getConfigFromDatabase(catalog: Catalog): IndexConfig? = catalog.settings.indexCronPattern?.let { IndexConfig(catalog.identifier, "IGNORE", it.trim()) }
 
     fun getSinglePublishedDocument(
         queryInfo: QueryInfo,
@@ -150,8 +148,7 @@ class IndexService(
         return "($conditions)"
     }
 
-    fun getExporter(category: DocumentCategory, exportFormat: String): IgeExporter =
-        exportService.getExporter(category, exportFormat)
+    fun getExporter(category: DocumentCategory, exportFormat: String): IgeExporter = exportService.getExporter(category, exportFormat)
 
     fun updateCronConfig(catalogId: String, config: IndexCronOptions) {
         val catalog = catalogRepo.findByIdentifier(catalogId)
@@ -172,8 +169,7 @@ class IndexService(
             .run { catalogRepo.save(this) }
     }
 
-    fun getLastLog(catalogId: String): IndexMessage? =
-        catalogRepo.findByIdentifier(catalogId).settings.lastLogSummary
+    fun getLastLog(catalogId: String): IndexMessage? = catalogRepo.findByIdentifier(catalogId).settings.lastLogSummary
 
     fun requestPublishableDocuments(
         queryInfo: QueryInfo,

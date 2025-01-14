@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -37,8 +37,6 @@ import { RxStompService } from "../../rx-stomp.service";
 import { copyToClipboardFn } from "../../services/utils";
 
 import { IndexingExplanationComponent } from "./indexing-explanation/indexing-explanation.component";
-
-import { AsyncPipe } from "@angular/common";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 import { MatButton } from "@angular/material/button";
@@ -53,11 +51,9 @@ import { JobHandlerHeaderComponent } from "../../shared/job-handler-header/job-h
   selector: "ige-indexing",
   templateUrl: "./indexing.component.html",
   styleUrls: ["./indexing.component.scss"],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IndexingExplanationComponent,
-    AsyncPipe,
     MatFormFieldModule,
     ReactiveFormsModule,
     FormlyModule,

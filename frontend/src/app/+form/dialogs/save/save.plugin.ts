@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -28,7 +28,6 @@ import { DocEventsService } from "../../../services/event/doc-events.service";
 import { DOCUMENT } from "@angular/common";
 import { IgeError } from "../../../models/ige-error";
 import { PluginService } from "../../../services/plugin/plugin.service";
-import { GeneralStore } from "../../../store/general.store";
 
 @Injectable()
 export class SavePlugin extends SaveBase {
@@ -49,14 +48,6 @@ export class SavePlugin extends SaveBase {
     super();
     inject(PluginService).registerPlugin(this);
 
-    effect(() => {
-      if (!this.formRegistered) return;
-      console.log(this.forAddress());
-      console.log(
-        "save plugin",
-        this.generalStore.getOpenedDocument(this.forAddress()),
-      );
-    });
     effect(() => {
       if (!this.formRegistered) return;
       const doc = this.generalStore.getOpenedDocument(this.forAddress());

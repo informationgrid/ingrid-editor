@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -37,8 +37,6 @@ class ChildDatasetException(
         /**
          * Factory method for an arbitrary reason
          */
-        fun mustNotBePublished(uuids: List<String>): ChildDatasetException {
-            return ChildDatasetException(STATUS_CODE, ERROR_CODE, ERROR_TEXT, mapOf("uuids" to uuids))
-        }
+        fun mustNotBePublished(uuids: List<String>): ChildDatasetException = ChildDatasetException(STATUS_CODE, ERROR_CODE, ERROR_TEXT, mapOf("uuids" to uuids))
     }
 }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -59,30 +59,6 @@ export class UndoPlugin extends Plugin {
       this.docEvents.onEvent(this.eventUndoId).subscribe(() => this.undo()),
       this.docEvents.onEvent(this.eventRedoId).subscribe(() => this.redo()),
     ];
-
-    /*const afterLoadSubscription = this.docEvents
-      .afterLoadAndSet$(this.forAddress)
-      .subscribe((data) => {
-        // if (data) {
-        this.history = [];
-        this.redoHistory = [];
-        // this.actionTriggered = true;
-
-        this.formToolbarService.setButtonState("toolBtnUndo", false);
-
-        // add behaviour to set active states for toolbar buttons
-        // need to add behaviour after each load since form-object changes!
-
-        // FIXME: form is not available when opening a document, going to dashboard and back to form again
-        //        seems to be, because when clicking on form, the last opened document is being reloaded!?
-        this.addBehaviour();
-
-        this.subscriptions.push(
-          toolbarEventSubscription,
-          afterLoadSubscription
-        );
-        // }
-      });*/
     this.subscriptions.push(...toolbarEventSubscription);
   }
 
@@ -155,35 +131,4 @@ export class UndoPlugin extends Plugin {
     this.formToolbarService.removeButton("toolBtnUndo");
     this.formToolbarService.removeButton("toolBtnRedo");
   }
-
-  /**
-   * When a dataset is loaded or changed then notify the toolbar to enable/disable button state.
-   */
-  /*
-private addBehaviour() {
-      const formData = this.formService.requestFormValues();
-
-      this.form = formData.form;
-      this.formValueSubscription = this.form.valueChanges
-        .pipe(
-          debounceTime(500)
-        )
-        .subscribe((value) => {
-          console.log('The form value changed:', value);
-
-          // if we used the undo/redo button then ignore this event
-          if (this.actionTriggered) {
-            this.actionTriggered = false;
-            // return;
-          }
-
-          // only push if other field was changed, otherwise remove last change and push new value
-          // => so we only remember complete field changes instead of each character
-          this.history.push(value);
-          if (this.history.length > 1) {
-            this.formToolbarService.setButtonState('toolBtnUndo', true);
-          }
-        });
-}
-  */
 }

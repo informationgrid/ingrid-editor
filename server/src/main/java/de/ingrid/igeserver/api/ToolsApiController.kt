@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -28,12 +28,10 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(path = ["/api/tools"])
 class ToolsApiController : ToolsApi {
 
-    override fun validWkt(wkt: String): ResponseEntity<WktValidateResponse> {
-        return try {
-            convertWktToGml32(wkt)
-            ResponseEntity.ok(WktValidateResponse(true))
-        } catch (ex: Exception) {
-            ResponseEntity.ok(WktValidateResponse(false, ex.message))
-        }
+    override fun validWkt(wkt: String): ResponseEntity<WktValidateResponse> = try {
+        convertWktToGml32(wkt)
+        ResponseEntity.ok(WktValidateResponse(true))
+    } catch (ex: Exception) {
+        ResponseEntity.ok(WktValidateResponse(false, ex.message))
     }
 }

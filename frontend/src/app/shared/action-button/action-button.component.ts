@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -25,7 +25,6 @@ import { MatIcon } from "@angular/material/icon";
   selector: "ige-action-button",
   templateUrl: "./action-button.component.html",
   styleUrls: ["./action-button.component.scss"],
-  standalone: true,
   imports: [MatButton, MatIcon],
 })
 export class ActionButtonComponent implements OnInit {

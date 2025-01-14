@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -45,8 +45,10 @@ class InGridKrznComponent extends InGridComponent {
       this.dataCollection,
       this.informationSystem,
     ].forEach((docType) => {
-      docType.options.dynamicRequired.accessConstraints = undefined;
-      docType.options.required.accessConstraints = true;
+      docType.options.dynamicRequired.accessConstraints = () => true;
+      if (docType === this.informationSystem) {
+        docType.options.required.useConstraints = true;
+      }
     });
   }
 }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -51,29 +51,25 @@ class SNSGemetThesaurus : ThesaurusService() {
         return mapToKeywordList(json)
     }
 
-    private fun mapToKeywordList(json: ArrayNode): List<Keyword> {
-        return json.map {
-            // get alternate English name
-            val englishResponse = sendRequest(
-                "GET",
-                "$searchUrlTemplate/getConcept?concept_uri=${it.getStringOrEmpty("uri")}&language=en",
-            )
-            val englishNode = jacksonObjectMapper().readValue<ObjectNode>(englishResponse)
-            Keyword(
-                it.getStringOrEmpty("uri"),
-                it.getStringOrEmpty("preferredLabel.string"),
-                englishNode.getString("preferredLabel.string"),
-            )
-        }
+    private fun mapToKeywordList(json: ArrayNode): List<Keyword> = json.map {
+        // get alternate English name
+        val englishResponse = sendRequest(
+            "GET",
+            "$searchUrlTemplate/getConcept?concept_uri=${it.getStringOrEmpty("uri")}&language=en",
+        )
+        val englishNode = jacksonObjectMapper().readValue<ObjectNode>(englishResponse)
+        Keyword(
+            it.getStringOrEmpty("uri"),
+            it.getStringOrEmpty("preferredLabel.string"),
+            englishNode.getString("preferredLabel.string"),
+        )
     }
 
-    private fun convertSearchMode(searchType: ThesaurusSearchType): Int {
-        return when (searchType) {
-            ThesaurusSearchType.EXACT -> 0
-            ThesaurusSearchType.BEGINS_WITH -> 1
-            ThesaurusSearchType.ENDS_WITH -> 2
-            ThesaurusSearchType.CONTAINS -> 3
-        }
+    private fun convertSearchMode(searchType: ThesaurusSearchType): Int = when (searchType) {
+        ThesaurusSearchType.EXACT -> 0
+        ThesaurusSearchType.BEGINS_WITH -> 1
+        ThesaurusSearchType.ENDS_WITH -> 2
+        ThesaurusSearchType.CONTAINS -> 3
     }
 }
 
@@ -83,7 +79,5 @@ enum class ConceptType(private val value: String) {
     SOUPERGROUP("http://www.eionet.europa.eu/gemet/supergroup/"),
     ;
 
-    override fun toString(): String {
-        return value
-    }
+    override fun toString(): String = value
 }

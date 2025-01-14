@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,13 +21,13 @@ import { effect, inject, Injectable } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
-import { of } from "rxjs";
+import { Observable, of } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
-import { catchError, filter, tap } from "rxjs/operators";
+import { catchError, filter, map, take, tap } from "rxjs/operators";
 import { SaveBase } from "./save.base";
 import { DelayedPublishDialogComponent } from "./delayed-publish-dialog/delayed-publish-dialog.component";
 import {
@@ -38,7 +38,6 @@ import { IgeError } from "../../../models/ige-error";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { TranslocoService } from "@ngneat/transloco";
 import { ProfileService } from "../../../services/profile.service";
-import { GeneralStore } from "../../../store/general.store";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
@@ -165,17 +164,28 @@ export class PublishPlugin extends SaveBase {
     });
   }
 
-  private validateBeforePublish() {
+  private validateBeforePublish(): Observable<boolean> {
     this.messageService.clearMessages$.next();
 
     this.documentService.publishState$.next(true);
 
     const validation: BeforePublishData = { errors: [] };
     this.docEvents.sendBeforePublish(validation);
+    if (this.formStateService.getForm().status !== "PENDING") {
+      return of(this.doValidation(validation));
+    } else {
+      // wait for async validators
+      return this.formStateService.getForm().statusChanges.pipe(
+        filter((state) => state !== "PENDING"),
+        take(1),
+        map(() => this.doValidation(validation)),
+      );
+    }
+  }
+
+  private doValidation(validation: BeforePublishData) {
     const formIsInvalid = this.formStateService.getForm().invalid;
-
     const allParentsPublished = this.checkForAllParentsPublished();
-
     const hasOtherErrors = validation.errors.length > 0;
 
     if (!allParentsPublished) {
@@ -183,26 +193,32 @@ export class PublishPlugin extends SaveBase {
         "Es müssen alle übergeordnete Datensätze veröffentlicht sein, bevor dieser ebenfalls veröffentlicht werden kann.",
       );
       return false;
-    } else {
-      if (formIsInvalid || hasOtherErrors) {
-        if (hasOtherErrors) console.warn("Other errors:", validation.errors);
-        console.warn(this.formStateService.getForm());
-        const validationErrors = this.extractFormValidationErrors(
-          this.formStateService.getForm().controls,
-        );
-        const error = new IgeError(
-          `Es müssen alle Felder korrekt ausgefüllt werden.
-          <ul>
-            <li>STRG + ALT + R zum vorherigen Fehler</li>
-            <li>STRG + ALT + W zum nächsten Fehler</li>
-          </ul>`,
-        );
-        if (validationErrors.length > 0) error.items = validationErrors;
-        this.modalService.showIgeError(error);
-        return false;
-      }
-      return true;
     }
+    if (formIsInvalid || hasOtherErrors) {
+      this.showErrorDialog(hasOtherErrors, validation);
+      return false;
+    }
+    return true;
+  }
+
+  private showErrorDialog(
+    hasOtherErrors: boolean,
+    validation: BeforePublishData,
+  ) {
+    if (hasOtherErrors) console.warn("Other errors:", validation.errors);
+    console.warn(this.formStateService.getForm());
+    const validationErrors = this.extractFormValidationErrors(
+      this.formStateService.getForm().controls,
+    );
+    const error = new IgeError(
+      `Es müssen alle Felder korrekt ausgefüllt werden.
+              <ul>
+                <li>STRG + ALT + R zum vorherigen Fehler</li>
+                <li>STRG + ALT + W zum nächsten Fehler</li>
+              </ul>`,
+    );
+    if (validationErrors.length > 0) error.items = validationErrors;
+    this.modalService.showIgeError(error);
   }
 
   publish() {
@@ -388,29 +404,30 @@ export class PublishPlugin extends SaveBase {
   }
 
   private validateDataset() {
-    const isValid = this.validateBeforePublish();
-    this.documentService
-      .validateDocument(this.getMetadata().wrapperId)
-      .pipe(
-        catchError((e) => {
-          const error = this.prepareValidationError(e);
-          error.unhandledException = false;
-          this.modalService.showIgeError(error);
-          return of(error);
-        }),
-      )
-      .subscribe((result) => {
-        console.debug("backendValidation: ", result);
-        if (!isValid || result instanceof IgeError) return;
+    this.validateBeforePublish().subscribe((isValid) => {
+      this.documentService
+        .validateDocument(this.getMetadata().wrapperId)
+        .pipe(
+          catchError((e) => {
+            const error = this.prepareValidationError(e);
+            error.unhandledException = false;
+            this.modalService.showIgeError(error);
+            return of(error);
+          }),
+        )
+        .subscribe((result) => {
+          console.debug("backendValidation: ", result);
+          if (!isValid || result instanceof IgeError) return;
 
-        this.modalService.confirmWith({
-          title: "Prüfung",
-          message: "Der Datensatz wurde erfolgreich geprüft.",
-          hideCancelButton: true,
+          this.modalService.confirmWith({
+            title: "Prüfung",
+            message: "Der Datensatz wurde erfolgreich geprüft.",
+            hideCancelButton: true,
+          });
+          this.documentService.publishState$.next(false);
         });
-        this.documentService.publishState$.next(false);
-      });
-    console.debug("isValid: ", isValid);
+      console.debug("isValid: ", isValid);
+    });
   }
 
   private extractFormValidationErrors(controls): string[] {
@@ -443,16 +460,18 @@ export class PublishPlugin extends SaveBase {
   }
 
   private async validateAndPublish(planned: boolean = false) {
-    if (!this.validateBeforePublish()) return;
+    this.validateBeforePublish().subscribe(async (isValid) => {
+      if (!isValid) return;
 
-    const profileCheck = await this.profileService.additionalPublicationCheck(
-      this.formStateService.getForm().getRawValue(),
-      this.formStateService.metadata(),
-      this.forAddress(),
-    );
-    if (!profileCheck) return;
+      const profileCheck = await this.profileService.additionalPublicationCheck(
+        this.formStateService.getForm().getRawValue(),
+        this.formStateService.metadata(),
+        this.forAddress(),
+      );
+      if (!profileCheck) return;
 
-    if (planned) this.showPlanPublishingDialog();
-    else this.publish();
+      if (planned) this.showPlanPublishingDialog();
+      else this.publish();
+    });
   }
 }

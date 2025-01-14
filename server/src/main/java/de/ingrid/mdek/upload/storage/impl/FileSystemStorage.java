@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2014-2024 wemove digital solutions GmbH
+ * Copyright (C) 2014-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -490,8 +490,6 @@ public class FileSystemStorage implements Storage {
         final Path dir = this.getExtractPath(realPath);
 
         final List<StorageItem> storageItems = new ArrayList<>();
-
-
 
         final int bufferSize = 1024;
         // NOTE: UTF8 encoded ZIP file entries can be interpreted when the constructor is provided

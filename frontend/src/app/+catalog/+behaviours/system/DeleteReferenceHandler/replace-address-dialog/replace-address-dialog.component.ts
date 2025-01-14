@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -51,7 +51,6 @@ export interface ReplaceAddressDialogData {
   selector: "ige-replace-address-dialog",
   templateUrl: "./replace-address-dialog.component.html",
   styleUrls: ["./replace-address-dialog.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     CdkDrag,
@@ -60,7 +59,6 @@ export interface ReplaceAddressDialogData {
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     MatTabGroup,
     MatTab,

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -30,14 +30,16 @@ class InGridSpecialisedTaskHmdkSchema : AnnotationSpec() {
     @Test
     fun minimal() {
         val json = SchemaUtils.getJsonFileContent("/export/ingrid/specialized-task.minimal.json").replaceFirst(
+            "\"properties\": {",
+            """"properties": {"publicationHmbTG": true, """,
+        ).replaceFirst(
             "{",
-            """ { "publicationHmbTG": true, "informationHmbTG": [{"key": "1"}], "isOpenData": true, "openDataCategories": [], """,
+            """{ "informationHmbTG": [{"key": "1"}], "isOpenData": true, "openDataCategories": [], """,
         )
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
 
     @Test
-    fun negativeTest() =
-        SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/ingrid/specialized-task.minimal.json")
+    fun negativeTest() = SchemaUtils.createNegativeTestByAddingInvalidField(schema, "/export/ingrid/specialized-task.minimal.json")
 }

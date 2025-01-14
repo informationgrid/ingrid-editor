@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -82,24 +82,20 @@ val sqlNegativeDecisionDocsWithDraft = """
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
 """.trimIndent()
 
-fun getUrlsFromJsonField(json: JsonNode): List<UploadInfo> {
-    return (
-        getUrlsFromJsonFieldTable(json, "applicationDocs") +
-            getUrlsFromJsonFieldTable(json, "announcementDocs") +
-            getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs") +
-            getUrlsFromJsonFieldTable(json, "furtherDocs") +
-            getUrlsFromJsonFieldTable(json, "considerationDocs") +
-            getUrlsFromJsonFieldTable(json, "approvalDocs") +
-            getUrlsFromJsonFieldTable(json, "decisionDocs")
-        )
-}
+fun getUrlsFromJsonField(json: JsonNode): List<UploadInfo> = (
+    getUrlsFromJsonFieldTable(json, "applicationDocs") +
+        getUrlsFromJsonFieldTable(json, "announcementDocs") +
+        getUrlsFromJsonFieldTable(json, "reportsRecommendationDocs") +
+        getUrlsFromJsonFieldTable(json, "furtherDocs") +
+        getUrlsFromJsonFieldTable(json, "considerationDocs") +
+        getUrlsFromJsonFieldTable(json, "approvalDocs") +
+        getUrlsFromJsonFieldTable(json, "decisionDocs")
+    )
 
-fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadInfo> {
-    return json.get(tableField)
-        ?.filter { !it.get("downloadURL").get("asLink").asBoolean() }
-        ?.map { mapToUploadInfo(it) }
-        ?: emptyList()
-}
+fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadInfo> = json.get(tableField)
+    ?.filter { !it.get("downloadURL").get("asLink").asBoolean() }
+    ?.map { mapToUploadInfo(it) }
+    ?: emptyList()
 
 private fun mapToUploadInfo(it: JsonNode): UploadInfo {
     val validUntilDateField = it.get("validUntil")

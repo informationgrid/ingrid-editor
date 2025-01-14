@@ -1,9 +1,9 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 .mat-mdc-dialog-content {
   resize: both;
   padding-top: 0;
-  color: $ige-text-color;
+  color: vars.$ige-text-color;
   white-space: normal !important;
   min-width: 250px;
 }
@@ -17,7 +17,7 @@
   cursor: move;
 
   h1 {
-    color: $ige-primary;
+    color: vars.$ige-primary;
     margin: unset;
     padding: unset;
     font-size: 16px;

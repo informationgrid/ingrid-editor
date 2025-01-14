@@ -45,6 +45,14 @@
                                 <button
                                     mat-menu-item
                                     (click)="
+                                        editButton.focus(); editQuery(query.id)
+                                    "
+                                >
+                                    Bearbeiten
+                                </button>
+                                <button
+                                    mat-menu-item
+                                    (click)="
                                         editButton.focus();
                                         removeQuery(query.id)
                                     "

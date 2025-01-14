@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -36,19 +36,13 @@ open class IndexException : ServerException {
         /**
          * Factory method for missing configuration value
          */
-        fun wasCancelled(): IndexException {
-            return IndexException(STATUS_CODE, ERROR_CODE_CANCEL, "Indexing was cancelled")
-        }
+        fun wasCancelled(): IndexException = IndexException(STATUS_CODE, ERROR_CODE_CANCEL, "Indexing was cancelled")
 
         /**
          * Factory method for an arbitrary reason
          */
-        fun withReason(reason: String, cause: Throwable? = null): IndexException {
-            return IndexException(STATUS_CODE, ERROR_CODE, reason, null, cause)
-        }
+        fun withReason(reason: String, cause: Throwable? = null): IndexException = IndexException(STATUS_CODE, ERROR_CODE, reason, null, cause)
 
-        fun folderWithNoPublishedDocs(uuid: String): IndexException {
-            return IndexException(STATUS_CODE, ERROR_CODE_FOLDER_WITH_NO_CHILDREN, uuid)
-        }
+        fun folderWithNoPublishedDocs(uuid: String): IndexException = IndexException(STATUS_CODE, ERROR_CODE_FOLDER_WITH_NO_CHILDREN, uuid)
     }
 }

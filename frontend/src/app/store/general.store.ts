@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
 import { Query } from "./query/query.model";
 import { DocumentAbstract } from "./document/document.model";
@@ -37,6 +56,7 @@ type GeneralState = {
   latestPublishedDocuments: DocumentAbstract[];
   oldestExpiredDocuments: DocumentAbstract[];
   sessionTimeoutIn: number;
+  catalogLanguage: string;
 };
 
 const initialState: GeneralState = {
@@ -67,6 +87,7 @@ const initialState: GeneralState = {
   latestPublishedDocuments: [],
   oldestExpiredDocuments: [],
   sessionTimeoutIn: -1,
+  catalogLanguage: "de",
 };
 
 export const GeneralStore = signalStore(
@@ -160,6 +181,9 @@ export const GeneralStore = signalStore(
     },
     setSessionTimeout(value: number): void {
       patchState(store, { sessionTimeoutIn: value });
+    },
+    setCatalogLanguage(value: string): void {
+      patchState(store, { catalogLanguage: value });
     },
   })),
 );

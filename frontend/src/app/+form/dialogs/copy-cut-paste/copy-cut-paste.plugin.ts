@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -30,7 +30,7 @@ import {
 } from "./paste-dialog.component";
 import { Observable } from "rxjs";
 import { MatDialog } from "@angular/material/dialog";
-import { delay, filter, switchMap, tap } from "rxjs/operators";
+import { delay, filter, map, switchMap, tap } from "rxjs/operators";
 import { ConfigService } from "../../../services/config/config.service";
 import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
@@ -41,6 +41,7 @@ import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { waitForCondition } from "../../../services/utils";
 
 @Injectable()
 export class CopyCutPastePlugin extends Plugin {
@@ -139,51 +140,32 @@ export class CopyCutPastePlugin extends Plugin {
         docs.every((active) => active?.hasWritePermission),
       );
 
-      const parentWithChildrenSelected =
-        await this.checkForParentsWithSelectedChildren(ids);
-      this.toolbarService.setMenuItemStateOfButton(
-        "toolBtnCopy",
-        "COPYTREE",
-        parentWithChildrenSelected,
+      this.checkForParentsWithSelectedChildren(ids).subscribe(
+        (parentWithChildrenSelected) => {
+          this.toolbarService.setMenuItemStateOfButton(
+            "toolBtnCopy",
+            "COPYTREE",
+            parentWithChildrenSelected,
+          );
+        },
       );
     }
   }
 
-  private async checkForParentsWithSelectedChildren(
+  private checkForParentsWithSelectedChildren(
     data: number[],
-  ): Promise<boolean> {
-    return new Promise((resolve) => {
-      return this.checkForParentsWithSelectedChildrenLoop(data, resolve);
-    });
+  ): Observable<boolean> {
+    return waitForCondition(this.treeNodesLoaded(data), 200).pipe(
+      map(() => this.atLeastOneWithChildren(data)),
+    );
   }
 
-  private checkForParentsWithSelectedChildrenLoop(
-    data: number[],
-    resolve,
-    tries = 10,
-  ) {
-    const allNodesLoaded = data.every((id) => this.getStore().entityMap()[id]);
-    if (allNodesLoaded) {
-      resolve(data.some((id) => this.getStore().entityMap()[id]._hasChildren));
-    } else {
-      if (tries === 0) {
-        console.warn("Node information could not be received from store");
-        resolve(false);
-      } else {
-        console.debug(
-          "Tree does not have node information yet. Waiting 200ms ...",
-        );
-        setTimeout(
-          () =>
-            this.checkForParentsWithSelectedChildrenLoop(
-              data,
-              resolve,
-              --tries,
-            ),
-          200,
-        );
-      }
-    }
+  private atLeastOneWithChildren(data: number[]) {
+    return data.some((id) => this.getStore().entityMap()[id]?._hasChildren);
+  }
+
+  private treeNodesLoaded(data: number[]) {
+    return () => data.every((id) => this.getStore().entityMap()[id]);
   }
 
   async copy(includeTree = false) {

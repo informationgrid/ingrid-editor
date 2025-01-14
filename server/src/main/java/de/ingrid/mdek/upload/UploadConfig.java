@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2014-2024 wemove digital solutions GmbH
+ * Copyright (C) 2014-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -34,40 +34,10 @@ import java.util.Map;
 
 @Configuration
 @ConfigurationProperties("upload")
-public class Config {
+public class UploadConfig {
 
     @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(Config.class);
-
-    /**
-     * MAIL
-     */
-    @Value("${system.mail.receiver:}")
-    public String systemMailReceiver;
-
-    @Value("${workflow.mail.sender:}")
-    public String workflowMailSender;
-
-    @Value("${workflow.mail.receiver:}")
-    public String workflowMailReceiver;
-
-    @Value("${workflow.mail.smtp:}")
-    public String workflowMailSmtpHost;
-
-    @Value("${workflow.mail.smtp.user:}")
-    public String workflowMailSmtpUser;
-
-    @Value("${workflow.mail.smtp.password:}")
-    public String workflowMailSmtpPassword;
-
-    @Value("${workflow.mail.smtp.port:}")
-    public String workflowMailSmtpPort;
-
-    @Value("${workflow.mail.smtp.ssl:false}")
-    public boolean workflowMailSmtpSSL;
-
-    @Value("${workflow.mail.smtp.protocol:smtp}")
-    public String workflowMailSmtpProtocol;
+    private static final Log log = LogFactory.getLog(UploadConfig.class);
 
     /**
      * UPLOAD

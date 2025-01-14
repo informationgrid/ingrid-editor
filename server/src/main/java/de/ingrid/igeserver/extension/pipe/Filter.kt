@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -32,7 +32,9 @@ import de.ingrid.igeserver.extension.Extension
  * This allows filters to reject further processing of the payload but also implies that
  * non-fatal exceptions should be handled by the filter itself.
  */
-interface Filter<T : Payload> : Extension, (T, Context) -> T {
+interface Filter<T : Payload> :
+    Extension,
+    (T, Context) -> T {
 
     override val id: String
         get() = this::class.qualifiedName ?: this::class.toString()

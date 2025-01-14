@@ -133,10 +133,19 @@
         "descriptions": {
           "type": "array",
           "items": {
-            "$ref": "../../general.schema.json#/definitions/KeyValue"
+            "_type": "string",
+            "uuidRef": ["null", "string"],
+            "url": ["null", "string"],
+            "identifier": ["null", "string"],
+            "date": {
+              "type": ["null", "string"],
+              "format": "date-time"
+            },
+            "dateType": {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            }
           }
         }
-      }
     },
     "featureDescription": {
       "properties": {
@@ -159,13 +168,10 @@
           }
         }
       }
-    }
-  },
-  "type": "object",
-  "properties": {
-    "properties": {
+      }
+    },
+    "propertiesGeoDataset": {
       "type": "object",
-      "unevaluatedProperties": false,
       "properties": {
         "isAdVCompatible": {
           "type": ["null", "boolean"]
@@ -198,6 +204,12 @@
           }
         }
       }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "properties": {
+      "$ref": "#/definitions/propertiesGeoDataset"
     },
     "identifier": {
       "type": "string"

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { map } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { Observable } from "rxjs";
@@ -64,16 +64,18 @@ export class ConsolidateKeywordsPlugin extends Plugin {
     super();
     this.isPrivileged =
       configService.hasCatAdminRights() || configService.hasMdAdminRights();
+
+    effect(() => {
+      this.handleMenuItem(
+        this.generalStore.getOpenedDocument(this.forAddress()),
+      );
+    });
   }
 
   registerForm() {
     super.registerForm();
     // only add menu item in form if user is privileged and not for address
-    if (this.isPrivileged && !this.forAddress) {
-      /*      const onDocLoad = this.treeStore.openedDocument$.subscribe((doc) =>
-        this.handleMenuItem(doc),
-      );*/
-
+    if (this.isPrivileged && !this.forAddress()) {
       const onEvent = this.docEvents
         .onEvent("OPEN_CONSOLIDATE_KEYWORDS_DIALOG")
         .subscribe(async () => this.openConsolidateKeywordsDialog());

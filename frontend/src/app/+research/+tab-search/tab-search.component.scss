@@ -1,11 +1,11 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   overflow: auto;
 }
 
 .prefix {
-  color: $ige-placeholder-color;
+  color: vars.$ige-placeholder-color;
   white-space: nowrap;
   padding-right: 8px;
 }

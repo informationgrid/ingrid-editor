@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -83,7 +83,7 @@ export class DocumentService {
   reload$ = new Subject<ReloadData>();
 
   private configuration: Configuration;
-  private alternateAddressTitle: (IgeDocument) => string = null;
+  private alternateAddressTitle: (doc: IgeDocument) => string = null;
 
   constructor(
     private http: HttpClient,
@@ -187,7 +187,7 @@ export class DocumentService {
       ignoreFolders: "exceptFolders",
       selectConditions: "document1.state = 'PUBLISHED'" + currentUser,
     };
-    combineLatest(
+    combineLatest([
       this.catalogService.getExpiryDuration(),
       this.researchService.search(
         "",
@@ -217,7 +217,7 @@ export class DocumentService {
         },
         ["selectConditions"],
       ),
-    )
+    ])
       .pipe(
         map(([days, docs, addresses]) => {
           if (days == 0) return [];
@@ -386,7 +386,7 @@ export class DocumentService {
   }
 
   private trimObjectAndRemoveEvilTags(obj: IgeDocument): IgeDocument {
-    const trimmed = JSON.stringify(obj, (key, value) => {
+    const trimmed = JSON.stringify(obj, (_key, value) => {
       return typeof value === "string"
         ? this.removeEvilTags(value.trim())
         : value;
@@ -574,7 +574,7 @@ export class DocumentService {
     );
   }
 
-  private handleDeleteError(error): Observable<any> {
+  private handleDeleteError(error: any): Observable<any> {
     const errorCode = error?.error?.errorCode;
 
     const handled = this.docEvents.sendOnError(errorCode);
@@ -588,7 +588,7 @@ export class DocumentService {
     throw error;
   }
 
-  private handleUnpublishError(error, id): Observable<any> {
+  private handleUnpublishError(error: any, id: number): Observable<any> {
     const errorCode = error?.error?.errorCode;
     switch (errorCode) {
       case "IS_REFERENCED_ERROR":
@@ -605,7 +605,7 @@ export class DocumentService {
     throw error;
   }
 
-  private handleIsReferencedError(error) {
+  private handleIsReferencedError(error: any) {
     console.error(error?.error?.errorText);
   }
 
@@ -669,14 +669,13 @@ export class DocumentService {
    * @param dest is the document, where the other docs to be copied will have as their parent
    * @param includeTree if set to tree then the whole tree is being copied instead of just the selected document
    * @param isAddress
-   * @returns {Observable<Response>}
    */
   copy(
     srcIDs: number[],
     dest: number,
     includeTree: boolean,
     isAddress: boolean,
-  ) {
+  ): Observable<DocumentWithMetadata[]> {
     return this.dataService.copy(srcIDs, dest, includeTree).pipe(
       tap((docs) => {
         this.messageService.sendInfo("Datensatz wurde kopiert");

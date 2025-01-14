@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 .result-table-header {
   height: 49px;
@@ -15,7 +15,7 @@
     font-weight: 400;
     letter-spacing: 0.4px;
     line-height: 49px;
-    color: $ige-primary;
+    color: vars.$ige-primary;
 
     margin: auto;
     width: 50%;
@@ -35,7 +35,7 @@
     margin-left: 8px;
 
     circle {
-      stroke: $ige-primary;
+      stroke: vars.$ige-primary;
     }
   }
 

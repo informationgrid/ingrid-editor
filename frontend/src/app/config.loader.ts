@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -76,6 +76,7 @@ export function ConfigLoader(
   http: HttpClient,
   dialog: MatDialog,
   translocoService: TranslocoService,
+  generalStore: any,
 ) {
   function getRedirectNavigationCommand(catalogId: string, urlPath: string) {
     const splittedUrl = urlPath.split(";");
@@ -125,7 +126,12 @@ export function ConfigLoader(
               rootPath,
             null,
           ),
-        ).then(() => configService.getCurrentUserInfo());
+        )
+          .then(() => configService.getCurrentUserInfo())
+          .then((info) => {
+            const language = info.currentCatalog.settings?.config.language;
+            if (language) generalStore.setCatalogLanguage(language);
+          });
         return;
       }
 
@@ -153,6 +159,9 @@ export function ConfigLoader(
     try {
       await configService.load();
       await initializeKeycloakAndGetUserInfo(authFactory, configService);
+      const language =
+        configService.$userInfo.value.currentCatalog.settings?.config.language;
+      if (language) generalStore.setCatalogLanguage(language);
       await firstValueFrom(translocoService.load("de"));
       await redirectToCatalogSpecificRoute(router, dialog);
       await loadProfile.call(this, configService);

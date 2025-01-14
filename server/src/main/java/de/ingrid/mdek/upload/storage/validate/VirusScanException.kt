@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -25,8 +25,7 @@ import de.ingrid.mdek.upload.ValidationException
  * when an error -that do not throw an exception- is found during a scan
  * record all logs output of the scan
  */
-open class VirusScanException(message: String, file: String, scanReport: String) :
-    ValidationException(message, file, STATUS_CODE) {
+open class VirusScanException(message: String, file: String, scanReport: String) : ValidationException(message, file, STATUS_CODE) {
     init {
         data[SCAN_EXCEPTION_KEY] = scanReport
     }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -456,7 +456,7 @@ class OgcRecordService(
     }
 
     fun prepareRecords(records: ResearchResponse, collectionId: String, format: RecordFormat, links: List<Link>, queryMetadata: QueryMetadata): ByteArray {
-        val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record._uuid!!, collectionId, format) }
+        val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record.uuid!!, collectionId, format) }
         val unwrappedRecords = removeDefaultWrapper(format, recordList)
         return addWrapperToRecords(unwrappedRecords, format, links, false, queryMetadata)
     }

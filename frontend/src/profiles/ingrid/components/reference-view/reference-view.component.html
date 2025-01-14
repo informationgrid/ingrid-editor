@@ -1,0 +1,20 @@
+<div class="type">
+    {{ (item().type?.key | codelist: "2000" | async) ?? item().type?.value }}
+</div>
+
+@if (urlItem()) {
+    <div class="title">{{ item().title }}</div>
+    <a class="url no-text-transform" [href]="urlItem().url" target="_blank">{{
+        urlItem().url
+    }}</a>
+} @else {
+    <a class="url no-text-transform" (click)="navigate(internalItem())">{{
+        internalItem().title
+    }}</a>
+}
+
+@if (item().explanation) {
+    <div class="explanation">
+        {{ item().explanation }}
+    </div>
+}

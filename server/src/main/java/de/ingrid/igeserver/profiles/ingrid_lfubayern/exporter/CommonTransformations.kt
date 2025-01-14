@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -101,20 +101,16 @@ fun lfubGetDescriptiveKeywords(
     }
 }
 
-fun getLfuBayernTransformer(docType: String): KClass<out Any>? {
-    return when (docType) {
-        "InGridGeoDataset" -> GeodatasetTransformerLfub::class
-        "InGridGeoService" -> GeoserviceTransformerLfub::class
-        "InGridInformationSystem" -> InformationSystemTransformerLfub::class
-        else -> null
-    }
+fun getLfuBayernTransformer(docType: String): KClass<out Any>? = when (docType) {
+    "InGridGeoDataset" -> GeodatasetTransformerLfub::class
+    "InGridGeoService" -> GeoserviceTransformerLfub::class
+    "InGridInformationSystem" -> InformationSystemTransformerLfub::class
+    else -> null
 }
 
-fun getLfuBayernExternalTransformer(docType: String): KClass<out Any>? {
-    return when (docType) {
-        "InGridGeoDataset" -> GeodatasetTransformerExternalLfub::class
-        "InGridGeoService" -> GeoserviceTransformerExternalLfub::class
-        "InGridInformationSystem" -> InformationSystemTransformerExternalLfub::class
-        else -> null
-    }
+fun getLfuBayernExternalTransformer(docType: String): KClass<out Any>? = when (docType) {
+    "InGridGeoDataset" -> GeodatasetTransformerExternalLfub::class
+    "InGridGeoService" -> GeoserviceTransformerExternalLfub::class
+    "InGridInformationSystem" -> InformationSystemTransformerExternalLfub::class
+    else -> null
 }

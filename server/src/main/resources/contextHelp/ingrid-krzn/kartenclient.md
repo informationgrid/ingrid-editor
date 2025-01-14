@@ -5,9 +5,9 @@ docType:
   - InGridGeoDataset
 
 # title, used as window title
-title: Alternativer Karten Client
+title: Kartenclient
 ---
 
-URL Pattern eines alternativen Karten Clients. Die Zeichenfolge {ID} wird durch die ID des Metadatensatzes ersetzt.
+URL Pattern eines Kartenclients. Die Zeichenfolge {ID} wird durch die ID des Metadatensatzes ersetzt.
 
 Bsp: https://geoportal-hamburg.de/geo-online/?mdid={ID}
