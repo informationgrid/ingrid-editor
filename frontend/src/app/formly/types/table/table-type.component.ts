@@ -36,10 +36,14 @@ import {
 import { SelectionModel } from "@angular/cdk/collections";
 import {
   MatCell,
+  MatCellDef,
   MatColumnDef,
   MatHeaderCell,
+  MatHeaderCellDef,
   MatHeaderRow,
+  MatHeaderRowDef,
   MatRow,
+  MatRowDef,
   MatTable,
   MatTableDataSource,
 } from "@angular/material/table";
@@ -117,6 +121,10 @@ export interface TableProps {
     MatHeaderRow,
     MatRow,
     AddButtonComponent,
+    MatHeaderCellDef,
+    MatCellDef,
+    MatHeaderRowDef,
+    MatRowDef,
   ],
 })
 export class TableTypeComponent
