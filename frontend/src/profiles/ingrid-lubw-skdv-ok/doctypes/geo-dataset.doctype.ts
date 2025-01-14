@@ -16,6 +16,14 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
         codelistId: "30000",
         options: this.getCodelistForSelect("30000", "dataManagement"),
       }),
+    ]);
+
+    const positionAccessConstraints = this.findFieldElementWithId(
+      fieldConfig,
+      "accessConstraints",
+    );
+    this.addAfter(
+      positionAccessConstraints,
       this.addInput(
         "protectDataAccessControl",
         "Sperrung und Löschung in Hinblick auf den Schutz personenbezogener Daten",
@@ -23,7 +31,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
           wrappers: ["panel", "form-field"],
         },
       ),
-    ]);
+    );
 
     const positionFachbezug = this.findFieldElementWithId(
       fieldConfig,
@@ -77,6 +85,14 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
               formatter: (item: any) =>
                 // this.formatCodelistValue("30004", item),
                 item.key,
+            },
+          },
+        ],
+        batchActions: [
+          {
+            label: "Ändern",
+            click: (item) => {
+              console.log("Action!", item);
             },
           },
         ],
