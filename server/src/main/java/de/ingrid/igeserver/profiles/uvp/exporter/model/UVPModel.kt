@@ -221,7 +221,7 @@ data class UVPModel(
 
     fun hasPoBox(): Boolean = !pointOfContact?.poBox.isNullOrEmpty()
 
-    fun getUvpAddressParents(): List<DocumentData> = if (pointOfContact!!.parentAddresses.isEmpty()) emptyList() else nonHiddenAncestorAddresses!!.dropLast(1)
+    fun getUvpAddressParents(): List<DocumentData> = if (pointOfContact!!.parentAddresses.isEmpty()) emptyList() else nonHiddenAncestorAddresses!!.dropLast(1).reversed()
 
     fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> = if (pointOfContact == null) emptyList() else nonHiddenAncestorAddresses!!.map { getAddressShort(it.document) }
 
