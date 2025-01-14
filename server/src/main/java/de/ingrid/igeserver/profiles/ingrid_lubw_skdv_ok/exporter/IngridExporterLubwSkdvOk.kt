@@ -31,7 +31,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -60,7 +60,7 @@ class IngridExporterLubwSkdvOk(
 @Service
 class IngridIdfExporterLubwSkdvOk(
     codelistHandler: CodelistHandler,
-    config: Config,
+    config: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
