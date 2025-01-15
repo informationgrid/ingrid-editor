@@ -155,7 +155,7 @@ dependencies {
     implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.24.0"
     implementation "org.commonmark:commonmark-ext-gfm-tables:0.24.0"
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3'
 
     // PostgreSQL
     implementation 'org.postgresql:postgresql:42.7.4'
