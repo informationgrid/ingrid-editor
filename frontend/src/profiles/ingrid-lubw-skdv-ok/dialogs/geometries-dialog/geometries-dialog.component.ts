@@ -1,4 +1,4 @@
-import { Component, Inject, inject } from "@angular/core";
+import { Component, Inject, inject, signal } from "@angular/core";
 import { DialogTemplateComponent } from "../../../../app/shared/dialog-template/dialog-template.component";
 import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
@@ -18,7 +18,7 @@ export class GeometriesDialogComponent {
   private codelistService = inject(CodelistService);
 
   form: FormGroup = new FormGroup<any>({});
-  disabled: boolean;
+  disabled = signal<boolean>(false);
 
   fields: FormlyFieldConfig[] = geometriesFields(
     this.codelistService.observe("30002"),
@@ -29,7 +29,11 @@ export class GeometriesDialogComponent {
   constructor(
     private dlgRef: MatDialogRef<any>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {}
+  ) {
+    this.form.statusChanges.subscribe((status) => {
+      this.disabled.set(status !== "VALID");
+    });
+  }
 
   submit() {
     this.dlgRef.close(this.form.value);

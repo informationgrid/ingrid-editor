@@ -29,7 +29,6 @@ export function geometriesFields(
   const fieldHelper = new FormFieldHelper();
   return [
     fieldHelper.addInput("number", "Nummer", {
-      required: true,
       wrappers: ["panel", "form-field"],
       type: "number",
     }),
@@ -41,9 +40,11 @@ export function geometriesFields(
       wrappers: ["panel", "form-field"],
     }),
     fieldHelper.addSelect("type", "Geometrietyp", {
+      required: true,
       options: typeCodelist,
     }),
     fieldHelper.addInput("scale", "Maßstab", {
+      required: true,
       wrappers: ["panel", "form-field"],
     }),
     fieldHelper.addSelect("category", "Kategorie", {

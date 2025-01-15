@@ -151,17 +151,20 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
             key: "type",
             label: "Geometrietyp",
             props: {
+              required: true,
               formatter: (item: any) => this.formatCodelistValue("30005", item),
             },
           },
           {
             key: "scale",
             label: "Maßstab",
+            props: { required: true },
           },
           {
             key: "category",
             label: "Kategorie",
             props: {
+              required: true,
               formatter: (item: any) => this.formatCodelistValue("30003", item),
             },
           },

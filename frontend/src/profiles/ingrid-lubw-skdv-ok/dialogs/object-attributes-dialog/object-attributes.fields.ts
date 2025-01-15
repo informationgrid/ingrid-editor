@@ -32,7 +32,6 @@ export function objectAttributesFields(
       options: groupCodelist,
     }),
     fieldHelper.addInput("number", "Nummer", {
-      required: true,
       wrappers: ["panel", "form-field"],
       type: "number",
     }),
