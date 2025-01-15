@@ -123,29 +123,14 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
           {
             label: "Ändern",
             click: (items: any[], form: FormControl) => {
-              this.dialog
-                .open(BatchEditObjectAttributesComponent)
-                .afterClosed()
-                .subscribe((result) => {
-                  if (!result) return;
-
-                  items.forEach((item) => {
-                    if (result.category) {
-                      item.category = { key: result.category.value };
-                    }
-                    if (result.step) {
-                      item.transmissionLevel = { key: result.step.value };
-                    }
-                  });
-                  form.updateValueAndValidity();
-                  form.markAsDirty();
-                });
+              this.handleBatchUpdate(items, form);
             },
           },
         ],
       }),
       this.addTable("geometries", "Geometrie", {
         supportUpload: false,
+        allowDuplicate: true,
         dialog: GeometriesDialogComponent,
         columns: [
           {
@@ -191,8 +176,36 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
             },
           },
         ],
+        batchActions: [
+          {
+            label: "Ändern",
+            click: (items: any[], form: FormControl) => {
+              this.handleBatchUpdate(items, form);
+            },
+          },
+        ],
       }),
     ]);
     return fieldConfig;
   };
+
+  private handleBatchUpdate(items: any[], form: FormControl<any>) {
+    this.dialog
+      .open(BatchEditObjectAttributesComponent)
+      .afterClosed()
+      .subscribe((result) => {
+        if (!result) return;
+
+        items.forEach((item) => {
+          if (result.category) {
+            item.category = { key: result.category.value };
+          }
+          if (result.step) {
+            item.transmissionLevel = { key: result.step.value };
+          }
+        });
+        form.updateValueAndValidity();
+        form.markAsDirty();
+      });
+  }
 }

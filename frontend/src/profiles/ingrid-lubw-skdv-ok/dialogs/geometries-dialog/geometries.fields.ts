@@ -54,11 +54,5 @@ export function geometriesFields(
       required: true,
       options: transmissionLevelCodelist,
     }),
-    fieldHelper.addInput("decisions", "Objektartscharfe Entscheidungen", {
-      wrappers: ["panel", "form-field"],
-    }),
-    fieldHelper.addInput("responsible", "Verantwortung der Änderung", {
-      wrappers: ["panel", "form-field"],
-    }),
   ];
 }
