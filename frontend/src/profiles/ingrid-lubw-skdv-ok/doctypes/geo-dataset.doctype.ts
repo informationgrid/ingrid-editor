@@ -1,15 +1,43 @@
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { ObjectAttributesDialogComponent } from "../dialogs/object-attributes-dialog/object-attributes-dialog.component";
 import { GeometriesDialogComponent } from "../dialogs/geometries-dialog/geometries-dialog.component";
 import { BatchEditObjectAttributesComponent } from "../dialogs/batch-edit-object-attributes/batch-edit-object-attributes.component";
 import { FormControl } from "@angular/forms";
+import { MetadataOption } from "../../../app/formly/types/metadata-type/metadata-type.component";
 
 @Injectable({
   providedIn: "root",
 })
 export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
+  protected metadataOptions(): MetadataOption[] {
+    return [
+      {
+        label: "Verantwortung der Änderung",
+        contextHelpKey: "responsible",
+        required: true,
+        typeOptions: [
+          {
+            multiple: false,
+            key: "responsible",
+            items: [
+              {
+                label: "Fachredaktion",
+                value: "editor",
+              },
+              {
+                label: "WIBAS AG Daten",
+                value: "wibas",
+              },
+            ],
+          },
+        ],
+      },
+      ...super.metadataOptions(),
+    ];
+  }
+
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     const position = this.findFieldElementWithId(fieldConfig, "pointOfContact");
     this.addMultipleAfter(position, [
@@ -161,14 +189,6 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
                 // this.formatCodelistValue("30004", item),
                 item.key,
             },
-          },
-          {
-            key: "decisions",
-            label: "Objektartscharfe Entscheidungen",
-          },
-          {
-            key: "responsible",
-            label: "Verantwortung der Änderung",
           },
         ],
       }),
