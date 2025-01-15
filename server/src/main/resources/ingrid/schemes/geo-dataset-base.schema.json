@@ -146,6 +146,7 @@
             }
           }
         }
+      }
     },
     "featureDescription": {
       "properties": {
@@ -167,7 +168,6 @@
             }
           }
         }
-      }
       }
     },
     "propertiesGeoDataset": {
