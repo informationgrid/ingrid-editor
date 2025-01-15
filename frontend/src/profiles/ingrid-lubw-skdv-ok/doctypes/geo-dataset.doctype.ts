@@ -3,8 +3,8 @@ import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { ObjectAttributesDialogComponent } from "../dialogs/object-attributes-dialog/object-attributes-dialog.component";
 import { GeometriesDialogComponent } from "../dialogs/geometries-dialog/geometries-dialog.component";
-import { MatDialog } from "@angular/material/dialog";
 import { BatchEditObjectAttributesComponent } from "../dialogs/batch-edit-object-attributes/batch-edit-object-attributes.component";
+import { FormControl } from "@angular/forms";
 
 @Injectable({
   providedIn: "root",
@@ -93,12 +93,23 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
         batchActions: [
           {
             label: "Ändern",
-            click: (item) => {
+            click: (items: any[], form: FormControl) => {
               this.dialog
                 .open(BatchEditObjectAttributesComponent)
                 .afterClosed()
                 .subscribe((result) => {
-                  console.log("Action!", result);
+                  if (!result) return;
+
+                  items.forEach((item) => {
+                    if (result.category) {
+                      item.category = { key: result.category.value };
+                    }
+                    if (result.step) {
+                      item.transmissionLevel = { key: result.step.value };
+                    }
+                  });
+                  form.updateValueAndValidity();
+                  form.markAsDirty();
                 });
             },
           },

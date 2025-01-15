@@ -139,7 +139,9 @@ class LubwSkdvOkProfile(
         description = ""
         defaultEntry = ""
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(toCodelistEntry("1", "Test-Eintrag Gruppe"))
+            codelist30002.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
         }
     }
 

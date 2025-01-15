@@ -1,30 +1,28 @@
 <ige-dialog-template label="Einträge bearbeiten" (submit)="submit()">
     <ng-container content>
         <form class="flex-col small-label-width">
-            <div class="form-field">
-                <mat-form-field appearance="outline">
-                    <mat-label>Kategorie</mat-label>
-                    <mat-select>
-                        @for (category of categories(); track category) {
-                            <mat-option [value]="category">
-                                {{ category.fields["de"] }}
-                            </mat-option>
-                        }
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div class="form-field">
-                <mat-form-field appearance="outline">
-                    <mat-label>Übermittlungsstufe</mat-label>
-                    <mat-select>
-                        @for (step of steps; track step) {
-                            <mat-option [value]="step">
-                                {{ step }}
-                            </mat-option>
-                        }
-                    </mat-select>
-                </mat-form-field>
-            </div>
+            <mat-form-field appearance="outline">
+                <mat-label>Kategorie</mat-label>
+                <mat-select [formControl]="categoryControl">
+                    <mat-option>- Nicht setzen -</mat-option>
+                    @for (category of categories; track category) {
+                        <mat-option [value]="category">
+                            {{ category.label }}
+                        </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Übermittlungsstufe</mat-label>
+                <mat-select [formControl]="stepControl">
+                    <mat-option>- Nicht setzen -</mat-option>
+                    @for (step of steps; track step) {
+                        <mat-option [value]="step">
+                            {{ step.label }}
+                        </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
         </form>
     </ng-container>
 </ige-dialog-template>
