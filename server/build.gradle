@@ -12,7 +12,7 @@ buildscript {
     ext.kotest_version = '5.9.1'
     ext.jte_version = '3.1.15'
     ext.geotools_version = '28.2'
-    ext['log4j2.version'] = '2.24.3'
+    ext['log4j2.version'] = '2.23.1'
 }
 
 plugins {
