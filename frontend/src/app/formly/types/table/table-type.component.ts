@@ -90,6 +90,7 @@ export interface TableProps {
   // TODO: should be moved to UVP profile
   batchValidUntil?: any;
   batchActions?: any[];
+  allowDuplicate?: boolean;
 }
 
 @UntilDestroy()
@@ -479,5 +480,11 @@ export class TableTypeComponent
     return this.formControl.value?.every((item) =>
       requiredColumnKeys.every((key) => item[key]),
     );
+  }
+
+  duplicateRow(rowIndex: number) {
+    this.formControl.value.push(this.formControl.value[rowIndex]);
+    this.formControl.updateValueAndValidity();
+    this.formControl.markAsDirty();
   }
 }

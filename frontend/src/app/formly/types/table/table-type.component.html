@@ -179,6 +179,15 @@
                                         <mat-icon svgIcon="Mehr"></mat-icon>
                                     </button>
                                     <mat-menu #tableRowAction="matMenu">
+                                        @if (props.allowDuplicate) {
+                                            <button
+                                                type="button"
+                                                mat-menu-item
+                                                (click)="duplicateRow(rowIndex)"
+                                            >
+                                                Duplizieren
+                                            </button>
+                                        }
                                         <button
                                             type="button"
                                             mat-menu-item
