@@ -2048,15 +2048,20 @@ export abstract class IngridShared extends BaseDoctype {
 
   private handleHVDClick(field: FormlyFieldConfig) {
     const hvdChecked = field.formControl.value.isHvd;
-    const metadata = field.formControl.value;
-    const isOpenData = metadata.isOpenData;
+    const isOpenData = field.formControl.value.isOpenData;
     // if hvd is checked and field is not open data, show open data dialog
     if (hvdChecked && !isOpenData) {
       return this.handleActivateOpenData(field).pipe(
         tap((success) =>
           success
-            ? field.formControl.setValue({ ...metadata, isOpenData: true })
-            : field.formControl.setValue({ ...metadata, isHvd: false }),
+            ? field.formControl.setValue({
+                ...field.formControl.value,
+                isOpenData: true,
+              })
+            : field.formControl.setValue({
+                ...field.formControl.value,
+                isHvd: false,
+              }),
         ),
       );
     } else {
