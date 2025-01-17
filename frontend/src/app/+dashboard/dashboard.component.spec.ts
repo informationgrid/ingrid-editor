@@ -70,7 +70,7 @@ describe("DashboardComponent", () => {
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       provideLocationMocks(),
-      provideMatomoTesting(),
+      // provideMatomoTesting(),
     ],
     mocks: [
       ConfigService,

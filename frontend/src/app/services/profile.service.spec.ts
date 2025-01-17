@@ -51,7 +51,7 @@ describe("ProfileService", () => {
           permissions: [],
         }),
       }),
-      provideMatomoTesting(),
+      // provideMatomoTesting(),
     ],
     mocks: [ContextHelpService, ModalService],
   });

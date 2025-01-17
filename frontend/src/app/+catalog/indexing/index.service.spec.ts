@@ -43,7 +43,7 @@ describe("IndexService", () => {
       mockProvider(ConfigService, {
         $userInfo: new BehaviorSubject({}),
       }),
-      provideMatomoTesting(),
+      // provideMatomoTesting(),
     ],
   });
 
