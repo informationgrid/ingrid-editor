@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { registerLocaleData } from "@angular/common";
-import { ConfigService } from "./services/config/config.service";
+import { ConfigService, Configuration } from "./services/config/config.service";
 import { HttpClient } from "@angular/common/http";
 import { MatDialog } from "@angular/material/dialog";
 import { IgeError } from "./models/ige-error";
@@ -37,6 +37,7 @@ import { ProfileService } from "./services/profile.service";
 import { catchError, filter, map, switchMap, take } from "rxjs/operators";
 import { ProfileMapper } from "../profiles/profile.mapper";
 import { Type } from "@angular/core";
+import { MatomoInitializerService } from "ngx-matomo-client";
 
 registerLocaleData(de);
 
@@ -75,6 +76,7 @@ export function ConfigLoader(
   dialog: MatDialog,
   translocoService: TranslocoService,
   generalStore: any,
+  matomoInitializer: MatomoInitializerService,
 ) {
   function getRedirectNavigationCommand(catalogId: string, urlPath: string) {
     const splittedUrl = urlPath.split(";");
@@ -153,9 +155,20 @@ export function ConfigLoader(
     }
   }
 
+  function initializeMatomo(config: Configuration) {
+    matomoInitializer.initializeTracker({
+      siteId: config.matomoSiteId,
+      trackerUrl: config.matomoUrl,
+    });
+  }
+
   return async () => {
     try {
       await configService.load();
+
+      const config = configService.getConfiguration();
+      if (config.matomoUrl) initializeMatomo(config);
+
       await initializeKeycloakAndGetUserInfo(authFactory, configService);
       const language =
         configService.$userInfo.value.currentCatalog.settings?.config.language;

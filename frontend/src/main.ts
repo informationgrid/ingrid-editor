@@ -143,6 +143,11 @@ import { MatDatepickerIntl } from "@angular/material/datepicker";
 import { GermanDateIntl } from "./app/services/german-date.intl";
 import { RadioOptionsComponent } from "./app/formly/types/radio-options/radio-options.component";
 import { GeneralStore } from "./app/store/general.store";
+import {
+  MatomoInitializerService,
+  provideMatomo,
+  withRouter,
+} from "ngx-matomo-client";
 
 if (environment.production) {
   enableProdMode();
@@ -387,6 +392,7 @@ bootstrapApplication(AppComponent, {
         inject(MatDialog),
         inject(TranslocoService),
         inject(GeneralStore),
+        inject(MatomoInitializerService),
       );
       return initializerFn();
     }),
@@ -480,5 +486,12 @@ bootstrapApplication(AppComponent, {
     // PLUGINS
     pluginProvider,
     provideAnimations(),
+    // Matomo
+    provideMatomo(
+      {
+        mode: "deferred",
+      },
+      withRouter(),
+    ),
   ],
 });

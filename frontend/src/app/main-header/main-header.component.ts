@@ -43,6 +43,7 @@ import { MatCardTitle } from "@angular/material/card";
 import { MatDivider } from "@angular/material/divider";
 import { AsyncPipe, DatePipe } from "@angular/common";
 import { GeneralStore } from "../store/general.store";
+import { MatomoTrackClickDirective } from "ngx-matomo-client";
 
 @Component({
   selector: "ige-main-header",
@@ -65,6 +66,7 @@ import { GeneralStore } from "../store/general.store";
     RouterLink,
     AsyncPipe,
     DatePipe,
+    MatomoTrackClickDirective,
   ],
 })
 export class MainHeaderComponent implements OnInit {

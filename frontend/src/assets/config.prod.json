@@ -15,5 +15,7 @@
     "AP4": false,
     "NotForDemo": true,
     "openAISearch": false
-  }
+  },
+  "matomoUrl": null,
+  "matomoSiteId": null
 }
