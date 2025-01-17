@@ -30,6 +30,7 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { provideMatomoTesting } from "ngx-matomo-client/testing";
 
 describe("IndexService", () => {
   let spectator: SpectatorService<IndexService>;
@@ -42,6 +43,7 @@ describe("IndexService", () => {
       mockProvider(ConfigService, {
         $userInfo: new BehaviorSubject({}),
       }),
+      provideMatomoTesting(),
     ],
   });
 
