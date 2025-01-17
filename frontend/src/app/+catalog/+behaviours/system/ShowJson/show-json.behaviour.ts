@@ -30,7 +30,7 @@ export class ShowJsonBehaviour extends Plugin {
   name = "Anzeige JSON Formular";
   group = "Toolbar";
   description =
-    "Ein neuer Button ermöglicht die Anzeige des JSON-Dokuments neben dem Formular.";
+    "Fügt einen Button hinzu, mit dem das JSON-Dokument neben dem Formular angezeigt werden kann.";
   defaultActive = false;
 
   private uiStore = inject(UiStore);
