@@ -30,7 +30,6 @@ export interface ConnectionStateInfo {
 
 @Component({
   selector: "ige-connection-state",
-  standalone: true,
   imports: [MatIcon, MatTooltip, MatProgressSpinner],
   templateUrl: "./connection-state.component.html",
   styleUrl: "./connection-state.component.scss",

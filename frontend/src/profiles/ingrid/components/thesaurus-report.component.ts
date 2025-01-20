@@ -54,7 +54,6 @@ import { MatButton } from "@angular/material/button";
       </span>
     </div>
   `,
-  standalone: true,
   imports: [MatIcon, MatSnackBarActions, MatButton, MatSnackBarAction],
 })
 export class ThesaurusReportComponent implements OnInit {

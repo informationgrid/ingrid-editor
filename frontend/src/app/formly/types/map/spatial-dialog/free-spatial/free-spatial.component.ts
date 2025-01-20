@@ -62,7 +62,6 @@ import { HelpContextButtonComponent } from "../../../../../help-context-button/h
   selector: "ige-free-spatial",
   templateUrl: "./free-spatial.component.html",
   styleUrls: ["./free-spatial.component.scss"],
-  standalone: true,
   imports: [
     SearchInputComponent,
     MatList,

@@ -25,7 +25,6 @@ import { FormDashboardComponent } from "../form-dashboard/form-dashboard.compone
   selector: "ige-form",
   templateUrl: "./form.component.html",
   styleUrls: ["./form.component.scss"],
-  standalone: true,
   imports: [DynamicFormComponent, FormDashboardComponent],
 })
 export class FormComponent {}

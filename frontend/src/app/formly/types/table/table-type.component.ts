@@ -82,7 +82,6 @@ import { AddButtonComponent } from "../../../shared/add-button/add-button.compon
   selector: "ige-table-type",
   templateUrl: "table-type.component.html",
   styleUrls: ["table-type.component.scss"],
-  standalone: true,
   imports: [
     FormLabelComponent,
     NgIf,

@@ -38,7 +38,6 @@ export const DATEBOX_CONTROL_VALUE_ACCESSOR = {
   templateUrl: "./datebox.component.html",
   styleUrls: ["./datebox.component.css"],
   providers: [DATEBOX_CONTROL_VALUE_ACCESSOR],
-  standalone: true,
   imports: [
     MatFormField,
     MatInput,

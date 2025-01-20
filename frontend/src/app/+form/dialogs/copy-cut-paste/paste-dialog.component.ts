@@ -35,7 +35,6 @@ export interface PasteDialogOptions {
 @Component({
   templateUrl: "./paste-dialog.component.html",
   styleUrls: ["./paste-dialog.component.scss"],
-  standalone: true,
   imports: [DialogTemplateComponent, DestinationSelectionComponent],
 })
 export class PasteDialogComponent implements OnInit {

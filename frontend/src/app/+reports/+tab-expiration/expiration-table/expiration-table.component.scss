@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 .mat-mdc-row {
   &:hover:not(.readonly) {
@@ -7,6 +7,6 @@
   }
 
   &.readonly .mat-mdc-cell {
-    color: $ige-comment-color;
+    color: vars.$ige-comment-color;
   }
 }

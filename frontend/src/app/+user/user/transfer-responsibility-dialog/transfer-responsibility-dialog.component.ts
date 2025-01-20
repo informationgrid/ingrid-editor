@@ -50,7 +50,6 @@ import { SearchInputComponent } from "../../../shared/search-input/search-input.
     CdkDragHandle,
     SearchInputComponent,
   ],
-  standalone: true,
 })
 export class TransferResponsibilityDialogComponent implements OnInit {
   oldUser: User;

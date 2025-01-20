@@ -56,7 +56,6 @@ import { toObservable } from "@angular/core/rxjs-interop";
   selector: "ige-tab-search",
   templateUrl: "./tab-search.component.html",
   styleUrls: ["./tab-search.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     PageTemplateComponent,

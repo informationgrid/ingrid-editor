@@ -48,7 +48,6 @@ import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabell
   templateUrl: "./select-type.component.html",
   styleUrls: ["./select-type.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     MatOption,
     MatPseudoCheckbox,

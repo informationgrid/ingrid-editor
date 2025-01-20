@@ -77,7 +77,6 @@ interface ThesaurusTypeInfo extends Array<any | ThesaurusResult[]> {
     NgClass,
     DialogTemplateComponent,
   ],
-  standalone: true,
 })
 export class ConsolidateDialogComponent implements OnInit {
   private codelistStore = inject(CodelistStore);

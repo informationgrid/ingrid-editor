@@ -46,7 +46,6 @@ import { MatHint } from "@angular/material/form-field";
   selector: "ige-referenced-documents-type",
   templateUrl: "./referenced-documents-type.component.html",
   styleUrls: ["./referenced-documents-type.component.scss"],
-  standalone: true,
   imports: [
     MatButton,
     MatProgressSpinner,

@@ -60,7 +60,6 @@ export interface SelectCswRecordData {
   selector: "ige-select-csw-record-dialog",
   templateUrl: "./select-csw-record-dialog.html",
   styleUrls: ["./select-csw-record-dialog.scss"],
-  standalone: true,
   imports: [
     DialogTemplateComponent,
     FormlyModule,

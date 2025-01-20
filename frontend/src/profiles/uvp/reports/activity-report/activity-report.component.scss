@@ -1,4 +1,4 @@
-@import "src/variables.scss";
+@use "src/variables" as vars;
 
 a {
   text-transform: none;
@@ -10,7 +10,7 @@ a {
   justify-content: space-between;
 
   button {
-    color: $ige-secondary;
+    color: vars.$ige-secondary;
     margin-left: 5px;
   }
 }

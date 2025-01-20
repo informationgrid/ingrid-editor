@@ -68,7 +68,6 @@ import { CdkMonitorFocus } from "@angular/cdk/a11y";
   selector: "ige-general-report",
   templateUrl: "./general-report.component.html",
   styleUrls: ["./general-report.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     PageTemplateNoHeaderComponent,

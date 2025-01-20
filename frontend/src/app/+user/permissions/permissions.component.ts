@@ -50,7 +50,6 @@ import { TranslocoModule } from "@ngneat/transloco";
     PermissionTableComponent,
     TranslocoModule,
   ],
-  standalone: true,
 })
 export class PermissionsComponent implements OnInit, ControlValueAccessor {
   private onChange: (x: any) => {};

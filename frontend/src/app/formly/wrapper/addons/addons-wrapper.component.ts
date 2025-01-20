@@ -33,7 +33,6 @@ import { MatIconButton } from "@angular/material/button";
   selector: "ige-addons",
   templateUrl: "./addons-wrapper.component.html",
   styleUrls: ["./addons-wrapper.component.scss"],
-  standalone: true,
   imports: [NgStyle, MatIcon, NgTemplateOutlet, MatIconButton],
 })
 export class AddonsWrapperComponent

@@ -38,7 +38,6 @@ import { DialogTemplateComponent } from "../../../../shared/dialog-template/dial
   selector: "ige-link-dialog",
   templateUrl: "./link-dialog.component.html",
   styleUrls: ["./link-dialog.component.scss"],
-  standalone: true,
   imports: [DialogTemplateComponent, ReactiveFormsModule, FormlyModule],
 })
 export class LinkDialogComponent implements OnInit, AfterViewInit {

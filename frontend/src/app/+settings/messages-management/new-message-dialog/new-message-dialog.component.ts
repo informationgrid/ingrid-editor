@@ -44,7 +44,6 @@ import {
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import {
   MatFormField,
   MatHint,
@@ -63,7 +62,6 @@ import { MatCardSubtitle } from "@angular/material/card";
   selector: "ige-new-message-dialog",
   templateUrl: "./new-message-dialog.component.html",
   styleUrls: ["./new-message-dialog.component.scss"],
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,
@@ -71,7 +69,6 @@ import { MatCardSubtitle } from "@angular/material/card";
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     ReactiveFormsModule,
     MatFormField,

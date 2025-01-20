@@ -38,7 +38,6 @@ import { MatIcon } from "@angular/material/icon";
       <mat-icon class="material-icons-outlined" svgIcon="info-24px"></mat-icon>
     </button>
   `,
-  standalone: true,
   imports: [MatIconButton, MatTooltip, MatIcon],
 })
 export class HelpContextButtonComponent {

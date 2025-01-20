@@ -32,7 +32,6 @@ import { MatButton } from "@angular/material/button";
   selector: "ige-update-get-capabilities",
   templateUrl: "./update-get-capabilities.component.html",
   styleUrls: ["./update-get-capabilities.component.scss"],
-  standalone: true,
   imports: [MatButton],
 })
 export class UpdateGetCapabilitiesComponent extends FieldType<FieldTypeConfig> {

@@ -24,9 +24,7 @@ import {
   MetadataOptionItem,
   MetadataOptionItems,
 } from "../metadata-type.component";
-import { MatButton } from "@angular/material/button";
-import { MatIcon } from "@angular/material/icon";
-import { AsyncPipe, JsonPipe } from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { map } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 import {
@@ -41,15 +39,7 @@ interface PropertyItem {
 
 @Component({
   selector: "ige-metadata-type-short",
-  standalone: true,
-  imports: [
-    MatButton,
-    MatIcon,
-    MatChipOption,
-    MatChipListbox,
-    JsonPipe,
-    AsyncPipe,
-  ],
+  imports: [MatChipOption, MatChipListbox, AsyncPipe],
   templateUrl: "./metadata-type-short.component.html",
   styleUrl: "./metadata-type-short.component.scss",
 })

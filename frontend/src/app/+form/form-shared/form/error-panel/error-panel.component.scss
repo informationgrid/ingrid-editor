@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   position: sticky;
@@ -7,7 +7,7 @@
 }
 
 .wrapper {
-  background-color: $error-color;
+  background-color: vars.$error-color;
   color: #ffffff;
   padding: 12px;
   display: flex;

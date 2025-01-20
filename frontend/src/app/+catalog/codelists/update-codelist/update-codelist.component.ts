@@ -56,7 +56,6 @@ import { AddButtonComponent } from "../../../shared/add-button/add-button.compon
   selector: "ige-update-codelist",
   templateUrl: "./update-codelist.component.html",
   styleUrls: ["./update-codelist.component.scss"],
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,

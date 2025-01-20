@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 .spacing {
   padding-bottom: 15px;
@@ -21,7 +21,7 @@
   }
 
   .mat-mdc-optgroup-label span {
-    color: $ige-secondary;
+    color: vars.$ige-secondary;
     font-weight: 500 !important;
   }
 
@@ -29,12 +29,12 @@
     padding-right: 4px;
 
     svg .coloring-stroke {
-      stroke: $ige-secondary;
+      stroke: vars.$ige-secondary;
     }
   }
 
   .mat-icon + span {
-    color: $ige-secondary;
+    color: vars.$ige-secondary;
     font-weight: 500;
     font-size: 14px;
     text-transform: uppercase;

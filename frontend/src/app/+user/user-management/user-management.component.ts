@@ -37,7 +37,6 @@ import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
   selector: "ige-user-management",
   templateUrl: "./user-management.component.html",
   styleUrls: ["./user-management.component.scss"],
-  standalone: true,
   imports: [
     MatTabNav,
     MatTabLink,

@@ -54,7 +54,6 @@ import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-
     MatButtonModule,
     DialogTemplateComponent,
   ],
-  standalone: true,
 })
 export class PrintViewDialogComponent {
   profile: any;

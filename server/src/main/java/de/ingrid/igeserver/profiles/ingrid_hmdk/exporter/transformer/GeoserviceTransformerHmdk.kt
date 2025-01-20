@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -28,18 +28,16 @@ import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.amendHMDKDescriptiveKey
 import de.ingrid.igeserver.profiles.ingrid_hmdk.exporter.getMapUrl
 
 class GeoserviceTransformerHmdk(transformerConfig: TransformerConfig) : GeodataserviceModelTransformer(transformerConfig) {
-    override fun getDescriptiveKeywords(): List<Thesaurus> =
-        amendHMDKDescriptiveKeywords(doc.data, codelists, super.getDescriptiveKeywords())
+    override fun getDescriptiveKeywords(): List<Thesaurus> = amendHMDKDescriptiveKeywords(doc.data, codelists, super.getDescriptiveKeywords())
 
     override fun getCrossReference(
         uuid: String,
         type: KeyValue?,
         direction: String,
         ignoreNotFound: Boolean,
-    ): CrossReference? =
-        super.getCrossReference(uuid, type, direction, ignoreNotFound)?.apply {
-            mapUrl = getMapUrl(getLastPublishedDocument(uuid), tags)
-        }
+    ): CrossReference? = super.getCrossReference(uuid, type, direction, ignoreNotFound)?.apply {
+        mapUrl = getMapUrl(getLastPublishedDocument(uuid), tags)
+    }
 
     override val mapLinkUrl = getMapUrl(doc, tags)
 }
@@ -51,10 +49,9 @@ class GeoserviceTransformerHmdkMetaver(transformerConfig: TransformerConfig) : G
         type: KeyValue?,
         direction: String,
         ignoreNotFound: Boolean,
-    ): CrossReference? =
-        super.getCrossReference(uuid, type, direction, ignoreNotFound)?.apply {
-            mapUrl = getMapUrl(getLastPublishedDocument(uuid), tags)
-        }
+    ): CrossReference? = super.getCrossReference(uuid, type, direction, ignoreNotFound)?.apply {
+        mapUrl = getMapUrl(getLastPublishedDocument(uuid), tags)
+    }
 
     override val mapLinkUrl = getMapUrl(doc, tags)
 }

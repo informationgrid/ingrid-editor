@@ -73,7 +73,6 @@ export const docReferenceTemplate: Partial<DocumentReference> = {
   selector: "ige-document-reference-type",
   templateUrl: "./document-reference-type.component.html",
   styleUrls: ["./document-reference-type.component.scss"],
-  standalone: true,
   imports: [
     FormErrorComponent,
     FormlyModule,

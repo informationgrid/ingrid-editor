@@ -56,7 +56,6 @@ import { SessionService } from "./services/session.service";
   selector: "ige-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
-  standalone: true,
   imports: [
     MatDrawerContainer,
     SideMenuComponent,

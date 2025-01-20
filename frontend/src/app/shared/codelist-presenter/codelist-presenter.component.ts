@@ -57,7 +57,6 @@ import { MatIconButton } from "@angular/material/button";
     MatIconButton,
     MatMenuItem,
   ],
-  standalone: true,
 })
 export class CodelistPresenterComponent implements OnInit {
   codelist = input<Codelist>();
@@ -70,7 +69,7 @@ export class CodelistPresenterComponent implements OnInit {
   asFavorite = output<CodelistEntry>();
 
   sortedEntries = computed(() => {
-    return this.codelist().entries.sort((a, b) =>
+    return [...this.codelist().entries].sort((a, b) =>
       a.fields["de"]?.localeCompare(b.fields["de"]),
     );
   });

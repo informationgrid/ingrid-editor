@@ -29,7 +29,6 @@ import { MatButton } from "@angular/material/button";
   selector: "ige-upload-check",
   templateUrl: "./upload-check.component.html",
   styleUrls: ["./upload-check.component.scss"],
-  standalone: true,
   imports: [MatCheckboxModule, KeyValuePipe, RouterLink, MatButton],
 })
 export class UploadCheckComponent implements OnInit {

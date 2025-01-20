@@ -42,7 +42,6 @@ import {
   selector: "ige-date-range-type",
   templateUrl: "./date-range-type.component.html",
   styleUrls: ["./date-range-type.component.scss"],
-  standalone: true,
   imports: [
     MatFormField,
     MatLabel,

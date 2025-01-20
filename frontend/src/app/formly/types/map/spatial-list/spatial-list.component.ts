@@ -62,7 +62,6 @@ export interface SpatialLocationWithColor extends SpatialLocation {
   selector: "ige-spatial-list",
   templateUrl: "./spatial-list.component.html",
   styleUrls: ["./spatial-list.component.scss"],
-  standalone: true,
   imports: [
     MatIcon,
     TranslocoDirective,

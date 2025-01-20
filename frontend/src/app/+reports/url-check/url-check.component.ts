@@ -64,7 +64,6 @@ import { AsyncPipe, DatePipe } from "@angular/common";
   selector: "ige-url-check",
   templateUrl: "./url-check.component.html",
   styleUrls: ["./url-check.component.scss"],
-  standalone: true,
   imports: [
     PageTemplateComponent,
     JobHandlerHeaderComponent,

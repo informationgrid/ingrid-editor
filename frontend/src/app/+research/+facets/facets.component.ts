@@ -84,7 +84,6 @@ export interface FacetUpdate {
       useExisting: forwardRef(() => FacetsComponent),
     },
   ],
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     MatIconButton,

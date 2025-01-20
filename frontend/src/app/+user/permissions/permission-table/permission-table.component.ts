@@ -62,7 +62,6 @@ import { BreadcrumbComponent } from "../../../+form/form-info/breadcrumb/breadcr
     TranslocoModule,
     BreadcrumbComponent,
   ],
-  standalone: true,
 })
 export class PermissionTableComponent implements ControlValueAccessor {
   @Input() label: string;

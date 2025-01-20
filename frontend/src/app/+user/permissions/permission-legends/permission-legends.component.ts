@@ -31,7 +31,6 @@ interface Legend {
   templateUrl: "./permission-legends.component.html",
   styleUrls: ["./permission-legends.component.scss"],
   imports: [MatIconModule],
-  standalone: true,
 })
 export class PermissionLegendsComponent implements OnInit {
   @Input() showReadLegend = true;

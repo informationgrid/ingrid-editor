@@ -37,7 +37,6 @@ import { KeyValuePipe } from "@angular/common";
   selector: "ige-behaviours",
   templateUrl: "./behaviours.component.html",
   styleUrls: ["./behaviours.component.scss"],
-  standalone: true,
   imports: [
     PageTemplateNoHeaderComponent,
     BehaviourItemComponent,

@@ -33,7 +33,6 @@ import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
   selector: "ige-reports",
   templateUrl: "./reports.component.html",
   styleUrls: ["./reports.component.scss"],
-  standalone: true,
   imports: [
     MatTabNav,
     MatTabLink,

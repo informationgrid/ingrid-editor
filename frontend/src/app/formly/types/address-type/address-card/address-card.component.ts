@@ -71,7 +71,6 @@ export interface ResolvedAddressWithType {
     DocumentIconComponent,
     CodelistPipe,
   ],
-  standalone: true,
 })
 export class AddressCardComponent implements OnInit {
   address = input.required<ResolvedAddressWithType>();

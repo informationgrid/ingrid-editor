@@ -34,7 +34,6 @@ import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
   selector: "ige-research",
   templateUrl: "./research.component.html",
   styleUrls: ["./research.component.scss"],
-  standalone: true,
   imports: [
     MatTabNav,
     MatTabLink,

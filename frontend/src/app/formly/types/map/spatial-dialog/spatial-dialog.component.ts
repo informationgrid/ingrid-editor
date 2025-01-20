@@ -69,7 +69,6 @@ interface LocationType {
   selector: "ige-spatial-dialog",
   templateUrl: "./spatial-dialog.component.html",
   styleUrls: ["./spatial-dialog.component.scss"],
-  standalone: true,
   imports: [
     MatIconButton,
     MatDialogClose,

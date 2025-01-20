@@ -40,7 +40,6 @@ import { FieldToAriaLabelPipe } from "../../../directives/fieldToAiraLabel.pipe"
   selector: "ige-inline-help-wrapper",
   templateUrl: "./inline-help-wrapper.component.html",
   styleUrls: ["./inline-help-wrapper.component.scss"],
-  standalone: true,
   imports: [
     NgTemplateOutlet,
     MatIconButton,

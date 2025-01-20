@@ -46,7 +46,6 @@ import { TreeStore } from "../../../store/tree/tree.store";
   selector: "permission-add-dialog",
   templateUrl: "./permission-add-dialog.component.html",
   styleUrls: ["./permission-add-dialog.component.scss"],
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,

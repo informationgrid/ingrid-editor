@@ -33,18 +33,19 @@ import { MatIcon } from "@angular/material/icon";
 import { MatButton } from "@angular/material/button";
 import { EmailformComponent } from "../../emailform/emailform.component";
 import { AsyncPipe } from "@angular/common";
+import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 
 @Component({
   selector: "ige-profile",
   templateUrl: "./profile.component.html",
   styleUrls: ["./profile.component.scss"],
-  standalone: true,
   imports: [
     PageTemplateNoHeaderComponent,
     MatIcon,
     MatButton,
     EmailformComponent,
     AsyncPipe,
+    MATOMO_DIRECTIVES,
   ],
 })
 export class ProfileComponent implements OnInit {

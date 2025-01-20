@@ -41,7 +41,6 @@ import { DialogTemplateComponent } from "../../../app/shared/dialog-template/dia
     FormlyModule,
     DialogTemplateComponent,
   ],
-  standalone: true,
 })
 export class GeometryContextDialogComponent implements OnInit {
   form: FormGroup = new FormGroup<any>({});

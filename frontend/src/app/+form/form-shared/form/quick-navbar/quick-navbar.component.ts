@@ -34,7 +34,6 @@ import { UiStore } from "../../../../store/ui.store";
   selector: "ige-quick-navbar",
   templateUrl: "./quick-navbar.component.html",
   styleUrls: ["./quick-navbar.component.scss"],
-  standalone: true,
   imports: [
     DocumentIconComponent,
     HeaderNavigationComponent,

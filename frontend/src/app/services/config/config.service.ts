@@ -47,6 +47,8 @@ export class Configuration {
     public nominatimDetailUrl: string,
     public showAccessibilityLink: boolean,
     public allowOverwriteOnVersionConflict?: boolean,
+    public matomoUrl?: string,
+    public matomoSiteId?: string,
   ) {}
 }
 

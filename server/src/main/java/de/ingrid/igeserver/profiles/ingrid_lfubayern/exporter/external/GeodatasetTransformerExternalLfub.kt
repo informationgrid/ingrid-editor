@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -33,8 +33,7 @@ class GeodatasetTransformerExternalLfub(transformerConfig: TransformerConfig) : 
         fieldToCodelist.referenceFileFormat = "20002"
     }
 
-    override fun getDescriptiveKeywords(): List<Thesaurus> =
-        lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData, codelists, true)
+    override fun getDescriptiveKeywords(): List<Thesaurus> = lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData, codelists, true)
 
     override val useConstraints: List<UseConstraintTemplate> = lfubUseConstraints(super.useConstraints, docData)
 }

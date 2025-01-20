@@ -46,7 +46,6 @@ import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
   templateUrl: "./form-info.component.html",
   styleUrls: ["./form-info.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     BreadcrumbComponent,
     PublishPendingComponent,

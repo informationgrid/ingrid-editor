@@ -34,7 +34,6 @@ import { NgIf } from "@angular/common";
   selector: "ige-full-width-wrapper",
   templateUrl: "./full-width-wrapper.component.html",
   styleUrls: ["./full-width-wrapper.component.scss"],
-  standalone: true,
   imports: [FormLabelComponent, NgIf],
 })
 export class FullWidthWrapperComponent

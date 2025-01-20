@@ -36,7 +36,6 @@ import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-t
     MatButtonModule,
     PageTemplateNoHeaderComponent,
   ],
-  standalone: true,
 })
 export class ContentManagementComponent implements OnInit {
   configService = inject(ConfigService);

@@ -18,6 +18,8 @@
                         [disabled]="!button.active || isNotReady"
                         [matTooltip]="button.tooltip"
                         [attr.aria-label]="button.tooltip"
+                        matomoClickCategory="Toolbar"
+                        [matomoClickAction]="'Button_' + button.eventId"
                     >
                         <mat-icon
                             class="material-icons-outlined"
@@ -48,6 +50,8 @@
                                 data: menuItem.data,
                             })
                         "
+                        matomoClickCategory="Toolbar"
+                        [matomoClickAction]="'HiddenMenuItem_' + button.eventId"
                     >
                         <span>{{ menuItem.label }}</span>
                     </button>
@@ -65,6 +69,8 @@
                     (menuClosed)="menu[button.id] = false"
                     [matTooltip]="button.tooltip"
                     [attr.aria-label]="button.tooltip"
+                    matomoClickCategory="Toolbar"
+                    [matomoClickAction]="'Button_' + button.eventId"
                 >
                     <mat-icon
                         class="material-icons-outlined"
@@ -84,6 +90,8 @@
                             (click)="
                                 actionsMenu.focus(); sendEvent(menuItem.eventId)
                             "
+                            matomoClickCategory="Toolbar"
+                            [matomoClickAction]="'MenuItem_' + button.eventId"
                         >
                             <span>{{ menuItem.label }}</span>
                         </button>
@@ -110,6 +118,8 @@
                         [attr.data-cy]="'toolbar_' + button.eventId"
                         (click)="sendEvent(button.eventId)"
                         [disabled]="!button.active || isNotReady"
+                        matomoClickCategory="Toolbar"
+                        [matomoClickAction]="'IconButton_' + button.eventId"
                     >
                         <!--aria-label="{{button.tooltip}}"-->
                         <mat-icon>{{ button.matIconVariable }}</mat-icon>
@@ -123,6 +133,8 @@
                         [disabled]="!button.active || isNotReady"
                         [attr.aria-label]="button.label"
                         (click)="sendEvent(button.eventId)"
+                        matomoClickCategory="Toolbar"
+                        matomoClickAction="SaveButton"
                     >
                         {{ button.label }}
                     </button>
@@ -136,6 +148,8 @@
                         [attr.data-cy]="'toolbar_publish_now'"
                         [disabled]="!button.active || isNotReady"
                         [attr.aria-label]="button.label"
+                        matomoClickCategory="Toolbar"
+                        matomoClickAction="DirectPublish"
                     >
                         {{ button.label }}
                     </button>
@@ -151,6 +165,8 @@
                         (menuClosed)="menu[button.id] = false"
                         aria-label="Mehr zum Veröffentlichen"
                         (click)="saveCurrentFocus()"
+                        matomoClickCategory="Toolbar"
+                        matomoClickAction="PublishMore"
                     >
                         <mat-icon>{{
                             menu[button.id]
@@ -169,6 +185,10 @@
                                 [disabled]="!menuItem.active"
                                 [attr.data-cy]="'toolbar_' + menuItem.eventId"
                                 (click)="sendEvent(menuItem.eventId)"
+                                matomoClickCategory="Toolbar"
+                                [matomoClickAction]="
+                                    'PublishMenu_' + menuItem.eventId
+                                "
                             >
                                 <span>{{ menuItem.label }}</span>
                             </button>

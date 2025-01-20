@@ -28,8 +28,6 @@ import {
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../../app/services/document/document.service";
 import { map } from "rxjs/operators";
-import { of } from "rxjs";
-import { AsyncPipe } from "@angular/common";
 import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
 
 interface DataOriginItem {
@@ -79,18 +77,15 @@ export class DataOriginViewComponent {
   description = computed<string>(() => this.item().value);
 
   constructor() {
-    effect(
-      () => {
-        if (this.item()._type == "internalDataOrigin") {
-          return this.documentService
-            .load(this.item().uuidRef, false, false, true)
-            .pipe(map((doc) => doc.document.title))
-            .subscribe((value) => this.title.set(value));
-        } else {
-          return this.title.set(this.item().title);
-        }
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      if (this.item()._type == "internalDataOrigin") {
+        return this.documentService
+          .load(this.item().uuidRef, false, false, true)
+          .pipe(map((doc) => doc.document.title))
+          .subscribe((value) => this.title.set(value));
+      } else {
+        return this.title.set(this.item().title);
+      }
+    });
   }
 }

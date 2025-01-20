@@ -48,7 +48,6 @@ export interface FormMessageType {
       ]),
     ]),
   ],
-  standalone: true,
   imports: [NgClass, MatIcon, MatIconButton],
 })
 export class FormMessageComponent implements OnInit {

@@ -27,7 +27,6 @@ import { ActionButtonComponent } from "../../../shared/action-button/action-butt
   selector: "dashboard-address-header",
   templateUrl: "./dashboard-address-header.component.html",
   styleUrls: ["./dashboard-address-header.component.scss"],
-  standalone: true,
   imports: [ActionButtonComponent],
 })
 export class DashboardAddressHeaderComponent implements OnInit {

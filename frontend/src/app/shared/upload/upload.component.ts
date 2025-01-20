@@ -60,7 +60,6 @@ import { AsyncPipe } from "@angular/common";
       transition("* => void", [animate(300, style({ opacity: 0 }))]),
     ]),
   ],
-  standalone: true,
   imports: [NgxFlowModule, MatIcon, MatButton, UploadItemComponent, AsyncPipe],
 })
 export class UploadComponent implements AfterViewInit {

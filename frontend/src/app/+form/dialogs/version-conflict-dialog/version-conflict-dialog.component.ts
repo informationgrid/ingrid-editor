@@ -33,7 +33,6 @@ export type VersionConflictChoice = "cancel" | "force" | "reload";
   selector: "ige-version-conflict-dialog",
   templateUrl: "./version-conflict-dialog.component.html",
   styleUrls: ["./version-conflict-dialog.component.scss"],
-  standalone: true,
   imports: [
     MatDialogModule,
     MatButtonModule,

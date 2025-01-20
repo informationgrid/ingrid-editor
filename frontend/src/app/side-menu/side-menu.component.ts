@@ -55,7 +55,6 @@ import { UiStore } from "../store/ui.store";
       ]),
     ]),
   ],
-  standalone: true,
   imports: [
     TranslocoDirective,
     MatNavList,

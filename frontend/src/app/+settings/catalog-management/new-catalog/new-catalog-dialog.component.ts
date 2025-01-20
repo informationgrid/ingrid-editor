@@ -44,7 +44,6 @@ export interface CatalogSettings {
 
 @Component({
   templateUrl: "new-catalog-dialog.component.html",
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,

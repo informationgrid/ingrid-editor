@@ -1,9 +1,9 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 /*-------------------*/
 
 .section {
-  color: $ige-primary;
+  color: vars.$ige-primary;
 }
 
 .section mat-icon {
@@ -15,7 +15,7 @@
 }
 
 .header {
-  background-color: $ige-background;
+  background-color: vars.$ige-background;
   padding-top: 15px;
   padding-bottom: 15px;
 }
@@ -23,7 +23,7 @@
 .header h1 {
   margin-bottom: 15px;
   padding-left: 20px;
-  color: $ige-primary;
+  color: vars.$ige-primary;
 }
 
 .header div,

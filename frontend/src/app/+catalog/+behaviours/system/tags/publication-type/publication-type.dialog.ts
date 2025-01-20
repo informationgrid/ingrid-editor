@@ -35,7 +35,6 @@ export interface PublicationTypeDialogOptions {
   selector: "ige-publication-type.dialog",
   templateUrl: "./publication-type.dialog.html",
   styleUrls: ["./publication-type.dialog.scss"],
-  standalone: true,
   imports: [
     DialogTemplateComponent,
     MatRadioGroup,

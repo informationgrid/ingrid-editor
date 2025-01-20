@@ -51,7 +51,6 @@ export interface ReplaceAddressDialogData {
   selector: "ige-replace-address-dialog",
   templateUrl: "./replace-address-dialog.component.html",
   styleUrls: ["./replace-address-dialog.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     CdkDrag,
@@ -60,7 +59,6 @@ export interface ReplaceAddressDialogData {
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     MatTabGroup,
     MatTab,

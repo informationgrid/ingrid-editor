@@ -44,7 +44,6 @@ import { toObservable } from "@angular/core/rxjs-interop";
   selector: "ige-tab-sql",
   templateUrl: "./tab-sql.component.html",
   styleUrls: ["./tab-sql.component.scss"],
-  standalone: true,
   imports: [
     PageTemplateComponent,
     MatButton,

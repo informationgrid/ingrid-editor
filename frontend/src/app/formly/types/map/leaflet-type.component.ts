@@ -52,7 +52,6 @@ import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/fo
   selector: "ige-formly-leaflet-type",
   templateUrl: "leaflet-type.component.html",
   styleUrls: ["leaflet-type.component.scss"],
-  standalone: true,
   imports: [
     MatFabButton,
     MatTooltip,

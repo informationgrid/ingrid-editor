@@ -40,7 +40,6 @@ import { Query } from "../../store/query/query.model";
   selector: "ige-save-query-dialog",
   templateUrl: "./save-query-dialog.component.html",
   styleUrls: ["./save-query-dialog.component.scss"],
-  standalone: true,
   imports: [
     MatIconButton,
     MatDialogClose,

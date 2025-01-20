@@ -84,7 +84,6 @@ interface RepeatDetailListProps extends FormlyFieldProps {
     MatTooltipModule,
     NgComponentOutlet,
   ],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RepeatDetailListComponent

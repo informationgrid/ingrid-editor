@@ -46,6 +46,7 @@ import {
 } from "@angular/common/http";
 import { ProfileService } from "../services/profile.service";
 import { GeneralStore } from "../store/general.store";
+import { provideMatomoTesting } from "ngx-matomo-client/testing";
 
 describe("DashboardComponent", () => {
   let spectator: Spectator<DashboardComponent>;
@@ -69,6 +70,7 @@ describe("DashboardComponent", () => {
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       provideLocationMocks(),
+      // provideMatomoTesting(),
     ],
     mocks: [
       ConfigService,

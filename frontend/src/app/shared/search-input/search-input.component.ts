@@ -64,7 +64,6 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
     MatButtonModule,
     FocusDirective,
   ],
-  standalone: true,
 })
 export class SearchInputComponent {
   @Input() searchSub: Subscription;

@@ -60,7 +60,6 @@ export interface RepeatProps extends FormlyFieldProps {
   selector: "ige-repeat",
   templateUrl: "./repeat.component.html",
   styleUrls: ["./repeat.component.scss"],
-  standalone: true,
   imports: [
     FormErrorComponent,
     FormlyModule,

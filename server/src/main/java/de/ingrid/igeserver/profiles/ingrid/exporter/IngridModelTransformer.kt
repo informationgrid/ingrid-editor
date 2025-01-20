@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -916,6 +916,11 @@ open class IngridModelTransformer(
                 "Dienst \"${model.title}\" (GetCapabilities)",
                 it.methodCall ?: throw ServerException.withReason("Operation URL is NULL"),
                 it.description,
+                serviceType = getServiceType(data.service.type),
+                serviceversion = getVersion(
+                    data.service.version?.firstOrNull(),
+                    data.service.type?.key,
+                ),
             )
         }
         ?: emptyList()

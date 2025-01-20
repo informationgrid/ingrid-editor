@@ -27,7 +27,6 @@ import { MatInput } from "@angular/material/input";
   selector: "general-settings",
   templateUrl: "./general-settings.component.html",
   styleUrls: ["./general-settings.component.scss"],
-  standalone: true,
   imports: [
     PageTemplateComponent,
     MatCheckbox,

@@ -36,7 +36,6 @@ import { MatIcon } from "@angular/material/icon";
   selector: "ige-breadcrumb",
   templateUrl: "./breadcrumb.component.html",
   styleUrls: ["./breadcrumb.component.scss"],
-  standalone: true,
   imports: [MatTooltip, MatIcon, forwardRef(() => BreadCrumbTooltipPipe)],
 })
 export class BreadcrumbComponent implements OnInit {

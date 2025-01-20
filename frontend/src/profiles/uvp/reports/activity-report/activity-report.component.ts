@@ -51,7 +51,6 @@ import { MatButton, MatIconButton } from "@angular/material/button";
   selector: "activity-report",
   templateUrl: "./activity-report.component.html",
   styleUrls: ["./activity-report.component.scss"],
-  standalone: true,
   imports: [
     SearchInputComponent,
     MatTableModule,

@@ -43,7 +43,6 @@ import { GeneralStore } from "../../store/general.store";
   selector: "ige-form-dashboard",
   templateUrl: "./form-dashboard.component.html",
   styleUrls: ["./form-dashboard.component.scss"],
-  standalone: true,
   imports: [
     DashboardAddressHeaderComponent,
     DashboardDocsHeaderComponent,

@@ -37,7 +37,6 @@ import { MatButton } from "@angular/material/button";
   selector: "uvp-bericht",
   templateUrl: "./uvp-bericht.component.html",
   styleUrls: ["./uvp-bericht.component.scss"],
-  standalone: true,
   imports: [
     MatTableModule,
     MatSortModule,

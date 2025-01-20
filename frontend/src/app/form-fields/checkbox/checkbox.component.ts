@@ -38,7 +38,6 @@ export const CHECKBOX_CONTROL_VALUE_ACCESSOR = {
   templateUrl: "./checkbox.component.html",
   styleUrls: ["./checkbox.component.css"],
   providers: [CHECKBOX_CONTROL_VALUE_ACCESSOR],
-  standalone: true,
   imports: [MatCheckbox, ReactiveFormsModule, FormsModule],
 })
 export class CheckboxComponent implements ControlValueAccessor, OnInit {

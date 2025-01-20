@@ -59,7 +59,6 @@ import { MatTooltip } from "@angular/material/tooltip";
   selector: "zabbix-report-dialog",
   templateUrl: "./zabbix-report-dialog.component.html",
   styleUrls: ["./zabbix-report-dialog.component.scss"],
-  standalone: true,
   imports: [
     MatButton,
     MatDialogClose,

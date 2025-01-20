@@ -42,7 +42,6 @@ import { FormErrorComponent } from "../../../../../+form/form-shared/ige-form-er
   selector: "ige-wkt-spatial",
   templateUrl: "./wkt-spatial.component.html",
   styleUrls: ["./wkt-spatial.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     MatFormField,

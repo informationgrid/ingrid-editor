@@ -80,7 +80,6 @@ export interface ChooseAddressResponse {
   templateUrl: "./choose-address-dialog.component.html",
   styleUrls: ["./choose-address-dialog.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,

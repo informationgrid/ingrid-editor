@@ -39,6 +39,7 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { DocumentService } from "../../../services/document/document.service";
+import { provideMatomoTesting } from "ngx-matomo-client/testing";
 
 let spectator: Spectator<FormToolbarComponent>;
 const buttonSubject = new Subject<Array<ToolbarItem | Separator>>();
@@ -64,6 +65,7 @@ const createHost = createComponentFactory({
     mockProvider(DocumentService, {
       documentOperationFinished$: documentOperationFinishedSubject,
     }),
+    provideMatomoTesting(),
   ],
   detectChanges: false,
 });

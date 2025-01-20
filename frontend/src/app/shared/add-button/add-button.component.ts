@@ -44,7 +44,6 @@ export interface AddButtonOptions {
   selector: "ige-add-button",
   templateUrl: "./add-button.component.html",
   styleUrls: ["./add-button.component.scss"],
-  standalone: true,
   imports: [
     MatButton,
     NgTemplateOutlet,

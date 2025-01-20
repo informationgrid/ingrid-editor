@@ -77,7 +77,6 @@ import { waitForCondition } from "../../../services/utils";
     AddButtonComponent,
     FieldToAiraLabelledbyPipe,
   ],
-  standalone: true,
 })
 export class AddressTypeComponent
   extends FieldType<FieldTypeConfig>

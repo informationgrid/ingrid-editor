@@ -30,7 +30,6 @@ import { DecimalPipe } from "@angular/common";
   templateUrl: "./chart.component.html",
   styleUrls: ["./chart.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [DecimalPipe],
 })
 export class ChartComponent {

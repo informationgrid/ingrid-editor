@@ -43,7 +43,6 @@ import {
   selector: "ige-valid-until-dialog",
   templateUrl: "./valid-until-dialog.component.html",
   styleUrls: ["./valid-until-dialog.component.scss"],
-  standalone: true,
   imports: [
     MatIconButton,
     MatDialogClose,

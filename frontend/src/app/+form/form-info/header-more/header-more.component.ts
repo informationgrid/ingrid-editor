@@ -52,7 +52,6 @@ import { UiStore } from "../../../store/ui.store";
     ]),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     TranslocoDirective,
     MatTooltip,

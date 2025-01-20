@@ -31,7 +31,6 @@ import { NgClass } from "@angular/common";
   selector: "ige-document-icon",
   templateUrl: "./document-icon.component.html",
   styleUrls: ["./document-icon.component.scss"],
-  standalone: true,
   imports: [MatTooltip, MatIcon, NgClass],
 })
 export class DocumentIconComponent implements OnChanges {

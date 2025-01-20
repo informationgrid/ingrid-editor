@@ -78,7 +78,6 @@ import { CodelistStore } from "../../store/codelist/codelist.store";
     MatDivider,
     PageTemplateComponent,
   ],
-  standalone: true,
 })
 export class CatalogCodelistsComponent implements OnInit {
   private codelistStore = inject(CodelistStore);
@@ -118,23 +117,20 @@ export class CatalogCodelistsComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {
-    effect(
-      () => {
-        if (this.codelistSelect?.value) {
-          const option = this.filteredOptions().find(
-            (item) => item.id === this.codelistSelect.value.id,
-          );
-          if (!option) {
-            this.codelistSelect.setValue(this.filteredOptions()[0]);
-            this.selectCodelist(this.filteredOptions()[0]);
-          }
-        } else if (this.filteredOptions().length > 0) {
+    effect(() => {
+      if (this.codelistSelect?.value) {
+        const option = this.filteredOptions().find(
+          (item) => item.id === this.codelistSelect.value.id,
+        );
+        if (!option) {
           this.codelistSelect.setValue(this.filteredOptions()[0]);
           this.selectCodelist(this.filteredOptions()[0]);
         }
-      },
-      { allowSignalWrites: true },
-    );
+      } else if (this.filteredOptions().length > 0) {
+        this.codelistSelect.setValue(this.filteredOptions()[0]);
+        this.selectCodelist(this.filteredOptions()[0]);
+      }
+    });
   }
 
   ngOnInit(): void {

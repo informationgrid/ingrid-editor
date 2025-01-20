@@ -45,11 +45,11 @@ import { ChartComponent } from "./chart/chart.component";
 import { DocumentListItemComponent } from "../shared/document-list-item/document-list-item.component";
 import { AsyncPipe } from "@angular/common";
 import { GeneralStore } from "../store/general.store";
+import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 
 @Component({
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     QuickSearchComponent,
@@ -58,6 +58,7 @@ import { GeneralStore } from "../store/general.store";
     ChartComponent,
     DocumentListItemComponent,
     AsyncPipe,
+    MATOMO_DIRECTIVES,
   ],
 })
 export class DashboardComponent implements OnInit {

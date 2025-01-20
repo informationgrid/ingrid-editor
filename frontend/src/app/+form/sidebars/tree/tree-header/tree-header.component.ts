@@ -47,7 +47,6 @@ import { AsyncPipe } from "@angular/common";
   selector: "ige-tree-header",
   templateUrl: "./tree-header.component.html",
   styleUrls: ["./tree-header.component.scss"],
-  standalone: true,
   imports: [
     MatCheckbox,
     MatTooltip,

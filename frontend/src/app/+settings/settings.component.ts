@@ -34,7 +34,6 @@ import { ConfigService } from "../services/config/config.service";
   selector: "settings",
   templateUrl: "./settings.component.html",
   styleUrls: ["./settings.component.scss"],
-  standalone: true,
   imports: [
     MatTabNav,
     MatTabLink,

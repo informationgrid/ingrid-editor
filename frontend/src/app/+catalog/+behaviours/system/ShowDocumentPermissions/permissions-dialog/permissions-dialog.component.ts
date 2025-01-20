@@ -61,7 +61,6 @@ export interface PermissionDialogData {
     CdkDragHandle,
     SearchInputComponent,
   ],
-  standalone: true,
 })
 export class PermissionsDialogComponent implements OnInit {
   id: number;

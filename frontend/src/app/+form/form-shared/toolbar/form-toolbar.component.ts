@@ -33,12 +33,12 @@ import { LongPressDirective } from "../../../directives/longPress.directive";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatIcon } from "@angular/material/icon";
 import { MatDivider } from "@angular/material/divider";
+import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 
 @Component({
   selector: "form-toolbar",
   templateUrl: "./form-toolbar.component.html",
   styleUrls: ["./form-toolbar.component.scss"],
-  standalone: true,
   imports: [
     MatToolbar,
     MatToolbarRow,
@@ -52,6 +52,7 @@ import { MatDivider } from "@angular/material/divider";
     MatMenuItem,
     MatDivider,
     MatIconButton,
+    MATOMO_DIRECTIVES,
   ],
 })
 export class FormToolbarComponent implements OnInit {

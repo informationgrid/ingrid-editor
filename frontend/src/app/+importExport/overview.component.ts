@@ -33,7 +33,6 @@ import {
 @Component({
   templateUrl: "./overview.component.html",
   styleUrls: ["./overview.component.scss"],
-  standalone: true,
   imports: [
     MatTabNav,
     MatTabLink,

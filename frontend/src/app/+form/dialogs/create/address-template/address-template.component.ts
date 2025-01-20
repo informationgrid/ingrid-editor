@@ -56,7 +56,6 @@ interface AddressDocumentAbstract extends DocumentAbstract {
   selector: "ige-address-template",
   templateUrl: "./address-template.component.html",
   styleUrls: ["./address-template.component.scss"],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,

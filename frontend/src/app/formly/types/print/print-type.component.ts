@@ -32,7 +32,6 @@ import { CodelistPipe } from "../../../directives/codelist.pipe";
   templateUrl: "./print-type.component.html",
   styleUrls: ["./print-type.component.scss"],
   imports: [DatePipe, AsyncPipe, CodelistPipe],
-  standalone: true,
 })
 export class PrintTypeComponent
   extends FieldType<FieldTypeConfig>

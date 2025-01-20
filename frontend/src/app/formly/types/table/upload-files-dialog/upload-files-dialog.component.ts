@@ -61,7 +61,6 @@ export interface LinkInfo {
   selector: "ige-upload-files-dialog",
   templateUrl: "./upload-files-dialog.component.html",
   styleUrls: ["./upload-files-dialog.component.scss"],
-  standalone: true,
   imports: [DialogTemplateComponent, UploadComponent, MatSlideToggle],
 })
 export class UploadFilesDialogComponent implements OnInit, OnDestroy {

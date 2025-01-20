@@ -43,7 +43,6 @@ import { MatOption } from "@angular/material/core";
   selector: "ige-filter-select",
   templateUrl: "./filter-select.component.html",
   styleUrls: ["./filter-select.component.scss"],
-  standalone: true,
   imports: [
     MatFormField,
     MatInput,

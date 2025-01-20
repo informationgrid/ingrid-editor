@@ -48,11 +48,9 @@ describe("FilterSelectComponent", () => {
   });
 
   it("should create", () => {
-    spectator = createComponent();
-    spectator.setInput(
-      "options",
-      createSignal([]) as InputSignal<SelectOptionUi[]>,
-    );
+    spectator = createComponent({ props: { options: [] } });
+
+    spectator.detectChanges();
 
     expect(spectator.component).toBeTruthy();
   });

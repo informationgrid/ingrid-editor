@@ -65,7 +65,6 @@ interface UrlReference extends Reference {
   selector: "ige-document-reference-selector",
   templateUrl: "./document-reference-selector.component.html",
   styleUrl: "./document-reference-selector.component.scss",
-  standalone: true,
   imports: [
     FormErrorComponent,
     DocumentIconComponent,

@@ -78,7 +78,6 @@ export enum TreeActionType {
   styleUrls: ["./tree.component.scss"],
   providers: [DynamicDatabase],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     TranslocoDirective,
     TreeHeaderComponent,

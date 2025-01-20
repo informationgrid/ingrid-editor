@@ -71,7 +71,6 @@ import { ImportReportComponent } from "./import-report/import-report.component";
   selector: "ige-import",
   templateUrl: "./import.component.html",
   styleUrls: ["./import.component.scss"],
-  standalone: true,
   imports: [
     PageTemplateComponent,
     JobHandlerHeaderComponent,

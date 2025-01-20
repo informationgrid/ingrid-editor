@@ -31,7 +31,6 @@ import { SizePipe } from "../../../directives/size.pipe";
   selector: "ige-upload-item",
   templateUrl: "./upload-item.component.html",
   styleUrls: ["./upload-item.component.scss"],
-  standalone: true,
   imports: [
     MatProgressSpinner,
     MatIcon,

@@ -39,7 +39,6 @@ import { DatePipe } from "@angular/common";
       ]),
     ]),
   ],
-  standalone: true,
   imports: [MatTooltip, DatePipe],
 })
 export class GroupHeaderMoreComponent implements OnInit {

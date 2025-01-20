@@ -33,7 +33,6 @@ interface RadioOption {
 @UntilDestroy()
 @Component({
   selector: "ige-radio-options",
-  standalone: true,
   imports: [CommonModule, MatRadioGroup, MatRadioButton, FormsModule],
   templateUrl: "./radio-options.component.html",
   styleUrl: "./radio-options.component.scss",

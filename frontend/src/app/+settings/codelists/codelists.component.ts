@@ -37,7 +37,6 @@ import { CodelistStore } from "../../store/codelist/codelist.store";
   selector: "ige-codelists",
   templateUrl: "./codelists.component.html",
   styleUrls: ["./codelists.component.scss"],
-  standalone: true,
   imports: [
     PageTemplateComponent,
     MatButton,

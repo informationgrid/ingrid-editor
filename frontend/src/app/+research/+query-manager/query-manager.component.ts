@@ -44,7 +44,6 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   selector: "ige-query-manager",
   templateUrl: "./query-manager.component.html",
   styleUrls: ["./query-manager.component.scss"],
-  standalone: true,
   imports: [
     PageTemplateComponent,
     CardBoxComponent,

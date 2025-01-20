@@ -47,7 +47,6 @@ export interface SelectServiceResponse {
   templateUrl: "./select-geo-dataset-dialog.component.html",
   styleUrls: ["./select-geo-dataset-dialog.component.scss"],
   imports: [FormlyModule, DialogTemplateComponent, TreeComponent],
-  standalone: true,
 })
 export class SelectGeoDatasetDialog {
   private documentService = inject(DocumentService);

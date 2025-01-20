@@ -45,7 +45,6 @@ import { GroupStore } from "../../../store/group/group.store";
 @Component({
   selector: "ige-new-group-dialog",
   templateUrl: "./new-group-dialog.component.html",
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,

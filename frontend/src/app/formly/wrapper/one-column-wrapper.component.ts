@@ -33,7 +33,6 @@ import { FormLabelComponent } from "./form-label/form-label.component";
   selector: "ige-one-column-wrapper",
   templateUrl: "./one-column-wrapper.component.html",
   styleUrls: ["./one-column-wrapper.component.scss"],
-  standalone: true,
   imports: [FormLabelComponent],
 })
 export class OneColumnWrapperComponent

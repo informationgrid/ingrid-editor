@@ -32,7 +32,6 @@ export interface Option {
   selector: "ige-option-list",
   templateUrl: "./option-list.component.html",
   styleUrls: ["./option-list.component.scss"],
-  standalone: true,
   imports: [MatRadioModule, MatDividerModule, FormsModule],
 })
 export class OptionListComponent implements OnInit {

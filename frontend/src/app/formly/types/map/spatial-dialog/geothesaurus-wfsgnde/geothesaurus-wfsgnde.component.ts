@@ -63,7 +63,6 @@ interface GeoThesaurusResult {
     "../free-spatial/free-spatial.component.scss",
     "./geothesaurus-wfsgnde.component.scss",
   ],
-  standalone: true,
   imports: [
     MatDividerModule,
     MatListModule,

@@ -42,7 +42,6 @@ interface LinkType {
   selector: "ige-upload-type",
   templateUrl: "./upload-type.component.html",
   styleUrls: ["./upload-type.component.scss"],
-  standalone: true,
   imports: [MatInput, ReactiveFormsModule],
 })
 export class UploadTypeComponent

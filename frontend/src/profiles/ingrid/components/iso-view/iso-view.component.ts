@@ -48,7 +48,6 @@ import { DialogTemplateComponent } from "../../../../app/shared/dialog-template/
     MatProgressSpinner,
     DialogTemplateComponent,
   ],
-  standalone: true,
 })
 export class IsoViewComponent implements OnInit {
   isoText: string;

@@ -41,7 +41,6 @@ import { MatIcon } from "@angular/material/icon";
   selector: "zabbix-report",
   templateUrl: "./zabbix-report.component.html",
   styleUrls: ["./zabbix-report.component.scss"],
-  standalone: true,
   imports: [
     DatePipe,
     MatMenuModule,

@@ -28,7 +28,6 @@ import { DatePipe } from "@angular/common";
   selector: "ige-publish-pending",
   templateUrl: "./publish-pending.component.html",
   styleUrls: ["./publish-pending.component.scss"],
-  standalone: true,
   imports: [TranslocoDirective, MatButton, DatePipe],
 })
 export class PublishPendingComponent implements OnInit {

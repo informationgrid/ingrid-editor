@@ -18,7 +18,6 @@
  * limitations under the Licence.
  */
 import {
-  AfterViewInit,
   Component,
   computed,
   effect,
@@ -69,13 +68,13 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { GroupStore } from "../../store/group/group.store";
 import { GeneralStore } from "../../store/general.store";
 import { UiStore } from "../../store/ui.store";
+import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 
 @UntilDestroy()
 @Component({
   selector: "ige-group-manager",
   templateUrl: "./group.component.html",
   styleUrls: ["../user.styles.scss"],
-  standalone: true,
   imports: [
     MatToolbar,
     MatToolbarRow,
@@ -99,6 +98,7 @@ import { UiStore } from "../../store/ui.store";
     MatDivider,
     UserTableComponent,
     MatProgressSpinner,
+    MATOMO_DIRECTIVES,
   ],
   providers: [UserManagementService],
 })

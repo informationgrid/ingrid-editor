@@ -41,7 +41,6 @@ export const RADIOBOX_CONTROL_VALUE_ACCESSOR = {
   templateUrl: "./radiobox.component.html",
   styleUrls: ["./radiobox.component.css"],
   providers: [RADIOBOX_CONTROL_VALUE_ACCESSOR],
-  standalone: true,
   imports: [MatRadioGroup, ReactiveFormsModule, FormsModule, MatRadioButton],
 })
 export class RadioboxComponent implements ControlValueAccessor, OnInit {

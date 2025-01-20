@@ -41,7 +41,6 @@ import { MatIcon } from "@angular/material/icon";
   selector: "ige-uvp-sections",
   templateUrl: "./uvp-sections.component.html",
   styleUrls: ["./uvp-sections.component.scss"],
-  standalone: true,
   imports: [
     FormlyModule,
     MatIconButton,

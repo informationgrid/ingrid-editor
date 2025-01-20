@@ -30,7 +30,6 @@ import { TimePipe } from "../../directives/time.pipe";
   selector: "ige-session-timeout-info",
   templateUrl: "./session-timeout-info.component.html",
   styleUrls: ["./session-timeout-info.component.scss"],
-  standalone: true,
   imports: [
     A11yModule,
     MatButtonModule,

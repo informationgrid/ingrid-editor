@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   display: flex;
@@ -12,7 +12,7 @@
   //margin-right: 12px !important;
 
   &.marker ::ng-deep .coloring {
-    fill: $ige-check-color;
+    fill: vars.$ige-check-color;
   }
 }
 

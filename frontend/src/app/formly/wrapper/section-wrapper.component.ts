@@ -33,7 +33,6 @@ import { MatDivider } from "@angular/material/divider";
   `,
   styleUrls: ["./section-wrapper.component.scss"],
   imports: [MatDivider],
-  standalone: true,
 })
 export class SectionWrapper extends FieldWrapper {
   @ViewChild("fieldComponent", { read: ViewContainerRef, static: true })

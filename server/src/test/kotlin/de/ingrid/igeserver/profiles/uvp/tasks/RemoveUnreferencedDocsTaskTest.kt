@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -155,5 +155,4 @@ class RemoveUnreferencedDocsTaskTest :
         }
     })
 
-private fun fakeFile(fileSystemStorage: FileSystemStorage, file: String, path: String = "123") =
-    FileSystemItem(fileSystemStorage, "test-cat", "", "", path, file, "", 0, null, false, Scope.PUBLISHED)
+private fun fakeFile(fileSystemStorage: FileSystemStorage, file: String, path: String = "123") = FileSystemItem(fileSystemStorage, "test-cat", "", "", path, file, "", 0, null, false, Scope.PUBLISHED)

@@ -47,7 +47,6 @@ import { MatIcon } from "@angular/material/icon";
   selector: "ige-new-user-dialog",
   templateUrl: "./new-user-dialog.component.html",
   styleUrls: ["./new-user-dialog.component.scss"],
-  standalone: true,
   imports: [
     DialogTemplateComponent,
     ReactiveFormsModule,

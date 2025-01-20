@@ -80,7 +80,6 @@ import { MatIcon } from "@angular/material/icon";
   templateUrl: "./result-table.component.html",
   styleUrls: ["./result-table.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     NgIf,
     ResultTableHeaderComponent,

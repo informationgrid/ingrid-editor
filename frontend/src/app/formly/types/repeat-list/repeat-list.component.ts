@@ -133,7 +133,6 @@ interface RepeatListProps extends FormlyFieldProps {
   selector: "ige-repeat-list",
   templateUrl: "./repeat-list.component.html",
   styleUrls: ["./repeat-list.component.scss"],
-  standalone: true,
   imports: [
     FormErrorComponent,
     FormlyModule,

@@ -34,7 +34,6 @@ import { MatButton } from "@angular/material/button";
   selector: "ige-card-box",
   templateUrl: "./card-box.component.html",
   styleUrls: ["./card-box.component.scss"],
-  standalone: true,
   imports: [
     MatCard,
     MatCardTitle,

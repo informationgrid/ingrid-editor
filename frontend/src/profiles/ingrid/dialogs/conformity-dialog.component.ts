@@ -68,7 +68,6 @@ export interface FormType {
 @Component({
   selector: "ige-conformity-dialog",
   templateUrl: "./conformity-dialog.component.html",
-  standalone: true,
   imports: [
     DialogTemplateComponent,
     ReactiveFormsModule,

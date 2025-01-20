@@ -36,7 +36,6 @@ import { FormlyModule } from "@ngx-formly/core";
   selector: "ige-behaviour-item",
   templateUrl: "./behaviour-item.component.html",
   styleUrls: ["./behaviour-item.component.scss"],
-  standalone: true,
   imports: [
     MatCard,
     MatCardHeader,

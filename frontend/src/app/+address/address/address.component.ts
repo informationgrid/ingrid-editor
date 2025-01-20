@@ -25,7 +25,6 @@ import { FormDashboardComponent } from "../../+form/form-dashboard/form-dashboar
   selector: "ige-address",
   templateUrl: "./address.component.html",
   styleUrls: ["./address.component.scss"],
-  standalone: true,
   imports: [DynamicFormComponent, FormDashboardComponent],
 })
 export class AddressComponent {}

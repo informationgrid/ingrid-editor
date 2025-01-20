@@ -41,7 +41,6 @@ interface ReferenceItemInternal extends ReferenceItem {
 
 @Component({
   selector: "ige-reference-view",
-  standalone: true,
   imports: [CodelistPipe, AsyncPipe],
   templateUrl: "./reference-view.component.html",
   styleUrl: "./reference-view.component.scss",

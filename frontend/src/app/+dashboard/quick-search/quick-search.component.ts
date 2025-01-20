@@ -39,7 +39,6 @@ import { escapeRegExp } from "../../shared/utils";
   selector: "ige-quick-search",
   templateUrl: "./quick-search.component.html",
   styleUrls: ["./quick-search.component.scss"],
-  standalone: true,
   imports: [
     SearchInputComponent,
     MatAutocomplete,

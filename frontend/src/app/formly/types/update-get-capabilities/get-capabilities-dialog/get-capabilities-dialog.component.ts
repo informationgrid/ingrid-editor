@@ -57,7 +57,6 @@ import { CodelistPipe } from "../../../../directives/codelist.pipe";
   selector: "ige-get-capabilities-dialog",
   templateUrl: "./get-capabilities-dialog.component.html",
   styleUrls: ["./get-capabilities-dialog.component.scss"],
-  standalone: true,
   imports: [
     DialogTemplateComponent,
     MatFormField,

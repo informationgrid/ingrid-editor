@@ -27,13 +27,11 @@ import {
   MatDialogTitle,
 } from "@angular/material/dialog";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 
 @Component({
   selector: "ige-dialog-template",
   templateUrl: "./dialog-template.component.html",
   styleUrls: ["./dialog-template.component.scss"],
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,
@@ -41,7 +39,6 @@ import { CdkScrollable } from "@angular/cdk/scrolling";
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     MatDialogActions,
     MatButton,

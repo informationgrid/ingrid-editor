@@ -33,7 +33,6 @@ import { MatTooltipModule } from "@angular/material/tooltip";
   templateUrl: "./form-label.component.html",
   styleUrls: ["./form-label.component.scss"],
   imports: [MatIconModule, MatTooltipModule],
-  standalone: true,
 })
 export class FormLabelComponent {
   @Input() fieldId: string;

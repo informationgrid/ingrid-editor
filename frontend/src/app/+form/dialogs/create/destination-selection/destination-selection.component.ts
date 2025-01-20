@@ -30,7 +30,6 @@ import { DocumentListItemComponent } from "../../../../shared/document-list-item
   selector: "ige-destination-selection",
   templateUrl: "./destination-selection.component.html",
   styleUrls: ["./destination-selection.component.scss"],
-  standalone: true,
   imports: [TreeComponent, DocumentListItemComponent],
 })
 export class DestinationSelectionComponent implements OnInit {

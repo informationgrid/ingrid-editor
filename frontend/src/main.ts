@@ -18,11 +18,12 @@
  * limitations under the Licence.
  */
 import {
-  APP_INITIALIZER,
   enableProdMode,
   ErrorHandler,
   importProvidersFrom,
+  inject,
   LOCALE_ID,
+  provideAppInitializer,
 } from "@angular/core";
 
 import { ConfigLoader } from "./app/config.loader";
@@ -142,6 +143,11 @@ import { MatDatepickerIntl } from "@angular/material/datepicker";
 import { GermanDateIntl } from "./app/services/german-date.intl";
 import { RadioOptionsComponent } from "./app/formly/types/radio-options/radio-options.component";
 import { GeneralStore } from "./app/store/general.store";
+import {
+  MatomoInitializerService,
+  provideMatomo,
+  withRouter,
+} from "ngx-matomo-client";
 
 if (environment.production) {
   enableProdMode();
@@ -377,20 +383,19 @@ bootstrapApplication(AppComponent, {
     ),
     provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
     // make sure we are authenticated by keycloak before bootstrap
-    {
-      provide: APP_INITIALIZER,
-      useFactory: ConfigLoader,
-      deps: [
-        ConfigService,
-        AuthenticationFactory,
-        Router,
-        HttpClient,
-        MatDialog,
-        TranslocoService,
-        GeneralStore,
-      ],
-      multi: true,
-    },
+    provideAppInitializer(() => {
+      const initializerFn = ConfigLoader(
+        inject(ConfigService),
+        inject(AuthenticationFactory),
+        inject(Router),
+        inject(HttpClient),
+        inject(MatDialog),
+        inject(TranslocoService),
+        inject(GeneralStore),
+        inject(MatomoInitializerService),
+      );
+      return initializerFn();
+    }),
     // set locale for dates
     {
       provide: LOCALE_ID,
@@ -481,5 +486,12 @@ bootstrapApplication(AppComponent, {
     // PLUGINS
     pluginProvider,
     provideAnimations(),
+    // Matomo
+    provideMatomo(
+      {
+        mode: "deferred",
+      },
+      withRouter(),
+    ),
   ],
 });
