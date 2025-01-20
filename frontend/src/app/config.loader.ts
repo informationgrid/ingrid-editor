@@ -42,7 +42,7 @@ import { MatomoInitializerService } from "ngx-matomo-client";
 registerLocaleData(de);
 
 function loadProfile(configService: ConfigService) {
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
     const hasCatalogAssigned = ProfileService.userHasAnyCatalog(
       configService.$userInfo.value,
     );
@@ -58,7 +58,9 @@ function loadProfile(configService: ConfigService) {
         map(({ ProfilePack }) => ProfilePack.getMyComponent() as Type<any>),
         take(1),
         catchError(() => {
-          throw new IgeError("Profile could not be loaded");
+          const igeError = new IgeError("Profile could not be loaded");
+          reject(igeError);
+          throw igeError;
         }),
       )
       .subscribe((data) => {
@@ -162,6 +164,20 @@ export function ConfigLoader(
     });
   }
 
+  function handleUnsupportedProfile() {
+    setTimeout(() => {
+      const path = window.location.pathname.split(";")[0];
+      const otherCatalogId =
+        configService.$userInfo.value.assignedCatalogs.find(
+          (item) => item.id !== ConfigService.catalogId,
+        ).id;
+      window.location.href = path.replace(
+        ConfigService.catalogId,
+        otherCatalogId,
+      );
+    }, 1000);
+  }
+
   return async () => {
     try {
       await configService.load();
@@ -178,6 +194,10 @@ export function ConfigLoader(
       await loadProfile.call(this, configService);
       console.debug("FINISHED APP INIT");
     } catch (err) {
+      if (err.message === "Profile could not be loaded") {
+        handleUnsupportedProfile();
+        return;
+      }
       // remove loading spinner and rethrow error
       document.getElementsByClassName("app-loading").item(0).innerHTML =
         "Fehler bei der Initialisierung";
