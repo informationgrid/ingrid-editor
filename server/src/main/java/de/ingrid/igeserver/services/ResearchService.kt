@@ -149,7 +149,8 @@ class ResearchService(
 
         // if we don't look explicitly for published state then look by default for latest version
         val latestFilter = if (!checkForPublishedSearch(query.clauses)) "document1.is_latest = true AND " else ""
-        val catalogAndPermissionFilter = deletedFilter + latestFilter + catalogFilter + permissionFilter
+        val archivedFilter = if (!checkForArchivedSearch(query.clauses)) "'archived' != ALL(document_wrapper.tags) AND " else ""
+        val catalogAndPermissionFilter = deletedFilter + latestFilter + archivedFilter + catalogFilter + permissionFilter
 
         val termSearch = convertSearchTerm(query)
 
@@ -205,6 +206,21 @@ class ResearchService(
         } else {
             clauses.value
                 ?.map { value -> value.replace(" ", "").contains(".state='PUBLISHED'") } ?: listOf()
+        }
+
+        return filterString.any { it }
+    }
+
+    private fun checkForArchivedSearch(clauses: BoolFilter?): Boolean {
+        if (clauses == null) {
+            return false
+        }
+
+        val filterString: List<Boolean> = if (!clauses.clauses.isNullOrEmpty()) {
+            clauses.clauses.map { checkForArchivedSearch(it) }
+        } else {
+            clauses.value
+                ?.map { value -> value == "archivedDocs" } ?: listOf()
         }
 
         return filterString.any { it }

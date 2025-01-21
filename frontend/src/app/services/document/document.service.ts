@@ -113,13 +113,15 @@ export class DocumentService {
     const excludeFoldersSQL = excludeFolders
       ? " AND document1.type != 'FOLDER'"
       : "";
+    const archivedTagSQL = " AND 'archived' != ALL(document_wrapper.tags)";
     return this.researchService
       .searchBySQL(
         `SELECT DISTINCT document1.*, document_wrapper.category
          FROM document_wrapper
+
                 JOIN document document1 ON document_wrapper.uuid = document1.uuid
          WHERE (title ILIKE '%${query}%' OR document1.uuid = '${query}')
-           ${categorySQL} ${excludeFoldersSQL}`,
+           ${categorySQL} ${excludeFoldersSQL} ${archivedTagSQL}`,
         1,
         size,
       )
