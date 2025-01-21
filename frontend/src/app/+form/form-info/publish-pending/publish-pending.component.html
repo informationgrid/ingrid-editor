@@ -1,21 +1,15 @@
-@if (metadata.pendingDate) {
-    <div class="publish-pending-info">
-        <div *transloco="let t; read: 'publish'">
-            {{ t("formWithPronoun") }} wird am
-            {{ metadata.pendingDate | date: "dd.MM.yyyy" }} veröffentlicht.
+<div class="publish-pending-info">
+    {{ message() }}
+    @if (allowCancel()) {
+        <div>
+            <button
+                mat-button
+                color="primary"
+                class="mat-stroked-button"
+                (click)="cancel.emit()"
+            >
+                {{ buttonLabel() }}
+            </button>
         </div>
-        <div *transloco="let t; read: 'dashboard'">
-            @if (metadata.hasWritePermission) {
-                <button
-                    mat-button
-                    color="primary"
-                    class="mat-stroked-button"
-                    (click)="stopPublish()"
-                >
-                    Veröffentlichung abbrechen und
-                    {{ t("formSingular") }} bearbeiten
-                </button>
-            }
-        </div>
-    </div>
-}
+    }
+</div>

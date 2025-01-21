@@ -1107,6 +1107,10 @@ export class DocumentService {
       null,
     );
   }
+
+  unarchive(wrapperId: number, forAddress: boolean) {
+    return this.dataService.unarchive(wrapperId);
+  }
 }
 
 export class SaveOptions {

@@ -22,6 +22,7 @@ import {
   Component,
   computed,
   inject,
+  input,
   Input,
   OnInit,
 } from "@angular/core";
@@ -30,7 +31,7 @@ import { IgeDocument } from "../../models/ige-document";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ShortTreeNode } from "../sidebars/tree/tree.types";
 import { Router } from "@angular/router";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
 import { ConfigService } from "../../services/config/config.service";
 import { FormStateService } from "../form-state.service";
 import { BreadcrumbComponent } from "./breadcrumb/breadcrumb.component";
@@ -39,6 +40,7 @@ import { HeaderTitleRowComponent } from "./header-title-row/header-title-row.com
 import { GeneralStore } from "../../store/general.store";
 import { TreeStore } from "../../store/tree/tree.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
+import { DocumentService } from "../../services/document/document.service";
 
 @UntilDestroy()
 @Component({
@@ -50,22 +52,24 @@ import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
     BreadcrumbComponent,
     PublishPendingComponent,
     HeaderTitleRowComponent,
+    TranslocoDirective,
   ],
 })
 export class FormInfoComponent implements OnInit {
-  @Input() form: UntypedFormGroup;
+  form = input<UntypedFormGroup>();
 
   _model: IgeDocument;
   @Input() set model(value: IgeDocument) {
     this._model = value;
   }
 
-  @Input() forAddress = false;
-  @Input() disableTitleEdit = false;
+  forAddress = input<boolean>(false);
+  disableTitleEdit = input<boolean>(false);
 
   private generalStore = inject(GeneralStore);
   private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);
+  private documentService = inject(DocumentService);
 
   path = computed<ShortTreeNode[]>(() => {
     if (this.forAddress) {
@@ -77,6 +81,17 @@ export class FormInfoComponent implements OnInit {
 
   rootName: string;
   metadata = this.formStateService.metadata;
+
+  isArchived = computed(() =>
+    this.metadata().tags.split(",").includes("archived"),
+  );
+
+  isPending = computed(
+    () =>
+      this.metadata().pendingDate !== null &&
+      this.metadata().pendingDate !== undefined &&
+      this.metadata().pendingDate !== "",
+  );
 
   constructor(
     private router: Router,
@@ -102,4 +117,18 @@ export class FormInfoComponent implements OnInit {
     if (nodeId) route.push({ id: store.entityMap()[nodeId]._uuid });
     return this.router.navigate(route);
   }
+
+  stopPublish() {
+    this.documentService
+      .cancelPendingPublishing(this.metadata().wrapperId, this.forAddress())
+      .subscribe();
+  }
+
+  unarchive() {
+    this.documentService
+      .unarchive(this.metadata().wrapperId, this.forAddress())
+      .subscribe();
+  }
+
+  protected readonly stop = stop;
 }

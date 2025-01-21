@@ -167,6 +167,13 @@ export class DocumentDataService {
     );
   }
 
+  unarchive(id: number): Observable<DocumentWithMetadata> {
+    return this.http.put<DocumentWithMetadata>(
+      this.configuration.backendUrl + "datasets/" + id + "?unarchive=true",
+      {},
+    );
+  }
+
   cancelPendingPublishing(id: number): Observable<DocumentWithMetadata> {
     return this.http.put<DocumentWithMetadata>(
       this.configuration.backendUrl +
