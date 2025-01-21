@@ -69,7 +69,7 @@ class InGridPublishExport(
                             FROM document
                             WHERE uuid = '$docId'
                                 AND version=$version)
-                        """.trimIndent()
+                        """.trimIndent(),
                     )
                 } else if (dataType == "InGridGeoService") {
                     indexReferencedDocs(
@@ -81,7 +81,7 @@ class InGridPublishExport(
                             FROM document
                             WHERE uuid = '$docId'
                                 AND version=$version)
-                        """.trimIndent()
+                        """.trimIndent(),
                     )
                 }
             } else if (isAddress) {
@@ -90,7 +90,7 @@ class InGridPublishExport(
                     indexReferencedDocs(
                         context,
                         "Index documents with referenced address $docId to Elasticsearch",
-                        """data->'pointOfContact'@>'[{"ref": "$docId"}]'"""
+                        """data->'pointOfContact'@>'[{"ref": "$docId"}]'""",
                     )
                 }
             }
