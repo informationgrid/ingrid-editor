@@ -56,30 +56,33 @@ class InGridPublishExport(
             if (isDocument) {
                 indexDoc(context, docId, DocumentCategory.DATA)
                 val dataType = payload.wrapper.type
-                GlobalScope.launch {
-                    if (dataType == "InGridGeoDataset") {
-                        indexReferencedDocs(
-                            context,
-                            "Index documents referenced by dataset $docId to Elasticsearch",
-                            """
-                            d.uuid IN (
-                                SELECT jsonb_array_elements(data->'references')->>'uuidRef'
-                                FROM document
-                                WHERE uuid = '$docId')
-                            """.trimIndent()
-                        )
-                    } else if (dataType == "InGridGeoService") {
-                        indexReferencedDocs(
-                            context,
-                            "Index documents coupled to service $docId to Elasticsearch",
-                            """
-                            d.uuid IN (
-                                SELECT jsonb_array_elements(data->'service'->'coupledResources')->>'uuid'
-                                FROM document
-                                WHERE uuid = '$docId')
-                            """.trimIndent()
-                        )
-                    }
+                val version = payload.document.version
+                // we cannot use GlobalScope here, because we need data from the previous version
+                // this can only be reliably determined if we're in the same transaction
+                if (dataType == "InGridGeoDataset") {
+                    indexReferencedDocs(
+                        context,
+                        "Index documents (previously or currently) referenced by dataset $docId to Elasticsearch",
+                        """
+                        d.uuid IN (
+                            SELECT jsonb_array_elements(data->'references')->>'uuidRef'
+                            FROM document
+                            WHERE uuid = '$docId'
+                                AND version=$version)
+                        """.trimIndent()
+                    )
+                } else if (dataType == "InGridGeoService") {
+                    indexReferencedDocs(
+                        context,
+                        "Index documents (previously or currently) coupled to service $docId to Elasticsearch",
+                        """
+                        d.uuid IN (
+                            SELECT jsonb_array_elements(data->'service'->'coupledResources')->>'uuid'
+                            FROM document
+                            WHERE uuid = '$docId'
+                                AND version=$version)
+                        """.trimIndent()
+                    )
                 }
             } else if (isAddress) {
                 indexDoc(context, docId, DocumentCategory.ADDRESS)
