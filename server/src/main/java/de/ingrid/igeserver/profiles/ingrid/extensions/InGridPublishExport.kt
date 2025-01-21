@@ -58,7 +58,11 @@ class InGridPublishExport(
             } else if (isAddress) {
                 indexDoc(context, docId, DocumentCategory.ADDRESS)
                 GlobalScope.launch {
-                    indexReferencedDocs(context, docId)
+                    indexReferencedDocs(
+                        context,
+                        "Index documents with referenced address $docId to Elasticsearch",
+                        """data->'pointOfContact'@>'[{"ref": "$docId"}]'"""
+                    )
                 }
             }
         } catch (ex: Exception) {
@@ -68,8 +72,8 @@ class InGridPublishExport(
         return payload
     }
 
-    private fun indexReferencedDocs(context: Context, docId: String) {
-        context.addMessage(Message(this, "Index documents with referenced address $docId to Elasticsearch"))
+    private fun indexReferencedDocs(context: Context, message: String, sqlFilter: String) {
+        context.addMessage(Message(this, message))
 
         // get uuids from documents that reference the address
         val docsWithReferences = jdbcTemplate.queryForList<String>(
@@ -80,7 +84,7 @@ class InGridPublishExport(
                 dw.uuid = d.uuid
                 AND d.state = 'PUBLISHED'
                 AND dw.deleted = 0
-                AND data->'pointOfContact' @> '[{"ref": "$docId"}]');
+                AND $sqlFilter);
             """.trimIndent(),
         )
 
