@@ -18,6 +18,7 @@ export class ArchivePlugin extends Plugin {
   group = "Datensätze";
   defaultActive = false;
   hide = false;
+  hideInAddress = true;
 
   private formToolbarService = inject(FormToolbarService);
   private docEvents = inject(DocEventsService);
@@ -74,5 +75,10 @@ export class ArchivePlugin extends Plugin {
       });
 
     this.formSubscriptions.push(toolbarEventSubscription);
+  }
+
+  unregisterForm() {
+    super.unregisterForm();
+    this.formToolbarService.removeButton("toolBtnArchive");
   }
 }
