@@ -1,5 +1,16 @@
 # Changelog
 
+## 7.4.1 (22.01.2025)
+
+
+### Bugfixes
+
+* Validierungsfehler über die OGC API (POST & PUT Methode) (#7224)
+* Anzeige "HVD" wird nicht an "Offene Lizenz" angepasst,  (#7217)
+* Automatische Indizierung im IGE-NG funktioniert nicht (#7201)
+* Die Sortierung der Vorschaugrafiken funktioniert nicht (#7193)
+* UVP-Verfahren - Portal - Darstellungsfehler in der Adresse (#6021)
+    
 ## 7.4.0 (10.01.2025)
 
 ### Features
