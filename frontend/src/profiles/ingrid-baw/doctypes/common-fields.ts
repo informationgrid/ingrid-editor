@@ -22,6 +22,7 @@ import { FormFieldHelper } from "../../form-field-helper";
 import { Injectable } from "@angular/core";
 import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 import { FormControl } from "@angular/forms";
+import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
@@ -43,6 +44,41 @@ export class CommonFieldsBaw extends FormFieldHelper {
     return doc.addRepeatList("bawKeywords", "BAW - Schlagwortkatalog 2012", {
       asSelect: true,
       options: doc.getCodelistForSelect("3950005", "null"),
+    });
+  }
+
+  getTimestepFieldConfig(): FormlyFieldConfig {
+    // TODO: flexibly set required and validotors
+    return this.addInput("timestep", "Zeitliche Genauigkeit (zurückgestellt)", {
+      fieldLabel: "Zeitliche Genauigkeit",
+      type: "number",
+      suffix: {
+        text: "s",
+      },
+      wrappers: ["panel", "form-field"],
+    });
+  }
+
+  getVerticalCoordinateReferenceSystemFieldConfig(
+    doc: IngridShared,
+  ): FormlyFieldConfig {
+    return this.addSelectInline(
+      "verticalCoordinateReferenceSystem",
+      "Höhenbezugssystem",
+      {
+        required: true,
+        options: doc.getCodelistForSelect(
+          "verticalCoordinateReferenceSystem",
+          "null",
+        ),
+      },
+    );
+  }
+
+  getUnitOfMeasurementFieldConfig(doc: IngridShared) {
+    return this.addSelectInline("unitOfMeasurement", "Einheit", {
+      required: true,
+      options: doc.getCodelistForSelect("3950020", "null"),
     });
   }
 
@@ -68,6 +104,23 @@ export class CommonFieldsBaw extends FormFieldHelper {
       ...pointOfContact.fieldConfig[pointOfContact.index].validators,
       hasBAWPointOfContact: this.hasBAWPointOfContact,
     };
+  }
+
+  addSharedGeoDatasetFields(
+    doc: GeoDatasetDoctypeBaw,
+    fieldConfig: FormlyFieldConfig[],
+  ) {
+    this.addSharedFields(doc, fieldConfig);
+
+    const pointOfContactPosition = this.findFieldElementWithId(
+      fieldConfig,
+      "pointOfContact",
+    );
+
+    // Auftragsnummer
+    this.addAfter(pointOfContactPosition, this.getOrderNumberFieldConfig());
+    // Auftragstitel
+    this.addAfter(pointOfContactPosition, this.getOrderTitleFieldConfig());
   }
 
   hasBAWPointOfContact = {

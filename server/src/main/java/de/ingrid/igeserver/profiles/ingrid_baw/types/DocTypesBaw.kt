@@ -17,19 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormlyFieldConfig } from "@ngx-formly/core";
-import { inject, Injectable } from "@angular/core";
-import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
-import { CommonFieldsBaw } from "./common-fields";
+package de.ingrid.igeserver.profiles.ingrid_baw.types
 
-@Injectable({
-  providedIn: "root",
-})
-export class GeoDatasetDoctypeBaw extends GeoDatasetDoctype {
-  common = inject(CommonFieldsBaw);
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.stereotype.Component
 
-  manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    this.common.addSharedGeoDatasetFields(this, fieldConfig);
-    return fieldConfig;
-  };
+@Component
+class BawSimulation(jdbcTemplate: JdbcTemplate) : BawBaseType(jdbcTemplate) {
+    override val className = "BawSimulation"
+}
+
+@Component
+class BawMeasurement(jdbcTemplate: JdbcTemplate) : BawBaseType(jdbcTemplate) {
+    override val className = "BawMeasurement"
 }

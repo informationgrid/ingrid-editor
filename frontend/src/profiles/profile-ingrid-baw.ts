@@ -28,6 +28,8 @@ import { SoftwareDoctypeBaw } from "./ingrid-baw/doctypes/software.doctype";
 import { CommonFieldsBaw } from "./ingrid-baw/doctypes/common-fields";
 import { ProjectDoctypeBaw } from "./ingrid-baw/doctypes/project.doctype";
 import { PublicationDoctypeBaw } from "./ingrid-baw/doctypes/publication.doctype";
+import { SimulationDoctypeBaw } from "./ingrid-baw/doctypes/simulation.doctype";
+import { MeasurementDoctypeBaw } from "./ingrid-baw/doctypes/measurement.doctype";
 
 @UntilDestroy()
 @Component({
@@ -40,6 +42,8 @@ class InGridBawComponent extends InGridComponent {
   project = inject(ProjectDoctypeBaw);
   publication = inject(PublicationDoctypeBaw);
   software = inject(SoftwareDoctypeBaw);
+  simulation = inject(SimulationDoctypeBaw);
+  measurement = inject(MeasurementDoctypeBaw);
 
   dialog = inject(MatDialog);
   docEvents = inject(DocEventsService);
@@ -52,6 +56,8 @@ class InGridBawComponent extends InGridComponent {
     this.project,
     this.publication,
     this.software,
+    this.simulation,
+    this.measurement,
     this.person,
     this.organisation,
   ];
@@ -69,6 +75,8 @@ class InGridBawComponent extends InGridComponent {
       this.project,
       this.publication,
       this.software,
+      this.simulation,
+      this.measurement,
     ].forEach((docType) => {
       // add BWaStr-Strecken to spatial types
       docType.options.spatialTypes.push("bwastr");
