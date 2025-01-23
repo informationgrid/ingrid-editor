@@ -23,9 +23,8 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UseConstraint
-import de.ingrid.mdek.upload.Config
 
-class GeodatasetMapperBkg(isoData: IsoImportData, config: Config) : GeodatasetMapper(isoData, config) {
+class GeodatasetMapperBkg(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
     val common = CommonMapperBkg(codeListService)
 
