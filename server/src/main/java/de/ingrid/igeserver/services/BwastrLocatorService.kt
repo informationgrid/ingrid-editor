@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -123,12 +123,11 @@ class BwastrLocatorService {
         return http.send(request, HttpResponse.BodyHandlers.ofString()).body()
     }
 
-    private fun httpClient(executor: ExecutorService?) =
-        HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(30))
-            .followRedirects(HttpClient.Redirect.NORMAL)
-            .executor(executor)
-            .build()
+    private fun httpClient(executor: ExecutorService?) = HttpClient.newBuilder()
+        .connectTimeout(Duration.ofSeconds(30))
+        .followRedirects(HttpClient.Redirect.NORMAL)
+        .executor(executor)
+        .build()
 
     private fun httpRequest(method: String, url: String, body: String?): HttpRequest {
         val msgBody =
