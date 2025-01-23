@@ -61,14 +61,12 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
 
   private getSimulationModelTypeFieldConfig() {
     return this.addRepeatList("simulationModelType", "Simulationsmodellart", {
-      required: true,
       options: this.getCodelistForSelect("3950003", "null"),
     });
   }
 
   private getSimulationParameterFieldConfig() {
     return this.addRepeat("simulationParameter", "Simulationsparameter", {
-      required: true,
       fields: [
         this.addInputInline("name", "Name", { required: true }),
         this.addSelectInline("role", "Rolle", {
