@@ -124,6 +124,7 @@ export abstract class IngridShared extends BaseDoctype {
   showHVD: boolean = false;
   showAdVCompatible: boolean = false;
   showAdVProductGroup: boolean = false;
+  showFileReferences: boolean = true;
   /** @deprecated: should be defined in geoservice-doctype */
   isGeoService: boolean = false;
   /** @deprecated: should be defined in geodataset-doctype */
@@ -137,6 +138,7 @@ export abstract class IngridShared extends BaseDoctype {
     urlDataType: "1320",
     fileReferenceFormat: "1320",
   };
+  metadataDefaultValue: any = undefined;
 
   protected metadataOptions(): MetadataOption[] {
     return [
@@ -284,7 +286,7 @@ export abstract class IngridShared extends BaseDoctype {
               <FormlyFieldConfig>{
                 key: "properties",
                 type: "metadata",
-
+                defaultValue: this.metadataDefaultValue,
                 props: <MetadataProps>{
                   availableOptions: availableOptions,
                   disabledOptions: {},
@@ -1517,6 +1519,7 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   addFileReferences() {
+    if (!this.showFileReferences) return null;
     return this.addSection("Dateien", [
       this.addRepeatDistributionDetailList("fileReferences", "Dateien", {
         required: false,

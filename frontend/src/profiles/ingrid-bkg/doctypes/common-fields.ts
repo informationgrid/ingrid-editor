@@ -7,10 +7,8 @@ import { FormlyFieldInput } from "@ngx-formly/material/input";
   providedIn: "root",
 })
 export class CommonFieldsBkg extends BaseDoctype {
-  documentFields(): FormlyFieldConfig<
-    FormlyFieldProps & { [additionalProperties: string]: any }
-  >[] {
-    throw new Error("Method not implemented.");
+  documentFields(): FormlyFieldConfig[] {
+    throw new Error("This should not be called but must be implemented.");
   }
 
   getAccessConstraints(): FormlyFieldConfig {
@@ -28,11 +26,12 @@ export class CommonFieldsBkg extends BaseDoctype {
             )?.data;
             return data ? JSON.parse(data)?.de : "";
           },
-          "props.required": "!formState.mainModel?.isInspireIdentified",
+          "props.required":
+            "!formState.mainModel?.properties?.isInspireIdentified",
         },
       }),
       this.addTextArea("accessConstraintsBkgComment", null, "bkg", {
-        fieldLabel: "Kommentar",
+        fieldLabel: "ergänzender Texteintrag",
       }),
     ]);
   }
@@ -40,6 +39,7 @@ export class CommonFieldsBkg extends BaseDoctype {
   getUseConstraints(): FormlyFieldConfig {
     return this.addGroupSimple(null, [
       this.addSelect("useConstraintsBkg", "Nutzungsbedingungen", {
+        required: true,
         wrappers: ["panel", "form-field"],
         options: this.getCodelistForSelect("10003", "useConstraintsBkg"),
         codelistId: "10003",
@@ -58,13 +58,13 @@ export class CommonFieldsBkg extends BaseDoctype {
         null,
         [
           this.addTextAreaInline(
-            "useConstraintsBkgComment",
-            "Kommentar",
+            "useConstraintsBkgSource",
+            "Quellenvermerk",
             "bkg",
           ),
           this.addTextAreaInline(
-            "useConstraintsBkgSource",
-            "Quellenvermerk",
+            "useConstraintsBkgComment",
+            "ergänzender Texteintrag",
             "bkg",
           ),
         ],

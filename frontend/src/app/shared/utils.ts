@@ -151,7 +151,7 @@ export function removeNullOrEmptyFields(obj: any) {
     if (p === null || p === "") {
       obj[f] = undefined;
     } else if (typeof p === "object" && p !== null) {
-      this.removeNullOrEmptyFields(p);
+      removeNullOrEmptyFields(p);
     }
   }
 }

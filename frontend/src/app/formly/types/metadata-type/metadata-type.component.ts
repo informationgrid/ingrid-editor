@@ -26,11 +26,7 @@ import {
 } from "@ngx-formly/core";
 import { FormLabelComponent } from "../../wrapper/form-label/form-label.component";
 import { AsyncPipe, NgIf, NgTemplateOutlet } from "@angular/common";
-import {
-  MatChip,
-  MatChipListbox,
-  MatChipOption,
-} from "@angular/material/chips";
+import { MatChipListbox, MatChipOption } from "@angular/material/chips";
 import {
   AbstractControl,
   FormControl,
@@ -92,7 +88,6 @@ export interface MetadataOptionItem {
     FormLabelComponent,
     NgIf,
     MatChipListbox,
-    MatChip,
     MatChipOption,
     ReactiveFormsModule,
     FormErrorComponent,

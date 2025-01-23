@@ -25,6 +25,7 @@ import { CommonFieldsBkg } from "./ingrid-bkg/doctypes/common-fields";
 import { OpendataBehaviour } from "./ingrid-bkg/behaviours/opendata.behaviour";
 import { PluginService } from "../app/services/plugin/plugin.service";
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
+import { GeoServiceDoctype } from "./ingrid/doctypes/geo-service.doctype";
 
 @Component({
   template: "",
@@ -57,6 +58,16 @@ class InGridBkgComponent extends InGridComponent {
         if (docType !== this.specialisedTask) {
           this.addUseAndAccessConstraints(fieldConfig);
           this.removeOriginalUseConstraints(fieldConfig);
+          if (docType === this.geoDataset) {
+            // set default value for subType to dataset
+            const metadata = docType.findFieldElementWithIdPath(
+              fieldConfig,
+              "properties",
+            );
+            metadata.fieldConfig[metadata.index].defaultValue = {
+              subType: { key: "5" },
+            };
+          }
         }
         this.removeWktFromSpatialReferences(fieldConfig);
 
@@ -68,6 +79,11 @@ class InGridBkgComponent extends InGridComponent {
           !this.isShowCategoriesActivated();
         docType.options.validate.downloadLinkWhenOpenData = false;
       }
+
+      if (docType === this.geoService) {
+        (docType as GeoServiceDoctype).showHasAccessConstraints = false;
+      }
+      docType.showFileReferences = false;
     });
   }
 

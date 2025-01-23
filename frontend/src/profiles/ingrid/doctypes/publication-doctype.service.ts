@@ -143,7 +143,7 @@ export class PublicationDoctype extends IngridShared {
       this.addAvailabilitySection(),
       this.addLinksSection(),
       this.addFileReferences(),
-    ];
+    ].filter(Boolean);
 
     return this.manipulateDocumentFields(fields);
   };
