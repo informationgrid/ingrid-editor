@@ -268,13 +268,10 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
   }
 
   showSpatialDialog(location: SpatialLocation = null) {
-    const data: Partial<SpatialLocation> = location ?? {
-      type: "free",
-    };
-    data.limitTypes = ["free"];
-
     this.dialog
-      .open(SpatialDialogComponent, { data: data })
+      .open(SpatialDialogComponent, {
+        data: { location: location ?? { type: "free" }, limitTypes: ["free"] },
+      })
       .afterClosed()
       .subscribe((result) => {
         if (result && result.value) this.updateLocation(result);

@@ -36,12 +36,16 @@ import { DecimalPipe } from "@angular/common";
 
 export type SpatialLocationType = "free" | "wkt" | "wfsgnde" | "bwastr";
 
+export interface SpatialDialogData {
+  location: SpatialLocation;
+  limitTypes?: SpatialLocationType[];
+}
+
 export interface SpatialLocation {
   title: string;
   type: SpatialLocationType;
   value?: SpatialBoundingBox;
   wkt?: string;
-  limitTypes?: SpatialLocationType[];
   ars?: string;
   bwastr?: BwastrSection;
 }

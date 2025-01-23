@@ -201,7 +201,7 @@ export class LeafletTypeComponent
         maxWidth: 1260,
         minWidth: "min(600px, 100%)",
         data: {
-          ...this.locations[locationIndex],
+          location: this.locations[locationIndex],
           limitTypes: this.props.limitTypes,
         },
         ariaLabel: "Raumbezug hinzufügen",

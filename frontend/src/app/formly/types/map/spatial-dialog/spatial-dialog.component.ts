@@ -38,6 +38,7 @@ import {
 } from "@angular/material/dialog";
 import {
   BwastrSection,
+  SpatialDialogData,
   SpatialLocation,
   SpatialLocationType,
 } from "../spatial-list/spatial-list.component";
@@ -48,7 +49,6 @@ import { TranslocoService } from "@ngneat/transloco";
 import { debounceTime } from "rxjs/operators";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { MatFormField } from "@angular/material/form-field";
 import { MatSelect } from "@angular/material/select";
 import { MatOption } from "@angular/material/core";
@@ -74,7 +74,6 @@ interface LocationType {
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     MatFormField,
     MatSelect,
@@ -95,7 +94,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
 
   private transloco = inject(TranslocoService);
 
-  dialogTitle = this.data?.value
+  dialogTitle = this.data?.location?.value
     ? "Raumbezug bearbeiten"
     : "Raumbezug hinzufügen";
 
@@ -121,7 +120,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
 
   constructor(
     private dialogRef: MatDialogRef<SpatialDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: SpatialLocation,
+    @Inject(MAT_DIALOG_DATA) public data: SpatialDialogData,
     private leafletService: LeafletService,
   ) {
     if (this.data?.limitTypes) {
@@ -136,10 +135,11 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
       .pipe(untilDestroyed(this), debounceTime(500))
       .subscribe((title) => (this.result.title = title));
 
-    if (this.data) {
-      this._bbox = this.data.value;
-      this.titleInput.setValue(this.data.title);
-      this.result = { ...this.result, ...this.data };
+    if (this.data?.location) {
+      const location = this.data.location;
+      this._bbox = location.value;
+      this.titleInput.setValue(location.title);
+      this.result = { ...this.result, ...location };
     } else {
       this.titleInput.setValue("Neuer Raumbezug");
     }
@@ -150,7 +150,7 @@ export class SpatialDialogComponent implements OnInit, AfterViewInit {
       this.leaflet.nativeElement,
       {},
     );
-    setTimeout(() => this.updateView(this.data?.type ?? "free"));
+    setTimeout(() => this.updateView(this.data?.location?.type ?? "free"));
   }
 
   updateBoundingBox(result: SpatialBoundingBox) {
