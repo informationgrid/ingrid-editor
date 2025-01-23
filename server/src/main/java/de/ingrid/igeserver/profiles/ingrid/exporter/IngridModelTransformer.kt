@@ -202,17 +202,8 @@ open class IngridModelTransformer(
             if (constraint.title?.key == "26") "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply" else null
 
         val baseJson = codelists.getData("6500", constraint.title?.key)
-        val sourceString = ",\"quelle\":\"${constraint.source.orEmpty().replace("\"", "\\\\\"")}\""
 
-        val json = baseJson?.let {
-            if (it.contains(",\"quelle\":\"\"".toRegex())) {
-                // replace existing source string
-                it.replace(",\"quelle\":\"\"".toRegex(), sourceString)
-            } else {
-                // add source string
-                it.replace("}$".toRegex(), "$sourceString}")
-            }
-        }
+        val json = getUseConstraintJson(baseJson, constraint.source)
 
         UseConstraintTemplate(
             CharacterStringModel(
@@ -225,6 +216,20 @@ open class IngridModelTransformer(
             constraint.title?.key,
         )
     } ?: emptyList()
+
+    private fun getUseConstraintJson(baseJson: String?, source: String?): String? {
+        val sourceString = ",\"quelle\":\"${source.orEmpty().replace("\"", "\\\\\"")}\""
+
+        return baseJson?.let {
+            if (it.contains(",\"quelle\":\"\"".toRegex())) {
+                // replace existing source string
+                it.replace(",\"quelle\":\"\"".toRegex(), sourceString)
+            } else {
+                // add source string
+                it.replace("}$".toRegex(), "$sourceString}")
+            }
+        }
+    }
 
     fun containsSpatialRepresentation(): Boolean = gridSpatialRepresentation != null && !gridSpatialRepresentation.isAllFieldsNullOrEmpty()
 

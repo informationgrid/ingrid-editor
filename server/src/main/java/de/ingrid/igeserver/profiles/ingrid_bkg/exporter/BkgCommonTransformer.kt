@@ -33,11 +33,25 @@ class BkgCommonTransformer(private val codelists: CodelistTransformer, private v
                     },
                 ),
                 doc.data.getStringOrEmpty("resource.useConstraintsBkgSource"),
-                null,
+                getUseConstraintJson(codelists.getData("10003", bkgUseConstraintsTitleKey), doc.data.getString("resource.useConstraintsBkgSource")),
                 bkgUseConstraintsTitleKey,
                 doc.data.getStringOrEmpty("resource.useConstraintsBkgComment"),
             ),
         )
+    }
+
+    private fun getUseConstraintJson(baseJson: String?, source: String?): String? {
+        val sourceString = ",\"quelle\":\"${source.orEmpty().replace("\"", "\\\\\"")}\""
+
+        return baseJson?.let {
+            if (it.contains(",\"quelle\":\"\"".toRegex())) {
+                // replace existing source string
+                it.replace(",\"quelle\":\"\"".toRegex(), sourceString)
+            } else {
+                // add source string
+                it.replace("}$".toRegex(), "$sourceString}")
+            }
+        }
     }
 
     fun getAccessConstraints(defaultAccessConstraintsCodelistValues: List<String>): AccessConstraint {
