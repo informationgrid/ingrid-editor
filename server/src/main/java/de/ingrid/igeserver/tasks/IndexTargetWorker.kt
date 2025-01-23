@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -214,7 +214,7 @@ class IndexTargetWorker(
     @Throws(IOException::class)
     private fun getIPlugInfo(infoId: String, info: IPlugInfo, forAddress: Boolean): String {
         val plugId = "ige-ng_${plugInfo.catalog.identifier}"
-        val currentDate = OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
+        val currentDate = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"))
 
         return jacksonObjectMapper()
             .createObjectNode()

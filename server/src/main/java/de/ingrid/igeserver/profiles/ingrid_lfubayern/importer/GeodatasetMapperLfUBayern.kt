@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,9 +22,8 @@ package de.ingrid.igeserver.profiles.ingrid_lfubayern.importer
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
-import de.ingrid.mdek.upload.Config
 
-class GeodatasetMapperLfUBayern(isoData: IsoImportData, config: Config) : GeodatasetMapper(isoData, config) {
+class GeodatasetMapperLfUBayern(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
     init {
         fieldToCodelist.referenceFileFormat = "20002"

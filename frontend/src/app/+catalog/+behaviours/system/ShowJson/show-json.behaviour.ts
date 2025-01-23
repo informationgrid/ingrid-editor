@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -30,7 +30,7 @@ export class ShowJsonBehaviour extends Plugin {
   name = "Anzeige JSON Formular";
   group = "Toolbar";
   description =
-    "Ein neuer Button ermöglicht die Anzeige des JSON-Dokuments neben dem Formular.";
+    "Fügt einen Button hinzu, mit dem das JSON-Dokument neben dem Formular angezeigt werden kann.";
   defaultActive = false;
 
   private uiStore = inject(UiStore);

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -35,7 +35,6 @@ export const DROPDOWN_CONTROL_VALUE_ACCESSOR = {
   templateUrl: "./drop-down.component.html",
   styleUrls: ["./drop-down.component.css"],
   providers: [DROPDOWN_CONTROL_VALUE_ACCESSOR],
-  standalone: true,
   imports: [MatFormField, MatSelect, MatOption],
 })
 export class DropDownComponent implements ControlValueAccessor, OnInit {

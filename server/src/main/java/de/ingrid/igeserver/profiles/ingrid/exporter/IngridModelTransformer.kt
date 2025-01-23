@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -55,7 +55,7 @@ import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getString
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.kotlin.util.suffixIfNot
 import org.unbescape.json.JsonEscape
@@ -71,7 +71,7 @@ data class TransformerConfig(
     val model: IngridModel,
     val catalogIdentifier: String,
     val codelists: CodelistTransformer,
-    val config: Config,
+    val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
     val cache: TransformerCache,
     val doc: Document,
@@ -85,7 +85,7 @@ open class IngridModelTransformer(
     val model = transformerConfig.model
     val catalogIdentifier = transformerConfig.catalogIdentifier
     val codelists = transformerConfig.codelists
-    val config = transformerConfig.config
+    val config = transformerConfig.uploadConfig
     val catalogService = transformerConfig.catalogService
     val cache = transformerConfig.cache
     val doc = transformerConfig.doc
@@ -930,6 +930,11 @@ open class IngridModelTransformer(
                 "Dienst \"${model.title}\" (GetCapabilities)",
                 it.methodCall ?: throw ServerException.withReason("Operation URL is NULL"),
                 it.description,
+                serviceType = getServiceType(data.service.type),
+                serviceversion = getVersion(
+                    data.service.version?.firstOrNull(),
+                    data.service.type?.key,
+                ),
             )
         }
         ?: emptyList()

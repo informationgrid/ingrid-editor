@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,14 +22,12 @@ package de.ingrid.igeserver.profiles.ingrid_hmdk.importer
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
-import de.ingrid.mdek.upload.Config
 
-class GeodatasetMapperHMDK(isoData: IsoImportData, config: Config) : GeodatasetMapper(isoData, config) {
+class GeodatasetMapperHMDK(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
     val publicationHmbTG = containsKeyword("hmbtg")
 
-    override fun getKeywords(): List<String> =
-        super.getKeywords(listOf("HmbTG-Informationsgegenstand")).filterNot { it == "hmbtg" }
+    override fun getKeywords(): List<String> = super.getKeywords(listOf("HmbTG-Informationsgegenstand")).filterNot { it == "hmbtg" }
 
     fun getInformationHmbTG(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
         ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "HmbTG-Informationsgegenstand" }

@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 ige-add-button {
   display: block;
@@ -6,7 +6,7 @@ ige-add-button {
 }
 
 .cdk-drag {
-  background: $ige-background;
+  background: vars.$ige-background;
 }
 
 .cdk-drag-handle {

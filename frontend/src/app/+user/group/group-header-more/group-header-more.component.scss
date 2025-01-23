@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   display: block;
@@ -9,15 +9,15 @@
   margin-bottom: 24px;
   overflow: hidden;
   line-height: 22px;
-  background: $ige-background;
+  background: vars.$ige-background;
   border-radius: 8px;
   //font-size: 14px;
   font-weight: 400;
-  color: $ige-text-color;
+  color: vars.$ige-text-color;
 
   > div > div:nth-child(1) {
     width: 296px;
-    color: $ige-hint-color;
+    color: vars.$ige-hint-color;
   }
 
   .padding-below {

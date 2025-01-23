@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -36,7 +36,6 @@ import { MatIcon } from "@angular/material/icon";
   selector: "ige-breadcrumb",
   templateUrl: "./breadcrumb.component.html",
   styleUrls: ["./breadcrumb.component.scss"],
-  standalone: true,
   imports: [MatTooltip, MatIcon, forwardRef(() => BreadCrumbTooltipPipe)],
 })
 export class BreadcrumbComponent implements OnInit {

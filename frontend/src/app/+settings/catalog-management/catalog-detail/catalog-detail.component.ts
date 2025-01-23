@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -38,7 +38,6 @@ import {
 import { NewCatalogDialogComponent } from "../new-catalog/new-catalog-dialog.component";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -59,13 +58,11 @@ export interface CatalogDetailResponse {
   selector: "ige-catalog-detail",
   templateUrl: "./catalog-detail.component.html",
   styleUrls: ["./catalog-detail.component.scss"],
-  standalone: true,
   imports: [
     MatIconButton,
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     MatFormField,
     MatLabel,

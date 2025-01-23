@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -36,7 +36,7 @@ import {
   CdkDropList,
 } from "@angular/cdk/drag-drop";
 import { MatListModule } from "@angular/material/list";
-import { AsyncPipe, JsonPipe, KeyValuePipe, NgForOf } from "@angular/common";
+import { AsyncPipe, KeyValuePipe, NgForOf } from "@angular/common";
 
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
@@ -50,7 +50,6 @@ import { filter, startWith } from "rxjs/operators";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
 import { FormStateService } from "../../../+form/form-state.service";
-import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import { CodelistPipe } from "../../../directives/codelist.pipe";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
@@ -83,15 +82,12 @@ interface RepeatDistributionDetailListProps extends FormlyFieldProps {
     MatListModule,
     MatMenuModule,
     MatExpansionModule,
-    AddButtonComponent,
     MatButtonModule,
     FormErrorComponent,
     KeyValuePipe,
     MatTooltipModule,
-    JsonPipe,
     NgForOf,
   ],
-  standalone: true,
 })
 export class RepeatDistributionDetailListComponent
   extends FieldType<FieldTypeConfig<RepeatDistributionDetailListProps>>

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -58,6 +58,6 @@ fun getInternalReferences(modelTransformer: IngridModelTransformer, codelists: C
     )
 }
 
-fun getPortalUrl(transformerConfig: TransformerConfig): String = URI(transformerConfig.config.uploadExternalUrl).let {
+fun getPortalUrl(transformerConfig: TransformerConfig): String = URI(transformerConfig.uploadConfig.uploadExternalUrl).let {
     if (it.scheme == null) "" else it.scheme + "://" + it.host
 }

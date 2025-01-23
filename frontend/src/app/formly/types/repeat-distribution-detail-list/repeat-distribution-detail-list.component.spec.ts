@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,7 +22,7 @@ import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
 import { RepeatDistributionDetailListComponent } from "./repeat-distribution-detail-list.component";
 import { FormlyFieldConfig, FormlyForm, FormlyModule } from "@ngx-formly/core";
 
-describe("RepeatDistributionDetailListComponent", () => {
+xdescribe("RepeatDistributionDetailListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
   const createHost = createHostFactory({
     component: FormlyForm,

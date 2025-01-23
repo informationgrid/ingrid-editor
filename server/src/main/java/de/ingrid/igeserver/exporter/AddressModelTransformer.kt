@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -28,7 +28,7 @@ import de.ingrid.igeserver.utils.checkPublicationTags
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 import de.ingrid.igeserver.utils.mapToKeyValue
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.dao.EmptyResultDataAccessException
 import java.text.SimpleDateFormat
@@ -41,7 +41,7 @@ data class AddressTransformerConfig(
     val relationType: KeyValue?,
     val doc: Document,
     val documentService: DocumentService,
-    val config: Config?,
+    val uploadConfig: UploadConfig?,
     val tags: List<String>,
 )
 
@@ -53,7 +53,7 @@ open class AddressModelTransformer(
     val relationType = transformerConfig.relationType
     val doc = transformerConfig.doc
     val documentService = transformerConfig.documentService
-    val config = transformerConfig.config
+    val config = transformerConfig.uploadConfig
     val tags = transformerConfig.tags
 
     var displayAddress: Document

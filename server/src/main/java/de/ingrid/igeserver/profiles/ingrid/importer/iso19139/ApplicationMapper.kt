@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -23,10 +23,9 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ServiceUrl
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
-import de.ingrid.mdek.upload.Config
 import org.apache.logging.log4j.kotlin.logger
 
-open class ApplicationMapper(isoData: IsoImportData, config: Config) : GeneralMapper(isoData, config) {
+open class ApplicationMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
 
     val log = logger()
     val identificationInfo = metadata.identificationInfo[0].dataIdentificationInfo
@@ -56,13 +55,11 @@ open class ApplicationMapper(isoData: IsoImportData, config: Config) : GeneralMa
 
     fun getSystemEnvironment(): String = identificationInfo?.environmentDescription?.value ?: ""
 
-    fun getImplementationHistory(): String =
-        metadata.dataQualityInfo?.get(0)?.dqDataQuality?.lineage?.liLinage?.processStep?.get(0)?.liProcessStep?.description?.value
-            ?: ""
+    fun getImplementationHistory(): String = metadata.dataQualityInfo?.get(0)?.dqDataQuality?.lineage?.liLinage?.processStep?.get(0)?.liProcessStep?.description?.value
+        ?: ""
 
-    fun getBaseDataText(): String =
-        metadata.dataQualityInfo?.get(0)?.dqDataQuality?.lineage?.liLinage?.source?.get(0)?.liSource?.description?.value
-            ?: ""
+    fun getBaseDataText(): String = metadata.dataQualityInfo?.get(0)?.dqDataQuality?.lineage?.liLinage?.source?.get(0)?.liSource?.description?.value
+        ?: ""
 
     fun getExplanation(): String = identificationInfo?.supplementalInformation?.value ?: ""
 

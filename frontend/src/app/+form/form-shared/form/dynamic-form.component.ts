@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -94,7 +94,6 @@ import { BehaviourService } from "../../../services/behavior/behaviour.service";
   selector: "ige-form-wrapper",
   templateUrl: "./dynamic-form.component.html",
   styleUrls: ["./dynamic-form.component.scss"],
-  standalone: true,
   imports: [
     FormToolbarComponent,
     AngularSplitModule,
@@ -216,27 +215,22 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.isLoading = this.generalStore.isDocumentLoading();
     });
 
-    effect(
-      () => {
-        // execute only ofter init, otherwise initial loading of dataset will not work
-        if (!this.afterInit()) return;
-        const activeNode = this.generalStore.getExplicitActiveNode(
+    effect(() => {
+      // execute only ofter init, otherwise initial loading of dataset will not work
+      if (!this.afterInit()) return;
+      const activeNode = this.generalStore.getExplicitActiveNode(this.address);
+      if (activeNode === null) {
+        // when clicking on root node in breadcrumb we need to set opened document to null
+        // otherwise the last one will be loaded again
+        this.documentService.updateOpenedDocumentInTreestore(
+          null,
           this.address,
         );
-        if (activeNode === null) {
-          // when clicking on root node in breadcrumb we need to set opened document to null
-          // otherwise the last one will be loaded again
-          this.documentService.updateOpenedDocumentInTreestore(
-            null,
-            this.address,
-          );
-          this.router.navigate([
-            ConfigService.catalogId + (this.address ? "/address" : "/form"),
-          ]);
-        }
-      },
-      { allowSignalWrites: true },
-    );
+        this.router.navigate([
+          ConfigService.catalogId + (this.address ? "/address" : "/form"),
+        ]);
+      }
+    });
   }
 
   ngOnDestroy() {

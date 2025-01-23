@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -189,6 +189,15 @@ data class UVPModel(
             .map { formatDate(formatterNoSeparator, it) }
     }
 
+    fun getDecisionDateAsDate(): List<OffsetDateTime> {
+        val decisionDates =
+            data.steps.filterIsInstance<StepDecisionOfAdmission>().map { it.decisionDate }.toMutableList()
+        if (data.decisionDate != null) decisionDates += data.decisionDate
+
+        return decisionDates
+            .map { OffsetDateTime.parse(it) }
+    }
+
     companion object {
         val codelistHandler: CodelistHandler? by lazy {
             SpringContext.getBean(CodelistHandler::class.java)
@@ -221,7 +230,7 @@ data class UVPModel(
 
     fun hasPoBox(): Boolean = !pointOfContact?.poBox.isNullOrEmpty()
 
-    fun getUvpAddressParents(): List<DocumentData> = if (pointOfContact!!.parentAddresses.isEmpty()) emptyList() else nonHiddenAncestorAddresses!!.dropLast(1)
+    fun getUvpAddressParents(): List<DocumentData> = if (pointOfContact!!.parentAddresses.isEmpty()) emptyList() else nonHiddenAncestorAddresses!!.dropLast(1).reversed()
 
     fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> = if (pointOfContact == null) emptyList() else nonHiddenAncestorAddresses!!.map { getAddressShort(it.document) }
 

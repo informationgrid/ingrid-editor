@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -40,7 +40,6 @@ import { Query } from "../../store/query/query.model";
   selector: "ige-save-query-dialog",
   templateUrl: "./save-query-dialog.component.html",
   styleUrls: ["./save-query-dialog.component.scss"],
-  standalone: true,
   imports: [
     MatIconButton,
     MatDialogClose,

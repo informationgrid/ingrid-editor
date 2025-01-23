@@ -53,5 +53,14 @@ if [[ -n "${ENABLE_AI}" ]]; then
   sed -i -r "s@openAISearch\":.*@openAISearch\": $ENABLE_AI@" /app/resources/static/assets/config.json
 fi
 
+if [[ -n "${MATOMO_URL}" ]]; then
+  sed -i -r "s@matomoUrl\":.*@matomoUrl\": \"$MATOMO_URL\",@" /app/resources/static/assets/config.json
+fi
+
+if [ -n "${MATOMO_SITE_ID}" ]; then
+  sed -i -r "s@matomoSiteId\":.*@matomoSiteId\": $MATOMO_SITE_ID,@" /app/resources/static/assets/config.json
+fi
+
+
 echo "Run original entrypoint command"
 java -cp $( cat /app/jib-classpath-file ) $( cat /app/jib-main-class-file )

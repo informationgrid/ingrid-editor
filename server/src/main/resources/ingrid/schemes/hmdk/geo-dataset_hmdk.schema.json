@@ -13,7 +13,7 @@
       }
     },
     "informationHmbTG": {
-      "type": "array",
+      "type": ["null", "array"],
       "items": {
         "$ref": "../../../general.schema.json#/definitions/KeyValue"
       }

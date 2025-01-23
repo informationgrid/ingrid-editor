@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -108,7 +108,10 @@ export class GeoServiceDoctype extends IngridShared {
                 asSelect: true,
                 showSearch: true,
                 required: this.geoServiceOptions.required.classification,
-                options: this.getCodelistForSelect("5200", "classification"),
+            options: this.getCodelistForSelect(
+              "5200",
+              "service.classification",
+            ),
                 codelistId: "5200",
               },
             ),
@@ -119,7 +122,7 @@ export class GeoServiceDoctype extends IngridShared {
                   this.addSelectInline("type", "Art des Dienstes", {
                     required: true,
                     showSearch: true,
-                    options: this.getCodelistForSelect("5100", "type"),
+                  options: this.getCodelistForSelect("5100", "service.type"),
                     codelistId: "5100",
                     hasInlineContextHelp: true,
                     contextHelpId: "serviceType",

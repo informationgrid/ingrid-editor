@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -45,7 +45,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   defaultActive = true;
   name = "Assistent für GetCapabilities";
   description =
-    "Es erscheint ein neuer Toolbar-Button über den es möglich ist, einen neuen Geodatendienst hinzuzufügen mit den Daten aus einem getCapabilities Dokument.";
+    "Fügt einen Button hinzu, mit dem ein neuer Geodatendienst mit den Daten aus einem getCapabilities Dokument angelegt werden kann.";
   eventId = "WIZARD_GET_CAPABILITIES";
   hideInAddress = true;
   group = "Toolbar";

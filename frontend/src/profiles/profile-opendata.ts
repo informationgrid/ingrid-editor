@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -57,14 +57,22 @@ export class OpenDataComponent {
         filter((map) => map["505"] !== undefined),
         take(1),
       )
-      .subscribe((data) => {
-        const contact = data["505"].entries.filter(
-          (item) => item.id === "10",
-        )[0];
-        const clonedContact = JSON.parse(JSON.stringify(contact));
-        clonedContact.fields.de = "Veröffentlichende Stelle";
-        this.codelistStore.updateCodelist(clonedContact);
-      });
+      .subscribe((data) => this.modifyAddressTypeCodelist(data));
+  }
+
+  private modifyAddressTypeCodelist(data) {
+    const modified505 = {
+      ...data["505"],
+      entries: data["505"].entries.map((item) =>
+        item.id === "10"
+          ? {
+              ...item,
+              fields: { ...item.fields, de: "Veröffentlichende Stelle" },
+            }
+          : item,
+      ),
+    };
+    this.codelistStore.updateCodelist(modified505);
   }
 }
 

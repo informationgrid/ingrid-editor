@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 .mat-mdc-card {
   padding: 16px 24px 8px;
@@ -13,7 +13,7 @@
 
   mat-card-title h2 {
     font-size: 24px;
-    color: $ige-primary;
+    color: vars.$ige-primary;
     text-align: center;
     letter-spacing: 0.74px;
     padding-bottom: 16px;

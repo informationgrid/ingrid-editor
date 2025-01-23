@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,9 +21,8 @@ package de.ingrid.igeserver.profiles.ingrid.importer.iso19139
 
 import de.ingrid.igeserver.exports.iso.OperatesOn
 import de.ingrid.igeserver.model.KeyValue
-import de.ingrid.mdek.upload.Config
 
-open class GeoserviceMapper(isoData: IsoImportData, config: Config) : GeneralMapper(isoData, config) {
+open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
 
     val info = metadata.identificationInfo[0].identificationInfo
 

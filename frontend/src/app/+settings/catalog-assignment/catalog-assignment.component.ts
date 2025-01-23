@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -33,7 +33,6 @@ import { Catalog } from "../../+catalog/services/catalog.model";
   selector: "ige-catalog-assignment",
   templateUrl: "./catalog-assignment.component.html",
   styleUrls: ["./catalog-assignment.component.scss"],
-  standalone: true,
   imports: [PageTemplateComponent, FilterSelectComponent, MatButton],
 })
 export class CatalogAssignmentComponent {

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -41,7 +41,6 @@ interface ReferenceItemInternal extends ReferenceItem {
 
 @Component({
   selector: "ige-reference-view",
-  standalone: true,
   imports: [CodelistPipe, AsyncPipe],
   templateUrl: "./reference-view.component.html",
   styleUrl: "./reference-view.component.scss",

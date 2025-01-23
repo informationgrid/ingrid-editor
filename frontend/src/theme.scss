@@ -1,5 +1,14 @@
 @use "@angular/material" as mat;
-@include mat.core();
+@include mat.elevation-classes();
+@include mat.app-background();
+
+html {
+  // hover effect on select boxes
+  --mat-sys-dragged-state-layer-opacity: 0.16;
+  --mat-sys-focus-state-layer-opacity: 0.12;
+  --mat-sys-hover-state-layer-opacity: 0.08;
+  --mat-sys-pressed-state-layer-opacity: 0.12;
+}
 
 $mat-ige-purple: (
   100: #3a3184,
@@ -152,7 +161,8 @@ ige-side-menu {
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include mat.core-theme($ige-theme);
+@include mat.elevation-classes();
+@include mat.app-background();
 //@include mat.input-theme($ige-theme);
 @include mat.button-theme($ige-theme);
 @include mat.icon-button-theme($ige-form-theme);

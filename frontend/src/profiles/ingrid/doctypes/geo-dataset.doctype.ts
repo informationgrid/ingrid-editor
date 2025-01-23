@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -28,7 +28,6 @@ import {
   MetadataOption,
   MetadataOptionItem,
 } from "../../../app/formly/types/metadata-type/metadata-type.component";
-import { of } from "rxjs";
 import { dataOrigin } from "./geo-dataset.dataOrigin";
 
 @Injectable({
@@ -182,12 +181,18 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addRepeat("vectorSpatialRepresentation", "Vektorformat", {
           fields: [
             this.addSelectInline("topologyLevel", "Topologieinformation", {
-              options: this.getCodelistForSelect("528", "topologyLevel"),
+              options: this.getCodelistForSelect(
+                "528",
+                "vectorSpatialRepresentation.topologyLevel",
+              ),
               codelistId: "528",
               showSearch: true,
             }),
             this.addSelectInline("geometricObjectType", "Geometrietyp", {
-              options: this.getCodelistForSelect("515", "geometricObjectType"),
+              options: this.getCodelistForSelect(
+                "515",
+                "vectorSpatialRepresentation.geometricObjectType",
+              ),
               codelistId: "515",
               showSearch: true,
               expressions: {
@@ -232,7 +237,10 @@ export class GeoDatasetDoctype extends IngridShared {
             this.addRepeat("axesDimensionProperties", null, {
               fields: [
                 this.addSelectInline("name", "Achsenbezeichnung", {
-                  options: this.getCodelistForSelect("514", "name"),
+                  options: this.getCodelistForSelect(
+                    "514",
+                    "gridSpatialRepresentation.axesDimensionProperties.name",
+                  ),
                   codelistId: "514",
                   required: true,
                   showSearch: true,
@@ -271,7 +279,10 @@ export class GeoDatasetDoctype extends IngridShared {
                   },
                 ),
                 this.addSelectInline("cellGeometry", "Zellengeometrie", {
-                  options: this.getCodelistForSelect("509", "cellGeometry"),
+                  options: this.getCodelistForSelect(
+                    "509",
+                    "gridSpatialRepresentation.cellGeometry",
+                  ),
                   codelistId: "509",
                   showSearch: true,
                   allowNoValue: true,
@@ -325,7 +336,7 @@ export class GeoDatasetDoctype extends IngridShared {
                     this.addSelectInline("pointInPixel", "Punkt im Pixel", {
                       options: this.getCodelistForSelect(
                         "2100",
-                        "pointInPixel",
+                        "gridSpatialRepresentation.georectified.pointInPixel",
                       ),
                       codelistId: "2100",
                       showSearch: true,
@@ -428,12 +439,18 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addGroupSimple("portrayalCatalogueInfo", [
           this.addRepeat("citation", "Symbolkatalog", {
             className: "optional",
-            fields: this.titleDateEditionFields("3555"),
+            fields: this.titleDateEditionFields(
+              "3555",
+              "portrayalCatalogueInfo.",
+            ),
           }),
         ]),
         this.addGroupSimple("featureCatalogueDescription", [
           this.addRepeat("citation", "Schlüsselkatalog", {
-            fields: this.titleDateEditionFields("3535"),
+            fields: this.titleDateEditionFields(
+              "3535",
+              "featureCatalogueDescription.",
+            ),
             expressions: {
               "props.required": this.geodatasetOptions.dynamicRequired.citation,
               className: (field: FormlyFieldConfig) =>

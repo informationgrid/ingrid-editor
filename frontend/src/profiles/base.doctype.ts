@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -109,10 +109,10 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
 
   getCodelistForSelect(
     codelistId: string,
-    field: string,
+    path: string,
     sortBy: CodelistSort = "label",
   ): Observable<SelectOptionUi[]> {
-    if (field) this.fieldWithCodelistMap.set(field, codelistId);
+    if (path) this.fieldWithCodelistMap.set(path, codelistId);
 
     return this.codelistService.observe(codelistId, sortBy);
   }
@@ -204,12 +204,29 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   ) {
     fields.forEach((field) => {
       if (field.fieldGroup) {
-        this.addCodelistDefaultValues(field.fieldGroup);
+        this.addCodelistDefaultValues(
+          field.fieldGroup,
+          this.createPrefix(prefix, field),
+        );
       }
       if (field.fieldArray?.["fieldGroup"]) {
         this.addCodelistDefaultValues(
           field.fieldArray["fieldGroup"],
-          (field.key as string) + ".",
+          this.createPrefix(prefix, field),
+        );
+      }
+      // for repeatDetailList
+      if (field.props?.fields) {
+        this.addCodelistDefaultValues(
+          field.props.fields,
+          this.createPrefix(prefix, field),
+        );
+      }
+      // for tables
+      if (field.props?.columns) {
+        this.addCodelistDefaultValues(
+          field.props.columns,
+          this.createPrefix(prefix, field),
         );
       }
       let codelistField = this.fieldWithCodelistMap.get(
@@ -237,6 +254,16 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
           .subscribe();
       }
     });
+  }
+
+  private createPrefix(prefix: string, field: FormlyFieldConfig) {
+    return prefix
+      ? field.key
+        ? `${prefix}${field.key as string}.`
+        : prefix
+      : field.key
+        ? (field.key as string) + "."
+        : "";
   }
 
   formatCodelistValue(codelist: string, item: { key; value }) {

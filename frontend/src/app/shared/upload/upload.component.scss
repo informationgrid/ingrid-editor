@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 ul,
 li {
@@ -55,5 +55,5 @@ li {
 }
 
 .dragged .upload-content {
-  background-color: $ige-mark-color;
+  background-color: vars.$ige-mark-color;
 }

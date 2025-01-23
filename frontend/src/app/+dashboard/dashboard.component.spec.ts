@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -46,6 +46,7 @@ import {
 } from "@angular/common/http";
 import { ProfileService } from "../services/profile.service";
 import { GeneralStore } from "../store/general.store";
+import { provideMatomoTesting } from "ngx-matomo-client/testing";
 
 describe("DashboardComponent", () => {
   let spectator: Spectator<DashboardComponent>;
@@ -69,6 +70,7 @@ describe("DashboardComponent", () => {
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       provideLocationMocks(),
+      // provideMatomoTesting(),
     ],
     mocks: [
       ConfigService,

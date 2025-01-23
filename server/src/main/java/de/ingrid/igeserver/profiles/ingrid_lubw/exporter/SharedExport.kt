@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -51,8 +51,6 @@ fun amendLubwDescriptiveKeywords(
     return keywords
 }
 
-fun getOAC(docData: JsonNode): String? =
-    docData.getString("oac")
+fun getOAC(docData: JsonNode): String? = docData.getString("oac")
 
-fun getEnvironmentDescription(docData: JsonNode): String? =
-    docData.getString("dataQualityInfo.lineage.source.environmentDescription")
+fun getEnvironmentDescription(docData: JsonNode): String? = docData.getString("dataQualityInfo.lineage.source.environmentDescription")

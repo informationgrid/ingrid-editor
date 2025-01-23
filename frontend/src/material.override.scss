@@ -1,4 +1,5 @@
-@import "src/variables";
+@use "src/variables" as vars;
+@use "sass:color";
 
 // TODO: temporary fix.
 // Issue caused by upgrading to angular/material 17, that this variable becomes undefined.
@@ -8,7 +9,7 @@
 }
 
 ::placeholder {
-  color: $ige-placeholder-color !important;
+  color: vars.$ige-placeholder-color !important;
 }
 
 button.mdc-button {
@@ -28,18 +29,18 @@ ige-side-menu .mat-mdc-list-item {
   }
 
   &:hover {
-    background: lighten($ige-secondary, 8%) !important;
+    background: color.adjust(vars.$ige-secondary, $lightness: 8%) !important;
   }
 
   &.active:hover {
-    background: lighten($ige-primary, 8%) !important;
+    background: color.adjust(vars.$ige-primary, $lightness: 8%) !important;
   }
 }
 
 .mat-mdc-dialog-container {
   .dialog-title-wrapper {
     padding: 16px 26px 16px 16px;
-    background-color: $ige-secondary;
+    background-color: vars.$ige-secondary;
 
     &.error {
       background-color: #cd0909;
@@ -63,12 +64,12 @@ ige-side-menu .mat-mdc-list-item {
   }
 
   mat-dialog-actions {
-    border-top: 1px solid $ige-background-bar;
+    border-top: 1px solid vars.$ige-background-bar;
   }
 }
 
 mat-icon svg .coloring {
-  fill: $ige-secondary;
+  fill: vars.$ige-secondary;
 }
 
 form-toolbar mat-icon svg .coloring {
@@ -112,7 +113,7 @@ mat-dialog-container.mat-mdc-dialog-container {
 }
 
 .cdk-overlay-container .mat-mdc-dialog-container .mdc-dialog__content {
-  color: $ige-text-color;
+  color: vars.$ige-text-color;
 }
 
 mat-tab-nav-panel {
@@ -124,11 +125,11 @@ mat-tab-nav-panel {
 }
 
 .mdc-floating-label--float-above {
-  color: $ige-text-color !important;
+  color: vars.$ige-text-color !important;
 }
 
 .mat-focused .mdc-floating-label--float-above {
-  color: $ige-secondary-dark !important;
+  color: vars.$ige-secondary-dark !important;
 }
 
 .timespan .mdc-text-field:not(.mdc-text-field--disabled) {
@@ -162,7 +163,7 @@ mat-tab-nav-panel {
 
 mat-icon.dark-blue {
   svg path {
-    fill: $ige-secondary;
+    fill: vars.$ige-secondary;
   }
 }
 
@@ -178,14 +179,14 @@ mat-icon.dark-blue {
   }
 
   mat-button-toggle {
-    color: $ige-secondary;
+    color: vars.$ige-secondary;
   }
 
   mat-button-toggle.mat-button-toggle-checked {
     z-index: 1;
     color: white;
     font-weight: 500;
-    background-color: $ige-primary;
+    background-color: vars.$ige-primary;
   }
 }
 
@@ -195,7 +196,7 @@ mat-icon.dark-blue {
   }
 
   .mdc-snackbar__surface {
-    background-color: $ige-info-background;
+    background-color: vars.$ige-info-background;
   }
 }
 
@@ -203,7 +204,7 @@ mat-icon.dark-blue {
 input,
 textarea {
   &[disabled] {
-    color: $ige-hint-color !important;
+    color: vars.$ige-hint-color !important;
   }
 }
 

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,7 +20,7 @@
 package de.ingrid.igeserver.tasks
 
 import de.ingrid.igeserver.mail.EmailServiceImpl
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import de.ingrid.mdek.upload.storage.validate.VirusFoundException
 import de.ingrid.mdek.upload.storage.validate.VirusScanException
 import org.apache.logging.log4j.Level
@@ -37,7 +37,7 @@ import java.nio.file.StandardCopyOption
 @Component
 class UploadVirusScanTask(
     private var emailService: EmailServiceImpl,
-    private val uploadSettings: Config,
+    private val uploadSettings: UploadConfig,
 ) {
     val log = logger()
     val emailReportSubject = "[IGE-NG] Virus Scan Report"

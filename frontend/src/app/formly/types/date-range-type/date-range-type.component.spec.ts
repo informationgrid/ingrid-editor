@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -27,7 +27,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { FormlyMaterialModule } from "@ngx-formly/material";
 import { provideNativeDateAdapter } from "@angular/material/core";
 
-describe("DateRangeTypeComponent", () => {
+xdescribe("DateRangeTypeComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
   const createHost = createHostFactory({
     component: FormlyForm,

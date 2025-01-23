@@ -60,6 +60,11 @@
         "${date.get()}"@if (!date.isLast()),@endif
     @endfor
     ],
+    "decision_date": [
+    @for(var date : ForSupport.of(page.getDecisionDateAsDate()))
+        "${page.formatDate(page.getFormatterISO(), date.get())}"@if (!date.isLast()),@endif
+    @endfor
+    ],
     "location": ["${page.handleContent(page.getSpatialTitle())}"],
     "created": "${page.formatDate(page.getFormatterISO(), page.get_created())}",
     "modified": "${page.formatDate(page.getFormatterISO(), page.get_contentModified())}",

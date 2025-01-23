@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -63,13 +63,13 @@ import { GroupStore } from "../../store/group/group.store";
 import { GeneralStore } from "../../store/general.store";
 import { UiStore } from "../../store/ui.store";
 import { toSignal } from "@angular/core/rxjs-interop";
+import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 
 @UntilDestroy()
 @Component({
   selector: "ige-user-manager",
   templateUrl: "./user.component.html",
   styleUrls: ["../user.styles.scss"],
-  standalone: true,
   imports: [
     MatToolbar,
     MatToolbarRow,
@@ -86,6 +86,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
     MatMenuItem,
     HeaderMoreComponent,
     FormlyModule,
+    MATOMO_DIRECTIVES,
   ],
   providers: [UserManagementService],
 })
@@ -130,18 +131,15 @@ export class UserComponent implements OnInit {
     private formMenuService: FormMenuService,
     private snackBar: MatSnackBar,
   ) {
-    effect(
-      () => {
-        const user = this.userService.selectedUser$();
-        // set user in case we come from another page
-        // TODO: should be done with URL-parameter to load the user like it's done on document page
-        if (!user) return;
+    effect(() => {
+      const user = this.userService.selectedUser$();
+      // set user in case we come from another page
+      // TODO: should be done with URL-parameter to load the user like it's done on document page
+      if (!user) return;
 
-        this.explicitUserLogin.set(user.login);
-        if (this.loadedUser()?.id !== user.id) this.loadUser(user.id);
-      },
-      { allowSignalWrites: true },
-    );
+      this.explicitUserLogin.set(user.login);
+      if (this.loadedUser()?.id !== user.id) this.loadUser(user.id);
+    });
   }
 
   ngOnInit() {

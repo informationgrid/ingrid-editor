@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -31,8 +31,7 @@ import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
 import de.ingrid.igeserver.services.FIELD_UUID
 import java.time.format.DateTimeFormatter
 
-fun documentInPublishedState(document: Document) =
-    document.state == DocumentState.PUBLISHED || document.state == DocumentState.DRAFT_AND_PUBLISHED || document.state == DocumentState.PENDING
+fun documentInPublishedState(document: Document) = document.state == DocumentState.PUBLISHED || document.state == DocumentState.DRAFT_AND_PUBLISHED || document.state == DocumentState.PENDING
 
 fun convertToDocument(docJson: JsonNode, docType: String? = null, docVersion: Int? = null, docUuid: String? = null): Document = Document().apply {
     title = docJson.getStringOrEmpty("title")

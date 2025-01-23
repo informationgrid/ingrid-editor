@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -33,12 +33,12 @@ import { LongPressDirective } from "../../../directives/longPress.directive";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatIcon } from "@angular/material/icon";
 import { MatDivider } from "@angular/material/divider";
+import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 
 @Component({
   selector: "form-toolbar",
   templateUrl: "./form-toolbar.component.html",
   styleUrls: ["./form-toolbar.component.scss"],
-  standalone: true,
   imports: [
     MatToolbar,
     MatToolbarRow,
@@ -52,6 +52,7 @@ import { MatDivider } from "@angular/material/divider";
     MatMenuItem,
     MatDivider,
     MatIconButton,
+    MATOMO_DIRECTIVES,
   ],
 })
 export class FormToolbarComponent implements OnInit {

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,7 +20,6 @@
 import { Component, OnInit } from "@angular/core";
 import { MessageService } from "../../services/messages/message.service";
 import { MessageFormatBackend } from "../../services/messages/message";
-import { tap } from "rxjs/operators";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { UntypedFormGroup } from "@angular/forms";
 import { messagesFields } from "./formly-fields";
@@ -57,7 +56,6 @@ import { MatIcon } from "@angular/material/icon";
   selector: "ige-messages-management",
   templateUrl: "./messages-management.component.html",
   styleUrls: ["./messages-management.component.scss"],
-  standalone: true,
   imports: [
     PageTemplateComponent,
     AddButtonComponent,

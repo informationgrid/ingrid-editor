@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -46,7 +46,6 @@ import { MatHint } from "@angular/material/form-field";
   selector: "ige-referenced-documents-type",
   templateUrl: "./referenced-documents-type.component.html",
   styleUrls: ["./referenced-documents-type.component.scss"],
-  standalone: true,
   imports: [
     MatButton,
     MatProgressSpinner,

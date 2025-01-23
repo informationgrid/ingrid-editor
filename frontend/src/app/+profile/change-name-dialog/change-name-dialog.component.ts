@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -36,20 +36,17 @@ import { ModalService } from "../../services/modal/modal.service";
 import { UserService } from "../../services/user/user.service";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 
 @Component({
   selector: "ige-change-name-dialog",
   templateUrl: "./change-name-dialog.component.html",
-  standalone: true,
   imports: [
     MatIconButton,
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     ReactiveFormsModule,
     MatFormField,

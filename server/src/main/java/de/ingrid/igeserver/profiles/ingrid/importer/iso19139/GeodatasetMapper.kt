@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -34,10 +34,9 @@ import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.profiles.ingrid.iso639LanguageMapping
-import de.ingrid.mdek.upload.Config
 import org.apache.logging.log4j.kotlin.logger
 
-open class GeodatasetMapper(isoData: IsoImportData, config: Config) : GeneralMapper(isoData, config) {
+open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
 
     val log = logger()
     val identificationInfo = metadata.identificationInfo[0].dataIdentificationInfo

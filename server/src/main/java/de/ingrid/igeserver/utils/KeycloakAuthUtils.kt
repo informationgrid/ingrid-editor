@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -69,8 +69,7 @@ class KeycloakAuthUtils(@Lazy val catalogService: CatalogService) : AuthUtils {
         return roles.contains(SimpleGrantedAuthority(role)) || roles.contains(SimpleGrantedAuthority("ROLE_$role"))
     }
 
-    private fun getRoles(principal: AbstractAuthenticationToken): Collection<GrantedAuthority> =
-        principal.authorities ?: emptyList()
+    private fun getRoles(principal: AbstractAuthenticationToken): Collection<GrantedAuthority> = principal.authorities ?: emptyList()
 
     override fun isAdmin(principal: Principal): Boolean = containsRole(principal, "cat-admin") || containsRole(principal, "ige-super-admin")
 

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -29,7 +29,7 @@ import jakarta.annotation.PostConstruct
 import jakarta.ws.rs.ClientErrorException
 import jakarta.ws.rs.ForbiddenException
 import jakarta.ws.rs.core.Response
-import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.kotlin.logger
 import org.jboss.resteasy.client.jaxrs.ResteasyClient
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl
 import org.keycloak.OAuth2Constants
@@ -69,7 +69,7 @@ class KeycloakService : UserManagementService {
         fun realm(): RealmResource = client.realm(realm)
     }
 
-    private val log = LogManager.getLogger(KeycloakService::class.java)
+    private val log = logger()
 
     @Value("\${keycloak.backend-user}")
     private val backendUser: String? = null
@@ -387,7 +387,7 @@ class KeycloakService : UserManagementService {
             // delete user
             val response = users.delete(user.id)
             if (response.status != 204) {
-                log.error("Error during deleting keycloak user: $userId", response.status)
+                log.error("Error during deleting keycloak user: $userId status: ${response.status}")
             }
             return
         }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -65,7 +65,6 @@ interface UrlReference extends Reference {
   selector: "ige-document-reference-selector",
   templateUrl: "./document-reference-selector.component.html",
   styleUrl: "./document-reference-selector.component.scss",
-  standalone: true,
   imports: [
     FormErrorComponent,
     DocumentIconComponent,

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -45,11 +45,11 @@ import { ChartComponent } from "./chart/chart.component";
 import { DocumentListItemComponent } from "../shared/document-list-item/document-list-item.component";
 import { AsyncPipe } from "@angular/common";
 import { GeneralStore } from "../store/general.store";
+import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 
 @Component({
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     QuickSearchComponent,
@@ -58,6 +58,7 @@ import { GeneralStore } from "../store/general.store";
     ChartComponent,
     DocumentListItemComponent,
     AsyncPipe,
+    MATOMO_DIRECTIVES,
   ],
 })
 export class DashboardComponent implements OnInit {

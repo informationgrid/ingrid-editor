@@ -2,7 +2,7 @@
     <div
         class="image-container flex-row flex-wrap gap-24 row-gap-12"
         cdkDropList
-        cdkDropListOrientation="horizontal"
+        cdkDropListOrientation="mixed"
         (cdkDropListDropped)="drop($event)"
     >
         @for (field of field.fieldGroup; track field; let i = $index) {

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -57,7 +57,6 @@ import { MatIconButton } from "@angular/material/button";
     MatIconButton,
     MatMenuItem,
   ],
-  standalone: true,
 })
 export class CodelistPresenterComponent implements OnInit {
   codelist = input<Codelist>();
@@ -70,7 +69,7 @@ export class CodelistPresenterComponent implements OnInit {
   asFavorite = output<CodelistEntry>();
 
   sortedEntries = computed(() => {
-    return this.codelist().entries.sort((a, b) =>
+    return [...this.codelist().entries].sort((a, b) =>
       a.fields["de"]?.localeCompare(b.fields["de"]),
     );
   });

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -52,8 +52,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
     @Lazy
     private lateinit var documentService: DocumentService
 
-    fun getExporter(category: DocumentCategory, format: String): IgeExporter =
-        exporterFactory.getExporter(category, format)
+    fun getExporter(category: DocumentCategory, format: String): IgeExporter = exporterFactory.getExporter(category, format)
 
     fun getExportTypes(catalogId: String, profileId: String, onlyPublic: Boolean = true): List<ExportTypeInfo> {
         val profile = documentService.catalogService.getProfileFromCatalog(catalogId)

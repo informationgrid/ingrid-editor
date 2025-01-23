@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -47,7 +47,7 @@ export abstract class AddressShared extends BaseDoctype {
           className: "flex-1",
           required: true,
           showSearch: true,
-          options: this.getCodelistForSelect("4430", "type").pipe(
+          options: this.getCodelistForSelect("4430", "contact.type").pipe(
             map((items) =>
               items.filter((item) => item.value !== "5" && item.value !== "6"),
             ),
@@ -161,7 +161,7 @@ export abstract class AddressShared extends BaseDoctype {
       showSearch: true,
       wrappers: ["inline-help", "form-field"],
       className: options.hideAdministrativeArea ? null : "flex-1",
-      options: this.getCodelistForSelect("6200", "country"),
+      options: this.getCodelistForSelect("6200", "address.country"),
       codelistId: "6200",
       defaultValue: options?.defaultCountry,
     });
@@ -169,7 +169,10 @@ export abstract class AddressShared extends BaseDoctype {
       "administrativeArea",
       "Verwaltungsgebiet",
       {
-        options: this.getCodelistForSelect("6250", "administrativeArea"),
+        options: this.getCodelistForSelect(
+          "6250",
+          "address.administrativeArea",
+        ),
         codelistId: "6250",
         wrappers: ["inline-help", "form-field"],
         required:

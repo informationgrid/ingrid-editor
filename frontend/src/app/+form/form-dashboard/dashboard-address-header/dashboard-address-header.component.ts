@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -27,7 +27,6 @@ import { ActionButtonComponent } from "../../../shared/action-button/action-butt
   selector: "dashboard-address-header",
   templateUrl: "./dashboard-address-header.component.html",
   styleUrls: ["./dashboard-address-header.component.scss"],
-  standalone: true,
   imports: [ActionButtonComponent],
 })
 export class DashboardAddressHeaderComponent implements OnInit {

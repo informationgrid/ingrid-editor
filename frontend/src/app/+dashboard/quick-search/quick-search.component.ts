@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -39,7 +39,6 @@ import { escapeRegExp } from "../../shared/utils";
   selector: "ige-quick-search",
   templateUrl: "./quick-search.component.html",
   styleUrls: ["./quick-search.component.scss"],
-  standalone: true,
   imports: [
     SearchInputComponent,
     MatAutocomplete,
