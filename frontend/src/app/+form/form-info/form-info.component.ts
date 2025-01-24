@@ -72,7 +72,7 @@ export class FormInfoComponent implements OnInit {
   private documentService = inject(DocumentService);
 
   path = computed<ShortTreeNode[]>(() => {
-    if (this.forAddress) {
+    if (this.forAddress()) {
       return this.generalStore.breadcrumb().address.slice(0, -1);
     } else {
       return this.generalStore.breadcrumb().document.slice(0, -1);
@@ -100,7 +100,7 @@ export class FormInfoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    if (this.forAddress) {
+    if (this.forAddress()) {
       this.rootName = this.translocoService.translate("menu.address");
     } else {
       this.rootName = this.translocoService.translate("menu.form");
@@ -109,9 +109,9 @@ export class FormInfoComponent implements OnInit {
 
   async scrollToTreeNode(nodeId: number) {
     const route: any[] = [
-      ConfigService.catalogId + (this.forAddress ? "/address" : "/form"),
+      ConfigService.catalogId + (this.forAddress() ? "/address" : "/form"),
     ];
-    const store = this.forAddress
+    const store = this.forAddress()
       ? this.addressTreeStore
       : this.documentTreeStore;
     if (nodeId) route.push({ id: store.entityMap()[nodeId]._uuid });
