@@ -57,7 +57,7 @@ class InGridPublishExport(
                 indexDoc(context, docId, DocumentCategory.DATA)
                 val dataType = payload.wrapper.type
                 val version = payload.document.version
-                // we cannot use GlobalScope here, because we need data from the previous version
+                // we cannot use GlobalScope directly here, because we need data from the previous version
                 // this can only be reliably determined if we're in the same transaction
                 if (dataType == "InGridGeoDataset") {
                     indexReferencedDocs(
@@ -86,13 +86,11 @@ class InGridPublishExport(
                 }
             } else if (isAddress) {
                 indexDoc(context, docId, DocumentCategory.ADDRESS)
-                GlobalScope.launch {
-                    indexReferencedDocs(
-                        context,
-                        "Index documents with referenced address $docId to Elasticsearch",
-                        """data->'pointOfContact'@>'[{"ref": "$docId"}]'""",
-                    )
-                }
+                indexReferencedDocs(
+                    context,
+                    "Index documents with referenced address $docId to Elasticsearch",
+                    """data->'pointOfContact'@>'[{"ref": "$docId"}]'""",
+                )
             }
         } catch (ex: Exception) {
             throw ClientException.withReason("Problem with indexing to Elasticsearch: ${ex.cause?.message}", ex)
@@ -117,7 +115,10 @@ class InGridPublishExport(
             """.trimIndent(),
         )
 
-        docsWithReferences.forEach { indexDoc(context, it, DocumentCategory.DATA) }
+        // use GlobalScope only for indexing, not for determining which documents to index
+        GlobalScope.launch {
+            docsWithReferences.forEach { indexDoc(context, it, DocumentCategory.DATA) }
+        }
     }
 
     private fun indexDoc(context: Context, docId: String, category: DocumentCategory) {
