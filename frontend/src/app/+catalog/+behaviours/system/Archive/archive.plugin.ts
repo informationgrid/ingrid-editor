@@ -1,4 +1,4 @@
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 import { FormToolbarService } from "../../../../+form/form-shared/toolbar/form-toolbar.service";
@@ -35,6 +35,17 @@ export class ArchivePlugin extends Plugin {
       },
     });
     inject(PluginService).registerPlugin(this);
+
+    effect(() => {
+      if (!this.formRegistered) return;
+      const doc = this.generalStore.getOpenedDocument(this.forAddress());
+      this.formToolbarService.setButtonState(
+        "toolBtnArchive",
+        doc !== null &&
+          doc._tags.split(",").indexOf("archived") === -1 &&
+          doc.hasWritePermission,
+      );
+    });
   }
 
   registerForm() {
