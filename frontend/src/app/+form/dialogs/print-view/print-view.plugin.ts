@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import {
   FormToolbarService,
   Separator,
@@ -77,7 +77,7 @@ export class PrintViewPlugin extends Plugin {
         matSvgVariable: "Vorschau-Druckansicht",
         eventId: "PRINT",
         pos: 20,
-        active: false,
+        active: signal(false),
       },
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));
