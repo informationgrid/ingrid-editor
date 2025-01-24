@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import {
   FormToolbarService,
   Separator,
@@ -173,7 +173,7 @@ export class HistoryPlugin extends Plugin {
         matSvgVariable: "Vorheriger-Datensatz",
         eventId: this.eventIdPrevious,
         pos: 200,
-        active: false,
+        active: signal(false),
         hiddenMenu: [],
       },
       {
@@ -182,7 +182,7 @@ export class HistoryPlugin extends Plugin {
         matSvgVariable: "Naechster-Datensatz",
         eventId: this.eventIdNext,
         pos: 210,
-        active: false,
+        active: signal(false),
         hiddenMenu: [],
       },
     ];

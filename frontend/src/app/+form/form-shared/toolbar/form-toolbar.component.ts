@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, signal, ViewChild } from "@angular/core";
 import {
   FormToolbarService,
   Separator,
@@ -62,7 +62,7 @@ export class FormToolbarComponent implements OnInit {
 
   menu = {};
 
-  isNotReady = false;
+  isNotReady = signal<boolean>(false);
   private currentFocusedEl: HTMLElement;
 
   constructor(
@@ -76,7 +76,7 @@ export class FormToolbarComponent implements OnInit {
     this.documentService.documentOperationFinished$
       .pipe(takeUntilDestroyed())
       .subscribe((isReady) => {
-        this.isNotReady = !isReady;
+        this.isNotReady.set(!isReady);
       });
   }
 

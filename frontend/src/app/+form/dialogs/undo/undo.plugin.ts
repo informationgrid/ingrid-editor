@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { UntypedFormGroup } from "@angular/forms";
 import { DocEventsService } from "../../../services/event/doc-events.service";
@@ -76,7 +76,7 @@ export class UndoPlugin extends Plugin {
       matIconVariable: "undo",
       eventId: this.eventUndoId,
       pos: 150,
-      active: false,
+      active: signal(false),
     });
 
     // add button to toolbar for revert action
@@ -86,7 +86,7 @@ export class UndoPlugin extends Plugin {
       matIconVariable: "redo",
       eventId: this.eventRedoId,
       pos: 160,
-      active: false,
+      active: signal(false),
     });
   }
 

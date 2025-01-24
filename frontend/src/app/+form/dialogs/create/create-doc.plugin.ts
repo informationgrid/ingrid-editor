@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
 import { UntilDestroy } from "@ngneat/until-destroy";
@@ -99,7 +99,7 @@ export class CreateDocumentPlugin extends Plugin {
           matSvgVariable: "Neuer-Datensatz",
           eventId: "NEW_DOC",
           pos: 1,
-          active: true,
+          active: signal(true),
         });
         this.addNonAdminBehaviour();
       });
