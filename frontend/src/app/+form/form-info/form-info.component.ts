@@ -41,6 +41,7 @@ import { GeneralStore } from "../../store/general.store";
 import { TreeStore } from "../../store/tree/tree.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { DocumentService } from "../../services/document/document.service";
+import { DocEventsService } from "../../services/event/doc-events.service";
 
 @UntilDestroy()
 @Component({
@@ -70,6 +71,7 @@ export class FormInfoComponent implements OnInit {
   private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);
   private documentService = inject(DocumentService);
+  private docEvents = inject(DocEventsService);
 
   path = computed<ShortTreeNode[]>(() => {
     if (this.forAddress()) {
@@ -125,9 +127,7 @@ export class FormInfoComponent implements OnInit {
   }
 
   unarchive() {
-    this.documentService
-      .unarchive(this.metadata().wrapperId, this.forAddress())
-      .subscribe();
+    this.docEvents.sendEvent({ type: "UNARCHIVE" });
   }
 
   protected readonly stop = stop;

@@ -62,7 +62,6 @@ class UVPComponent {
     private activityReportBehaviour: ActivityReportBehaviour,
   ) {
     this.addBehaviour(negativeAssessmentDoctype);
-    this.tagsService.addAdditionalTags(["negative-assessment-not-publish"]);
     this.addStylesheet();
 
     profileService.registerProfiles([

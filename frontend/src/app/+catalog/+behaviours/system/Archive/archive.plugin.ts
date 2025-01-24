@@ -9,6 +9,7 @@ import {
   ConfirmDialogData,
 } from "../../../../dialogs/confirm/confirm-dialog.component";
 import { TagsService } from "../tags/tags.service";
+import { DocumentService } from "../../../../services/document/document.service";
 
 @Injectable()
 export class ArchivePlugin extends Plugin {
@@ -24,6 +25,7 @@ export class ArchivePlugin extends Plugin {
   private docEvents = inject(DocEventsService);
   private dialog = inject(MatDialog);
   private tagsService = inject(TagsService);
+  private documentService = inject(DocumentService);
 
   constructor() {
     super();
@@ -73,19 +75,37 @@ export class ArchivePlugin extends Plugin {
           .afterClosed()
           .subscribe((result) => {
             if (result) {
-              this.tagsService.addAdditionalTags(["archived"]);
+              const openedDocument = this.generalStore.getOpenedDocument(false);
               this.tagsService
-                .updatePublicationType(
-                  this.generalStore.getOpenedDocument(false).id as number,
-                  "archived",
-                  false,
-                )
-                .subscribe();
+                .addTags(openedDocument.id as number, ["archived"], false)
+                .subscribe(() => {
+                  this.documentService.reload$.next({
+                    uuid: openedDocument._uuid,
+                    forAddress: false,
+                  });
+                });
             }
           });
       });
 
-    this.formSubscriptions.push(toolbarEventSubscription);
+    const unArchiveSubscription = this.docEvents
+      .onEvent("UNARCHIVE")
+      .subscribe(() => {
+        const openedDocument = this.generalStore.getOpenedDocument(false);
+        this.tagsService
+          .removeTags(openedDocument.id as number, ["archived"], false)
+          .subscribe(() => {
+            this.documentService.reload$.next({
+              uuid: openedDocument._uuid,
+              forAddress: false,
+            });
+          });
+      });
+
+    this.formSubscriptions.push(
+      toolbarEventSubscription,
+      unArchiveSubscription,
+    );
   }
 
   unregisterForm() {
