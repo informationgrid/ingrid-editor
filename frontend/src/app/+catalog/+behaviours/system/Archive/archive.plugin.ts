@@ -1,4 +1,4 @@
-import { effect, inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 import { FormToolbarService } from "../../../../+form/form-shared/toolbar/form-toolbar.service";
@@ -55,7 +55,7 @@ export class ArchivePlugin extends Plugin {
       label: "Archivieren",
       eventId: "ARCHIVE",
       pos: 18,
-      active: true,
+      active: signal(false),
       align: "right",
     });
 
