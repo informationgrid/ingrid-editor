@@ -46,7 +46,6 @@ class InGridPublishExport(
 
     override val profiles = arrayOf("ingrid")
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
         val docId = payload.document.uuid
         val isDocument = payload.wrapper.category == "data"
@@ -99,6 +98,7 @@ class InGridPublishExport(
         return payload
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun indexReferencedDocs(context: Context, message: String, sqlFilter: String) {
         context.addMessage(Message(this, message))
 
