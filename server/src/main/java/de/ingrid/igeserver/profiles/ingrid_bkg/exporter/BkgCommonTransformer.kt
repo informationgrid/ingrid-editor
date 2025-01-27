@@ -7,6 +7,7 @@ import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.AccessConstraint
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
+import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 
@@ -18,6 +19,14 @@ class BkgCommonTransformer(private val codelists: CodelistTransformer, private v
 
     fun getUseConstraints(): List<UseConstraintTemplate> {
         val title = getValueFromCodelistData("10003", bkgUseConstraintsTitleKey) ?: ""
+        val json = if (doc.data.getBoolean("properties.isOpenData") == true) {
+            getUseConstraintJson(
+                codelists.getData("10003", bkgUseConstraintsTitleKey),
+                doc.data.getString("resource.useConstraintsBkgSource"),
+            )
+        } else {
+            null
+        }
         return listOf(
             UseConstraintTemplate(
                 CharacterStringModel(
@@ -33,7 +42,7 @@ class BkgCommonTransformer(private val codelists: CodelistTransformer, private v
                     },
                 ),
                 doc.data.getStringOrEmpty("resource.useConstraintsBkgSource"),
-                getUseConstraintJson(codelists.getData("10003", bkgUseConstraintsTitleKey), doc.data.getString("resource.useConstraintsBkgSource")),
+                json,
                 bkgUseConstraintsTitleKey,
                 doc.data.getStringOrEmpty("resource.useConstraintsBkgComment"),
             ),
