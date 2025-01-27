@@ -49,6 +49,8 @@ class M094CleanupScheduler : MigrationBase("0.94") {
             setAdminAuthentication("Migration", "Task")
             val removed = entityManager.createNativeQuery("""DELETE FROM qrtz_cron_triggers WHERE trigger_name='index'""")
                 .executeUpdate()
+            entityManager.createNativeQuery("""DELETE FROM qrtz_triggers WHERE trigger_name='index'""")
+                .executeUpdate()
             log.info("""$removed cron triggers removed""")
         }
     }
