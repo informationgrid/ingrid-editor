@@ -45,6 +45,9 @@ export class DoiBehaviour extends Plugin {
       modelOptions: {
         updateOn: "blur",
       },
+      validators: {
+        validation: ["doiPrefix"],
+      },
     });
 
     inject(PluginService).registerPlugin(this);

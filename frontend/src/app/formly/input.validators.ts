@@ -86,6 +86,26 @@ export function ElasticsearchAliasValidator(
     : { valid_es_alias: true };
 }
 
+const doiPrefixRegExp = new RegExp(/^10\.\d{4,}$/);
+
+export function DoiPrefixValidator(
+  control: UntypedFormControl,
+): ValidationErrors {
+  return !control.value || doiPrefixRegExp.test(control.value?.trim())
+    ? null
+    : { doi_prefix: true };
+}
+
+const doiRegExp = new RegExp(/^10\.\d{4,}\/.+$/);
+
+export function DoiValidator(
+  control: UntypedFormControl,
+): ValidationErrors {
+  return !control.value || doiRegExp.test(control.value?.trim())
+    ? null
+    : { doi: { message: "Benötigtes Format: 10.VXYZ/ABC..." } };
+}
+
 export function patternWithMessage(
   pattern: string | RegExp,
   errorField: string,

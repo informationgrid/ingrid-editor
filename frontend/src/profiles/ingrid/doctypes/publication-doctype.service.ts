@@ -109,6 +109,9 @@ export class PublicationDoctype extends IngridShared {
           this.showDoiFields
             ? this.addGroup(null, "DOI", [
                 this.addInputInline("doi", "DOI", {
+                  validators: {
+                    validation: ["doi"],
+                  },
                   hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
                 }),
