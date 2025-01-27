@@ -109,7 +109,8 @@ export class PublicationDoctype extends IngridShared {
           this.showDoiFields
             ? this.addGroup(null, "DOI", [
                 this.addInputInline("doi", "DOI", {
-                  wrappers: ["form-field"],
+                  hasInlineContextHelp: true,
+                  wrappers: ["inline-help", "form-field"],
                 }),
                 this.addAutoCompleteInline(
                   "generalResourceType",
@@ -120,13 +121,15 @@ export class PublicationDoctype extends IngridShared {
                       "generalResourceType",
                     ),
                     codelistId: "3390",
-                    wrappers: ["form-field"],
+                    hasInlineContextHelp: true,
+                    wrappers: ["inline-help", "form-field"],
                   },
                 ),
                 this.addAutoCompleteInline("documentType", "Ressourcen Typ", {
                   options: this.getCodelistForSelect("3385", "documentType"),
                   codelistId: "3385",
-                  wrappers: ["form-field"],
+                  hasInlineContextHelp: true,
+                  wrappers: ["inline-help", "form-field"],
                 }),
               ])
             : this.addAutocomplete("documentType", "Dokumententyp", {
