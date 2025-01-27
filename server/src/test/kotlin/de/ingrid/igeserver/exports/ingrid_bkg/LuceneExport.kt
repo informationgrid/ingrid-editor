@@ -39,7 +39,7 @@ class LuceneExport : GeodatasetBase() {
         this.exporterLucene =
             IngridLuceneExporterBkg(
                 this.codelistHandler,
-                this.config,
+                this.uploadConfig,
                 this.catalogService,
                 this.documentService,
             )
@@ -69,13 +69,12 @@ class LuceneExport : GeodatasetBase() {
         }
     }
 
-    private fun exportGeoDatasetLucene(additionalJson: String? = null): String =
-        exportJsonToJson(
-            exporterLucene,
-            "/export/ingrid/geo-dataset.minimal.sample.json",
-            additionalJson?.let {
-                jacksonObjectMapper()
-                    .readTree(additionalJson.trimIndent()) as ObjectNode
-            },
-        ).replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+    private fun exportGeoDatasetLucene(additionalJson: String? = null): String = exportJsonToJson(
+        exporterLucene,
+        "/export/ingrid/geo-dataset.minimal.sample.json",
+        additionalJson?.let {
+            jacksonObjectMapper()
+                .readTree(additionalJson.trimIndent()) as ObjectNode
+        },
+    ).replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 }

@@ -33,7 +33,7 @@ class UseConstraints : GeodatasetBase() {
         this.exporter =
             IngridIdfExporterBkg(
                 this.codelistHandler,
-                this.config,
+                this.uploadConfig,
                 this.catalogService,
                 this.documentService,
             )
