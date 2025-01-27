@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -33,6 +33,5 @@ class InformationSystemModelTransformerBkg(transformerConfig: TransformerConfig)
 
     override val useConstraints: List<UseConstraintTemplate> = super.useConstraints + bkgTransformer.getUseConstraints()
 
-    override fun getAccessConstraints(): List<AccessConstraint> =
-        super.getAccessConstraints() + bkgTransformer.getAccessConstraints(super.useAndAccessConstraintsCodelistValues)
+    override fun getAccessConstraints(): List<AccessConstraint> = super.getAccessConstraints() + bkgTransformer.getAccessConstraints(super.useAndAccessConstraintsCodelistValues)
 }

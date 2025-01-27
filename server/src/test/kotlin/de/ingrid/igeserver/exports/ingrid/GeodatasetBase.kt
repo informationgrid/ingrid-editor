@@ -123,13 +123,12 @@ open class GeodatasetBase : ShouldSpec() {
         every { this@GeodatasetBase.documentService.getIncomingReferences(this.any(), this.any()) } answers { emptySet() }
     }
 
-    protected fun exportGeoDataset(additionalJson: String? = null): String =
-        exportJsonToXML(
-            exporter,
-            "/export/ingrid/geo-dataset.minimal.sample.json",
-            additionalJson?.let {
-                jacksonObjectMapper()
-                    .readTree(additionalJson.trimIndent()) as ObjectNode
-            },
-        ).replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+    protected fun exportGeoDataset(additionalJson: String? = null): String = exportJsonToXML(
+        exporter,
+        "/export/ingrid/geo-dataset.minimal.sample.json",
+        additionalJson?.let {
+            jacksonObjectMapper()
+                .readTree(additionalJson.trimIndent()) as ObjectNode
+        },
+    ).replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 }

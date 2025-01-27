@@ -39,8 +39,7 @@ fun exportDocToXML(exporter: IgeExporter, doc: Document): String = (exporter.run
         .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 }.also { println(it) }
 
-fun exportJsonToJson(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String =
-    prettyFormatJson(exportJsonToString(exporter, file, additional))
+fun exportJsonToJson(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String = prettyFormatJson(exportJsonToString(exporter, file, additional))
 
 private fun exportJsonToString(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String {
     val input = SchemaUtils.getJsonFileContent(file)
