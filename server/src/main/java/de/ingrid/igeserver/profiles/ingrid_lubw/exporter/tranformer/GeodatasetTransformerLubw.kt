@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -23,7 +23,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.amendLubwDescriptiveKeywords
-import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.getEnvironmentDescription
 
 class GeodatasetTransformerLubw(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
@@ -33,9 +33,8 @@ class GeodatasetTransformerLubw(transformerConfig: TransformerConfig) : Geodatas
         if (!super.systemEnvironment.isNullOrEmpty()) {
             super.systemEnvironment
         } else {
-            docData.getString("dataQualityInfo.lineage.source.environmentDescription")
+            getEnvironmentDescription(docData)
         }
 
-    override fun getDescriptiveKeywords(): List<Thesaurus> =
-        amendLubwDescriptiveKeywords(docData, super.getDescriptiveKeywords())
+    override fun getDescriptiveKeywords(): List<Thesaurus> = amendLubwDescriptiveKeywords(docData, super.getDescriptiveKeywords())
 }

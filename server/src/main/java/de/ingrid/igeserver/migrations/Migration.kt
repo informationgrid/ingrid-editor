@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -92,11 +92,9 @@ class Migration : ApplicationRunner {
         }
     }
 
-    private fun getStrategiesAfter(version: String): List<MigrationStrategy> {
-        return migrationStrategies
-            .filter { it.compareWithVersion(version) == VersionCompare.HIGHER }
-            .sortedBy { it.version }
-    }
+    private fun getStrategiesAfter(version: String): List<MigrationStrategy> = migrationStrategies
+        .filter { it.compareWithVersion(version) == VersionCompare.HIGHER }
+        .sortedBy { it.version }
 
     private fun getVersion(): String {
         val info = versionRepo.findById(1).get()

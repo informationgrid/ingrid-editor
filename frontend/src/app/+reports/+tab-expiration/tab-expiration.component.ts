@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -38,7 +38,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { catchError, filter, map, tap } from "rxjs/operators";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { AsyncPipe, NgTemplateOutlet } from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { MatDividerModule } from "@angular/material/divider";
 import { CatalogService } from "../../+catalog/services/catalog.service";
 import { MatTabsModule } from "@angular/material/tabs";
@@ -54,7 +54,6 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
   selector: "ige-tab-expiration",
   templateUrl: "./tab-expiration.component.html",
   styleUrls: ["./tab-expiration.component.scss"],
-  standalone: true,
   imports: [
     MatCheckboxModule,
     ExpirationTableComponent,
@@ -63,7 +62,6 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
     MatTabsModule,
     MatProgressSpinnerModule,
     AsyncPipe,
-    NgTemplateOutlet,
     FormsModule,
     PageTemplateComponent,
   ],

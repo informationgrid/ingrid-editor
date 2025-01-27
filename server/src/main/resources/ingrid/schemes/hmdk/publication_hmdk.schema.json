@@ -1,14 +1,16 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/hmdk/PublicationHmdk",
-  "allOf": [
-    {
-      "$ref": "../publication-base.schema.json"
-    }
-  ],
+  "$ref": "../publication-base.schema.json",
   "properties": {
-    "publicationHmbTG": {
-      "type": ["null", "boolean"]
+    "properties": {
+      "unevaluatedProperties": false,
+      "$ref": "../publication-base.schema.json#/definitions/propertiesPublication",
+      "properties": {
+        "publicationHmbTG": {
+          "type": ["null", "boolean"]
+        }
+      }
     },
     "informationHmbTG": {
       "type": "array",

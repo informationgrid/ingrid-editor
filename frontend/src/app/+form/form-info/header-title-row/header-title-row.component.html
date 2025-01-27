@@ -2,7 +2,7 @@
     <ige-document-icon [doc]="doc"></ige-document-icon>
 
     @if (!showTitleInput) {
-        <span
+        <h1
             class="label flex-1 flex-row justify-content-space-between"
             [matTooltip]="
                 !address || !disableEdit
@@ -26,7 +26,7 @@
                 >{{ _form.get("title")?.value || "Kein Titel" }}</span
             >
             <mat-icon svgIcon="cursor-edit" matTooltip="Bearbeiten"></mat-icon>
-        </span>
+        </h1>
     }
 
     <form

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -32,10 +32,8 @@ class GeodatasetTransformerUPSH(transformerConfig: TransformerConfig) : Geodatas
 
     private val docData = doc.data
 
-    override fun getGeometryContexts(): List<GeometryContext> {
-        return docData.get("geometryContext")
-            ?.map { convertToGeometryContext(it) } ?: emptyList()
-    }
+    override fun getGeometryContexts(): List<GeometryContext> = docData.get("geometryContext")
+        ?.map { convertToGeometryContext(it) } ?: emptyList()
 
     private fun convertToGeometryContext(item: JsonNode): GeometryContext {
         val featureType = mapFeatureType(item.getStringOrEmpty("featureType.key"))
@@ -56,13 +54,11 @@ class GeodatasetTransformerUPSH(transformerConfig: TransformerConfig) : Geodatas
         )
     }
 
-    private fun mapFeatureType(type: String): String {
-        return when (type) {
-            "nominal" -> "NominalFeature"
-            "ordinal" -> "OrdinalFeature"
-            "scalar" -> "ScalarFeature"
-            "other" -> "OtherFeature"
-            else -> "OtherFeature"
-        }
+    private fun mapFeatureType(type: String): String = when (type) {
+        "nominal" -> "NominalFeature"
+        "ordinal" -> "OrdinalFeature"
+        "scalar" -> "ScalarFeature"
+        "other" -> "OtherFeature"
+        else -> "OtherFeature"
     }
 }

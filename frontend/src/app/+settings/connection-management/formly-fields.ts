@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -116,8 +116,10 @@ export class ConnectionForm extends FormFieldHelper {
       }),
       this.addCheckboxInline("https", "verwende HTTPS", {
         expressions: {
-          "props.label":
-            "model.https ? 'HTTPS (Zertifikat \"/elasticsearch-ca.pem\" muss vorhanden sein)' : 'HTTPS'",
+          "props.label": (field: FormlyFieldConfig) =>
+            field.model.https
+              ? 'HTTPS (Zertifikat \"/elasticsearch-ca.pem\" muss vorhanden sein)'
+              : "HTTPS",
         },
       }),
       this.addCheckboxInline("isSecure", "ist abgesichert"),
@@ -137,7 +139,7 @@ export class ConnectionForm extends FormFieldHelper {
           }),
         ],
         {
-          hideExpression: "!model.isSecure",
+          hideExpression: (field: FormlyFieldConfig) => !field.model.isSecure,
           fieldGroupClassName: "flex-row gap-6",
         },
       ),

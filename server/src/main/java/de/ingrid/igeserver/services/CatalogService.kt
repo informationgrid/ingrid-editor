@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -35,6 +35,7 @@ import de.ingrid.igeserver.repository.GroupRepository
 import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -53,6 +54,7 @@ class CatalogService(
     private val keycloakService: UserManagementService,
     private val catalogProfiles: List<CatalogProfile>,
 ) {
+    private val log = logger()
 
     private val catalogProfileMap = mutableMapOf<String, CatalogProfile>()
 
@@ -135,8 +137,7 @@ class CatalogService(
         initializeIndices(type)
     }
 
-    private fun initializeCatalogConfig(catalogId: String) =
-        updateCatalogConfig(catalogId, config = CatalogConfig(elasticsearchAlias = catalogId))
+    private fun initializeCatalogConfig(catalogId: String) = updateCatalogConfig(catalogId, config = CatalogConfig(elasticsearchAlias = catalogId))
 
     fun initializeCodelists(catalogId: String, type: String, codelistId: String? = null) {
         this.getCatalogProfile(type)
@@ -343,15 +344,14 @@ class CatalogService(
         return userPermissions
     }
 
-    private fun containsAnyFolderWritePermission(groupEntries: List<JsonNode>) =
-        groupEntries.any { entry ->
+    private fun containsAnyFolderWritePermission(groupEntries: List<JsonNode>) = groupEntries.any { entry ->
 
-            val isFolder = entry["isFolder"]?.asBoolean() ?: false
-            val hasAnyWritePermission =
-                listOf("writeTree", "writeTreeExceptParent").contains(entry["permission"]?.asText())
+        val isFolder = entry["isFolder"]?.asBoolean() ?: false
+        val hasAnyWritePermission =
+            listOf("writeTree", "writeTreeExceptParent").contains(entry["permission"]?.asText())
 
-            isFolder && hasAnyWritePermission
-        }
+        isFolder && hasAnyWritePermission
+    }
 
     /**
      *  get all users of active catalog
@@ -364,12 +364,18 @@ class CatalogService(
     fun getAllCatalogUsers(catalogId: String): List<User> {
         val keyCloakUsers = keycloakService.getUsersWithIgeRoles()
         val catalogUsers = getUserOfCatalog(catalogId)
-        return keyCloakUsers
+
+        val mappedUsers = keyCloakUsers
             .filter { user -> catalogUsers.any { it.userId == user.login } }
             .map { user ->
                 val catUser = catalogUsers.find { it.userId == user.login }!!
                 applyIgeUserInfo(user, catUser, catalogId)
             }
+
+        val missingUsers = catalogUsers.filter { catUser -> keyCloakUsers.none { it.login == catUser.userId } }
+        if (missingUsers.isNotEmpty())log.error("The following users in catalog '$catalogId' were not found in Keycloak: ${missingUsers.map { it.userId }}")
+
+        return mappedUsers
     }
 
     private fun getAllCatalogUsernames(principal: Principal): List<String> {
@@ -377,8 +383,7 @@ class CatalogService(
         return userRepo.findAllUserIdsByCatalogId(catalogId)
     }
 
-    fun getEditableUsernamesForCurrentCatalog(principal: Principal): List<String> =
-        filterEditableUsers(principal, getAllCatalogUsernames(principal))
+    fun getEditableUsernamesForCurrentCatalog(principal: Principal): List<String> = filterEditableUsers(principal, getAllCatalogUsernames(principal))
 
     /**
      * Check if the principal can edit the user
@@ -390,8 +395,7 @@ class CatalogService(
      * @param username the username to check
      * @return true if the principal can edit the user
      */
-    fun canEditUser(principal: Principal, username: String) =
-        filterEditableUsers(principal, listOf(username)).isNotEmpty()
+    fun canEditUser(principal: Principal, username: String) = filterEditableUsers(principal, listOf(username)).isNotEmpty()
 
     /**
      * Filter users that are editable by the principal

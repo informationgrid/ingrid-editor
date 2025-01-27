@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, inject, OnInit, Output } from "@angular/core";
 import {
   ConfigService,
   Configuration,
@@ -25,7 +25,6 @@ import {
   Version,
 } from "../services/config/config.service";
 import { NavigationEnd, Router, RouterLink, Routes } from "@angular/router";
-import { SessionQuery } from "../store/session.query";
 import { Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { StorageService } from "../../storage.service";
@@ -43,12 +42,13 @@ import { MatIcon } from "@angular/material/icon";
 import { MatCardTitle } from "@angular/material/card";
 import { MatDivider } from "@angular/material/divider";
 import { AsyncPipe, DatePipe } from "@angular/common";
+import { GeneralStore } from "../store/general.store";
+import { MatomoTrackClickDirective } from "ngx-matomo-client";
 
 @Component({
   selector: "ige-main-header",
   templateUrl: "./main-header.component.html",
   styleUrls: ["./main-header.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     MatToolbar,
@@ -66,9 +66,11 @@ import { AsyncPipe, DatePipe } from "@angular/common";
     RouterLink,
     AsyncPipe,
     DatePipe,
+    MatomoTrackClickDirective,
   ],
 })
 export class MainHeaderComponent implements OnInit {
+  private generalStore = inject(GeneralStore);
   @Output() onLogout = new EventEmitter<void>();
 
   userInfo$ = this.configService.$userInfo;
@@ -76,7 +78,7 @@ export class MainHeaderComponent implements OnInit {
   pageTitle: string;
   currentCatalog$: Observable<string>;
   version: Version;
-  timeout$ = this.session.select("sessionTimeoutIn");
+  timeout = this.generalStore.sessionTimeoutIn;
   initials: string;
   isAdmin: boolean;
   externalHelp: string;
@@ -91,7 +93,6 @@ export class MainHeaderComponent implements OnInit {
   constructor(
     private configService: ConfigService,
     private catalogService: CatalogService,
-    private session: SessionQuery,
     private router: Router,
     private authFactory: AuthenticationFactory,
     private storageService: StorageService,

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -28,9 +28,7 @@ import java.util.*
 @Component
 class DateService {
 
-    fun now(): OffsetDateTime {
-        return OffsetDateTime.now()
-    }
+    fun now(): OffsetDateTime = OffsetDateTime.now()
 
     fun toISO8601UTC(date: Date?): String? {
         val tz: TimeZone = TimeZone.getTimeZone("UTC")

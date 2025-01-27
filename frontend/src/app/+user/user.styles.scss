@@ -1,4 +1,5 @@
-@import "src/variables";
+@use "src/variables" as vars;
+@use "sass:color";
 
 :host {
   display: flex;
@@ -10,11 +11,14 @@
   }
 
   ::ng-deep ige-repeat-list .list-item {
-    background: $ige-background;
+    background: vars.$ige-background;
     margin-bottom: 2px;
 
     &:hover {
-      background: darken($ige-background, 5%) !important;
+      background: color.adjust(
+        vars.$ige-background,
+        $lightness: -5%
+      ) !important;
     }
   }
 }
@@ -40,11 +44,12 @@ as-split-area {
 
   .page-title {
     margin-top: 0;
+    margin-bottom: 0;
     padding-bottom: 12px;
     font-size: 34px;
     letter-spacing: 0.25px;
     line-height: 44px;
-    color: $ige-primary;
+    color: vars.$ige-primary;
   }
 }
 
@@ -73,7 +78,7 @@ as-split-area {
 
   button.btnSave {
     &:not([disabled]):hover {
-      background-color: lighten($ige-secondary, 5%);
+      background-color: color.adjust(vars.$ige-secondary, $lightness: 5%);
     }
   }
 
@@ -96,34 +101,39 @@ as-split-area {
     flex-shrink: 0;
 
     ::ng-deep svg path {
-      fill: $ige-primary;
+      fill: vars.$ige-primary;
     }
   }
 
   .label {
     display: flex;
     justify-content: space-between;
-    color: $ige-primary;
+    color: vars.$ige-primary;
     padding: 7px 10px;
     line-height: 43px;
     font-size: 24px;
   }
 
   button {
-    background: $ige-background;
+    background: vars.$ige-background;
   }
 }
 
 mat-toolbar-row {
-  background-color: $ige-background;
+  background-color: vars.$ige-background;
   padding: 0;
 }
 
 h1 {
-  padding-left: 12px;
   font-size: 2em;
   line-height: 44px;
   font-weight: 400;
+}
+
+h2 {
+  margin: unset;
+  font-size: 24px;
+  font-weight: normal;
 }
 
 ngx-skeleton-loader {

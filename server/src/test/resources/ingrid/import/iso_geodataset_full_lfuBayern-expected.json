@@ -122,10 +122,12 @@
           "key": "5304"
         },
         "title": "Meine Verweis",
+        "referenceType": "url",
         "url": "http://verweis.de",
         "explanation": ""
       }
     ],
+    "fileReferences": [],
     "invekosKeywords": [],
     "metadata": {
       "language": {

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -37,7 +37,6 @@ import { LinkDialogComponent } from "../table/link-dialog/link-dialog.component"
 import {
   CdkDrag,
   CdkDragDrop,
-  CdkDragPreview,
   CdkDropList,
   moveItemInArray,
 } from "@angular/cdk/drag-drop";
@@ -48,7 +47,6 @@ import {
 } from "../table/form-dialog/form-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { MatCardModule } from "@angular/material/card";
-import { AsyncPipe, NgOptimizedImage } from "@angular/common";
 import { MatIconModule } from "@angular/material/icon";
 import { ConfigService } from "../../../services/config/config.service";
 import { UploadService } from "../../../shared/upload/upload.service";
@@ -64,16 +62,12 @@ import { FormStateService } from "../../../+form/form-state.service";
   selector: "ige-repeat",
   templateUrl: "./preview-image.component.html",
   styleUrls: ["./preview-image.component.scss"],
-  standalone: true,
   imports: [
     MatButtonModule,
     CdkDropList,
     CdkDrag,
-    CdkDragPreview,
     MatCardModule,
-    NgOptimizedImage,
     MatIconModule,
-    AsyncPipe,
     MatTooltipModule,
   ],
 })
@@ -158,7 +152,7 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
   showUploadFilesDialog() {
     this.dialog
       .open(UploadFilesDialogComponent, {
-        minWidth: 700,
+        minWidth: "min(700px, 100%)",
         data: {
           allowedUploadTypes: [
             "gif",

@@ -9,7 +9,13 @@ title: Regionalschlüssel
 
 # Regionalschlüssel
 
-Amtlicher Regionalschlüssel (ARS) des Statistischen Bundesamtes, hier als ergänzende Angabe zur BoundingBox. Es sind nur jene Ziffern des ARS anzugeben, die die jeweilige administrative Ebene abbilden (Gemeinde: alle 12 Stellen; Gemeindeverband: die ersten 9 Stellen; Bundesland: die ersten 2 Stellen. Der Nationalstaat 'Bundesrepublik Deutschland' wird mit '000000000000' angegeben (12 mal die '0')).
-Die Angabe des Regionalschlüssels ermöglicht die Präzisierung der Beschreibung der räumlichen Ausdehnung einer Geodatenressource und sollte nur angegeben werden, wenn der geometrische Umring einer administrativen Einheit zutreffend ist und die Geodatenressource vollständig darin liegt.
+Der amtliche Regionalschlüssel (ARS) des Statistischen Bundesamtes dient als ergänzende Angabe zur BoundingBox und präzisiert die Beschreibung der räumlichen Ausdehnung einer Geodatenressource. Es sind nur jene Ziffern des ARS anzugeben, die die jeweilige administrative Ebene abbilden:
 
-Über https://opengovtech.de/ars/ können Sie einen Amtlichen Regionalschlüssel suchen.
+- Gemeinde: alle 12 Stellen des ARS sind erforderlich
+- Gemeindeverband: die ersten 9 Stellen des ARS sind anzugeben
+- Bundesland: die ersten 2 Stellen des ARS sind ausreichend
+- Nationalstaat 'Bundesrepublik Deutschland':  die Eingabe einer einzigen '0' ist ausreichend. Für die Ausgabeformate (ISO-XML, Portal uvm.) wird der Wert automatisch auf 12 Stellen ('000000000000') vervollständigt.
+
+Der Regionalschlüssel sollte nur angegeben werden, wenn der geometrische Umring einer administrativen Einheit zutreffend ist und die Geodatenressource vollständig darin liegt.
+
+Ein interaktives Tool zur Suche nach Amtlichen Regionalschlüsseln finden Sie unter https://opengovtech.de/ars/.

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -33,18 +33,19 @@ import { MatIcon } from "@angular/material/icon";
 import { MatButton } from "@angular/material/button";
 import { EmailformComponent } from "../../emailform/emailform.component";
 import { AsyncPipe } from "@angular/common";
+import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 
 @Component({
   selector: "ige-profile",
   templateUrl: "./profile.component.html",
   styleUrls: ["./profile.component.scss"],
-  standalone: true,
   imports: [
     PageTemplateNoHeaderComponent,
     MatIcon,
     MatButton,
     EmailformComponent,
     AsyncPipe,
+    MATOMO_DIRECTIVES,
   ],
 })
 export class ProfileComponent implements OnInit {
@@ -128,7 +129,7 @@ export class ProfileComponent implements OnInit {
           lastName: this.userInfo$.value.lastName,
         },
         hasBackdrop: true,
-        minWidth: 400,
+        minWidth: "min(400px, 100%)",
       })
       .afterClosed()
       .pipe(filter((modified) => modified))

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -32,17 +32,14 @@ import { PluginService } from "../../../../services/plugin/plugin.service";
 export class AddressTitleBehaviour extends Plugin {
   id = "plugin.address.title";
   name = "Template für die Generierung des Adressen-Titels";
-  description =
-    'Definition für den Titel, der bei einer neuen Adresse generiert wird. Z.B.: firstName ? lastName + ", " + firstName : organization<br>Verfügbare Felder sind: <b>firstName</b> und ' +
-    "<b>lastName</b> für Personen und <b>organization</b> für Organisationen";
+  description = `<p>Definition für den Titel, der bei einer neuen Adresse generiert wird.</p>
+<p>Beispiele: <ul><li>\${address.firstName ? address.lastName + ", " + address.firstName : address.organization}</li>
+<li>\${address.lastName} --- generated</li></ul></p>`;
   group = "Adressen";
   defaultActive = false;
 
-  private addressTitleFunction: AddressTitleFn = (
-    address: IgeDocument /* IMPORTANT FOR EVALUATION! */,
-  ) => {
-    const value = this.replaceVariables(this.data.template);
-    return (0, eval)(`address = ${JSON.stringify(address)};${value}`) ?? "";
+  private addressTitleFunction: AddressTitleFn = (address: IgeDocument) => {
+    return this.formatAddressString(address, `\`${this.data.template}\``);
   };
 
   constructor(private documentService: DocumentService) {
@@ -52,58 +49,17 @@ export class AddressTitleBehaviour extends Plugin {
       key: "template",
       type: "input",
       props: {
-        placeholder: 'firstName ? lastName + ", " + firstName : organization',
+        placeholder:
+          '${address.firstName ? address.lastName + ", " + address.firstName : address.organization}',
         appearance: "outline",
         required: true,
       },
       modelOptions: {
         updateOn: "blur",
       },
-      validators: {
-        template: {
-          expression: this.validateInputString(),
-          message: () => "Der Wert ist ungültig",
-        },
-      },
     });
 
     inject(PluginService).registerPlugin(this);
-  }
-
-  private validateInputString() {
-    return (c) => {
-      let error = false;
-      const address =
-        'address = {firstName: "",lastName: "",organization: ""};';
-      try {
-        const value = this.replaceVariables(c.value);
-
-        const testString = (0, eval)(address + value);
-        console.debug("Eval string value: ", value);
-        console.debug("Eval string evaluated: ", testString);
-        if (testString && typeof testString !== "string") {
-          throw new Error("Not a String");
-        } else if (
-          testString === undefined ||
-          testString.indexOf("undefined") !== -1
-        ) {
-          throw new Error("One or more fields are not defined");
-        }
-      } catch (e) {
-        console.debug("Evaluation error");
-        error = true;
-      }
-      return !error;
-    };
-  }
-
-  private replaceVariables(text: string) {
-    return !text
-      ? ""
-      : text
-          .replace(/organization/g, "address.organization")
-          .replace(/lastName/g, "address.lastName")
-          .replace(/firstName/g, "address.firstName");
   }
 
   register() {
@@ -117,5 +73,16 @@ export class AddressTitleBehaviour extends Plugin {
   unregister() {
     super.unregister();
     this.documentService.registerAddressTitleFunction(null);
+  }
+
+  private formatAddressString(obj, formatString) {
+    // Wrap formatString into a function body
+    const formatterFunction = new Function(
+      "address",
+      `return ${formatString};`,
+    );
+
+    // Safely call the function with the object
+    return formatterFunction(obj);
   }
 }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -84,9 +84,7 @@ class OgcHtmlConverterService(
         return "$table</table>"
     }
 
-    private fun addRow(key: String, value: String): String {
-        return "<tr><td style='width:160px'><b>$key</b></td><td>$value</td></tr>"
-    }
+    private fun addRow(key: String, value: String): String = "<tr><td style='width:160px'><b>$key</b></td><td>$value</td></tr>"
 
     fun wrapperForHtml(responseRecords: String, links: List<Link>?, queryMetadata: QueryMetadata?): String {
         var metadata = ""

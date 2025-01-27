@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -27,13 +27,10 @@ class GeodatasetMapperHMDK(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
     val publicationHmbTG = containsKeyword("hmbtg")
 
-    override fun getKeywords(): List<String> =
-        super.getKeywords(listOf("HmbTG-Informationsgegenstand")).filterNot { it == "hmbtg" }
+    override fun getKeywords(): List<String> = super.getKeywords(listOf("HmbTG-Informationsgegenstand")).filterNot { it == "hmbtg" }
 
-    fun getInformationHmbTG(): List<KeyValue> {
-        return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
-            ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "HmbTG-Informationsgegenstand" }
-            ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
-            ?.map { KeyValue(it) } ?: emptyList()
-    }
+    fun getInformationHmbTG(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "HmbTG-Informationsgegenstand" }
+        ?.flatMap { thesaurus -> thesaurus.keywords?.keyword?.mapNotNull { it.value } ?: emptyList() }
+        ?.map { KeyValue(it) } ?: emptyList()
 }

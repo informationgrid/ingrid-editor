@@ -43,7 +43,7 @@
                             [formControl]="filterCtrl"
                         ></ngx-mat-select-search>
                     </mat-option>
-                    @for (codelist of filteredOptions; track codelist.id) {
+                    @for (codelist of filteredOptions(); track codelist.id) {
                         <mat-option [value]="codelist">
                             {{ codelist.name }} ({{ codelist.id }})
                         </mat-option>
@@ -51,14 +51,14 @@
                 </mat-select>
             </mat-form-field>
             <mat-slide-toggle
-                [checked]="showAllCodelists"
+                [checked]="showAllCodelists()"
                 (change)="handleCodelistToggle($event)"
                 >Alle Codelisten anzeigen</mat-slide-toggle
             >
         </div>
     </div>
 
-    @if (filteredOptions.length > 0) {
+    @if (filteredOptions().length > 0) {
         <div main-content class="flex-1">
             @if (selectedCodelist?.description) {
                 <div class="description">

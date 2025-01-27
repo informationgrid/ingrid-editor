@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,10 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit } from "@angular/core";
+import { Component, Inject, OnInit } from "@angular/core";
 import { SaveQueryDialogResponse } from "./save-query-dialog.response";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import {
+  MAT_DIALOG_DATA,
   MatDialogActions,
   MatDialogClose,
   MatDialogContent,
@@ -33,12 +34,12 @@ import { MatInput } from "@angular/material/input";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { FocusDirective } from "../../directives/focus.directive";
 import { MatCheckbox } from "@angular/material/checkbox";
+import { Query } from "../../store/query/query.model";
 
 @Component({
   selector: "ige-save-query-dialog",
   templateUrl: "./save-query-dialog.component.html",
   styleUrls: ["./save-query-dialog.component.scss"],
-  standalone: true,
   imports: [
     MatIconButton,
     MatDialogClose,
@@ -62,7 +63,15 @@ export class SaveQueryDialogComponent implements OnInit {
     forCatalog: false,
   };
 
-  constructor() {}
+  constructor(@Inject(MAT_DIALOG_DATA) public query: Query) {
+    if (!query) return;
+
+    this.model = {
+      name: query.name,
+      description: query.description,
+      forCatalog: query.isCatalogQuery,
+    };
+  }
 
   ngOnInit(): void {}
 }

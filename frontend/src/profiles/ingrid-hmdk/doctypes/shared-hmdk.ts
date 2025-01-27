@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -49,15 +49,6 @@ export class SharedHmdk {
     doc: IngridShared,
     fieldConfig: FormlyFieldConfig[],
   ) => {
-    // add "Veröffentlichung gemäß HmbTG" to "OpenData" Section
-    // const openData = doc.findFieldElementWithId(fieldConfig, "isOpenData");
-    // openData.fieldConfig.push(this.getPublicationHmbTGFieldConfig(doc));
-    // add "Informationsgegenstand" right after OpenData Section
-    /*const openDataParent = doc.findParentFieldElementWithId(
-      fieldConfig,
-      "isOpenData",
-    );*/
-
     // at least one "Herausgeber" is required when Dataset is OpenData
     const pointOfContact = doc.findFieldElementWithId(
       fieldConfig,
@@ -104,18 +95,6 @@ export class SharedHmdk {
       "Bei aktivierter 'Veröffentlichung gemäß HmbgTG'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
   };
 
-  private getPublicationHmbTGFieldConfig(doc: IngridShared): FormlyFieldConfig {
-    return doc.addCheckboxInline(
-      "publicationHmbTG",
-      "Veröffentlichung gemäß HmbTG",
-      {
-        className: "flex-1",
-        click: (field: FormlyFieldConfig) =>
-          this.handlePublicationHmbTGClick(doc, field),
-      },
-    );
-  }
-
   private getInformationHmbTGFieldConfig(doc: IngridShared) {
     return doc.addRepeatList("informationHmbTG", "Informationsgegenstand", {
       asSelect: true,
@@ -123,9 +102,12 @@ export class SharedHmdk {
         hide: (field: FormlyFieldConfig) =>
           field.model.properties?.publicationHmbTG !== true &&
           field.model.properties?.isOpenData !== true,
-        "props.disabled":
-          "(field.model.properties?.publicationHmbTG !== true && field.model.properties?.isOpenData === true) || formState.disabled",
-        "props.required": "field.model.properties?.publicationHmbTG === true",
+        "props.disabled": (field: FormlyFieldConfig) =>
+          (field.model.properties?.publicationHmbTG !== true &&
+            field.model.properties?.isOpenData === true) ||
+          field.options.formState.disabled,
+        "props.required": (field: FormlyFieldConfig) =>
+          field.model.properties?.publicationHmbTG === true,
       },
       options: doc.getCodelistForSelect(
         "informationsgegenstand",
@@ -139,7 +121,7 @@ export class SharedHmdk {
     doc: IngridShared,
     field: FormlyFieldConfig,
   ) {
-    const checked = field.formControl.value;
+    const checked = field.formControl.value?.publicationHmbTG;
     if (checked) {
       this.handleActivateHmbTG(doc, field);
     } else {
@@ -160,12 +142,14 @@ export class SharedHmdk {
         );
 
       // set Anwendungseinschränkungen to "Datenlizenz Deutschland Namensnennung"
-      field.model.resource.useConstraints = [
-        {
-          title: { key: "1" },
-          source: "Freie und Hansestadt Hamburg, zuständige Behörde",
-        },
-      ];
+      if (field.model.resource) {
+        field.model.resource.useConstraints = [
+          {
+            title: { key: "1" },
+            source: "Freie und Hansestadt Hamburg, zuständige Behörde",
+          },
+        ];
+      }
       // we need to set the model here and update it, since new form controls need to be created
       // by ngx-formly, because we update a repeat-component!
       field.options.formState.updateModel();
@@ -218,7 +202,7 @@ export class SharedHmdk {
   private handleDeactivateHmbTG(doc: IngridShared, field: FormlyFieldConfig) {
     function executeAction() {
       // remove all categories
-      field.form.get("openDataCategories").setValue([]);
+      field.form.get("openDataCategories")?.setValue([]);
       // remove all "Informationsgegenstände" (set to "ohne Veröffentlichungspflicht" if open data)
       field.form.get("informationHmbTG")?.setValue(
         field.model.properties?.isOpenData
@@ -261,7 +245,10 @@ export class SharedHmdk {
     previous: Observable<boolean>,
   ) {
     return this.wrap(() => {
-      field.form.get("properties.publicationHmbTG").setValue(true);
+      field.formControl.setValue({
+        ...field.formControl.value,
+        publicationHmbTG: true,
+      });
       if (field.model.resource !== undefined) {
         field.model.resource.useConstraints = [
           {
@@ -271,7 +258,8 @@ export class SharedHmdk {
         ];
         // we need to set the model here and update it, since new form controls need to be created
         // by ngx-formly, because we update a repeat-component!
-        field.options.formState.updateModel();
+        // delay execution so that setValue-calls to form are executed
+        setTimeout(() => field.options.formState.updateModel());
       }
 
       // if inspire set access constraint "keine"
@@ -291,7 +279,7 @@ export class SharedHmdk {
   hmdkHandleDeactivateOpenData(field: FormlyFieldConfig) {
     // remove "keine" from access constraints
     const accessConstraintsCtrl = field.form.get("resource.accessConstraints");
-    accessConstraintsCtrl.setValue(
+    accessConstraintsCtrl?.setValue(
       accessConstraintsCtrl.value.filter((entry: any) => entry.key !== "1"),
     );
 
@@ -299,11 +287,11 @@ export class SharedHmdk {
     const useConstraintsCtrl = field.form.get(
       "resource.useConstraints",
     ) as FormArray;
-    useConstraintsCtrl.clear();
+    useConstraintsCtrl?.clear();
 
     // remove all categories
-    field.form.get("openDataCategories").setValue([]);
-    if (field.model.isHvd) field.form.get("isHvd").setValue(false);
+    field.form.get("openDataCategories")?.setValue([]);
+    field.formControl.setValue({ ...field.formControl.value, isHvd: false });
     return of(true);
   }
 

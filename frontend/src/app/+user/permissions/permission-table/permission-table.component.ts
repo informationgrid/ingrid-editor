@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -62,7 +62,6 @@ import { BreadcrumbComponent } from "../../../+form/form-info/breadcrumb/breadcr
     TranslocoModule,
     BreadcrumbComponent,
   ],
-  standalone: true,
 })
 export class PermissionTableComponent implements ControlValueAccessor {
   @Input() label: string;
@@ -87,7 +86,6 @@ export class PermissionTableComponent implements ControlValueAccessor {
   callAddPermissionDialog() {
     return this.dialog
       .open(PermissionAddDialogComponent, {
-        minWidth: 500,
         hasBackdrop: true,
         data: {
           forAddress: this.forAddress,

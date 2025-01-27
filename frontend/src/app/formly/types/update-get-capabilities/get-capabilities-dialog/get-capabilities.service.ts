@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ConfigService } from "../../../../services/config/config.service";
 import {
@@ -38,23 +38,24 @@ import {
   TimeReference,
   Url,
 } from "./get-capabilities.model";
-import { CodelistQuery } from "../../../../store/codelist/codelist.query";
 import { isEmptyObject } from "../../../../shared/utils";
 import { CodelistEntry } from "../../../../store/codelist/codelist.model";
 import { lastValueFrom } from "rxjs";
 import { KeywordAnalysis } from "../../../../../profiles/ingrid/utils/keywords";
+import { CodelistStore } from "../../../../store/codelist/codelist.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class GetCapabilitiesService {
+  private codelistStore = inject(CodelistStore);
+
   private backendUrl: string;
 
   constructor(
     private http: HttpClient,
     configService: ConfigService,
     private documentService: DocumentService,
-    private codelistQuery: CodelistQuery,
     private keywordAnalysis: KeywordAnalysis,
   ) {
     configService.$userInfo.subscribe(
@@ -228,7 +229,7 @@ export class GetCapabilitiesService {
 
   private mapConformities(value: any[]) {
     return value.map((item) => {
-      const entry: CodelistEntry = this.codelistQuery.getCodelistEntryByValue(
+      const entry: CodelistEntry = this.codelistStore.getCodelistEntryByValue(
         "6005",
         item.specification,
         "iso",

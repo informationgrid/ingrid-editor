@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,6 +22,7 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
+import de.ingrid.igeserver.utils.getString
 
 open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
@@ -245,8 +246,43 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
     val lineageProcessStepDescriptions =
         data.dataQualityInfo?.lineage?.source?.processStep?.description?.map { codelists.getValue("", it) }
             ?: emptyList()
+
+    data class LineageSourceDescription(
+        val value: String,
+        val title: String?,
+        val identifier: String?,
+        val date: String?,
+        val dateType: String?,
+        val uuidRef: String?,
+        val url: String?,
+    )
+
     val lineageSourceDescriptions =
-        data.dataQualityInfo?.lineage?.source?.descriptions?.map { codelists.getValue("", it) } ?: emptyList()
+        data.dataQualityInfo?.lineage?.source?.descriptions?.map {
+            val title: String?
+            val identifier: String?
+            when (it._type) {
+                "internalDataOrigin" -> {
+                    val doc = documentService.getLastPublishedDocument(catalogIdentifier, it.uuidRef!!, false)
+                    title = doc.title
+                    identifier = doc.data.getString("identifier")
+                }
+                else -> {
+                    title = it.title
+                    identifier = it.identifier
+                }
+            }
+            LineageSourceDescription(
+                value = it.value,
+                title,
+                identifier,
+                date = it.date,
+                dateType = (codelists.getValue("502", it.dateType, "iso")),
+                uuidRef = it.uuidRef,
+                url = it.url,
+            )
+        } ?: emptyList()
+
     val hasLineageInformation =
         !lineageStatement.isNullOrEmpty() || lineageProcessStepDescriptions.isNotEmpty() || lineageSourceDescriptions.isNotEmpty()
 

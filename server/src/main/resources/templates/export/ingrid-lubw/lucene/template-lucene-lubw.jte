@@ -8,6 +8,12 @@
 
 @template.export.ingrid.lucene.template-lucene(map = map, extraFields = @`
 ,
+    @if(page.getEnvironmentDescription() != null)
+        "environmentDescription": "${page.getEnvironmentDescription()}",
+    @endif
+    @if(page.getOac() != null)
+        "oac": "${page.getOac()}",
+    @endif
     "distributor": "${page.getDistributor()}",
     "object_node.tree_path.name": [
     @for(var entry : ForSupport.of(page.getTreePathNames()))

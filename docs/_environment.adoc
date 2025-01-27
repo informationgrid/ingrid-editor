@@ -127,6 +127,14 @@
 |
 |
 
+|MATOMO_URL
+|Must be set to enable Matomo tracking
+|
+
+|MATOMO_SITE_ID
+|Must be set to enable Matomo tracking
+|
+
 |NOMINATIM_URL
 |
 |

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -56,7 +56,6 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { FakeMatIconRegistry } from "@angular/material/icon/testing";
 import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
 import { TreeStore } from "../../../store/tree/tree.store";
-import { TreeQuery } from "../../../store/tree/tree.query";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ConfigService } from "../../../services/config/config.service";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
@@ -364,7 +363,7 @@ describe("TreeComponent", () => {
       }
     });
 
-    spectator.component.activeNodeId = 4;
+    spectator.component.activeNodeId.set(4);
     spectator.component.expandNodeIds = new Subject<number[]>();
     setTimeout(() => spectator.component.expandNodeIds.next([1, 2, 3]));
     spectator.detectChanges();
@@ -428,13 +427,13 @@ describe("TreeComponent", () => {
 
   it("should move a root node to a folder", fakeAsync(() => {
     const store = spectator.inject(TreeStore);
-    const treeQuery = spectator.inject(TreeQuery);
+    const treeStore = spectator.inject(TreeStore);
     store.set(recentDocuments);
 
     db.getPath.and.returnValue(Promise.resolve(["1"]));
     db.initialData.and.returnValue(of(recentDocuments));
     db.getChildren.and.callFake((parentId) =>
-      of(treeQuery.getChildren(parentId)),
+      of(treeStore.getChildren(parentId)),
     );
     spectator.detectChanges();
 

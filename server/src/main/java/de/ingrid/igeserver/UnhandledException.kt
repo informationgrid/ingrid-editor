@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -32,8 +32,6 @@ open class UnhandledException : ServerException {
         /**
          * Factory method for an arbitrary cause
          */
-        fun withCause(cause: Throwable): UnhandledException {
-            return UnhandledException(STATUS_CODE, ERROR_CODE, cause.localizedMessage ?: cause.toString(), null, cause)
-        }
+        fun withCause(cause: Throwable): UnhandledException = UnhandledException(STATUS_CODE, ERROR_CODE, cause.localizedMessage ?: cause.toString(), null, cause)
     }
 }

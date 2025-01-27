@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -29,7 +29,7 @@ data class DataModel(
     val description: String?,
     val landingPage: String?,
     val DCATThemes: List<KeyValue>?,
-    val hvd: Boolean?,
+    val isHvd: Boolean?,
     val hvdCategories: List<KeyValue>?,
     val addresses: List<AddressRefModel>?,
     val qualityProcessURI: String?,

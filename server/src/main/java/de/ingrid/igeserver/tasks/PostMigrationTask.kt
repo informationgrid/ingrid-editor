@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -269,7 +269,7 @@ class PostMigrationTask(
             foundChildren.forEach { child ->
                 child.wrapper.parent = newFolder
                 documentService.docWrapperRepo.saveAndFlush(child.wrapper)
-                documentService.aclService.updateParent(doc.id!!, newFolderId)
+                documentService.aclService.updateParent(child.wrapper.id!!, newFolderId)
 
                 // only set parentIdentifier if not already set. do not overwrite explicitly set parentIdentifier
                 if (child.document.data.get("parentIdentifier") == null || child.document.data.get("parentIdentifier") is NullNode) {

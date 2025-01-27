@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,32 +17,37 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { EntityState, EntityStore, StoreConfig } from "@datorama/akita";
 import { ProfileAbstract } from "./profile.model";
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withMethods,
+} from "@ngrx/signals";
+import { setAllEntities, withEntities } from "@ngrx/signals/entities";
+import { computed } from "@angular/core";
 
-type FormHeaderInfoField = "status" | "type" | "created" | "modified";
-
-export interface ProfileState extends EntityState<ProfileAbstract> {
-  isInitialized: boolean;
-  ui: {
-    hideFormHeaderInfos: FormHeaderInfoField[];
-  };
-}
-
-export function createProfile(params: Partial<ProfileAbstract>) {
-  return (<Partial<ProfileAbstract>>{
-    isInitialized: false,
-    ui: {
-      hideFormHeaderInfos: null,
-    },
-  }) as ProfileAbstract;
-}
-
-@Injectable({ providedIn: "root" })
-@StoreConfig({ name: "profile" })
-export class ProfileStore extends EntityStore<ProfileState, ProfileAbstract> {
-  constructor() {
-    super(createProfile(null));
-  }
-}
+export const ProfileStore = signalStore(
+  { providedIn: "root" },
+  withEntities<ProfileAbstract>(),
+  withComputed((store) => ({
+    documentProfiles: computed(() => {
+      return store
+        .entities()
+        .filter((entity) => !entity.isAddressProfile && entity.id !== "FOLDER");
+    }),
+    addressProfiles: computed(() => {
+      return store
+        .entities()
+        .filter((entity) => entity.isAddressProfile && entity.id !== "FOLDER");
+    }),
+  })),
+  withMethods((store) => ({
+    set(profiles: ProfileAbstract[]): void {
+      patchState(store, setAllEntities(profiles));
+    } /*
+      update(profile: ProfileAbstract): void {
+        patchState(store, updateEntity({ id: group.id, changes: profile }));
+      }*/,
+  })),
+);

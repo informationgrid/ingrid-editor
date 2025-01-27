@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -38,6 +38,8 @@ import { firstValueFrom, of, switchMap } from "rxjs";
 import { PublicationCheckDialogComponent } from "./ingrid/dialogs/publication-check/publication-check-dialog.component";
 import { Metadata } from "../app/models/ige-document";
 import { ResearchService } from "../app/+research/research.service";
+import { ConsolidateKeywordsPlugin } from "./ingrid/dialogs/consolidateKeywords/consolidate-keywords.plugin";
+import { PluginService } from "../app/services/plugin/plugin.service";
 
 export enum InGridDoctype {
   InGridSpecialisedTask = "InGridSpecialisedTask",
@@ -72,6 +74,8 @@ export class InGridComponent implements OnInit {
   invekos = inject(InvekosPlugin);
   dialog = inject(MatDialog);
   researchService = inject(ResearchService);
+  pluginService = inject(PluginService);
+  consolidateKeywordsPlugin = inject(ConsolidateKeywordsPlugin);
 
   // docTypesEnum: InGridDoctype
 
@@ -90,7 +94,9 @@ export class InGridComponent implements OnInit {
     ];
   };
 
-  constructor() {}
+  constructor() {
+    this.pluginService.registerPlugin(this.consolidateKeywordsPlugin);
+  }
 
   ngOnInit() {
     this.profileService.registerProfiles(this.getDocTypes());
@@ -164,7 +170,7 @@ export class InGridComponent implements OnInit {
   }
 
   private checkForCoupledServiceWithGetCap(uuid: string) {
-    const sql = `WITH filtered_documents AS (SELECT document1.*, document_wrapper.category
+    const sql = `WITH filtered_documents AS (SELECT document1.*, document1.data, document_wrapper.category
                                              FROM document_wrapper
                                                     JOIN document document1 ON document_wrapper.uuid = document1.uuid
                                              WHERE document1.is_latest = true

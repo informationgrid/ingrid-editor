@@ -1,12 +1,12 @@
 <div class="page-wrapper flex-col">
     <div class="header-wrapper">
         <div class="user-management-header">
-            <div class="page-title">
+            <h1 class="page-title">
                 Gruppen (<span data-cy="groups-count">{{
-                    (groups | async)?.length
+                    groups()?.length
                 }}</span
                 >)
-            </div>
+            </h1>
             <mat-toolbar>
                 <mat-toolbar-row>
                     <ige-search-input
@@ -24,6 +24,8 @@
                             mat-stroked-button
                             (click)="openAddGroupDialog()"
                             matTooltip="Gruppe hinzufügen"
+                            matomoClickCategory="UserManagement"
+                            matomoClickAction="AddGroup"
                         >
                             <mat-icon>person_add</mat-icon> Hinzufügen
                         </button>
@@ -35,6 +37,8 @@
                             matTooltip="Speichern"
                             (click)="saveGroup()"
                             [disabled]="form?.invalid || !form?.dirty"
+                            matomoClickCategory="UserManagement"
+                            matomoClickAction="SaveGroup"
                         >
                             Speichern
                         </button>
@@ -46,15 +50,15 @@
     <as-split (dragEnd)="this.userManagementService.rememberTableWidth($event)">
         <!-- GROUP LIST -->
         <as-split-area
-            [size]="tableWidth"
+            [size]="tableWidth()"
             id="sidebarRoles"
             class="split-pane-content-primary container"
         >
             <groups-table
                 [query]="query.value"
-                [groups]="groups | async"
+                [groups]="groups()"
                 [userGroupNames]="userGroupNames"
-                [selectedGroup]="groupQuery.selectActiveId()"
+                [selectedGroup]="activeGroup()"
                 (onGroupSelect)="groupService.setActive($event.id)"
                 (onDelete)="deleteGroup($event)"
             ></groups-table>
@@ -62,12 +66,12 @@
 
         <!-- GROUP DETAIL -->
         <as-split-area
-            [size]="100 - tableWidth"
+            [size]="100 - tableWidth()"
             id="formRoles"
             class="split-pane-content-secondary container-fluid flex-row"
         >
             @if (!isLoading) {
-                @if (selectedGroup) {
+                @if (selectedGroup()) {
                     <form
                         [formGroup]="form"
                         class="detail-role flex-col gap-12"
@@ -76,11 +80,11 @@
                             <div class="document-type">
                                 <mat-icon svgIcon="group"></mat-icon>
                             </div>
-                            <span class="label flex-1" [class.editable]="false">
+                            <h2 class="label flex-1" [class.editable]="false">
                                 <span>{{
                                     form.get("name")?.value || "Kein Titel"
                                 }}</span>
-                            </span>
+                            </h2>
                             <button
                                 mat-icon-button
                                 data-cy="btn-expand-header"
@@ -99,22 +103,28 @@
                                 class="menu dark menu-button"
                                 matTooltip="Bearbeiten"
                                 [matMenuTriggerFor]="groupMoreMenu"
+                                matomoClickCategory="UserManagement"
+                                matomoClickAction="GroupActionsMenu"
                             >
                                 <mat-icon svgIcon="Mehr"></mat-icon>
                             </button>
                             <mat-menu #groupMoreMenu="matMenu">
                                 <button
                                     mat-menu-item
-                                    (click)="showGroupUsers(selectedGroup.id)"
+                                    (click)="showGroupUsers(selectedGroup().id)"
+                                    matomoClickCategory="UserManagement"
+                                    matomoClickAction="ShowGroupUsers"
                                 >
                                     Benutzer anzeigen
                                 </button>
                                 <button
                                     [disabled]="
-                                        selectedGroup.currentUserIsMember
+                                        selectedGroup().currentUserIsMember
                                     "
                                     mat-menu-item
-                                    (click)="deleteGroup(selectedGroup.id)"
+                                    (click)="deleteGroup(selectedGroup().id)"
+                                    matomoClickCategory="UserManagement"
+                                    matomoClickAction="DeleteGroup"
                                 >
                                     Löschen
                                 </button>
@@ -122,9 +132,9 @@
                         </div>
                         <group-header-more
                             [showMore]="this.showMore"
-                            [group]="selectedGroup"
+                            [group]="selectedGroup()"
                         ></group-header-more>
-                        @if (selectedGroup.currentUserIsMember) {
+                        @if (selectedGroup().currentUserIsMember) {
                             <div class="no-fields-selected-notice warn">
                                 <div class="infoIcon">
                                     <mat-icon
@@ -158,7 +168,7 @@
                             ></textarea>
                         </mat-form-field>
                         <ige-permissions
-                            [disabled]="selectedGroup.currentUserIsMember"
+                            [disabled]="selectedGroup().currentUserIsMember"
                             [showRootReadSlider]="
                                 userHasRootReadPermission ||
                                 userHasRootWritePermission
@@ -182,7 +192,7 @@
                         ></user-table>
                     </form>
                 } @else {
-                    @if ((groups | async)?.length > 0) {
+                    @if (groups()?.length > 0) {
                         <div
                             class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
                         >
@@ -198,7 +208,7 @@
                             </div>
                         </div>
                     }
-                    @if ((groups | async)?.length === 0) {
+                    @if (groups()?.length === 0) {
                         <div
                             class="detail-role no-selection-placeholder flex-1 flex-col justify-content-center align-items-center"
                         >

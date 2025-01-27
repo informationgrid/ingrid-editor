@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -26,18 +26,16 @@ import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.tranformer.GeodatasetTr
 import de.ingrid.igeserver.utils.getString
 import kotlin.reflect.KClass
 
-fun getLubwModelTransformerClass(docType: String): KClass<out Any>? {
-    return when (docType) {
-        "InGridGeoDataset" -> GeodatasetTransformerLubw::class
-        else -> null
-    }
+fun getLubwModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
+    "InGridGeoDataset" -> GeodatasetTransformerLubw::class
+    else -> null
 }
 
 fun amendLubwDescriptiveKeywords(
     docData: JsonNode,
     previousKeywords: List<Thesaurus>,
 ): List<Thesaurus> {
-    val oac = docData.getString("oac")
+    val oac = getOAC(docData)
 
     val keywords = previousKeywords.toMutableList()
 
@@ -52,3 +50,7 @@ fun amendLubwDescriptiveKeywords(
     }
     return keywords
 }
+
+fun getOAC(docData: JsonNode): String? = docData.getString("oac")
+
+fun getEnvironmentDescription(docData: JsonNode): String? = docData.getString("dataQualityInfo.lineage.source.environmentDescription")

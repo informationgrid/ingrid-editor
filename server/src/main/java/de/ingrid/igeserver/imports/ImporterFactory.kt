@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -33,13 +33,9 @@ class ImporterFactory {
     @Autowired
     private lateinit var importer: List<IgeImporter>
 
-    fun getImporterById(id: String): IgeImporter {
-        return importer.find { it.typeInfo.id == id } ?: throw NotFoundException.withMissingResource(id, null)
-    }
+    fun getImporterById(id: String): IgeImporter = importer.find { it.typeInfo.id == id } ?: throw NotFoundException.withMissingResource(id, null)
 
-    fun getImporterInfos(): List<ImportTypeInfo> {
-        return importer.map { it.typeInfo }
-    }
+    fun getImporterInfos(): List<ImportTypeInfo> = importer.map { it.typeInfo }
 
     fun getImporter(profile: CatalogProfile, contentType: String, fileContent: String): List<IgeImporter> {
         val responsibleImporter = importer

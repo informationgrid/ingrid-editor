@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -27,13 +27,11 @@ import {
   MatDialogTitle,
 } from "@angular/material/dialog";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 
 @Component({
   selector: "ige-dialog-template",
   templateUrl: "./dialog-template.component.html",
   styleUrls: ["./dialog-template.component.scss"],
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,
@@ -41,7 +39,6 @@ import { CdkScrollable } from "@angular/cdk/scrolling";
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     MatDialogActions,
     MatButton,

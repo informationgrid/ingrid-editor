@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,8 +19,6 @@
  */
 package de.ingrid.igeserver.services.getCapabilities
 
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.Wms130NamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
@@ -29,55 +27,50 @@ import org.w3c.dom.Node
 /**
  * @author André Wallat
  */
-class Wms111CapabilitiesParser(
-    codelistHandler: CodelistHandler,
-    private val researchService: ResearchService,
-    catalogId: String,
-) :
-    GeneralCapabilitiesParser(XPathUtils(Wms130NamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
+class Wms111CapabilitiesParser(params: CapabilitiesParameter) :
+    GeneralCapabilitiesParser(XPathUtils(Wms130NamespaceContext()), params),
+    ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.1.1" to "1", "1.3.0" to "2")
 
-    override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        return CapabilitiesBean().apply {
-            // General settings
-            serviceType = "WMS"
-            dataServiceType = "2" // view
-            title = xPathUtils.getString(doc, XPATH_EXP_WMS_1_1_1_TITLE)
-            description = xPathUtils.getString(doc, XPATH_EXP_WMS_1_1_1_ABSTRACT)
-            val versionList = getNodesContentAsList(doc, XPATH_EXP_WMS_1_1_1_VERSION)
-            versions = mapVersionsFromCodelist("5152", versionList, versionSyslistMap)
-            fees = getKeyValueForPath(doc, XPATH_EXP_WMS_FEES, "6500")
-            accessConstraints =
-                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMS_ACCESS_CONSTRAINTS))
-            onlineResources =
-                getOnlineResources(doc, XPATH_EXP_WMS_ONLINE_RESOURCE)
-            val commonKeywords: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS)
-            val allKeywordsSet: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS_LAYER).toList()
-            keywords.addAll((commonKeywords + allKeywordsSet).distinctBy { it.lowercase() })
-            val boundingBoxesFromLayers = getBoundingBoxesFromLayers(doc)
-            var unionOfBoundingBoxes: LocationBean? = null
-            if (boundingBoxesFromLayers.isNotEmpty()) {
-                unionOfBoundingBoxes = getUnionOfBoundingBoxes(boundingBoxesFromLayers)
-                unionOfBoundingBoxes.name = "Raumbezug von: " + title
-                boundingBoxes = listOf(unionOfBoundingBoxes)
-            }
-
-            coupledResources = getCoupledResources(doc, unionOfBoundingBoxes, commonKeywords)
-
-            // Spatial Reference Systems (SRS / CRS)
-            // Note: The root <Layer> element shall include a sequence of zero or more
-            // CRS elements listing all CRSs that are common to all subsidiary layers.
-            // see: 7.2.4.6.7 CRS (WMS Implementation Specification, page 26)
-
-            // get all root Layer coordinate Reference Systems
-            // there only can be one root layer!
-            spatialReferenceSystems = getSpatialReferenceSystems(doc, XPATH_EXP_WMS_LAYER_CRS)
-            address = getAddress(doc)
-            // Conformity
-            // setConformities(mapToConformityBeans(doc, XPATH_EXP_CSW_CONFORMITY));
-            operations = getOperations(doc)
+    override fun getCapabilitiesData(doc: Document): CapabilitiesBean = CapabilitiesBean().apply {
+        // General settings
+        serviceType = "WMS"
+        dataServiceType = "2" // view
+        title = xPathUtils.getString(doc, XPATH_EXP_WMS_1_1_1_TITLE)
+        description = xPathUtils.getString(doc, XPATH_EXP_WMS_1_1_1_ABSTRACT)
+        val versionList = getNodesContentAsList(doc, XPATH_EXP_WMS_1_1_1_VERSION)
+        versions = mapVersionsFromCodelist("5152", versionList, versionSyslistMap)
+        fees = getKeyValueForPath(doc, XPATH_EXP_WMS_FEES, "6500")
+        accessConstraints =
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMS_ACCESS_CONSTRAINTS))
+        onlineResources =
+            getOnlineResources(doc, XPATH_EXP_WMS_ONLINE_RESOURCE)
+        val commonKeywords: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS)
+        val allKeywordsSet: List<String> = getKeywords(doc, XPATH_EXP_WMS_KEYWORDS_LAYER).toList()
+        keywords.addAll((commonKeywords + allKeywordsSet).distinctBy { it.lowercase() })
+        val boundingBoxesFromLayers = getBoundingBoxesFromLayers(doc)
+        var unionOfBoundingBoxes: LocationBean? = null
+        if (boundingBoxesFromLayers.isNotEmpty()) {
+            unionOfBoundingBoxes = getUnionOfBoundingBoxes(boundingBoxesFromLayers)
+            unionOfBoundingBoxes.name = "Raumbezug von: " + title
+            boundingBoxes = listOf(unionOfBoundingBoxes)
         }
+
+        coupledResources = getCoupledResources(doc, unionOfBoundingBoxes, commonKeywords)
+
+        // Spatial Reference Systems (SRS / CRS)
+        // Note: The root <Layer> element shall include a sequence of zero or more
+        // CRS elements listing all CRSs that are common to all subsidiary layers.
+        // see: 7.2.4.6.7 CRS (WMS Implementation Specification, page 26)
+
+        // get all root Layer coordinate Reference Systems
+        // there only can be one root layer!
+        spatialReferenceSystems = getSpatialReferenceSystems(doc, XPATH_EXP_WMS_LAYER_CRS)
+        address = getAddress(doc)
+        // Conformity
+        // setConformities(mapToConformityBeans(doc, XPATH_EXP_CSW_CONFORMITY));
+        operations = getOperations(doc)
     }
 
     private fun getCoupledResources(
@@ -91,7 +84,7 @@ class Wms111CapabilitiesParser(
         for (i in 0 until identifierNodes.length) {
             val id = identifierNodes.item(i).textContent
             // check for the found IDs if a metadata with this resource identifier exists
-            val coupledResource: GeoDataset? = checkForCoupledResource(researchService, catalogId, id)
+            val coupledResource: GeoDataset? = checkForCoupledResource(params.researchService, params.catalogId, id)
             // the dataset does not exist yet
             if (coupledResource == null) {
                 val newDataset = GeoDataset().apply {
@@ -130,7 +123,7 @@ class Wms111CapabilitiesParser(
         // Operation - GetCapabilities
         val getCapabilitiesOp = OperationBean()
         getCapabilitiesOp.name = KeyValue(
-            codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"),
+            params.codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"),
             "GetCapabilities",
         )
         getCapabilitiesOp.methodCall = "GetCapabilities"
@@ -148,7 +141,7 @@ class Wms111CapabilitiesParser(
         // Operation - GetMap
         val getMapOp = OperationBean()
         getMapOp.name = KeyValue(
-            codelistHandler.getCodeListEntryId("5110", "GetMap", "de"),
+            params.codelistHandler.getCodeListEntryId("5110", "GetMap", "de"),
             "GetMap",
         )
         getMapOp.methodCall = "GetMap"
@@ -172,7 +165,7 @@ class Wms111CapabilitiesParser(
         if (getFeatureInfoAddress != null && getFeatureInfoAddress.length != 0) {
             val getFeatureInfoOp = OperationBean()
             getFeatureInfoOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5110", "GetFeatureInfo", "de"),
+                params.codelistHandler.getCodeListEntryId("5110", "GetFeatureInfo", "de"),
                 "GetFeatureInfo",
             )
             getFeatureInfoOp.methodCall = "GetFeatureInfo"
@@ -208,7 +201,7 @@ class Wms111CapabilitiesParser(
         )
 
         // try to find address in database and set the uuid if found
-        searchForAddress(researchService, catalogId, address)
+        searchForAddress(params.researchService, params.catalogId, address)
 
         address.street = xPathUtils.getString(
             doc,

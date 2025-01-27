@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 .title {
   padding-bottom: 10px;
@@ -25,9 +25,10 @@ ige-document-icon {
 }
 
 .label {
-  color: $ige-primary;
+  color: vars.$ige-primary;
   position: relative;
   overflow-wrap: anywhere;
+  margin: unset;
   padding: 7px 10px;
   cursor: not-allowed;
 
@@ -39,7 +40,7 @@ ige-document-icon {
       padding: 5px 8px;
       margin-right: 10px;
       border-radius: 4px;
-      border: 2px solid $ige-comment-color;
+      border: 2px solid vars.$ige-comment-color;
 
       mat-icon {
         visibility: visible;
@@ -54,7 +55,7 @@ ige-document-icon {
       width: 20px;
 
       .coloring {
-        fill: $ige-comment-color;
+        fill: vars.$ige-comment-color;
       }
     }
   }

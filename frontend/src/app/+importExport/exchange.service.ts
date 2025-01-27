@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,12 +21,11 @@ import {
   ConfigService,
   Configuration,
 } from "../services/config/config.service";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { Observable, Subject } from "rxjs";
 import { tap } from "rxjs/operators";
-import { TreeStore } from "../store/tree/tree.store";
-import { AddressTreeStore } from "../store/address-tree/address-tree.store";
+import { GeneralStore } from "../store/general.store";
 
 export interface ImportLog<Type> {
   isRunning: boolean;
@@ -111,6 +110,7 @@ export interface ImportTypeInfo {
   providedIn: "root",
 })
 export class ExchangeService {
+  private generalStore = inject(GeneralStore);
   private configuration: Configuration;
   private readonly catalogType: string;
 
@@ -131,8 +131,6 @@ export class ExchangeService {
   constructor(
     private http: HttpClient,
     configService: ConfigService,
-    private treeStore: TreeStore,
-    private addressTreeStore: AddressTreeStore,
   ) {
     this.configuration = configService.getConfiguration();
     this.catalogType = configService.$userInfo.getValue().currentCatalog.type;
@@ -165,8 +163,8 @@ export class ExchangeService {
       )
       .pipe(
         tap(() => {
-          this.treeStore.update({ needsReload: true });
-          this.addressTreeStore.update({ needsReload: true });
+          this.generalStore.setNeedsReload(false, true);
+          this.generalStore.setNeedsReload(true, true);
         }),
       );
   }

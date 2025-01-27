@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -35,6 +36,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
 
 @Hidden
@@ -96,4 +99,22 @@ interface CatalogApi {
     @PutMapping(value = ["/catalogConfig"])
     @Operation(responses = [], summary = "Save configuration of a catalog")
     fun saveCatalogConfig(principal: Principal, @RequestBody data: CatalogConfigRequest): ResponseEntity<Unit>
+
+    @PostMapping(value = ["/catalogs/import"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun catalogImport(
+        principal: Principal,
+        @Parameter(description = "The catalog to be imported.", required = true) @RequestBody file: @Valid MultipartFile,
+        @Parameter(description = "") @RequestParam("flowChunkNumber") flowChunkNumber: Int,
+        @Parameter(description = "") @RequestParam("flowTotalChunks") flowTotalChunks: Int,
+        @Parameter(description = "") @RequestParam("flowCurrentChunkSize") flowCurrentChunkSize: Long,
+        @Parameter(description = "") @RequestParam(value = "flowTotalSize") flowTotalSize: Long,
+        @Parameter(description = "") @RequestParam("flowIdentifier") flowIdentifier: String,
+        @Parameter(description = "") @RequestParam("flowFilename") flowFilename: String,
+    ): ResponseEntity<Unit>
+
+    @PostMapping(value = ["/catalogs/export/{identifier}"], produces = ["application/zip"])
+    fun catalogExport(
+        principal: Principal,
+        @Parameter(description = "The identifier of the catalog.", required = true) @PathVariable("identifier") id: String,
+    ): ResponseEntity<ByteArray?>
 }

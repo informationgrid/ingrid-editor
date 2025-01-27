@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,9 +21,9 @@ package de.ingrid.igeserver.features.ogc_api_records.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.api.ImportOptions
-import de.ingrid.igeserver.exports.ExporterFactory
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.features.ogc_api_records.model.Link
+import de.ingrid.igeserver.features.ogc_api_records.model.MoveRecordsDTO
 import de.ingrid.igeserver.features.ogc_api_records.services.OgcRecordService
 import de.ingrid.igeserver.features.ogc_api_records.services.QueryMetadata
 import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcApiResearchQueryFactory
@@ -78,7 +78,6 @@ class OgcApiRecordsController(
     private val ogcRecordService: OgcRecordService,
     private val researchService: ResearchService,
     private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
-    private val exporterFactory: ExporterFactory,
     private val apiValidationService: ApiValidationService,
     private val documentService: DocumentService,
     val catalogService: CatalogService,
@@ -503,7 +502,12 @@ class OgcApiRecordsController(
     }
 
     @PostMapping(value = ["/collections/{collectionId}/items/actions/move"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
-    @Operation(tags = ["OGC/Records/Actions"], summary = "Relocate/move record(s) to folder ID.", hidden = false)
+    @Operation(
+        tags = ["OGC/Records/Actions"],
+        hidden = false,
+        summary = "Move records to a specified folder or top level",
+        description = "This endpoint allows moving records identified by `recordId` to a folder identified by `folderId`. If `folderId` is omitted, null, or an empty string, the document will be moved to the top level.",
+    )
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation."),
@@ -516,7 +520,7 @@ class OgcApiRecordsController(
         @RequestHeader allHeaders: Map<String, String>,
         principal: Authentication,
         @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: String,
+        @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: List<MoveRecordsDTO>,
     ): ResponseEntity<JsonNode> {
         apiValidationService.validateCollection(collectionId)
         ogcRecordService.moveRecords(collectionId, data)

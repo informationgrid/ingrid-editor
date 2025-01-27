@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -38,7 +38,6 @@ const val FIELD_RESPONSIBLE_USER = "_responsibleUser"
 const val FIELD_HAS_CHILDREN = "_hasChildren"
 const val FIELD_TAGS = "_tags"
 const val FIELD_PARENT = "_parent"
-const val FIELD_PARENT_IS_FOLDER = "_parentIsFolder"
 const val FIELD_PENDING_DATE = "_pendingDate"
 const val FIELD_METADATA_DATE = "_metadataDate"
 const val FIELD_CATEGORY = "_category"

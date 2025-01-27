@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,26 +17,25 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import {
   ActivatedRouteSnapshot,
   Router,
   RouterStateSnapshot,
 } from "@angular/router";
-import { TreeQuery } from "../store/tree/tree.query";
-import { AddressTreeQuery } from "../store/address-tree/address-tree.query";
 import { DocumentService } from "../services/document/document.service";
 import { ConfigService } from "../services/config/config.service";
 import { PluginService } from "../services/plugin/plugin.service";
+import { GeneralStore } from "../store/general.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class RedirectFormGuard {
+  private generalStore = inject(GeneralStore);
+
   constructor(
     private router: Router,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
     private pluginService: PluginService,
   ) {}
@@ -91,8 +90,7 @@ export class RedirectFormGuard {
   }
 
   private getOpenedDocumentId(forAddress: boolean): string {
-    const query = forAddress ? this.addressTreeQuery : this.treeQuery;
-    return query.getValue().openedDocument?._uuid;
+    return this.generalStore.getOpenedDocument(forAddress)?._uuid;
   }
 
   private async handleNavigation(

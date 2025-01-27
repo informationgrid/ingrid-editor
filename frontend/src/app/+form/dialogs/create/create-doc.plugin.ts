@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,11 +17,9 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
-import { TreeQuery } from "../../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { CreateNodeComponent, CreateOptions } from "./create-node.component";
 import { DocumentService } from "../../../services/document/document.service";
@@ -33,6 +31,9 @@ import { TranslocoService } from "@ngneat/transloco";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { take } from "rxjs/operators";
+import { TreeStore } from "../../../store/tree/tree.store";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Injectable()
@@ -44,14 +45,17 @@ export class CreateDocumentPlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
+
   isAdmin = this.config.hasCatAdminRights();
+
+  private activeNodes$ = toObservable(this.generalStore.activeTreeNodes);
 
   constructor(
     private config: ConfigService,
     private toolbarService: FormToolbarService,
     private docEvents: DocEventsService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
     private formStateService: FormStateService,
     private dialog: MatDialog,
@@ -59,6 +63,15 @@ export class CreateDocumentPlugin extends Plugin {
   ) {
     super();
     inject(PluginService).registerPlugin(this);
+
+    effect(() => {
+      if (!this.formRegistered) return;
+      const doc = this.generalStore.getOpenedDocument(this.forAddress());
+      this.toolbarService.setButtonState(
+        "toolBtnPrint",
+        doc !== null && doc._type != "FOLDER",
+      );
+    });
   }
 
   registerForm() {
@@ -76,7 +89,7 @@ export class CreateDocumentPlugin extends Plugin {
   private initializeButton() {
     this.translocoService
       .selectTranslate(
-        this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
+        this.forAddress() ? "toolbar.newAddress" : "toolbar.newDocument",
       )
       .pipe(take(1))
       .subscribe((tooltipText) => {
@@ -86,22 +99,21 @@ export class CreateDocumentPlugin extends Plugin {
           matSvgVariable: "Neuer-Datensatz",
           eventId: "NEW_DOC",
           pos: 1,
-          active: true,
+          active: signal(true),
         });
         this.addNonAdminBehaviour();
       });
   }
 
   async newDoc() {
-    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
-    const selectedDoc = query.getOpenedDocument();
+    const selectedDoc = this.generalStore.getOpenedDocument(this.forAddress());
 
     if (selectedDoc) {
       let handled = await FormUtils.handleDirtyForm(
         this.formStateService,
         this.documentService,
         this.dialog,
-        this.forAddress,
+        this.forAddress(),
       );
 
       if (!handled) {
@@ -113,13 +125,11 @@ export class CreateDocumentPlugin extends Plugin {
 
   showDialog() {
     this.dialog.open(CreateNodeComponent, {
-      minWidth: 500,
       maxWidth: 600,
-      minHeight: 500,
       disableClose: false,
       hasBackdrop: true,
       data: {
-        forAddress: this.forAddress,
+        forAddress: this.forAddress(),
         isFolder: false,
       } as CreateOptions,
     });
@@ -136,22 +146,27 @@ export class CreateDocumentPlugin extends Plugin {
   private addNonAdminBehaviour() {
     if (!this.isAdmin) {
       const canGenerallyCreate = this.config.hasPermission(
-        this.forAddress ? "can_create_address" : "can_create_dataset",
+        this.forAddress() ? "can_create_address" : "can_create_dataset",
       );
       this.toolbarService.setButtonState("toolBtnNew", canGenerallyCreate);
 
-      if (!canGenerallyCreate && this.forAddress) {
-        const organisationCheckSubscription = this.addressTreeQuery
-          .selectActive()
-          .subscribe((data) => {
+      if (!canGenerallyCreate && this.forAddress()) {
+        const organisationCheckSubscription = this.activeNodes$.subscribe(
+          (data) => {
+            const docs = data.map((item) => this.getStore().entityMap()[item]);
             this.toolbarService.setButtonState(
               "toolBtnNew",
-              this.isOrganisation(data),
+              this.isOrganisation(docs),
             );
-          });
+          },
+        );
         this.formSubscriptions.push(organisationCheckSubscription);
       }
     }
+  }
+
+  private getStore() {
+    return this.forAddress() ? this.addressTreeStore : this.documentTreeStore;
   }
 
   private isOrganisation(data: any[]) {

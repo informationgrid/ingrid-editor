@@ -1,15 +1,19 @@
-@import "src/variables";
+@use "src/variables" as vars;
+@use "sass:color";
 
 :host {
   display: flex;
 }
 
 .matching {
-  background-color: $ige-mark-color !important;
+  background-color: vars.$ige-mark-color !important;
 
   &:hover,
   &.mat-active {
-    background-color: darken($ige-mark-color, 5%) !important;
+    background-color: color.adjust(
+      vars.$ige-mark-color,
+      $lightness: -5%
+    ) !important;
   }
 }
 

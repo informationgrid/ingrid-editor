@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -24,7 +24,5 @@ import org.springframework.stereotype.Service
 
 @Service
 class GeoThesaurusFactory(val thesauri: List<GeoThesaurusService>) {
-    fun get(id: String): GeoThesaurusService {
-        return thesauri.find { it.id == id } ?: throw NotFoundException.withMissingResource(id, "GeoThesaurus")
-    }
+    fun get(id: String): GeoThesaurusService = thesauri.find { it.id == id } ?: throw NotFoundException.withMissingResource(id, "GeoThesaurus")
 }

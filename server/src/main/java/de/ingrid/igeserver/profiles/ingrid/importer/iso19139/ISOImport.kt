@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -34,6 +34,8 @@ import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -49,6 +51,8 @@ data class IsoImportData(
     val catalogId: String,
     val documentService: DocumentService,
     val addressMaps: MutableMap<String, String>,
+    val researchService: ResearchService,
+    val uploadConfig: UploadConfig,
 )
 
 data class IsoConverterOutput(
@@ -57,7 +61,7 @@ data class IsoConverterOutput(
 )
 
 @Service
-class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService) : IgeImporter {
+class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig) : IgeImporter {
     private val log = logger()
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
@@ -75,7 +79,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
-        val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps)
+        val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps, researchService, uploadConfig)
         val output = try {
             val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
             convertIsoToJson(isoData, catalogProfileId)
@@ -137,23 +141,19 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
         return jacksonObjectMapper().readValue(outputReferences.toString(), ArrayNode::class.java)
     }
 
-    private fun handleByProfile(isoData: IsoImportData, profile: String): IsoConverterOutput? {
-        return profileMapper[profile]?.let { mapper ->
-            mapper.handle(isoData.catalogId, isoData.data, isoData.addressMaps)?.let {
-                val output: TemplateOutput = JsonStringOutput()
-                templateEngine.render(it.template, it.mapper, output)
+    private fun handleByProfile(isoData: IsoImportData, profile: String): IsoConverterOutput? = profileMapper[profile]?.let { mapper ->
+        mapper.handle(isoData.catalogId, isoData.data, isoData.addressMaps)?.let {
+            val output: TemplateOutput = JsonStringOutput()
+            templateEngine.render(it.template, it.mapper, output)
 
-                IsoConverterOutput(
-                    output.toString(),
-                    handleAddressReferences(it.mapper),
-                )
-            }
+            IsoConverterOutput(
+                output.toString(),
+                handleAddressReferences(it.mapper),
+            )
         }
     }
 
-    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
-        return "application/xml" == contentType && !fileContent.contains("<rdf:RDF")
-    }
+    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean = "application/xml" == contentType && !fileContent.contains("<rdf:RDF")
 
     internal class JsonStringOutput : StringOutput() {
         override fun writeUserContent(value: String?) {

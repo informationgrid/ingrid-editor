@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,9 +21,15 @@ package de.ingrid.igeserver.profiles.ingrid_lubw.exporter.tranformer
 
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.getEnvironmentDescription
+import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.getOAC
 import de.ingrid.igeserver.utils.getString
 
 class IngridModelTransformerLubw(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
+
+    private val docData = doc.data
+    val oac = getOAC(docData)
+    val environmentDescription = getEnvironmentDescription(docData)
 
     val treePathNames: List<String>
     val treePathUuids: List<String>

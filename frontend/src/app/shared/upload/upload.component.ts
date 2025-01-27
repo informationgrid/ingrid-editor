@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -25,6 +25,9 @@ import {
   Output,
   ViewChild,
   input,
+  computed,
+  Signal,
+  AfterViewInit,
 } from "@angular/core";
 import {
   animate,
@@ -57,10 +60,9 @@ import { AsyncPipe } from "@angular/common";
       transition("* => void", [animate(300, style({ opacity: 0 }))]),
     ]),
   ],
-  standalone: true,
   imports: [NgxFlowModule, MatIcon, MatButton, UploadItemComponent, AsyncPipe],
 })
-export class UploadComponent implements OnInit {
+export class UploadComponent implements AfterViewInit {
   /** Link text */
   @Input() text = this.transloco.translate("form.placeholder.chooseFile");
   /** Name used in form which will be sent in HTTP request. */
@@ -68,13 +70,9 @@ export class UploadComponent implements OnInit {
   /** Target URL for file uploading. */
   @Input() targetAnalyze;
 
-  @Input() target: string = null;
   /** File extension that accepted, same as 'accept' of <input type="file" />.
    By the default, it's set to 'image/*'. */
   @Input() accept = "*.*";
-
-  /** Allow multiple files to be uploaded */
-  @Input() multiple = true;
 
   /* automatically upload files after drop/select */
   @Input() autoupload = true;
@@ -96,7 +94,19 @@ export class UploadComponent implements OnInit {
 
   @ViewChild("flow") flow: FlowDirective;
 
-  flowConfig: flowjs.FlowOptions;
+  target = input.required<string>();
+  multiple = input<boolean>();
+  dropZoneText = computed(() =>
+    this.multiple()
+      ? "Datei(en) zum Hochladen hier ablegen"
+      : "Datei zum Hochladen hier ablegen",
+  );
+  flowConfig: Signal<flowjs.FlowOptions> = computed(() => ({
+    target: this.target(),
+    testChunks: false,
+    forceChunkSize: false,
+    maxChunkRetries: 2,
+  }));
   _errors: { [x: string]: UploadError } = {};
   errors = new BehaviorSubject<{ [x: string]: UploadError }>({});
   filesForUpload = new Subject<TransfersWithErrorInfo[]>();
@@ -111,21 +121,6 @@ export class UploadComponent implements OnInit {
     private uploadService: UploadService,
     private transloco: TranslocoService,
   ) {}
-
-  ngOnInit() {
-    if (!this.target) {
-      throw new IgeError(
-        "Es wurde kein Ziel für die Upload Komponente angegeben. Bitte 'target' definieren.",
-      );
-    }
-
-    this.flowConfig = {
-      target: this.target,
-      testChunks: false,
-      forceChunkSize: false,
-      maxChunkRetries: 2,
-    };
-  }
 
   ngAfterViewInit() {
     combineLatest([this.errors, this.flow.transfers$])

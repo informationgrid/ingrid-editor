@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, computed, inject, input, Signal } from "@angular/core";
 import { MatChipListbox, MatChipOption } from "@angular/material/chips";
 import {
@@ -5,10 +24,8 @@ import {
   MetadataOptionItem,
   MetadataOptionItems,
 } from "../metadata-type.component";
-import { MatButton } from "@angular/material/button";
-import { MatIcon } from "@angular/material/icon";
-import { AsyncPipe, JsonPipe } from "@angular/common";
-import { map, mergeMap } from "rxjs/operators";
+import { AsyncPipe } from "@angular/common";
+import { map } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 import {
   CodelistService,
@@ -22,15 +39,7 @@ interface PropertyItem {
 
 @Component({
   selector: "ige-metadata-type-short",
-  standalone: true,
-  imports: [
-    MatButton,
-    MatIcon,
-    MatChipOption,
-    MatChipListbox,
-    JsonPipe,
-    AsyncPipe,
-  ],
+  imports: [MatChipOption, MatChipListbox, AsyncPipe],
   templateUrl: "./metadata-type-short.component.html",
   styleUrl: "./metadata-type-short.component.scss",
 })
@@ -40,11 +49,11 @@ export class MetadataTypeShortComponent {
 
   private codelistService = inject(CodelistService);
 
-  filteredOptions: Signal<Observable<PropertyItem>[]> = computed(() => {
+  filteredOptions: Signal<Observable<PropertyItem[]>[]> = computed(() => {
     const data = this.value();
     return this.options()
       .flatMap((option) => option.typeOptions)
-      .flatMap((typeOption) => {
+      .map((typeOption) => {
         const codelistObs = typeOption.codelistId
           ? this.codelistService
               .observe(typeOption.codelistId)
@@ -53,7 +62,7 @@ export class MetadataTypeShortComponent {
         const genericItems =
           typeOption.asyncItems ?? codelistObs ?? of(typeOption.items);
         return genericItems.pipe(
-          mergeMap((item) => {
+          map((item) => {
             return (
               item
                 ?.map((item) => this.filterSelected(data, typeOption, item))

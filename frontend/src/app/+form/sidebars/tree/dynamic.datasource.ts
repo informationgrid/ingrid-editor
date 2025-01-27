@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -214,6 +214,9 @@ export class DynamicDataSource extends DataSource<TreeNode> {
    * @param dest
    */
   insertNodeInTree(node: TreeNode, dest: number) {
+    // if data has not yet been initialized, we do not need to update any nodes
+    if (!this.data) return;
+
     // in case the new parent was collapsed, the moved nodes are automatically
     // loaded from the backend when expanding the parent
     const alreadyPresent = this.data.find((item) => item._id === node._id);

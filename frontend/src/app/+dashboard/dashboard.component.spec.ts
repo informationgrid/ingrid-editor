@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -33,7 +33,6 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { CardBoxComponent } from "../shared/card-box/card-box.component";
 import { MatCardModule } from "@angular/material/card";
 import { MatListModule } from "@angular/material/list";
-import { SessionStore } from "../store/session.store";
 import { DateAgoPipe } from "../directives/date-ago.pipe";
 import { TranslocoModule } from "@ngneat/transloco";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
@@ -46,6 +45,8 @@ import {
   withInterceptorsFromDi,
 } from "@angular/common/http";
 import { ProfileService } from "../services/profile.service";
+import { GeneralStore } from "../store/general.store";
+import { provideMatomoTesting } from "ngx-matomo-client/testing";
 
 describe("DashboardComponent", () => {
   let spectator: Spectator<DashboardComponent>;
@@ -69,6 +70,7 @@ describe("DashboardComponent", () => {
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
       provideLocationMocks(),
+      // provideMatomoTesting(),
     ],
     mocks: [
       ConfigService,
@@ -94,16 +96,14 @@ describe("DashboardComponent", () => {
   });
 
   it("should show last recent documents", () => {
-    const sessionStore = spectator.inject(SessionStore);
+    const sessionStore = spectator.inject(GeneralStore);
     const dataService = spectator.inject<DocumentService>(DocumentService);
     dataService.findRecentDrafts.and.callFake(() => {
-      sessionStore.update({ latestDocuments: recentDocuments });
+      sessionStore.setLatestDocuments(recentDocuments);
     });
     dataService.findRecentPublished.and.callFake(() => {
-      sessionStore.update({ latestDocuments: recentDocuments });
+      sessionStore.setLatestDocuments(recentDocuments);
     });
-    // const formService = spectator.inject<FormularService>(FormularService);
-
     spectator.detectChanges();
 
     const recentDocs = spectator.queryAll(

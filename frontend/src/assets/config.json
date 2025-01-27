@@ -9,6 +9,8 @@
   "nominatimDetailUrl": "https://nominatim.openstreetmap.org/details?osmtype={type}&osmid={id}&format=json",
   "showAccessibilityLink": true,
   "allowOverwriteOnVersionConflict": true,
+  "matomoUrl": null,
+  "matomoSiteId": null,
   "featureFlags": {
     "showTestBadge": false,
     "AP3": true,

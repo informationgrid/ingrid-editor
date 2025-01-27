@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -34,8 +34,6 @@ open class InvalidParameterException : ClientException {
         /**
          * Factory method for invalid parameters
          */
-        fun withInvalidParameters(vararg parameterNames: String, cause: Throwable? = null): InvalidParameterException {
-            return InvalidParameterException(STATUS_CODE, ERROR_CODE, ERROR_TEXT_INVALID, mapOf("parameterNames" to parameterNames), cause)
-        }
+        fun withInvalidParameters(vararg parameterNames: String, cause: Throwable? = null): InvalidParameterException = InvalidParameterException(STATUS_CODE, ERROR_CODE, ERROR_TEXT_INVALID, mapOf("parameterNames" to parameterNames), cause)
     }
 }

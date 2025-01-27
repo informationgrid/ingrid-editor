@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   padding-bottom: 22px;
@@ -10,7 +10,7 @@
 
 mat-card {
   max-width: 200px;
-  background: $ige-background;
+  background: vars.$ige-background;
 
   .content {
     position: relative;

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -23,17 +23,29 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.utils.getString
-import org.apache.jena.vocabulary.RDFSyntax.doc
 
 class Migrate120 {
 
     companion object {
+        private val includedTypes = listOf(
+            "InGridGeoDataset",
+            "InGridDataCollection",
+            "InGridGeoService",
+            "InGridInformationSystem",
+            "InGridPublication",
+            "InGridProject",
+            "InGridSpecialisedTask",
+        )
+
         fun migrate(documents: JsonNode, profile: String): JsonNode {
             listOf("draft", "published").forEach { type ->
                 documents.get(type)?.let { docVersion ->
                     docVersion as ObjectNode
-                    val migratedData = getPropertiesOfDocument(docVersion, docVersion.getString("_type")!!)
-                    docVersion.set<JsonNode>("properties", migratedData)
+                    val docType = docVersion.getString("_type")!!
+                    if (includedTypes.contains(docType)) {
+                        val migratedData = getPropertiesOfDocument(docVersion, docType)
+                        docVersion.set<JsonNode>("properties", migratedData)
+                    }
                 }
             }
             return documents
@@ -46,12 +58,14 @@ class Migrate120 {
             val subType = doc.remove("subType")
             val isInspireConform = doc.remove("isInspireConform")
             val hvd = doc.remove("hvd")
+            val publicationHmbTG = doc.remove("publicationHmbTG")
 
+            if (publicationHmbTG?.booleanValue() == true) set<JsonNode>("publicationHmbTG", publicationHmbTG)
             if (isOpenData?.booleanValue() == true) set<JsonNode>("isOpenData", isOpenData)
             if (isAdVCompatible?.booleanValue() == true) set<JsonNode>("isAdVCompatible", isAdVCompatible)
             if (isInspireIdentified?.booleanValue() == true) {
                 if (docType == "InGridGeoDataset") {
-                    if (isInspireConform?.isNull == true || !isInspireConform.booleanValue()) {
+                    if (isInspireConform == null || isInspireConform.isNull || !isInspireConform.booleanValue()) {
                         put("isInspireIdentified", "notConform")
                     } else {
                         put("isInspireIdentified", "conform")

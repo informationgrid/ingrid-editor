@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,10 +20,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
+  computed,
   ElementRef,
+  inject,
   Inject,
   OnInit,
+  Signal,
   signal,
   ViewChild,
 } from "@angular/core";
@@ -40,8 +42,6 @@ import {
   MatDialogTitle,
 } from "@angular/material/dialog";
 import { tap } from "rxjs/operators";
-import { TreeQuery } from "../../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { Router } from "@angular/router";
 import {
   ReactiveFormsModule,
@@ -60,16 +60,17 @@ import { TreeNode } from "../../../store/tree/tree-node.model";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { MatTab, MatTabGroup } from "@angular/material/tabs";
 import { DocumentTemplateComponent } from "./document-template/document-template.component";
 import { NgTemplateOutlet } from "@angular/common";
 import { AddressTemplateComponent } from "./address-template/address-template.component";
 import { DestinationSelectionComponent } from "./destination-selection/destination-selection.component";
 import { BreadcrumbComponent } from "../../form-info/breadcrumb/breadcrumb.component";
+import { GeneralStore } from "../../../store/general.store";
+import { TreeStore } from "../../../store/tree/tree.store";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 export interface CreateOptions {
-  parent: string;
   forAddress: boolean;
   isFolder: boolean;
 }
@@ -78,7 +79,6 @@ export interface CreateOptions {
 @Component({
   templateUrl: "./create-node.component.html",
   styleUrls: ["./create-node.component.scss"],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CdkDrag,
@@ -87,7 +87,6 @@ export interface CreateOptions {
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     MatTabGroup,
     MatTab,
@@ -103,10 +102,16 @@ export interface CreateOptions {
   ],
 })
 export class CreateNodeComponent implements OnInit {
+  private generalStore = inject(GeneralStore);
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
+
   @ViewChild("contextNodeContainer") container: ElementRef;
   title = "Neuen Ordner anlegen";
-  parent: number = null;
-  forAddress: boolean;
+  parent: Signal<number> = computed(() => {
+    return this.path()[this.path().length - 1]?.id ?? null;
+  });
+  forAddress = signal<boolean>(false);
   selectedPage = 0;
   rootTreeName: string;
   isFolder = signal<boolean>(true);
@@ -114,16 +119,26 @@ export class CreateNodeComponent implements OnInit {
   jumpedTreeNodeId: number = null;
   isAdmin = this.config.hasWriteRootPermission();
   selectedLocation: number = null;
-  pathWithWritePermission = signal<boolean>(false);
+
+  path = computed<ShortTreeNode[]>(() => {
+    return this.overridePath() ?? this.mapPath(this.getBreadcrumb());
+  });
+
+  pathWithWritePermission = computed<boolean>(() => {
+    const value = this.path();
+    return value.length === 0
+      ? this.isAdmin
+      : value[value.length - 1].permission.canOnlyWriteSubtree ||
+          !value[value.length - 1].disabled;
+  });
   alreadySubmitted = false;
 
-  private query: TreeQuery | AddressTreeQuery;
   docTypeChoice = signal<string>(null);
+
+  private overridePath = signal<ShortTreeNode[]>(null);
 
   constructor(
     private config: ConfigService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     private router: Router,
     private fb: UntypedFormBuilder,
     private documentService: DocumentService,
@@ -133,47 +148,20 @@ export class CreateNodeComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: CreateOptions,
   ) {
     this.isFolder.set(data.isFolder);
-    this.forAddress = this.data.forAddress;
+    this.forAddress.set(this.data.forAddress);
     this.rootTreeName = this.translocoService.translate(
-      this.forAddress ? "menu.address" : "menu.form",
+      this.forAddress() ? "menu.address" : "menu.form",
     );
 
     if (!this.isFolder()) {
       this.title = this.translocoService.translate(
-        this.forAddress ? "toolbar.newAddress" : "toolbar.newDocument",
+        this.forAddress() ? "toolbar.newAddress" : "toolbar.newDocument",
       );
     }
-
-    effect(
-      () => {
-        // update path depending on selected document type
-        this.docTypeChoice();
-        this.mapPath(this.path);
-      },
-      { allowSignalWrites: true },
-    );
   }
 
-  private _path: ShortTreeNode[] = [];
-
-  get path() {
-    return this._path;
-  }
-
-  set path(value: ShortTreeNode[]) {
-    this._path = value;
-    this.pathWithWritePermission.set(
-      value.length === 0
-        ? this.isAdmin
-        : value[value.length - 1].permission.canOnlyWriteSubtree ||
-            !value[value.length - 1].disabled,
-    );
-  }
-
-  ngOnInit() {
-    this.query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
-
-    if (this.isFolder() || !this.forAddress) {
+  async ngOnInit() {
+    if (this.isFolder() || !this.forAddress()) {
       this.initializeForDocumentsAndFolders();
     } else {
       this.initializeForAddresses();
@@ -182,24 +170,25 @@ export class CreateNodeComponent implements OnInit {
     this.formGroup.valueChanges
       .pipe(untilDestroyed(this))
       .subscribe((value) => this.docTypeChoice.set(value.choice));
+  }
 
-    // set initial path to current position
-    this.query.breadcrumb$
-      .pipe(untilDestroyed(this))
-      .subscribe((path) => this.mapPath(path));
+  private getBreadcrumb(): ShortTreeNode[] {
+    return this.forAddress()
+      ? this.generalStore.breadcrumb.address()
+      : this.generalStore.breadcrumb.document();
   }
 
   async handleCreate() {
-    if (
-      // don't proceed if invalid form or user without writePermission on selected path
+    if (this.alreadySubmitted) return;
+    // don't proceed if invalid form or user without writePermission on selected path
+    const invalid =
       this.formGroup.invalid ||
-      (!this.isAdmin && !this.pathWithWritePermission())
-    )
-      return;
+      (!this.isAdmin && !this.pathWithWritePermission());
+    if (invalid) return;
 
     this.alreadySubmitted = true;
 
-    if (this.isFolder() || !this.forAddress) {
+    if (this.isFolder() || !this.forAddress()) {
       await this.handleDocumentCreate();
     } else {
       await this.handleAddressCreate();
@@ -211,14 +200,12 @@ export class CreateNodeComponent implements OnInit {
   }
 
   applyLocation() {
-    this.parent = this.selectedLocation;
-
     if (this.selectedLocation === null) {
-      this.path = [];
+      this.overridePath.set([]);
     } else {
       this.documentService
-        .getPath(this.parent)
-        .pipe(tap((result) => (this.path = result)))
+        .getPath(this.selectedLocation)
+        .pipe(tap((result) => this.overridePath.set(result)))
         .subscribe();
     }
 
@@ -233,32 +220,29 @@ export class CreateNodeComponent implements OnInit {
   }
 
   quickBreadcrumbChange(id: number) {
-    this.parent = id;
-    const index = this.path.findIndex((item) => item.id === id);
-    this.path = this.path.splice(0, index + 1);
+    const index = this.path().findIndex((item) => item.id === id);
+    this.overridePath.set([...this.path().splice(0, index + 1)]);
   }
 
-  private mapPath(path: ShortTreeNode[]) {
+  private mapPath(path: ShortTreeNode[]): ShortTreeNode[] {
     if (path.length === 0) {
-      this.path = [];
-      return;
+      return [];
     }
 
-    this.path = this.getPathAllowedToAdd([...path]);
-    this.parent = this.path[this.path.length - 1]?.id ?? null;
+    return this.getPathAllowedToAdd([...path]);
   }
 
   private getPathAllowedToAdd(path: ShortTreeNode[]): ShortTreeNode[] {
     if (path.length === 0) return [];
 
     const lastNode = path.pop();
-    const entity = this.query.getEntity(lastNode.id);
+    const entity = this.getStore().entityMap()[lastNode.id];
     // if entity could not be found because user has no read permission on parent node
     // then we cannot give any permission to the currently selected path
     if (!entity) return [];
 
     const cannotAddBelow = this.docBehaviours.cannotAddDocumentBelow()(
-      this.forAddress,
+      this.forAddress(),
       <TreeNode>{
         type: entity._type,
         hasWritePermission: entity.hasWritePermission,
@@ -270,6 +254,10 @@ export class CreateNodeComponent implements OnInit {
       return this.getPathAllowedToAdd(path);
     }
     return [...path, lastNode];
+  }
+
+  private getStore() {
+    return this.forAddress() ? this.addressTreeStore : this.documentTreeStore;
   }
 
   private initializeForDocumentsAndFolders() {
@@ -302,7 +290,7 @@ export class CreateNodeComponent implements OnInit {
     const savedDoc = await this.saveForm(
       newAddress,
       this.docTypeChoice(),
-      this.parent,
+      this.parent(),
     );
 
     this.navigateAfterSave(savedDoc.metadata.uuid);
@@ -315,14 +303,14 @@ export class CreateNodeComponent implements OnInit {
     const savedDoc = await this.saveForm(
       newDocument,
       this.docTypeChoice(),
-      this.parent,
+      this.parent(),
     );
 
     this.navigateAfterSave(savedDoc.metadata.uuid);
   }
 
   private saveForm(data: IgeDocument, type: string, parent: number) {
-    const pathIds = this.path.map((item) => item.id);
+    const pathIds = this.path().map((item) => item.id);
 
     return firstValueFrom(
       this.documentService.save(
@@ -330,7 +318,7 @@ export class CreateNodeComponent implements OnInit {
           data,
           type,
           parent,
-          this.forAddress,
+          this.forAddress(),
           pathIds,
         ),
       ),
@@ -341,7 +329,7 @@ export class CreateNodeComponent implements OnInit {
     this.dialogRef.close(uuid);
 
     const page =
-      ConfigService.catalogId + (this.forAddress ? "/address" : "/form");
+      ConfigService.catalogId + (this.forAddress() ? "/address" : "/form");
     this.router.navigate([page, { id: uuid }]);
   }
 }

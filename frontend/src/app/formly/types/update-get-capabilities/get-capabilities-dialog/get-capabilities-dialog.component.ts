@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -42,7 +42,7 @@ import { ShortTreeNode } from "../../../../+form/sidebars/tree/tree.types";
 import { ConfigService } from "../../../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
-import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatError, MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../../directives/focus.directive";
 import { MatButton } from "@angular/material/button";
@@ -57,7 +57,6 @@ import { CodelistPipe } from "../../../../directives/codelist.pipe";
   selector: "ige-get-capabilities-dialog",
   templateUrl: "./get-capabilities-dialog.component.html",
   styleUrls: ["./get-capabilities-dialog.component.scss"],
-  standalone: true,
   imports: [
     DialogTemplateComponent,
     MatFormField,
@@ -75,6 +74,7 @@ import { CodelistPipe } from "../../../../directives/codelist.pipe";
     AsyncPipe,
     CodelistPipe,
     DatePipe,
+    MatError,
   ],
 })
 export class GetCapabilitiesDialogComponent {
@@ -129,7 +129,7 @@ export class GetCapabilitiesDialogComponent {
   }
 
   private handleError(error: any): Observable<null> {
-    this.error = error.message;
+    this.error = error.error?.errorText ?? error.message;
     return of(null);
   }
 
@@ -175,7 +175,9 @@ export class GetCapabilitiesDialogComponent {
       (item) => item.name.key === "1" || item.name.value === "GetCapabilities",
     );
 
-    getCapOp.addressList = getCapOp.addressList.map(() => originalUrl);
+    if (getCapOp) {
+      getCapOp.addressList = getCapOp.addressList?.map(() => originalUrl) ?? [];
+    }
     return report;
   }
 

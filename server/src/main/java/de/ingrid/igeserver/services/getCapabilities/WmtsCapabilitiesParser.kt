@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,46 +19,39 @@
  */
 package de.ingrid.igeserver.services.getCapabilities
 
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.WmtsNamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class WmtsCapabilitiesParser(
-    codelistHandler: CodelistHandler,
-    private val researchService: ResearchService,
-    catalogId: String,
-) :
-    GeneralCapabilitiesParser(XPathUtils(WmtsNamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
+class WmtsCapabilitiesParser(params: CapabilitiesParameter) :
+    GeneralCapabilitiesParser(XPathUtils(WmtsNamespaceContext()), params),
+    ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.0.0" to "3")
 
-    override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        return CapabilitiesBean().apply {
-            serviceType = "WMTS"
-            dataServiceType = "2" // Darstellungsdienst
-            title = xPathUtils.getString(doc, XPATH_EXP_WMTS_TITLE)
-            description = xPathUtils.getString(doc, XPATH_EXP_WMTS_ABSTRACT)
-            val versionList = getNodesContentAsList(doc, XPATH_EXP_WMTS_VERSION)
-            versions = mapVersionsFromCodelist("5152", versionList, versionSyslistMap)
-            fees = getKeyValueForPath(doc, XPATH_EXP_WMTS_FEES, "6500")
-            accessConstraints =
-                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMTS_ACCESS_CONSTRAINTS))
+    override fun getCapabilitiesData(doc: Document): CapabilitiesBean = CapabilitiesBean().apply {
+        serviceType = "WMTS"
+        dataServiceType = "2" // Darstellungsdienst
+        title = xPathUtils.getString(doc, XPATH_EXP_WMTS_TITLE)
+        description = xPathUtils.getString(doc, XPATH_EXP_WMTS_ABSTRACT)
+        val versionList = getNodesContentAsList(doc, XPATH_EXP_WMTS_VERSION)
+        versions = mapVersionsFromCodelist("5152", versionList, versionSyslistMap)
+        fees = getKeyValueForPath(doc, XPATH_EXP_WMTS_FEES, "6500")
+        accessConstraints =
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WMTS_ACCESS_CONSTRAINTS))
 
-            // TODO: Resource Locator / Type
-            // ...
+        // TODO: Resource Locator / Type
+        // ...
 
-            keywords = getKeywords(doc, XPATH_EXP_WMTS_KEYWORDS).toMutableList()
-            address = getAddress(doc)
-            boundingBoxes = getBoundingBoxesFromLayers(doc)
-            spatialReferenceSystems =
-                getSpatialReferenceSystems(
-                    doc,
-                    "/wmts:Capabilities/wmts:Contents/wmts:TileMatrixSet/ows11:SupportedCRS",
-                )
-            operations = getOperations(doc)
-        }
+        keywords = getKeywords(doc, XPATH_EXP_WMTS_KEYWORDS).toMutableList()
+        address = getAddress(doc)
+        boundingBoxes = getBoundingBoxesFromLayers(doc)
+        spatialReferenceSystems =
+            getSpatialReferenceSystems(
+                doc,
+                "/wmts:Capabilities/wmts:Contents/wmts:TileMatrixSet/ows11:SupportedCRS",
+            )
+        operations = getOperations(doc)
     }
 
     private fun getOperations(doc: Document): List<OperationBean> {
@@ -84,7 +77,7 @@ class WmtsCapabilitiesParser(
         )
         if (!getCapabilitiesOp.addressList!!.isEmpty()) {
             getCapabilitiesOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"),
+                params.codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"),
                 "GetCapabilities",
             )
             // do not set method call so that it doesn't appear in ISO (#3651)
@@ -152,7 +145,7 @@ class WmtsCapabilitiesParser(
         )
 
         // try to find address in database and set the uuid if found
-        searchForAddress(researchService, catalogId, address)
+        searchForAddress(params.researchService, params.catalogId, address)
 
         address.street = xPathUtils.getString(
             doc,

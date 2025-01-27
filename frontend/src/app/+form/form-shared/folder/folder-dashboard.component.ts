@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,28 +17,28 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input } from "@angular/core";
-import { TreeQuery } from "../../../store/tree/tree.query";
+import { Component, effect, inject, input } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../services/document/document.service";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { ConfigService } from "../../../services/config/config.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { TranslocoDirective } from "@ngneat/transloco";
 import { ActionButtonComponent } from "../../../shared/action-button/action-button.component";
 import { CardBoxComponent } from "../../../shared/card-box/card-box.component";
 import { DocumentListItemComponent } from "../../../shared/document-list-item/document-list-item.component";
 import { MatIcon } from "@angular/material/icon";
+import { GeneralStore } from "../../../store/general.store";
+import { TreeStore } from "../../../store/tree/tree.store";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 @UntilDestroy()
 @Component({
   selector: "ige-folder-dashboard",
   templateUrl: "./folder-dashboard.component.html",
   styleUrls: ["./folder-dashboard.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     ActionButtonComponent,
@@ -48,29 +48,18 @@ import { MatIcon } from "@angular/material/icon";
   ],
 })
 export class FolderDashboardComponent {
-  query: TreeQuery | AddressTreeQuery;
+  private generalStore = inject(GeneralStore);
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
 
-  @Input() set isAddress(value: boolean) {
-    this.query = value ? this.addressTreeQuery : this.treeQuery;
-    this.query.openedDocument$.pipe(untilDestroyed(this)).subscribe((doc) => {
-      if (doc) this.updateChildren(doc);
-    });
-    this._isAddress = value;
-  }
+  isAddress = input<boolean>();
 
-  get isAddress() {
-    return this._isAddress;
-  }
-
-  private _isAddress: boolean;
   canCreateAddress: boolean;
   canCreateDataset: boolean;
   childDocs$ = new BehaviorSubject<DocumentAbstract[]>([]);
   numChildren: number;
 
   constructor(
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     configService: ConfigService,
     private docEvents: DocEventsService,
     private router: Router,
@@ -78,34 +67,36 @@ export class FolderDashboardComponent {
   ) {
     this.canCreateAddress = configService.hasPermission("can_create_address");
     this.canCreateDataset = configService.hasPermission("can_create_dataset");
+
+    effect(() => {
+      const doc = this.generalStore.getOpenedDocument(this.isAddress());
+      if (doc) this.updateChildren(doc);
+    });
   }
 
   updateChildren(model: DocumentAbstract) {
-    const query = this.isAddress ? this.addressTreeQuery : this.treeQuery;
+    const store = this.isAddress()
+      ? this.addressTreeStore
+      : this.documentTreeStore;
     // TODO switch to user specific query
 
     // wait for store changes to get children of node
-    query
-      .selectAll()
-      .pipe(untilDestroyed(this))
-      .subscribe(() => {
-        const childrenFromStore = query.getChildren(model.id as number);
-        if (childrenFromStore.length === 0 && model._hasChildren) {
-          // load children, as they are not in store yet
-          this.docService
-            .getChildren(model.id as number, this.isAddress)
-            .subscribe();
-        }
-        this.numChildren = childrenFromStore.length;
-        const latestChildren = childrenFromStore
-          .sort(
-            (c1, c2) =>
-              new Date(c2._contentModified).getTime() -
-              new Date(c1._contentModified).getTime(),
-          )
-          .slice(0, 5);
-        this.childDocs$.next(latestChildren);
-      });
+    const childrenFromStore = store.getChildren(model.id as number);
+    if (childrenFromStore.length === 0 && model._hasChildren) {
+      // load children, as they are not in store yet
+      this.docService
+        .getChildren(model.id as number, this.isAddress())
+        .subscribe();
+    }
+    this.numChildren = childrenFromStore.length;
+    const latestChildren = childrenFromStore
+      .sort(
+        (c1, c2) =>
+          new Date(c2._contentModified).getTime() -
+          new Date(c1._contentModified).getTime(),
+      )
+      .slice(0, 5);
+    this.childDocs$.next(latestChildren);
   }
 
   createNewFolder() {
@@ -118,7 +109,7 @@ export class FolderDashboardComponent {
 
   async openDocument(uuid: string) {
     await this.router.navigate([
-      ConfigService.catalogId + (this.isAddress ? "/address" : "/form"),
+      ConfigService.catalogId + (this.isAddress() ? "/address" : "/form"),
       { id: uuid },
     ]);
   }

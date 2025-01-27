@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -23,7 +23,7 @@ import {
   OnInit,
   signal,
 } from "@angular/core";
-import { MatFormField, MatInput, MatSuffix } from "@angular/material/input";
+import { MatInput, MatSuffix } from "@angular/material/input";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatIcon } from "@angular/material/icon";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -33,9 +33,8 @@ import {
 } from "../../../services/codelist/codelist.service";
 import { FieldType } from "@ngx-formly/material/form-field";
 import { FieldTypeConfig, FormlyFieldProps } from "@ngx-formly/core";
-import { AsyncPipe } from "@angular/common";
 import { Observable, of } from "rxjs";
-import { debounceTime, startWith, take } from "rxjs/operators";
+import { debounceTime, startWith } from "rxjs/operators";
 import { BackendOption } from "../../../store/codelist/codelist.model";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
@@ -46,17 +45,14 @@ interface UnitInput extends FormlyFieldProps {
 @UntilDestroy()
 @Component({
   selector: "ige-unit-input",
-  standalone: true,
   imports: [
     MatInput,
     MatSuffix,
-    MatFormField,
     MatMenu,
     MatMenuItem,
     MatMenuTrigger,
     MatIcon,
     ReactiveFormsModule,
-    AsyncPipe,
   ],
   templateUrl: "./unit-input.component.html",
   styleUrl: "./unit-input.component.scss",
@@ -73,7 +69,7 @@ export class UnitInputComponent
     let options = this.props.unitOptions;
     if (!(options instanceof Observable)) options = of(options);
 
-    options.pipe(take(1)).subscribe((opts) => {
+    options.pipe(untilDestroyed(this)).subscribe((opts) => {
       const unitValue = this.field.fieldGroup[1].formControl.value;
       this.$options.set(opts);
 

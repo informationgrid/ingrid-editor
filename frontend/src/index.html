@@ -17,7 +17,7 @@
             href="assets/icons/IGE-NG_apple-touch-icon.png"
         />
 
-        <style type="text/css">
+        <style nonce="random_nonce_value">
             .app-loading {
                 position: relative;
                 display: flex;
@@ -59,7 +59,9 @@
         </style>
     </head>
     <body>
-        <ige-root>
+        <!-- https://angular.dev/best-practices/security#content-security-policy -->
+        <!-- https://www.innoq.com/en/blog/2023/07/style-nonces-for-csp-in-angular-16/ -->
+        <ige-root ngCspNonce="random_nonce_value">
             <div class="app-loading">
                 <h1>Lade IGE-NG</h1>
                 <div class="lds-dual-ring"></div>

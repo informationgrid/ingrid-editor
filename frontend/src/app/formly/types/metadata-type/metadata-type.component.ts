@@ -1,3 +1,22 @@
+/**
+ * ==================================================
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
 import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import {
@@ -6,12 +25,8 @@ import {
   FormlyFieldProps,
 } from "@ngx-formly/core";
 import { FormLabelComponent } from "../../wrapper/form-label/form-label.component";
-import { AsyncPipe, NgIf } from "@angular/common";
-import {
-  MatChip,
-  MatChipListbox,
-  MatChipOption,
-} from "@angular/material/chips";
+import { AsyncPipe, NgIf, NgTemplateOutlet } from "@angular/common";
+import { MatChipListbox, MatChipOption } from "@angular/material/chips";
 import {
   AbstractControl,
   FormControl,
@@ -43,6 +58,7 @@ export interface MetadataOption {
   label: string;
   required?: boolean;
   typeOptions: MetadataOptionItems[];
+  contextHelpKey?: string;
 }
 
 export interface MetadataOptionItems {
@@ -60,18 +76,17 @@ export interface MetadataOptionItem {
   key?: string;
   label: string;
   value: any;
+  contextHelpKey?: string;
   hide?: boolean;
   onClick?: (field: FormlyFieldConfig, previousValue: any) => void;
 }
 
 @Component({
   selector: "ige-metadata-type",
-  standalone: true,
   imports: [
     FormLabelComponent,
     NgIf,
     MatChipListbox,
-    MatChip,
     MatChipOption,
     ReactiveFormsModule,
     FormErrorComponent,
@@ -81,6 +96,7 @@ export interface MetadataOptionItem {
     MatIcon,
     AsyncPipe,
     MatIconButton,
+    NgTemplateOutlet,
   ],
   templateUrl: "./metadata-type.component.html",
   styleUrl: "./metadata-type.component.scss",
@@ -150,14 +166,18 @@ export class MetadataTypeComponent
     return Object.values(data).some((value) => value);
   }
 
-  showContextHelp(event: MouseEvent, field: MetadataOptionItem) {
+  showInlineContextHelp(event: MouseEvent, key: string, label: string) {
     event.stopImmediatePropagation();
+    this.showContextHelp(event.target as HTMLElement, key, label);
+  }
+
+  showContextHelp(event: HTMLElement, key: string, label: string) {
     this.contextHelpService.showContextHelp(
       this.configService.$userInfo.value.currentCatalog.type,
       this.formStateService.metadata().docType,
-      field.key,
-      field.label,
-      event.target as HTMLElement,
+      key,
+      label,
+      event,
     );
   }
 

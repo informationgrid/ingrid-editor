@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import {
   HttpEvent,
   HttpHandler,
@@ -26,22 +26,22 @@ import {
 } from "@angular/common/http";
 import { Observable, Subscription, timer } from "rxjs";
 import { filter, scan, take, takeWhile } from "rxjs/operators";
-import { SessionStore } from "../store/session.store";
 import { ModalService } from "./modal/modal.service";
 import { IgeError } from "../models/ige-error";
-import { KeycloakEventType, KeycloakService } from "keycloak-angular";
+import { KeycloakEventTypeLegacy, KeycloakService } from "keycloak-angular";
 import { StorageService } from "../../storage.service";
 import { AuthenticationFactory } from "../security/auth.factory";
+import { GeneralStore } from "../store/general.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class SessionTimeoutInterceptor implements HttpInterceptor {
+  private generalStore = inject(GeneralStore);
   timer$: Subscription;
   private oneSecondInMilliseconds = 1000;
 
   constructor(
-    private session: SessionStore,
     private modalService: ModalService,
     private keycloak: KeycloakService,
     private authFactory: AuthenticationFactory,
@@ -50,7 +50,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
     this.initListener();
     this.keycloak.keycloakEvents$
       .pipe(
-        filter((item) => item.type === KeycloakEventType.OnAuthSuccess),
+        filter((item) => item.type === KeycloakEventTypeLegacy.OnAuthSuccess),
         take(1),
       )
       .subscribe(() => this.resetSessionTimeout());
@@ -101,9 +101,7 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
   }
 
   private updateStore(time: number) {
-    this.session.update({
-      sessionTimeoutIn: time,
-    });
+    this.generalStore.setSessionTimeout(time);
 
     if (time <= 0) {
       const error = new IgeError(
@@ -137,7 +135,9 @@ export class SessionTimeoutInterceptor implements HttpInterceptor {
 
     this.keycloak.keycloakEvents$
       .pipe(
-        filter((item) => item.type === KeycloakEventType.OnAuthRefreshSuccess),
+        filter(
+          (item) => item.type === KeycloakEventTypeLegacy.OnAuthRefreshSuccess,
+        ),
       )
       .subscribe(() => {
         this.storageService.store(

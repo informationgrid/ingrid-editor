@@ -3,7 +3,7 @@
     class="allPageScroll flex-1 flex-col"
 >
     <div class="welcome" data-cy="welcome-message">
-        <div class="greetings">{{ t("welcome") }}</div>
+        <h1 class="greetings">{{ t("welcome") }}</h1>
         @for (message of messages$ | async; track message) {
             <div class="message">
                 <span>{{ message.text }}</span>
@@ -23,6 +23,8 @@
                 svgIcon="Neuer-Datensatz"
                 [disabled]="!canCreateDataset"
                 (submit)="createNewDocument()"
+                matomoClickCategory="QuickActions"
+                matomoClickAction="CreateNewDocument"
             ></ige-action-button>
             <ige-action-button
                 label="Neuer Ordner"
@@ -36,6 +38,8 @@
                     icon="import_export"
                     [disabled]="!canImport"
                     (submit)="gotoImportPage()"
+                    matomoClickCategory="QuickActions"
+                    matomoClickAction="ImportDocument"
                 ></ige-action-button>
             }
             <ige-action-button
@@ -43,6 +47,8 @@
                 svgIcon="outline-person_add-24px"
                 [disabled]="!canCreateAddress"
                 (submit)="createNewAddress()"
+                matomoClickCategory="QuickActions"
+                matomoClickAction="CreateNewAddress"
             ></ige-action-button>
         </div>
 
@@ -60,7 +66,7 @@
                 data-cy="card-latest-docs"
             >
                 <ige-document-list-item
-                    [docs]="recentDocs$"
+                    [docs]="recentDocs()"
                     [hideDate]="false"
                     (select)="openDocument($event._uuid)"
                 ></ige-document-list-item>
@@ -73,28 +79,26 @@
                 (toggle)="updatePublished($event)"
             >
                 <ige-document-list-item
-                    [docs]="recentPublishedDocs$"
+                    [docs]="recentPublishedDocs()"
                     [hideDate]="false"
                     (select)="openDocument($event._uuid)"
                 ></ige-document-list-item>
             </ige-card-box>
 
-            @if (oldestExpiredDocs$ | async; as oldestExpiredDocs) {
-                @if (oldestExpiredDocs.length) {
-                    <ige-card-box
-                        label="{{ t('oldestExpired') }}"
-                        endBtnTitle="Zur übersicht"
-                        (endBtnOnClick)="goToExpiryPage()"
-                        nameOfToggle="Von mir"
-                        (toggle)="updateExpired($event)"
-                    >
-                        <ige-document-list-item
-                            [docs]="oldestExpiredDocs"
-                            [hideDate]="false"
-                            (select)="openByType($event)"
-                        ></ige-document-list-item>
-                    </ige-card-box>
-                }
+            @if (oldestExpiredDocs().length > 0) {
+                <ige-card-box
+                    label="{{ t('oldestExpired') }}"
+                    endBtnTitle="Zur übersicht"
+                    (endBtnOnClick)="goToExpiryPage()"
+                    nameOfToggle="Von mir"
+                    (toggle)="updateExpired($event)"
+                >
+                    <ige-document-list-item
+                        [docs]="oldestExpiredDocs()"
+                        [hideDate]="false"
+                        (select)="openByType($event)"
+                    ></ige-document-list-item>
+                </ige-card-box>
             }
         </div>
     </div>

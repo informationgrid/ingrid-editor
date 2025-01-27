@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -32,7 +32,6 @@ export interface Option {
   selector: "ige-option-list",
   templateUrl: "./option-list.component.html",
   styleUrls: ["./option-list.component.scss"],
-  standalone: true,
   imports: [MatRadioModule, MatDividerModule, FormsModule],
 })
 export class OptionListComponent implements OnInit {

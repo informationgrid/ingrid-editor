@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -265,10 +265,9 @@ class IndexingTask(
         null
     }
 
-    private fun getElasticsearchAliasFromCatalog(catalog: Catalog, category: DocumentCategory, exportTarget: String) =
-        "${catalog.settings.config.elasticsearchAlias ?: catalog.identifier}_${category.value}_${
-            exportTarget.lowercase().replace(" ", "")
-        }"
+    private fun getElasticsearchAliasFromCatalog(catalog: Catalog, category: DocumentCategory, exportTarget: String) = "${catalog.settings.config.elasticsearchAlias ?: catalog.identifier}_${category.value}_${
+        exportTarget.lowercase().replace(" ", "")
+    }"
 
     /** Indexing of a single document into an Elasticsearch index. */
     fun updateDocument(

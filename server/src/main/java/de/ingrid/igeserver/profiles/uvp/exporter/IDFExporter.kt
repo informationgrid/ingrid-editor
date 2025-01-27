@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -28,7 +28,7 @@ import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.uvp.exporter.model.UVPModel
 import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -38,7 +38,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 
 @Service
-class IDFExporter(val config: Config) : IgeExporter {
+class IDFExporter(val uploadConfig: UploadConfig) : IgeExporter {
 
     val log = logger()
 
@@ -66,29 +66,25 @@ class IDFExporter(val config: Config) : IgeExporter {
         return prettyXml
     }
 
-    private fun getTemplateForDoctype(type: String): String {
-        return when (type) {
-            "UvpApprovalProcedureDoc" -> "export/uvp/idf/idf-approval.jte"
-            "UvpNegativePreliminaryAssessmentDoc" -> "export/uvp/idf/idf-negative.jte"
-            "UvpForeignProjectDoc" -> "export/uvp/idf/idf-foreign.jte"
-            "UvpSpatialPlanningProcedureDoc" -> "export/uvp/idf/idf-spatialOrLine.jte"
-            "UvpLineDeterminationDoc" -> "export/uvp/idf/idf-spatialOrLine.jte"
-            else -> {
-                throw ServerException.withReason("Cannot get template for type: $type")
-            }
+    private fun getTemplateForDoctype(type: String): String = when (type) {
+        "UvpApprovalProcedureDoc" -> "export/uvp/idf/idf-approval.jte"
+        "UvpNegativePreliminaryAssessmentDoc" -> "export/uvp/idf/idf-negative.jte"
+        "UvpForeignProjectDoc" -> "export/uvp/idf/idf-foreign.jte"
+        "UvpSpatialPlanningProcedureDoc" -> "export/uvp/idf/idf-spatialOrLine.jte"
+        "UvpLineDeterminationDoc" -> "export/uvp/idf/idf-spatialOrLine.jte"
+        else -> {
+            throw ServerException.withReason("Cannot get template for type: $type")
         }
     }
 
-    override fun toString(exportedObject: Any): String {
-        return exportedObject.toString()
-    }
+    override fun toString(exportedObject: Any): String = exportedObject.toString()
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
         val mapper = ObjectMapper().registerKotlinModule()
         return mapOf(
             "map" to mapOf(
                 "model" to mapper.convertValue(json, UVPModel::class.java).apply { init(catalogId) },
-                "docInfo" to DocInfo(catalogId, json.uuid, config.uploadExternalUrl),
+                "docInfo" to DocInfo(catalogId, json.uuid, uploadConfig.uploadExternalUrl),
             ),
         )
     }

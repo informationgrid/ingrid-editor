@@ -1,9 +1,9 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   color: #0f8737;
 }
 
 input {
-  color: $ige-text-color;
+  color: vars.$ige-text-color;
 }

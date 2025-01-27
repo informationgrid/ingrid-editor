@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -65,14 +65,10 @@ class PortalExporter : IgeExporter {
         return writer.toString()
     }
 
-    override fun toString(exportedObject: Any): String {
-        return exportedObject.toString()
-    }
+    override fun toString(exportedObject: Any): String = exportedObject.toString()
 
-    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> {
-        return mapOf(
-            "model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java),
-            "catalogId" to catalogId,
-        )
-    }
+    private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> = mapOf(
+        "model" to jacksonObjectMapper().convertValue(json, MCloudModel::class.java),
+        "catalogId" to catalogId,
+    )
 }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -30,9 +30,7 @@ class BehaviourService(
     private val catalogRepo: CatalogRepository,
 ) {
 
-    fun get(catalogId: String): List<Behaviour> {
-        return behaviourRepo.findAllByCatalog_Identifier(catalogId)
-    }
+    fun get(catalogId: String): List<Behaviour> = behaviourRepo.findAllByCatalog_Identifier(catalogId)
 
     fun get(catalogId: String, behaviourId: String): Behaviour? = get(catalogId).find { it.name == behaviourId }
 

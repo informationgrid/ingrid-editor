@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -33,7 +33,7 @@ import {
   MatPseudoCheckbox,
   MatPseudoCheckboxState,
 } from "@angular/material/core";
-import { debounceTime, filter, map, take, tap } from "rxjs/operators";
+import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
 import { FieldTypeConfig, FormlyModule } from "@ngx-formly/core";
 import { BackendOption } from "../../../store/codelist/codelist.model";
@@ -48,7 +48,6 @@ import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabell
   templateUrl: "./select-type.component.html",
   styleUrls: ["./select-type.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     MatOption,
     MatPseudoCheckbox,
@@ -118,7 +117,7 @@ export class SelectTypeComponent
       .pipe(
         untilDestroyed(this),
         filter((data) => data !== undefined && data.length > 0),
-        take(1),
+        // take(1),
         map((options) =>
           options.map(
             (option) =>
@@ -221,5 +220,9 @@ export class SelectTypeComponent
     return this.selectOptions.filter(
       (option) => option.value.toLowerCase().indexOf(filter) !== -1,
     );
+  }
+
+  itemId(item: BackendOption) {
+    return item.key ?? item;
   }
 }

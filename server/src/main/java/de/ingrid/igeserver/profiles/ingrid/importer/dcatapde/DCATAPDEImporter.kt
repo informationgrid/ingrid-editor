@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -76,9 +76,7 @@ class DCATAPDEImporter(
         return output.toString()
     }
 
-    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
-        return (contentType == "application/xml" || contentType == "application/rdf+xml") && fileContent.contains("<rdf:RDF") && fileContent.contains("http://dcat-ap.de/def/dcatde/")
-    }
+    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean = (contentType == "application/xml" || contentType == "application/rdf+xml") && fileContent.contains("<rdf:RDF") && fileContent.contains("http://dcat-ap.de/def/dcatde/")
 
     internal class JsonStringOutput : StringOutput() {
         override fun writeUserContent(value: String?) {

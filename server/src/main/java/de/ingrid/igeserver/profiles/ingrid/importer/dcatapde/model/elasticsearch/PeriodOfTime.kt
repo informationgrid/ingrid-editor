@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2022-2024 wemove digital solutions GmbH
+ * Copyright (C) 2022-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -39,11 +39,7 @@ class PeriodOfTime : Serializable {
         return startDate == temporal.startDate && endDate == temporal.endDate
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(startDate, endDate)
-    }
+    override fun hashCode(): Int = Objects.hash(startDate, endDate)
 
-    override fun toString(): String {
-        return "PeriodOfTime{startDate=$startDate, endDate=$endDate}"
-    }
+    override fun toString(): String = "PeriodOfTime{startDate=$startDate, endDate=$endDate}"
 }

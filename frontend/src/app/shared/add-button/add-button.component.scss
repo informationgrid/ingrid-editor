@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 button {
   //display: flex;
@@ -18,7 +18,7 @@ button {
   }
 */
   &.error-outline {
-    border-color: $error-color !important;
+    border-color: vars.$error-color !important;
   }
 
   &.padding-btn {

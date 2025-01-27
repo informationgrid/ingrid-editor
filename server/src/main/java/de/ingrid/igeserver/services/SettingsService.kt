@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -48,9 +48,7 @@ class SettingsService(
         return jacksonObjectMapper().convertValue(iBusJson, object : TypeReference<List<ElasticConfig>>() {})
     }
 
-    fun getConnectionConfig(id: String): WithId? {
-        return getIBusConfig().find { it.id!! == id } ?: getElasticConfig().find { it.id!! == id }
-    }
+    fun getConnectionConfig(id: String): WithId? = getIBusConfig().find { it.id!! == id } ?: getElasticConfig().find { it.id!! == id }
 
     fun setIBusConfig(config: List<IBusConfig>) {
         addIdIfNeeded(config)

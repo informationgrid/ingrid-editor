@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -26,21 +26,18 @@ class Version(inputVersion: String) : Comparable<Version> {
     var version: String
         private set
 
-    override fun compareTo(other: Version) =
-        (split() to other.split()).let { (thisParts, thatParts) ->
-            val length = max(thisParts.size, thatParts.size)
-            for (i in 0 until length) {
-                val thisPart = if (i < thisParts.size) thisParts[i].toInt() else 0
-                val thatPart = if (i < thatParts.size) thatParts[i].toInt() else 0
-                if (thisPart < thatPart) return -1
-                if (thisPart > thatPart) return 1
-            }
-            0
+    override fun compareTo(other: Version) = (split() to other.split()).let { (thisParts, thatParts) ->
+        val length = max(thisParts.size, thatParts.size)
+        for (i in 0 until length) {
+            val thisPart = if (i < thisParts.size) thisParts[i].toInt() else 0
+            val thatPart = if (i < thatParts.size) thatParts[i].toInt() else 0
+            if (thisPart < thatPart) return -1
+            if (thisPart > thatPart) return 1
         }
-
-    override fun toString(): String {
-        return version
+        0
     }
+
+    override fun toString(): String = version
 
     init {
         require(inputVersion.matches("[0-9]+(\\.[0-9]+)*".toRegex())) { "Invalid version format" }

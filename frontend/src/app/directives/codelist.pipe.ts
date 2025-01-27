@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,22 +17,23 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Pipe, PipeTransform } from "@angular/core";
-import { CodelistQuery } from "../store/codelist/codelist.query";
+import { inject, Pipe, PipeTransform } from "@angular/core";
 import { CodelistService } from "../services/codelist/codelist.service";
 import { BackendOption, Codelist } from "../store/codelist/codelist.model";
 import { filter, map, take } from "rxjs/operators";
 import { Observable, of } from "rxjs";
+import { CodelistStore } from "../store/codelist/codelist.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @Pipe({
   name: "codelist",
   standalone: true,
 })
 export class CodelistPipe implements PipeTransform {
-  constructor(
-    private codelistQuery: CodelistQuery,
-    private codelistService: CodelistService,
-  ) {}
+  private codelistStore = inject(CodelistStore);
+  private codelistService = inject(CodelistService);
+
+  private codelistStore$ = toObservable(this.codelistStore.entityMap);
 
   transform(
     value: string | BackendOption | null,
@@ -43,11 +44,12 @@ export class CodelistPipe implements PipeTransform {
     if (value === null || value === undefined) return of(null);
     if (value instanceof Object && value.key === null) return of(value.value);
 
-    const codelist = this.codelistQuery.getEntity(id);
+    const codelist = this.codelistStore.entityMap()[id];
 
     if (!codelist) {
       this.codelistService.byId(id);
-      return this.codelistQuery.selectEntity(id).pipe(
+      return this.codelistStore$.pipe(
+        map((item) => item[id]),
         filter((cl) => cl !== undefined),
         take(1),
         map(

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,6 +20,7 @@
 import {
   Component,
   HostListener,
+  inject,
   Inject,
   OnInit,
   signal,
@@ -46,13 +47,15 @@ import {
 } from "@angular/material/sidenav";
 import { SideMenuComponent } from "./side-menu/side-menu.component";
 import { MainHeaderComponent } from "./main-header/main-header.component";
+import { SectionSkipperComponent } from "./section-skipper/section-skipper.component";
+import { UiStore } from "./store/ui.store";
+import { SessionService } from "./services/session.service";
 
 @UntilDestroy()
 @Component({
   selector: "ige-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
-  standalone: true,
   imports: [
     MatDrawerContainer,
     SideMenuComponent,
@@ -60,6 +63,7 @@ import { MainHeaderComponent } from "./main-header/main-header.component";
     RouterOutlet,
     MatDrawer,
     MatDrawerContent,
+    SectionSkipperComponent,
   ],
 })
 export class AppComponent implements OnInit {
@@ -70,8 +74,11 @@ export class AppComponent implements OnInit {
   isLoggingout = false;
   userHasCatalog = signal<boolean>(false);
 
+  private uiStore = inject(UiStore);
+
   constructor(
     private behaviourService: BehaviourService /*for initialization!*/,
+    private sessionService: SessionService /*for initialization!*/,
     private configService: ConfigService,
     codelistService: CodelistService,
     private registry: MatIconRegistry,
@@ -84,6 +91,8 @@ export class AppComponent implements OnInit {
     private router: Router,
     private transloco: TranslocoService,
   ) {
+    this.updateStoreFromLocalStorage();
+
     this.initProfile();
 
     this.loadIcons();
@@ -101,6 +110,18 @@ export class AppComponent implements OnInit {
     this.configService.$userInfo
       .pipe(map((info) => ProfileService.userHasAnyCatalog(info)))
       .subscribe((isAssigned) => this.userHasCatalog.set(isAssigned));
+  }
+
+  private updateStoreFromLocalStorage() {
+    const initValueSidebar = localStorage.getItem("sidebarExpanded") === "true";
+    this.uiStore.setSidebarExpanded(initValueSidebar);
+    const textAreaHeights = localStorage.getItem("textAreaHeights");
+    try {
+      if (textAreaHeights)
+        this.uiStore.setTextAreaHeights(JSON.parse(textAreaHeights));
+    } catch (ex) {
+      // catch only in case the value was somehow written in a non json format
+    }
   }
 
   private loadIcons() {

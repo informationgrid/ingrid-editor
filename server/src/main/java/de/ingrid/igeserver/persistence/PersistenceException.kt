@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -36,20 +36,16 @@ open class PersistenceException : ServerException {
         /**
          * Factory method for an unexpected ambiguity of entities
          */
-        fun withMultipleEntities(resourceId: String, resourceType: String?, database: String?): PersistenceException {
-            return PersistenceException(
-                STATUS_CODE,
-                ERROR_CODE_NOT_UNIQUE,
-                ERROR_TEXT_NOT_UNIQUE,
-                mapOf("resourceId" to resourceId, "resourceType" to resourceType, "database" to database),
-            )
-        }
+        fun withMultipleEntities(resourceId: String, resourceType: String?, database: String?): PersistenceException = PersistenceException(
+            STATUS_CODE,
+            ERROR_CODE_NOT_UNIQUE,
+            ERROR_TEXT_NOT_UNIQUE,
+            mapOf("resourceId" to resourceId, "resourceType" to resourceType, "database" to database),
+        )
 
         /**
          * Factory method for an arbitrary reason
          */
-        fun withReason(reason: String, cause: Throwable? = null): PersistenceException {
-            return PersistenceException(STATUS_CODE, ERROR_CODE, reason, null, cause)
-        }
+        fun withReason(reason: String, cause: Throwable? = null): PersistenceException = PersistenceException(STATUS_CODE, ERROR_CODE, reason, null, cause)
     }
 }

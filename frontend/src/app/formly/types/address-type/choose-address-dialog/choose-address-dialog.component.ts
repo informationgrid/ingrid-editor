@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,6 +21,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   Inject,
   OnDestroy,
   OnInit,
@@ -30,8 +31,6 @@ import {
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { BehaviorSubject, Observable } from "rxjs";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
-import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
-import { CodelistQuery } from "../../../../store/codelist/codelist.query";
 import {
   CodelistService,
   SelectOption,
@@ -47,7 +46,6 @@ import {
   MatDialogTitle,
 } from "@angular/material/dialog";
 import { ResolvedAddressWithType } from "../address-card/address-card.component";
-import { SessionQuery } from "../../../../store/session.query";
 import { DocumentService } from "../../../../services/document/document.service";
 import { ConfigService } from "../../../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -58,9 +56,12 @@ import { MatSelect } from "@angular/material/select";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
+import { CodelistStore } from "../../../../store/codelist/codelist.store";
+import { toObservable } from "@angular/core/rxjs-interop";
+import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
+import { GeneralStore } from "../../../../store/general.store";
 
 export interface ChooseAddressDialogData {
   address: ResolvedAddressWithType;
@@ -79,7 +80,6 @@ export interface ChooseAddressResponse {
   templateUrl: "./choose-address-dialog.component.html",
   styleUrls: ["./choose-address-dialog.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,
@@ -87,7 +87,6 @@ export interface ChooseAddressResponse {
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     TreeComponent,
     DocumentListItemComponent,
@@ -96,28 +95,29 @@ export interface ChooseAddressResponse {
   ],
 })
 export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
+  private codelistStore = inject(CodelistStore);
+  private addressTreeStore = inject(AddressTreeStore);
+  private generalStore = inject(GeneralStore);
   @ViewChild(MatSelect) recentAddressSelect: MatSelect;
   selection = signal<DocumentAbstract>(null);
   selectedType: string;
   selectedNode = new BehaviorSubject<number>(null);
-  recentAddresses$: Observable<DocumentAbstract[]>;
-  initialActiveAddressType = new BehaviorSubject<Partial<DocumentAbstract>>(
-    null,
-  );
+  recentAddresses$: Observable<DocumentAbstract[]> = toObservable(
+    this.generalStore.recentAddresses,
+  ).pipe(map((allRecent) => allRecent[ConfigService.catalogId] ?? []));
+  initialActiveAddressType = new BehaviorSubject<Partial<any>>(null);
   typeSelectionEnabled = signal<boolean>(false);
   activeStep = 1;
   referenceTypes: DocumentAbstract[];
+  private codelists$ = toObservable(this.codelistStore.entityMap);
 
   disabledCondition: (node: TreeNode) => boolean = (node: TreeNode) => {
     return node.type === "FOLDER";
   };
 
   constructor(
-    private addressTreeQuery: AddressTreeQuery,
     @Inject(MAT_DIALOG_DATA) private data: ChooseAddressDialogData,
-    private codelistQuery: CodelistQuery,
     private codelistService: CodelistService,
-    private sessionQuery: SessionQuery,
     private documentService: DocumentService,
     private dlgRef: MatDialogRef<ChooseAddressDialogComponent>,
     private cdr: ChangeDetectorRef,
@@ -125,10 +125,10 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.codelistService.byId("505");
-    this.codelistQuery
-      .selectEntity("505")
+    this.codelists$
       .pipe(
         untilDestroyed(this),
+        map((item) => item["505"]),
         map((codelist) => CodelistService.mapToSelect(codelist)),
         map((items) => this.filterByAllowedTypes(items)),
         tap((items) => this.preselectIfOnlyOneType(items)),
@@ -141,11 +141,6 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
         }),
       )
       .subscribe();
-
-    this.recentAddresses$ = this.sessionQuery.recentAddresses$.pipe(
-      untilDestroyed(this),
-      map((allRecent) => allRecent[ConfigService.catalogId] ?? []),
-    );
 
     this.updateModel(this.data.address);
     if (this.data.skipToType && this.typeSelectionEnabled()) {
@@ -166,7 +161,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   }
 
   updateAddressTree(addressId: number) {
-    this.selection.set(this.addressTreeQuery.getEntity(addressId));
+    this.selection.set(this.addressTreeStore.entityMap()[addressId]);
   }
 
   getResult(): void {

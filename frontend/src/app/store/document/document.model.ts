@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,11 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ID } from "@datorama/akita";
 import { DocumentState } from "../../models/ige-document";
 
 export interface DocumentAbstract {
-  id: ID | number;
+  id: string | number;
   title: string;
   icon: string;
   _state: DocumentState;

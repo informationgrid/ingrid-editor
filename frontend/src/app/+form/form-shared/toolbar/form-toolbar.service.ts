@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { Injectable, WritableSignal } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { IgeError } from "../../../models/ige-error";
@@ -41,7 +41,7 @@ export interface ToolbarItem extends DefaultToolbarItem {
   matSvgVariable?: string;
   cssClasses?: string;
   eventId: string;
-  active?: boolean;
+  active?: WritableSignal<boolean>;
   label?: string;
   isPrimary?: boolean;
   menu?: ToolbarMenuItem[];
@@ -125,10 +125,8 @@ export class FormToolbarService {
    * @param active
    */
   setButtonState(id: string, active: boolean) {
-    const button = <ToolbarItem>this.getButtonById(id);
-    if (button) {
-      button.active = active;
-    }
+    const button = this.getButtonById(id) as ToolbarItem | null;
+    if (button) button.active?.set(active);
   }
 
   setMenuItemStateOfButton(id: string, eventId: string, active: boolean) {

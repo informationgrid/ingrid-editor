@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -71,21 +71,15 @@ class OgcHtmlExporter(
         return
     }
 
-    private fun getPublished(catalogId: String, uuid: String): JsonNode? {
-        return try {
-            val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
-            getRawJsonFromDocument(document)
-        } catch (ex: Exception) {
-            // allow to export only draft versions
-            null
-        }
+    private fun getPublished(catalogId: String, uuid: String): JsonNode? = try {
+        val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
+        getRawJsonFromDocument(document)
+    } catch (ex: Exception) {
+        // allow to export only draft versions
+        null
     }
 
-    private fun selectDraftOrPublished(publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode {
-        return (draftVersion ?: publishedVersion) as ObjectNode
-    }
+    private fun selectDraftOrPublished(publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode = (draftVersion ?: publishedVersion) as ObjectNode
 
-    override fun toString(exportedObject: Any): String {
-        return exportedObject as String
-    }
+    override fun toString(exportedObject: Any): String = exportedObject as String
 }

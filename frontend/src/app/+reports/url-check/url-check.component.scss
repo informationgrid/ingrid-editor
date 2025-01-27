@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   overflow: auto;
@@ -67,7 +67,7 @@ td.mat-column-count {
     width: auto;
   }
   .mat-icon {
-    color: $ige-secondary;
+    color: vars.$ige-secondary;
   }
 }
 

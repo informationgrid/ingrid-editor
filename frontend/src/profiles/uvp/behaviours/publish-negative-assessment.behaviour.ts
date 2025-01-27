@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -18,7 +18,6 @@
  * limitations under the Licence.
  */
 import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
-import { TreeQuery } from "../../../app/store/tree/tree.query";
 import { FormMenuService, MenuId } from "../../../app/+form/form-menu.service";
 import { Injectable } from "@angular/core";
 import { filter } from "rxjs/operators";
@@ -30,6 +29,7 @@ import {
 import { DocumentAbstract } from "../../../app/store/document/document.model";
 import { TagsService } from "../../../app/+catalog/+behaviours/system/tags/tags.service";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @Injectable({ providedIn: "root" })
 export class PublishNegativeAssessmentBehaviour extends Plugin {
@@ -43,8 +43,9 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
   group = "UVP";
   formMenuId: MenuId = "dataset";
 
+  private openedDocument$ = toObservable(this.generalStore.openedDocument);
+
   constructor(
-    private documentTreeQuery: TreeQuery,
     private formMenuService: FormMenuService,
     private dialog: MatDialog,
     private tagsService: TagsService,
@@ -78,7 +79,7 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
         ?.data?.controlledByDataset ?? false;
     if (!isActive) return;
 
-    const onDocLoad = this.documentTreeQuery.openedDocument$
+    const onDocLoad = this.openedDocument$
       .pipe(filter((doc) => doc !== null))
       .subscribe((doc) => {
         const button = {
@@ -134,7 +135,7 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
       .afterClosed()
       .subscribe((newTag: string) => {
         if (!newTag) return;
-        this.tagsService.updateTagForDocument(doc, newTag, this.forAddress);
+        this.tagsService.updateTagForDocument(doc, newTag, this.forAddress());
       });
   }
 }

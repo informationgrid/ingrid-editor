@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  signal,
+} from "@angular/core";
 import {
   FieldTypeConfig,
   FormlyFieldConfig,
@@ -36,7 +42,7 @@ import {
   CdkDropList,
 } from "@angular/cdk/drag-drop";
 import { MatListModule } from "@angular/material/list";
-import { AsyncPipe, JsonPipe, KeyValuePipe, NgForOf } from "@angular/common";
+import { NgComponentOutlet } from "@angular/common";
 
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
@@ -44,20 +50,26 @@ import { MatButtonModule } from "@angular/material/button";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { FieldType } from "@ngx-formly/material";
-import { CodelistPipe } from "../../../directives/codelist.pipe";
-import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
+import {
+  AddButtonComponent,
+  AddButtonOptions,
+} from "../../../shared/add-button/add-button.component";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { debounceTime, startWith } from "rxjs/operators";
 
 interface RepeatDetailListProps extends FormlyFieldProps {
   titleField: string;
   fields: FormlyFieldConfig[];
+  _types?: AddButtonOptions[];
+  viewComponent: any;
 }
 
+@UntilDestroy()
 @Component({
   selector: "ige-repeat-detail-list",
   templateUrl: "./repeat-detail-list.component.html",
   styleUrls: ["./repeat-detail-list.component.scss"],
   imports: [
-    AsyncPipe,
     CdkDrag,
     CdkDropList,
     CdkDragHandle,
@@ -68,47 +80,55 @@ interface RepeatDetailListProps extends FormlyFieldProps {
     AddButtonComponent,
     MatButtonModule,
     FormErrorComponent,
-    KeyValuePipe,
     FormlyModule,
     MatTooltipModule,
-    JsonPipe,
-    NgForOf,
-    CodelistPipe,
+    NgComponentOutlet,
   ],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RepeatDetailListComponent
   extends FieldType<FieldTypeConfig<RepeatDetailListProps>>
   implements OnInit
 {
-  constructor(
-    private dialog: MatDialog,
-    private cdr: ChangeDetectorRef,
-  ) {
-    super();
+  private dialog = inject(MatDialog);
+
+  previewItems = signal<any[]>([]);
+
+  ngOnInit(): void {
+    this.formControl.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        startWith(this.formControl.value),
+        debounceTime(0),
+      )
+      .subscribe((items) => this.previewItems.set(items));
   }
 
-  ngOnInit(): void {}
-
-  addItem() {
-    this.openDialog(null);
+  addItem(type: string) {
+    this.openDialog(type, null);
   }
 
   editItem(index: number) {
-    this.openDialog(index);
+    this.openDialog(null, index);
   }
 
-  private openDialog(index?: number) {
+  private openDialog(type?: string, index?: number) {
     const existingModel =
       index == null
         ? null
         : JSON.parse(JSON.stringify(this.model[this.field.key + ""][index]));
+    const dialogType: FormlyFieldConfig = {
+      key: "_type",
+      type: "input",
+      defaultValue: type ?? this.props.fields["_type"],
+      className: "hide",
+    };
     this.dialog
       .open(FormDialogComponent, {
         width: "90vw",
         maxWidth: "950px",
         data: <FormDialogData>{
-          fields: this.props.fields,
+          fields: [...this.props.fields, dialogType],
           model: existingModel,
         },
       })
@@ -117,7 +137,6 @@ export class RepeatDetailListComponent
         if (response) {
           this.replaceItem(index, response);
         }
-        this.cdr.detectChanges();
       });
   }
 

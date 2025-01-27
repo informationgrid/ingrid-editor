@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -36,7 +36,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.mdek.upload.Config
+import de.ingrid.mdek.upload.UploadConfig
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -48,7 +48,7 @@ import org.unbescape.json.JsonEscape
 @Service
 class IngridLuceneExporter(
     val codelistHandler: CodelistHandler,
-    val config: Config,
+    val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
     @Lazy val documentService: DocumentService,
 ) {
@@ -128,7 +128,7 @@ class IngridLuceneExporter(
     }
 
     fun getMapper(type: IngridDocType, doc: Document, catalog: Catalog, options: ExportOptions): Map<String, Any> {
-        val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier)
+        val codelistTransformer = CodelistTransformer(codelistHandler, catalog.identifier, catalog.settings.config.language ?: "de")
         val data = TransformerData(type, catalog.identifier, codelistTransformer, doc, options.tags)
 
         val transformer: Any = getTransformer(data)
@@ -152,7 +152,7 @@ class IngridLuceneExporter(
                     null,
                     data.doc,
                     documentService = documentService,
-                    config = config,
+                    uploadConfig = uploadConfig,
                     data.tags,
                 ),
             )
@@ -164,7 +164,7 @@ class IngridLuceneExporter(
                     data.mapper.convertValue(data.doc, IngridModel::class.java),
                     data.catalogIdentifier,
                     data.codelistTransformer,
-                    config,
+                    uploadConfig,
                     catalogService,
                     TransformerCache(),
                     data.doc,

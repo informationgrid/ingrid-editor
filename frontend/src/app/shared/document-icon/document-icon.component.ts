@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -31,7 +31,6 @@ import { NgClass } from "@angular/common";
   selector: "ige-document-icon",
   templateUrl: "./document-icon.component.html",
   styleUrls: ["./document-icon.component.scss"],
-  standalone: true,
   imports: [MatTooltip, MatIcon, NgClass],
 })
 export class DocumentIconComponent implements OnChanges {

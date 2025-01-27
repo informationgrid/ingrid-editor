@@ -1,10 +1,10 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 .leading {
   min-height: 48px;
   background: white;
   font-size: 24px;
-  color: $ige-primary;
+  color: vars.$ige-primary;
 }
 
 mat-tab-group {

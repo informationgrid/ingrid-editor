@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -41,12 +41,10 @@ fun exportJsonToXML(exporter: IgeExporter, file: String, additional: ObjectNode?
     return prettyFormatXml(result, 4).replace("\r\n", "\n")
 }
 
-fun exportDocToXML(exporter: IgeExporter, doc: Document): String {
-    return (exporter.run(doc, "test-catalog") as String).let {
-        prettyFormatXml(it, 4).replace("\r\n", "\n")
-            .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
-    }.also { println(it) }
-}
+fun exportDocToXML(exporter: IgeExporter, doc: Document): String = (exporter.run(doc, "test-catalog") as String).let {
+    prettyFormatXml(it, 4).replace("\r\n", "\n")
+        .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
+}.also { println(it) }
 
 fun exportJsonStringToXML(exporter: IgeExporter, json: String): String {
     val doc = convertToDocument(json)

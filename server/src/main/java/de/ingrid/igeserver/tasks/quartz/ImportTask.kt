@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -60,7 +60,13 @@ class ImportTask(
         val info = prepareJob(context)
         val notificationType = MessageTarget(NotificationType.IMPORT, info.catalogId)
         val stage =
-            if (info.importFile != null) Stage.ANALYZE else if (info.analysis != null) Stage.IMPORT else Stage.UNKNOWN
+            if (info.importFile != null) {
+                Stage.ANALYZE
+            } else if (info.analysis != null) {
+                Stage.IMPORT
+            } else {
+                Stage.UNKNOWN
+            }
 
         // use start time from analysis phase if it already happened
         val message = if (stage == Stage.ANALYZE) Message() else Message(info.startTime ?: Date())

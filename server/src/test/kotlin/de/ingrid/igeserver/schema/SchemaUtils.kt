@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -29,8 +29,7 @@ class SchemaUtils {
     companion object {
         fun validate(json: String, schema: String) = PreJsonSchemaValidator().validate(schema, json)
 
-        fun getJsonFileContent(file: String) =
-            this::class.java.getResource(file)!!.readText(Charsets.UTF_8).replace("\r\n", "\n")
+        fun getJsonFileContent(file: String) = this::class.java.getResource(file)!!.readText(Charsets.UTF_8).replace("\r\n", "\n")
 
         fun createNegativeTestByAddingInvalidField(schema: String, jsonFile: String) {
             val json = getJsonFileContent(jsonFile)

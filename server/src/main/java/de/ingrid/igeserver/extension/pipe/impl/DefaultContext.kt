@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -62,12 +62,9 @@ open class DefaultContext(
         messages.clear()
     }
 
-    override fun messages(): Iterable<Message> {
-        return messages.asIterable()
-    }
+    override fun messages(): Iterable<Message> = messages.asIterable()
 
     override var properties: Map<String, Any?> = mutableMapOf()
 }
 
-class SimpleContext(override val catalogId: String, override val profile: String, val uuid: String) :
-    DefaultContext(catalogId, profile, null, null)
+class SimpleContext(override val catalogId: String, override val profile: String, val uuid: String) : DefaultContext(catalogId, profile, null, null)

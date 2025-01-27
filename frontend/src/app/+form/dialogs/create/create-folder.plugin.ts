@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,22 +17,21 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
-import { TreeQuery } from "../../../store/tree/tree.query";
 import { CreateNodeComponent, CreateOptions } from "./create-node.component";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
-import { filter, take } from "rxjs/operators";
 import { FormUtils } from "../../form.utils";
 import { DocumentService } from "../../../services/document/document.service";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { FormStateService } from "../../form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { TranslocoService } from "@ngneat/transloco";
+import { TreeStore } from "../../../store/tree/tree.store";
+import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
 @UntilDestroy()
 @Injectable()
@@ -44,6 +43,9 @@ export class CreateFolderPlugin extends Plugin {
   defaultActive = true;
   hide = true;
 
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
+
   eventCreateFolderId = "CREATE_FOLDER";
 
   private isAdmin = this.config.hasCatAdminRights();
@@ -52,8 +54,6 @@ export class CreateFolderPlugin extends Plugin {
     private config: ConfigService,
     private formToolbarService: FormToolbarService,
     private docEvents: DocEventsService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     private documentService: DocumentService,
     private formStateService: FormStateService,
     private dialog: MatDialog,
@@ -73,7 +73,7 @@ export class CreateFolderPlugin extends Plugin {
       matSvgVariable: "outline-create_new_folder-24px",
       eventId: this.eventCreateFolderId,
       pos: 10,
-      active: true,
+      active: signal(true),
     });
 
     // add event handler for revert
@@ -83,20 +83,24 @@ export class CreateFolderPlugin extends Plugin {
 
     if (!this.isAdmin) {
       const buttonEnabled = this.config.hasPermission(
-        this.forAddress ? "can_create_address" : "can_create_dataset",
+        this.forAddress() ? "can_create_address" : "can_create_dataset",
       );
-      this.formToolbarService.setButtonState("toolBtnFolder", buttonEnabled);
+      this.toggleButtonState(buttonEnabled);
     }
 
     this.formSubscriptions.push(toolbarEventSubscription);
   }
 
+  private toggleButtonState(buttonEnabled: boolean) {
+    this.formToolbarService.setButtonState("toolBtnFolder", buttonEnabled);
+  }
+
   async createFolder() {
+    this.toggleButtonState(false);
     // show dialog where user can choose name of the folder and location
     // it can be created under the root node or another folder
     // TODO: parent node determination is the same as in new-doc plugin
-    const query = this.forAddress ? this.addressTreeQuery : this.treeQuery;
-    const selectedDoc = query.getOpenedDocument();
+    const selectedDoc = this.generalStore.getOpenedDocument(this.forAddress());
 
     // wait for entity in store, otherwise it could happen that the tree is being
     // loaded while we clicked on the create node button. In this case the function
@@ -106,45 +110,32 @@ export class CreateFolderPlugin extends Plugin {
         this.formStateService,
         this.documentService,
         this.dialog,
-        this.forAddress,
+        this.forAddress(),
       );
 
       if (!handled) {
         return;
       }
 
-      query
-        .selectEntity(selectedDoc.id)
-        .pipe(
-          untilDestroyed(this),
-          filter((entity) => entity !== undefined),
-          take(1),
-        )
-        .subscribe((entity) => {
-          let parentDocId = null;
-          const folder = query.getFirstParentFolder(selectedDoc.id.toString());
-          if (folder !== null) {
-            parentDocId = folder.id;
-          }
-          this.showDialog(parentDocId);
-        });
-    } else {
-      this.showDialog(null);
+      const store = this.forAddress()
+        ? this.addressTreeStore
+        : this.documentTreeStore;
+
+      await store.waitForDocumentInStore(selectedDoc.id);
     }
+    this.toggleButtonState(true);
+    this.showDialog();
   }
 
-  showDialog(parentDocId: string) {
+  showDialog() {
     this.dialog.open(CreateNodeComponent, {
-      minWidth: 500,
       maxWidth: 600,
-      minHeight: 500,
       disableClose: false,
       hasBackdrop: true,
-      data: {
-        parent: parentDocId,
-        forAddress: this.forAddress,
+      data: <CreateOptions>{
+        forAddress: this.forAddress(),
         isFolder: true,
-      } as CreateOptions,
+      },
       ariaLabel: this.transloco.translate("toolbar.newFolder"),
     });
   }

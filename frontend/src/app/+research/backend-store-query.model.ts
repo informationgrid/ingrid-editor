@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,12 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-export interface BackendStoreQuery {
-  readonly id: string;
+export interface BackendUpdateStoreQuery {
+  readonly id: number;
   readonly name: string;
-  readonly category: "facet" | "sql";
   readonly description: string;
   readonly global: boolean;
+}
+
+export interface BackendStoreQuery extends BackendUpdateStoreQuery {
+  readonly category: "facet" | "sql";
   readonly userId?: string;
   readonly modified?: any;
   readonly settings: {
