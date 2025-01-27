@@ -126,6 +126,8 @@ data class Publication(
     val explanation: String?,
     val publishedIn: String?,
     val baseDataText: String?,
+    val doi: String?,
+    val generalResourceType: KeyValue?,
     val documentType: KeyValue?,
     val publicationDate: String?,
     val publishingHouse: String?,

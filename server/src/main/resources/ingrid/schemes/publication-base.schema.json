@@ -112,6 +112,19 @@
         "baseDataText": {
           "type": ["null", "string"]
         },
+        "doi": {
+          "type": ["null", "string"]
+        },
+        "generalResourceType": {
+          "anyOf": [
+            {
+              "$ref": "refs/general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "documentType": {
           "anyOf": [
             {
