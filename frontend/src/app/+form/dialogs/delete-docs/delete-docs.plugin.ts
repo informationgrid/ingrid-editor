@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -88,7 +88,7 @@ export class DeleteDocsPlugin extends Plugin {
       matSvgVariable: "outline-delete-24px",
       eventId: "DELETE",
       pos: 100,
-      active: false,
+      active: signal(false),
     });
 
     const store = this.getStore();

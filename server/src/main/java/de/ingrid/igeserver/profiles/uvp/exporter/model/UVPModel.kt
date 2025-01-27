@@ -189,6 +189,15 @@ data class UVPModel(
             .map { formatDate(formatterNoSeparator, it) }
     }
 
+    fun getDecisionDateAsDate(): List<OffsetDateTime> {
+        val decisionDates =
+            data.steps.filterIsInstance<StepDecisionOfAdmission>().map { it.decisionDate }.toMutableList()
+        if (data.decisionDate != null) decisionDates += data.decisionDate
+
+        return decisionDates
+            .map { OffsetDateTime.parse(it) }
+    }
+
     companion object {
         val codelistHandler: CodelistHandler? by lazy {
             SpringContext.getBean(CodelistHandler::class.java)
