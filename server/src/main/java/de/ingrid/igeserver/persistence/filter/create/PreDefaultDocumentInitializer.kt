@@ -26,6 +26,7 @@ import de.ingrid.igeserver.persistence.filter.PreCreatePayload
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentState
@@ -44,6 +45,7 @@ class PreDefaultDocumentInitializer(
     val catalogRepo: CatalogRepository,
     val catalogService: CatalogService,
     var authUtils: AuthUtils,
+    val behaviourService: BehaviourService,
 ) : Filter<PreCreatePayload> {
 
     override val profiles = arrayOf<String>()
@@ -70,10 +72,16 @@ class PreDefaultDocumentInitializer(
         val now = dateService.now()
         val fullName = authUtils.getFullNameFromPrincipal(context.principal!!)
         val actualUser = catalogService.getDbUserFromPrincipal(context.principal!!)
+        val doiBehaviour = behaviourService.get(catalogRef.name, "plugin.doi")
 
         with(payload.document) {
             catalog = catalogRef
 //            data.put(FIELD_HAS_CHILDREN, false)
+            if (doiBehaviour?.active == true) {
+                (doiBehaviour?.data?.get("doiPrefix") as String)?.let { doiPrefix ->
+                    data.putObject("publication").put("doi", "$doiPrefix/")
+                }
+            }
             created = now
             modified = now
             contentmodified = now
