@@ -1,6 +1,7 @@
 package de.ingrid.igeserver.profiles.ingrid_bkg.exporter
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
@@ -16,6 +17,7 @@ class BkgCommonTransformer(private val codelists: CodelistTransformer, private v
     private val bkgUseConstraintsTitleKey = doc.data.getStringOrEmpty("resource.useConstraintsBkg.key")
     private val bkgAccessConstraintsTitleKey =
         doc.data.getStringOrEmpty("resource.accessConstraintsBkg.key")
+    private val objectMapper = jacksonObjectMapper()
 
     fun getUseConstraints(): List<UseConstraintTemplate> {
         val title = getValueFromCodelistData("10003", bkgUseConstraintsTitleKey) ?: ""
@@ -50,17 +52,25 @@ class BkgCommonTransformer(private val codelists: CodelistTransformer, private v
     }
 
     private fun getUseConstraintJson(baseJson: String?, source: String?): String? {
-        val sourceString = ",\"quelle\":\"${source.orEmpty().replace("\"", "\\\\\"")}\""
+        if (baseJson.isNullOrBlank()) return null
 
-        return baseJson?.let {
-            if (it.contains(",\"quelle\":\"\"".toRegex())) {
-                // replace existing source string
-                it.replace(",\"quelle\":\"\"".toRegex(), sourceString)
-            } else {
-                // add source string
-                it.replace("}$".toRegex(), "$sourceString}")
-            }
+        val jsonNode = objectMapper.readTree(baseJson)
+
+        // If the JSON is not an object, handle this case
+        if (jsonNode !is ObjectNode) return baseJson
+
+        // remove long text info
+        jsonNode.remove("de")
+        jsonNode.remove("en")
+
+        if (jsonNode.isEmpty) return null
+
+        // Add or replace the "quelle" field
+        if (!source.isNullOrEmpty()) {
+            jsonNode.put("quelle", source)
         }
+
+        return objectMapper.writeValueAsString(jsonNode)
     }
 
     fun getAccessConstraints(defaultAccessConstraintsCodelistValues: List<String>): AccessConstraint {
