@@ -40,6 +40,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { DocumentService } from "../../../services/document/document.service";
 import { provideMatomoTesting } from "ngx-matomo-client/testing";
+import { signal, WritableSignal } from "@angular/core";
 
 let spectator: Spectator<FormToolbarComponent>;
 const buttonSubject = new Subject<Array<ToolbarItem | Separator>>();
@@ -93,6 +94,7 @@ describe("Form-Toolbar", () => {
       matIconVariable: "remove",
       pos: 1,
       eventId: "TEST_EVENT",
+      active: signal(false),
     };
     buttonSubject.next([item]);
     spectator.detectChanges();
@@ -114,6 +116,7 @@ describe("Form-Toolbar", () => {
       isPrimary: true,
       label: "Veröffentlichen",
       align: "right",
+      active: signal(false),
     };
     buttonSubject.next([item]);
 

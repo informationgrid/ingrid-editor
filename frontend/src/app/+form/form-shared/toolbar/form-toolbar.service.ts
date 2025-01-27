@@ -126,7 +126,7 @@ export class FormToolbarService {
    */
   setButtonState(id: string, active: boolean) {
     const button = this.getButtonById(id) as ToolbarItem | null;
-    if (button) button.active.set(active);
+    if (button) button.active?.set(active);
   }
 
   setMenuItemStateOfButton(id: string, eventId: string, active: boolean) {
