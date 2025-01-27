@@ -80,7 +80,7 @@ export class TreeModeToolbarBehaviour extends Plugin {
   private handleMultiSelectMode() {
     this.previousState = this.toolbarService.buttons.map((button) => ({
       id: button.id,
-      active: (<ToolbarItem>button).active(),
+      active: (<ToolbarItem>button).active?.(),
     }));
 
     this.toolbarService.buttons
