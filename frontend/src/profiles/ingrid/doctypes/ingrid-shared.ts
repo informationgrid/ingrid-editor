@@ -1402,10 +1402,10 @@ export abstract class IngridShared extends BaseDoctype {
           {
             asSelect: false,
             showSearch: true,
-          options: this.getCodelistForSelect(
-            "6010",
-            "resource.accessConstraints",
-          ),
+            options: this.getCodelistForSelect(
+              "6010",
+              "resource.accessConstraints",
+            ),
             codelistId: "6010",
             expressions: {
               "props.required": (field: FormlyFieldConfig) =>
