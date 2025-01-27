@@ -106,11 +106,34 @@ export class PublicationDoctype extends IngridShared {
             wrappers: ["panel", "form-field"],
             className: "optional",
           }),
-          this.addAutocomplete("documentType", "Dokumententyp", {
-            options: this.getCodelistForSelect("3385", "documentType"),
-            codelistId: "3385",
-            className: "optional",
-          }),
+          this.showDoiFields
+            ? this.addGroup(null, "DOI", [
+                this.addInputInline("doi", "DOI", {
+                  wrappers: ["form-field"],
+                }),
+                this.addAutoCompleteInline(
+                  "generalResourceType",
+                  "Ressourcen Typ (generell)",
+                  {
+                    options: this.getCodelistForSelect(
+                      "3390",
+                      "generalResourceType",
+                    ),
+                    codelistId: "3390",
+                    wrappers: ["form-field"],
+                  },
+                ),
+                this.addAutoCompleteInline("documentType", "Ressourcen Typ", {
+                  options: this.getCodelistForSelect("3385", "documentType"),
+                  codelistId: "3385",
+                  wrappers: ["form-field"],
+                }),
+              ])
+            : this.addAutocomplete("documentType", "Dokumententyp", {
+                options: this.getCodelistForSelect("3385", "documentType"),
+                codelistId: "3385",
+                className: "optional",
+              }),
           this.addTextArea("baseDataText", "Basisdaten", this.id, {
             className: "optional flex-1",
           }),
@@ -134,7 +157,7 @@ export class PublicationDoctype extends IngridShared {
             ],
             { className: "optional" },
           ),
-        ]),
+        ].filter(Boolean)),
       ]),
 
       this.addSpatialSection(),
