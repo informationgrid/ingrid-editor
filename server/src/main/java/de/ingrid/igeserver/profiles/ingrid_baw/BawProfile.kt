@@ -240,7 +240,7 @@ class BawProfile(
             add(CodelistHandler.toCodelistEntry("3", "2D-hor"))
             add(CodelistHandler.toCodelistEntry("4", "2D-vert"))
             add(CodelistHandler.toCodelistEntry("5", "3D"))
-            add(CodelistHandler.toCodelistEntry("999", "keine"))
+//            add(CodelistHandler.toCodelistEntry("999", "keine"))
         }
     }
 
@@ -272,7 +272,7 @@ class BawProfile(
             add(CodelistHandler.toCodelistEntry("20", "UnTRIM"))
             add(CodelistHandler.toCodelistEntry("21", "UnTRIM2007"))
             add(CodelistHandler.toCodelistEntry("22", "UnTRIM2009"))
-            add(CodelistHandler.toCodelistEntry("999", "kein"))
+//            add(CodelistHandler.toCodelistEntry("999", "kein"))
             add(CodelistHandler.toCodelistEntry("23", "DuMuˣ"))
         }
     }

@@ -708,12 +708,12 @@ open class IngridModelTransformer(
                 KeyValue(codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de"), null)
             it
         } +
-            getCoupledServicesForGeodataset.map {
+            getExternalCoupledResources().map {
                 Reference(
-                    it.objectName,
-                    it.refType,
+                    it.name,
+                    KeyValue("3600", null),
                     it.description,
-                    it.serviceUrl,
+                    it.url,
                     null,
                     null,
                 )

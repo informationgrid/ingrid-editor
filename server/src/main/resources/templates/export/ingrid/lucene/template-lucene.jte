@@ -232,6 +232,9 @@
     @for(var entry : ForSupport.of(page.getReferencesWithCoupledServicesAndFileReferences()))
         "${entry.get().getUrl()}"@if (!entry.isLast()),@endif
     @endfor
+@for(var entry : ForSupport.of(page.getGetCoupledServicesForGeodataset()))
+    "${entry.get().getObjectName()}"@if (!entry.isLast()),@endif
+@endfor
     ],
     "t017_url_ref.content": [
     @for(var entry : ForSupport.of(page.getReferencesWithCoupledServicesAndFileReferences()))

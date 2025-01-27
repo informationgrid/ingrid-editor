@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { FormFieldHelper } from "../../form-field-helper";
+import { FormFieldHelper, InputOptions } from "../../form-field-helper";
 import { Injectable } from "@angular/core";
 import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 import { FormControl } from "@angular/forms";
@@ -41,21 +41,26 @@ export class CommonFieldsBaw extends FormFieldHelper {
   }
 
   getBAWKeywordCatalogueFieldConfig(doc: IngridShared): FormlyFieldConfig {
-    return doc.addRepeatList("bawKeywords", "BAW - Schlagwortkatalog 2012", {
+    return doc.addRepeatList("bawKeywords", "BAW - Schlagwortkatalog", {
+      showSearch: true,
+      view: "chip",
+      className: "optional",
       asSelect: true,
       options: doc.getCodelistForSelect("3950005", "null"),
     });
   }
 
-  getTimestepFieldConfig(): FormlyFieldConfig {
-    // TODO: flexibly set required and validotors
-    return this.addInput("timestep", "Zeitliche Genauigkeit (zurückgestellt)", {
+  getTimestepFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
+    return this.addInput("timestep", "Zeitliche Genauigkeit", {
       fieldLabel: "Zeitliche Genauigkeit",
       type: "number",
+      className: "single-field width-25 right-align",
+      required: options.required,
+      validators: options.validators,
       suffix: {
         text: "s",
       },
-      wrappers: ["panel", "form-field"],
+      wrappers: ["panel", "form-field", "addons"],
     });
   }
 
@@ -83,14 +88,14 @@ export class CommonFieldsBaw extends FormFieldHelper {
   }
 
   addSharedFields(doc: IngridShared, fieldConfig: FormlyFieldConfig[]) {
-    const keywordSectionPosition = this.findFieldElementWithId(
+    const gemetKeywordsPosition = this.findFieldElementWithId(
       fieldConfig,
-      "pointOfContact",
+      "gemet",
     );
 
     // BAW Schlagwortkatalog
-    this.addAfter(
-      keywordSectionPosition,
+    this.addBefore(
+      gemetKeywordsPosition,
       this.getBAWKeywordCatalogueFieldConfig(doc),
     );
 
@@ -110,17 +115,30 @@ export class CommonFieldsBaw extends FormFieldHelper {
     doc: GeoDatasetDoctypeBaw,
     fieldConfig: FormlyFieldConfig[],
   ) {
-    this.addSharedFields(doc, fieldConfig);
-
-    const pointOfContactPosition = this.findFieldElementWithId(
+    const parentIdentifierPosition = this.findFieldElementWithId(
       fieldConfig,
-      "pointOfContact",
+      "parentIdentifier",
     );
 
     // Auftragsnummer
-    this.addAfter(pointOfContactPosition, this.getOrderNumberFieldConfig());
+    this.addBefore(parentIdentifierPosition, this.getOrderNumberFieldConfig());
     // Auftragstitel
-    this.addAfter(pointOfContactPosition, this.getOrderTitleFieldConfig());
+    this.addBefore(parentIdentifierPosition, this.getOrderTitleFieldConfig());
+
+    this.addSharedFields(doc, fieldConfig);
+  }
+
+  removeDataQualitySection(
+    doc: IngridShared,
+    fieldConfig: FormlyFieldConfig[],
+  ) {
+    const dataQualitySection = doc.findFieldElementWithId(
+      fieldConfig,
+      "dataQuality",
+    );
+    if (dataQualitySection) {
+      fieldConfig.splice(dataQualitySection.index, 1);
+    }
   }
 
   hasBAWPointOfContact = {

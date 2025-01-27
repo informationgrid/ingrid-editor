@@ -45,8 +45,9 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
         this.getDrainFieldConfig(),
         this.getGaugeFieldConfig(),
         this.getTargetParametersFieldConfig(),
+        this.getPosAccuracyFieldConfig(),
+        this.getDataQualityDescFieldConfig(),
       ]),
-      this.getDataQualitySectionFieldConfig(),
     );
     return fieldConfig;
   };
@@ -132,24 +133,6 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
     });
   }
 
-  getDataQualitySectionFieldConfig() {
-    return this.addSection("Datenqualität(MessdatenBAW)", [
-      this.addInput("posAccuracy", "Lagegenauigkeit", {
-        type: "number",
-        suffix: { text: "m" },
-        className: "right-align",
-        wrappers: ["panel", "form-field", "addons"],
-      }),
-      this.addTextArea(
-        "dataQualityDescription",
-        "Beschreibung der Datenqualität",
-        {
-          wrappers: ["panel", "form-field"],
-        },
-      ),
-    ]);
-  }
-
   getDrainFieldConfig() {
     return this.addGroup("drain", "Abfluss", [
       this.addInputInline("value", "Q min", {
@@ -181,5 +164,24 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
       className: "single-field width-25 right-align",
       wrappers: ["panel", "form-field", "addons"],
     });
+  }
+
+  getPosAccuracyFieldConfig(): FormlyFieldConfig {
+    return this.addInput("posAccuracy", "Lagegenauigkeit", {
+      type: "number",
+      suffix: { text: "m" },
+      className: "single-field width-25 right-align",
+      wrappers: ["panel", "form-field", "addons"],
+    });
+  }
+
+  getDataQualityDescFieldConfig(): FormlyFieldConfig {
+    return this.addTextArea(
+      "dataQualityDescription",
+      "Beschreibung der Datenqualität",
+      {
+        wrappers: ["panel", "form-field"],
+      },
+    );
   }
 }

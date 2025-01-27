@@ -978,6 +978,10 @@ export class FormFieldHelper {
     info.fieldConfig.splice(info.index + 1, 0, field);
   }
 
+  addBefore(info: FieldConfigPosition, field: FormlyFieldConfig) {
+    info.fieldConfig.splice(info.index, 0, field);
+  }
+
   private initExpressions(expressions = {}) {
     return {
       "props.disabled": (field: FormlyFieldConfig) =>

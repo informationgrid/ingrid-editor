@@ -28,6 +28,16 @@ import { CommonFieldsBaw } from "./common-fields";
 export class GeoDatasetDoctypeBaw extends GeoDatasetDoctype {
   common = inject(CommonFieldsBaw);
 
+  showAdVCompatible = false;
+  showAdVProductGroup = false;
+  showDataQualitySection = false;
+
+  constructor() {
+    super();
+    this.options.hide.orderInfo = true;
+    this.options.hide.resourceGroup = true;
+  }
+
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedGeoDatasetFields(this, fieldConfig);
     return fieldConfig;

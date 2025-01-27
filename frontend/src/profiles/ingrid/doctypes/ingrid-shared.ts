@@ -107,6 +107,8 @@ export abstract class IngridShared extends BaseDoctype {
     },
     hide: {
       openData: false,
+      orderInfo: false,
+      resourceGroup: false,
     },
     spatialTypes: ["free", "wkt", "wfsgnde"],
   };
@@ -1367,141 +1369,153 @@ export abstract class IngridShared extends BaseDoctype {
             },
           ),
         ]),
-        this.addGroup(
-          "resource",
-          "Weiteres",
-          [
-            this.addTextAreaInline("purpose", "Herstellungszweck", "dataset", {
-              hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
-            }),
-            this.addTextAreaInline(
-              "specificUsage",
-              "Eignung/Nutzung",
-              "dataset",
-              {
-                hasInlineContextHelp: true,
-                wrappers: ["inline-help", "form-field"],
-              },
+        this.options.hide.resourceGroup
+          ? null
+          : this.addGroup(
+              "resource",
+              "Weiteres",
+              [
+                this.addTextAreaInline(
+                  "purpose",
+                  "Herstellungszweck",
+                  "dataset",
+                  {
+                    hasInlineContextHelp: true,
+                    wrappers: ["inline-help", "form-field"],
+                  },
+                ),
+                this.addTextAreaInline(
+                  "specificUsage",
+                  "Eignung/Nutzung",
+                  "dataset",
+                  {
+                    hasInlineContextHelp: true,
+                    wrappers: ["inline-help", "form-field"],
+                  },
+                ),
+              ],
+              { className: "optional" },
             ),
-          ],
-          { className: "optional" },
-        ),
       ].filter(Boolean),
     );
   }
 
   addAvailabilitySection() {
-    return this.addSection("Verfügbarkeit", [
-      this.addGroupSimple("resource", [
-        this.addRepeatList("accessConstraints", "Zugriffsbeschränkungen", {
-          asSelect: false,
-          showSearch: true,
-          options: this.getCodelistForSelect(
-            "6010",
-            "resource.accessConstraints",
-          ),
-          codelistId: "6010",
-          expressions: {
-            "props.required": (field: FormlyFieldConfig) =>
-              this.options.dynamicRequired.accessConstraints(field),
-            className: (field: FormlyFieldConfig) =>
-              field.props.required ? "" : "optional",
-          },
-        }),
-        this.addRepeat("useConstraints", "Nutzungsbedingungen", {
-          required: this.options.required.useConstraints,
-          expressions: {
-            "props.minLength": (field: FormlyFieldConfig) =>
-              field.props.required ? 1 : undefined,
-            defaultValue: (field: FormlyFieldConfig) =>
-              field.props.required ? [{}] : null,
-            className: (field: FormlyFieldConfig) =>
-              field.props.required ? "" : "optional",
-          },
-          fields: [
-            this.addAutocomplete("title", null, {
-              required: true,
-              options: this.getCodelistForSelect(
-                "6500",
-                "resource.useConstraints.title",
-              ),
-              fieldLabel: "Lizenz",
-              codelistId: "6500",
-              wrappers: ["form-field"],
-              className: "flex-1",
-            }),
-            this.addInput("source", null, {
-              wrappers: ["form-field"],
-              fieldLabel: "Quelle",
-              className: "flex-1",
-            }),
-          ],
-        }),
-        this.addTextArea(
-          "useLimitation",
-          "Anwendungseinschränkungen",
-          "dataset",
-          {
-            required: this.options.required.useLimitation,
-            className: "optional flex-1",
-          },
-        ),
-      ]),
-      this.addGroupSimple("distribution", [
-        this.addRepeat("format", "Datenformat", {
-          expressions: {
-            "props.required": (field: FormlyFieldConfig) =>
-              this.options.dynamicRequired.dataFormat(field),
-            className: (field: FormlyFieldConfig) =>
-              field.props.required ? "" : "optional",
-          },
-          fields: [
-            this.addAutoCompleteInline("name", "Name", {
-              options: this.getCodelistForSelect(
-                this.codelistIds.distributionFormat,
-                "distribution.format.name",
-              ),
-              codelistId: this.codelistIds.distributionFormat,
-              required: true,
-            }),
-            this.addInputInline("version", "Version"),
-            this.addInputInline("compression", "Kompressionstechnik"),
-            this.addInputInline("specification", "Spezifikation"),
-          ],
-          validators: {
-            validation: ["notEmptyArray"],
-          },
-        }),
-      ]),
-      this.addRepeat("digitalTransferOptions", "Medienoption", {
-        className: "optional",
-        fields: [
-          this.addSelectInline("name", "Medium", {
+    return this.addSection(
+      "Verfügbarkeit",
+      [
+        this.addGroupSimple("resource", [
+          this.addRepeatList("accessConstraints", "Zugriffsbeschränkungen", {
+            asSelect: false,
             showSearch: true,
             options: this.getCodelistForSelect(
-              "520",
-              "digitalTransferOptions.name",
+              "6010",
+              "resource.accessConstraints",
             ),
-            codelistId: "520",
+            codelistId: "6010",
+            expressions: {
+              "props.required": (field: FormlyFieldConfig) =>
+                this.options.dynamicRequired.accessConstraints(field),
+              className: (field: FormlyFieldConfig) =>
+                field.props.required ? "" : "optional",
+            },
           }),
-          this.addUnitInputInline("transferSize", "Datenvolumen", {
-            type: "number",
-            className: "right-align",
-            unitOptions: <SelectOption[]>[
-              new SelectOption("MB", "MB"),
-              new SelectOption("GB", "GB"),
-              new SelectOption("TB", "TB"),
+          this.addRepeat("useConstraints", "Nutzungsbedingungen", {
+            required: this.options.required.useConstraints,
+            expressions: {
+              "props.minLength": (field: FormlyFieldConfig) =>
+                field.props.required ? 1 : undefined,
+              defaultValue: (field: FormlyFieldConfig) =>
+                field.props.required ? [{}] : null,
+              className: (field: FormlyFieldConfig) =>
+                field.props.required ? "" : "optional",
+            },
+            fields: [
+              this.addAutocomplete("title", null, {
+                required: true,
+                options: this.getCodelistForSelect(
+                  "6500",
+                  "resource.useConstraints.title",
+                ),
+                fieldLabel: "Lizenz",
+                codelistId: "6500",
+                wrappers: ["form-field"],
+                className: "flex-1",
+              }),
+              this.addInput("source", null, {
+                wrappers: ["form-field"],
+                fieldLabel: "Quelle",
+                className: "flex-1",
+              }),
             ],
-            fieldGroup: [{ key: "value" }, { key: "unit" }],
           }),
-          this.addInputInline("mediumNote", "Speicherort"),
-        ],
-      }),
-      this.addTextArea("orderInfo", "Bestellinformation", "dataset", {
-        className: "optional flex-1",
-      }),
-    ]);
+          this.addTextArea(
+            "useLimitation",
+            "Anwendungseinschränkungen",
+            "dataset",
+            {
+              required: this.options.required.useLimitation,
+              className: "optional flex-1",
+            },
+          ),
+        ]),
+        this.addGroupSimple("distribution", [
+          this.addRepeat("format", "Datenformat", {
+            expressions: {
+              "props.required": (field: FormlyFieldConfig) =>
+                this.options.dynamicRequired.dataFormat(field),
+              className: (field: FormlyFieldConfig) =>
+                field.props.required ? "" : "optional",
+            },
+            fields: [
+              this.addAutoCompleteInline("name", "Name", {
+                options: this.getCodelistForSelect(
+                  this.codelistIds.distributionFormat,
+                  "distribution.format.name",
+                ),
+                codelistId: this.codelistIds.distributionFormat,
+                required: true,
+              }),
+              this.addInputInline("version", "Version"),
+              this.addInputInline("compression", "Kompressionstechnik"),
+              this.addInputInline("specification", "Spezifikation"),
+            ],
+            validators: {
+              validation: ["notEmptyArray"],
+            },
+          }),
+        ]),
+        this.addRepeat("digitalTransferOptions", "Medienoption", {
+          className: "optional",
+          fields: [
+            this.addSelectInline("name", "Medium", {
+              showSearch: true,
+              options: this.getCodelistForSelect(
+                "520",
+                "digitalTransferOptions.name",
+              ),
+              codelistId: "520",
+            }),
+            this.addUnitInputInline("transferSize", "Datenvolumen", {
+              type: "number",
+              className: "right-align",
+              unitOptions: <SelectOption[]>[
+                new SelectOption("MB", "MB"),
+                new SelectOption("GB", "GB"),
+                new SelectOption("TB", "TB"),
+              ],
+              fieldGroup: [{ key: "value" }, { key: "unit" }],
+            }),
+            this.addInputInline("mediumNote", "Speicherort"),
+          ],
+        }),
+        this.options.hide.orderInfo
+          ? null
+          : this.addTextArea("orderInfo", "Bestellinformation", "dataset", {
+              className: "optional flex-1",
+            }),
+      ].filter(Boolean),
+    );
   }
 
   addLinksSection() {

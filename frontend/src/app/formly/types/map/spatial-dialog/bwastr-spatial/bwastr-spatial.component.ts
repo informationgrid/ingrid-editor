@@ -22,8 +22,8 @@ import {
   EventEmitter,
   inject,
   Input,
-  OnInit,
   OnDestroy,
+  OnInit,
   Output,
 } from "@angular/core";
 import { MatDividerModule } from "@angular/material/divider";
@@ -54,8 +54,6 @@ import {
   BwastrLocatorSearchResponse,
   BwastrLocatorService,
 } from "./bwastr-locator.service";
-import { MatButton } from "@angular/material/button";
-import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 
@@ -75,8 +73,6 @@ import { MatInput } from "@angular/material/input";
     SearchInputComponent,
     MatCheckboxModule,
     FormsModule,
-    MatButton,
-    MatProgressSpinner,
     MatFormField,
     MatInput,
     MatLabel,
