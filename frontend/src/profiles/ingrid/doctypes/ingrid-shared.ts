@@ -1177,7 +1177,11 @@ export abstract class IngridShared extends BaseDoctype {
             codelistId: "99999999",
             required: true,
             defaultValue: {
-              key: "150",
+              key:
+                this.configService.$userInfo.value.currentCatalog.settings
+                  .config.language === "en"
+                  ? "123"
+                  : "150",
             },
             contextHelpId: "languageInfo",
           }),
