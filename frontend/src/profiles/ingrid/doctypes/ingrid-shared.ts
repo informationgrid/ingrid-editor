@@ -1177,11 +1177,7 @@ export abstract class IngridShared extends BaseDoctype {
             codelistId: "99999999",
             required: true,
             defaultValue: {
-              key:
-                this.configService.$userInfo.value.currentCatalog.settings
-                  .config.language === "en"
-                  ? "123"
-                  : "150",
+              key: ConfigService.catalogLanguage === "en" ? "123" : "150",
             },
             contextHelpId: "languageInfo",
           }),
@@ -1254,7 +1250,7 @@ export abstract class IngridShared extends BaseDoctype {
                   key: "pass",
                   type: "ige-select",
                   label: "Grad",
-                  width: "130px",
+                  width: "135px",
                   props: {
                     required: true,
                     label: "Grad",

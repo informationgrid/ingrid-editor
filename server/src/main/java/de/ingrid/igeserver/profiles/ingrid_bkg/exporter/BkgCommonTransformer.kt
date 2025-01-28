@@ -39,7 +39,7 @@ class BkgCommonTransformer(private val codelists: CodelistTransformer, private v
     private val objectMapper = jacksonObjectMapper()
 
     fun getUseConstraints(): List<UseConstraintTemplate> {
-        val title = getValueFromCodelistData("10003", bkgUseConstraintsTitleKey) ?: ""
+        val title = getValueFromCodelistData("10003", bkgUseConstraintsTitleKey, codelists.catalogLanguage) ?: ""
         val json = if (doc.data.getBoolean("properties.isOpenData") == true) {
             getUseConstraintJson(
                 codelists.getData("10003", bkgUseConstraintsTitleKey),
@@ -93,7 +93,7 @@ class BkgCommonTransformer(private val codelists: CodelistTransformer, private v
     }
 
     fun getAccessConstraints(defaultAccessConstraintsCodelistValues: List<String>): AccessConstraint {
-        val title = getValueFromCodelistData("10001", bkgAccessConstraintsTitleKey)
+        val title = getValueFromCodelistData("10001", bkgAccessConstraintsTitleKey, codelists.catalogLanguage)
             ?: return AccessConstraint(
                 accessConstraintsCodelistValues ?: defaultAccessConstraintsCodelistValues,
                 emptyList(),
@@ -121,7 +121,7 @@ class BkgCommonTransformer(private val codelists: CodelistTransformer, private v
         )
     }
 
-    private fun getValueFromCodelistData(codelistId: String, key: String, field: String = "de"): String? {
+    private fun getValueFromCodelistData(codelistId: String, key: String, field: String): String? {
         val jsonData = codelists.getData(
             codelistId,
             key,

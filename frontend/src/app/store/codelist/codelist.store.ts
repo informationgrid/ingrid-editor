@@ -26,6 +26,7 @@ import {
   withEntities,
 } from "@ngrx/signals/entities";
 import { IgeError } from "../../models/ige-error";
+import { ConfigService } from "../../services/config/config.service";
 
 export const CodelistStore = signalStore(
   { providedIn: "root" },
@@ -51,7 +52,9 @@ export const CodelistStore = signalStore(
         (entry) => entry.id === entryKey,
       )?.fields;
 
-      return entryFields ? entryFields["de"] : (defaultValue ?? "");
+      return entryFields
+        ? entryFields[ConfigService.catalogLanguage]
+        : (defaultValue ?? "");
     },
 
     getCodelistEntryByKey(codelistId: string, entryKey: string): CodelistEntry {
