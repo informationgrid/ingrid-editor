@@ -552,7 +552,7 @@ open class IngridModelTransformer(
 
     private val availabilityAccessConstraints = data.resource?.accessConstraints?.map {
         CharacterStringModel(
-            getValueFromCodelistData("6010", it.key)
+            getValueFromCodelistData("6010", it.key, codelists.catalogLanguage)
                 ?: codelists.getValue("6010", it) ?: "",
             getValueFromCodelistData("6010", it.key, "url"),
         )
@@ -1148,7 +1148,7 @@ open class IngridModelTransformer(
 
     fun isHvd(): Boolean = data.properties?.isHvd ?: false
 
-    fun getValueFromCodelistData(codelistId: String, key: String?, field: String = "de"): String? {
+    fun getValueFromCodelistData(codelistId: String, key: String?, field: String): String? {
         val jsonData = codelists.getData(
             codelistId,
             key,
