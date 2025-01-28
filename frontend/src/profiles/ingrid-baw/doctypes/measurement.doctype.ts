@@ -71,7 +71,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
         type: "number",
       }),
       this.common.getUnitOfMeasurementFieldConfig(this),
-      this.common.getVerticalCoordinateReferenceSystemFieldConfig(this),
+      this.common.getInlineVerticalCoordinateReferenceSystemFieldConfig(this),
     ]);
   }
 
@@ -99,7 +99,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
           type: "number",
         }),
         this.common.getUnitOfMeasurementFieldConfig(this),
-        this.common.getVerticalCoordinateReferenceSystemFieldConfig(this),
+        this.common.getInlineVerticalCoordinateReferenceSystemFieldConfig(this),
         this.addInputInline("description", "Beschreibung"),
       ],
     });
@@ -119,16 +119,20 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
   getTargetParametersFieldConfig() {
     return this.addRepeat("targetParameters", "Zielparameter", {
       fields: [
-        this.addSelectInline("name", "Name", {
-          required: true,
-          options: this.getCodelistForSelect("3950021", "null"),
-        }),
-        this.addSelectInline("type", "Art", {
-          required: true,
-          options: this.getCodelistForSelect("3950014", "null"),
-        }),
-        this.common.getUnitOfMeasurementFieldConfig(this),
-        this.addInputInline("formula", "Formel/Funktion"),
+        this.addGroupSimple(null, [
+          this.addSelectInline("name", "Name", {
+            required: true,
+            options: this.getCodelistForSelect("3950021", "null"),
+          }),
+          this.addSelectInline("type", "Art", {
+            required: true,
+            options: this.getCodelistForSelect("3950014", "null"),
+          }),
+        ]),
+        this.addGroupSimple(null, [
+          this.common.getUnitOfMeasurementFieldConfig(this),
+          this.addInputInline("formula", "Formel/Funktion"),
+        ]),
       ],
     });
   }

@@ -25,7 +25,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-abstract class BawBaseType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
+abstract class BawGeoDatasetBaseType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemplate) {
     override val jsonSchema = "/ingrid/schemes/baw/geo-dataset_baw.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
 }

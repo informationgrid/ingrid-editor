@@ -67,6 +67,24 @@ export class CommonFieldsBaw extends FormFieldHelper {
   getVerticalCoordinateReferenceSystemFieldConfig(
     doc: IngridShared,
   ): FormlyFieldConfig {
+    return this.addRepeatList(
+      "verticalCoordinateReferenceSystem",
+      "Vertikale Koordinatenreferenzsysteme",
+      {
+        asSelect: false,
+        showSearch: true,
+        options: doc.getCodelistForSelect(
+          "verticalCoordinateReferenceSystem",
+          "null",
+        ),
+        codelistId: "verticalCoordinateReferenceSystem",
+      },
+    );
+  }
+
+  getInlineVerticalCoordinateReferenceSystemFieldConfig(
+    doc: IngridShared,
+  ): FormlyFieldConfig {
     return this.addSelectInline(
       "verticalCoordinateReferenceSystem",
       "Höhenbezugssystem",
@@ -97,6 +115,17 @@ export class CommonFieldsBaw extends FormFieldHelper {
     this.addBefore(
       gemetKeywordsPosition,
       this.getBAWKeywordCatalogueFieldConfig(doc),
+    );
+
+    const spatialSystemPosition = this.findFieldElementWithId(
+      fieldConfig,
+      "spatialSystems",
+    );
+
+    // Vertikale Koordinatenreferenzsysteme
+    this.addAfter(
+      spatialSystemPosition,
+      this.getVerticalCoordinateReferenceSystemFieldConfig(doc),
     );
 
     // Require reference to address 'Bundesanstalt für Wasserbau' as 'Ansprechpartner'

@@ -19,15 +19,23 @@
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { inject, Injectable } from "@angular/core";
-import { GeoDatasetDoctype } from "../../ingrid/doctypes/geo-dataset.doctype";
 import { CommonFieldsBaw } from "./common-fields";
-import { DataCollectionDoctype } from "../../ingrid/doctypes/data-collection.doctype";
+import { InformationSystemDoctype } from "../../ingrid/doctypes/information-system.doctype";
 
 @Injectable({
   providedIn: "root",
 })
-export class SoftwareDoctypeBaw extends DataCollectionDoctype {
+export class SoftwareDoctypeBaw extends InformationSystemDoctype {
   common = inject(CommonFieldsBaw);
+
+  id = "BawSoftware";
+  label = "Software";
+
+  constructor() {
+    super();
+    // this.showInspireRelevant = false;
+    // this.options.hide.openData = true;
+  }
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedFields(this, fieldConfig);

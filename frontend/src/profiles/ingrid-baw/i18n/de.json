@@ -3,6 +3,7 @@
     "InGridPublication": "Literatur / Medien",
     "InGridProject": "Projekt / Auftrag",
     "BawSimulation": "Simulationsdaten",
-    "BawMeasurement": "Messdaten"
+    "BawMeasurement": "Messdaten",
+    "BawSoftware": "Software"
   }
 }

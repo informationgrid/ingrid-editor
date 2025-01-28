@@ -19,15 +19,21 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.types
 
+import de.ingrid.igeserver.profiles.ingrid.types.InGridInformationSystemType
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class BawSimulation(jdbcTemplate: JdbcTemplate) : BawBaseType(jdbcTemplate) {
+class BawGeoDatasetSimulation(jdbcTemplate: JdbcTemplate) : BawGeoDatasetBaseType(jdbcTemplate) {
     override val className = "BawSimulation"
 }
 
 @Component
-class BawMeasurement(jdbcTemplate: JdbcTemplate) : BawBaseType(jdbcTemplate) {
+class BawGeoDatasetMeasurement(jdbcTemplate: JdbcTemplate) : BawGeoDatasetBaseType(jdbcTemplate) {
     override val className = "BawMeasurement"
+}
+
+@Component
+class BawSoftware(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
+    override val className = "BawSoftware"
 }
