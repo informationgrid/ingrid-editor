@@ -401,7 +401,11 @@ open class IngridModelTransformer(
     )
 
     val gemetKeywords = Thesaurus(
-        keywords = data.keywords?.gemet?.map { KeywordIso(it.label, adaptGemetLinks(it.id), it.alternativeLabel) }
+        keywords = data.keywords?.gemet?.map {
+            val label = if (codelists.catalogLanguage == "en") it.alternativeLabel else it.label
+            val alternativeLabel = if (codelists.catalogLanguage == "en") null else it.alternativeLabel
+            KeywordIso(label, adaptGemetLinks(it.id), alternativeLabel)
+        }
             ?: emptyList(),
         date = "2012-07-20",
         name = "GEMET - Concepts, version 3.1",
