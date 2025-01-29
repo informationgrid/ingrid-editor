@@ -150,6 +150,7 @@ class InGridProfile(
         val codelist6250 = createCodelist6250(catalogRef)
         val codelist3535 = createCodelist3535(catalogRef)
         val codelist3555 = createCodelist3555(catalogRef)
+        val codelist3386 = createCodelist3386(catalogRef)
         val codelist3390 = createCodelist3390(catalogRef)
 
         when (codelistId) {
@@ -158,11 +159,20 @@ class InGridProfile(
             "6250" -> codelistHandler.removeAndAddCodelist(catalogId, codelist6250)
             "3535" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3535)
             "3555" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3555)
+            "3386" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3386)
             "3390" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3390)
             null -> {
                 codelistHandler.removeAndAddCodelists(
                     catalogId,
-                    listOf(codelist6006, codelist1350, codelist6250, codelist3535, codelist3555, codelist3390),
+                    listOf(
+                        codelist6006,
+                        codelist1350,
+                        codelist6250,
+                        codelist3535,
+                        codelist3555,
+                        codelist3386,
+                        codelist3390,
+                    ),
                 )
             }
 
@@ -295,6 +305,22 @@ class InGridProfile(
             add(CodelistHandler.toCodelistEntry("65", "Agrarstatistikgesetz AgrStatG"))
             add(CodelistHandler.toCodelistEntry("67", "Betriebssatzung der LGN v. 7.7.1997"))
             add(CodelistHandler.toCodelistEntry("68", "Bundesimmissionsschutzverordnung"))
+        }
+    }
+
+    private fun createCodelist3386(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "3386"
+        catalog = catalogRef
+        name = "Ressourcen-Typ"
+        description =
+            "Die Liste der Ressourcentypen ist initial eine Kopie der Codeliste 3385: Objektklasse 2 - Dokumenttyp"
+        data = jacksonObjectMapper().createArrayNode().apply {
+            codelistHandler.getCodelists(listOf("3385"))?.get(0)?.entries?.let { codelist3385 ->
+                codelist3385.forEach { entry ->
+                    val de = entry.localisations.get("de") ?: entry.localisations.get("en") ?: ""
+                    add(toCodelistEntry(entry.id, de, null, entry.localisations.get("en")))
+                }
+            }
         }
     }
 
