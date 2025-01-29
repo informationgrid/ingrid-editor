@@ -845,6 +845,30 @@ open class GeneralMapper(val isoData: IsoImportData) {
         return result
     }
 
+    fun getPublication(): Publication? {
+        var doi: String? = null
+        var generalResourceType: KeyValue? = null
+        metadata.identificationInfo[0].identificationInfo?.citation?.citation?.identifier?.forEach loop@{ identifier ->
+            val code = identifier.mdIdentifier?.code?.value
+            if (code?.startsWith("https://doi.org/") == true) {
+                doi = code.replace("https://doi.org/", "")
+                generalResourceType = convertToCatalogKeyValue(
+                    "3390",
+                    identifier.mdIdentifier.authority?.citation?.identifier?.get(0)?.mdIdentifier?.code?.value,
+                )
+                return@loop
+            }
+        }
+        val documentType = convertToCatalogKeyValue(
+            "3386",
+            metadata.identificationInfo[0].identificationInfo?.resourceFormat?.mdFormat?.name?.value,
+            "en",
+        )
+
+        if (doi == null && generalResourceType == null && documentType == null) return null
+        return Publication(doi, generalResourceType, documentType)
+    }
+
     private fun getUseConstraintNoteWhenJsonExists(
         otherConstraints: List<String>,
         index: Int,
@@ -869,6 +893,12 @@ open class GeneralMapper(val isoData: IsoImportData) {
         if (text == null) return null
         val id = codeListService.getCodeListEntryId("6500", text, "de")
         return if (id == null) KeyValue(null, text) else KeyValue(id)
+    }
+
+    private fun convertToCatalogKeyValue(codelistId: String, value: String?, language: String = "de"): KeyValue? {
+        if (value == null) return null
+        val id = codeListService.getCatalogCodelistKey(catalogId, codelistId, value, language)
+        return if (id == null) KeyValue(null, value) else KeyValue(id)
     }
 
     private fun isJsonString(useConstraint: String?): Boolean {
@@ -1041,4 +1071,10 @@ data class AddressInfo(
     val zipCode: String?,
     val zipPOBox: String?,
     val administrativeArea: KeyValue?,
+)
+
+data class Publication(
+    val doi: String?,
+    val generalResourceType: KeyValue?,
+    val documentType: KeyValue?,
 )
