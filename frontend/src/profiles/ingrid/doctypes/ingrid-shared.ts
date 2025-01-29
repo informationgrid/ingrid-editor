@@ -1650,6 +1650,37 @@ export abstract class IngridShared extends BaseDoctype {
     });
   }
 
+  addDoiFields(): FormlyFieldConfig {
+    return this.addGroup(null, "DOI", [
+      this.addInputInline("doi", "DOI", {
+        validators: {
+          validation: ["doi"],
+        },
+        hasInlineContextHelp: true,
+        wrappers: ["inline-help", "form-field"],
+      }),
+      this.addAutoCompleteInline(
+        "generalResourceType",
+        "Ressourcen Typ (generell)",
+        {
+          options: this.getCodelistForSelect(
+            "3390",
+            "generalResourceType",
+          ),
+          codelistId: "3390",
+          hasInlineContextHelp: true,
+          wrappers: ["inline-help", "form-field"],
+        },
+      ),
+      this.addAutoCompleteInline("documentType", "Ressourcen Typ", {
+        options: this.getCodelistForSelect("3385", "documentType"),
+        codelistId: "3385",
+        hasInlineContextHelp: true,
+        wrappers: ["inline-help", "form-field"],
+      }),
+    ])
+  }
+
   protected urlRefFields() {
     return this.addGroupSimple(null, [
       { key: "_type" },
