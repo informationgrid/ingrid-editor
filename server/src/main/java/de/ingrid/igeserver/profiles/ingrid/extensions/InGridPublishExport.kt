@@ -58,19 +58,18 @@ class InGridPublishExport(
                 val version = payload.document.version
                 // we cannot use GlobalScope directly here, because we need data from the previous version
                 // this can only be reliably determined if we're in the same transaction
-                if (dataType == "InGridGeoDataset") {
-                    indexReferencedDocs(
-                        context,
-                        "Index documents (previously or currently) referenced by dataset $docId to Elasticsearch",
-                        """
-                        d.uuid IN (
-                            SELECT jsonb_array_elements(data->'references')->>'uuidRef'
-                            FROM document
-                            WHERE uuid = '$docId'
-                                AND version=$version)
-                        """.trimIndent(),
-                    )
-                } else if (dataType == "InGridGeoService") {
+                indexReferencedDocs(
+                    context,
+                    "Index documents (previously or currently) referenced by dataset $docId to Elasticsearch",
+                    """
+                    d.uuid IN (
+                        SELECT jsonb_array_elements(data->'references')->>'uuidRef'
+                        FROM document
+                        WHERE uuid = '$docId'
+                            AND version=$version)
+                    """.trimIndent(),
+                )
+                if (dataType == "InGridGeoService") {
                     indexReferencedDocs(
                         context,
                         "Index documents (previously or currently) coupled to service $docId to Elasticsearch",
