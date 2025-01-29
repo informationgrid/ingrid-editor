@@ -318,21 +318,23 @@ export class TreeComponent implements OnInit {
   private handleUpdate(updateInfo: UpdateDatasetInfo) {
     // disable multi selection mode after a tree operation
     this.selection.multiSelectionModeEnabled.set(false);
-
-    switch (updateInfo.type) {
-      case UpdateType.New:
-        return this.addNewNodes(updateInfo);
-      case UpdateType.Update:
-        return this.dataSource.updateNode(updateInfo.data);
-      case UpdateType.Delete:
-        this.deleteNode(updateInfo);
-        return;
-      case UpdateType.Move:
-        const srcDocIds = updateInfo.data.map((doc) => <number>doc.id);
-        this.moveNodes(srcDocIds, updateInfo.parent);
-        return;
-      default:
-        throw new Error("Tree Action type not known: " + updateInfo.type);
+    // if we have no data yet, ignore updates
+    if (this.dataSource.data != null) {
+      switch (updateInfo.type) {
+        case UpdateType.New:
+          return this.addNewNodes(updateInfo);
+        case UpdateType.Update:
+          return this.dataSource.updateNode(updateInfo.data);
+        case UpdateType.Delete:
+          this.deleteNode(updateInfo);
+          return;
+        case UpdateType.Move:
+          const srcDocIds = updateInfo.data.map((doc) => <number>doc.id);
+          this.moveNodes(srcDocIds, updateInfo.parent);
+          return;
+        default:
+          throw new Error("Tree Action type not known: " + updateInfo.type);
+      }
     }
   }
 
