@@ -29,13 +29,6 @@ export class ArchivePlugin extends Plugin {
 
   constructor() {
     super();
-    this.fields.push({
-      key: "date",
-      type: "datepicker",
-      props: {
-        appearance: "outline",
-      },
-    });
     inject(PluginService).registerPlugin(this);
 
     effect(() => {

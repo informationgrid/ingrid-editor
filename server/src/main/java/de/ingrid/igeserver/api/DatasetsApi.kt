@@ -104,10 +104,6 @@ interface DatasetsApi {
             value = "revert",
             required = false,
         ) revert: Boolean,
-        @Parameter(description = "Delete the draft version and make the published version the current one.") @RequestParam(
-            value = "unarchive",
-            required = false,
-        ) unarchive: Boolean,
         @Parameter(description = "Document version") @RequestParam(
             value = "version",
             required = false,
