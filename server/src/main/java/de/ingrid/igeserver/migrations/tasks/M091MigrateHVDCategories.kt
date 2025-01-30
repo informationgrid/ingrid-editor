@@ -48,25 +48,30 @@ class M091MigrateHVDCategories : MigrationBase("0.91") {
     private lateinit var docRepo: DocumentRepository
 
     override fun exec() {
+        val pageSize = 100
+        var page = 1
+
         ClosableTransaction(transactionManager).use {
-            val docs = entityManager.createQuery("SELECT doc FROM Document doc").resultList
-            val docTypesToMigrate = listOf(
-                "InGridGeoDataset",
-            )
             setAdminAuthentication("Migration", "Task")
-            docs
-                .map { it as Document }
-                .filter { docTypesToMigrate.contains(it.type) }
-                .forEach {
-                    try {
-                        if (migrateHVDCategories(it)) {
-                            log.info("Migrated doc with dbID ${it.id}")
+
+            do {
+                log.info("Handling page $page, (migrate hvd categories)")
+                val documents =
+                    entityManager.createQuery("""SELECT doc FROM Document doc WHERE doc.type = 'InGridGeoDataset' ORDER BY id""")
+                        .setFirstResult((page - 1) * pageSize)
+                        .setMaxResults(pageSize)
+                        .resultList
+                documents
+                    .forEach {
+                        (it as Document)
+                        val changed = migrateHVDCategories(it)
+                        if (changed) {
+                            log.info("Migrated HVDs for doc with dbID ${it.id}")
                             docRepo.save(it)
                         }
-                    } catch (ex: Exception) {
-                        log.error("Error migrating document with dbID ${it.id}", ex)
                     }
-                }
+                page++
+            } while (documents.size == pageSize)
         }
     }
 
