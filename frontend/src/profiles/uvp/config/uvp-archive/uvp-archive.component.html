@@ -1,1 +1,62 @@
-<p>uvp-archive works!</p>
+<page-template-no-header label="Archivierung">
+    <ng-container left-side>
+        <p>
+            Hier können Sie Verfahren archivieren lassen, dessen Datum der
+            Entscheidung vor dem eingestellten Archivierungsdatum liegt. Sie
+            haben auch die Möglichkeit zu bestimmen, ob alle Dokumente im Portal
+            ausblendet oder sichtbar bleiben sollen oder nur die Dokumente der
+            Entscheidung.
+        </p>
+        <p>
+            "Alle Dokumente im Portal ausblenden": Bei allen Dokumente ohne
+            Gültig-Bis Datum oder bei denen das Gültig-Bis Datum in der Zukunft
+            oder auf "heute" liegt, wird das Gültig-Bis Datum auf das gestrige
+            Datum gesetzt. Nach Veröffentlichung sind keine Dokumente mehr im
+            Portal sichtbar
+        </p>
+        <p>
+            "Alle Dokumente im Portal sichtbar belassen": Es gibt keine Änderung
+            am Gültig-Bis Datum
+        </p>
+        <p>"Nur Dokumente der Entscheidung sichtbar belassen": ...</p>
+    </ng-container>
+
+    <div main-content>
+        @if (!active) {
+            Bitte aktivieren Sie erst das Verhalten "Archivierung".
+        } @else {
+            <mat-form-field appearance="outline" class="white-bg">
+                <mat-label>Datum auswählen</mat-label>
+                <input
+                    matInput
+                    [matDatepicker]="picker"
+                    [formControl]="dateControl"
+                />
+                <mat-datepicker-toggle
+                    matIconSuffix
+                    [for]="picker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-radio-group
+                [formControl]="choice"
+                class="flex-col padding-vertical"
+            >
+                <mat-radio-button value="hideAll">
+                    Alle Dokumente im Portal ausblenden
+                </mat-radio-button>
+                <mat-radio-button value="showAll">
+                    Alle Dokumente im Portal sichtbar belassen
+                </mat-radio-button>
+                <mat-radio-button value="showOnlyDecision">
+                    Nur Dokumente der Entscheidung sichtbar belassen
+                </mat-radio-button>
+            </mat-radio-group>
+
+            <button mat-flat-button color="primary" (click)="update()">
+                Jetzt aktualisieren
+            </button>
+        }
+    </div>
+</page-template-no-header>

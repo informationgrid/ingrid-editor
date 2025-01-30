@@ -38,6 +38,7 @@ import { ActivityReportBehaviour } from "./uvp/behaviours/activity-report.behavi
 import { AuthGuard } from "../app/security/auth.guard";
 import { CatalogService } from "../app/+catalog/services/catalog.service";
 import { CatalogRoutesService } from "../app/+catalog/catalog-routes.service";
+import { UvpArchiveBehaviour } from "./uvp/behaviours/uvp-archive.behaviour";
 
 @Component({
   template: "",
@@ -45,6 +46,7 @@ import { CatalogRoutesService } from "../app/+catalog/catalog-routes.service";
 })
 class UVPComponent {
   private catalogRouteService = inject(CatalogRoutesService);
+  private uvpArchiveBehaviour = inject(UvpArchiveBehaviour);
 
   constructor(
     private profileService: ProfileService,
@@ -91,7 +93,7 @@ class UVPComponent {
 
     this.removeExpiredDocumentsTab(reportsService);
 
-    this.addUVPArchiveTab(this.catalogRouteService);
+    // this.addUVPArchiveTab(this.catalogRouteService);
   }
 
   private modifyFormHeader() {
@@ -106,6 +108,7 @@ class UVPComponent {
     this.pluginService.registerPlugin(uvpNumberPlugin);
     this.pluginService.registerPlugin(this.zabbixReportBehaviour);
     this.pluginService.registerPlugin(this.activityReportBehaviour);
+    this.pluginService.registerPlugin(this.uvpArchiveBehaviour);
 
     if (this.publishNegativeAssessmentBehaviour.isActive) {
       negativeAssessmentDoctype.forPublish = true;
