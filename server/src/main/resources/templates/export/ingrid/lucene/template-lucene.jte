@@ -148,7 +148,7 @@
 
     "t01_object.org_obj_id": null,
     @if("3".equals(page.getDocumentType()))
-    "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().hasAccessConstraintsOrFalse()}",
+    "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().hasAccessConstraintsOrFalse()  ? 'Y' : 'N'}",
     "t011_obj_serv.type": "${page.getServiceType(null)}",
     @if(page.getData().getService().getType() != null)
         "t011_obj_serv.type_key": "${page.getData().getService().getType().getKey()}",
