@@ -54,7 +54,12 @@
                 </mat-radio-button>
             </mat-radio-group>
 
-            <button mat-flat-button color="primary" (click)="update()">
+            <button
+                mat-flat-button
+                color="primary"
+                (click)="archiveNow()"
+                [disabled]="!dateControl.valid || !choice.value"
+            >
                 Jetzt aktualisieren
             </button>
         }

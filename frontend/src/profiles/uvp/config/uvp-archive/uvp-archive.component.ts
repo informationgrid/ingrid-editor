@@ -7,6 +7,7 @@ import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
 import { MatRadioButton, MatRadioGroup } from "@angular/material/radio";
 import { PageTemplateNoHeaderComponent } from "../../../../app/shared/page-template/page-template-no-header.component";
+import { UvpArchiveService } from "./uvp-archive.service";
 
 @Component({
   selector: "ige-uvp-archive",
@@ -22,13 +23,16 @@ import { PageTemplateNoHeaderComponent } from "../../../../app/shared/page-templ
   ],
   templateUrl: "./uvp-archive.component.html",
   styleUrl: "./uvp-archive.component.scss",
+  providers: [UvpArchiveService],
 })
 export class UvpArchiveComponent {
   private behaviourService = inject(BehaviourService);
 
+  private uvpArchiveService = inject(UvpArchiveService);
+
   active = this.behaviourService.getBehaviour("plugin.archive").isActive;
-  dateControl = new FormControl("");
-  choice = new FormControl("");
+  dateControl = new FormControl<Date>(null);
+  choice = new FormControl(null);
 
   constructor() {
     this.choice.valueChanges.subscribe((value) => {
@@ -40,5 +44,9 @@ export class UvpArchiveComponent {
     });
   }
 
-  update() {}
+  archiveNow() {
+    this.uvpArchiveService
+      .archive(this.choice.value, this.dateControl.value)
+      .subscribe();
+  }
 }
