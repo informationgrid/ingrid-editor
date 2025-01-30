@@ -177,7 +177,10 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
           {
             key: "scale",
             label: "Maßstab",
-            props: { required: true },
+            props: {
+              required: true,
+              formatter: (item: any) => this.formatCodelistValue("30006", item),
+            },
           },
           {
             key: "category",

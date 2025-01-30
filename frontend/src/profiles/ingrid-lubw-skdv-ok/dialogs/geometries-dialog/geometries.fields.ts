@@ -25,6 +25,7 @@ export function geometriesFields(
   typeCodelist: Observable<SelectOption[]>,
   categoryCodelist: Observable<SelectOption[]>,
   transmissionLevelCodelist: Observable<SelectOption[]>,
+  scaleCodelist: Observable<SelectOption[]>,
 ) {
   const fieldHelper = new FormFieldHelper();
   return [
@@ -43,9 +44,9 @@ export function geometriesFields(
       required: true,
       options: typeCodelist,
     }),
-    fieldHelper.addInput("scale", "Maßstab", {
+    fieldHelper.addAutocomplete("scale", "Maßstab", {
       required: true,
-      wrappers: ["panel", "form-field"],
+      options: scaleCodelist,
     }),
     fieldHelper.addSelect("category", "Kategorie", {
       required: true,

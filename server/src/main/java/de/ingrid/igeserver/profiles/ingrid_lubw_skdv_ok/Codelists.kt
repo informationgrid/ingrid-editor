@@ -165,6 +165,12 @@ val codelist30002 = mapOf(
     "63" to "Amtsinterne Organisation",
 )
 
+val codelist30003 = mapOf(
+    "1" to "Angebotsdaten",
+    "2" to "bedingte Pflichtdaten",
+    "3" to "Pflichtdaten",
+)
+
 val codelist30004 = mapOf(
     "1" to "1 - unbeschränkt (im Internet)",
     "2" to "2 - beschränkt auf die öffentliche Verwaltung (LVN und KVN)",
@@ -172,4 +178,27 @@ val codelist30004 = mapOf(
     "4" to "4 - beschränkt auf bestimmte Behörden, Mitgliedsgemeinden des SKDV-Datenverbunds (bezeichnet nach Auswahlliste)",
     "5" to "5 - beschränkt auf Umwelt- und Naturschutzbehörden",
     "6" to "6 - beschränktes Leserecht im Einzelfall",
+)
+
+val codelist30005 = mapOf(
+    "1" to "punktförmig",
+    "2" to "flächenförmig",
+    "3" to "linienförmig",
+    "5" to "dreidimensional",
+    "6" to "indirekter Raumbezug",
+    "7" to "Raster",
+    "8" to "keine Angabe",
+)
+
+val codelist30006 = mapOf(
+    "1" to "1:2.000 (Liegenschaftskataster)",
+    "2" to "1:5.000",
+    "3" to "1:10.000",
+    "4" to "1:25.000",
+    "5" to "1:50.000",
+    "6" to "1:100.000",
+    "7" to "1:200.000",
+    "8" to "1:250.000",
+    "9" to "1:500.000",
+    "10" to "1:1.000.000",
 )

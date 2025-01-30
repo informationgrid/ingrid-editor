@@ -40,9 +40,10 @@ export class GeometriesDialogComponent {
   disabled = signal<boolean>(false);
 
   fields: FormlyFieldConfig[] = geometriesFields(
-    this.codelistService.observe("30002"),
+    this.codelistService.observe("30005"),
     this.codelistService.observe("30003"),
     this.codelistService.observe("30004"),
+    this.codelistService.observe("30006", "NO_SORT"),
   );
 
   constructor(

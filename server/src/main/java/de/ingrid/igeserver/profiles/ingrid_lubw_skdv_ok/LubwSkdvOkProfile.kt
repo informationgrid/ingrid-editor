@@ -64,6 +64,7 @@ class LubwSkdvOkProfile(
         val codelist30003 = createCodelist30003(catalogRef)
         val codelist30004 = createCodelist30004(catalogRef)
         val codelist30005 = createCodelist30005(catalogRef)
+        val codelist30006 = createCodelist30006(catalogRef)
 
         when (codelistId) {
             "30000" -> {
@@ -96,10 +97,15 @@ class LubwSkdvOkProfile(
                 return
             }
 
+            "30006" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30005)
+                return
+            }
+
             null -> {
                 codelistHandler.removeAndAddCodelists(
                     catalogId,
-                    listOf(codelist30000, codelist30001, codelist30002, codelist30003, codelist30004, codelist30005),
+                    listOf(codelist30000, codelist30001, codelist30002, codelist30003, codelist30004, codelist30005, codelist30006),
                 )
             }
         }
@@ -152,7 +158,9 @@ class LubwSkdvOkProfile(
         description = ""
         defaultEntry = ""
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(toCodelistEntry("1", "Test-Eintrag Kategorie"))
+            codelist30003.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
         }
     }
 
@@ -176,7 +184,22 @@ class LubwSkdvOkProfile(
         description = ""
         defaultEntry = ""
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(toCodelistEntry("1", "Test-Eintrag Geometrie - Typ"))
+            codelist30005.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
+        }
+    }
+
+    private fun createCodelist30006(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30006"
+        catalog = catalogRef
+        name = "Geometrie - Maßstab"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            codelist30006.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
         }
     }
 }
