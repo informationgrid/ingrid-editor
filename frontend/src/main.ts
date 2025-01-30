@@ -148,6 +148,7 @@ import {
   provideMatomo,
   withRouter,
 } from "ngx-matomo-client";
+import { AppInjector } from "./app/app_injector";
 
 if (environment.production) {
   enableProdMode();
@@ -494,4 +495,6 @@ bootstrapApplication(AppComponent, {
       withRouter(),
     ),
   ],
+}).then((appRef) => {
+  AppInjector.setInjector(appRef.injector);
 });

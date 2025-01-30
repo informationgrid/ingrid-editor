@@ -29,9 +29,8 @@ import { AuthGuard } from "./security/auth.guard";
 import { InitCatalogComponent } from "./init-catalog/init-catalog.component";
 import { ConfigService } from "./services/config/config.service";
 import { filter } from "rxjs/operators";
-import { Injector } from "@angular/core";
-import { CatalogService } from "./+catalog/services/catalog.service";
 import { CatalogRoutesService } from "./+catalog/catalog-routes.service";
+import { AppInjector } from "./app_injector";
 
 export const routes: Routes = [
   {
@@ -106,13 +105,10 @@ export const routes: Routes = [
         path: "catalogs",
         loadChildren: () =>
           import("./+catalog/routes").then((routes) => {
-            console.log("catalogs routes", routes);
-            const injector = Injector.create({
-              providers: [{ provide: CatalogRoutesService }],
-            });
-            const catalogService = injector.get(CatalogRoutesService);
+            const catalogService =
+              AppInjector.getInjector().get(CatalogRoutesService);
+
             routes.default[0].children.push(
-              // @ts-ignore
               ...catalogService.getAdditionalRoutes(),
             );
             return routes;
