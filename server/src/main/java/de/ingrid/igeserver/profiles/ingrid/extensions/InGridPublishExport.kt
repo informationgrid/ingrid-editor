@@ -46,7 +46,6 @@ class InGridPublishExport(
 
     override val profiles = arrayOf("ingrid")
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
         val docId = payload.document.uuid
         val isDocument = payload.wrapper.category == "data"
@@ -55,11 +54,41 @@ class InGridPublishExport(
         try {
             if (isDocument) {
                 indexDoc(context, docId, DocumentCategory.DATA)
+                val dataType = payload.wrapper.type
+                val version = payload.document.version
+                // we cannot use GlobalScope directly here, because we need data from the previous version
+                // this can only be reliably determined if we're in the same transaction
+                indexReferencedDocs(
+                    context,
+                    "Index documents (previously or currently) referenced by dataset $docId to Elasticsearch",
+                    """
+                    d.uuid IN (
+                        SELECT jsonb_array_elements(data->'references')->>'uuidRef'
+                        FROM document
+                        WHERE uuid = '$docId'
+                            AND version=$version)
+                    """.trimIndent(),
+                )
+                if (dataType == "InGridGeoService") {
+                    indexReferencedDocs(
+                        context,
+                        "Index documents (previously or currently) coupled to service $docId to Elasticsearch",
+                        """
+                        d.uuid IN (
+                            SELECT jsonb_array_elements(data->'service'->'coupledResources')->>'uuid'
+                            FROM document
+                            WHERE uuid = '$docId'
+                                AND version=$version)
+                        """.trimIndent(),
+                    )
+                }
             } else if (isAddress) {
                 indexDoc(context, docId, DocumentCategory.ADDRESS)
-                GlobalScope.launch {
-                    indexReferencedDocs(context, docId)
-                }
+                indexReferencedDocs(
+                    context,
+                    "Index documents with referenced address $docId to Elasticsearch",
+                    """data->'pointOfContact'@>'[{"ref": "$docId"}]'""",
+                )
             }
         } catch (ex: Exception) {
             throw ClientException.withReason("Problem with indexing to Elasticsearch: ${ex.cause?.message}", ex)
@@ -68,8 +97,9 @@ class InGridPublishExport(
         return payload
     }
 
-    private fun indexReferencedDocs(context: Context, docId: String) {
-        context.addMessage(Message(this, "Index documents with referenced address $docId to Elasticsearch"))
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun indexReferencedDocs(context: Context, message: String, sqlFilter: String) {
+        context.addMessage(Message(this, message))
 
         // get uuids from documents that reference the address
         val docsWithReferences = jdbcTemplate.queryForList<String>(
@@ -80,11 +110,14 @@ class InGridPublishExport(
                 dw.uuid = d.uuid
                 AND d.state = 'PUBLISHED'
                 AND dw.deleted = 0
-                AND data->'pointOfContact' @> '[{"ref": "$docId"}]');
+                AND $sqlFilter);
             """.trimIndent(),
         )
 
-        docsWithReferences.forEach { indexDoc(context, it, DocumentCategory.DATA) }
+        // use GlobalScope only for indexing, not for determining which documents to index
+        GlobalScope.launch {
+            docsWithReferences.forEach { indexDoc(context, it, DocumentCategory.DATA) }
+        }
     }
 
     private fun indexDoc(context: Context, docId: String, category: DocumentCategory) {
