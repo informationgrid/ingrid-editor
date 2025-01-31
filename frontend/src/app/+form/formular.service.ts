@@ -99,7 +99,9 @@ export class FormularService {
         mergeMap((items) => items),
         mergeMap((item) => getSectionItem(item)),
         filter((item) => item?.wrappers?.indexOf("section") >= 0),
-        map((item) => item.props.label),
+        map((item) =>
+          item.className === "hide" ? "_" + item.props.label : item.props.label,
+        ),
         toArray(),
       )
       .subscribe((sections) => {
