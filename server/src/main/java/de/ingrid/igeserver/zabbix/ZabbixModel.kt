@@ -91,8 +91,8 @@ class ZabbixModel {
         val uuid: String,
         val documentTitle: String,
         val documentURL: String,
-        val addressName: String,
-        val addressMail: String,
+        val addressName: String?,
+        val addressMail: String?,
         val uploads: List<Upload>,
     )
 
