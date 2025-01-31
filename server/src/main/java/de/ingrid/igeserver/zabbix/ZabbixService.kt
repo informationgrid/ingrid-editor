@@ -250,12 +250,15 @@ class ZabbixService(
         uuid: String,
         name: String,
         url: String,
-        addressMail: String,
+        addressMail: String?,
         documentsToAdd: List<ZabbixModel.Upload>,
     ) {
         val hostId = createHost(uuid, name, url, catalogIdentifier)
-        createUser(addressMail)
-        createAction(uuid, addressMail)
+        if (addressMail != null) {
+            // only create notification job when mail is set
+            createUser(addressMail)
+            createAction(uuid, addressMail)
+        }
         documentsToAdd.forEach { document ->
             log.debug("Add document ${document.name}")
             createWebscenario(uuid, hostId, document.name, document.url)
@@ -469,6 +472,13 @@ class ZabbixService(
             val error = json.get("error").get("data")?.asText()
             if (error?.contains("exist") == true) {
                 log.debug(error)
+            } else if (error?.contains("invalid") == true) {
+                val sanitizedRequest = if (requestBody.contains("auth")) {
+                    requestBody.substring(0, requestBody.indexOf("auth"))
+                } else {
+                    requestBody
+                }
+                log.error("Request failed: $sanitizedRequest")
             } else {
                 throw ServerException.withReason(json.get("error").get("data")?.asText() ?: "Request Error occurred")
             }
