@@ -35,17 +35,19 @@ import { Group } from "../../models/user-group";
 // @ts-ignore
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
 import { GroupStore } from "../../store/group/group.store";
+import { TranslocoService } from "@ngneat/transloco";
 
 @Injectable({
   providedIn: "root",
 })
 export class UserService {
   private groupStore = inject(GroupStore);
+  private loco = inject(TranslocoService);
 
   availableRoles: SelectOptionUi[] = [
-    new SelectOption("cat-admin", "Katalog-Administrator"),
-    new SelectOption("md-admin", "Metadaten-Administrator"),
-    new SelectOption("author", "Autor"),
+    new SelectOption("cat-admin", this.loco.translate("roles.cat-admin")),
+    new SelectOption("md-admin", this.loco.translate("roles.md-admin")),
+    new SelectOption("author", this.loco.translate("roles.author")),
   ];
 
   roleIcon = {

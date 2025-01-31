@@ -81,7 +81,8 @@
   "roles": {
     "cat-admin": "Katalog-Administrator",
     "md-admin": "Metadaten-Administrator",
-    "author": "Autor"
+    "author": "Autor",
+    "ige-super-admin": "Super-Administrator"
   },
   "export": {
     "form": "Daten",
