@@ -29,6 +29,7 @@ import { AddButtonOptions } from "../app/shared/add-button/add-button.component"
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
   index: number;
+  field: FormlyFieldConfig;
 }
 
 export interface Options {
@@ -932,50 +933,39 @@ export class FormFieldHelper {
   findFieldElementWithId(
     fieldConfig: FormlyFieldConfig[],
     id: string,
+    parentId?: string,
+    matchesParentId?: boolean,
   ): FieldConfigPosition {
     if (!fieldConfig) return null;
 
-    const index = fieldConfig.findIndex((field) => {
-      if (field.key === id) return true;
-    });
+    if (matchesParentId) {
+      const index = fieldConfig.findIndex((field) => {
+        if (field.key === id) return true;
+      });
 
-    if (index !== -1) return { fieldConfig, index };
+      if (index !== -1)
+        return { fieldConfig, index, field: fieldConfig[index] };
+    }
 
     let subFound = null;
     fieldConfig.some((item) => {
-      subFound = this.findFieldElementWithId(item.fieldGroup, id);
+      subFound = this.findFieldElementWithId(
+        item.fieldGroup,
+        id,
+        parentId,
+        parentId ? item.key === parentId : true,
+      );
       return subFound;
     });
     return subFound;
   }
 
-  // TODO: merge with findFieldElementWithId
-  findParentFieldElementWithId(
-    fieldConfig: FormlyFieldConfig[],
-    id: string,
-    fieldConfigParent: FormlyFieldConfig[] = null,
-    parentIndex: number = null,
-  ): FieldConfigPosition {
+  findSectionWithLabel(fieldConfig: FormlyFieldConfig[], label: string) {
     if (!fieldConfig) return null;
 
-    const index = fieldConfig.findIndex((field) => {
-      if (field.key === id) return true;
+    return fieldConfig.find((item) => {
+      return item.props?.label === label;
     });
-
-    if (index !== -1)
-      return { fieldConfig: fieldConfigParent, index: parentIndex };
-
-    let subFound = null;
-    fieldConfig.some((item, index) => {
-      subFound = this.findParentFieldElementWithId(
-        item.fieldGroup,
-        id,
-        fieldConfig,
-        index,
-      );
-      return subFound;
-    });
-    return subFound;
   }
 
   addAfter(info: FieldConfigPosition, field: FormlyFieldConfig) {

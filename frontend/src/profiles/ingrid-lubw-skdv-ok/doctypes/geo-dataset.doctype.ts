@@ -30,9 +30,15 @@ import { MetadataOption } from "../../../app/formly/types/metadata-type/metadata
   providedIn: "root",
 })
 export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
+  constructor() {
+    super();
+    this.showAdVCompatible = false;
+    this.showAdVProductGroup = false;
+  }
+
   protected metadataOptions(): MetadataOption[] {
     return [
-      {
+      /*      {
         label: "Verantwortung der Änderung",
         contextHelpKey: "responsible",
         required: true,
@@ -52,12 +58,18 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
             ],
           },
         ],
-      },
-      ...super.metadataOptions(),
+      }*/ ...super
+        .metadataOptions()
+        .filter((item) => item.contextHelpKey !== "subType"),
     ];
   }
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+    const isAuthor = this.configService.$userInfo.value.role === "author";
+    if (isAuthor) {
+      this.hideFieldsForEditor(fieldConfig);
+    }
+
     const position = this.findFieldElementWithId(fieldConfig, "pointOfContact");
     this.addMultipleAfter(position, [
       this.addRepeatList("dataManagement", "Datenführende Stelle", {
@@ -71,16 +83,34 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
       fieldConfig,
       "accessConstraints",
     );
-    this.addAfter(
-      positionAccessConstraints,
-      this.addInput(
+    this.addMultipleAfter(positionAccessConstraints, [
+      this.addRadioboxes("personalData", "Personenbezogene Daten", {
+        required: true,
+        options: [
+          {
+            value: "Ja",
+            id: true,
+          },
+          {
+            value: "Nein",
+            id: false,
+          },
+        ],
+      }),
+      this.addTextArea(
         "protectDataAccessControl",
         "Sperrung und Löschung in Hinblick auf den Schutz personenbezogener Daten",
+        this.id,
         {
           wrappers: ["panel", "form-field"],
+          expressions: {
+            hide: (field: FormlyFieldConfig, a, b) =>
+              field.options.formState.mainModel?.resource?.personalData !==
+              true,
+          },
         },
       ),
-    );
+    ]);
 
     const positionFachbezug = this.findFieldElementWithId(
       fieldConfig,
@@ -232,5 +262,54 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
         form.updateValueAndValidity();
         form.markAsDirty();
       });
+  }
+
+  private hideFieldsForEditor(fieldConfig: FormlyFieldConfig[]) {
+    [
+      "parentIdentifier",
+      "alternateTitle",
+      "graphicOverviews",
+      "identifier",
+      "spatialRepresentationType",
+      "vectorSpatialRepresentation",
+      "gridSpatialRepresentation",
+      "resolution",
+      "descriptions",
+      ["portrayalCatalogueInfo", "citation"],
+      ["featureCatalogueDescription", "citation"],
+      ["processStep", "description"],
+      "featureTypes",
+      "language",
+      "languages",
+      "characterSet",
+      "conformanceResult",
+      "specificUsage",
+      "format",
+      "digitalTransferOptions",
+      "orderInfo",
+    ].forEach((field) => {
+      if (field instanceof Array) {
+        this.hideField(
+          this.findFieldElementWithId(fieldConfig, field[1], field[0]).field,
+        );
+      } else {
+        this.hideField(this.findFieldElementWithId(fieldConfig, field).field);
+      }
+    });
+
+    this.hideField(this.findSectionWithLabel(fieldConfig, "Datenqualität"));
+    this.hideField(this.findSectionWithLabel(fieldConfig, "Raumbezug"));
+  }
+
+  private hideField(fieldElement: FormlyFieldConfig) {
+    if (!fieldElement.className || fieldElement.className.trim() === "") {
+      fieldElement.className = "hide";
+    } else {
+      fieldElement.className += " hide";
+    }
+    // remove dynamic setting of className
+    if (fieldElement.expressions?.className) {
+      fieldElement.expressions.className = undefined;
+    }
   }
 }
