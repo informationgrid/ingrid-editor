@@ -371,10 +371,8 @@ export class PublishPlugin extends SaveBase {
   private handleDocumentChange(loadedDocument: DocumentAbstract): void {
     this.formToolbarService.setButtonState(
       "toolBtnPublish",
-      loadedDocument !== null &&
-        loadedDocument._pendingDate == null &&
-        loadedDocument._type !== "FOLDER" &&
-        loadedDocument.hasWritePermission,
+      DocumentService.canWriteDocument(loadedDocument) &&
+        loadedDocument._type !== "FOLDER",
     );
     this.formToolbarService.setMenuItemStateOfButton(
       "toolBtnPublish",

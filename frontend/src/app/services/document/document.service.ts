@@ -85,6 +85,15 @@ export class DocumentService {
   private configuration: Configuration;
   private alternateAddressTitle: (doc: IgeDocument) => string = null;
 
+  static canWriteDocument(doc: DocumentAbstract): boolean {
+    return (
+      doc !== null &&
+      doc._pendingDate == null &&
+      doc.hasWritePermission &&
+      doc._tags.split(",").indexOf("archived") === -1
+    );
+  }
+
   constructor(
     private http: HttpClient,
     private configService: ConfigService,

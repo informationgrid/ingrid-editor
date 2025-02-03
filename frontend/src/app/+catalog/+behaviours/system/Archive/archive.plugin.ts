@@ -36,9 +36,7 @@ export class ArchivePlugin extends Plugin {
       const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.formToolbarService.setButtonState(
         "toolBtnArchive",
-        doc !== null &&
-          doc._tags.split(",").indexOf("archived") === -1 &&
-          doc.hasWritePermission,
+        DocumentService.canWriteDocument(doc),
       );
     });
   }
