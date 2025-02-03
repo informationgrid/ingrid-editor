@@ -34,16 +34,6 @@ export class UvpArchiveComponent {
   dateControl = new FormControl<Date>(null);
   choice = new FormControl(null);
 
-  constructor() {
-    this.choice.valueChanges.subscribe((value) => {
-      if (value === "showAll") {
-        this.dateControl.disable();
-      } else {
-        this.dateControl.enable();
-      }
-    });
-  }
-
   archiveNow() {
     this.uvpArchiveService
       .archive(this.choice.value, this.dateControl.value)

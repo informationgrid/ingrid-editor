@@ -122,7 +122,7 @@ export class DocumentService {
     const excludeFoldersSQL = excludeFolders
       ? " AND document1.type != 'FOLDER'"
       : "";
-    const archivedTagSQL = " AND 'archived' != ALL(document_wrapper.tags)";
+    const archivedTagSQL = " AND 'archived' NOT IN (SELECT UNNEST(tags))";
     return this.researchService
       .searchBySQL(
         `SELECT DISTINCT document1.*, document_wrapper.category

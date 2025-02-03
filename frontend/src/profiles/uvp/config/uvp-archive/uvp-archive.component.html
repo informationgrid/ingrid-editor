@@ -25,6 +25,11 @@
         @if (!active) {
             Bitte aktivieren Sie erst das Verhalten "Archivierung".
         } @else {
+            <p class="comment-field">
+                Wählen Sie ein Datum aus, um alle Verfahren zu archivieren,
+                deren Entscheidungsdatum vor oder an diesem Datum liegt.
+            </p>
+
             <mat-form-field appearance="outline" class="white-bg">
                 <mat-label>Datum auswählen</mat-label>
                 <input

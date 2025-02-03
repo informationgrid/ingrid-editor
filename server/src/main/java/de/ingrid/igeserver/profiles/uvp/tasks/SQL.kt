@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.uvp.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.utils.UploadInfo
+import java.time.OffsetDateTime
 
 val sqlStepsPublished = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
@@ -96,6 +97,55 @@ fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadIn
     ?.filter { !it.get("downloadURL").get("asLink").asBoolean() }
     ?.map { mapToUploadInfo(it) }
     ?: emptyList()
+
+fun sqlDecisionDateBefore(catalogId: String, date: OffsetDateTime): String = """
+    SELECT dw.id, doc.id
+    FROM catalog,
+         document_wrapper dw,
+         document doc,
+         jsonb_array_elements(doc.data -> 'processingSteps') elems
+    WHERE catalog.identifier = '$catalogId'
+      AND doc.catalog_id = dw.catalog_id
+      AND catalog.id = dw.catalog_id
+      AND catalog.type = 'uvp'
+      AND dw.deleted = 0
+      AND dw.category = 'data'
+      AND dw.uuid = doc.uuid
+      AND doc.state = 'PUBLISHED'
+      AND elems->>'type' = 'decisionOfAdmission' AND (elems->>'decisionDate')::timestamptz <= '$date'
+""".trimIndent()
+
+fun sqlUpdateValidDate(docId: Int, tableField: String): String = """
+        UPDATE document
+        SET data = jsonb_set(
+                data,
+                '{processingSteps}',
+                (SELECT jsonb_agg(
+                                CASE
+                                    -- Verarbeite NUR gültige Elemente
+                                    WHEN step -> 'reportsRecommendationDocs' IS NOT NULL THEN
+                                        jsonb_set(
+                                                step,
+                                                '{reportsRecommendationDocs}',
+                                                (SELECT jsonb_agg(
+                                                                jsonb_set(
+                                                                        doc,
+                                                                        '{validUntil}',
+                                                                        to_jsonb((NOW() - INTERVAL '1 day')::date::text),
+                                                                        TRUE
+                                                                )
+                                                        )
+                                                 FROM jsonb_array_elements(step -> 'reportsRecommendationDocs') doc),
+                                                TRUE
+                                        )
+                                    ELSE step -- Belasse nicht betroffene Elemente unverändert
+                                    END
+                        )
+                 FROM jsonb_array_elements(data -> 'processingSteps') step),
+                TRUE
+                   )
+        WHERE id = $docId
+""".trimIndent()
 
 private fun mapToUploadInfo(it: JsonNode): UploadInfo {
     val validUntilDateField = it.get("validUntil")
