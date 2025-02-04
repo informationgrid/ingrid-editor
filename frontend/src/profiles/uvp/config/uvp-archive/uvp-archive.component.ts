@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { BehaviourService } from "../../../../app/services/behavior/behaviour.service";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
@@ -27,7 +27,10 @@ import { MatButton } from "@angular/material/button";
 import { MatRadioButton, MatRadioGroup } from "@angular/material/radio";
 import { PageTemplateNoHeaderComponent } from "../../../../app/shared/page-template/page-template-no-header.component";
 import { UvpArchiveService } from "./uvp-archive.service";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { switchMap } from "rxjs";
 
+@UntilDestroy()
 @Component({
   selector: "ige-uvp-archive",
   imports: [
@@ -52,6 +55,20 @@ export class UvpArchiveComponent {
   active = this.behaviourService.getBehaviour("plugin.archive").isActive;
   dateControl = new FormControl<Date>(null);
   choice = new FormControl(null);
+  numOfDatasetsHint = signal<string>("");
+
+  constructor() {
+    this.dateControl.valueChanges
+      .pipe(
+        untilDestroyed(this),
+        switchMap((value) =>
+          this.uvpArchiveService.checkDatasetsBeforeDecisionDate(value),
+        ),
+      )
+      .subscribe((value) => {
+        this.numOfDatasetsHint.set(`${value} Verfahren werden archiviert`);
+      });
+  }
 
   archiveNow() {
     this.uvpArchiveService

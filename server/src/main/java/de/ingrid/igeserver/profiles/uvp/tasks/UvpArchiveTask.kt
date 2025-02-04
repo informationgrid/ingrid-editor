@@ -21,6 +21,8 @@ package de.ingrid.igeserver.profiles.uvp.tasks
 
 import de.ingrid.igeserver.api.TagRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
+import de.ingrid.igeserver.profiles.uvp.UvpArchiveService
+import de.ingrid.igeserver.profiles.uvp.WrapperAndDocId
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.tasks.quartz.IgeJob
 import de.ingrid.igeserver.utils.setAdminAuthentication
@@ -37,10 +39,11 @@ import java.time.OffsetDateTime
 class UvpArchiveTask(
     val transactionManager: PlatformTransactionManager,
     val entityManager: EntityManager,
+    val uvpArchiveService: UvpArchiveService,
     val documentService: DocumentService,
 ) : IgeJob() {
-    private val tableIds = listOf("announcementDocs", "applicationDocs", "reportsRecommendationDocs", "furtherDocs", "considerationDocs")
-    private val tableIdsDecision = listOf("approvalDocs", "decisionDocs")
+    private val tableIds = listOf("announcementDocs", "applicationDocs", "reportsRecommendationDocs", "furtherDocs", "considerationDocs", "approvalDocs")
+    private val tableIdsDecision = listOf("decisionDocs")
     override val log = logger()
 
     companion object {
@@ -54,7 +57,7 @@ class UvpArchiveTask(
         val catalogId = context.mergedJobDataMap["catalogId"] as String
 
         // get all docs whose decision date is before a given date
-        val datasets = getDatasetsBeforeDecisionDate(catalogId, date)
+        val datasets = uvpArchiveService.getDatasetsBeforeDecisionDate(catalogId, date)
 
         setAdminAuthentication("UVPArchive", "Task")
 
@@ -65,7 +68,6 @@ class UvpArchiveTask(
                 ArchiveType.SHOW_ALL -> {} // do nothing
                 ArchiveType.SHOW_ONLY_DECISION -> handleShowOnlyDecision(datasets)
             }
-
             archiveDatasets(datasets, catalogId)
         }
     }
@@ -76,12 +78,6 @@ class UvpArchiveTask(
             documentService.updateTags(catalogId, it.wrapperId, TagRequest(listOf("archived"), null))
         }
     }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun getDatasetsBeforeDecisionDate(catalogId: String, date: OffsetDateTime): List<WrapperAndDocId> = entityManager.createNativeQuery(
-        sqlDecisionDateBefore(catalogId, date),
-        WrapperAndDocId::class.java,
-    ).resultList as List<WrapperAndDocId>
 
     private fun handleShowOnlyDecision(datasets: List<WrapperAndDocId>) {
         datasets.forEach {
@@ -98,6 +94,4 @@ class UvpArchiveTask(
             }
         }
     }
-
-    private data class WrapperAndDocId(val wrapperId: Int, val docId: Int)
 }

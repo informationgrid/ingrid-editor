@@ -33,4 +33,11 @@ export class UvpArchiveService {
       date,
     });
   }
+
+  checkDatasetsBeforeDecisionDate(date: Date) {
+    return this.http.post(
+      `${this.configuration.backendUrl}uvp/archive/check`,
+      date,
+    );
+  }
 }

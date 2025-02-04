@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.profiles.uvp.api
 
 import de.ingrid.igeserver.model.JobCommand
+import de.ingrid.igeserver.profiles.uvp.UvpArchiveService
 import de.ingrid.igeserver.profiles.uvp.tasks.ArchiveType
 import de.ingrid.igeserver.profiles.uvp.tasks.UvpArchiveTask
 import de.ingrid.igeserver.services.CatalogService
@@ -40,7 +41,7 @@ import java.time.OffsetDateTime
 @Tag(name = "UVP Archive")
 @RestController
 @RequestMapping(path = ["/api/uvp/archive"])
-class UvpArchiveApiController(val catalogService: CatalogService, val scheduler: SchedulerService) {
+class UvpArchiveApiController(val catalogService: CatalogService, val scheduler: SchedulerService, val uvpArchiveService: UvpArchiveService) {
 
     @Operation
     @PostMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -49,11 +50,9 @@ class UvpArchiveApiController(val catalogService: CatalogService, val scheduler:
         @RequestBody body: ArchiveParameter,
     ): ResponseEntity<Boolean> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val profile = catalogService.getProfileFromCatalog(catalogId).identifier
         val jobKey = JobKey.jobKey(UvpArchiveTask.JOB_KEY, catalogId)
 
         val jobDataMap = JobDataMap().apply {
-            put("profile", profile)
             put("catalogId", catalogId)
             put("type", body.type.name)
             put("date", body.date.toString())
@@ -62,6 +61,17 @@ class UvpArchiveApiController(val catalogService: CatalogService, val scheduler:
         scheduler.handleJobWithCommand(JobCommand.start, UvpArchiveTask::class.java, jobKey, jobDataMap)
 
         return ResponseEntity.ok(true)
+    }
+
+    @Operation
+    @PostMapping(value = ["/check"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getDatasetsBeforeDecisionDate(
+        principal: Principal,
+        @RequestBody date: OffsetDateTime,
+    ): ResponseEntity<Int> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val result = uvpArchiveService.getDatasetsBeforeDecisionDate(catalogId, date)
+        return ResponseEntity.ok(result.size)
     }
 }
 

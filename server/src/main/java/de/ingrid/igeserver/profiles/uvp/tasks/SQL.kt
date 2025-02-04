@@ -123,19 +123,27 @@ fun sqlUpdateValidDate(docId: Int, tableField: String): String = """
                 (SELECT jsonb_agg(
                                 CASE
                                     -- Verarbeite NUR gültige Elemente
-                                    WHEN step -> 'reportsRecommendationDocs' IS NOT NULL THEN
+                                    WHEN jsonb_typeof(step -> '$tableField') = 'array' THEN
                                         jsonb_set(
                                                 step,
-                                                '{reportsRecommendationDocs}',
+                                                '{$tableField}',
                                                 (SELECT jsonb_agg(
-                                                                jsonb_set(
-                                                                        doc,
-                                                                        '{validUntil}',
-                                                                        to_jsonb((NOW() - INTERVAL '1 day')::date::text),
-                                                                        TRUE
-                                                                )
+                                                                CASE
+                                                                    WHEN doc ->> 'validUntil' IS NULL OR
+                                                                         (doc ->> 'validUntil')::timestamp >=
+                                                                         CURRENT_DATE::timestamptz THEN
+                                                                        jsonb_set(
+                                                                                doc,
+                                                                                '{validUntil}',
+                                                                                to_jsonb(to_char(
+                                                                                    (CURRENT_DATE::timestamp AT TIME ZONE 'Europe/Berlin') AT TIME ZONE 'UTC'
+                                                                                , 'YYYY-MM-DD"T"HH24:MI:SS.MSZ')),
+                                                                                TRUE
+                                                                        )
+                                                                    ELSE doc
+                                                                    END
                                                         )
-                                                 FROM jsonb_array_elements(step -> 'reportsRecommendationDocs') doc),
+                                                 FROM jsonb_array_elements(step -> '$tableField') doc),
                                                 TRUE
                                         )
                                     ELSE step -- Belasse nicht betroffene Elemente unverändert
@@ -149,6 +157,7 @@ fun sqlUpdateValidDate(docId: Int, tableField: String): String = """
 
 private fun mapToUploadInfo(it: JsonNode): UploadInfo {
     val validUntilDateField = it.get("validUntil")
-    val expiredDate = if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
+    val expiredDate =
+        if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
     return UploadInfo("", it.get("downloadURL").get("uri").textValue(), expiredDate)
 }

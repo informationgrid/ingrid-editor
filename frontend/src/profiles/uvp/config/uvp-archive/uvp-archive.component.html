@@ -18,7 +18,12 @@
             "Alle Dokumente im Portal sichtbar belassen": Es gibt keine Änderung
             am Gültig-Bis Datum
         </p>
-        <p>"Nur Dokumente der Entscheidung sichtbar belassen": ...</p>
+        <p>
+            "Nur Dokumente der Entscheidung sichtbar belassen": Für alle
+            Dokumente aus den anderen Tabellen, die also nicht aus der
+            Entscheidung kommen, wird die Gültigkeit auf das gestrige Datum
+            gesetzt, so dass diese aus der Portalansicht entfernt werden.
+        </p>
     </ng-container>
 
     <div main-content>
@@ -42,6 +47,7 @@
                     [for]="picker"
                 ></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
+                <mat-hint>{{ numOfDatasetsHint() }}</mat-hint>
             </mat-form-field>
 
             <mat-radio-group
