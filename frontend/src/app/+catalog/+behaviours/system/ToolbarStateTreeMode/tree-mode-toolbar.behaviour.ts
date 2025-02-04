@@ -40,6 +40,7 @@ export class TreeModeToolbarBehaviour extends Plugin {
   private uiStore = inject(UiStore);
 
   private activeToolbarItemsInMultiSelect = ["toolBtnCopy", "toolBtnRemove"];
+  private multiSelectActive = false;
   private previousState: { id: string; active: boolean }[];
 
   constructor(private toolbarService: FormToolbarService) {
@@ -57,14 +58,17 @@ export class TreeModeToolbarBehaviour extends Plugin {
   }
 
   private handleMode(multiSelectMode: boolean) {
-    if (multiSelectMode) {
-      this.handleMultiSelectMode();
+    if (multiSelectMode && !this.multiSelectActive) {
+      this.activateMultiSelectMode();
+    } else if (!multiSelectMode && this.multiSelectActive) {
+      this.activateSingleSelectionMode();
     } else {
-      this.handleSingleSelectionMode();
+      // mode did not change
     }
+    this.multiSelectActive = multiSelectMode;
   }
 
-  private handleSingleSelectionMode() {
+  private activateSingleSelectionMode() {
     if (!this.previousState) {
       return;
     }
@@ -77,7 +81,7 @@ export class TreeModeToolbarBehaviour extends Plugin {
     );
   }
 
-  private handleMultiSelectMode() {
+  private activateMultiSelectMode() {
     this.previousState = this.toolbarService.buttons.map((button) => ({
       id: button.id,
       active: (<ToolbarItem>button).active,
