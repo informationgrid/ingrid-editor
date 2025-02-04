@@ -148,7 +148,7 @@
 
     "t01_object.org_obj_id": null,
     @if("3".equals(page.getDocumentType()))
-    "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().hasAccessConstraintsOrFalse()}",
+    "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().hasAccessConstraintsOrFalse()  ? 'Y' : 'N'}",
     "t011_obj_serv.type": "${page.getServiceType(null)}",
     @if(page.getData().getService().getType() != null)
         "t011_obj_serv.type_key": "${page.getData().getService().getType().getKey()}",
@@ -186,13 +186,20 @@
     ],
     @if("3".equals(page.getDocumentType()) && !page.getModel().getData().getService().hasAccessConstraintsOrFalse())
     "capabilities_url": "${page.getCapabilitiesUrl()}",
+    "capabilities_download_url": "${page.getCapabilitiesDownloadUrl()}",
     @elseif("1".equals(page.getDocumentType()))
     "capabilities_url": [
         @for(var entry : ForSupport.of(page.getCapabilitiesUrlsFromService()))
             "${entry.get()}"@if (!entry.isLast()),@endif
         @endfor
         ],
+    "capabilities_download_url": [
+        @for(var entry : ForSupport.of(page.getCapabilitiesDownloadUrlsFromService()))
+            "${entry.get()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
     @endif
+
     "refering_service_uuid": [
     @for(var entry : ForSupport.of(page.getGetCoupledServicesForGeodataset()))
         "${page.getReferingServiceUuid(entry.get())}"@if (!entry.isLast()),@endif

@@ -364,8 +364,6 @@ describe("TreeComponent", () => {
     });
 
     spectator.component.activeNodeId.set(4);
-    spectator.component.expandNodeIds = new Subject<number[]>();
-    setTimeout(() => spectator.component.expandNodeIds.next([1, 2, 3]));
     spectator.detectChanges();
 
     tick();
