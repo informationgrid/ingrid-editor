@@ -98,6 +98,7 @@ export class PublicationDoctype extends IngridShared {
           this.addTextArea("location", "Standort", this.id, {
             className: "optional flex-1",
           }),
+          this.showDoiFields ? this.addDoiFields() : null,
           this.addInput("isbn", "ISBN-Nr.", {
             wrappers: ["panel", "form-field"],
             className: "optional",
@@ -106,13 +107,11 @@ export class PublicationDoctype extends IngridShared {
             wrappers: ["panel", "form-field"],
             className: "optional",
           }),
-          this.showDoiFields
-            ? this.addDoiFields()
-            : this.addAutocomplete("documentType", "Dokumententyp", {
+          !this.showDoiFields ? this.addAutocomplete("documentType", "Dokumententyp", {
                 options: this.getCodelistForSelect("3385", "documentType"),
                 codelistId: "3385",
                 className: "optional",
-              }),
+              }) : null,
           this.addTextArea("baseDataText", "Basisdaten", this.id, {
             className: "optional flex-1",
           }),
