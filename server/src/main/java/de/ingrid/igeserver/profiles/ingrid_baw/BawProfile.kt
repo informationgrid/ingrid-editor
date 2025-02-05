@@ -73,6 +73,10 @@ class BawProfile(
             "3950021" to createCodelist3950021(catalogRef),
             "3950003" to createCodelist3950003(catalogRef),
             "3950004" to createCodelist3950004(catalogRef),
+            "3950030" to createCodelist3950030(catalogRef),
+            "3950031" to createCodelist3950031(catalogRef),
+            "3950032" to createCodelist3950032(catalogRef),
+            "3950033" to createCodelist3950033(catalogRef),
             "verticalCoordinateReferenceSystem" to createCodelistPlaceholder("verticalCoordinateReferenceSystem", catalogRef),
         )
 
@@ -226,6 +230,57 @@ class BawProfile(
             add(CodelistHandler.toCodelistEntry("7", "Peilung"))
             add(CodelistHandler.toCodelistEntry("8", "Steuerungsdaten"))
             add(CodelistHandler.toCodelistEntry("9", "Protokoll"))
+        }
+    }
+
+    private fun createCodelist3950030(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "3950030"
+        catalog = catalogRef
+        name = "3950030"
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Java", english = "Java"))
+            add(CodelistHandler.toCodelistEntry("2", "Fortran", english = "Fortran"))
+            add(CodelistHandler.toCodelistEntry("3", "Fortran 2003", english = "Fortran 2003"))
+            add(CodelistHandler.toCodelistEntry("4", "Python", english = "Python"))
+            add(CodelistHandler.toCodelistEntry("5", "C", english = "C"))
+            add(CodelistHandler.toCodelistEntry("6", "C++", english = "C++"))
+            add(CodelistHandler.toCodelistEntry("7", "C#", english = "C#"))
+            add(CodelistHandler.toCodelistEntry("8", "PHP", english = "PHP"))
+            add(CodelistHandler.toCodelistEntry("9", "R", english = "R"))
+            add(CodelistHandler.toCodelistEntry("10", "VB", english = "VB"))
+            add(CodelistHandler.toCodelistEntry("11", "MicroStation", english = "MicroStation"))
+            add(CodelistHandler.toCodelistEntry("12", "Delphi", english = "Delphi"))
+            add(CodelistHandler.toCodelistEntry("13", "Access", english = "Access"))
+        }
+    }
+    private fun createCodelist3950031(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "3950031"
+        catalog = catalogRef
+        name = "3950031"
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Visual Studio", english = "Visual Studio"))
+            add(CodelistHandler.toCodelistEntry("2", "Visual Studio Code", english = "Visual Studio Code"))
+            add(CodelistHandler.toCodelistEntry("3", "Eclipse", english = "Eclipse"))
+        }
+    }
+    private fun createCodelist3950032(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "3950032"
+        catalog = catalogRef
+        name = "3950032"
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Ticket", english = "Ticket"))
+            add(CodelistHandler.toCodelistEntry("2", "Software Center", english = "Software Center"))
+            add(CodelistHandler.toCodelistEntry("3", "Netzwerkinstallation", english = "Network installation"))
+            add(CodelistHandler.toCodelistEntry("4", "Download", english = "Download"))
+        }
+    }
+    private fun createCodelist3950033(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "3950033"
+        catalog = catalogRef
+        name = "3950033"
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Rhenus", english = "Rhenus", iso = "Rhenus"))
+            add(CodelistHandler.toCodelistEntry("2", "Automatix", english = "Automatix", iso = "Automatix"))
         }
     }
 

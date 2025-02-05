@@ -107,6 +107,8 @@ export abstract class IngridShared extends BaseDoctype {
     },
     hide: {
       openData: false,
+      distribution: false,
+      digitalTransferOptions: false,
       orderInfo: false,
       resourceGroup: false,
     },
@@ -1459,56 +1461,60 @@ export abstract class IngridShared extends BaseDoctype {
             },
           ),
         ]),
-        this.addGroupSimple("distribution", [
-          this.addRepeat("format", "Datenformat", {
-            expressions: {
-              "props.required": (field: FormlyFieldConfig) =>
-                this.options.dynamicRequired.dataFormat(field),
-              className: (field: FormlyFieldConfig) =>
-                field.props.required ? "" : "optional",
-            },
-            fields: [
-              this.addAutoCompleteInline("name", "Name", {
-                options: this.getCodelistForSelect(
-                  this.codelistIds.distributionFormat,
-                  "distribution.format.name",
-                ),
-                codelistId: this.codelistIds.distributionFormat,
-                required: true,
+        this.options.hide.distribution
+          ? null
+          : this.addGroupSimple("distribution", [
+              this.addRepeat("format", "Datenformat", {
+                expressions: {
+                  "props.required": (field: FormlyFieldConfig) =>
+                    this.options.dynamicRequired.dataFormat(field),
+                  className: (field: FormlyFieldConfig) =>
+                    field.props.required ? "" : "optional",
+                },
+                fields: [
+                  this.addAutoCompleteInline("name", "Name", {
+                    options: this.getCodelistForSelect(
+                      this.codelistIds.distributionFormat,
+                      "distribution.format.name",
+                    ),
+                    codelistId: this.codelistIds.distributionFormat,
+                    required: true,
+                  }),
+                  this.addInputInline("version", "Version"),
+                  this.addInputInline("compression", "Kompressionstechnik"),
+                  this.addInputInline("specification", "Spezifikation"),
+                ],
+                validators: {
+                  validation: ["notEmptyArray"],
+                },
               }),
-              this.addInputInline("version", "Version"),
-              this.addInputInline("compression", "Kompressionstechnik"),
-              this.addInputInline("specification", "Spezifikation"),
-            ],
-            validators: {
-              validation: ["notEmptyArray"],
-            },
-          }),
-        ]),
-        this.addRepeat("digitalTransferOptions", "Medienoption", {
-          className: "optional",
-          fields: [
-            this.addSelectInline("name", "Medium", {
-              showSearch: true,
-              options: this.getCodelistForSelect(
-                "520",
-                "digitalTransferOptions.name",
-              ),
-              codelistId: "520",
-            }),
-            this.addUnitInputInline("transferSize", "Datenvolumen", {
-              type: "number",
-              className: "right-align",
-              unitOptions: <SelectOption[]>[
-                new SelectOption("MB", "MB"),
-                new SelectOption("GB", "GB"),
-                new SelectOption("TB", "TB"),
+            ]),
+        this.options.hide.digitalTransferOptions
+          ? null
+          : this.addRepeat("digitalTransferOptions", "Medienoption", {
+              className: "optional",
+              fields: [
+                this.addSelectInline("name", "Medium", {
+                  showSearch: true,
+                  options: this.getCodelistForSelect(
+                    "520",
+                    "digitalTransferOptions.name",
+                  ),
+                  codelistId: "520",
+                }),
+                this.addUnitInputInline("transferSize", "Datenvolumen", {
+                  type: "number",
+                  className: "right-align",
+                  unitOptions: <SelectOption[]>[
+                    new SelectOption("MB", "MB"),
+                    new SelectOption("GB", "GB"),
+                    new SelectOption("TB", "TB"),
+                  ],
+                  fieldGroup: [{ key: "value" }, { key: "unit" }],
+                }),
+                this.addInputInline("mediumNote", "Speicherort"),
               ],
-              fieldGroup: [{ key: "value" }, { key: "unit" }],
             }),
-            this.addInputInline("mediumNote", "Speicherort"),
-          ],
-        }),
         this.options.hide.orderInfo
           ? null
           : this.addTextArea("orderInfo", "Bestellinformation", "dataset", {

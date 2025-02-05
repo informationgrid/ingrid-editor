@@ -974,12 +974,12 @@ export class FormFieldHelper {
     return subFound;
   }
 
-  addAfter(info: FieldConfigPosition, field: FormlyFieldConfig) {
-    info.fieldConfig.splice(info.index + 1, 0, field);
+  addAfter(info: FieldConfigPosition, ...field: FormlyFieldConfig[]) {
+    info.fieldConfig.splice(info.index + 1, 0, ...field);
   }
 
-  addBefore(info: FieldConfigPosition, field: FormlyFieldConfig) {
-    info.fieldConfig.splice(info.index, 0, field);
+  addBefore(info: FieldConfigPosition, ...field: FormlyFieldConfig[]) {
+    info.fieldConfig.splice(info.index, 0, ...field);
   }
 
   private initExpressions(expressions = {}) {
