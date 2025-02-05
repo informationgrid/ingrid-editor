@@ -646,9 +646,11 @@ open class IngridModelTransformer(
 
     val doi = data.publication?.doi
     val generalResourceType = data.publication?.generalResourceType?.let { codelists.getValue("3390", it, "en") }
+    val resourceType = data.publication?.resourceType?.let { codelists.getValue("3386", it, "en") }
 
-    // not only literature anymore
-    val resourceFormat = data.publication?.documentType?.let { codelists.getValue(if (doi == null) "3385" else "3386", it, "en") }
+    // TODO: move to specific doc types
+    // only literature
+    val resourceFormat = data.publication?.documentType?.let { codelists.getValue("3385", it, "en") }
 
     val references = data.references ?: emptyList()
     private val externalReferences: List<ServiceUrl> by lazy {

@@ -210,6 +210,6 @@
 "publication": {
     "doi": "${publication.getDoi()}",
     "generalResourceType": @template.imports.ingrid.partial.key-value(item = publication.getGeneralResourceType()),
-    "documentType": @template.imports.ingrid.partial.key-value(item = publication.getDocumentType())
+    "resourceType": @template.imports.ingrid.partial.key-value(item = publication.getResourceType())
 },
 @endif

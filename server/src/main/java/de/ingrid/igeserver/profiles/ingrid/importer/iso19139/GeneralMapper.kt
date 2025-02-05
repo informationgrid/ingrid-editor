@@ -859,14 +859,20 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 return@loop
             }
         }
-        val documentType = convertToCatalogKeyValue(
+        val resourceType = convertToCatalogKeyValue(
             "3386",
             metadata.identificationInfo[0].identificationInfo?.resourceFormat?.mdFormat?.name?.value,
             "en",
         )
+        // is only being used in "literature", which cannot be imported currently - ignore
+        val documentType = convertToCatalogKeyValue(
+            "3385",
+            metadata.identificationInfo[0].identificationInfo?.resourceFormat?.mdFormat?.name?.value,
+            "en",
+        )
 
-        if (doi == null && generalResourceType == null && documentType == null) return null
-        return Publication(doi, generalResourceType, documentType)
+        if (doi == null && generalResourceType == null && resourceType == null) return null
+        return Publication(doi, generalResourceType, resourceType)
     }
 
     private fun getUseConstraintNoteWhenJsonExists(
@@ -1076,5 +1082,5 @@ data class AddressInfo(
 data class Publication(
     val doi: String?,
     val generalResourceType: KeyValue?,
-    val documentType: KeyValue?,
+    val resourceType: KeyValue?,
 )

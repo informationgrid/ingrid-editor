@@ -27,4 +27,4 @@ ConferenceProceeding
 
 Format der Ressource: Formatbeschreibung der Ressource
 
-Domain: 32 (gmd:resourceFormat)
+Domain: 206 (gmd:authority)

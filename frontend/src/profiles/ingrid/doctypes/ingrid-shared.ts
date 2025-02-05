@@ -1672,8 +1672,8 @@ export abstract class IngridShared extends BaseDoctype {
           wrappers: ["inline-help", "form-field"],
         },
       ),
-      this.addAutoCompleteInline("documentType", "Ressourcen Typ", {
-        options: this.getCodelistForSelect("3386", "documentType"),
+      this.addAutoCompleteInline("resourceType", "Ressourcen Typ", {
+        options: this.getCodelistForSelect("3386", "resourceType"),
         codelistId: "3386",
         hasInlineContextHelp: true,
         wrappers: ["inline-help", "form-field"],
