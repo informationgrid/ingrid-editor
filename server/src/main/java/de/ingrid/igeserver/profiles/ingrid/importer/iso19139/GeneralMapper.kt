@@ -846,33 +846,23 @@ open class GeneralMapper(val isoData: IsoImportData) {
     }
 
     fun getPublication(): Publication? {
-        var doi: String? = null
-        var generalResourceType: KeyValue? = null
         metadata.identificationInfo[0].identificationInfo?.citation?.citation?.identifier?.forEach loop@{ identifier ->
             val code = identifier.mdIdentifier?.code?.value
             if (code?.startsWith("https://doi.org/") == true) {
-                doi = code.replace("https://doi.org/", "")
-                generalResourceType = convertToCatalogKeyValue(
-                    "3390",
-                    identifier.mdIdentifier.authority?.citation?.identifier?.get(0)?.mdIdentifier?.code?.value,
-                )
-                return@loop
+                val doi = code.replace("https://doi.org/", "")
+                val authorityCode = identifier.mdIdentifier.authority?.citation?.identifier?.get(0)?.mdIdentifier?.code?.value
+                val generalResourceType = convertToCatalogKeyValue("3390", authorityCode?.substringBefore("/"))
+                val resourceType = convertToCatalogKeyValue("3386", authorityCode?.substringAfter("/"), "en")
+                return Publication(doi, generalResourceType, resourceType)
             }
         }
-        val resourceType = convertToCatalogKeyValue(
-            "3386",
-            metadata.identificationInfo[0].identificationInfo?.resourceFormat?.mdFormat?.name?.value,
-            "en",
-        )
-        // is only being used in "literature", which cannot be imported currently - ignore
+        // is only being used in "literature", which cannot be imported currently - ignore for now
         val documentType = convertToCatalogKeyValue(
             "3385",
             metadata.identificationInfo[0].identificationInfo?.resourceFormat?.mdFormat?.name?.value,
             "en",
         )
-
-        if (doi == null && generalResourceType == null && resourceType == null) return null
-        return Publication(doi, generalResourceType, resourceType)
+        return null
     }
 
     private fun getUseConstraintNoteWhenJsonExists(

@@ -320,7 +320,7 @@
                                 <gmd:identifier>
                                     <gmd:MD_Identifier>
                                         <gmd:code>
-                                            <gco:CharacterString>${page.getGeneralResourceType()}</gco:CharacterString>
+                                            <gco:CharacterString>${page.getGeneralResourceType()}/${page.getResourceType()}</gco:CharacterString>
                                         </gmd:code>
                                     </gmd:MD_Identifier>
                                 </gmd:identifier>

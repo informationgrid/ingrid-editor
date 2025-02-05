@@ -48,8 +48,10 @@ import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOpti
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.igeserver.utils.checkPublicationTags
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
@@ -644,13 +646,18 @@ open class IngridModelTransformer(
     // information system or publication
     open val supplementalInformation = data.explanation ?: data.publication?.explanation
 
-    val doi = data.publication?.doi
-    val generalResourceType = data.publication?.generalResourceType?.let { codelists.getValue("3390", it, "en") }
-    val resourceType = data.publication?.resourceType?.let { codelists.getValue("3386", it, "en") }
+    // TODO: move to specific doc type
+    // literature
+    val resourceFormat = if (!isDoiActive()) data.publication?.documentType?.let { codelists.getValue("3385", it, "en") } else null
 
-    // TODO: move to specific doc types
-    // only literature
-    val resourceFormat = data.publication?.documentType?.let { codelists.getValue("3385", it, "en") }
+    private fun isDoiActive(): Boolean {
+        val doiBehaviour = SpringContext.getBean(BehaviourService::class.java)?.get(catalogIdentifier, "plugin.doi")
+        return doiBehaviour?.active == true
+    }
+
+    val doi = if (isDoiActive()) data.publication?.doi else null
+    val generalResourceType = if (isDoiActive()) data.publication?.generalResourceType?.let { codelists.getValue("3390", it, "en") } else null
+    val resourceType = if (isDoiActive()) data.publication?.resourceType?.let { codelists.getValue("3386", it, "en") } else null
 
     val references = data.references ?: emptyList()
     private val externalReferences: List<ServiceUrl> by lazy {
