@@ -38,7 +38,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
       this.addSection("Simulationsdaten", [
         this.getSimulationFieldConfig(),
         this.getDimensionalityFieldConfig(),
-        this.common.getTimestepFieldConfig({ required: true }),
+        this.common.getTimestepFieldConfig(),
         this.getSimulationModelTypeFieldConfig(),
         this.getSimulationParameterFieldConfig(),
       ]),

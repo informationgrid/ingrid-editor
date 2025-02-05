@@ -35,10 +35,10 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
     this.common.addSharedGeoDatasetFields(this, fieldConfig);
     fieldConfig.push(
       this.addSection("Messdaten", [
-        this.common.getTimestepFieldConfig(),
         this.getMeasuringMethodFieldConfig(),
         this.getSpatialityFieldConfig(),
         this.getMeasuringDepthFieldConfig(),
+        this.common.getTimestepFieldConfig(),
         this.getFrequencyFieldConfig(),
         this.getAverageWaterLevelFieldConfig(),
         this.getZeroLevelFieldConfig(),
@@ -94,13 +94,31 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
   getZeroLevelFieldConfig() {
     return this.addRepeat("zeroLevel", "Pegelnullpunkt", {
       fields: [
-        this.addInputInline("value", "Pegelnullpunkt", {
-          required: true,
-          type: "number",
-        }),
-        this.common.getUnitOfMeasurementFieldConfig(this),
-        this.common.getInlineVerticalCoordinateReferenceSystemFieldConfig(this),
-        this.addInputInline("description", "Beschreibung"),
+        this.addGroupSimple(
+          null,
+          [
+            this.addGroupSimple(
+              null,
+              [
+                this.addInputInline("value", "Pegelnullpunkt", {
+                  required: true,
+                  type: "number",
+                }),
+                this.common.getUnitOfMeasurementFieldConfig(this),
+                this.common.getInlineVerticalCoordinateReferenceSystemFieldConfig(
+                  this,
+                ),
+              ],
+              {
+                fieldGroupClassName: "flex-row",
+              },
+            ),
+            this.addInputInline("description", "Beschreibung"),
+          ],
+          {
+            className: "flex-1",
+          },
+        ),
       ],
     });
   }
@@ -108,10 +126,26 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
   getGaugeFieldConfig() {
     return this.addRepeat("gauge", "Messgerät", {
       fields: [
-        this.addInputInline("name", "Gerätename", { required: true }),
-        this.addInputInline("id", "Geräte-ID"),
-        this.addInputInline("model", "Gerätemodell"),
-        this.addInputInline("description", "Beschreibung"),
+        this.addGroupSimple(
+          null,
+          [
+            this.addGroupSimple(
+              null,
+              [
+                this.addInputInline("name", "Gerätename", { required: true }),
+                this.addInputInline("id", "Geräte-ID"),
+                this.addInputInline("model", "Gerätemodell"),
+              ],
+              {
+                fieldGroupClassName: "flex-row",
+              },
+            ),
+            this.addInputInline("description", "Beschreibung"),
+          ],
+          {
+            className: "flex-1",
+          },
+        ),
       ],
     });
   }
@@ -139,7 +173,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
 
   getDrainFieldConfig() {
     return this.addGroup("drain", "Abfluss", [
-      this.addInputInline("value", "Q min", {
+      this.addInputInline("min", "Q min", {
         type: "number",
         suffix: {
           text: "m³/s",
@@ -147,7 +181,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
         className: "right-align",
         wrappers: ["form-field", "addons"],
       }),
-      this.addInputInline("value", "Q max", {
+      this.addInputInline("max", "Q max", {
         type: "number",
         suffix: {
           text: "m³/s",
