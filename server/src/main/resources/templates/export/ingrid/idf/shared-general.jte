@@ -17,6 +17,7 @@
 @param IngridModelTransformer page
 @param Content contentInfo = null
 @param Content additionalCitation = null
+@param Content citationEdition = null
 @param Boolean isService = false
 
 !{var spatial = page.getData().getSpatial();}
@@ -301,6 +302,9 @@
                     </gmd:date>
                 @endfor
             @endif
+
+            ${citationEdition}
+
             @if( page.getModel().getType().equals("InGridGeoDataset") && page.getCitationURL() != null )
                 <gmd:identifier>
                     <gmd:MD_Identifier>

@@ -121,7 +121,7 @@ export abstract class IngridShared extends BaseDoctype {
   showHVD: boolean = false;
   showAdVCompatible: boolean = false;
   showAdVProductGroup: boolean = false;
-  showDoiFields: boolean = this.behaviourService.getBehaviour("plugin.doi")?.isActive;
+  showDoiFields: boolean = this.behaviourService.getBehaviour("plugin.doi")?.isActive == true;
   /** @deprecated: should be defined in geoservice-doctype */
   isGeoService: boolean = false;
   /** @deprecated: should be defined in geodataset-doctype */

@@ -78,7 +78,7 @@ class PreDefaultDocumentInitializer(
             catalog = catalogRef
 //            data.put(FIELD_HAS_CHILDREN, false)
             if (doiBehaviour?.active == true) {
-                (doiBehaviour?.data?.get("doiPrefix") as String)?.let { doiPrefix ->
+                doiBehaviour.data?.get("doiPrefix")?.let { doiPrefix ->
                     data.putObject("publication").put("doi", "$doiPrefix/")
                 }
             }
