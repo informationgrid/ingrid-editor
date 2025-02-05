@@ -158,6 +158,7 @@ export class GeoDatasetDoctype extends IngridShared {
             },
           },
         }),
+        this.showDoiFields? this.addGroupSimple("publication", [this.addDoiFields()]) : null,
         this.addRepeatList(
           "spatialRepresentationType",
           "Digitale Repräsentation",
@@ -463,7 +464,7 @@ export class GeoDatasetDoctype extends IngridShared {
             asAutocomplete: true,
           }),
         ]),
-      ]),
+      ].filter(Boolean)),
       this.addSection("Datenqualität", [
         this.addGroupSimple("dataQuality", [
           this.addGroupSimple("completenessOmission", [

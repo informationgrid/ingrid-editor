@@ -93,7 +93,8 @@ export class DataCollectionDoctype extends IngridShared {
         this.addTextArea("explanation", "Erläuterungen", this.id, {
           className: "optional flex-1",
         }),
-      ]),
+        this.showDoiFields ? this.addGroupSimple("publication", [this.addDoiFields()]) : null,
+      ].filter(Boolean)),
 
       this.addSpatialSection(),
       this.addTimeReferenceSection(),

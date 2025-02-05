@@ -103,7 +103,8 @@ export class InformationSystemDoctype extends IngridShared {
             this.addInputInline("description", "Erläuterung"),
           ],
         }),
-      ]),
+        this.showDoiFields ? this.addGroupSimple("publication", [this.addDoiFields()]) : null,
+      ].filter(Boolean)),
 
       this.addSpatialSection(),
       this.addTimeReferenceSection(),

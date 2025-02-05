@@ -257,7 +257,8 @@ export class GeoServiceDoctype extends IngridShared {
             className: "optional",
           }),
         ]),
-      ]),
+        this.showDoiFields ? this.addGroupSimple("publication", [this.addDoiFields()]) : null,
+      ].filter(Boolean)),
 
       this.addSpatialSection(),
       this.addTimeReferenceSection(),
