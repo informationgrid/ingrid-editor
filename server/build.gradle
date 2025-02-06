@@ -1,16 +1,16 @@
 import gg.jte.ContentType
 import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
+import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import java.nio.file.Paths
 
 import static org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 
 buildscript {
     ext.kotlin_version = '2.1.0'
-    ext.spring_boot_version = '3.4.1'
+    ext.spring_boot_version = '3.4.2'
     ext.kotest_version = '5.9.1'
-    ext.jte_version = '3.1.15'
+    ext.jte_version = '3.1.16'
     ext.geotools_version = '28.2'
     ext['log4j2.version'] = '2.23.1'
 }
@@ -29,7 +29,7 @@ plugins {
     id 'com.google.cloud.tools.jib' version '3.4.4'
     id "com.gorylenko.gradle-git-properties" version "2.4.2"
     id 'io.kotest' version '0.4.11'
-    id "com.github.ben-manes.versions" version "0.51.0"
+    id "com.github.ben-manes.versions" version "0.52.0"
     id "gg.jte.gradle" version "$jte_version"
     id "org.hibernate.orm" version "6.5.2.Final"
     id "org.jlleitschuh.gradle.ktlint" version "12.1.2"
@@ -134,13 +134,13 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     // JSON schema validation
-    implementation 'com.networknt:json-schema-validator:1.5.4'
+    implementation 'com.networknt:json-schema-validator:1.5.5'
 
     // Keycloak
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.keycloak:keycloak-admin-client:26.0.3'
+    implementation 'org.keycloak:keycloak-admin-client:26.0.4'
 
     // OpenAI
     // import Kotlin API client BOM
@@ -158,7 +158,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3'
 
     // PostgreSQL
-    implementation 'org.postgresql:postgresql:42.7.4'
+    implementation 'org.postgresql:postgresql:42.7.5'
     implementation "org.hibernate.orm:hibernate-core"
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.5'
 
@@ -436,4 +436,8 @@ tasks.register('checkForSnapshots', {
         }
     }
 })
+
+ktlint {
+    version.set("1.5.0")
+}
 

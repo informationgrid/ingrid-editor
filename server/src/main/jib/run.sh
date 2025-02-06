@@ -58,7 +58,7 @@ if [[ -n "${MATOMO_URL}" ]]; then
 fi
 
 if [ -n "${MATOMO_SITE_ID}" ]; then
-  sed -i -r "s@matomoSiteId\":.*@matomoSiteId\": $MATOMO_SITE_ID,@" /app/resources/static/assets/config.json
+  sed -i -r "s@matomoSiteId\":.*@matomoSiteId\": \"$MATOMO_SITE_ID\",@" /app/resources/static/assets/config.json
 fi
 
 

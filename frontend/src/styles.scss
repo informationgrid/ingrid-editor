@@ -42,6 +42,10 @@ a {
   }
 }
 
+.overflow-auto {
+  overflow: auto;
+}
+
 .user-popup mat-icon path {
   fill: vars.$ige-primary;
 }

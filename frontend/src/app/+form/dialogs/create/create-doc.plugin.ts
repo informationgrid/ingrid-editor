@@ -50,7 +50,9 @@ export class CreateDocumentPlugin extends Plugin {
 
   isAdmin = this.config.hasCatAdminRights();
 
-  private activeNodes$ = toObservable(this.generalStore.activeTreeNodes);
+  private activeAddressNodes$ = toObservable(
+    this.generalStore.activeAddressTreeNodes,
+  );
 
   constructor(
     private config: ConfigService,
@@ -151,15 +153,14 @@ export class CreateDocumentPlugin extends Plugin {
       this.toolbarService.setButtonState("toolBtnNew", canGenerallyCreate);
 
       if (!canGenerallyCreate && this.forAddress()) {
-        const organisationCheckSubscription = this.activeNodes$.subscribe(
-          (data) => {
+        const organisationCheckSubscription =
+          this.activeAddressNodes$.subscribe((data) => {
             const docs = data.map((item) => this.getStore().entityMap()[item]);
             this.toolbarService.setButtonState(
               "toolBtnNew",
               this.isOrganisation(docs),
             );
-          },
-        );
+          });
         this.formSubscriptions.push(organisationCheckSubscription);
       }
     }

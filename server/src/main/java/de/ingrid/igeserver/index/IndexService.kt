@@ -92,7 +92,7 @@ class IndexService(
             getIndexConfigurations()
                 .filter { it.cron.isNotEmpty() }
                 .forEach { config ->
-                    val jobKey = JobKey.jobKey(IndexService.JOB_KEY, config.catalogId)
+                    val jobKey = JobKey.jobKey(JOB_KEY, config.catalogId)
                     try {
                         schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, config.catalogId, config.cron)
                     } catch (e: Exception) {
@@ -158,7 +158,7 @@ class IndexService(
         catalog.settings = settings
         catalogRepo.save(catalog)
 
-        val jobKey = JobKey.jobKey(IndexService.JOB_KEY, catalogId)
+        val jobKey = JobKey.jobKey(JOB_KEY, catalogId)
         schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, catalogId, config.cronPattern)
     }
 
