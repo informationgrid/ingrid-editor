@@ -98,9 +98,7 @@ export function DoiPrefixValidator(
 
 const doiRegExp = new RegExp(/^10\.\d{4,}\/.+$/);
 
-export function DoiValidator(
-  control: UntypedFormControl,
-): ValidationErrors {
+export function DoiValidator(control: UntypedFormControl): ValidationErrors {
   return !control.value || doiRegExp.test(control.value?.trim())
     ? null
     : { doi: { message: "Benötigtes Format: 10.VXYZ/ABC..." } };

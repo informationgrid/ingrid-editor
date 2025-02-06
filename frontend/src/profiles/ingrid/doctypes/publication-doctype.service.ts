@@ -43,99 +43,113 @@ export class PublicationDoctype extends IngridShared {
       this.addGeneralSection(),
       this.addKeywordsSection(),
       this.addSection("Fachbezug", [
-        this.addGroupSimple("publication", [
-          this.addTextArea("author", "Autor/Verfasser", this.id, {
-            className: "optional flex-1",
-          }),
-          this.addInput("publisher", "Herausgeber", {
-            wrappers: ["panel", "form-field"],
-            className: "optional",
-          }),
-          this.addGroup(
-            null,
-            "Erscheinung",
-            [
-              this.addGroup(
-                null,
-                null,
-                [
-                  this.addInputInline("publishedIn", "Erschienen in", {
-                    hasInlineContextHelp: true,
-                    wrappers: ["inline-help", "form-field"],
-                  }),
-                  this.addInputInline("placeOfPublication", "Erscheinungsort", {
-                    hasInlineContextHelp: true,
-                    wrappers: ["inline-help", "form-field"],
-                  }),
-                ],
-                { wrappers: [] },
-              ),
-              this.addGroup(
-                null,
-                null,
-                [
-                  this.addInputInline("volume", "Band/Heft", {
-                    hasInlineContextHelp: true,
-                    wrappers: ["inline-help", "form-field"],
-                  }),
-                  this.addInputInline("pages", "Seiten", {
-                    hasInlineContextHelp: true,
-                    wrappers: ["inline-help", "form-field"],
-                  }),
-                  this.addInputInline("publicationDate", "Erscheinungsjahr", {
-                    hasInlineContextHelp: true,
-                    wrappers: ["inline-help", "form-field"],
-                  }),
-                ],
-                { wrappers: [] },
-              ),
-            ],
-            {
-              fieldGroupClassName: "",
+        this.addGroupSimple(
+          "publication",
+          [
+            this.addTextArea("author", "Autor/Verfasser", this.id, {
+              className: "optional flex-1",
+            }),
+            this.addInput("publisher", "Herausgeber", {
+              wrappers: ["panel", "form-field"],
               className: "optional",
-            },
-          ),
-          this.addTextArea("location", "Standort", this.id, {
-            className: "optional flex-1",
-          }),
-          this.showDoiFields ? this.addDoiFields() : null,
-          this.addInput("isbn", "ISBN-Nr.", {
-            wrappers: ["panel", "form-field"],
-            className: "optional",
-          }),
-          this.addInput("publishingHouse", "Verlag", {
-            wrappers: ["panel", "form-field"],
-            className: "optional",
-          }),
-          !this.showDoiFields ? this.addAutocomplete("documentType", "Dokumententyp", {
-                options: this.getCodelistForSelect("3385", "documentType"),
-                codelistId: "3385",
+            }),
+            this.addGroup(
+              null,
+              "Erscheinung",
+              [
+                this.addGroup(
+                  null,
+                  null,
+                  [
+                    this.addInputInline("publishedIn", "Erschienen in", {
+                      hasInlineContextHelp: true,
+                      wrappers: ["inline-help", "form-field"],
+                    }),
+                    this.addInputInline(
+                      "placeOfPublication",
+                      "Erscheinungsort",
+                      {
+                        hasInlineContextHelp: true,
+                        wrappers: ["inline-help", "form-field"],
+                      },
+                    ),
+                  ],
+                  { wrappers: [] },
+                ),
+                this.addGroup(
+                  null,
+                  null,
+                  [
+                    this.addInputInline("volume", "Band/Heft", {
+                      hasInlineContextHelp: true,
+                      wrappers: ["inline-help", "form-field"],
+                    }),
+                    this.addInputInline("pages", "Seiten", {
+                      hasInlineContextHelp: true,
+                      wrappers: ["inline-help", "form-field"],
+                    }),
+                    this.addInputInline("publicationDate", "Erscheinungsjahr", {
+                      hasInlineContextHelp: true,
+                      wrappers: ["inline-help", "form-field"],
+                    }),
+                  ],
+                  { wrappers: [] },
+                ),
+              ],
+              {
+                fieldGroupClassName: "",
                 className: "optional",
-              }) : null,
-          this.addTextArea("baseDataText", "Basisdaten", this.id, {
-            className: "optional flex-1",
-          }),
-          this.addGroup(
-            null,
-            "Weiteres",
-            [
-              this.addTextAreaInline(
-                "bibliographicData",
-                "Weitere bibliographische Angaben",
-                this.id,
-                {
-                  hasInlineContextHelp: true,
-                  wrappers: ["inline-help", "form-field"],
-                },
-              ),
-              this.addTextAreaInline("explanation", "Erläuterungen", this.id, {
-                hasInlineContextHelp: true,
-                wrappers: ["inline-help", "form-field"],
-              }),
-            ],
-            { className: "optional" },
-          ),
-        ].filter(Boolean)),
+              },
+            ),
+            this.addTextArea("location", "Standort", this.id, {
+              className: "optional flex-1",
+            }),
+            this.showDoiFields ? this.addDoiFields() : null,
+            this.addInput("isbn", "ISBN-Nr.", {
+              wrappers: ["panel", "form-field"],
+              className: "optional",
+            }),
+            this.addInput("publishingHouse", "Verlag", {
+              wrappers: ["panel", "form-field"],
+              className: "optional",
+            }),
+            !this.showDoiFields
+              ? this.addAutocomplete("documentType", "Dokumententyp", {
+                  options: this.getCodelistForSelect("3385", "documentType"),
+                  codelistId: "3385",
+                  className: "optional",
+                })
+              : null,
+            this.addTextArea("baseDataText", "Basisdaten", this.id, {
+              className: "optional flex-1",
+            }),
+            this.addGroup(
+              null,
+              "Weiteres",
+              [
+                this.addTextAreaInline(
+                  "bibliographicData",
+                  "Weitere bibliographische Angaben",
+                  this.id,
+                  {
+                    hasInlineContextHelp: true,
+                    wrappers: ["inline-help", "form-field"],
+                  },
+                ),
+                this.addTextAreaInline(
+                  "explanation",
+                  "Erläuterungen",
+                  this.id,
+                  {
+                    hasInlineContextHelp: true,
+                    wrappers: ["inline-help", "form-field"],
+                  },
+                ),
+              ],
+              { className: "optional" },
+            ),
+          ].filter(Boolean),
+        ),
       ]),
 
       this.addSpatialSection(),

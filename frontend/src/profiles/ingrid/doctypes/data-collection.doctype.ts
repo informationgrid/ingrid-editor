@@ -44,57 +44,62 @@ export class DataCollectionDoctype extends IngridShared {
       this.addGeneralSection(),
       this.addKeywordsSection(),
 
-      this.addSection("Fachbezug", [
-        this.addRepeat("categoryCatalog", "Objektartenkatalog", {
-          expressions: {
-            "props.required": (field: FormlyFieldConfig) =>
-              field.options.formState.mainModel?.databaseContent?.length > 0,
-            className: (field: FormlyFieldConfig) =>
-              field.props.required ? "" : "optional",
-          },
-          fields: [
-            this.addAutocomplete("title", "Titel", {
-              className: "flex-3",
-              wrappers: ["form-field"],
-              required: true,
-              options: this.getCodelistForSelect(
-                "3535",
-                "categoryCatalog.title",
-              ),
-              codelistId: "3535",
-            }),
-            this.addDatepickerInline("date", "Datum", {
-              className: "flex-1",
-              required: true,
-            }),
-            this.addInputInline("edition", "Version", {
-              className: "flex-1",
-            }),
-          ],
-        }),
-        this.addRepeat(
-          "databaseContent",
-          "Inhalte der Datensammlung/Datenbank",
-          {
-            className: "optional",
+      this.addSection(
+        "Fachbezug",
+        [
+          this.addRepeat("categoryCatalog", "Objektartenkatalog", {
+            expressions: {
+              "props.required": (field: FormlyFieldConfig) =>
+                field.options.formState.mainModel?.databaseContent?.length > 0,
+              className: (field: FormlyFieldConfig) =>
+                field.props.required ? "" : "optional",
+            },
             fields: [
-              this.addInputInline("parameter", "Parameter", {
-                className: "flex-1",
+              this.addAutocomplete("title", "Titel", {
+                className: "flex-3",
+                wrappers: ["form-field"],
+                required: true,
+                options: this.getCodelistForSelect(
+                  "3535",
+                  "categoryCatalog.title",
+                ),
+                codelistId: "3535",
               }),
-              this.addInputInline("moreInfo", "Ergänzende Angaben", {
+              this.addDatepickerInline("date", "Datum", {
+                className: "flex-1",
+                required: true,
+              }),
+              this.addInputInline("edition", "Version", {
                 className: "flex-1",
               }),
             ],
-          },
-        ),
-        this.addTextArea("methodText", "Methode/Datengrundlage", this.id, {
-          className: "optional flex-1",
-        }),
-        this.addTextArea("explanation", "Erläuterungen", this.id, {
-          className: "optional flex-1",
-        }),
-        this.showDoiFields ? this.addGroupSimple("publication", [this.addDoiFields()]) : null,
-      ].filter(Boolean)),
+          }),
+          this.addRepeat(
+            "databaseContent",
+            "Inhalte der Datensammlung/Datenbank",
+            {
+              className: "optional",
+              fields: [
+                this.addInputInline("parameter", "Parameter", {
+                  className: "flex-1",
+                }),
+                this.addInputInline("moreInfo", "Ergänzende Angaben", {
+                  className: "flex-1",
+                }),
+              ],
+            },
+          ),
+          this.addTextArea("methodText", "Methode/Datengrundlage", this.id, {
+            className: "optional flex-1",
+          }),
+          this.addTextArea("explanation", "Erläuterungen", this.id, {
+            className: "optional flex-1",
+          }),
+          this.showDoiFields
+            ? this.addGroupSimple("publication", [this.addDoiFields()])
+            : null,
+        ].filter(Boolean),
+      ),
 
       this.addSpatialSection(),
       this.addTimeReferenceSection(),

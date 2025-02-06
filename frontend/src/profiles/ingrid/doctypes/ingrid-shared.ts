@@ -121,7 +121,8 @@ export abstract class IngridShared extends BaseDoctype {
   showHVD: boolean = false;
   showAdVCompatible: boolean = false;
   showAdVProductGroup: boolean = false;
-  showDoiFields: boolean = this.behaviourService.getBehaviour("plugin.doi")?.isActive == true;
+  showDoiFields: boolean =
+    this.behaviourService.getBehaviour("plugin.doi")?.isActive == true;
   /** @deprecated: should be defined in geoservice-doctype */
   isGeoService: boolean = false;
   /** @deprecated: should be defined in geodataset-doctype */
@@ -1663,10 +1664,7 @@ export abstract class IngridShared extends BaseDoctype {
         "generalResourceType",
         "Ressourcen Typ (generell)",
         {
-          options: this.getCodelistForSelect(
-            "3390",
-            "generalResourceType",
-          ),
+          options: this.getCodelistForSelect("3390", "generalResourceType"),
           codelistId: "3390",
           hasInlineContextHelp: true,
           wrappers: ["inline-help", "form-field"],
@@ -1678,7 +1676,7 @@ export abstract class IngridShared extends BaseDoctype {
         hasInlineContextHelp: true,
         wrappers: ["inline-help", "form-field"],
       }),
-    ])
+    ]);
   }
 
   protected urlRefFields() {

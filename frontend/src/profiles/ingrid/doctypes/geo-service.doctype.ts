@@ -96,98 +96,131 @@ export class GeoServiceDoctype extends IngridShared {
         inspireTopics: true,
       }),
 
-      this.addSection("Fachbezug", [
-        this.addGroupSimple("service", [
-          this.addRepeatList("classification", "Klassifikation des Dienstes", {
-            asSelect: true,
-            showSearch: true,
-            required: this.geoServiceOptions.required.classification,
-            options: this.getCodelistForSelect(
-              "5200",
-              "service.classification",
+      this.addSection(
+        "Fachbezug",
+        [
+          this.addGroupSimple("service", [
+            this.addRepeatList(
+              "classification",
+              "Klassifikation des Dienstes",
+              {
+                asSelect: true,
+                showSearch: true,
+                required: this.geoServiceOptions.required.classification,
+                options: this.getCodelistForSelect(
+                  "5200",
+                  "service.classification",
+                ),
+                codelistId: "5200",
+              },
             ),
-            codelistId: "5200",
-          }),
-          this.addGroup(null, null, [
-            this.addGroupSimple(
-              null,
-              [
-                this.addSelectInline("type", "Art des Dienstes", {
+            this.addGroup(null, null, [
+              this.addGroupSimple(
+                null,
+                [
+                  this.addSelectInline("type", "Art des Dienstes", {
+                    required: true,
+                    showSearch: true,
+                    options: this.getCodelistForSelect("5100", "service.type"),
+                    codelistId: "5100",
+                    hasInlineContextHelp: true,
+                    contextHelpId: "serviceType",
+                    wrappers: ["inline-help", "form-field"],
+                    hooks: {
+                      onInit: (field: FormlyFieldConfig) =>
+                        this.handleServiceTypeChange(field),
+                    },
+                  }),
+                  this.addRepeatListInline("version", "Version des Dienstes", {
+                    options: this.getServiceVersionOptions,
+                    // codelistId: "5152",
+                    showSearch: true,
+                    fieldGroupClassName: "flex-1",
+                    hasInlineContextHelp: true,
+                    contextHelpId: "serviceVersion",
+                    wrappers: ["inline-help"],
+                    className: "optional flex-1",
+                  }),
+                  this.addCheckboxInline(
+                    "isAtomDownload",
+                    "Als ATOM-Download Dienst bereitstellen",
+                    {
+                      className: "optional",
+                      click: (field: FormlyFieldConfig) =>
+                        this.showAtomFeedInfo(field),
+                      expressions: {
+                        hide: (field: FormlyFieldConfig) =>
+                          field.options.formState.mainModel?.service?.type
+                            ?.key !== "3",
+                      },
+                    },
+                  ),
+                ],
+                { className: "flex-1" },
+              ),
+            ]),
+            this.addRepeat("operations", "Operationen", {
+              required: this.geoServiceOptions.required.operations,
+              fields: [
+                this.addAutoCompleteInline("name", "Name", {
                   required: true,
-                  showSearch: true,
-                  options: this.getCodelistForSelect("5100", "service.type"),
-                  codelistId: "5100",
-                  hasInlineContextHelp: true,
-                  contextHelpId: "serviceType",
-                  wrappers: ["inline-help", "form-field"],
-                  hooks: {
-                    onInit: (field: FormlyFieldConfig) =>
-                      this.handleServiceTypeChange(field),
+                  options: this.getServiceOperationNameOptions,
+                }),
+                this.addInputInline("description", "Beschreibung"),
+                this.addInputInline("methodCall", "Zugriffs-URL", {
+                  required: true,
+                  validators: {
+                    validation: ["url"],
                   },
                 }),
-                this.addRepeatListInline("version", "Version des Dienstes", {
-                  options: this.getServiceVersionOptions,
-                  // codelistId: "5152",
-                  showSearch: true,
-                  fieldGroupClassName: "flex-1",
-                  hasInlineContextHelp: true,
-                  contextHelpId: "serviceVersion",
-                  wrappers: ["inline-help"],
-                  className: "optional flex-1",
-                }),
-                this.addCheckboxInline(
-                  "isAtomDownload",
-                  "Als ATOM-Download Dienst bereitstellen",
-                  {
-                    className: "optional",
-                    click: (field: FormlyFieldConfig) =>
-                      this.showAtomFeedInfo(field),
-                    expressions: {
-                      hide: (field: FormlyFieldConfig) =>
-                        field.options.formState.mainModel?.service?.type
-                          ?.key !== "3",
+              ],
+            }),
+            this.addGroup(
+              null,
+              "Dargestellte Daten",
+              [
+                <FormlyFieldConfig>{
+                  key: "coupledResources",
+                  type: "couplingService",
+                  className: "flex-1",
+                  props: {
+                    label: "Dargestellte Daten",
+                    showLayernames:
+                      this.showLayernamesForCoupledResources === true,
+                    change: (field) => {
+                      // run delayed to use the updated value
+                      setTimeout(() =>
+                        this.handleCoupledDatasetsChange(field, field.model),
+                      );
                     },
                   },
-                ),
-              ],
-              { className: "flex-1" },
-            ),
-          ]),
-          this.addRepeat("operations", "Operationen", {
-            required: this.geoServiceOptions.required.operations,
-            fields: [
-              this.addAutoCompleteInline("name", "Name", {
-                required: true,
-                options: this.getServiceOperationNameOptions,
-              }),
-              this.addInputInline("description", "Beschreibung"),
-              this.addInputInline("methodCall", "Zugriffs-URL", {
-                required: true,
-                validators: {
-                  validation: ["url"],
-                },
-              }),
-            ],
-          }),
-          this.addGroup(
-            null,
-            "Dargestellte Daten",
-            [
-              <FormlyFieldConfig>{
-                key: "coupledResources",
-                type: "couplingService",
-                className: "flex-1",
-                props: {
-                  label: "Dargestellte Daten",
-                  showLayernames:
-                    this.showLayernamesForCoupledResources === true,
-                  change: (field) => {
-                    // run delayed to use the updated value
-                    setTimeout(() =>
-                      this.handleCoupledDatasetsChange(field, field.model),
-                    );
+                  expressions: {
+                    "props.required": (field: FormlyFieldConfig) =>
+                      field.options.formState.mainModel?.service?.couplingType
+                        ?.key === "tight",
+                    className: (field: FormlyFieldConfig) =>
+                      field.props.required ? "" : "optional",
                   },
                 },
+                this.addSelectInline("couplingType", "Kopplungstyp", {
+                  showSearch: true,
+                  defaultValue: { key: "loose" },
+                  options: <SelectOptionUi[]>[
+                    { label: "loose", value: "loose" },
+                    { label: "mixed", value: "mixed" },
+                    { label: "tight", value: "tight" },
+                  ],
+                  hasInlineContextHelp: true,
+                  wrappers: ["inline-help", "form-field"],
+                  expressions: {
+                    hide: (field: FormlyFieldConfig) =>
+                      !field.options.formState.mainModel?.service
+                        ?.coupledResources?.length,
+                  },
+                }),
+              ],
+              {
+                contextHelpId: "shownData",
                 expressions: {
                   "props.required": (field: FormlyFieldConfig) =>
                     field.options.formState.mainModel?.service?.couplingType
@@ -196,69 +229,45 @@ export class GeoServiceDoctype extends IngridShared {
                     field.props.required ? "" : "optional",
                 },
               },
-              this.addSelectInline("couplingType", "Kopplungstyp", {
-                showSearch: true,
-                defaultValue: { key: "loose" },
-                options: <SelectOptionUi[]>[
-                  { label: "loose", value: "loose" },
-                  { label: "mixed", value: "mixed" },
-                  { label: "tight", value: "tight" },
-                ],
-                hasInlineContextHelp: true,
-                wrappers: ["inline-help", "form-field"],
-                expressions: {
-                  hide: (field: FormlyFieldConfig) =>
-                    !field.options.formState.mainModel?.service
-                      ?.coupledResources?.length,
-                },
-              }),
-            ],
-            {
-              contextHelpId: "shownData",
-              expressions: {
-                "props.required": (field: FormlyFieldConfig) =>
-                  field.options.formState.mainModel?.service?.couplingType
-                    ?.key === "tight",
-                className: (field: FormlyFieldConfig) =>
-                  field.props.required ? "" : "optional",
-              },
-            },
-          ),
-          this.addResolutionFields(),
-          this.addGroup(
-            null,
-            null,
-            [
-              this.addTextAreaInline(
-                "systemEnvironment",
-                "Systemumgebung",
-                this.id,
-                {
-                  hasInlineContextHelp: true,
-                  wrappers: ["inline-help", "form-field"],
-                },
-              ),
-              this.addTextAreaInline(
-                "implementationHistory",
-                "Historie",
-                this.id,
-                {
-                  hasInlineContextHelp: true,
-                  wrappers: ["inline-help", "form-field"],
-                },
-              ),
-            ],
-            { className: "optional" },
-          ),
-          this.addTextArea("explanation", "Erläuterungen", this.id, {
-            className: "optional flex-1",
-          }),
-          this.addCheckbox("hasAccessConstraints", "Zugang geschützt", {
-            className: "optional",
-          }),
-        ]),
-        this.showDoiFields ? this.addGroupSimple("publication", [this.addDoiFields()]) : null,
-      ].filter(Boolean)),
+            ),
+            this.addResolutionFields(),
+            this.addGroup(
+              null,
+              null,
+              [
+                this.addTextAreaInline(
+                  "systemEnvironment",
+                  "Systemumgebung",
+                  this.id,
+                  {
+                    hasInlineContextHelp: true,
+                    wrappers: ["inline-help", "form-field"],
+                  },
+                ),
+                this.addTextAreaInline(
+                  "implementationHistory",
+                  "Historie",
+                  this.id,
+                  {
+                    hasInlineContextHelp: true,
+                    wrappers: ["inline-help", "form-field"],
+                  },
+                ),
+              ],
+              { className: "optional" },
+            ),
+            this.addTextArea("explanation", "Erläuterungen", this.id, {
+              className: "optional flex-1",
+            }),
+            this.addCheckbox("hasAccessConstraints", "Zugang geschützt", {
+              className: "optional",
+            }),
+          ]),
+          this.showDoiFields
+            ? this.addGroupSimple("publication", [this.addDoiFields()])
+            : null,
+        ].filter(Boolean),
+      ),
 
       this.addSpatialSection(),
       this.addTimeReferenceSection(),

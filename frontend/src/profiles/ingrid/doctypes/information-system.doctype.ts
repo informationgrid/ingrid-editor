@@ -41,70 +41,75 @@ export class InformationSystemDoctype extends IngridShared {
       this.addGeneralSection(),
       this.addKeywordsSection(),
 
-      this.addSection("Fachbezug", [
-        this.addSelect("serviceType", "Art des Dienstes", {
-          showSearch: true,
-          options: this.getCodelistForSelect("5300", "serviceType"),
-          codelistId: "5300",
-        }),
-        this.addRepeatList("serviceVersion", "Version", {
-          asAutocomplete: true,
-        }),
-        this.addGroup(
-          null,
-          "Weitere Informationen",
-          [
-            this.addTextAreaInline(
-              "systemEnvironment",
-              "Systemumgebung",
-              this.id,
-              {
+      this.addSection(
+        "Fachbezug",
+        [
+          this.addSelect("serviceType", "Art des Dienstes", {
+            showSearch: true,
+            options: this.getCodelistForSelect("5300", "serviceType"),
+            codelistId: "5300",
+          }),
+          this.addRepeatList("serviceVersion", "Version", {
+            asAutocomplete: true,
+          }),
+          this.addGroup(
+            null,
+            "Weitere Informationen",
+            [
+              this.addTextAreaInline(
+                "systemEnvironment",
+                "Systemumgebung",
+                this.id,
+                {
+                  hasInlineContextHelp: true,
+                  wrappers: ["inline-help", "form-field"],
+                },
+              ),
+              this.addTextAreaInline(
+                "implementationHistory",
+                "Historie",
+                this.id,
+                {
+                  hasInlineContextHelp: true,
+                  wrappers: ["inline-help", "form-field"],
+                },
+              ),
+            ],
+            { className: "optional" },
+          ),
+          this.addGroup(
+            null,
+            null,
+            [
+              this.addTextAreaInline("baseDataText", "Basisdaten", this.id, {
                 hasInlineContextHelp: true,
                 wrappers: ["inline-help", "form-field"],
-              },
-            ),
-            this.addTextAreaInline(
-              "implementationHistory",
-              "Historie",
-              this.id,
-              {
+              }),
+              this.addTextAreaInline("explanation", "Erläuterungen", this.id, {
                 hasInlineContextHelp: true,
                 wrappers: ["inline-help", "form-field"],
-              },
-            ),
-          ],
-          { className: "optional" },
-        ),
-        this.addGroup(
-          null,
-          null,
-          [
-            this.addTextAreaInline("baseDataText", "Basisdaten", this.id, {
-              hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
-            }),
-            this.addTextAreaInline("explanation", "Erläuterungen", this.id, {
-              hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
-            }),
-          ],
-          { className: "optional" },
-        ),
-        this.addRepeat("serviceUrls", "Service-Urls", {
-          className: "optional",
-          fields: [
-            this.addInputInline("name", "Name", { required: true }),
-            this.addInputInline("url", "URL", {
-              required: true,
-              validators: {
-                validation: ["url"],
-              },
-            }),
-            this.addInputInline("description", "Erläuterung"),
-          ],
-        }),
-        this.showDoiFields ? this.addGroupSimple("publication", [this.addDoiFields()]) : null,
-      ].filter(Boolean)),
+              }),
+            ],
+            { className: "optional" },
+          ),
+          this.addRepeat("serviceUrls", "Service-Urls", {
+            className: "optional",
+            fields: [
+              this.addInputInline("name", "Name", { required: true }),
+              this.addInputInline("url", "URL", {
+                required: true,
+                validators: {
+                  validation: ["url"],
+                },
+              }),
+              this.addInputInline("description", "Erläuterung"),
+            ],
+          }),
+          this.showDoiFields
+            ? this.addGroupSimple("publication", [this.addDoiFields()])
+            : null,
+        ].filter(Boolean),
+      ),
 
       this.addSpatialSection(),
       this.addTimeReferenceSection(),
