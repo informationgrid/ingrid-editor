@@ -183,7 +183,7 @@
         "<img src='${entry.get().getUri()}' height='100' class='preview_image' alt='${entry.get().getDescription()}' title='${entry.get().getDescription()}' >"@if (!entry.isLast()),@endif
     @endfor
     ],
-    @if("3".equals(page.getDocumentType()) && !page.getModel().getData().getService().hasAccessConstraintsOrFalse())
+    @if("3".equals(page.getDocumentType()))
     "capabilities_url": "${page.getCapabilitiesUrl()}",
     "capabilities_download_url": "${page.getCapabilitiesDownloadUrl()}",
     @elseif("1".equals(page.getDocumentType()))
