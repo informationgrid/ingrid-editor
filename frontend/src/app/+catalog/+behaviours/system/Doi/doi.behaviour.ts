@@ -27,8 +27,8 @@ import { PluginService } from "../../../../services/plugin/plugin.service";
 export class DoiBehaviour extends Plugin {
   id = "plugin.doi";
   name = "DOI-Felder anzeigen";
-  description = `Zeigt DOI-Felder im Formular an. Ersetzt das Feld "Dokumenttyp" in der Objektart "Literatur".
-<p>Es kann ein Default-Präfix angegeben werden, der in neuen Objekten automatisch eingefügt wird, in der Form: 10.VXYZ</p>`;
+  description = `Zeigt DOI-Felder im Formular unter der Rubrik "Fachbezug" an. In der Objektklasse "Literatur" wird dadurch das Feld "Dokumenttyp" ersetzt.
+<p>Es kann ein Default-Präfix angegeben werden, der in neu angelegten Objekten automatisch eingefügt wird.</p>`;
   defaultActive = false;
 
   constructor() {
@@ -38,7 +38,7 @@ export class DoiBehaviour extends Plugin {
       key: "doiPrefix",
       type: "input",
       props: {
-        placeholder: "Präfix für DOI-Einträge",
+        placeholder: "Default-Präfix für DOI-Einträge, Format: 10.VXYZ",
         appearance: "outline",
         required: false,
       },
