@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, signal } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { BehaviourService } from "../../../../app/services/behavior/behaviour.service";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
@@ -29,6 +29,11 @@ import { PageTemplateNoHeaderComponent } from "../../../../app/shared/page-templ
 import { UvpArchiveService } from "./uvp-archive.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { switchMap } from "rxjs";
+import { ConfigService } from "../../../../app/services/config/config.service";
+import { map, tap } from "rxjs/operators";
+import { RxStompService } from "../../../../app/rx-stomp.service";
+import { BaseLogResult } from "../../../../app/shared/base-log-result";
+import { DatePipe } from "@angular/common";
 
 @UntilDestroy()
 @Component({
@@ -42,20 +47,22 @@ import { switchMap } from "rxjs";
     MatRadioGroup,
     MatRadioButton,
     PageTemplateNoHeaderComponent,
+    DatePipe,
   ],
   templateUrl: "./uvp-archive.component.html",
   styleUrl: "./uvp-archive.component.scss",
   providers: [UvpArchiveService],
 })
-export class UvpArchiveComponent {
+export class UvpArchiveComponent implements OnInit {
   private behaviourService = inject(BehaviourService);
-
   private uvpArchiveService = inject(UvpArchiveService);
+  private rxStompService = inject(RxStompService);
 
   active = this.behaviourService.getBehaviour("plugin.archive").isActive;
   dateControl = new FormControl<Date>(null);
   choice = new FormControl(null);
   numOfDatasetsHint = signal<string>("");
+  status = signal<BaseLogResult>(null);
 
   constructor() {
     this.dateControl.valueChanges
@@ -68,6 +75,17 @@ export class UvpArchiveComponent {
       .subscribe((value) => {
         this.numOfDatasetsHint.set(`${value} Verfahren werden archiviert`);
       });
+  }
+
+  ngOnInit(): void {
+    this.rxStompService
+      .watch(`/topic/uvp/archiveStatus/${ConfigService.catalogId}`)
+      .pipe(
+        untilDestroyed(this),
+        map((msg) => JSON.parse(msg.body)),
+        tap((data) => this.status.set(data)),
+      )
+      .subscribe();
   }
 
   archiveNow() {

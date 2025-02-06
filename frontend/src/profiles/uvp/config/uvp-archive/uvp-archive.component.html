@@ -73,6 +73,33 @@
             >
                 Jetzt aktualisieren
             </button>
+
+            @if (status() != null) {
+                <div class="status">
+                    <div>
+                        Start:
+                        {{ status().startTime | date: "dd.LL.yyyy HH:mm:ss" }}
+                    </div>
+                    <div>
+                        &nbsp;Ende:
+                        {{ status().endTime | date: "dd.LL.yyyy HH:mm:ss" }}
+                    </div>
+                    <div>Archivierte Verfahren: {{ status().progress }}</div>
+                    @if (status().errors?.length > 0) {
+                        <div>
+                            Fehler:
+                            <span data-cy="count-errors">{{
+                                status().errors.length
+                            }}</span>
+                            <ul>
+                                @for (error of status().errors; track error) {
+                                    <li>{{ error }}</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            }
         }
     </div>
 </page-template-no-header>
