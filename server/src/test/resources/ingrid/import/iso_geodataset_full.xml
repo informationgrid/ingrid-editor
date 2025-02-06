@@ -159,14 +159,14 @@
                                     <gmd:identifier>
                                         <gmd:MD_Identifier>
                                             <gmd:code>
-                                                <gco:CharacterString>Image</gco:CharacterString>
+                                                <gco:CharacterString>ComputationalNotebook/Brochure/Bulletin</gco:CharacterString>
                                             </gmd:code>
                                         </gmd:MD_Identifier>
                                     </gmd:identifier>
                                 </gmd:CI_Citation>
                             </gmd:authority>
                             <gmd:code>
-                                <gco:CharacterString>https://doi.org/10.1234/abc</gco:CharacterString>
+                                <gco:CharacterString>https://doi.org/10.1000/1234</gco:CharacterString>
                             </gmd:code>
                         </gmd:MD_Identifier>
                     </gmd:identifier>

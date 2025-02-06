@@ -102,6 +102,22 @@
     "data" : "{}"
   } ],
   "codelist" : [ {
+    "id" : 27,
+    "identifier" : "3386",
+    "catalog_id" : 7,
+    "name" : "Ressourcen-Typ",
+    "description" : "",
+    "data" : "[{\"id\": \"5\", \"localisations\": {\"de\": \"ComputationalNotebook\", \"en\": \"ComputationalNotebook\"}}]",
+    "default_entry" : null
+  }, {
+    "id" : 28,
+    "identifier" : "3390",
+    "catalog_id" : 7,
+    "name" : "Ressourcen-Typ (generell)",
+    "description" : "",
+    "data" : "[{\"id\": \"5\", \"localisations\": {\"de\": \"ComputationalNotebook\", \"en\": \"ComputationalNotebook\"}}, {\"id\": \"12\", \"localisations\": {\"de\": \"Image\", \"en\": \"Image\"}}]",
+    "default_entry" : null
+  }, {
     "id" : 29,
     "identifier" : "6006",
     "catalog_id" : 7,

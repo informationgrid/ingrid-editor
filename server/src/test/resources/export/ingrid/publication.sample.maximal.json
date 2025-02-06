@@ -72,6 +72,13 @@
       "location": "Standort",
       "isbn": "3-456-7889-X",
       "publishingHouse": "Verlag",
+      "doi": "10.1000/1234",
+      "generalResourceType": {
+        "key": "5"
+      },
+      "resourceType": {
+        "key": "2"
+      },
       "documentType": {
         "key": "1"
       },
