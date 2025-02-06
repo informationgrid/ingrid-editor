@@ -628,8 +628,7 @@ open class IngridModelTransformer(
             .map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
             .filter {
                 it.type == "InGridGeoService" &&
-                    it.data.getString("service.type.key") == serviceTypeKey &&
-                    it.data.getBoolean("service.hasAccessConstraints") != true
+                    it.data.getString("service.type.key") == serviceTypeKey
             }
             .mapNotNull { ref ->
                 ref.data.get("service").get("operations")
