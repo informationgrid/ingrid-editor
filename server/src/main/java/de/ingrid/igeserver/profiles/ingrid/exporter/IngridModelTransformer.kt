@@ -1133,6 +1133,9 @@ open class IngridModelTransformer(
     fun getSortHash(): String = DigestUtils.sha1Hex(model.title)
 
     fun isHvd(): Boolean = data.properties?.isHvd ?: false
+
+    // if the document is a service with "Zugang geschützt" or it has access constraints other than "1" ("Es gelten keine Zugriffsbeschränkungen") #4377 #7280
+    fun hasAccessConstraints(): Boolean = data.service.hasAccessConstraintsOrFalse() || (data.resource?.accessConstraints?.any { it.key != "1" } == true)
 }
 
 enum class CoordinateType { Lat1, Lat2, Lon1, Lon2 }
