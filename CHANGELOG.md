@@ -1,5 +1,18 @@
 # Changelog
 
+## 7.4.2 (07.02.2025)
+
+
+### Bugfixes
+
+* Fehler bei der Aktualisierung der extern gekoppelten Daten mit layerNames (#7302)
+* Fehler beim Wechsel zu Adressen für Autoren (#7301)
+* Toolbar Buttons disabled nach dem man Auswahlmode schließt  (#7281)
+* Fehlerhafter CSV-Export: capabilites_download_url korrekt befüllen (#7280)
+* Indexfeld access_constraint mit "Y" statt "true" befüllen (#7275)
+* Migrationstask für HVD fixen (#7274)
+* Datendownloads unter Verweise können jetzt nicht mehr zum Bearbeiten geöffnet werden, wenn die eingetragenen links / und oder Erläuterungen zu lang sind (#7263)
+    
 ## 7.4.2 (05.02.2025)
 
 
