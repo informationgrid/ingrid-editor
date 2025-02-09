@@ -30,6 +30,14 @@ import org.apache.logging.log4j.kotlin.logger
 class IBusIndexer(override val name: String, private val iBus: IBus) : IIndexManager {
     val log = logger()
 
+    override fun onFinishIndexAll() {
+        TODO("Not yet implemented")
+    }
+
+    override fun setCatalogId(catalogId: String) {
+        TODO("Not yet implemented")
+    }
+
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? {
         val call = IngridCall()
         call.method = "getIndexNameFromAliasName"

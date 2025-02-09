@@ -229,7 +229,7 @@ class IndexingTask(
                         catalogProfile.indexIdField.address
                     } else {
                         catalogProfile.indexIdField.document
-                    },
+                    }
                 )
             }.also {
                 if (it.isEmpty()) log.warn("No exporter found for any category with ID: ${config.exporterId}")
@@ -245,7 +245,7 @@ class IndexingTask(
         exportFormatId: String,
         ibusConfigs: List<IBusConfig>,
         elasticConfig: List<ElasticConfig>,
-        cswtConfig: List<CSWTConfig>,
+        cswConfig: List<CSWConfig>,
     ): List<ExportConfig> {
         val iBusDefinitions = ibusConfigs.map {
             ExportConfig(it.id!!, exportFormatId, listOf("internet"))
@@ -253,7 +253,7 @@ class IndexingTask(
         val elasticDefinitions = elasticConfig.map {
             ExportConfig(it.id!!, exportFormatId, listOf("internet"))
         }
-        val cswtDefinitions = cswtConfig.map {
+        val cswtDefinitions = cswConfig.map {
             ExportConfig(it.id!!, exportFormatId, listOf("internet"))
         }
         return iBusDefinitions + elasticDefinitions + cswtDefinitions

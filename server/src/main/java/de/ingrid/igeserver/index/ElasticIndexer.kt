@@ -57,6 +57,14 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
     private val defaultMapping: String = ElasticIndexer::class.java.getResource("/ingrid-meta-mapping.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-mapping.json' for creating index 'ingrid_meta'")
     private val defaultSettings: String = ElasticIndexer::class.java.getResource("/ingrid-meta-settings.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-settings.json' for creating index 'ingrid_meta'")
 
+    override fun onFinishIndexAll() {
+        TODO("Not yet implemented")
+    }
+
+    override fun setCatalogId(catalogId: String) {
+        TODO("Not yet implemented")
+    }
+
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? = runBlocking {
         val aliases = try {
             elastic.client.getAliases(indexAlias)

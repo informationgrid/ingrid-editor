@@ -44,10 +44,10 @@ class SettingsService(
 
         return jacksonObjectMapper().convertValue(iBusJson, object : TypeReference<List<ElasticConfig>>() {})
     }
-    fun getCSWTConfig(): List<CSWTConfig> {
+    fun getCSWTConfig(): List<CSWConfig> {
         val cswtJson = repoSettings.findByKey("cswt")?.value ?: return emptyList()
 
-        return jacksonObjectMapper().convertValue(cswtJson, object : TypeReference<List<CSWTConfig>>() {})
+        return jacksonObjectMapper().convertValue(cswtJson, object : TypeReference<List<CSWConfig>>() {})
     }
 
     fun getConnectionConfig(id: String): WithId? {
@@ -81,7 +81,7 @@ class SettingsService(
         this.updateItem("elasticsearch", config)
     }
 
-    fun setCSWTConfig(config: List<CSWTConfig>) {
+    fun setCSWTConfig(config: List<CSWConfig>) {
         addIdIfNeeded(config)
         this.updateItem("cswt", config)
     }

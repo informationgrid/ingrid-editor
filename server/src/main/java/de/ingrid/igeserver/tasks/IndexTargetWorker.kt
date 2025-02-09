@@ -93,6 +93,9 @@ class IndexTargetWorker(
             }
             // post phase
             indexPostPhase(plugInfo)
+
+            config.target.onFinishIndexAll()
+
             log.debug("Task finished: Indexing for $catalogId")
         } catch (ex: InterruptedException) {
             log.info("Indexing was cancelled")
@@ -171,6 +174,7 @@ class IndexTargetWorker(
             Pair(config.exporter.run(doc, catalogId, exportOptions), config.exporter.typeInfo.type)
 
         val elasticDocument = convertToElasticDocument(exportedDoc)
+        config.target.setCatalogId(catalogId)
         config.target.update(indexInfo, elasticDocument)
         val simpleContext = SimpleContext(catalogId, catalogProfile.identifier, doc.uuid)
 

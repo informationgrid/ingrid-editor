@@ -62,7 +62,7 @@ data class ExpiredDatasetConfig(
 data class ConnectionConfig(
     val ibus: List<IBusConfig>? = null,
     val elasticsearch: List<ElasticConfig>? = null,
-    val cswt: List<CSWTConfig>? = null,
+    val cswt: List<CSWConfig>? = null,
 )
 
 interface WithId {
@@ -88,7 +88,7 @@ data class ElasticConfig(
 ) : WithId
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class CSWTConfig(
+data class CSWConfig(
     override var id: String? = null,
     val name: String,
     val url: String,
