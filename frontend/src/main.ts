@@ -256,10 +256,6 @@ bootstrapApplication(AppComponent, {
             component: DocumentReferenceSelectorComponent,
           },
           {
-            name: "radioOptions",
-            component: RadioOptionsComponent,
-          },
-          {
             name: "updateGetCapabilities",
             component: UpdateGetCapabilitiesComponent,
           },
