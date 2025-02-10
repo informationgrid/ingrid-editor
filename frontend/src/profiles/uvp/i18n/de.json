@@ -62,5 +62,12 @@
       "uvp-monitoring": "Monitoring",
       "activity-report": "Aktivitätsbericht"
     }
+  },
+  "uvp": {
+    "archive": {
+      "showAll": "<span class='section-title'>Alle Dokumente im Portal sichtbar belassen</span>: Die Dokumente in den archivierten Verfahren werden nicht verändert und werden im Portal so angezeigt wie vor der Archivierung.",
+      "hideAll": "<span class='section-title'>Alle Dokumente im Portal ausblenden</span>: Alle Dokumente deren Gültig-Bis Datum nicht bereits in der Vergangenheit liegt, werden auf das gestrige Datum gesetzt und sind nach der Archivierung im Portal nicht mehr sichtbar.",
+      "showOnlyDecision": "<span class='section-title'>Nur Dokumente der Entscheidung sichtbar belassen</span>: Nur Dokumente aus der Entscheidung, werden weiterhin im Portal angezeigt. Alle anderen Dokumente werden ausgeblendet, indem die Gültigkeit auf das gestrige Datum gesetzt wird, insofern sich das Datum nicht bereits in der Vergangenheit befindet."
+    }
   }
 }

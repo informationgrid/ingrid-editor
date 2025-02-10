@@ -22,21 +22,54 @@ import { inject, Injectable } from "@angular/core";
 import { AuthGuard } from "../../../app/security/auth.guard";
 import { CatalogRoutesService } from "../../../app/+catalog/catalog-routes.service";
 import { Router } from "@angular/router";
+import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @Injectable({ providedIn: "root" })
 export class UvpArchiveBehaviour extends Plugin {
+  private transloco = inject(TranslocoService);
+
   id = "plugin.uvp.archive";
   name = "UVP Archivierung";
-  description = "Erweiterungen für die Archivierung von UVP-Dokumenten.";
+  description = `Erweiterungen für die Archivierung von UVP-Dokumenten.
+  <ul>
+    <li>${this.transloco.translate("uvp.archive.hideAll")}</li>
+    <li>${this.transloco.translate("uvp.archive.showAll")}</li>
+    <li>${this.transloco.translate("uvp.archive.showOnlyDecision")}</li>
+  </ul>`;
   defaultActive = true;
   group = "UVP";
-  hide = true;
+  hide = false;
 
   private catalogRouteService = inject(CatalogRoutesService);
   private router = inject(Router);
 
   constructor() {
     super();
+
+    this.fields.push({
+      key: "uvpArchiveType",
+      type: "radio",
+      defaultValue: "showAll",
+      wrappers: ["form-field"],
+      props: {
+        labelProp: "label",
+        valueProp: "value",
+        appearance: "outline",
+        options: [
+          { value: "hideAll", label: "Alle Dokumente im Portal ausblenden" },
+          {
+            value: "showAll",
+            label: "Alle Dokumente im Portal sichtbar belassen",
+          },
+          {
+            value: "showOnlyDecision",
+            label: "Nur Dokumente der Entscheidung sichtbar belassen",
+          },
+        ],
+        required: true,
+      },
+    });
   }
 
   register() {

@@ -61,6 +61,7 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
         key: "onlyWithSpatial",
         type: "toggle",
         props: {
+          appearance: "outline",
           label: "Nur mit Raumbezügen",
         },
       },
@@ -68,6 +69,7 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
         key: "controlledByDataset",
         type: "toggle",
         props: {
+          appearance: "outline",
           label: "Veröffentlichung im Portal auf Datensatzebene steuern",
         },
       },

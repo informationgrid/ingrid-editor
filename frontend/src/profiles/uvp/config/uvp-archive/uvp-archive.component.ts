@@ -17,14 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, OnInit, signal } from "@angular/core";
+import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { BehaviourService } from "../../../../app/services/behavior/behaviour.service";
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
-import { MatRadioButton, MatRadioGroup } from "@angular/material/radio";
 import { PageTemplateNoHeaderComponent } from "../../../../app/shared/page-template/page-template-no-header.component";
 import { UvpArchiveService } from "./uvp-archive.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -34,6 +33,7 @@ import { map, tap } from "rxjs/operators";
 import { RxStompService } from "../../../../app/rx-stomp.service";
 import { BaseLogResult } from "../../../../app/shared/base-log-result";
 import { DatePipe } from "@angular/common";
+import { TranslocoService } from "@ngneat/transloco";
 
 @UntilDestroy()
 @Component({
@@ -44,8 +44,6 @@ import { DatePipe } from "@angular/common";
     MatDatepickerModule,
     ReactiveFormsModule,
     MatButton,
-    MatRadioGroup,
-    MatRadioButton,
     PageTemplateNoHeaderComponent,
     DatePipe,
   ],
@@ -57,12 +55,19 @@ export class UvpArchiveComponent implements OnInit {
   private behaviourService = inject(BehaviourService);
   private uvpArchiveService = inject(UvpArchiveService);
   private rxStompService = inject(RxStompService);
+  private transloco = inject(TranslocoService);
 
   active = this.behaviourService.getBehaviour("plugin.archive").isActive;
   dateControl = new FormControl<Date>(null);
-  choice = new FormControl(null);
   numOfDatasetsHint = signal<string>("");
   status = signal<BaseLogResult>(null);
+  explanation = computed<string>(() => {
+    const type =
+      this.behaviourService.getBehaviour("plugin.uvp.archive").data[
+        "uvpArchiveType"
+      ];
+    return this.transloco.translate("uvp.archive." + type);
+  });
 
   constructor() {
     this.dateControl.valueChanges
@@ -89,8 +94,6 @@ export class UvpArchiveComponent implements OnInit {
   }
 
   archiveNow() {
-    this.uvpArchiveService
-      .archive(this.choice.value, this.dateControl.value)
-      .subscribe();
+    this.uvpArchiveService.archive(this.dateControl.value).subscribe();
   }
 }

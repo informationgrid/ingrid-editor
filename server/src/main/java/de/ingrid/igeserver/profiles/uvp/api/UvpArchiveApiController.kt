@@ -23,6 +23,7 @@ import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.profiles.uvp.UvpArchiveService
 import de.ingrid.igeserver.profiles.uvp.tasks.ArchiveType
 import de.ingrid.igeserver.profiles.uvp.tasks.UvpArchiveTask
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.SchedulerService
 import io.swagger.v3.oas.annotations.Operation
@@ -41,7 +42,7 @@ import java.time.OffsetDateTime
 @Tag(name = "UVP Archive")
 @RestController
 @RequestMapping(path = ["/api/uvp/archive"])
-class UvpArchiveApiController(val catalogService: CatalogService, val scheduler: SchedulerService, val uvpArchiveService: UvpArchiveService) {
+class UvpArchiveApiController(val catalogService: CatalogService, val scheduler: SchedulerService, val uvpArchiveService: UvpArchiveService, val behaviourService: BehaviourService) {
 
     @Operation
     @PostMapping(value = [""], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -51,16 +52,25 @@ class UvpArchiveApiController(val catalogService: CatalogService, val scheduler:
     ): ResponseEntity<Boolean> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val jobKey = JobKey.jobKey(UvpArchiveTask.JOB_KEY, catalogId)
+        val type = behaviourService.get(catalogId, "plugin.uvp.archive")?.data?.get("type") as? String
 
         val jobDataMap = JobDataMap().apply {
             put("catalogId", catalogId)
-            put("type", body.type.name)
+            put("type", mapType(type))
             put("date", body.date.toString())
             put("report", null)
         }
         scheduler.handleJobWithCommand(JobCommand.start, UvpArchiveTask::class.java, jobKey, jobDataMap)
 
         return ResponseEntity.ok(true)
+    }
+
+    private fun mapType(type: String?): String {
+        return when (type) {
+            "hideAll" -> return ArchiveType.HIDE_ALL.name
+            "showOnlyDecision" -> return ArchiveType.SHOW_ONLY_DECISION.name
+            else -> return ArchiveType.SHOW_ALL.name
+        }
     }
 
     @Operation
@@ -75,4 +85,4 @@ class UvpArchiveApiController(val catalogService: CatalogService, val scheduler:
     }
 }
 
-data class ArchiveParameter(val type: ArchiveType, val date: OffsetDateTime?)
+data class ArchiveParameter(val date: OffsetDateTime?)
