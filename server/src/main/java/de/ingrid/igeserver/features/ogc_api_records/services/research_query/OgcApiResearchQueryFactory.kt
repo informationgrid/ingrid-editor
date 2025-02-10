@@ -30,11 +30,14 @@ class OgcApiResearchQueryFactory(
 ) {
     fun getQuery(profile: CatalogProfile, ogcFilterParameter: OgcFilterParameter): ResearchQuery {
         try {
-            val filter = ogcApiSearchFilterList.filter { ogcApiSearchFilter: OgcApiResearchQuery -> ogcApiSearchFilter.profiles.contains(profile.identifier) }
+            var filter = ogcApiSearchFilterList.filter { ogcApiSearchFilter: OgcApiResearchQuery -> ogcApiSearchFilter.profiles.contains(profile.identifier) }
             if (filter.size > 1) throw ConfigurationException.withReason("Record query is not possible. The profile '$profile' has more than one OgcApiResearchQuery.")
+            if (filter.isEmpty()) {
+                filter = ogcApiSearchFilterList.filter { ogcApiSearchFilter: OgcApiResearchQuery -> ogcApiSearchFilter.profiles.contains("fallback") }
+            }
             return filter.first().createQuery(ogcFilterParameter)
         } catch (e: NoSuchElementException) {
-            throw ConfigurationException.withReason("Record query is not possible. The profile '$profile' does not have a OgcApiResearchQuery.")
+            throw ConfigurationException.withReason("OGC Record query is not possible. $e")
         }
     }
 }
