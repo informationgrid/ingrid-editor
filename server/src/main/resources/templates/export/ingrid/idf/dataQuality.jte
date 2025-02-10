@@ -255,7 +255,7 @@
                                     <gmd:date>
                                         <gmd:CI_Date>
                                             <gmd:date>
-                                                <gco:Date>${description.getDate()}</gco:Date>
+                                                <gco:DateTime>${description.getDate()}</gco:DateTime>
                                             </gmd:date>
                                             <gmd:dateType>
                                                 <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="${description.getDateType()}">${description.getDateType()}</gmd:CI_DateTypeCode>
