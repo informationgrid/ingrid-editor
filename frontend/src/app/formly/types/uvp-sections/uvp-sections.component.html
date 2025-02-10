@@ -1,3 +1,4 @@
+@let isDisabled = formState.disabled || props.disabled || formControl.disabled;
 @if (field.fieldGroup.length > 0) {
     @for (
         currentField of field.fieldGroup;
@@ -10,7 +11,7 @@
             [class.elevated]="markSection[i]"
         >
             <formly-field [field]="currentField"></formly-field>
-            @if (form.enabled) {
+            @if (!isDisabled) {
                 <button
                     type="button"
                     class="menu dark menu-button"
@@ -35,7 +36,7 @@
         </div>
     }
     <div style="display: flex; justify-content: center">
-        @if (!(formState.disabled || props.disabled || formControl.disabled)) {
+        @if (!isDisabled) {
             <button
                 mat-flat-button
                 type="button"
@@ -51,8 +52,8 @@
 }
 @if (field.fieldGroup.length < 1) {
     <div class="section-wrapper">
-        <h3>Verfahrenschritte</h3>
-        @if (!(formState.disabled || props.disabled || formControl.disabled)) {
+        <h3>Verfahrensschritte</h3>
+        @if (!isDisabled) {
             <button
                 mat-flat-button
                 type="button"
