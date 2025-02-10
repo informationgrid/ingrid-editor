@@ -17,7 +17,6 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-
 package de.ingrid.igeserver.features.ogc_api_records.services.research_query
 
 import de.ingrid.igeserver.configuration.ConfigurationException
