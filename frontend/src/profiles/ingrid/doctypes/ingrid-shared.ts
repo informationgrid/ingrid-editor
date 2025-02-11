@@ -1677,15 +1677,15 @@ export abstract class IngridShared extends BaseDoctype {
         updateOn: "change",
       }),
       this.addRadioboxes("referenceType", "Verweistyp:", {
-        defaultValue: "uuidRef",
+        defaultValue: "url",
         options: [
-          {
-            value: "Interner Datensatz",
-            id: "uuidRef",
-          },
           {
             value: "Externe URL",
             id: "url",
+          },
+          {
+            value: "Interner Datensatz",
+            id: "uuidRef",
           },
         ],
       }),
