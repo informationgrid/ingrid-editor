@@ -141,7 +141,6 @@ import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
 import { MetadataTypeComponent } from "./app/formly/types/metadata-type/metadata-type.component";
 import { MatDatepickerIntl } from "@angular/material/datepicker";
 import { GermanDateIntl } from "./app/services/german-date.intl";
-import { RadioOptionsComponent } from "./app/formly/types/radio-options/radio-options.component";
 import { GeneralStore } from "./app/store/general.store";
 import {
   MatomoInitializerService,
