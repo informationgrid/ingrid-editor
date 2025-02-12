@@ -39,6 +39,8 @@ abstract class OgcApiResearchQuery {
 
     abstract var ogcParameter: OgcFilterParameter
 
+    abstract fun checkParametersSupport()
+
     abstract fun profileSpecificClauses(): MutableList<BoolFilter>?
 
     fun profiles(): List<String> = profiles
@@ -67,17 +69,14 @@ abstract class OgcApiResearchQuery {
 
         clausesList.add(BoolFilter("OR", listOf("document1.state = 'PUBLISHED'"), null, null, false))
 
-        // time span
-        if (ogcParameter.datetime != null) {
-            val dateList = ogcDateTimeConverter(ogcParameter.datetime)
+        ogcParameter.datetime?.let { datetime ->
+            val dateList = ogcDateTimeConverter(datetime)
             clausesList.add(BoolFilter("OR", listOf("selectTimespan"), null, dateList, true))
         }
-        // filter by doc type
-        if (ogcParameter.type != null) {
+
+        ogcParameter.type?.let { type ->
             val typeList = mutableListOf<String>()
-            for (name in ogcParameter.type) {
-                typeList.add("document_wrapper.type = '$name'")
-            }
+            for (name in type) typeList.add("document_wrapper.type = '$name'")
             clausesList.add(BoolFilter("OR", typeList, null, null, false))
         }
 
@@ -88,6 +87,7 @@ abstract class OgcApiResearchQuery {
 
     fun createQuery(ogcFilterParameter: OgcFilterParameter): ResearchQuery {
         ogcParameter = ogcFilterParameter
+        checkParametersSupport()
         return ResearchQuery(
             term = null,
             clauses = BoolFilter(op = "AND", value = null, clauses = clauses(ogcFilterParameter), parameter = null, isFacet = true),

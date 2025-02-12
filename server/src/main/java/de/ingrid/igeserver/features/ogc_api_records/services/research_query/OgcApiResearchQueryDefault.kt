@@ -31,10 +31,10 @@ class OgcApiResearchQueryDefault : OgcApiResearchQuery() {
 
     override lateinit var ogcParameter: OgcFilterParameter
 
-    override fun profileSpecificClauses(): MutableList<BoolFilter>? {
-        if (ogcParameter.qParameter != null) {
-            throw ConfigurationException.withReason("Request parameter 'q' is not yet supported for current profile. Please remove the parameter.")
-        }
-        return null
+    override fun checkParametersSupport() {
+        ogcParameter.qParameter?.let { throw ConfigurationException.withReason("Request parameter 'q' is not yet supported for current profile. Please remove the parameter.") }
+        ogcParameter.bbox?.let { throw ConfigurationException.withReason("Request parameter 'bbox' is not yet supported for current profile. Please remove the parameter.") }
     }
+
+    override fun profileSpecificClauses(): MutableList<BoolFilter>? = null
 }

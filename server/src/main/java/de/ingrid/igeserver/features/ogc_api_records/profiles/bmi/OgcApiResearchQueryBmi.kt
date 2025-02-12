@@ -33,6 +33,8 @@ class OgcApiResearchQueryBmi : OgcApiResearchQuery() {
 
     override lateinit var ogcParameter: OgcFilterParameter // = OgcFilterParameter(null, null, null, null, null, null)
 
+    override fun checkParametersSupport() {}
+
     override fun profileSpecificClauses(): MutableList<BoolFilter>? {
         val clausesList: MutableList<BoolFilter> = mutableListOf()
 

@@ -33,6 +33,8 @@ class OgcApiResearchQueryUvp : OgcApiResearchQuery() {
 
     override lateinit var ogcParameter: OgcFilterParameter
 
+    override fun checkParametersSupport() {}
+
     override fun profileSpecificClauses(): MutableList<BoolFilter>? {
         val clausesList: MutableList<BoolFilter> = mutableListOf()
 
