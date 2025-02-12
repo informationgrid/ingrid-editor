@@ -66,11 +66,7 @@ abstract class OgcApiResearchQuery {
         clausesList.add(BoolFilter("OR", listOf("exceptFolders"), null, null, true))
 
         clausesList.add(BoolFilter("OR", listOf("document1.state = 'PUBLISHED'"), null, null, false))
-        // bbox // check if 4 values is true
-        if (ogcParameter.bbox != null) {
-            val boundingBox = ogcParameter.bbox.map { coordinate -> coordinate.toString() }
-            clausesList.add(BoolFilter("OR", listOf("ingridSelectSpatial"), null, boundingBox, true))
-        }
+
         // time span
         if (ogcParameter.datetime != null) {
             val dateList = ogcDateTimeConverter(ogcParameter.datetime)

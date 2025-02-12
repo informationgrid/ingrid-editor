@@ -36,6 +36,11 @@ class OgcApiResearchQueryUvp : OgcApiResearchQuery() {
     override fun profileSpecificClauses(): MutableList<BoolFilter>? {
         val clausesList: MutableList<BoolFilter> = mutableListOf()
 
+        ogcParameter.bbox?.let { bbox ->
+            val boundingBox = bbox.map { coordinate -> coordinate.toString() }
+            clausesList.add(BoolFilter("OR", listOf("ingridSelectSpatial"), null, boundingBox, true))
+        }
+
         if (ogcParameter.qParameter != null) {
             clausesList.add(BoolFilter("OR", listOf(qParameterSQL()), null, null, false))
         }
@@ -44,7 +49,7 @@ class OgcApiResearchQueryUvp : OgcApiResearchQuery() {
     }
 
     @Language("PostgreSQL")
-    fun qParameterSQL(): String {
+    private fun qParameterSQL(): String {
         val titleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "title ILIKE '%$it%'" }
         val descriptionCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
 
