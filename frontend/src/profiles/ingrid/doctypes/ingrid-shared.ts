@@ -1652,8 +1652,11 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   addDoiFields(): FormlyFieldConfig {
+    let doiPrefix =
+      this.behaviourService.getBehaviour("plugin.doi")?.data?.doiPrefix;
     return this.addGroup(null, "DOI", [
       this.addInputInline("doi", "DOI", {
+        defaultValue: doiPrefix ? doiPrefix + "/" : "",
         validators: {
           validation: ["doi"],
         },
