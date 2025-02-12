@@ -131,12 +131,12 @@ fun sqlUpdateValidDate(docId: Int, tableField: String): String = """
                                                                 CASE
                                                                     WHEN doc ->> 'validUntil' IS NULL OR
                                                                          (doc ->> 'validUntil')::timestamp >=
-                                                                         CURRENT_DATE::timestamptz THEN
+                                                                         (CURRENT_DATE::timestamp AT TIME ZONE 'Europe/Berlin') AT TIME ZONE 'UTC' THEN
                                                                         jsonb_set(
                                                                                 doc,
                                                                                 '{validUntil}',
                                                                                 to_jsonb(to_char(
-                                                                                    (CURRENT_DATE::timestamp AT TIME ZONE 'Europe/Berlin') AT TIME ZONE 'UTC'
+                                                                                    ((CURRENT_DATE::timestamp - INTERVAL '1 day') AT TIME ZONE 'Europe/Berlin') AT TIME ZONE 'UTC'
                                                                                 , 'YYYY-MM-DD"T"HH24:MI:SS.MSZ')),
                                                                                 TRUE
                                                                         )

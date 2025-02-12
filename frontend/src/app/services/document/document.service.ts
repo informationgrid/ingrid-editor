@@ -1119,8 +1119,38 @@ export class DocumentService {
     );
   }
 
-  unarchive(wrapperId: number, forAddress: boolean) {
-    return this.dataService.unarchive(wrapperId);
+  archive(wrapperId: number) {
+    return this.dataService.archive(wrapperId).pipe(
+      tap((doc) => {
+        this.updateTreeStore(doc, false);
+        const docAbstract = this.mapToDocumentAbstracts([doc]);
+        this.generalStore.setDatasetsChanged(
+          {
+            type: UpdateType.Update,
+            data: docAbstract,
+            doNotSelect: true,
+          },
+          false,
+        );
+      }),
+    );
+  }
+
+  unarchive(wrapperId: number) {
+    return this.dataService.unarchive(wrapperId).pipe(
+      tap((doc) => {
+        this.updateTreeStore(doc, false);
+        const docAbstract = this.mapToDocumentAbstracts([doc]);
+        this.generalStore.setDatasetsChanged(
+          {
+            type: UpdateType.Update,
+            data: docAbstract,
+            doNotSelect: true,
+          },
+          false,
+        );
+      }),
+    );
   }
 }
 

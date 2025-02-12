@@ -29,6 +29,7 @@ import {
 } from "../../../../dialogs/confirm/confirm-dialog.component";
 import { TagsService } from "../tags/tags.service";
 import { DocumentService } from "../../../../services/document/document.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @Injectable()
 export class ArchivePlugin extends Plugin {
@@ -45,6 +46,7 @@ export class ArchivePlugin extends Plugin {
   private dialog = inject(MatDialog);
   private tagsService = inject(TagsService);
   private documentService = inject(DocumentService);
+  private transloco = inject(TranslocoService);
 
   constructor() {
     super();
@@ -78,7 +80,9 @@ export class ArchivePlugin extends Plugin {
           .open(ConfirmDialogComponent, {
             data: <ConfirmDialogData>{
               title: "Archivieren",
-              message: "Wollen Sie den Datensatz wirklich archivieren?",
+              message:
+                "Wollen Sie den Datensatz wirklich archivieren? " +
+                this.transloco.translate("archive.message"),
               confirmButtonText: "Jetzt archivieren",
             },
           })
@@ -86,8 +90,8 @@ export class ArchivePlugin extends Plugin {
           .subscribe((result) => {
             if (result) {
               const openedDocument = this.generalStore.getOpenedDocument(false);
-              this.tagsService
-                .addTags(openedDocument.id as number, ["archived"], false)
+              this.documentService
+                .archive(openedDocument.id as number)
                 .subscribe(() => {
                   this.documentService.reload$.next({
                     uuid: openedDocument._uuid,
@@ -102,8 +106,8 @@ export class ArchivePlugin extends Plugin {
       .onEvent("UNARCHIVE")
       .subscribe(() => {
         const openedDocument = this.generalStore.getOpenedDocument(false);
-        this.tagsService
-          .removeTags(openedDocument.id as number, ["archived"], false)
+        this.documentService
+          .unarchive(openedDocument.id as number)
           .subscribe(() => {
             this.documentService.reload$.next({
               uuid: openedDocument._uuid,
