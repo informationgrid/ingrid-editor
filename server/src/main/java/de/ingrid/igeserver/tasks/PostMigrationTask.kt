@@ -230,7 +230,7 @@ class PostMigrationTask(
     }
 
     private fun restructureObjectsWithChildren(catalogIdentifier: String) {
-        documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = false).forEach { doc ->
+        documentService.getAllDataDocumentWrappers(catalogIdentifier, includeFolders = false).forEach { doc ->
             val foundChildren = documentService.findChildren(
                 catalogIdentifier,
                 doc.id,
