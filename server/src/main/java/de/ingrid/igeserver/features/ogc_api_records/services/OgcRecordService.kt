@@ -107,6 +107,7 @@ class OgcRecordService(
     private val ogcHtmlConverterService: OgcHtmlConverterService,
     generalProperties: GeneralProperties,
 ) {
+    val hostUrl = generalProperties.host
     val hostnameOgcApi = generalProperties.host + "/api/ogc"
 
     fun handleLandingPageRequest(requestedFormat: CollectionFormat): ByteArray {
@@ -120,6 +121,7 @@ class OgcRecordService(
                     Link(href = "$hostnameOgcApi?f=$it", rel = "alternate", type = it.mimeType, title = "Link to the landing page in format '$it'"),
                 )
             }
+        linkList.add(Link(href = "$hostUrl/v3/api-docs", rel = "service-doc", type = "application/json", title = "The API documentation"))
         linkList.add(Link(href = "$hostnameOgcApi/conformance", rel = "conformance", type = "application/json", title = "OGC API conformance classes implemented by this server"))
         linkList.add(Link(href = "$hostnameOgcApi/collections", rel = "collections", type = "application/json", title = "Information about the record collections"))
 
