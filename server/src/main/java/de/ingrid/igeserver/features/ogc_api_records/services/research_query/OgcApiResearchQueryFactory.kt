@@ -22,22 +22,24 @@ package de.ingrid.igeserver.features.ogc_api_records.services.research_query
 import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.services.CatalogProfile
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
 @Service
 class OgcApiResearchQueryFactory(
     private val ogcApiSearchFilterList: List<OgcApiResearchQuery>,
+    @Qualifier("default") private val defaultFilter: OgcApiResearchQuery,
 ) {
     fun getQuery(profile: CatalogProfile, ogcFilterParameter: OgcFilterParameter): ResearchQuery {
         try {
-            var filter = ogcApiSearchFilterList.filter { ogcApiSearchFilter: OgcApiResearchQuery -> ogcApiSearchFilter.profiles.contains(profile.identifier) }
-            if (filter.size > 1) throw ConfigurationException.withReason("Record query is not possible. The profile '$profile' has more than one OgcApiResearchQuery.")
-            if (filter.isEmpty()) {
-                filter = ogcApiSearchFilterList.filter { ogcApiSearchFilter: OgcApiResearchQuery -> ogcApiSearchFilter.profiles.contains("fallback") }
+            val filter = ogcApiSearchFilterList.filter { ogcApiSearchFilter: OgcApiResearchQuery -> ogcApiSearchFilter.profiles.contains(profile.identifier) }
+            return when {
+                filter.size > 1 -> throw ConfigurationException.withReason("Record query is not possible. The profile '$profile' has more than one OgcApiResearchQuery.")
+                filter.isEmpty() -> defaultFilter.createQuery(ogcFilterParameter)
+                else -> filter.first().createQuery(ogcFilterParameter)
             }
-            return filter.first().createQuery(ogcFilterParameter)
         } catch (e: NoSuchElementException) {
-            throw ConfigurationException.withReason("OGC Record query is not possible. $e")
+            throw ConfigurationException.withReason("OGC Record query failed due to an unexpected error in OgcApiResearchQuery. $e")
         }
     }
 }

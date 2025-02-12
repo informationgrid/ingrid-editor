@@ -85,11 +85,7 @@ abstract class OgcApiResearchQuery {
             clausesList.add(BoolFilter("OR", typeList, null, null, false))
         }
 
-        val profileSpecificClausesList = profileSpecificClauses()
-
-        if (profileSpecificClausesList != null) {
-            clausesList.addAll(profileSpecificClausesList)
-        }
+        profileSpecificClauses()?.let { clausesList.addAll(it) }
 
         return clausesList
     }
