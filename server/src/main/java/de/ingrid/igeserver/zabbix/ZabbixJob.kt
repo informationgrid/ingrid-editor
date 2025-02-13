@@ -23,12 +23,14 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.tasks.quartz.IgeJob
 import org.apache.logging.log4j.kotlin.logger
+import org.quartz.DisallowConcurrentExecution
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
+@DisallowConcurrentExecution
 @Profile("zabbix")
 class ZabbixJob(
     val zabbixService: ZabbixService,

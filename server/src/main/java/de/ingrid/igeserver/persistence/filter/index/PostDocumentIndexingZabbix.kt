@@ -61,7 +61,7 @@ class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler
 
             try {
                 val profile = context.profile
-                val jobKey = JobKey.jobKey(ZabbixJob.JOB_KEY + "-" + data.uuid, catalogIdentifier)
+                val jobKey = JobKey.jobKey(ZabbixJob.JOB_KEY, catalogIdentifier)
                 val jobDataMap = JobDataMap().apply {
                     put("profile", profile)
                     put("catalogId", catalogIdentifier)
