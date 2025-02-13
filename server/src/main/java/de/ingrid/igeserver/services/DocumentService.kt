@@ -899,10 +899,10 @@ class DocumentService(
     }
 
     @Deprecated("Is not secured")
-    fun getAllDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> = if (includeFolders) {
-        docWrapperRepo.findAllDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
+    fun getAllDataDocumentWrappers(catalogIdentifier: String, includeFolders: Boolean = false): List<DocumentWrapper> = if (includeFolders) {
+        docWrapperRepo.findAllDataDocumentsAndFoldersByCatalog_Identifier(catalogIdentifier)
     } else {
-        docWrapperRepo.findAllDocumentsByCatalog_Identifier(catalogIdentifier)
+        docWrapperRepo.findAllDataDocumentsByCatalog_Identifier(catalogIdentifier)
     }
 
     fun isAddress(wrapper: DocumentWrapper): Boolean = wrapper.category == DocumentCategory.ADDRESS.value

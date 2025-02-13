@@ -332,19 +332,6 @@ export class FormFieldHelper {
     };
   }
 
-  addRadioOptions(id: string, label: string, options) {
-    return <FormlyFieldConfig>{
-      key: id,
-      type: "radioOptions",
-      className: "flex-1",
-      id: id,
-      label: label,
-      props: {
-        radioOptions: options.radioOptions,
-      },
-    };
-  }
-
   /**
    * @deprecated use addRepeatList
    */
@@ -869,6 +856,7 @@ export class FormFieldHelper {
       type: "radio",
       wrappers: ["panel", "inline-help"],
       className: "ige-radios",
+      defaultValue: options?.defaultValue ?? null,
       props: {
         label: options?.fieldLabel,
         externalLabel: label,

@@ -195,7 +195,7 @@ export class CodelistService {
 
   update(): Observable<Codelist[]> {
     return this.dataService.update().pipe(
-      map((codelists) => this.prepareCodelists(codelists, true)),
+      map((codelists) => this.prepareCodelists(codelists)),
       tap((codelists) => this.store.setCodelists(codelists)),
       tap(() => this.generalStore.setCodelistsLoaded()),
       catchError((e) => this.handleSyncError(e)),

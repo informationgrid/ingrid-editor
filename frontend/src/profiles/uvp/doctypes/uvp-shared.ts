@@ -170,9 +170,8 @@ export class UvpShared extends BaseDoctype {
       className: "space-bottom-field negative-space-top-field",
       expressions: {
         hide: (field: FormlyFieldConfig) =>
-          !field.model ||
-          !field.model["${id}"] ||
-          !(field.model["${id}"].length === 0),
+          // hide the checkbox if field does not exist or is empty
+          !field.model?.[id]?.length,
       },
     });
   }
