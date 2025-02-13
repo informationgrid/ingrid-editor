@@ -110,7 +110,7 @@ VALUES (1001, 100, 'uuid-1', 'UvpApprovalProcedureDoc', 'Anonymized Title', '{
     }
   ]
 }',
-        0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, false, 'PUBLISHED')
+        0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'PUBLISHED')
 ;
 
 INSERT INTO document_wrapper VALUES (1, 100, null, 'uuid-1', 'UvpApprovalProcedureDoc', 'data', 0);

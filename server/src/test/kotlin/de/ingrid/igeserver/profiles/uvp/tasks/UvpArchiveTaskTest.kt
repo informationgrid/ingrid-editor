@@ -22,6 +22,8 @@ package de.ingrid.igeserver.profiles.uvp.tasks
 import IntegrationTest
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.ninjasquad.springmockk.MockkBean
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.utils.getString
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -47,9 +49,12 @@ class UvpArchiveTaskTest : IntegrationTest() {
     @Autowired
     private lateinit var entityManager: EntityManager
 
+    @MockkBean
+    private lateinit var behaviourService: BehaviourService
+
     private lateinit var jobExecutionContext: JobExecutionContext
 
-    private val expectedDate = getCompareDate()
+    private val expectedDate = getYesterdayDate()
 
     @BeforeEach
     fun setUp() {
@@ -137,22 +142,30 @@ class UvpArchiveTaskTest : IntegrationTest() {
 
     private fun getTableRows(steps: ArrayNode, section: Int, tableId: String): ArrayNode = steps.get(section).get(tableId) as ArrayNode
 
-    private fun getCompareDate(): String {
+    private fun getYesterdayDate(): String {
         return OffsetDateTime.now(ZoneId.of("Europe/Berlin"))
             .with(LocalTime.MIN) // Sets the time to the start of the day
+            .minusDays(1)
             .withOffsetSameInstant(ZoneOffset.UTC) // Adjusts the offset to UTC
             .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")) // Formats with milliseconds
     }
 
     private fun runWithOption(option: ArchiveType) {
         val jobDataMap = JobDataMap().apply {
-            put("type", option.name)
             put("date", OffsetDateTime.now().toString())
             put("catalogId", "uvp_catalog")
         }
         every { jobExecutionContext.mergedJobDataMap } returns jobDataMap
 
+        every { behaviourService.get("uvp_catalog", "plugin.uvp.archive")?.data?.get("uvpArchiveType") } returns mapArchiveType(option)
+
         uvpArchiveTask.run(jobExecutionContext)
+    }
+
+    private fun mapArchiveType(option: ArchiveType): String = when (option) {
+        ArchiveType.HIDE_ALL -> "hideAll"
+        ArchiveType.SHOW_ALL -> "showAll"
+        ArchiveType.SHOW_ONLY_DECISION -> "showOnlyDecision"
     }
 
     @Suppress("UNCHECKED_CAST")
