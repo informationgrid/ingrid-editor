@@ -1358,7 +1358,7 @@ export abstract class IngridShared extends BaseDoctype {
         this.addGroupSimple("extraInfo", [
           this.addRepeatList(
             "legalBasicsDescriptions",
-            "Weitere rechtliche Grundlagen",
+            "Rechtliche Grundlagen",
             {
               asSelect: false,
               showSearch: true,
@@ -1698,10 +1698,17 @@ export abstract class IngridShared extends BaseDoctype {
         hasInlineContextHelp: true,
         updateOn: "change",
       }),
-      this.addRadioOptions("referenceType", "Verweistype auswählen", {
-        radioOptions: [
-          { title: "Externe URL", key: "url" },
-          { title: "Interner Datensatz", key: "uuidRef" },
+      this.addRadioboxes("referenceType", "Verweistyp:", {
+        defaultValue: "url",
+        options: [
+          {
+            value: "Externe URL",
+            id: "url",
+          },
+          {
+            value: "Interner Datensatz",
+            id: "uuidRef",
+          },
         ],
       }),
       this.addDocumentCard("uuidRef", {

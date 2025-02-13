@@ -96,7 +96,6 @@ class PostMigrationTask(
         // Warning: Execution Order is important
         saveAllGroupsOfCatalog(catalogIdentifier)
         initializeCatalogCodelistsAndQueries(catalogIdentifier)
-        uvpAdaptFolderStructure(catalogIdentifier)
         restructureObjectsWithChildren(catalogIdentifier)
         uvpSplitFreeAddresses(catalogIdentifier)
         fixSpatialSystems(catalogIdentifier)
@@ -230,20 +229,8 @@ class PostMigrationTask(
         return folderDoc.wrapper.id!!
     }
 
-    private fun uvpAdaptFolderStructure(catalogIdentifier: String) {
-        if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
-        documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = true).forEach { doc ->
-            log.debug("Migrate document: ${doc.id}")
-            migratePath(doc)
-        }
-
-        removeOldStructure(catalogIdentifier)
-        // save all groups again to update transferred rights
-        saveAllGroupsOfCatalog(catalogIdentifier)
-    }
-
     private fun restructureObjectsWithChildren(catalogIdentifier: String) {
-        documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = false).forEach { doc ->
+        documentService.getAllDataDocumentWrappers(catalogIdentifier, includeFolders = false).forEach { doc ->
             val foundChildren = documentService.findChildren(
                 catalogIdentifier,
                 doc.id,
@@ -302,69 +289,6 @@ class PostMigrationTask(
             // recursively update children
             replacePathIDinDescendants(catalogIdentifier, child, oldId, newId)
         }
-    }
-
-    private fun removeOldStructure(catalogIdentifier: String) {
-        listOf(
-            "Ausländische Vorhaben",
-            "Vorgelagerte Verfahren",
-            "Zulassungsverfahren",
-            "Vorprüfungen, negativ",
-        ).forEach { title ->
-            val oldldBaseFolder = documentService.findChildren(
-                catalogIdentifier,
-                null,
-            ).hits.find { it.document.title == title }
-            val auth = SecurityContextHolder.getContext().authentication
-            if (oldldBaseFolder != null) {
-                documentService.deleteDocument(
-                    auth as Principal,
-                    catalogIdentifier,
-                    oldldBaseFolder.wrapper.id!!,
-                )
-            }
-        }
-    }
-
-    private fun migratePath(doc: DocumentWrapper) {
-        val oldPath = doc.path // Style: [typeFolderId, FolderId, ...]
-        // skip root folders
-        if (oldPath.isEmpty()) return
-        val reducedPath = oldPath.subList(1, oldPath.size) // Style: [FolderId, ...]
-        val pathTitles = reducedPath.map {
-            documentService.getDocumentByWrapperId(doc.catalog?.identifier!!, it).title!!
-        }
-
-        val newPath = createAndGetPathByTitles(pathTitles, doc.catalog!!.identifier)
-
-        if (doc.type == "FOLDER") {
-            // make sure folders with the same name and path are not saved more than once
-            val folderWithSameNameAndPath = documentService.findChildren(
-                doc.catalog!!.identifier,
-                newPath.lastOrNull(),
-            ).hits.find {
-                it.document.title == documentService.getDocumentByWrapperId(doc.catalog?.identifier!!, doc.id!!).title
-            }
-
-            if (folderWithSameNameAndPath != null) {
-                if (doc == folderWithSameNameAndPath.wrapper) {
-                    // already transferred via parent node. only adjust path
-                    doc.path = newPath
-                    documentService.docWrapperRepo.saveAndFlush(doc)
-                    return
-                } else {
-                    // doc gets replaced by folderWithSameNameAndPath so adjust permission in groups
-                    transferRights(doc, folderWithSameNameAndPath.wrapper)
-                }
-                return
-            }
-        }
-
-        doc.path = newPath
-        doc.parent = if (newPath.isEmpty()) null else documentService.docWrapperRepo.findById(newPath.last()).get()
-        // save
-        documentService.aclService.updateParent(doc.id!!, newPath.lastOrNull())
-        documentService.docWrapperRepo.saveAndFlush(doc)
     }
 
     private fun transferRights(
@@ -432,36 +356,6 @@ class PostMigrationTask(
     }
 
     private fun removeIDinPermissions(sourceId: Int, permissions: List<JsonNode>): List<JsonNode> = permissions.filter { it.get("id").asInt() != sourceId }
-
-    private fun createAndGetPathByTitles(titles: List<String>, catalogIdentifier: String): MutableList<Int> {
-        val auth = SecurityContextHolder.getContext().authentication
-        val createdPathIds = mutableListOf<Int>()
-        var parentId: Int? = null
-        for (title in titles) {
-            val foundChild = documentService.findChildren(
-                catalogIdentifier,
-                parentId,
-            ).hits.filter { it.document.title == title }
-            if (foundChild.isEmpty()) {
-                // create new folder
-                val folderData = jacksonObjectMapper().createObjectNode()
-                    .put("_type", "FOLDER")
-                    .put("_parent", parentId.toString())
-                    .put("title", title)
-                val document = convertToDocument(folderData)
-                val folderDoc =
-                    documentService.createDocument(auth as Principal, catalogIdentifier, document, parentId)
-                documentService.docWrapperRepo.flush()
-
-                parentId = folderDoc.wrapper.id!!
-            } else {
-                // found folder
-                parentId = foundChild.first().wrapper.id!!
-            }
-            createdPathIds.add(parentId)
-        }
-        return createdPathIds
-    }
 
     private fun initializeCatalogCodelistsAndQueries(catalogIdentifier: String) {
         val catalogType = catalogService.getCatalogById(catalogIdentifier).type

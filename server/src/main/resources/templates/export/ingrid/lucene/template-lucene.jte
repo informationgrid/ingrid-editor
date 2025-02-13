@@ -145,10 +145,9 @@
     "t03_catalogue.mod_time": "",
     "t03_catalogue.mod_uuid": "",
 
-
     "t01_object.org_obj_id": null,
+    "t011_obj_serv.has_access_constraint": "${page.hasAccessConstraints() ? 'Y' : 'N'}",
     @if("3".equals(page.getDocumentType()))
-    "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().hasAccessConstraintsOrFalse()  ? 'Y' : 'N'}",
     "t011_obj_serv.type": "${page.getServiceType(null)}",
     @if(page.getData().getService().getType() != null)
         "t011_obj_serv.type_key": "${page.getData().getService().getType().getKey()}",
@@ -184,7 +183,7 @@
         "<img src='${entry.get().getUri()}' height='100' class='preview_image' alt='${entry.get().getDescription()}' title='${entry.get().getDescription()}' >"@if (!entry.isLast()),@endif
     @endfor
     ],
-    @if("3".equals(page.getDocumentType()) && !page.getModel().getData().getService().hasAccessConstraintsOrFalse())
+    @if("3".equals(page.getDocumentType()))
     "capabilities_url": "${page.getCapabilitiesUrl()}",
     "capabilities_download_url": "${page.getCapabilitiesDownloadUrl()}",
     @elseif("1".equals(page.getDocumentType()))
