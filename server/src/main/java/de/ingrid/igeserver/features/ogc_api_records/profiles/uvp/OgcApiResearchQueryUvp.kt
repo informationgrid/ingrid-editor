@@ -24,10 +24,8 @@ import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcF
 import de.ingrid.igeserver.model.BoolFilter
 import org.intellij.lang.annotations.Language
 import org.springframework.context.annotation.Profile
-import org.springframework.stereotype.Component
 
 @Profile("uvp")
-@Component
 class OgcApiResearchQueryUvp : OgcApiResearchQuery() {
     override val profiles = listOf("uvp")
 
