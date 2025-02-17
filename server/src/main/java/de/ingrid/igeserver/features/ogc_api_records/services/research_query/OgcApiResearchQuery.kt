@@ -39,7 +39,7 @@ abstract class OgcApiResearchQuery {
 
     abstract var ogcParameter: OgcFilterParameter
 
-    abstract fun checkParametersSupport()
+    abstract fun checkForUnsupportedParameters()
 
     abstract fun profileSpecificClauses(): MutableList<BoolFilter>?
 
@@ -87,7 +87,7 @@ abstract class OgcApiResearchQuery {
 
     fun createQuery(ogcFilterParameter: OgcFilterParameter): ResearchQuery {
         ogcParameter = ogcFilterParameter
-        checkParametersSupport()
+        checkForUnsupportedParameters()
         return ResearchQuery(
             term = null,
             clauses = BoolFilter(op = "AND", value = null, clauses = clauses(ogcFilterParameter), parameter = null, isFacet = true),

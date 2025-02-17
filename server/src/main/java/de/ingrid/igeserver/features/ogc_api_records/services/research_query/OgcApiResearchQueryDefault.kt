@@ -31,7 +31,7 @@ class OgcApiResearchQueryDefault : OgcApiResearchQuery() {
 
     override lateinit var ogcParameter: OgcFilterParameter
 
-    override fun checkParametersSupport() {
+    override fun checkForUnsupportedParameters() {
         ogcParameter.qParameter?.let { throw ConfigurationException.withReason("Request parameter 'q' is not yet supported for current profile. Please remove the parameter.") }
         ogcParameter.bbox?.let { throw ConfigurationException.withReason("Request parameter 'bbox' is not yet supported for current profile. Please remove the parameter.") }
     }
