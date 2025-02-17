@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.features.ogc_api_records.services.research_query
 
-import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.model.BoolFilter
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
@@ -29,10 +28,7 @@ import org.springframework.stereotype.Component
 class OgcApiResearchQueryDefault : OgcApiResearchQuery() {
     override val profiles = listOf("")
 
-    override fun checkForUnsupportedParameters(ogcFilterParameter: OgcFilterParameter) {
-        ogcFilterParameter.qParameter?.let { throw ConfigurationException.withReason("Request parameter 'q' is not yet supported for current profile. Please remove the parameter.") }
-        ogcFilterParameter.bbox?.let { throw ConfigurationException.withReason("Request parameter 'bbox' is not yet supported for current profile. Please remove the parameter.") }
-    }
+    override var unsupportedParameters: List<String> = listOf("qParameter", "bbox")
 
     override fun profileSpecificClauses(ogcParameter: OgcFilterParameter): MutableList<BoolFilter>? = null
 }

@@ -20,10 +20,12 @@
 package de.ingrid.igeserver.features.ogc_api_records.services.research_query
 
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import java.time.Instant
+import kotlin.reflect.full.memberProperties
 
 data class OgcFilterParameter(
     val queryLimit: Int,
@@ -37,7 +39,16 @@ data class OgcFilterParameter(
 abstract class OgcApiResearchQuery {
     abstract val profiles: List<String>
 
-    abstract fun checkForUnsupportedParameters(ogcFilterParameter: OgcFilterParameter)
+    open var unsupportedParameters: List<String> = listOf()
+
+    private fun checkForUnsupportedParameters(ogcFilterParameter: OgcFilterParameter) {
+        unsupportedParameters.forEach { unsupportedParameter ->
+            val property = OgcFilterParameter::class.memberProperties.find { it.name == unsupportedParameter }
+            property?.get(ogcFilterParameter)?.let {
+                throw ConfigurationException.withReason("Request parameter '$unsupportedParameter' is not yet supported for current profile. Please remove the parameter.")
+            }
+        }
+    }
 
     abstract fun profileSpecificClauses(ogcParameter: OgcFilterParameter): MutableList<BoolFilter>?
 

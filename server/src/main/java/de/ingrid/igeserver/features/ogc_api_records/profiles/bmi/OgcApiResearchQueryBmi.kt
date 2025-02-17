@@ -31,8 +31,6 @@ import org.springframework.stereotype.Component
 class OgcApiResearchQueryBmi : OgcApiResearchQuery() {
     override val profiles = listOf("bmi")
 
-    override fun checkForUnsupportedParameters(ogcFilterParameter: OgcFilterParameter) {}
-
     override fun profileSpecificClauses(ogcParameter: OgcFilterParameter): MutableList<BoolFilter>? {
         val clausesList: MutableList<BoolFilter> = mutableListOf()
 

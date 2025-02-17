@@ -31,8 +31,6 @@ import org.springframework.stereotype.Component
 class OgcApiResearchQueryIngrid : OgcApiResearchQuery() {
     override val profiles = listOf("ingrid", "ingrid-hmdk")
 
-    override fun checkForUnsupportedParameters(ogcFilterParameter: OgcFilterParameter) {}
-
     override fun profileSpecificClauses(ogcParameter: OgcFilterParameter): MutableList<BoolFilter>? {
         val clausesList: MutableList<BoolFilter> = mutableListOf()
 
