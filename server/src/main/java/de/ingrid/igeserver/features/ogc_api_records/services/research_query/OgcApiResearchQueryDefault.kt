@@ -21,7 +21,11 @@ package de.ingrid.igeserver.features.ogc_api_records.services.research_query
 
 import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.model.BoolFilter
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 
+@Component
+@Qualifier("default")
 class OgcApiResearchQueryDefault : OgcApiResearchQuery() {
     override val profiles = listOf("")
 
