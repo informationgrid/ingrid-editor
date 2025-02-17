@@ -75,8 +75,7 @@ abstract class OgcApiResearchQuery {
         }
 
         ogcParameter.type?.let { type ->
-            val typeList = mutableListOf<String>()
-            for (name in type) typeList.add("document_wrapper.type = '$name'")
+            val typeList = type.map { "document_wrapper.type = '$it'" }
             clausesList.add(BoolFilter("OR", typeList, null, null, false))
         }
 
