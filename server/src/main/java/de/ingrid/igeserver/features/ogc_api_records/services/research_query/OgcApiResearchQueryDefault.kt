@@ -29,12 +29,10 @@ import org.springframework.stereotype.Component
 class OgcApiResearchQueryDefault : OgcApiResearchQuery() {
     override val profiles = listOf("")
 
-    override lateinit var ogcParameter: OgcFilterParameter
-
-    override fun checkForUnsupportedParameters() {
-        ogcParameter.qParameter?.let { throw ConfigurationException.withReason("Request parameter 'q' is not yet supported for current profile. Please remove the parameter.") }
-        ogcParameter.bbox?.let { throw ConfigurationException.withReason("Request parameter 'bbox' is not yet supported for current profile. Please remove the parameter.") }
+    override fun checkForUnsupportedParameters(ogcFilterParameter: OgcFilterParameter) {
+        ogcFilterParameter.qParameter?.let { throw ConfigurationException.withReason("Request parameter 'q' is not yet supported for current profile. Please remove the parameter.") }
+        ogcFilterParameter.bbox?.let { throw ConfigurationException.withReason("Request parameter 'bbox' is not yet supported for current profile. Please remove the parameter.") }
     }
 
-    override fun profileSpecificClauses(): MutableList<BoolFilter>? = null
+    override fun profileSpecificClauses(ogcParameter: OgcFilterParameter): MutableList<BoolFilter>? = null
 }

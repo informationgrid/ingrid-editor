@@ -31,11 +31,9 @@ import org.springframework.stereotype.Component
 class OgcApiResearchQueryIngrid : OgcApiResearchQuery() {
     override val profiles = listOf("ingrid", "ingrid-hmdk")
 
-    override lateinit var ogcParameter: OgcFilterParameter
+    override fun checkForUnsupportedParameters(ogcFilterParameter: OgcFilterParameter) {}
 
-    override fun checkForUnsupportedParameters() {}
-
-    override fun profileSpecificClauses(): MutableList<BoolFilter>? {
+    override fun profileSpecificClauses(ogcParameter: OgcFilterParameter): MutableList<BoolFilter>? {
         val clausesList: MutableList<BoolFilter> = mutableListOf()
 
         ogcParameter.bbox?.let { bbox ->
@@ -44,14 +42,14 @@ class OgcApiResearchQueryIngrid : OgcApiResearchQuery() {
         }
 
         if (ogcParameter.qParameter != null) {
-            clausesList.add(BoolFilter("OR", listOf(qParameterSQL()), null, null, false))
+            clausesList.add(BoolFilter("OR", listOf(qParameterSQL(ogcParameter)), null, null, false))
         }
 
         return clausesList
     }
 
     @Language("PostgreSQL")
-    private fun qParameterSQL(): String {
+    private fun qParameterSQL(ogcParameter: OgcFilterParameter): String {
         val titleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "title ILIKE '%$it%'" }
         val descriptionCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
         val alternateTitleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'alternateTitle' ILIKE '%$it%'" }

@@ -37,11 +37,9 @@ data class OgcFilterParameter(
 abstract class OgcApiResearchQuery {
     abstract val profiles: List<String>
 
-    abstract var ogcParameter: OgcFilterParameter
+    abstract fun checkForUnsupportedParameters(ogcFilterParameter: OgcFilterParameter)
 
-    abstract fun checkForUnsupportedParameters()
-
-    abstract fun profileSpecificClauses(): MutableList<BoolFilter>?
+    abstract fun profileSpecificClauses(ogcParameter: OgcFilterParameter): MutableList<BoolFilter>?
 
     fun profiles(): List<String> = profiles
 
@@ -79,18 +77,17 @@ abstract class OgcApiResearchQuery {
             clausesList.add(BoolFilter("OR", typeList, null, null, false))
         }
 
-        profileSpecificClauses()?.let { clausesList.addAll(it) }
+        profileSpecificClauses(ogcParameter)?.let { clausesList.addAll(it) }
 
         return clausesList
     }
 
     fun createQuery(ogcFilterParameter: OgcFilterParameter): ResearchQuery {
-        ogcParameter = ogcFilterParameter
-        checkForUnsupportedParameters()
+        checkForUnsupportedParameters(ogcFilterParameter)
         return ResearchQuery(
             term = null,
             clauses = BoolFilter(op = "AND", value = null, clauses = clauses(ogcFilterParameter), parameter = null, isFacet = true),
-            pagination = ResearchPaging(1, ogcParameter.queryLimit, ogcParameter.queryOffset),
+            pagination = ResearchPaging(1, ogcFilterParameter.queryLimit, ogcFilterParameter.queryOffset),
         )
     }
 }
