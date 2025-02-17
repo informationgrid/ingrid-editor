@@ -39,7 +39,7 @@ class OgcApiResearchQueryIngrid : OgcApiResearchQuery() {
             clausesList.add(BoolFilter("OR", listOf("ingridSelectSpatial"), null, boundingBox, true))
         }
 
-        if (ogcParameter.qParameter != null) {
+        if (ogcParameter.q != null) {
             clausesList.add(BoolFilter("OR", listOf(qParameterSQL(ogcParameter)), null, null, false))
         }
 
@@ -48,10 +48,10 @@ class OgcApiResearchQueryIngrid : OgcApiResearchQuery() {
 
     @Language("PostgreSQL")
     private fun qParameterSQL(ogcParameter: OgcFilterParameter): String {
-        val titleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "title ILIKE '%$it%'" }
-        val descriptionCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
-        val alternateTitleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'alternateTitle' ILIKE '%$it%'" }
-        val freeKeywordsCondition = ogcParameter.qParameter?.joinToString(" OR ") { "EXISTS (SELECT 1 FROM jsonb_array_elements(data -> 'keywords' -> 'free') AS keyword WHERE keyword ->> 'label' ILIKE '%$it%')" }
+        val titleCondition = ogcParameter.q?.joinToString(" OR ") { "title ILIKE '%$it%'" }
+        val descriptionCondition = ogcParameter.q?.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
+        val alternateTitleCondition = ogcParameter.q?.joinToString(" OR ") { "data ->> 'alternateTitle' ILIKE '%$it%'" }
+        val freeKeywordsCondition = ogcParameter.q?.joinToString(" OR ") { "EXISTS (SELECT 1 FROM jsonb_array_elements(data -> 'keywords' -> 'free') AS keyword WHERE keyword ->> 'label' ILIKE '%$it%')" }
 
         return """
             ($titleCondition)

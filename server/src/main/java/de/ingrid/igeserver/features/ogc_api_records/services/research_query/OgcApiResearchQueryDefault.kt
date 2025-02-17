@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component
 class OgcApiResearchQueryDefault : OgcApiResearchQuery() {
     override val profiles = listOf("")
 
-    override var unsupportedParameters: List<String> = listOf("qParameter", "bbox")
+    override var unsupportedParameters: List<String> = listOf("q", "bbox")
 
     override fun profileSpecificClauses(ogcParameter: OgcFilterParameter): MutableList<BoolFilter>? = null
 }

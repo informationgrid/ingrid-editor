@@ -33,7 +33,7 @@ data class OgcFilterParameter(
     val type: List<String>?,
     val bbox: List<Float>?,
     val datetime: String?,
-    val qParameter: List<String>?,
+    val q: List<String>?,
 )
 
 abstract class OgcApiResearchQuery {

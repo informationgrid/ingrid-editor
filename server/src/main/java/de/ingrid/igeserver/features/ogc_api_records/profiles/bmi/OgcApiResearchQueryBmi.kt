@@ -39,7 +39,7 @@ class OgcApiResearchQueryBmi : OgcApiResearchQuery() {
             clausesList.add(BoolFilter("OR", listOf("ingridSelectSpatial"), null, boundingBox, true))
         }
 
-        if (ogcParameter.qParameter != null) {
+        if (ogcParameter.q != null) {
             clausesList.add(BoolFilter("OR", listOf(qParameterSQL(ogcParameter)), null, null, false))
         }
 
@@ -48,9 +48,9 @@ class OgcApiResearchQueryBmi : OgcApiResearchQuery() {
 
     @Language("PostgreSQL")
     private fun qParameterSQL(ogcParameter: OgcFilterParameter): String {
-        val titleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "title ILIKE '%$it%'" }
-        val descriptionCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
-        val keywordsCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'keywords' ILIKE '%$it%'" }
+        val titleCondition = ogcParameter.q?.joinToString(" OR ") { "title ILIKE '%$it%'" }
+        val descriptionCondition = ogcParameter.q?.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
+        val keywordsCondition = ogcParameter.q?.joinToString(" OR ") { "data ->> 'keywords' ILIKE '%$it%'" }
 
         return """
             ($titleCondition) 
