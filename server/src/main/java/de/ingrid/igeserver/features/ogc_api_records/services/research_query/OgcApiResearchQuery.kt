@@ -43,11 +43,15 @@ abstract class OgcApiResearchQuery {
 
     private fun checkForUnsupportedParameters(ogcFilterParameter: OgcFilterParameter) {
         unsupportedParameters.forEach { unsupportedParameter ->
-            val property = OgcFilterParameter::class.memberProperties.find { it.name == unsupportedParameter }
-            property?.get(ogcFilterParameter)?.let {
+            if (unallowedParameterExists(ogcFilterParameter, unsupportedParameter)) {
                 throw ConfigurationException.withReason("Request parameter '$unsupportedParameter' is not yet supported for current profile. Please remove the parameter.")
             }
         }
+    }
+
+    private fun unallowedParameterExists(ogcFilterParameter: OgcFilterParameter, unsupportedParameter: String): Boolean {
+        val property = OgcFilterParameter::class.memberProperties.find { it.name == unsupportedParameter }
+        return property?.get(ogcFilterParameter) != null
     }
 
     abstract fun profileSpecificClauses(ogcParameter: OgcFilterParameter): MutableList<BoolFilter>?
@@ -79,13 +83,11 @@ abstract class OgcApiResearchQuery {
         clausesList.add(BoolFilter("OR", listOf("document1.state = 'PUBLISHED'"), null, null, false))
 
         ogcParameter.datetime?.let { datetime ->
-            val dateList = ogcDateTimeConverter(datetime)
-            clausesList.add(BoolFilter("OR", listOf("selectTimespan"), null, dateList, true))
+            clausesList.add(BoolFilter("OR", listOf("selectTimespan"), null, ogcDateTimeConverter(datetime), true))
         }
 
         ogcParameter.type?.let { type ->
-            val typeList = type.map { "document_wrapper.type = '$it'" }
-            clausesList.add(BoolFilter("OR", typeList, null, null, false))
+            clausesList.add(BoolFilter("OR", type.map { "document_wrapper.type = '$it'" }, null, null, false))
         }
 
         profileSpecificClauses(ogcParameter)?.let { clausesList.addAll(it) }
