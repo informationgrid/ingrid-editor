@@ -37,7 +37,8 @@ class ISOImportHMDK(val codelistHandler: CodelistHandler, @Lazy val documentServ
         data: Metadata,
         addressMaps: MutableMap<String, String>,
     ): ImportProfileData? {
-        val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps, researchService, uploadConfig)
+        val catalogLanguage = documentService.catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
+        val isoData = IsoImportData(data, codelistHandler, catalogId, catalogLanguage, documentService, addressMaps, researchService, uploadConfig)
 
         return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset", "series" -> {

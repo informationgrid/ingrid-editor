@@ -24,8 +24,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.codelists.model.CodeListEntry
 import de.ingrid.igeserver.exports.iso.Metadata
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UseConstraint
-import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.getString
 
 data class AccessConstraint(
@@ -33,7 +33,7 @@ data class AccessConstraint(
     val note: String? = null,
 )
 
-class CommonMapperBkg(val codeListService: CodelistHandler) {
+class CommonMapperBkg(val isoData: IsoImportData) {
 
     fun accessConstraintsOverride(origAccessConstraints: List<KeyValue>, metadata: Metadata): List<KeyValue> {
         val bkgConstraint = accessConstraintBkg(metadata)
@@ -74,8 +74,8 @@ class CommonMapperBkg(val codeListService: CodelistHandler) {
         )
     }
 
-    private fun convertToKeyValueOfCodelistInDataLanguage(codelist: String, value: String?): KeyValue = codeListService.getCodelists(listOf(codelist)).firstOrNull()?.let {
-        val entry: CodeListEntry? = it.entries.find { entry -> getDataField(entry.data, "de") == value }
+    private fun convertToKeyValueOfCodelistInDataLanguage(codelist: String, value: String?): KeyValue = isoData.codelistService.getCodelists(listOf(codelist)).firstOrNull()?.let {
+        val entry: CodeListEntry? = it.entries.find { entry -> getDataField(entry.data, isoData.catalogLanguage) == value }
         if (entry == null) {
 //        log.error("Value in codelist $codelist not found: $value")
         }

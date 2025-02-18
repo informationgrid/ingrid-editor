@@ -24,6 +24,8 @@ import { filter, map, take } from "rxjs/operators";
 import { Observable, of } from "rxjs";
 import { CodelistStore } from "../store/codelist/codelist.store";
 import { toObservable } from "@angular/core/rxjs-interop";
+import { CatalogService } from "../+catalog/services/catalog.service";
+import { GeneralStore } from "../store/general.store";
 
 @Pipe({
   name: "codelist",
@@ -32,19 +34,20 @@ import { toObservable } from "@angular/core/rxjs-interop";
 export class CodelistPipe implements PipeTransform {
   private codelistStore = inject(CodelistStore);
   private codelistService = inject(CodelistService);
+  private generalStore = inject(GeneralStore);
 
   private codelistStore$ = toObservable(this.codelistStore.entityMap);
 
   transform(
     value: string | BackendOption | null,
     id: string,
-    lang = "de",
   ): Observable<string> {
     if (!id) return of(value as string);
     if (value === null || value === undefined) return of(null);
     if (value instanceof Object && value.key === null) return of(value.value);
 
     const codelist = this.codelistStore.entityMap()[id];
+    const lang = this.generalStore.catalogLanguage();
 
     if (!codelist) {
       this.codelistService.byId(id);

@@ -309,7 +309,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     }
 
     private fun getSalutationKeyValue(value: String): KeyValue? {
-        val salutationKey = value.trim().let { codeListService.getCodeListEntryId("4300", it, "de") }
+        val salutationKey = value.trim().let { codeListService.getCodeListEntryId("4300", it, isoData.catalogLanguage) }
         return if (salutationKey == null) null else KeyValue(salutationKey)
     }
 
@@ -322,26 +322,26 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.map { it.value }
         ?.joinToString(";")
         ?.split(";")
-        ?.mapNotNull { codeListService.getCodeListEntryId("8010", it, "de") }
+        ?.mapNotNull { codeListService.getCodeListEntryId("8010", it, isoData.catalogLanguage) }
         ?.map { KeyValue(it) } ?: emptyList()
 
     fun getAlternateTitle(): String = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.alternateTitle
         ?.map { it.value }
         ?.joinToString(";")
         ?.split(";")
-        ?.filter { codeListService.getCodeListEntryId("8010", it, "de") == null }
+        ?.filter { codeListService.getCodeListEntryId("8010", it, isoData.catalogLanguage) == null }
         ?.joinToString(";") ?: ""
 
     fun getThemes(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
         ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "GEMET - INSPIRE themes, version 1.0" }
         ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
-        ?.mapNotNull { codeListService.getCodeListEntryId("6100", it, "de") }
+        ?.mapNotNull { codeListService.getCodeListEntryId("6100", it, isoData.catalogLanguage) }
         ?.map { KeyValue(it) } ?: emptyList()
 
     fun getPriorityDatasets(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
         ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "INSPIRE priority data set" }
         ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
-        ?.map { codeListService.getCodeListEntryId("6350", it, "de") }
+        ?.map { codeListService.getCodeListEntryId("6350", it, isoData.catalogLanguage) }
         ?.map { KeyValue(it) } ?: emptyList()
 
     fun getInVeKoSKeywords(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
@@ -364,7 +364,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "Spatial scope" }
         ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
         ?.mapNotNull { it }
-        ?.map { codeListService.getCodeListEntryId("6360", it, "de") }
+        ?.map { codeListService.getCodeListEntryId("6360", it, isoData.catalogLanguage) }
         ?.map { KeyValue(it) }
         ?.getOrNull(0)
 
@@ -420,7 +420,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     fun getSpatialSystems(): List<KeyValue> = metadata.referenceSystemInfo
         ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
-        ?.map { codeListService.getCodeListEntryId("100", it, "de")?.let { KeyValue(it) } ?: KeyValue(null, it) }
+        ?.map { codeListService.getCodeListEntryId("100", it, isoData.catalogLanguage)?.let { KeyValue(it) } ?: KeyValue(null, it) }
         ?: emptyList()
 
     fun getSpatialReferences(): List<SpatialReference> {
@@ -488,7 +488,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 val min = it.verticalElement?.minimumValue?.value
                 val max = it.verticalElement?.maximumValue?.value
                 val datum = it.verticalElement?.verticalCRS?.verticalCRS?.verticalDatum?.verticalDatum?.name
-                val datumId = codeListService.getCodeListEntryId("101", datum, "de")
+                val datumId = codeListService.getCodeListEntryId("101", datum, isoData.catalogLanguage)
                 return if (uomId == null || min == null || max == null || datumId == null) {
                     null
                 } else {
@@ -591,7 +591,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.flatMap {
             it.legalConstraint?.otherConstraints?.map { constraint ->
                 if (constraint.isAnchor) {
-                    val key = codeListService.getCodeListEntryId("6010", constraint.value, "de")
+                    val key = codeListService.getCodeListEntryId("6010", constraint.value, isoData.catalogLanguage)
                     if (key == null) KeyValue(null, constraint.value) else KeyValue(key)
                 } else {
                     KeyValue(null, constraint.value)
@@ -606,7 +606,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     fun getDistributionFormat(): List<DistributionFormat> = metadata.distributionInfo?.mdDistribution?.distributionFormat
         ?.map { it.format }
         ?.mapNotNull {
-            val nameKey = codeListService.getCodeListEntryId("1320", it?.name?.value, "de")
+            val nameKey = codeListService.getCodeListEntryId("1320", it?.name?.value, isoData.catalogLanguage)
             val nameKeyValue = if (nameKey == null) KeyValue(null, it?.name?.value) else KeyValue(nameKey)
             val result = DistributionFormat(
                 nameKeyValue,
@@ -626,6 +626,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
         val value = TM_PeriodDurationToTimeAlle().parse(intervalEncoded)
         val intervalUnit = TM_PeriodDurationToTimeInterval().parse(intervalEncoded)
+        // explicitly look for German, since the unit is also parsed into German
         val intervalUnitKey = codeListService.getCodeListEntryId("1230", intervalUnit, "de")
 
         val description = maintenanceInformation?.maintenanceNote
@@ -671,7 +672,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 ?.map { resource ->
                     val fileFormatCode = resource.applicationProfile?.value
                     val typeId =
-                        if (fileFormatCode == null) null else codeListService.getCodeListEntryId("1320", fileFormatCode, "de")
+                        if (fileFormatCode == null) null else codeListService.getCodeListEntryId("1320", fileFormatCode, isoData.catalogLanguage)
                     val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
                     val fileName = resource.linkage.url?.substringAfterLast('/') ?: ""
                     val sizeInBytes = transferOption.mdDigitalTransferOptions.transferSize?.value?.times(1_000_000)
@@ -709,7 +710,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                         codeListService.getCodeListEntryId(
                             fieldToCodelist.referenceFileFormat,
                             applicationValue,
-                            "de",
+                            isoData.catalogLanguage,
                         ) ?: codeListService.getCatalogCodelistKey(
                             catalogId,
                             fieldToCodelist.referenceFileFormat,
@@ -867,7 +868,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     private fun convertUserConstraintToKeyValue(text: String?): KeyValue? {
         if (text == null) return null
-        val id = codeListService.getCodeListEntryId("6500", text, "de")
+        val id = codeListService.getCodeListEntryId("6500", text, isoData.catalogLanguage)
         return if (id == null) KeyValue(null, text) else KeyValue(id)
     }
 
@@ -881,8 +882,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.any { it == value } ?: false
 
     fun convertToKeyValueOfCodelist(codelist: String, value: String): KeyValue? {
-        val key = codeListService.getCodeListEntryId(codelist, value, "de")
-            ?: codeListService.getCatalogCodelistKey(codelist, value, "de")
+        val key = codeListService.getCodeListEntryId(codelist, value, isoData.catalogLanguage)
+            ?: codeListService.getCatalogCodelistKey(codelist, value, isoData.catalogLanguage)
         return if (key == null) KeyValue(null, value) else KeyValue(key)
     }
 }

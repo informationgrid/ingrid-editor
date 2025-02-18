@@ -43,7 +43,9 @@ export class CommonFieldsBkg extends BaseDoctype {
               "10001",
               selectedKey,
             )?.data;
-            return data ? JSON.parse(data)?.de : "";
+            return data
+              ? JSON.parse(data)?.[this.generalStore.catalogLanguage()]
+              : "";
           },
           "props.required":
             "!formState.mainModel?.properties?.isInspireIdentified",
@@ -69,7 +71,9 @@ export class CommonFieldsBkg extends BaseDoctype {
               "10003",
               selectedKey,
             )?.data;
-            return data ? JSON.parse(data)?.de : "";
+            return data
+              ? JSON.parse(data)?.[this.generalStore.catalogLanguage()]
+              : "";
           },
         },
       }),

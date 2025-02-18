@@ -26,7 +26,7 @@ import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UseConstraint
 
 class GeodatasetMapperBkg(isoData: IsoImportData) : GeodatasetMapper(isoData) {
 
-    val common = CommonMapperBkg(codeListService)
+    val common = CommonMapperBkg(isoData)
 
     override fun getAccessConstraints(): List<KeyValue> = common.accessConstraintsOverride(super.getAccessConstraints(), metadata)
 

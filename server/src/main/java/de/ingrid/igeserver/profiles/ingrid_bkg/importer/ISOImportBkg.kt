@@ -37,7 +37,8 @@ class ISOImportBkg(val codelistHandler: CodelistHandler, @Lazy val documentServi
         data: Metadata,
         addressMaps: MutableMap<String, String>,
     ): ImportProfileData? {
-        val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps, researchService, config)
+        val catalogLanguage = documentService.catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
+        val isoData = IsoImportData(data, codelistHandler, catalogId, catalogLanguage, documentService, addressMaps, researchService, config)
 
         return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset", "series" -> {

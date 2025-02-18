@@ -33,11 +33,13 @@ import { inject } from "@angular/core";
 import { FormStateService } from "../app/+form/form-state.service";
 import { CodelistStore } from "../app/store/codelist/codelist.store";
 import { toObservable } from "@angular/core/rxjs-interop";
+import { GeneralStore } from "../app/store/general.store";
 
 export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
   protected codelistService = inject(CodelistService);
   protected codelistStore = inject(CodelistStore);
   protected formStateService = inject(FormStateService);
+  protected generalStore = inject(GeneralStore);
 
   private codelistStore$ = toObservable(this.codelistStore.entityMap);
 
