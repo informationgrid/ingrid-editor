@@ -68,13 +68,15 @@ export class WktTools {
   }
 
   private readWKTString(wktString: string) {
+    // Convert to uppercase to avoid case sensitivity issues
+    const preProcessedWkt = wktString.toUpperCase();
     try {
       // Catch any malformed WKT strings
-      return wktToGeoJSON(wktString);
+      return wktToGeoJSON(preProcessedWkt);
     } catch (e1) {
       try {
         return wktToGeoJSON(
-          wktString.replace("\n", "").replace("\r", "").replace("\t", ""),
+          preProcessedWkt.replace("\n", "").replace("\r", "").replace("\t", ""),
         );
       } catch (e2) {
         if (e2.name === "WKTError") {
@@ -82,6 +84,8 @@ export class WktTools {
             "We could not understand the WKT string you entered. Check that you have parentheses " +
               "balanced, and try removing tabs and newline characters.",
           );
+        } else {
+          throw e2;
         }
       }
     }

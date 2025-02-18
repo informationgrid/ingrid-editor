@@ -638,20 +638,20 @@ open class IngridModelTransformer(
     }
 
     // type is "Darstellungsdienste" and operation is "GetCapabilities"
-    val capabilitiesUrl =
-        if (data.service.type?.key == "2") {
-            data.service.operations?.find { isCapabilitiesEntry(it) }?.methodCall
-                ?: ""
-        } else {
-            ""
-        }
+    val capabilitiesUrl = data.service.takeIf { it.type?.key == "2" }
+        ?.operations?.find { isCapabilitiesEntry(it) }?.methodCall.orEmpty()
 
-    fun getCapabilitiesUrlsFromService(): List<String> = if (model.type == "InGridGeoDataset") {
+    // type is "Download-Dienste" and operation is "GetCapabilities"
+    val capabilitiesDownloadUrl = data.service.takeIf { it.type?.key == "3" }
+        ?.operations?.find { isCapabilitiesEntry(it) }?.methodCall.orEmpty()
+
+    fun getCapabilitiesUrlsFromService(serviceTypeKey: String): List<String> = if (model.type == "InGridGeoDataset") {
         val doc = getLastPublishedDocument(model.uuid)
         documentService.getIncomingReferences(doc, catalogIdentifier)
             .map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
             .filter {
-                it.type == "InGridGeoService" && it.data.getString("service.type.key") == "2"
+                it.type == "InGridGeoService" &&
+                    it.data.getString("service.type.key") == serviceTypeKey
             }
             .mapNotNull { ref ->
                 ref.data.get("service").get("operations")
@@ -660,6 +660,10 @@ open class IngridModelTransformer(
     } else {
         emptyList()
     }
+
+    fun getCapabilitiesUrlsFromService(): List<String> = getCapabilitiesUrlsFromService("2")
+
+    fun getCapabilitiesDownloadUrlsFromService(): List<String> = getCapabilitiesUrlsFromService("3")
 
     fun getReferingServiceUuid(service: CrossReference): String = "${service.uuid}@@${service.objectName}@@${service.serviceUrl.orEmpty()}@@${this.citationURL}"
 
@@ -1151,6 +1155,9 @@ open class IngridModelTransformer(
     fun getSortHash(): String = DigestUtils.sha1Hex(model.title)
 
     fun isHvd(): Boolean = data.properties?.isHvd ?: false
+
+    // if the document is a service with "Zugang geschützt" or it has access constraints other than "1" ("Es gelten keine Zugriffsbeschränkungen") #4377 #7280
+    fun hasAccessConstraints(): Boolean = data.service.hasAccessConstraintsOrFalse() || (data.resource?.accessConstraints?.any { it.key != "1" } == true)
 
     fun getValueFromCodelistData(codelistId: String, key: String?, field: String): String? {
         val jsonData = codelists.getData(

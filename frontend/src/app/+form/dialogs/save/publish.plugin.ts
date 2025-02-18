@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
 import { DocumentService } from "../../../services/document/document.service";
@@ -158,7 +158,7 @@ export class PublishPlugin extends SaveBase {
       eventId: this.eventPublishId,
       pos: 25,
       align: "right",
-      active: false,
+      active: signal(false),
       isPrimary: true,
       menu: publishMenu,
     });
