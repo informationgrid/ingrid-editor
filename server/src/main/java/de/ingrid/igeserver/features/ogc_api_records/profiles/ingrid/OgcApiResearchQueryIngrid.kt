@@ -31,24 +31,27 @@ import org.springframework.stereotype.Component
 class OgcApiResearchQueryIngrid : OgcApiResearchQuery() {
     override val profiles = listOf("ingrid", "ingrid-hmdk")
 
-    override lateinit var ogcParameter: OgcFilterParameter
-
-    override fun profileSpecificClauses(): MutableList<BoolFilter>? {
+    override fun profileSpecificClauses(ogcParameter: OgcFilterParameter): MutableList<BoolFilter>? {
         val clausesList: MutableList<BoolFilter> = mutableListOf()
 
-        if (ogcParameter.qParameter != null) {
-            clausesList.add(BoolFilter("OR", listOf(qParameterSQL()), null, null, false))
+        ogcParameter.bbox?.let { bbox ->
+            val boundingBox = bbox.map { coordinate -> coordinate.toString() }
+            clausesList.add(BoolFilter("OR", listOf("ingridSelectSpatial"), null, boundingBox, true))
+        }
+
+        ogcParameter.q?.let { qParameter ->
+            clausesList.add(BoolFilter("OR", listOf(qParameterSQL(qParameter)), null, null, false))
         }
 
         return clausesList
     }
 
     @Language("PostgreSQL")
-    fun qParameterSQL(): String {
-        val titleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "title ILIKE '%$it%'" }
-        val descriptionCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
-        val alternateTitleCondition = ogcParameter.qParameter?.joinToString(" OR ") { "data ->> 'alternateTitle' ILIKE '%$it%'" }
-        val freeKeywordsCondition = ogcParameter.qParameter?.joinToString(" OR ") { "EXISTS (SELECT 1 FROM jsonb_array_elements(data -> 'keywords' -> 'free') AS keyword WHERE keyword ->> 'label' ILIKE '%$it%')" }
+    private fun qParameterSQL(qParameter: List<String>): String {
+        val titleCondition = qParameter.joinToString(" OR ") { "title ILIKE '%$it%'" }
+        val descriptionCondition = qParameter.joinToString(" OR ") { "data ->> 'description' ILIKE '%$it%'" }
+        val alternateTitleCondition = qParameter.joinToString(" OR ") { "data ->> 'alternateTitle' ILIKE '%$it%'" }
+        val freeKeywordsCondition = qParameter.joinToString(" OR ") { "EXISTS (SELECT 1 FROM jsonb_array_elements(data -> 'keywords' -> 'free') AS keyword WHERE keyword ->> 'label' ILIKE '%$it%')" }
 
         return """
             ($titleCondition)
