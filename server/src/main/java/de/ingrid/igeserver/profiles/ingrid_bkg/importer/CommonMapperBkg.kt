@@ -54,11 +54,12 @@ class CommonMapperBkg(val isoData: IsoImportData) {
                     convertToKeyValueOfCodelistInDataLanguage(
                         "10001",
                         otherConstraints[0].value!!,
+                        isoData.catalogLanguage,
                     ),
                 )
 
                 2 -> AccessConstraint(
-                    convertToKeyValueOfCodelistInDataLanguage("10001", otherConstraints[0].value!!),
+                    convertToKeyValueOfCodelistInDataLanguage("10001", otherConstraints[0].value!!, isoData.catalogLanguage),
                     otherConstraints[1].value,
                 )
 
@@ -68,17 +69,14 @@ class CommonMapperBkg(val isoData: IsoImportData) {
 
     fun useConstraintBkg(origUseConstraints: List<UseConstraint>): UseConstraint? = origUseConstraints.lastOrNull()?.let {
         UseConstraint(
-            convertToKeyValueOfCodelistInDataLanguage("10003", it.title?.value),
+            convertToKeyValueOfCodelistInDataLanguage("10003", it.title?.value, "name"),
             it.source,
             it.note,
         )
     }
 
-    private fun convertToKeyValueOfCodelistInDataLanguage(codelist: String, value: String?): KeyValue = isoData.codelistService.getCodelists(listOf(codelist)).firstOrNull()?.let {
-        val entry: CodeListEntry? = it.entries.find { entry -> getDataField(entry.data, isoData.catalogLanguage) == value }
-        if (entry == null) {
-//        log.error("Value in codelist $codelist not found: $value")
-        }
+    private fun convertToKeyValueOfCodelistInDataLanguage(codelist: String, value: String?, dataField: String): KeyValue = isoData.codelistService.getCodelists(listOf(codelist)).firstOrNull()?.let {
+        val entry: CodeListEntry? = it.entries.find { entry -> getDataField(entry.data, dataField) == value }
         if (entry == null) KeyValue(null, value) else KeyValue(entry.id)
     } ?: KeyValue(null, value)
 
