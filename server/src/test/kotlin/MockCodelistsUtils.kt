@@ -76,4 +76,14 @@ fun mockCodelists(codelistHandler: CodelistHandler) {
             }
         }
     }
+
+    every { codelistHandler.getCatalogCodelistValue(any(), "6250", any(), any()) } answers {
+        when (thirdArg<String>()) {
+            "7" -> "Hessen"
+            else -> {
+                println("Catalog-Codelist not mocked: ${thirdArg<String>()}")
+                null
+            }
+        }
+    }
 }

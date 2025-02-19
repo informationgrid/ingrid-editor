@@ -1,0 +1,300 @@
+{
+  "title": "INSPIRE-WCS Digital Terrain Model Grid Width 200 m",
+  "_id": 1631,
+  "_uuid": "B567ABDA-10CD-4335-83EA-8D8D2EA9E6B6",
+  "_type": "InGridGeoService",
+  "_created": "2025-02-17T14:33:01.136722Z",
+  "_createdBy": "Mike Cat-Miller",
+  "_modified": "2025-02-19T13:28:49.981788+01:00",
+  "_contentModified": "2025-02-19T13:28:49.9850318+01:00",
+  "_contentModifiedBy": "Mike Cat-Miller",
+  "_version": 1,
+  "_state": "P",
+  "data": {
+    "properties": {
+      "isInspireIdentified": "relevant",
+      "isOpenData": true,
+      "isAdVCompatible": true
+    },
+    "parentIdentifier": "",
+    "alternateTitle": "wcs_dgm200_inspire",
+    "description": "INSPIRE Download Service for Digital Terrain Model Grid Width 200 m (DGM200). The Digital Terrain Model DGM200 describes the terrain forms of the earth’s surface by means of a point quantity arranged in a regular grid, which is georeferenced to planimetry and altimetry. The grid width is 200 m. The data provided through this service covers the area of Germany. Scale: 1:200000\n                    ;",
+    "graphicOverviews": [
+      {
+        "fileName": {
+          "uri": "https://mis.bkg.bund.de/preview/DEBKG00M00000113.gif",
+          "value": "https://mis.bkg.bund.de/preview/DEBKG00M00000113.gif",
+          "asLink": true
+        },
+        "fileDescription": "grafische Darstellung"
+      }
+    ],
+    "pointOfContact": [
+      {
+        "ref": "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
+        "type": {
+          "key": "12"
+        }
+      },
+      {
+        "ref": "14a37ded-4ca5-4677-bfed-3607bed3071d",
+        "type": {
+          "key": "1"
+        }
+      },
+      {
+        "ref": "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
+        "type": {
+          "key": "7"
+        }
+      }
+    ],
+    "advProductGroups": [
+      {
+        "key": "2"
+      }
+    ],
+    "keywords": {
+      "gemet": [],
+      "umthes": [],
+      "free": [
+        {
+          "label": "grid"
+        },
+        {
+          "label": "coverage"
+        }
+      ]
+    },
+    "service": {
+      "classification": [
+        {
+          "key": "203"
+        }
+      ],
+      "type": {
+        "key": "3"
+      },
+      "version": [
+        {
+          "key": null,
+          "value": "OGC:WCS 1.1.1"
+        },
+        {
+          "key": null,
+          "value": "OGC:WCS 1.1.0"
+        },
+        {
+          "key": null,
+          "value": "OGC:WCS 2.0.1"
+        }
+      ],
+      "operations": [
+        {
+          "name": {
+            "key": "1"
+          },
+          "description": "",
+          "methodCall": "https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?REQUEST=GetCapabilities&SERVICE=WCS"
+        },
+        {
+          "name": {
+            "key": null,
+            "value": "DescribeCoverage"
+          },
+          "description": "",
+          "methodCall": "https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"
+        },
+        {
+          "name": {
+            "key": null,
+            "value": "GetCoverage"
+          },
+          "description": "",
+          "methodCall": "https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?"
+        }
+      ],
+      "coupledResources": [],
+      "resolution": [],
+      "systemEnvironment": "",
+      "implementationHistory": "",
+      "explanation": "WCS Service"
+    },
+    "spatial": {
+      "references": [
+        {
+          "type": "free",
+          "title": "Bundesrepublik Deutschland (000000000000)",
+          "value": {
+            "lat1": 47.23942,
+            "lat2": 55.054344,
+            "lon1": 6.098034,
+            "lon2": 15.578555
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "4326"
+        },
+        {
+          "key": "3857"
+        },
+        {
+          "key": "25832"
+        },
+        {
+          "key": "25833"
+        },
+        {
+          "key": "4647"
+        },
+        {
+          "key": "5650"
+        },
+        {
+          "key": "31466"
+        },
+        {
+          "key": "31467"
+        },
+        {
+          "key": "31468"
+        },
+        {
+          "key": "31469"
+        },
+        {
+          "key": "5676"
+        },
+        {
+          "key": "5677"
+        },
+        {
+          "key": "5678"
+        },
+        {
+          "key": "5679"
+        },
+        {
+          "key": "4839"
+        },
+        {
+          "key": "4258"
+        },
+        {
+          "key": "3034"
+        },
+        {
+          "key": "3035"
+        },
+        {
+          "key": "3044"
+        },
+        {
+          "key": "3045"
+        }
+      ],
+      "verticalExtent": {
+        "unitOfMeasure": null
+      },
+      "description": ""
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2020-11-17T07:47:50.251Z",
+          "referenceDateType": {
+            "key": "1"
+          }
+        }
+      ],
+      "resourceDateType": {
+        "key": "at"
+      },
+      "resourceDate": "2025-02-16T23:00:00Z",
+      "status": {
+        "key": "4"
+      }
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": {
+        "key": "1"
+      },
+      "userDefinedMaintenanceFrequency": {
+        "number": 4,
+        "unit": {
+          "key": "4"
+        }
+      },
+      "description": ""
+    },
+    "metadata": {
+      "language": {
+        "key": "123"
+      }
+    },
+    "conformanceResult": [
+      {
+        "pass": {
+          "key": "1"
+        },
+        "isInspire": false,
+        "explanation": "see the referenced specification",
+        "specification": {
+          "key": null,
+          "value": "COMMISSION REGULATION (EC) No 976/2009 of 19 October 2009 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards the Network Services"
+        },
+        "publicationDate": "2009-10-19T22:00:00Z"
+      }
+    ],
+    "extraInfo": {
+      "legalBasicsDescriptions": []
+    },
+    "resource": {
+      "purpose": "",
+      "specificUsage": "",
+      "accessConstraintsBkg": {
+        "key": "2"
+      },
+      "accessConstraintsBkgComment": "zugriff comment",
+      "accessConstraints": [
+        {
+          "key": "1"
+        }
+      ],
+      "useConstraintsBkg": {
+        "key": "1"
+      },
+      "useConstraintsBkgSource": "© GeoBasis-DE / BKG (year of last data download)",
+      "useConstraintsBkgComment": "nutzung comment",
+      "useLimitation": ""
+    },
+    "distribution": {
+      "format": [
+        {
+          "name": {
+            "key": "27"
+          },
+          "version": "",
+          "compression": "",
+          "specification": ""
+        }
+      ]
+    },
+    "digitalTransferOptions": [],
+    "orderInfo": "",
+    "references": [],
+    "spatialScope": null,
+    "themes": [
+      {
+        "key": "201"
+      }
+    ],
+    "priorityDatasets": [
+      {
+        "key": "572823362"
+      }
+    ]
+  }
+}
