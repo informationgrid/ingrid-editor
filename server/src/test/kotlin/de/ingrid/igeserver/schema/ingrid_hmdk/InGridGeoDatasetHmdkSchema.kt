@@ -32,7 +32,7 @@ class InGridGeoDatasetHmdkSchema : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
+        val json = SchemaUtils.getFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
             "\"properties\": {",
             """"properties": {"publicationHmbTG": true, """,
         ).replaceFirst("{", """{ "informationHmbTG": [{"key": "1"}], """)
@@ -45,7 +45,7 @@ class InGridGeoDatasetHmdkSchema : AnnotationSpec() {
 
     @Test
     fun negativeTestWrongProperty() {
-        val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
+        val json = SchemaUtils.getFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
             "\"properties\": {",
             """"properties": {"publicationHmbTGXXX": true, """,
         ).replaceFirst("{", """{ "informationHmbTG": [{"key": "1"}], """)

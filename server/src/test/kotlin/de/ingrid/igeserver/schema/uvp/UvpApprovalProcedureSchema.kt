@@ -52,21 +52,21 @@ class UvpApprovalProcedureSchema : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/approval-procedure.minimal.json")
+        val json = SchemaUtils.getFileContent("/export/uvp/approval-procedure.minimal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
 
     @Test
     fun full() {
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/approval-procedure.maximal.json")
+        val json = SchemaUtils.getFileContent("/export/uvp/approval-procedure.maximal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
 
     @Test
     fun emptySteps() {
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/approval-procedure.emptySteps.json")
+        val json = SchemaUtils.getFileContent("/export/uvp/approval-procedure.emptySteps.json")
         shouldThrow<ValidationException> {
             val result = SchemaUtils.validate(json, schema)
             result.size shouldBeGreaterThan 0
@@ -80,7 +80,7 @@ class UvpApprovalProcedureSchema : AnnotationSpec() {
     @Test
     fun wrongFieldInStep() {
         // this json contains field "furtherDocs" which does not belong to step "publicHearing"
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/approval-procedure.wrongStepField.json")
+        val json = SchemaUtils.getFileContent("/export/uvp/approval-procedure.wrongStepField.json")
         shouldThrow<ValidationException> {
             val result = SchemaUtils.validate(json, schema)
             result.size shouldBeGreaterThan 0

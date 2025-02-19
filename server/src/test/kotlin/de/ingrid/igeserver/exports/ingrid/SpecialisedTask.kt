@@ -138,7 +138,7 @@ class SpecialisedTask : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document1.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/specialisedTask-Document1.idf.xml")
         }
 
         should("maximalExport") {
@@ -148,7 +148,7 @@ class SpecialisedTask : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialized-task.expected.maximal.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/specialized-task.expected.maximal.idf.xml")
         }
 
         should("completeExport") {
@@ -158,7 +158,7 @@ class SpecialisedTask : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/specialisedTask-Document2.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/specialisedTask-Document2.idf.xml")
         }
     }
 }

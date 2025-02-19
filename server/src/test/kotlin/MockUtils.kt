@@ -66,7 +66,7 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
             )
         } answers {
             if (document.template != null) {
-                convertToDocument(SchemaUtils.getJsonFileContent(document.template)).apply {
+                convertToDocument(SchemaUtils.getFileContent(document.template)).apply {
                     wrapperId = document.id
                     uuid = document.uuid
                     data.put("_parent", document.parent)

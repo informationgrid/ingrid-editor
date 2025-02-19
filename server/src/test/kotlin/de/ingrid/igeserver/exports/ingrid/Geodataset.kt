@@ -38,7 +38,7 @@ open class Geodataset : GeodatasetBase() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/geo-dataset.minimal.expected.idf.xml")
             result shouldNotContain "<gmd:distributionInfo>"
         }
 
@@ -54,7 +54,7 @@ open class Geodataset : GeodatasetBase() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.maximal.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/geo-dataset.maximal.expected.idf.xml")
         }
 
         /*
@@ -64,7 +64,7 @@ open class Geodataset : GeodatasetBase() {
         this.should("openDataMinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.openData.json")
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.openData.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/geo-dataset.openData.expected.idf.xml")
         }
 
         /*
@@ -74,7 +74,7 @@ open class Geodataset : GeodatasetBase() {
         this.should("inspireMinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.INSPIRE.json")
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.INSPIRE.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/geo-dataset.INSPIRE.expected.idf.xml")
         }
 
         /*
@@ -84,7 +84,7 @@ open class Geodataset : GeodatasetBase() {
         this.should("advMinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.AdV.json")
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.AdV.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/geo-dataset.AdV.expected.idf.xml")
         }
 
         /*
@@ -94,7 +94,7 @@ open class Geodataset : GeodatasetBase() {
         this.should("vectorMinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.vector.json")
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.vector.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/geo-dataset.vector.expected.idf.xml")
         }
 
         /*
@@ -104,7 +104,7 @@ open class Geodataset : GeodatasetBase() {
         this.should("raster1MinimalExport") {
             val result = exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.GeobasisRaster.json")
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeobasisRaster.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/geo-dataset.GeobasisRaster.expected.idf.xml")
         }
 
         /*
@@ -115,7 +115,7 @@ open class Geodataset : GeodatasetBase() {
             val result =
                 exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.GeorektifiziertesRaster.json")
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeorektifiziertesRaster.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/geo-dataset.GeorektifiziertesRaster.expected.idf.xml")
         }
 
         /*
@@ -126,7 +126,7 @@ open class Geodataset : GeodatasetBase() {
             val result =
                 exportJsonToXML(this@Geodataset.exporter, "/export/ingrid/geo-dataset.GeoreferenzierbaresRaster.json")
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.GeoreferenzierbaresRaster.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/geo-dataset.GeoreferenzierbaresRaster.expected.idf.xml")
         }
 
         /*should("completeExport") {

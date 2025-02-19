@@ -42,14 +42,14 @@ class UvpSpatialAndLineSchema : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/spatial-planning-procedure.minimal.json")
+        val json = SchemaUtils.getFileContent("/export/uvp/spatial-planning-procedure.minimal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
 
     @Test
     fun full() {
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/spatial-planning-procedure.maximal.json")
+        val json = SchemaUtils.getFileContent("/export/uvp/spatial-planning-procedure.maximal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }

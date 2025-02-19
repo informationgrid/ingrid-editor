@@ -43,14 +43,14 @@ class UvpNegativePreliminarySchema : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/negative-preliminary.minimal.json")
+        val json = SchemaUtils.getFileContent("/export/uvp/negative-preliminary.minimal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
 
     @Test
     fun full() {
-        val json = SchemaUtils.getJsonFileContent("/export/uvp/negative-preliminary.maximal.json")
+        val json = SchemaUtils.getFileContent("/export/uvp/negative-preliminary.maximal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }

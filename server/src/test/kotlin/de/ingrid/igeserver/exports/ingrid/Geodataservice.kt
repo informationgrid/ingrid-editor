@@ -130,7 +130,7 @@ class Geodataservice : ShouldSpec() {
         should("minimalExport") {
             val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.minimal.sample.json")
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.minimal.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/geo-service.minimal.expected.idf.xml")
             result shouldNotContain "<gmd:distributionInfo>"
         }
 
@@ -144,7 +144,7 @@ class Geodataservice : ShouldSpec() {
             result = result
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.maximal.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/geo-service.maximal.expected.idf.xml")
         }
 
         /*
@@ -155,7 +155,7 @@ class Geodataservice : ShouldSpec() {
             every { documentService.getIncomingReferences(any(), "test-catalog") } returns emptySet()
             val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.DownloadDienste.json")
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.DownloadDienste.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/geo-service.DownloadDienste.expected.idf.xml")
         }
 
         xshould("completeLuceneExport") {
@@ -169,7 +169,7 @@ class Geodataservice : ShouldSpec() {
                 .replace("\" : ", "\": ")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geodataservice.lucene.json")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/geodataservice.lucene.json")
         }
 
         should("checkSuperiorReferences") {
@@ -179,7 +179,7 @@ class Geodataservice : ShouldSpec() {
                     "1000",
                     any(),
                 )
-            } returns convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.sample.json"))
+            } returns convertToDocument(SchemaUtils.getFileContent("/export/ingrid/geo-dataset.minimal.sample.json"))
 
             val result = exportJsonToXML(
                 exporter,
@@ -200,7 +200,7 @@ class Geodataservice : ShouldSpec() {
                     "1000",
                     any(),
                 )
-            } returns convertToDocument(SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.sample.json")).apply {
+            } returns convertToDocument(SchemaUtils.getFileContent("/export/ingrid/geo-dataset.minimal.sample.json")).apply {
                 data.put("parentIdentifier", "8282cf1f-c681-4402-b41e-b32cd08a4220")
             }
 

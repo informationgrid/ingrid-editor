@@ -29,7 +29,7 @@ class InGridGeoServiceBastSchema : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.minimal.json").replaceFirst(
+        val json = SchemaUtils.getFileContent("/export/ingrid/geo-service.minimal.json").replaceFirst(
             "{",
             """
             { "projectNumber": "my project number", "projectTitle": "my project title", "supplementalInformation": "info", "resource": { "useConstraintsComments": "my useConstraintsComments", "purpose": "my purpose (should be inherited)" }, 

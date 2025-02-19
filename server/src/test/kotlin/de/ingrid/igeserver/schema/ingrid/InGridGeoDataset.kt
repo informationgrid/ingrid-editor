@@ -31,14 +31,14 @@ class InGridGeoDataset : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.json")
+        val json = SchemaUtils.getFileContent("/export/ingrid/geo-dataset.minimal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
 
     @Test
     fun maximal() {
-        val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.maximal.json")
+        val json = SchemaUtils.getFileContent("/export/ingrid/geo-dataset.maximal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
@@ -46,7 +46,7 @@ class InGridGeoDataset : AnnotationSpec() {
     @Test
     fun negativeTestResourceField() {
         val exception = shouldThrow<ValidationException> {
-            val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
+            val json = SchemaUtils.getFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
                 "\"resource\": {",
                 """ "resource": { "purposeX": "my purpose (should not be allowed)", """,
             )

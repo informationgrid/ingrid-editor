@@ -131,7 +131,7 @@ class Address : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/address.person.sample.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/address.person.sample.expected.idf.xml")
         }
 
         should("person2Export") {
@@ -141,7 +141,7 @@ class Address : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/address.person2.sample.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/address.person2.sample.expected.idf.xml")
         }
 
         should("organisationExport") {
@@ -151,7 +151,7 @@ class Address : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/address.organisation.sample.expected.idf.xml")
+            result shouldBe SchemaUtils.getFileContent("/export/ingrid/address.organisation.sample.expected.idf.xml")
         }
 
         should("export address hierarchy with position name") {

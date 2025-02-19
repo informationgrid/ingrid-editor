@@ -29,7 +29,7 @@ class InGridInformationSystemLfuBayern : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getJsonFileContent("/export/ingrid/information-system.minimal.json").replaceFirst(
+        val json = SchemaUtils.getFileContent("/export/ingrid/information-system.minimal.json").replaceFirst(
             "{",
             """
             { "dataSetURI": "myUri", "fees": "my fees", "resource": { "useConstraintsComments": "my useConstraintsComments" }, 
