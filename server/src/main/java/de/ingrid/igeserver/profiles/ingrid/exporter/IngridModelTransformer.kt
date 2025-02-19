@@ -948,6 +948,7 @@ open class IngridModelTransformer(
                     data.service.version?.firstOrNull(),
                     data.service.type?.key,
                 ),
+                functionValue = "information",
             )
         }
         ?: emptyList()
