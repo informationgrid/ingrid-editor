@@ -142,11 +142,9 @@ class PostMigrationTask(
     ): Int {
         val auth = SecurityContextHolder.getContext().authentication
         val catalogIdentifier = migratedObject.catalog!!.identifier
-        val folderData = jacksonObjectMapper().createObjectNode()
-            .put("_type", "FOLDER")
-            .put("title", title)
+        val folderData = jacksonObjectMapper().createObjectNode().put("title", title)
 
-        val document = convertToDocument(folderData)
+        val document = convertToDocument(folderData, docType = "FOLDER")
         val folderDoc =
             documentService.createDocument(
                 auth as Principal,
