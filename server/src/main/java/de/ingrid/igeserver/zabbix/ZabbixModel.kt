@@ -162,3 +162,31 @@ class ZabbixModel {
         val period: String,
     )
 }
+
+fun getUploadsPayload(uuid: String, apiKey: String): String = """
+    {
+        "jsonrpc": "$JSONRPC",
+        "method": "httptest.get",
+        "params": {
+            "output": [
+                "hostid",
+                "name",
+                "status"
+            ],
+            "selectSteps": [
+                "name",
+                "url"
+            ],
+            "selectTags": "extend",
+            "tags": [
+                {
+                    "tag": "id",
+                    "value": "$uuid",
+                    "operator": "1"
+                }
+            ]
+        },
+        "auth": "$apiKey",
+        "id": 1
+    }
+""".trimIndent()

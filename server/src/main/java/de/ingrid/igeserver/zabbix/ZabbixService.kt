@@ -50,11 +50,8 @@ class ZabbixService(
     val uploadUrl = zabbixProperties.uploadURL
 
     fun addOrUpdateDocument(data: ZabbixModel.ZabbixData) {
-        val jsonWebscenarioGet =
-            """{"jsonrpc":"$JSONRPC","method":"httptest.get","params":{"output": ["hostid", "name", "status"],"selectSteps": ["name", "url"],"selectTags": "extend","tags":[{"tag":"id","value":"${data.uuid}","operator":"1"}]},"auth":"$apiKey","id":1}"""
-        val result = requestApi(jsonWebscenarioGet).get("result")
-
-        val remoteUploads = result.map { getUpload(it) }.toMutableList()
+        val remoteUploads = requestApi(getUploadsPayload(data.uuid, apiKey)).get("result")
+            .map { getUpload(it) }.toMutableList()
 
         val documentsToAdd = mutableListOf<ZabbixModel.Upload>()
         val documentsToDelete = remoteUploads
