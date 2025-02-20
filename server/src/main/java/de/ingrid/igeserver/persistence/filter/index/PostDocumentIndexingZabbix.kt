@@ -57,21 +57,20 @@ class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler
         val category = payload.category
 
         if (zabbixService.activatedCatalogs.contains(catalogIdentifier) && category == "DATA") {
-            val data = getZabbixData(payload, catalogIdentifier)
+            val profile = context.profile
+            val jobKey = JobKey.jobKey(ZabbixJob.JOB_KEY, catalogIdentifier)
 
-            try {
-                val profile = context.profile
-                val jobKey = JobKey.jobKey(ZabbixJob.JOB_KEY, catalogIdentifier)
-
-                val jobDataMap = JobDataMap().apply {
-                    put("profile", profile)
-                    put("catalogId", catalogIdentifier)
-                    put("data", jacksonObjectMapper().writeValueAsString(data))
-                }
-                scheduler.handleJobWithCommand(JobCommand.start, ZabbixJob::class.java, jobKey, jobDataMap, 1, false)
-            } catch (ex: Exception) {
-                throw ex
+            val jobDataMap = JobDataMap().apply {
+                put("profile", profile)
+                put("catalogId", catalogIdentifier)
+                put(
+                    "data",
+                    jacksonObjectMapper().writeValueAsString(
+                        getZabbixData(payload, catalogIdentifier),
+                    ),
+                )
             }
+            scheduler.handleJobWithCommand(JobCommand.start, ZabbixJob::class.java, jobKey, jobDataMap, jobPriority = 1, checkRunning = false)
         }
 
         return payload
