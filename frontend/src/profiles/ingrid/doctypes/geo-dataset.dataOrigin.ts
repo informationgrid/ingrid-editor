@@ -17,13 +17,16 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { map } from "rxjs/operators";
-import { of } from "rxjs";
+import { filter, tap } from "rxjs/operators";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { GeoDatasetDoctype } from "./geo-dataset.doctype";
 import { DataOriginViewComponent } from "../components/data-origin-view/data-origin-view.component";
+import { DocumentService } from "../../../app/services/document/document.service";
 
-export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
+export function dataOrigin(
+  geoDatasetDoctype: GeoDatasetDoctype,
+  documentService: DocumentService,
+) {
   return geoDatasetDoctype.addRepeatDetailList(
     "descriptions",
     "Datengrundlage/Herkunft",
@@ -93,6 +96,34 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
           expressions: {
             hide: (field: FormlyFieldConfig) => {
               return field.form.value._type != "internalDataOrigin";
+            },
+          },
+          hooks: {
+            onInit: (field: FormlyFieldConfig) => {
+              return field.options.fieldChanges.pipe(
+                filter((e) => {
+                  return e.type === "valueChanges" && e.field.key === "uuidRef";
+                }),
+                tap((value) => {
+                  if (
+                    field.form.value.date === null &&
+                    field.form.value.dateType === null
+                  ) {
+                    documentService
+                      .load(value.value, false, false, true)
+                      .subscribe((doc) => {
+                        const date =
+                          doc.document.temporal.events[0].referenceDate;
+                        const dateType =
+                          doc.document.temporal.events[0].referenceDateType;
+                        // TODO Create pattern to select right item of array
+                        // TODO Update form with new values
+                        console.log("autoUpdateDate", date);
+                        console.log("autoSelectedDateType", dateType);
+                      });
+                  }
+                }),
+              );
             },
           },
         }),
