@@ -48,15 +48,17 @@ class ZabbixModel {
         val url: String,
         val required: String?,
         val status_codes: String,
+        // TODO: refactor or comment if not possible
         val no: Int,
     )
 
     data class Trigger(
         val jsonrpc: String = JSONRPC,
+        // TODO: set default values where possible (same for host etc.)
         val method: String,
         val params: TriggerParams,
         val auth: String?,
-        val id: Int,
+        val id: Int = 1,
     )
 
     data class Group(val groupid: String)

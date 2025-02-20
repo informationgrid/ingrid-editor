@@ -281,10 +281,12 @@ class ZabbixService(
         return responseHostGroupGet.get("result").get(0)?.get("groupid")?.asText()
     }
 
+    // TODO: move request order around.
+    // first try to get host, then create host if not exists
     private fun createHost(uuid: String, name: String, url: String, catalogName: String): String {
-        var groupid = getHostGroupId(catalogName)
-        if (groupid == null) groupid = createHostgroup(catalogName)
+        var groupid = getHostGroupId(catalogName) ?: createHostgroup(catalogName)
         val hostname = shortenString(name, 255)
+        // e.g. "name": "test (12345678)"
         val visiblename = shortenString(name, 117, true) + " (" + uuid.take(8) + ")"
         val hostUrl = shortenString(url, 255)
 
@@ -296,8 +298,10 @@ class ZabbixService(
         )
         val params = ZabbixModel.HostParams(uuid, visiblename, groups, tags)
         val host = ZabbixModel.Host(method = "host.create", params = params, auth = apiKey, id = 1)
-        val values = jacksonObjectMapper().writeValueAsString(host)
-        val response = requestApi(values)
+        val response = requestApi(
+            jacksonObjectMapper().writeValueAsString(host),
+        )
+
         val hostId: String = if (response.has("error")) {
             val jsonHostGet =
                 """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output":"extend","filter":{"host":["$uuid"]}},"auth":"$apiKey","id":1}"""
@@ -372,6 +376,7 @@ class ZabbixService(
 
     private fun createTrigger(uuid: String, docName: String, docUrl: String) {
         val docNameShort = shortenString(docName, 64)
+        //  wrap docName in quotes if it contains a comma for zabbix compatibility
         val docNameTriggerExpression = if (docNameShort.contains(",")) "\"$docNameShort\"" else docNameShort
         val docNameTag = shortenString(docName, 255)
         val docUrlTag = shortenString(docUrl, 255, true)
@@ -382,13 +387,13 @@ class ZabbixService(
             ZabbixModel.Tag("document url", docUrlTag),
         )
         val params = ZabbixModel.TriggerParams(
-            "Dokument: ${docName.trim()}",
-            "min(/$uuid/web.test.fail[$docNameTriggerExpression],#$checkCount)>0",
-            4,
-            0,
-            tags,
+            description = "Dokument: ${docName.trim()}",
+            expression = "min(/$uuid/web.test.fail[$docNameTriggerExpression],#$checkCount)>0",
+            priority = 4,
+            status = 0,
+            tags = tags,
         )
-        val trigger = ZabbixModel.Trigger(method = "trigger.create", params = params, auth = apiKey, id = 1)
+        val trigger = ZabbixModel.Trigger(method = "trigger.create", params = params, auth = apiKey)
         val values = jacksonObjectMapper().writeValueAsString(trigger)
         val response = requestApi(values)
         log.debug(response)
@@ -405,6 +410,8 @@ class ZabbixService(
         val webscenario = ZabbixModel.Delete(method = "httptest.delete", params = ids, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(webscenario)
         val response = requestApi(values)
+        // TODO avoid logging without context
+        // log.debug("deleteWebscenario: $response")
         log.debug(response)
     }
 
@@ -441,6 +448,13 @@ class ZabbixService(
 
     private fun getFromStepsAsString(response: JsonNode, field: String) = response.get("steps").get(0).get(field).asText()
 
+    /**
+     * Shortens a string to a given length and adds a delimiter in the middle
+     *
+     * @param name the string to shorten
+     * @param length the maximum length of the string
+     * @param onlyEnd if true, only the end of the string is shortened
+     */
     private fun shortenString(name: String, length: Int, onlyEnd: Boolean = false): String {
         val delimiter = ".."
         val tname = name.trim()
@@ -465,11 +479,14 @@ class ZabbixService(
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
         val json = jacksonObjectMapper().readTree(response.body())
 
+        // TODO: add comments and better logging
         if (json.has("error")) {
             val error = json.get("error").get("data")?.asText()
             if (error?.contains("exist") == true) {
                 log.debug(error)
             } else if (error?.contains("invalid") == true) {
+                // for catch invalid email user create request
+                // TODO make sure no other errors are caught
                 val sanitizedRequest = if (requestBody.contains("auth")) {
                     requestBody.substring(0, requestBody.indexOf("auth"))
                 } else {
