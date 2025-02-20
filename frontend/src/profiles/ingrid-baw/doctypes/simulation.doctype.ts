@@ -61,6 +61,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
 
   private getSimulationModelTypeFieldConfig() {
     return this.addRepeatList("simulationModelType", "Simulationsmodellart", {
+      asSelect: true,
       options: this.getCodelistForSelect("3950003", "null"),
     });
   }
@@ -75,9 +76,10 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
         }),
         this.addInputInline("value", "Wert/Wertebereich", {
           required: true,
-          type: "number",
         }),
-        this.common.getUnitOfMeasurementFieldConfig(this),
+        this.addInputInline("unit", "Maßeinheit", {
+          required: true,
+        }),
       ],
     });
   }
