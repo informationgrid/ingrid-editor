@@ -31,6 +31,7 @@ import de.ingrid.igeserver.imports.expectedPersonUnderOrganisation
 import de.ingrid.igeserver.imports.expectedPersonUnderOrganisation2
 import de.ingrid.igeserver.imports.minimalMetadata
 import de.ingrid.igeserver.model.ResearchResponse
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -94,6 +95,7 @@ class IsoImporterTest : AnnotationSpec() {
         every { documentRepository.findAddressByOrganisationName(any(), any()) } returns emptyList()
         // needed for checking if imported address-reference already exists (default yes)
         every { documentService.getWrapperByCatalogAndDocumentUuid(any(), any()) } returns DocumentWrapper()
+        every { catalogService.getCatalogById(any()) } returns Catalog()
     }
 
     @Test

@@ -21,6 +21,7 @@ package de.ingrid.igeserver.imports.ingrid_lfubayern
 
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.imports.getFile
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.importer.ISOImportLfUBayern
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -56,6 +57,8 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog("ingrid-lfubayern")
         every { documentService.docRepo } returns documentRepository
         every { documentRepository.findAddressByOrganisationName(any(), any()) } returns emptyList()
+        every { catalogService.getCatalogById(any()) } returns Catalog()
+        every { documentService.catalogService } returns catalogService
     }
 
     @Test
