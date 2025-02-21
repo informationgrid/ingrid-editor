@@ -28,7 +28,7 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
 
     val log = logger()
 
-    data class BoundingBoxModel(val lat1: Float, val lon1: Float, val lat2: Float, val lon2: Float)
+    data class BoundingBoxModel(val lat1: Double, val lon1: Double, val lat2: Double, val lon2: Double)
 
     val polygon: String?
         get() {

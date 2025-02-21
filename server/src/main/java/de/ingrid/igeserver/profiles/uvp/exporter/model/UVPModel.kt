@@ -134,7 +134,7 @@ data class UVPModel(
         ?.map { prepareSpatialString(it) }
         ?.getOrNull(0)
 
-    fun getSpatial(field: String): Float? {
+    fun getSpatial(field: String): Double? {
         val value = getSpatialBoundingBox() ?: return null
 
         return when (field) {
@@ -150,12 +150,12 @@ data class UVPModel(
         ?.getOrNull(0)
         ?.value
 
-    fun getSpatialLatCenter(): Float? {
+    fun getSpatialLatCenter(): Double? {
         val bbox = getSpatialBoundingBox() ?: return null
         return bbox.lat1 + (bbox.lat2 - bbox.lat1) / 2
     }
 
-    fun getSpatialLonCenter(): Float? {
+    fun getSpatialLonCenter(): Double? {
         val bbox = getSpatialBoundingBox() ?: return null
         return bbox.lon1 + (bbox.lon2 - bbox.lon1) / 2
     }
