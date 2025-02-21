@@ -116,7 +116,7 @@ class BkgCommonTransformer(private val codelists: CodelistTransformer, private v
                         )
                     },
                 ),
-                if (comment != null) CharacterStringModel(comment, null) else null,
+                if (!comment.isNullOrEmpty()) CharacterStringModel(comment, null) else null,
             ),
         )
     }
