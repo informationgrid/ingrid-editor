@@ -990,10 +990,10 @@ data class SpatialReference(
 )
 
 data class BoundingBox(
-    val lat1: Float,
-    val lon1: Float,
-    val lat2: Float,
-    val lon2: Float,
+    val lat1: Double,
+    val lon1: Double,
+    val lat2: Double,
+    val lon2: Double,
 )
 
 data class CoupledResourceModel(

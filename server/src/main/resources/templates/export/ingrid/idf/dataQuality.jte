@@ -9,7 +9,7 @@
         <gmd:scope>
             <gmd:DQ_Scope>
                 <gmd:level>
-                    <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+                    <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="${page.getHierarchyLevel()}"/>
                 </gmd:level>
             </gmd:DQ_Scope>
         </gmd:scope>
