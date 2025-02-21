@@ -1,0 +1,365 @@
+{
+  "title": "GER CORINE Land Cover 5 ha (CLC5)",
+  "_id": 1632,
+  "_state": "P",
+  "_type": "InGridGeoDataset",
+  "_uuid": "D85D3ABC-0612-40AE-8E70-78EDB386DE7F",
+  "_created": "2025-02-17T14:33:01.136722Z",
+  "_createdBy": "Mike Cat-Miller",
+  "_modified": "2025-02-20T13:28:49.981788+01:00",
+  "_contentModified": "2025-02-20T13:28:49.9850318+01:00",
+  "_contentModifiedBy": "Mike Cat-Miller",
+  "_version": 1,
+  "data": {
+    "properties": {
+      "subType": {
+        "key": "6"
+      },
+      "isOpenData": true,
+      "isAdVCompatible": false
+    },
+    "parentIdentifier": "",
+    "alternateTitle": "CLC5",
+    "description": "This serie clc5 describes the landscape according to the CORINE Land Cover (CLC) nomenclature. These classes contain mainly information about landcover mixed with some aspects of landuse. CLC5 is based on the more detailed German landcover model (LBM-DE) which uses separate classes for landcover and landuse and attribute-information about percentage of vegetation and sealing. The mimimum unit for an object is 1 ha. For the CLC5 dataset landcover and landuse classes are combined to unique CLC-classes taking into account the percentage of vegetation and sealing, followed by a generalisation process.",
+    "graphicOverviews": [
+      {
+        "fileName": {
+          "uri": "https://mis.bkg.bund.de/preview/DEBKG00M00000221.png",
+          "value": "https://mis.bkg.bund.de/preview/DEBKG00M00000221.png",
+          "asLink": true
+        },
+        "fileDescription": "grafische Darstellung"
+      }
+    ],
+    "pointOfContact": [
+      {
+        "ref": "25d56d6c-ed8d-4589-8c14-f8cfcb669115",
+        "type": {
+          "key": "12"
+        }
+      }
+    ],
+    "advProductGroups": [],
+    "topicCategories": [
+      {
+        "key": "10"
+      }
+    ],
+    "keywords": {
+      "gemet": [
+        {
+          "id": "http://www.eionet.europa.eu/gemet/concept/4612",
+          "label": "Landbedeckung",
+          "alternativeLabel": "land cover"
+        },
+        {
+          "id": "http://www.eionet.europa.eu/gemet/concept/4678",
+          "label": "Flächennutzung",
+          "alternativeLabel": "land use"
+        }
+      ],
+      "umthes": [],
+      "free": [
+        {
+          "label": "CLC"
+        },
+        {
+          "label": "Landbedeckung"
+        },
+        {
+          "label": "Landnutzung"
+        },
+        {
+          "label": "Bodenbedeckung"
+        },
+        {
+          "label": "LBM-DE"
+        }
+      ]
+    },
+    "lineage": {
+      "statement": "The CLC5 data (minimum mapping unit 5 hectares) are derived from the land cover model for Germany (LBM-DE) by generalization. This dataset, in which the minimum mapping is 1 hectare, contains land cover and land use information for each object. By means of a cross-table the single combinations of land cover and land use attributes are transformed - with regard to the degrees of sealing and vegetation that are stored in LBM-DE as well - into unique CLC codes."
+    },
+    "identifier": "https://registry.gdi-de.org/id/de.bund.bkg.csw/d923011a-b576-43e1-8cee-666dae93f940",
+    "spatialRepresentationType": [
+      {
+        "key": "1"
+      }
+    ],
+    "resolution": [
+      {
+        "denominator": 25000,
+        "distanceMeter": 100,
+        "distanceDPI": 300
+      }
+    ],
+    "dataQualityInfo": {
+      "lineage": {
+        "source": {
+          "descriptions": [
+            {
+              "_type": "freeDescription",
+              "value": "LBM-DE"
+            }
+          ],
+          "processStep": {
+            "description": [
+              {
+                "key": null,
+                "value": "transformation"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "portrayalCatalogueInfo": {
+      "citation": [
+        {
+          "title": {
+            "key": null,
+            "value": "symbol"
+          },
+          "date": "2025-02-20T00:00:00.000+01:00",
+          "edition": "1"
+        }
+      ]
+    },
+    "featureCatalogueDescription": {
+      "citation": [
+        {
+          "title": {
+            "key": null,
+            "value": "key"
+          },
+          "date": "2025-02-12T00:00:00.000+01:00",
+          "edition": "2"
+        }
+      ],
+      "featureTypes": [
+        {
+          "key": null,
+          "value": "cause 1"
+        }
+      ]
+    },
+    "dataQuality": {
+      "completenessOmission": {}
+    },
+    "absoluteExternalPositionalAccuracy": {
+      "vertical": null,
+      "horizontal": null
+    },
+    "qualities": [
+      {
+        "_type": "completenessComission",
+        "measureType": {
+          "key": "1"
+        },
+        "value": 1,
+        "parameter": "a"
+      }
+    ],
+    "spatial": {
+      "references": [
+        {
+          "type": "free",
+          "title": "Bundesrepublik Deutschland (000000000000)",
+          "value": {
+            "lat1": 47.23942184448242,
+            "lat2": 55.054344177246094,
+            "lon1": 6.098033905029297,
+            "lon2": 15.5785551071167
+          }
+        }
+      ],
+      "spatialSystems": [
+        {
+          "key": "4258"
+        },
+        {
+          "key": "31467"
+        },
+        {
+          "key": "31468"
+        },
+        {
+          "key": "31469"
+        },
+        {
+          "key": "25833"
+        },
+        {
+          "key": "25832"
+        },
+        {
+          "key": "3044"
+        }
+      ],
+      "verticalExtent": {
+        "unitOfMeasure": null
+      },
+      "description": ""
+    },
+    "temporal": {
+      "events": [
+        {
+          "referenceDate": "2019-07-23T22:00:00Z",
+          "referenceDateType": {
+            "key": "1"
+          }
+        }
+      ],
+      "resourceDateType": null,
+      "resourceDate": null,
+      "status": {
+        "key": "4"
+      }
+    },
+    "maintenanceInformation": {
+      "maintenanceAndUpdateFrequency": {
+        "key": "1"
+      },
+      "userDefinedMaintenanceFrequency": {
+        "number": 3,
+        "unit": {
+          "key": "6"
+        }
+      },
+      "description": ""
+    },
+    "metadata": {
+      "language": {
+        "key": "123"
+      },
+      "characterSet": {
+        "key": "4"
+      }
+    },
+    "dataset": {
+      "languages": ["123"]
+    },
+    "conformanceResult": [
+      {
+        "pass": {
+          "key": "1"
+        },
+        "isInspire": false,
+        "explanation": "see the referenced specification",
+        "specification": {
+          "key": null,
+          "value": "COMMISSION REGULATION (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services"
+        },
+        "publicationDate": "2010-12-07T23:00:00Z"
+      }
+    ],
+    "extraInfo": {
+      "legalBasicsDescriptions": []
+    },
+    "resource": {
+      "purpose": "",
+      "specificUsage": "",
+      "accessConstraintsBkg": {
+        "key": "1"
+      },
+      "accessConstraintsBkgComment": "",
+      "accessConstraints": [],
+      "useConstraintsBkg": {
+        "key": "1"
+      },
+      "useConstraintsBkgSource": "© GeoBasis-DE / BKG &lt; year of last data download &gt;",
+      "useConstraintsBkgComment": "Kommentar",
+      "useLimitation": ""
+    },
+    "distribution": {
+      "format": [
+        {
+          "name": {
+            "key": "14"
+          },
+          "version": "3.2.1",
+          "compression": "",
+          "specification": ""
+        }
+      ]
+    },
+    "digitalTransferOptions": [],
+    "orderInfo": "",
+    "references": [
+      {
+        "url": "http://www.bkg.bund.de/EN/Products-and-Services/products-and-services.html",
+        "type": {
+          "key": "9999"
+        },
+        "title": "data and services",
+        "explanation": "",
+        "referenceType": "url"
+      },
+      {
+        "url": "https://sgx.geodatenzentrum.de/wfs_clc5_2012_inspire?REQUEST=GetCapabilities&SERVICE=WFS",
+        "type": {
+          "key": "9999"
+        },
+        "title": "service \"INSPIRE-WFS CORINE Land Cover – 5ha (2018)\" (GetCapabilities)",
+        "explanation": "",
+        "referenceType": "url"
+      },
+      {
+        "url": "https://sgx.geodatenzentrum.de/wms_clc5_2012_inspire?SERVICE=WMS&REQUEST=GetCapabilities",
+        "type": {
+          "key": "9999"
+        },
+        "title": "service \"INSPIRE-WMS CORINE Land Cover – 5ha (2018)\" (GetCapabilities)",
+        "explanation": "",
+        "referenceType": "url"
+      },
+      {
+        "url": "https://sgx.geodatenzentrum.de/wfs_clc5_2015_inspire?REQUEST=GetCapabilities&SERVICE=WFS",
+        "type": {
+          "key": "9999"
+        },
+        "title": "service \"INSPIRE-WFS CORINE Land Cover – 5ha (2015)\" (GetCapabilities)",
+        "explanation": "",
+        "referenceType": "url"
+      },
+      {
+        "url": "https://sgx.geodatenzentrum.de/wms_clc5_2015_inspire?SERVICE=WMS&REQUEST=GetCapabilities",
+        "type": {
+          "key": "9999"
+        },
+        "title": "service \"INSPIRE-WMS CORINE Land Cover – 5ha (2015)\" (GetCapabilities)",
+        "explanation": "",
+        "referenceType": "url"
+      },
+      {
+        "url": "https://sgx.geodatenzentrum.de/wfs_clc5_2012_inspire?REQUEST=GetCapabilities&SERVICE=WFS",
+        "type": {
+          "key": "9999"
+        },
+        "title": "service \"INSPIRE-WFS CORINE Land Cover – 5ha (2012)\" (GetCapabilities)",
+        "explanation": "",
+        "referenceType": "url"
+      },
+      {
+        "url": "https://sgx.geodatenzentrum.de/wms_clc5_2012_inspire?SERVICE=WMS&REQUEST=GetCapabilities",
+        "type": {
+          "key": "9999"
+        },
+        "title": "service \"INSPIRE-WMS CORINE Land Cover – 5ha (2012)\" (GetCapabilities)",
+        "explanation": "",
+        "referenceType": "url"
+      }
+    ],
+    "vectorSpatialRepresentation": [
+      {
+        "topologyLevel": {
+          "key": "4"
+        },
+        "geometricObjectType": {
+          "key": "3"
+        },
+        "geometricObjectCount": 4
+      }
+    ]
+  }
+}

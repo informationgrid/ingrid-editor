@@ -313,7 +313,7 @@
                 </gmd:MD_ReferenceSystem>
             </gmd:referenceSystemInfo>
             <gmd:identificationInfo>
-                <srv:SV_ServiceIdentification uuid="https://registry.gdi-de.org/id/de.bund.bkg.csw/58A8056B-6E11-3FC6-8429-304E163C4DE1">
+                <srv:SV_ServiceIdentification uuid="https://registry.gdi-de.org/id/de.bund.bkg.csw/B567ABDA-10CD-4335-83EA-8D8D2EA9E6B6">
                     <gmd:citation>
                         <gmd:CI_Citation>
                             <gmd:title>
@@ -785,7 +785,7 @@
                                         <gmd:URL>https://sgx.geodatenzentrum.de/wcs_dgm200_inspire?REQUEST=GetCapabilities&amp;SERVICE=WCS</gmd:URL>
                                     </gmd:linkage>
                                     <gmd:protocol>
-                                        <gmx:Anchor xlink:href="http://www.opengis.net/def/serviceType/ogc/wfs">OGC Web Feature Service</gmx:Anchor>
+                                        <gmx:Anchor xlink:href="http://www.opengis.net/def/serviceType/ogc/wcs">OGC Web Coverage Service</gmx:Anchor>
                                     </gmd:protocol>
                                     <gmd:name>
                                         <gco:CharacterString>Dienst "INSPIRE-WCS Digital Terrain Model Grid Width 200 m" (GetCapabilities)</gco:CharacterString>
