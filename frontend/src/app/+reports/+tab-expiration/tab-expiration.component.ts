@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, OnInit } from "@angular/core";
+import { Component, EventEmitter, OnInit, signal } from "@angular/core";
 
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import {
@@ -68,7 +68,7 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
 })
 export class TabExpirationComponent implements OnInit {
   currentUserId: number;
-  expiryDurationInDays: number;
+  expiryDurationInDays = signal<number | null>(null);
 
   isSearching: boolean = false;
   onSearch = new EventEmitter<void>();
@@ -110,7 +110,7 @@ export class TabExpirationComponent implements OnInit {
       .getExpiryDuration()
       .pipe(
         untilDestroyed(this),
-        tap((expiryDuration) => (this.expiryDurationInDays = expiryDuration)),
+        tap((expiryDuration) => this.expiryDurationInDays.set(expiryDuration)),
         tap(() => this.onSearch.emit()),
       )
       .subscribe();
@@ -131,7 +131,7 @@ export class TabExpirationComponent implements OnInit {
   }
 
   private updateResult() {
-    if (!this.expiryDurationInDays) return of();
+    if (!this.expiryDurationInDays()) return of();
 
     return this.search("selectDocuments").pipe(
       combineLatestWith(this.search("selectAddresses")),
@@ -163,7 +163,7 @@ export class TabExpirationComponent implements OnInit {
 
   private filterByExpiry(res: ResearchResponse): ResearchResponse {
     const filtered = res.hits.filter((doc) =>
-      isExpired(doc._contentModified, this.expiryDurationInDays),
+      isExpired(doc._contentModified, this.expiryDurationInDays()),
     );
     return { totalHits: filtered.length, hits: filtered };
   }
