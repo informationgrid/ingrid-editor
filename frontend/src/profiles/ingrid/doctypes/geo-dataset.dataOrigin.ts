@@ -112,14 +112,29 @@ export function dataOrigin(
                     documentService
                       .load(value.value, false, false, true)
                       .subscribe((doc) => {
-                        const date =
-                          doc.document.temporal.events[0].referenceDate;
-                        const dateType =
-                          doc.document.temporal.events[0].referenceDateType;
-                        // TODO Create pattern to select right item of array
-                        // TODO Update form with new values
-                        console.log("autoUpdateDate", date);
-                        console.log("autoSelectedDateType", dateType);
+                        const sortedTemporalEvents =
+                          doc.document.temporal.events.sort((a, b) => {
+                            return (
+                              new Date(b.referenceDate).getTime() -
+                              new Date(a.referenceDate).getTime()
+                            );
+                          });
+                        const allRevisionEvents = sortedTemporalEvents.filter(
+                          (event) => event.referenceDateType.key === "3",
+                        );
+                        let date: Date;
+                        let dateType: string;
+                        if (allRevisionEvents.length == 0) {
+                          date = sortedTemporalEvents[0].referenceDate;
+                          dateType = sortedTemporalEvents[0].referenceDateType;
+                        } else {
+                          date = allRevisionEvents[0].referenceDate;
+                          dateType = allRevisionEvents[0].referenceDateType;
+                        }
+                        field.formControl.root.get("date").setValue(date);
+                        field.formControl.root
+                          .get("dateType")
+                          .setValue(dateType);
                       });
                   }
                 }),
