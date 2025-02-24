@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.exporter.TransformationTools
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
 import de.ingrid.igeserver.utils.getString
 
@@ -141,11 +140,6 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
             "relativeInternalPositionalAccuracy" -> return "28"
             else -> ""
         }
-    }
-
-    fun mapConformanceResultTitle(result: ConformanceResult): String? = when (result.isInspire) {
-        true -> codelists.getValue("6005", result.specification, "iso") ?: codelists.getValue("6005", result.specification, "de")
-        else -> codelists.getCatalogCodelistValue("6006", result.specification)
     }
 
     private val unknownValueUnit = "<gmd:valueUnit gco:nilReason=\"unknown\"/>"
