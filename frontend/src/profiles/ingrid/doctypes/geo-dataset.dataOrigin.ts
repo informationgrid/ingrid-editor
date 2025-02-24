@@ -52,40 +52,6 @@ export function dataOrigin(
           hasInlineContextHelp: false,
           updateOn: "change",
         }),
-        geoDatasetDoctype.addGroupSimple(
-          null,
-          [
-            geoDatasetDoctype.addDatepickerInline("date", null, {
-              fieldLabel: "Datum",
-              wrappers: ["inline-help", "form-field"],
-              expressions: {
-                "props.required": (field: FormlyFieldConfig) =>
-                  field.form.value._type == "internalDataOrigin" ||
-                  !!field.form.value.title ||
-                  !!field.form.value.identifier ||
-                  !!field.form.value.dateType,
-              },
-            }),
-            geoDatasetDoctype.addSelect("dateType", null, {
-              showSearch: true,
-              fieldLabel: "Typ",
-              wrappers: ["form-field"],
-              className: "flex-3",
-              options: geoDatasetDoctype.getCodelistForSelect("502", "type"),
-              codelistId: "502",
-              expressions: {
-                "props.required": (field: FormlyFieldConfig) =>
-                  field.form.value._type == "internalDataOrigin" ||
-                  !!field.form.value.title ||
-                  !!field.form.value.identifier ||
-                  !!field.form.value.date,
-              },
-            }),
-          ],
-          {
-            fieldGroupClassName: "flex-row gap-12",
-          },
-        ),
         geoDatasetDoctype.addDocumentCard("uuidRef", {
           required: true,
           docTypeFilter: ["InGridGeoDataset"],
@@ -142,6 +108,40 @@ export function dataOrigin(
             },
           },
         }),
+        geoDatasetDoctype.addGroupSimple(
+          null,
+          [
+            geoDatasetDoctype.addDatepickerInline("date", null, {
+              fieldLabel: "Datum",
+              wrappers: ["inline-help", "form-field"],
+              expressions: {
+                "props.required": (field: FormlyFieldConfig) =>
+                  field.form.value._type == "internalDataOrigin" ||
+                  !!field.form.value.title ||
+                  !!field.form.value.identifier ||
+                  !!field.form.value.dateType,
+              },
+            }),
+            geoDatasetDoctype.addSelect("dateType", null, {
+              showSearch: true,
+              fieldLabel: "Typ",
+              wrappers: ["form-field"],
+              className: "flex-3",
+              options: geoDatasetDoctype.getCodelistForSelect("502", "type"),
+              codelistId: "502",
+              expressions: {
+                "props.required": (field: FormlyFieldConfig) =>
+                  field.form.value._type == "internalDataOrigin" ||
+                  !!field.form.value.title ||
+                  !!field.form.value.identifier ||
+                  !!field.form.value.date,
+              },
+            }),
+          ],
+          {
+            fieldGroupClassName: "flex-row gap-12",
+          },
+        ),
         geoDatasetDoctype.addInputInline("title", "Titel", {
           wrappers: ["inline-help", "form-field"],
           hasInlineContextHelp: true,
