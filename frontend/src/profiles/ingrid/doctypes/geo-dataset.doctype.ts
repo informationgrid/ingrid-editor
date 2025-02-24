@@ -425,7 +425,7 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [
             this.addGroupSimple("source", [
-              dataOrigin(this),
+              dataOrigin(this, this.documentService),
               this.addGroupSimple("processStep", [
                 this.addRepeatList("description", "Herstellungsprozess", {
                   className: "optional flex-1",
