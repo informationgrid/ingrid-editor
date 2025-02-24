@@ -119,22 +119,22 @@ export function dataOrigin(
                               new Date(a.referenceDate).getTime()
                             );
                           });
+                        if (sortedTemporalEvents.length === 0) {
+                          console.warn("No temporal events found!");
+                          return;
+                        }
                         const allRevisionEvents = sortedTemporalEvents.filter(
                           (event) => event.referenceDateType.key === "3",
                         );
-                        let date: Date;
-                        let dateType: string;
-                        if (allRevisionEvents.length == 0) {
-                          date = sortedTemporalEvents[0].referenceDate;
-                          dateType = sortedTemporalEvents[0].referenceDateType;
-                        } else {
-                          date = allRevisionEvents[0].referenceDate;
-                          dateType = allRevisionEvents[0].referenceDateType;
-                        }
-                        field.formControl.root.get("date").setValue(date);
-                        field.formControl.root
-                          .get("dateType")
-                          .setValue(dateType);
+                        const revisionFound = allRevisionEvents.length > 0;
+                        field.formControl.root.patchValue({
+                          date: revisionFound
+                            ? allRevisionEvents[0].referenceDate
+                            : sortedTemporalEvents[0].referenceDate,
+                          dateType: revisionFound
+                            ? allRevisionEvents[0].referenceDateType
+                            : sortedTemporalEvents[0].referenceDateType,
+                        });
                       });
                   }
                 }),
