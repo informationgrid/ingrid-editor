@@ -75,6 +75,7 @@ export interface MetadataOptionItems {
 export interface MetadataOptionItem {
   key?: string;
   label: string;
+  completeLabel?: string;
   value: any;
   contextHelpKey?: string;
   hide?: boolean;

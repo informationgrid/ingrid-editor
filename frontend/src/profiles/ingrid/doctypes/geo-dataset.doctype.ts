@@ -67,7 +67,6 @@ export class GeoDatasetDoctype extends IngridShared {
   showAdVProductGroup = true;
   showIdentifierCreateButton = true;
   isGeoDataset = true;
-  defaultKeySpatialScope = "885989663";
 
   constructor() {
     super();
