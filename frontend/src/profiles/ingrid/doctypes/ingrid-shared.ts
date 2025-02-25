@@ -254,6 +254,7 @@ export abstract class IngridShared extends BaseDoctype {
                 items: [
                   {
                     label: "kompatibel",
+                    completeLabel: "AdV kompatibel",
                     key: "isAdVCompatible",
                     value: true,
                     contextHelpKey: "isAdVCompatible",
