@@ -123,16 +123,16 @@
                                         <gco:Boolean>true</gco:Boolean>
                                     </gmd:extentTypeCode>
                                     <gmd:westBoundLongitude>
-                                        <gco:Decimal>8.47276</gco:Decimal>
+                                        <gco:Decimal>8.4727605</gco:Decimal>
                                     </gmd:westBoundLongitude>
                                     <gmd:eastBoundLongitude>
-                                        <gco:Decimal>8.800405</gco:Decimal>
+                                        <gco:Decimal>8.8004049</gco:Decimal>
                                     </gmd:eastBoundLongitude>
                                     <gmd:southBoundLatitude>
-                                        <gco:Decimal>50.015354</gco:Decimal>
+                                        <gco:Decimal>50.0153529</gco:Decimal>
                                     </gmd:southBoundLatitude>
                                     <gmd:northBoundLatitude>
-                                        <gco:Decimal>50.227142</gco:Decimal>
+                                        <gco:Decimal>50.2271424</gco:Decimal>
                                     </gmd:northBoundLatitude>
                                 </gmd:EX_GeographicBoundingBox>
                             </gmd:geographicElement>

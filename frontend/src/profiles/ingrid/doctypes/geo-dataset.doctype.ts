@@ -68,7 +68,6 @@ export class GeoDatasetDoctype extends IngridShared {
   showIdentifierCreateButton = true;
   showDataQualitySection = true;
   isGeoDataset = true;
-  defaultKeySpatialScope = "885989663";
 
   constructor() {
     super();
@@ -426,7 +425,7 @@ export class GeoDatasetDoctype extends IngridShared {
         this.addGroupSimple("dataQualityInfo", [
           this.addGroupSimple("lineage", [
             this.addGroupSimple("source", [
-              dataOrigin(this),
+              dataOrigin(this, this.documentService),
               this.addGroupSimple("processStep", [
                 this.addRepeatList("description", "Herstellungsprozess", {
                   className: "optional flex-1",

@@ -329,6 +329,7 @@ export class FormFieldHelper {
       className: "flex-1",
       props: { ...options },
       expressions: options.expressions,
+      hooks: options.hooks,
     };
   }
 
