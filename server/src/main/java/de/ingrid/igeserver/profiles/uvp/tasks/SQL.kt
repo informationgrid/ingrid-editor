@@ -118,12 +118,11 @@ fun sqlDecisionDateBefore(catalogId: String, date: OffsetDateTime): String = """
 fun sqlUpdateValidDate(docId: Int, tableField: String): String = """
         UPDATE document
         SET data = jsonb_set(
-                data,
-                '{processingSteps}',
-                (SELECT jsonb_agg(
-                                CASE
-                                    -- Verarbeite NUR gültige Elemente
-                                    WHEN jsonb_typeof(step -> '$tableField') = 'array' THEN
+        data,
+        '{processingSteps}',
+        (SELECT jsonb_agg(
+                        CASE
+                            WHEN jsonb_typeof(step -> '$tableField') = 'array' THEN
                                         jsonb_set(
                                                 step,
                                                 '{$tableField}',
@@ -146,7 +145,7 @@ fun sqlUpdateValidDate(docId: Int, tableField: String): String = """
                                                  FROM jsonb_array_elements(step -> '$tableField') doc),
                                                 TRUE
                                         )
-                                    ELSE step -- Belasse nicht betroffene Elemente unverändert
+                                    ELSE step
                                     END
                         )
                  FROM jsonb_array_elements(data -> 'processingSteps') step),
@@ -154,6 +153,41 @@ fun sqlUpdateValidDate(docId: Int, tableField: String): String = """
                    )
         WHERE id = $docId
 """.trimIndent()
+
+fun sqlUpdateValidDateNegativeDoc(docId: Int): String = """
+    UPDATE document
+        SET data = CASE
+           WHEN EXISTS (SELECT 1
+                        FROM jsonb_object_keys(data) AS keys
+                        WHERE keys = 'uvpNegativeDecisionDocs') THEN
+               jsonb_set(
+                       data,
+                       '{uvpNegativeDecisionDocs}',
+                       (SELECT jsonb_agg(
+                                       CASE
+                                           WHEN doc ->> 'validUntil' IS NULL OR
+                                                (doc ->> 'validUntil')::timestamp >=
+                                                (CURRENT_DATE::timestamp AT TIME ZONE 'Europe/Berlin') AT TIME ZONE
+                                                'UTC' THEN
+                                               jsonb_set(
+                                                       doc,
+                                                       '{validUntil}',
+                                                       to_jsonb(to_char(
+                                                               ((CURRENT_DATE::timestamp - INTERVAL '1 day') AT TIME ZONE 'Europe/Berlin') AT TIME ZONE
+                                                               'UTC'
+                                                           , 'YYYY-MM-DD"T"HH24:MI:SS.MSZ')),
+                                                       TRUE
+                                               )
+                                           ELSE doc
+                                           END
+                               )
+                        FROM jsonb_array_elements(data -> 'uvpNegativeDecisionDocs') doc),
+                       TRUE
+               )
+           ELSE data
+           END
+   WHERE id = $docId
+"""
 
 private fun mapToUploadInfo(it: JsonNode): UploadInfo {
     val validUntilDateField = it.get("validUntil")

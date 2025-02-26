@@ -23,13 +23,14 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.profiles.uvp.tasks.ArchiveType
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlDecisionDateBefore
 import de.ingrid.igeserver.profiles.uvp.tasks.sqlUpdateValidDate
+import de.ingrid.igeserver.profiles.uvp.tasks.sqlUpdateValidDateNegativeDoc
 import jakarta.persistence.EntityManager
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 import java.time.OffsetDateTime
 
-data class WrapperAndDocId(val wrapperId: Int, val docId: Int)
+data class WrapperAndDocId(val wrapperId: Int, val docId: Int, val docType: String)
 
 @Service
 class UvpArchiveService(val entityManager: EntityManager, val transactionManager: PlatformTransactionManager) {
@@ -78,7 +79,7 @@ class UvpArchiveService(val entityManager: EntityManager, val transactionManager
         datasets.forEach {
             tableIds.forEach { tableId ->
                 log.debug("Updating valid date for table $tableId for document ${it.docId}")
-                entityManager.createNativeQuery(sqlUpdateValidDate(it.docId, tableId)).executeUpdate()
+                entityManager.createNativeQuery(getQuery(it, tableId)).executeUpdate()
             }
         }
     }
@@ -87,8 +88,13 @@ class UvpArchiveService(val entityManager: EntityManager, val transactionManager
         datasets.forEach {
             (tableIds + tableIdsDecision).forEach { tableId ->
                 log.debug("Updating valid date for table $tableId for document ${it.docId}")
-                entityManager.createNativeQuery(sqlUpdateValidDate(it.docId, tableId)).executeUpdate()
+                entityManager.createNativeQuery(getQuery(it, tableId)).executeUpdate()
             }
         }
+    }
+
+    private fun getQuery(info: WrapperAndDocId, tableId: String): String = when (info.docType) {
+        "UvpNegativePreliminaryAssessmentDoc" -> sqlUpdateValidDateNegativeDoc(info.docId)
+        else -> sqlUpdateValidDate(info.docId, tableId)
     }
 }

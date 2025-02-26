@@ -53,13 +53,27 @@ export class ArchivePlugin extends Plugin {
     super();
 
     this.fields.push({
-      key: "hideForAuthors",
-      type: "checkbox",
-      wrappers: [],
-      defaultValue: false,
-      props: {
-        label: "Für Autoren nicht anzeigen",
-      },
+      fieldGroupClassName: "flex-col",
+      fieldGroup: [
+        {
+          key: "hideForAuthors",
+          type: "checkbox",
+          wrappers: [],
+          defaultValue: false,
+          props: {
+            label: "Für Autoren nicht anzeigen",
+          },
+        },
+        {
+          key: "showInPortal",
+          type: "checkbox",
+          wrappers: [],
+          defaultValue: false,
+          props: {
+            label: "archivierte Datensätze im Portal anzeigen",
+          },
+        },
+      ],
     });
 
     inject(PluginService).registerPlugin(this);

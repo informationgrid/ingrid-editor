@@ -26,9 +26,11 @@ import de.ingrid.igeserver.profiles.uvp.UvpArchiveService
 import de.ingrid.igeserver.profiles.uvp.WrapperAndDocId
 import de.ingrid.igeserver.profiles.uvp.tasks.ArchiveType
 import de.ingrid.igeserver.services.BehaviourService
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 
 @Component
+@Order(1) // run before default post archive task, to index modified document
 class UVPPostArchive(
     private val uvpArchiveService: UvpArchiveService,
     private val behaviourService: BehaviourService,
@@ -38,7 +40,7 @@ class UVPPostArchive(
     override fun invoke(payload: PostArchivePayload, context: Context): PostArchivePayload {
         val typeString = behaviourService.get(context.catalogId, "plugin.uvp.archive")?.data?.get("uvpArchiveType") as? String
         val type = ArchiveType.valueOf(uvpArchiveService.mapType(typeString))
-        val dataset = WrapperAndDocId(payload.wrapperId, payload.publishedDoc.id!!)
+        val dataset = WrapperAndDocId(payload.wrapperId, payload.publishedDoc.id!!, payload.publishedDoc.type)
 
         uvpArchiveService.updateValidUntilDate(listOf(dataset), type)
         return payload

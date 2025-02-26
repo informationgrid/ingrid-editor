@@ -11,8 +11,10 @@
     </ng-container>
 
     <div main-content>
-        @if (!active) {
-            Bitte aktivieren Sie erst das Verhalten "Archivierung".
+        @if (!active()) {
+            Bitte aktivieren Sie erst das Verhalten "Archivierung" und stellen
+            Sie sicher, dass die Option "archivierte Datensätze im Portal
+            anzeigen" ausgewählt ist.
         } @else {
             <p class="comment-field">
                 Wählen Sie ein Datum aus, um alle Verfahren zu archivieren,

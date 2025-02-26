@@ -57,7 +57,10 @@ export class UvpArchiveComponent implements OnInit {
   private rxStompService = inject(RxStompService);
   private transloco = inject(TranslocoService);
 
-  active = this.behaviourService.getBehaviour("plugin.archive").isActive;
+  active = computed<boolean>(() => {
+    const archivePlugin = this.behaviourService.getBehaviour("plugin.archive");
+    return archivePlugin.isActive && archivePlugin.data["showInPortal"];
+  });
   dateControl = new FormControl<Date>(null);
   numOfDatasetsHint = signal<string>("");
   status = signal<BaseLogResult>(null);
