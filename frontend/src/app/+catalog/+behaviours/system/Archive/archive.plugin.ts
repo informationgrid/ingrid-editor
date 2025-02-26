@@ -30,6 +30,7 @@ import {
 import { TagsService } from "../tags/tags.service";
 import { DocumentService } from "../../../../services/document/document.service";
 import { TranslocoService } from "@ngneat/transloco";
+import { ConfigService } from "../../../../services/config/config.service";
 
 @Injectable()
 export class ArchivePlugin extends Plugin {
@@ -44,12 +45,23 @@ export class ArchivePlugin extends Plugin {
   private formToolbarService = inject(FormToolbarService);
   private docEvents = inject(DocEventsService);
   private dialog = inject(MatDialog);
-  private tagsService = inject(TagsService);
   private documentService = inject(DocumentService);
   private transloco = inject(TranslocoService);
+  private configService = inject(ConfigService);
 
   constructor() {
     super();
+
+    this.fields.push({
+      key: "hideForAuthors",
+      type: "checkbox",
+      wrappers: [],
+      defaultValue: false,
+      props: {
+        label: "Für Autoren nicht anzeigen",
+      },
+    });
+
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
@@ -64,6 +76,9 @@ export class ArchivePlugin extends Plugin {
 
   registerForm() {
     super.registerForm();
+
+    if (this.data.hideForAuthors && this.configService.isAuthor()) return;
+
     this.formToolbarService.addButton({
       id: "toolBtnArchive",
       label: "Archivieren",

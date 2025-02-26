@@ -42,6 +42,7 @@ import { TreeStore } from "../../store/tree/tree.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { DocumentService } from "../../services/document/document.service";
 import { DocEventsService } from "../../services/event/doc-events.service";
+import { BehaviourService } from "../../services/behavior/behaviour.service";
 
 @UntilDestroy()
 @Component({
@@ -72,6 +73,10 @@ export class FormInfoComponent implements OnInit {
   private addressTreeStore = inject(AddressTreeStore);
   private documentService = inject(DocumentService);
   private docEvents = inject(DocEventsService);
+  private configService = inject(ConfigService);
+
+  private hideUnarchiveForAuthors: boolean =
+    inject(BehaviourService).getBehaviour("plugin.archive").data.hideForAuthors;
 
   path = computed<ShortTreeNode[]>(() => {
     if (this.forAddress()) {
@@ -84,9 +89,12 @@ export class FormInfoComponent implements OnInit {
   rootName: string;
   metadata = this.formStateService.metadata;
 
-  isArchived = computed(() =>
-    this.metadata().tags.split(",").includes("archived"),
-  );
+  canRemoveFromArchive = computed(() => {
+    const isArchived = this.metadata().tags.split(",").includes("archived");
+    const canUnarchive =
+      !this.hideUnarchiveForAuthors || !this.configService.isAuthor();
+    return isArchived && canUnarchive;
+  });
 
   isPending = computed(
     () =>

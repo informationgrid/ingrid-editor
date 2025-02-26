@@ -23,7 +23,7 @@
                 (cancel)="stopPublish()"
             ></ige-publish-pending>
         }
-        @if (isArchived()) {
+        @if (canRemoveFromArchive()) {
             <ige-publish-pending
                 [message]="t('publish.formWithPronoun') + ' wurde archiviert.'"
                 buttonLabel="Aus dem Archiv holen"
