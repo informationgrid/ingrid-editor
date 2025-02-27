@@ -84,6 +84,7 @@ class InGridBkgComponent extends InGridComponent {
         (docType as GeoServiceDoctype).showHasAccessConstraints = false;
       }
       docType.showFileReferences = false;
+      docType.showLegalBasicsDescriptions = false;
     });
   }
 

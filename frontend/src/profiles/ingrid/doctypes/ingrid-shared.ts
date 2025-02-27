@@ -125,6 +125,7 @@ export abstract class IngridShared extends BaseDoctype {
   showAdVCompatible: boolean = false;
   showAdVProductGroup: boolean = false;
   showFileReferences: boolean = true;
+  showLegalBasicsDescriptions: boolean = true;
   /** @deprecated: should be defined in geoservice-doctype */
   isGeoService: boolean = false;
   /** @deprecated: should be defined in geodataset-doctype */
@@ -1352,22 +1353,24 @@ export abstract class IngridShared extends BaseDoctype {
               },
             })
           : null,
-        this.addGroupSimple("extraInfo", [
-          this.addRepeatList(
-            "legalBasicsDescriptions",
-            "Rechtliche Grundlagen",
-            {
-              asSelect: false,
-              showSearch: true,
-              options: this.getCodelistForSelect(
-                "1350",
-                "extraInfo.legalBasicsDescriptions",
+        this.showLegalBasicsDescriptions
+          ? this.addGroupSimple("extraInfo", [
+              this.addRepeatList(
+                "legalBasicsDescriptions",
+                "Rechtliche Grundlagen",
+                {
+                  asSelect: false,
+                  showSearch: true,
+                  options: this.getCodelistForSelect(
+                    "1350",
+                    "extraInfo.legalBasicsDescriptions",
+                  ),
+                  codelistId: "1350",
+                  className: "optional",
+                },
               ),
-              codelistId: "1350",
-              className: "optional",
-            },
-          ),
-        ]),
+            ])
+          : null,
         this.addGroup(
           "resource",
           "Weiteres",
