@@ -651,7 +651,7 @@ open class IngridModelTransformer(
     val resourceFormat = if (!isDoiActive()) data.publication?.documentType?.let { codelists.getValue("3385", it, "en") } else null
 
     private fun isDoiActive(): Boolean {
-        val doiBehaviour = SpringContext.getBean(BehaviourService::class.java)?.get(catalogIdentifier, "plugin.doi")
+        val doiBehaviour = SpringContext.getBean(BehaviourService::class.java)?.get(catalogIdentifier, "plugin.ingrid.doi")
         return doiBehaviour?.active == true
     }
 

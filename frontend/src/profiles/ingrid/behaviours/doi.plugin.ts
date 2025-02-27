@@ -18,14 +18,14 @@
  * limitations under the Licence.
  */
 import { inject, Injectable } from "@angular/core";
-import { Plugin } from "../../plugin";
-import { PluginService } from "../../../../services/plugin/plugin.service";
+import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
+import { PluginService } from "../../../app/services/plugin/plugin.service";
 
 @Injectable({
   providedIn: "root",
 })
-export class DoiBehaviour extends Plugin {
-  id = "plugin.doi";
+export class DoiPlugin extends Plugin {
+  id = "plugin.ingrid.doi";
   name = "DOI-Felder anzeigen";
   description = `Zeigt DOI-Felder im Formular unter der Rubrik "Fachbezug" an. In der Objektklasse "Literatur" wird dadurch das Feld "Dokumenttyp" ersetzt.
 <p>Es kann ein Default-Präfix angegeben werden, der in neu angelegten Objekten automatisch eingefügt wird.</p>`;

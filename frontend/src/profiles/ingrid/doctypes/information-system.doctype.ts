@@ -37,6 +37,8 @@ export class InformationSystemDoctype extends IngridShared {
   showAdVProductGroup = true;
 
   documentFields = () => {
+    this.handleDoiBehaviour();
+
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection(),
       this.addKeywordsSection(),

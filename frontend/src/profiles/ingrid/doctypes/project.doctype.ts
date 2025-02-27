@@ -39,6 +39,8 @@ export class ProjectDoctype extends IngridShared {
   }
 
   documentFields = () => {
+    this.handleDoiBehaviour();
+
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection(),
       this.addKeywordsSection(),

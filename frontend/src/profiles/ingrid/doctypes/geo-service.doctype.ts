@@ -79,6 +79,8 @@ export class GeoServiceDoctype extends IngridShared {
   getServiceOperationNameOptions = new BehaviorSubject<SelectOptionUi[]>([]);
 
   documentFields = () => {
+    this.handleDoiBehaviour();
+
     const fields = <FormlyFieldConfig[]>[
       this.showUpdateGetCapabilities
         ? {

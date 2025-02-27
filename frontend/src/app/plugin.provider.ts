@@ -40,7 +40,6 @@ import { DefaultUserBehaviour } from "./+catalog/+behaviours/system/User/default
 import { ShowDocumentPermissionsHandlerPlugin } from "./+catalog/+behaviours/system/ShowDocumentPermissions/show-document-permissions-handler";
 import { FieldsToggleButtonBehaviour } from "./+catalog/+behaviours/system/FieldsToggleButton/fields-toggle-button.behaviour";
 import { ExpiredDocumentsBehaviour } from "./+catalog/+behaviours/system/expiredDocuments/expired-documents.behaviour";
-import { DoiBehaviour } from "./+catalog/+behaviours/system/Doi/doi.behaviour";
 
 export const pluginProvider = [
   { provide: PluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -81,5 +80,4 @@ export const pluginProvider = [
     multi: true,
   },
   { provide: PluginToken, useClass: ExpiredDocumentsBehaviour, multi: true },
-  { provide: PluginToken, useClass: DoiBehaviour, multi: true },
 ];

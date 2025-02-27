@@ -112,6 +112,7 @@ export class GeoDatasetDoctype extends IngridShared {
 
   documentFields = () => {
     this.handleInVeKoSBehaviour();
+    this.handleDoiBehaviour();
 
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection({

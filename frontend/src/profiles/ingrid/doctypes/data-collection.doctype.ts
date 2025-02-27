@@ -40,6 +40,8 @@ export class DataCollectionDoctype extends IngridShared {
   }
 
   documentFields = () => {
+    this.handleDoiBehaviour();
+
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection(),
       this.addKeywordsSection(),
