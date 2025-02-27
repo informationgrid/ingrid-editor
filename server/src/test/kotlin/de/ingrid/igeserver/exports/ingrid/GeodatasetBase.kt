@@ -92,7 +92,7 @@ open class GeodatasetBase : ShouldSpec() {
 
         mockCatalog(this.catalogService)
         mockCodelists(this.codelistHandler)
-        mockBehaviours(this.behaviourService)
+        mockBehaviours(this.behaviourService, "plugin.ingrid.doi")
 
         val addresses = listOf(
             MockDocument(

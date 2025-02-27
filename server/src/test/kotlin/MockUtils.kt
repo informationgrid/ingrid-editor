@@ -48,15 +48,17 @@ fun mockCatalog(catalogService: CatalogService) {
     every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog()
 }
 
-fun mockBehaviours(behaviourService: BehaviourService) {
+fun mockBehaviours(behaviourService: BehaviourService, vararg activeBehaviours: String) {
     every { behaviourService.get(any(), any()) } answers {
         Behaviour().apply {
             active = false
         }
     }
-    every { behaviourService.get(any(), "plugin.doi") } answers {
-        Behaviour().apply {
-            active = true
+    for (activeBehaviour in activeBehaviours) {
+        every { behaviourService.get(any(), activeBehaviour) } answers {
+            Behaviour().apply {
+                active = true
+            }
         }
     }
 }

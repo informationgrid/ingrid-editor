@@ -88,7 +88,7 @@ class Project : ShouldSpec() {
 
         mockCatalog(catalogService)
         mockCodelists(codelistHandler)
-        mockBehaviours(behaviourService)
+        mockBehaviours(behaviourService, "plugin.ingrid.doi")
 
         val addresses = listOf(
             MockDocument(
