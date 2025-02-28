@@ -20,6 +20,8 @@
 import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw-skdv-ok/doctypes/geo-dataset.doctype";
+import { BehaviourService } from "../app/services/behavior/behaviour.service";
+import { ConfigService } from "../app/services/config/config.service";
 
 @Component({
   template: "",
@@ -27,12 +29,24 @@ import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw-skdv-ok/doctypes/geo-
 })
 class InGridLubwSkdvOkComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeLubwSkdvOk);
+  behaviourService = inject(BehaviourService);
+  configService = inject(ConfigService);
 
   constructor() {
     super();
     // this.isoView.isoExportFormat = "ingridISOExternalBast";
     this.isoView.isoExportFormat = "ingridISOLubwSkdvOk";
     this.modifyFormFieldConfiguration();
+
+    const isAuthor = this.configService.$userInfo.value.role === "author";
+    if (isAuthor) {
+      this.disablePlugins([
+        "plugin.newDoc",
+        "plugin.folder",
+        "plugin.copy.cut.paste",
+        "plugin.deleteDocs",
+      ]);
+    }
   }
 
   protected getDocTypes = () => [
@@ -43,6 +57,12 @@ class InGridLubwSkdvOkComponent extends InGridComponent {
   ];
 
   private modifyFormFieldConfiguration() {}
+
+  private disablePlugins(pluginIds: string[]) {
+    pluginIds.forEach((id) => {
+      this.behaviourService.getBehaviour(id).isActive = false;
+    });
+  }
 }
 
 @NgModule({
