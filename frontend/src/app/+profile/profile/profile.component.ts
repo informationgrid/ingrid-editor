@@ -33,6 +33,7 @@ import { MatIcon } from "@angular/material/icon";
 import { MatButton } from "@angular/material/button";
 import { EmailformComponent } from "../../emailform/emailform.component";
 import { AsyncPipe } from "@angular/common";
+import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 import { TranslocoDirective } from "@ngneat/transloco";
 
 @Component({
@@ -45,6 +46,7 @@ import { TranslocoDirective } from "@ngneat/transloco";
     MatButton,
     EmailformComponent,
     AsyncPipe,
+    MATOMO_DIRECTIVES,
     TranslocoDirective,
   ],
 })

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { DocumentService } from "../../../services/document/document.service";
 import {
   FormToolbarService,
@@ -98,7 +98,7 @@ export class CopyCutPastePlugin extends Plugin {
         matSvgVariable: "Kopieren-Ausschneiden",
         eventId: "COPY",
         pos: 40,
-        active: false,
+        active: signal(false),
         menu: [
           { eventId: "COPY", label: "Kopieren" },
           { eventId: "COPYTREE", label: "Kopieren mit Teilbaum" },

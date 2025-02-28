@@ -15,7 +15,6 @@
         @for (address of resolvedAddresses(); track address; let i = $index) {
             <div
                 class="address-card-wrapper"
-                style="max-width: 50%"
                 [class.draggable]="formControl.enabled"
                 cdkDrag
                 [cdkDragDisabled]="formControl.disabled"

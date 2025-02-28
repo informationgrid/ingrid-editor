@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { registerLocaleData } from "@angular/common";
-import { ConfigService } from "./services/config/config.service";
+import { ConfigService, Configuration } from "./services/config/config.service";
 import { HttpClient } from "@angular/common/http";
 import { MatDialog } from "@angular/material/dialog";
 import { IgeError } from "./models/ige-error";
@@ -37,11 +37,12 @@ import { ProfileService } from "./services/profile.service";
 import { catchError, filter, map, switchMap, take } from "rxjs/operators";
 import { ProfileMapper } from "../profiles/profile.mapper";
 import { Type } from "@angular/core";
+import { MatomoInitializerService } from "ngx-matomo-client";
 
 registerLocaleData(de);
 
 function loadProfile(configService: ConfigService) {
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
     const hasCatalogAssigned = ProfileService.userHasAnyCatalog(
       configService.$userInfo.value,
     );
@@ -57,9 +58,9 @@ function loadProfile(configService: ConfigService) {
         map(({ ProfilePack }) => ProfilePack.getMyComponent() as Type<any>),
         take(1),
         catchError(() => {
-          throw new IgeError(
-            `Profile '${configService.$userInfo.value.currentCatalog?.type}' could not be loaded. You may need to add it to the profile.mapper.ts file.`,
-          );
+          const igeError = new IgeError(`Profile '${configService.$userInfo.value.currentCatalog?.type}' could not be loaded. You may need to add it to the profile.mapper.ts file.`);
+          reject(igeError);
+          throw igeError;
         }),
       )
       .subscribe((data) => {
@@ -77,6 +78,7 @@ export function ConfigLoader(
   dialog: MatDialog,
   translocoService: TranslocoService,
   generalStore: any,
+  matomoInitializer: MatomoInitializerService,
 ) {
   function getRedirectNavigationCommand(catalogId: string, urlPath: string) {
     const splittedUrl = urlPath.split(";");
@@ -155,9 +157,34 @@ export function ConfigLoader(
     }
   }
 
+  function initializeMatomo(config: Configuration) {
+    matomoInitializer.initializeTracker({
+      siteId: config.matomoSiteId,
+      trackerUrl: config.matomoUrl,
+    });
+  }
+
+  function handleUnsupportedProfile() {
+    setTimeout(() => {
+      const path = window.location.pathname.split(";")[0];
+      const otherCatalogId =
+        configService.$userInfo.value.assignedCatalogs.find(
+          (item) => item.id !== ConfigService.catalogId,
+        ).id;
+      window.location.href = path.replace(
+        ConfigService.catalogId,
+        otherCatalogId,
+      );
+    }, 1000);
+  }
+
   return async () => {
     try {
       await configService.load();
+
+      const config = configService.getConfiguration();
+      if (config.matomoUrl) initializeMatomo(config);
+
       await initializeKeycloakAndGetUserInfo(authFactory, configService);
       const language =
         configService.$userInfo.value.currentCatalog.settings?.config.language;
@@ -167,6 +194,10 @@ export function ConfigLoader(
       await loadProfile.call(this, configService);
       console.debug("FINISHED APP INIT");
     } catch (err) {
+      if (err.message === "Profile could not be loaded") {
+        handleUnsupportedProfile();
+        return;
+      }
       // remove loading spinner and rethrow error
       document.getElementsByClassName("app-loading").item(0).innerHTML =
         "Fehler bei der Initialisierung";

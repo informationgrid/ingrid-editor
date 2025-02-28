@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, signal, ViewChild } from "@angular/core";
 import {
   FormToolbarService,
   Separator,
@@ -33,6 +33,7 @@ import { LongPressDirective } from "../../../directives/longPress.directive";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatIcon } from "@angular/material/icon";
 import { MatDivider } from "@angular/material/divider";
+import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 
 @Component({
   selector: "form-toolbar",
@@ -51,6 +52,7 @@ import { MatDivider } from "@angular/material/divider";
     MatMenuItem,
     MatDivider,
     MatIconButton,
+    MATOMO_DIRECTIVES,
   ],
 })
 export class FormToolbarComponent implements OnInit {
@@ -60,7 +62,7 @@ export class FormToolbarComponent implements OnInit {
 
   menu = {};
 
-  isNotReady = false;
+  isNotReady = signal<boolean>(false);
   private currentFocusedEl: HTMLElement;
 
   constructor(
@@ -74,7 +76,7 @@ export class FormToolbarComponent implements OnInit {
     this.documentService.documentOperationFinished$
       .pipe(takeUntilDestroyed())
       .subscribe((isReady) => {
-        this.isNotReady = !isReady;
+        this.isNotReady.set(!isReady);
       });
   }
 

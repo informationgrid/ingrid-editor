@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../../../+form/form-shared/toolbar/form-toolbar.service";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { Plugin } from "../../plugin";
@@ -30,7 +30,7 @@ export class ShowJsonBehaviour extends Plugin {
   name = "Anzeige JSON Formular";
   group = "Toolbar";
   description =
-    "Ein neuer Button ermöglicht die Anzeige des JSON-Dokuments neben dem Formular.";
+    "Fügt einen Button hinzu, mit dem das JSON-Dokument neben dem Formular angezeigt werden kann.";
   defaultActive = false;
 
   private uiStore = inject(UiStore);
@@ -58,7 +58,7 @@ export class ShowJsonBehaviour extends Plugin {
       matIconVariable: "bug_report",
       eventId: this.eventShowJsonId,
       pos: 1000,
-      active: true,
+      active: signal(true),
     });
 
     // add event handler for revert

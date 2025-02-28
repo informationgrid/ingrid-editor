@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
 import { UntilDestroy } from "@ngneat/until-destroy";
@@ -50,7 +50,9 @@ export class CreateDocumentPlugin extends Plugin {
 
   isAdmin = this.config.hasCatAdminRights();
 
-  private activeNodes$ = toObservable(this.generalStore.activeTreeNodes);
+  private activeAddressNodes$ = toObservable(
+    this.generalStore.activeAddressTreeNodes,
+  );
 
   constructor(
     private config: ConfigService,
@@ -99,7 +101,7 @@ export class CreateDocumentPlugin extends Plugin {
           matSvgVariable: "Neuer-Datensatz",
           eventId: "NEW_DOC",
           pos: 1,
-          active: true,
+          active: signal(true),
         });
         this.addNonAdminBehaviour();
       });
@@ -151,15 +153,14 @@ export class CreateDocumentPlugin extends Plugin {
       this.toolbarService.setButtonState("toolBtnNew", canGenerallyCreate);
 
       if (!canGenerallyCreate && this.forAddress()) {
-        const organisationCheckSubscription = this.activeNodes$.subscribe(
-          (data) => {
+        const organisationCheckSubscription =
+          this.activeAddressNodes$.subscribe((data) => {
             const docs = data.map((item) => this.getStore().entityMap()[item]);
             this.toolbarService.setButtonState(
               "toolBtnNew",
               this.isOrganisation(docs),
             );
-          },
-        );
+          });
         this.formSubscriptions.push(organisationCheckSubscription);
       }
     }

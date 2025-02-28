@@ -45,6 +45,7 @@ import { LogResultComponent } from "./log-result/log-result.component";
 import { IndexingFields } from "./indexing-fields";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { JobHandlerHeaderComponent } from "../../shared/job-handler-header/job-handler-header.component";
+import { MatomoTrackClickDirective } from "ngx-matomo-client";
 
 @UntilDestroy()
 @Component({
@@ -62,6 +63,7 @@ import { JobHandlerHeaderComponent } from "../../shared/job-handler-header/job-h
     LogResultComponent,
     PageTemplateComponent,
     JobHandlerHeaderComponent,
+    MatomoTrackClickDirective,
   ],
 })
 export class IndexingComponent implements OnInit {

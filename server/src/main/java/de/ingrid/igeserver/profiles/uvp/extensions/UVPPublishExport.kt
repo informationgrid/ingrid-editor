@@ -27,6 +27,9 @@ import de.ingrid.igeserver.persistence.filter.PostPublishPayload
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.tasks.IndexingTask
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.queryForList
@@ -62,6 +65,7 @@ class UVPPublishExport(
         return payload
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun indexReferencedUvpDocs(context: Context, docId: String) {
         context.addMessage(Message(this, "Index documents with referenced address $docId to Elasticsearch"))
 
@@ -81,7 +85,10 @@ class UVPPublishExport(
             """.trimIndent(),
         )
 
-        docsWithReferences.forEach { indexUvpDoc(context, it, DocumentCategory.DATA) }
+        // use GlobalScope only for indexing, not for determining which documents to index
+        GlobalScope.launch {
+            docsWithReferences.forEach { indexUvpDoc(context, it, DocumentCategory.DATA) }
+        }
     }
 
     private fun indexUvpDoc(context: Context, docId: String, category: DocumentCategory) {

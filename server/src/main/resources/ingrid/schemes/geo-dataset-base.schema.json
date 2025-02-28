@@ -46,7 +46,7 @@
       }
     },
     "spatialGrid": {
-      "type": "object",
+      "type": ["null", "object"],
       "unevaluatedProperties": false,
       "properties": {
         "type": {

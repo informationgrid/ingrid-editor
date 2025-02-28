@@ -54,9 +54,8 @@ class WmtsCapabilitiesParser(params: CapabilitiesParameter) :
         operations = getOperations(doc)
     }
 
-    private fun getOperations(doc: Document): List<OperationBean> {
-        val operations: MutableList<OperationBean> = ArrayList()
-        val getCapabilitiesOp = mapToOperationBean(
+    private fun getOperations(doc: Document): List<OperationBean> = listOf(
+        mapToOperationBean(
             doc,
             arrayOf(
                 XPATH_EXP_WMTS_OP_GET_CAPABILITIES_GET_HREF1,
@@ -74,57 +73,15 @@ class WmtsCapabilitiesParser(params: CapabilitiesParameter) :
                 ID_OP_PLATFORM_HTTP_POST,
                 ID_OP_PLATFORM_HTTP_POST,
             ),
-        )
-        if (!getCapabilitiesOp.addressList!!.isEmpty()) {
-            getCapabilitiesOp.name = KeyValue(
+        ).apply {
+            name = KeyValue(
                 params.codelistHandler.getCodeListEntryId("5110", "GetCapabilities", "de"),
                 "GetCapabilities",
             )
-            // do not set method call so that it doesn't appear in ISO (#3651)
-            // getCapabilitiesOp.setMethodCall("GetCapabilities");
-            operations.add(getCapabilitiesOp)
-        }
-
-        // Only import GetCapabilities - Operation (#3651)
-        /*
-    // Operation - GetTile
-    OperationBean getTileOp = mapToOperationBean(doc,
-            new String[]{
-                    XPATH_EXP_WMTS_OP_GET_TILE_HREF1,
-                    XPATH_EXP_WMTS_OP_GET_TILE_HREF2,
-                    XPATH_EXP_WMTS_OP_GET_TILE_HREF3
-            },
-            new Integer[]{
-                    ID_OP_PLATFORM_HTTP_GET,
-                    ID_OP_PLATFORM_HTTP_GET,
-                    ID_OP_PLATFORM_HTTP_GET
-            });
-    if (!getTileOp.getAddressList().isEmpty()) {
-        getTileOp.setName("GetTile");
-        getTileOp.setMethodCall("GetTile");
-
-
-        operations.add(getTileOp);
-    }
-
-    // Operation - GetFeatureInfo - optional
-    String getFeatureInfoAddress = xPathUtils.getString(doc,  XPATH_EXP_WMTS_OP_GET_FEATURE_INFO_HREF);
-    if (getFeatureInfoAddress != null && getFeatureInfoAddress.length() != 0) {
-        OperationBean getFeatureInfoOp = new OperationBean();
-        getFeatureInfoOp.setName("GetFeatureInfo");
-        getFeatureInfoOp.setMethodCall("GetFeatureInfo");
-        List<Integer> getFeatureInfoOpPlatform = new ArrayList<>();
-        getFeatureInfoOpPlatform.add(ID_OP_PLATFORM_HTTP_GET);
-        getFeatureInfoOp.setPlatform(getFeatureInfoOpPlatform);
-        List<String> getFeatureInfoOpAddressList = new ArrayList<>();
-        getFeatureInfoOpAddressList.add(getFeatureInfoAddress);
-        getFeatureInfoOp.setAddressList(getFeatureInfoOpAddressList);
-
-
-        operations.add(getFeatureInfoOp);
-    }*/
-        return operations
-    }
+            // will be overwritten with original getCapabilities, but needs at least one entry!
+            addressList = addressList?.takeIf { it.isNotEmpty() } ?: listOf("")
+        },
+    )
 
     /**
      * @param doc

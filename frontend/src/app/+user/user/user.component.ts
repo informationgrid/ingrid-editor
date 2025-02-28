@@ -63,6 +63,7 @@ import { GroupStore } from "../../store/group/group.store";
 import { GeneralStore } from "../../store/general.store";
 import { UiStore } from "../../store/ui.store";
 import { toSignal } from "@angular/core/rxjs-interop";
+import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 
 @UntilDestroy()
 @Component({
@@ -85,6 +86,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
     MatMenuItem,
     HeaderMoreComponent,
     FormlyModule,
+    MATOMO_DIRECTIVES,
   ],
   providers: [UserManagementService],
 })

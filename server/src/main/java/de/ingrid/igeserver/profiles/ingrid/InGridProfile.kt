@@ -227,7 +227,7 @@ class InGridProfile(
     private fun createCodelist1350(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "1350"
         catalog = catalogRef
-        name = "Weitere rechtliche Grundlagen"
+        name = "Rechtliche Grundlagen"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "Atomgesetz (AtG)"))

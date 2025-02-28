@@ -24,6 +24,8 @@
                             mat-stroked-button
                             (click)="openAddGroupDialog()"
                             matTooltip="Gruppe hinzufügen"
+                            matomoClickCategory="UserManagement"
+                            matomoClickAction="AddGroup"
                         >
                             <mat-icon>person_add</mat-icon> Hinzufügen
                         </button>
@@ -35,6 +37,8 @@
                             matTooltip="Speichern"
                             (click)="saveGroup()"
                             [disabled]="form?.invalid || !form?.dirty"
+                            matomoClickCategory="UserManagement"
+                            matomoClickAction="SaveGroup"
                         >
                             Speichern
                         </button>
@@ -99,6 +103,8 @@
                                 class="menu dark menu-button"
                                 matTooltip="Bearbeiten"
                                 [matMenuTriggerFor]="groupMoreMenu"
+                                matomoClickCategory="UserManagement"
+                                matomoClickAction="GroupActionsMenu"
                             >
                                 <mat-icon svgIcon="Mehr"></mat-icon>
                             </button>
@@ -106,6 +112,8 @@
                                 <button
                                     mat-menu-item
                                     (click)="showGroupUsers(selectedGroup().id)"
+                                    matomoClickCategory="UserManagement"
+                                    matomoClickAction="ShowGroupUsers"
                                 >
                                     Benutzer anzeigen
                                 </button>
@@ -115,6 +123,8 @@
                                     "
                                     mat-menu-item
                                     (click)="deleteGroup(selectedGroup().id)"
+                                    matomoClickCategory="UserManagement"
+                                    matomoClickAction="DeleteGroup"
                                 >
                                     Löschen
                                 </button>
@@ -220,7 +230,7 @@
                 }
                 <!-- NO GROUP SELECTED -->
             } @else {
-                <mat-spinner style="margin: 100px auto"></mat-spinner>
+                <mat-spinner class="spinner"></mat-spinner>
             }
         </as-split-area>
     </as-split>

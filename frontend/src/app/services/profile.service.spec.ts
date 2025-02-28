@@ -27,7 +27,7 @@ import { ConfigService, UserInfo } from "./config/config.service";
 import { BehaviorSubject } from "rxjs";
 import { ContextHelpService } from "./context-help/context-help.service";
 import { ModalService } from "./modal/modal.service";
-import { Catalog } from "../+catalog/services/catalog.model";
+import { provideMatomoTesting } from "ngx-matomo-client/testing";
 
 describe("ProfileService", () => {
   let spectator: SpectatorService<ProfileService>;
@@ -51,6 +51,7 @@ describe("ProfileService", () => {
           permissions: [],
         }),
       }),
+      // provideMatomoTesting(),
     ],
     mocks: [ContextHelpService, ModalService],
   });

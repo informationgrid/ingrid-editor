@@ -8,6 +8,9 @@ html,
 body {
   height: 100%;
   margin: 0;
+
+  // hover effect in select boxes
+  --mat-sys-on-surface: #1a1b1f;
 }
 
 body {
@@ -37,6 +40,10 @@ a {
     text-decoration: none;
     color: color.adjust(vars.$ige-secondary, $lightness: 20%);
   }
+}
+
+.overflow-auto {
+  overflow: auto;
 }
 
 .user-popup mat-icon path {

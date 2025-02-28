@@ -127,8 +127,6 @@ export abstract class IngridShared extends BaseDoctype {
   isGeoDataset: boolean = false;
   private thesaurusTopics: boolean = false;
 
-  defaultKeySpatialScope = null; // Regional
-
   codelistIds = {
     distributionFormat: "1320",
     urlDataType: "1320",
@@ -256,6 +254,7 @@ export abstract class IngridShared extends BaseDoctype {
                 items: [
                   {
                     label: "kompatibel",
+                    completeLabel: "AdV kompatibel",
                     key: "isAdVCompatible",
                     value: true,
                     contextHelpKey: "isAdVCompatible",
@@ -1352,7 +1351,7 @@ export abstract class IngridShared extends BaseDoctype {
         this.addGroupSimple("extraInfo", [
           this.addRepeatList(
             "legalBasicsDescriptions",
-            "Weitere rechtliche Grundlagen",
+            "Rechtliche Grundlagen",
             {
               asSelect: false,
               showSearch: true,
@@ -1676,10 +1675,17 @@ export abstract class IngridShared extends BaseDoctype {
         hasInlineContextHelp: true,
         updateOn: "change",
       }),
-      this.addRadioOptions("referenceType", "Verweistype auswählen", {
-        radioOptions: [
-          { title: "Externe URL", key: "url" },
-          { title: "Interner Datensatz", key: "uuidRef" },
+      this.addRadioboxes("referenceType", "Verweistyp:", {
+        defaultValue: "url",
+        options: [
+          {
+            value: "Externe URL",
+            id: "url",
+          },
+          {
+            value: "Interner Datensatz",
+            id: "uuidRef",
+          },
         ],
       }),
       this.addDocumentCard("uuidRef", {
@@ -1848,12 +1854,6 @@ export abstract class IngridShared extends BaseDoctype {
 
   handleActivateInspireIdentified(field: FormlyFieldConfig) {
     const isOpenData = field.formControl.value.isOpenData === true;
-
-    if (this.defaultKeySpatialScope) {
-      field.form.get("spatialScope")?.setValue({
-        key: this.defaultKeySpatialScope,
-      });
-    }
 
     if (this.isGeoService) {
       if (isOpenData) {
@@ -2048,15 +2048,20 @@ export abstract class IngridShared extends BaseDoctype {
 
   private handleHVDClick(field: FormlyFieldConfig) {
     const hvdChecked = field.formControl.value.isHvd;
-    const metadata = field.formControl.value;
-    const isOpenData = metadata.isOpenData;
+    const isOpenData = field.formControl.value.isOpenData;
     // if hvd is checked and field is not open data, show open data dialog
     if (hvdChecked && !isOpenData) {
       return this.handleActivateOpenData(field).pipe(
         tap((success) =>
           success
-            ? field.formControl.setValue({ ...metadata, isOpenData: true })
-            : field.formControl.setValue({ ...metadata, isHvd: false }),
+            ? field.formControl.setValue({
+                ...field.formControl.value,
+                isOpenData: true,
+              })
+            : field.formControl.setValue({
+                ...field.formControl.value,
+                isHvd: false,
+              }),
         ),
       );
     } else {

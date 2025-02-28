@@ -55,10 +55,11 @@ export class DataOriginViewComponent {
   private router = inject(Router);
   type = computed<string>(() => {
     return this.item()._type === "internalDataOrigin"
-      ? "Geodatensatz " + this.item().uuidRef
+      ? "Geodatensatz"
       : "Freie Beschreibung";
   });
   title = signal<string>("");
+  resourceIdentifier = signal<string>(null);
   date = computed<string>(() => {
     let value: string = this.item().date
       ? new Date(this.item().date).toLocaleDateString("de-DE")
@@ -81,10 +82,14 @@ export class DataOriginViewComponent {
       if (this.item()._type == "internalDataOrigin") {
         return this.documentService
           .load(this.item().uuidRef, false, false, true)
-          .pipe(map((doc) => doc.document.title))
-          .subscribe((value) => this.title.set(value));
+          .pipe(map((doc) => doc.document))
+          .subscribe((document) => {
+            this.title.set(document.title);
+            this.resourceIdentifier.set(document.identifier);
+          });
       } else {
-        return this.title.set(this.item().title);
+        this.title.set(this.item().title);
+        this.resourceIdentifier.set(this.item().identifier);
       }
     });
   }

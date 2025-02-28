@@ -25,6 +25,8 @@
                             data-cy="toolbar_add_user"
                             matTooltip="Benutzer hinzufügen"
                             (click)="showAddUsersDialog()"
+                            matomoClickCategory="UserManagement"
+                            matomoClickAction="AddUser"
                         >
                             <mat-icon>person_add</mat-icon> Hinzufügen
                         </button>
@@ -36,6 +38,8 @@
                             matTooltip="Speichern"
                             (click)="saveUser()"
                             [disabled]="form?.invalid || !form?.dirty"
+                            matomoClickCategory="UserManagement"
+                            matomoClickAction="SaveUser"
                         >
                             Speichern
                         </button>
@@ -85,6 +89,8 @@
                         [matTooltip]="showMore() ? 'Schließen' : 'Öffnen'"
                         (click)="showMore.set(!showMore())"
                         [disabled]="isLoading()"
+                        matomoClickCategory="UserManagement"
+                        matomoClickAction="UserMoreData"
                     >
                         <mat-icon class="rotating animated"
                             >keyboard_arrow_down
@@ -97,6 +103,8 @@
                             class="menu-button"
                             matTooltip="Bearbeiten"
                             [matMenuTriggerFor]="userMoreMenu"
+                            matomoClickCategory="UserManagement"
+                            matomoClickAction="UserActionsMenu"
                         >
                             <mat-icon svgIcon="Mehr"></mat-icon>
                         </button>
@@ -107,6 +115,10 @@
                                 mat-menu-item
                                 (click)="menuItem.action()"
                                 [name]="menuItem.name"
+                                matomoClickCategory="UserManagement"
+                                [matomoClickAction]="
+                                    'MatMenuItem_' + menuItem.name
+                                "
                             >
                                 {{ menuItem.title }}
                             </button>

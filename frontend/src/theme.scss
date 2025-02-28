@@ -2,6 +2,14 @@
 @include mat.elevation-classes();
 @include mat.app-background();
 
+html {
+  // hover effect on select boxes
+  --mat-sys-dragged-state-layer-opacity: 0.16;
+  --mat-sys-focus-state-layer-opacity: 0.12;
+  --mat-sys-hover-state-layer-opacity: 0.08;
+  --mat-sys-pressed-state-layer-opacity: 0.12;
+}
+
 $mat-ige-purple: (
   100: #3a3184,
   500: #28225b,

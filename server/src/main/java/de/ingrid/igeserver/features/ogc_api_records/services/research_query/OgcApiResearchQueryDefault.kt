@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,11 +17,18 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.exports.iso
+package de.ingrid.igeserver.features.ogc_api_records.services.research_query
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import de.ingrid.igeserver.model.BoolFilter
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 
-data class Decimal(
-    @JacksonXmlProperty(localName = "Decimal", namespace = "http://www.isotc211.org/2005/gco")
-    var value: Double? = null,
-)
+@Component
+@Qualifier("default")
+class OgcApiResearchQueryDefault : OgcApiResearchQuery() {
+    override val profiles = listOf("")
+
+    override var unsupportedParameters: List<String> = listOf("q", "bbox")
+
+    override fun profileSpecificClauses(ogcParameter: OgcFilterParameter): MutableList<BoolFilter>? = null
+}

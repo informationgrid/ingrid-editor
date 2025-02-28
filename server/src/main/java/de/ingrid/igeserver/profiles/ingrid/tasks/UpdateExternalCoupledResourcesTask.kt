@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.model.GetRecordUrlAnalysis
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.CoupledResource
 import de.ingrid.igeserver.services.CapabilitiesService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.setAdminAuthentication
@@ -148,13 +149,5 @@ class UpdateExternalCoupledResourcesTask(
         val uuid: String,
         val links: List<CoupledResource>,
         val catalogId: Int,
-    )
-
-    private data class CoupledResource(
-        var uuid: String?,
-        var identifier: String?,
-        val url: String?,
-        val title: String?,
-        val isExternalRef: Boolean,
     )
 }

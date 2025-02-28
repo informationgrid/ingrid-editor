@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,9 +19,6 @@
  */
 package de.ingrid.igeserver.migrations.tasks
 
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.migrations.MigrationBase
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -33,10 +30,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
+/**
+ * Remove property geometryContext from geo-datasets except in catalog "ingrid-up-sh"
+ */
 @Service
-class M091MigrateHVDCategories : MigrationBase("0.91") {
+class M093HmdkRemovePropertyGeometryContext : MigrationBase("0.93") {
 
-    val log = logger()
+    private var log = logger()
 
     @Autowired
     lateinit var entityManager: EntityManager
@@ -48,25 +48,28 @@ class M091MigrateHVDCategories : MigrationBase("0.91") {
     private lateinit var docRepo: DocumentRepository
 
     override fun exec() {
+        log.info("Executing migration 0.93")
+    }
+
+    override fun postExec() {
         val pageSize = 100
         var page = 1
 
         ClosableTransaction(transactionManager).use {
             setAdminAuthentication("Migration", "Task")
-
             do {
-                log.info("Handling page $page, (migrate hvd categories)")
-                val documents =
-                    entityManager.createQuery("""SELECT doc FROM Document doc WHERE doc.type = 'InGridGeoDataset' ORDER BY id""")
-                        .setFirstResult((page - 1) * pageSize)
-                        .setMaxResults(pageSize)
-                        .resultList
+                // in every catalog except "ingrid-up-sh" -> remove "geometryContext"
+                val documents = entityManager.createQuery("""SELECT doc FROM Document doc WHERE doc.catalog.type!="ingrid-up-sh" ORDER BY id""")
+                    .setFirstResult((page - 1) * pageSize)
+                    .setMaxResults(pageSize)
+                    .resultList
+
                 documents
                     .forEach {
                         (it as Document)
-                        val changed = migrateHVDCategories(it)
+                        val changed = migrate(it)
                         if (changed) {
-                            log.info("Migrated HVDs for doc with dbID ${it.id}")
+                            log.info("Migrated doc with dbID ${it.id}")
                             docRepo.save(it)
                         }
                     }
@@ -75,16 +78,14 @@ class M091MigrateHVDCategories : MigrationBase("0.91") {
         }
     }
 
-    private fun migrateHVDCategories(doc: Document): Boolean {
-        val hvdCategories =
-            (doc.data.get("hvdCategories") as ArrayNode? ?: jacksonObjectMapper().createArrayNode())
-
-        if (hvdCategories.isEmpty) return false
-
-        hvdCategories.forEach {
-            (it as ObjectNode).put("key", it.get("key").asText().removePrefix("http://data.europa.eu/bna/"))
+    private fun migrate(doc: Document?): Boolean {
+        val hasGeometryContext = doc?.data?.has("geometryContext") ?: false
+        if (hasGeometryContext) {
+            log.info("Remove 'geometryContext': ${doc?.data?.get("geometryContext")}")
+            doc?.data?.remove("geometryContext")
+            return true
+        } else {
+            return false
         }
-
-        return true
     }
 }

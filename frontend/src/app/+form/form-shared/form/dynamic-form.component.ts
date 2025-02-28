@@ -171,7 +171,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   numberOfErrors = 0;
   showValidationErrors = false;
   private errorCounterSubscription: Subscription;
-  private afterInit = signal<boolean>(false);
 
   private waitForCodelistsLoaded$ = toObservable(
     this.generalStore.codelistsLoaded,
@@ -216,10 +215,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     effect(() => {
+      const activeNode = this.generalStore.explicitActiveNode();
       // execute only ofter init, otherwise initial loading of dataset will not work
-      if (!this.afterInit()) return;
-      const activeNode = this.generalStore.getExplicitActiveNode(this.address);
-      if (activeNode === null) {
+      if (activeNode === null) return;
+
+      if (activeNode.id === null) {
         // when clicking on root node in breadcrumb we need to set opened document to null
         // otherwise the last one will be loaded again
         this.documentService.updateOpenedDocumentInTreestore(
