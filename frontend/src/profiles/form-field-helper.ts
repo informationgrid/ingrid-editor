@@ -158,6 +158,12 @@ export interface CheckboxOptions extends Options {
   click?: ((field: FormlyFieldConfig, event?: any) => void) | any;
 }
 
+export interface RadioboxOptions extends Options {
+  fieldLabel?: string;
+  options?: any[] | Observable<any[]>;
+  click?: ((field: FormlyFieldConfig, event?: any) => void) | any;
+}
+
 export interface InputOptions extends Options {
   type?: "number" | "password";
   fieldLabel?: string;
@@ -855,7 +861,7 @@ export class FormFieldHelper {
     });
   }
 
-  addRadioboxes(id, label, options?): FormlyFieldConfig {
+  addRadioboxes(id, label, options?: RadioboxOptions): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
       key: id,

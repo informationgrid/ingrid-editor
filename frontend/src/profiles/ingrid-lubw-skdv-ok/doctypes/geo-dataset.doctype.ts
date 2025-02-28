@@ -66,12 +66,15 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
   }
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+    const position = this.findFieldElementWithId(fieldConfig, "pointOfContact");
+
     const isAuthor = this.configService.$userInfo.value.role === "author";
     if (isAuthor) {
       this.hideFieldsForEditor(fieldConfig);
+      // only allow pointOfContact
+      position.field.props.allowedTypes = ["7"];
     }
 
-    const position = this.findFieldElementWithId(fieldConfig, "pointOfContact");
     this.addMultipleAfter(position, [
       this.addRepeatList("dataManagement", "Datenführende Stelle", {
         asSelect: true,
@@ -97,6 +100,16 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
             id: false,
           },
         ],
+        click: (field: FormlyFieldConfig) => {
+          // delay execution in order to get the actual clicked value
+          setTimeout(() => {
+            const isPersonRelated = field.formControl.value;
+
+            if (isPersonRelated) {
+              this.handlePersonRelatedChoice(field);
+            }
+          });
+        },
       }),
       this.addTextArea(
         "protectDataAccessControl",
@@ -104,6 +117,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
         this.id,
         {
           wrappers: ["panel", "form-field"],
+          required: true,
           expressions: {
             hide: (field: FormlyFieldConfig, a, b) =>
               field.options.formState.mainModel?.resource?.personalData !==
@@ -245,6 +259,42 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
     return fieldConfig;
   };
 
+  private handlePersonRelatedChoice(field: FormlyFieldConfig) {
+    const accessConstraints = field.form.get("accessConstraints").value;
+    const snackMessage = [];
+    // Check if item with key "7" exists, add it if not present
+    const hasPersonRelatedEntry = accessConstraints.some(
+      (item: { key: string }) => item.key === "7",
+    );
+    if (!hasPersonRelatedEntry) {
+      accessConstraints.push({ key: "7" });
+      snackMessage.push(
+        "der Eintrag 'aufgrund der Vertraulichkeit personenbezogener Daten' hinzugefügt",
+      );
+    }
+
+    // Remove item with key "1" if present
+    const noConstraints = accessConstraints.findIndex(
+      (item: { key: string }) => item.key === "1",
+    );
+    if (noConstraints !== -1) {
+      accessConstraints.splice(noConstraints, 1);
+      snackMessage.push(
+        "der Eintrag 'Es gelten keine Zugriffsbeschränkungen' entfernt",
+      );
+    }
+
+    // Set the updated value back to the form
+    field.form.get("accessConstraints").setValue(accessConstraints);
+    if (snackMessage.length > 0) {
+      this.snack.open(
+        "Den Zugriffsbeschränkungen wurde " + snackMessage.join(" und "),
+        null,
+        { duration: 8000 },
+      );
+    }
+  }
+
   private handleBatchUpdate(items: any[], form: FormControl<any>) {
     this.dialog
       .open(BatchEditObjectAttributesComponent)
@@ -269,7 +319,6 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
     [
       "parentIdentifier",
       "alternateTitle",
-      "graphicOverviews",
       "identifier",
       "spatialRepresentationType",
       "vectorSpatialRepresentation",

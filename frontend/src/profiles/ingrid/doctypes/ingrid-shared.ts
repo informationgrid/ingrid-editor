@@ -72,7 +72,7 @@ export abstract class IngridShared extends BaseDoctype {
   http = inject(HttpClient);
   dialog = inject(MatDialog);
   cookieService = inject(CookieService);
-  private snack = inject(MatSnackBar);
+  protected snack = inject(MatSnackBar);
   protected configService = inject(ConfigService);
   private behaviourService = inject(BehaviourService);
   documentService = inject(DocumentService);
