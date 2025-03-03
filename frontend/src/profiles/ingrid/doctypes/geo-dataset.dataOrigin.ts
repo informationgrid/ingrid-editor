@@ -45,6 +45,35 @@ export function dataOrigin(
           icon: "circle",
         },
       ],
+      asyncValidators: {
+        descriptions: {
+          expression: (c: any, field: FormlyFieldConfig) => {
+            return new Promise(async (resolve, reject) => {
+              const dataOriginEntries = field.formControl.value;
+              if (!dataOriginEntries || dataOriginEntries.length === 0)
+                return resolve(true);
+              const loadPromises = dataOriginEntries
+                .filter((entry) => entry._type === "internalDataOrigin")
+                .map(
+                  (entry) =>
+                    new Promise((innerResolve) => {
+                      documentService
+                        .load(entry.uuidRef, false, false, true)
+                        .subscribe((doc) => {
+                          if (doc.metadata.state === "W")
+                            return innerResolve(false);
+                          innerResolve(true);
+                        });
+                    }),
+                );
+              const results = await Promise.all(loadPromises);
+              resolve(results.every((result) => result));
+            });
+          },
+          message: () =>
+            "Ein hinzugefügter Geodatensatz wurde noch nicht veröffentlicht.",
+        },
+      },
       fields: [
         geoDatasetDoctype.addTextAreaInline("value", "Beschreibung", null, {
           required: true,
