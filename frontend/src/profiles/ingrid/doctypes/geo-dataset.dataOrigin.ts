@@ -78,13 +78,20 @@ export function dataOrigin(
                     documentService
                       .load(value.value, false, false, true)
                       .subscribe((doc) => {
-                        const sortedTemporalEvents =
-                          doc.document.temporal.events.sort((a, b) => {
-                            return (
-                              new Date(b.referenceDate).getTime() -
-                              new Date(a.referenceDate).getTime()
-                            );
-                          });
+                        const events = doc.document.temporal.events;
+                        if (
+                          events.length <= 0 ||
+                          events[0].referenceDate == null ||
+                          events[0].referenceDateType == null
+                        )
+                          return;
+
+                        const sortedTemporalEvents = events.sort((a, b) => {
+                          return (
+                            new Date(b.referenceDate).getTime() -
+                            new Date(a.referenceDate).getTime()
+                          );
+                        });
                         if (sortedTemporalEvents.length === 0) {
                           console.warn("No temporal events found!");
                           return;
