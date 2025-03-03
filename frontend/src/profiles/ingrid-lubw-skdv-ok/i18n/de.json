@@ -1,5 +1,8 @@
 {
   "roles": {
     "author": "Fachredakteur"
+  },
+  "publish": {
+    "confirmMessage": "Mit der Bestätigung dieser Meldung wird der Metadatensatz gespeichert und im Web-Auftritt der RIPS-Metadaten veröffentlicht. Eine automatische Benachrichtigung wird an RIPS-Metadaten@lubw.bwl.de gesendet."
   }
 }
