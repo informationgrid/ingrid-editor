@@ -27,8 +27,8 @@ import {
 } from "@angular/core";
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../../app/services/document/document.service";
-import { map } from "rxjs/operators";
 import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
+import { NgClass } from "@angular/common";
 
 interface DataOriginItem {
   _type: "internalDataOrigin" | "freeDescription";
@@ -45,6 +45,7 @@ interface DataOriginItem {
   standalone: true,
   templateUrl: "./data-origin-view.component.html",
   styleUrl: "./data-origin-view.component.scss",
+  imports: [NgClass],
 })
 export class DataOriginViewComponent {
   item = input<DataOriginItem>();
@@ -76,16 +77,17 @@ export class DataOriginViewComponent {
     return value;
   });
   description = computed<string>(() => this.item().value);
+  state = signal<string>("");
 
   constructor() {
     effect(() => {
       if (this.item()._type == "internalDataOrigin") {
         return this.documentService
           .load(this.item().uuidRef, false, false, true)
-          .pipe(map((doc) => doc.document))
-          .subscribe((document) => {
-            this.title.set(document.title);
-            this.resourceIdentifier.set(document.identifier);
+          .subscribe((doc) => {
+            this.title.set(doc.document.title);
+            this.resourceIdentifier.set(doc.document.identifier);
+            this.state.set(doc.metadata.state);
           });
       } else {
         this.title.set(this.item().title);
