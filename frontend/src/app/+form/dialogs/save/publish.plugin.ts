@@ -18,11 +18,8 @@
  * limitations under the Licence.
  */
 import { effect, inject, Injectable, signal } from "@angular/core";
-import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { ModalService } from "../../../services/modal/modal.service";
-import { DocumentService } from "../../../services/document/document.service";
 import { Observable, of } from "rxjs";
-import { MatDialog } from "@angular/material/dialog";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -42,7 +39,7 @@ import { DocumentAbstract } from "../../../store/document/document.model";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class PublishPlugin extends SaveBase {
   id = "plugin.publish";
   name = "Publish Plugin";
@@ -50,6 +47,8 @@ export class PublishPlugin extends SaveBase {
     "Fügt einen Button zum Veröffentlichen eines Datensatzes hinzu.";
   group = "Toolbar";
   defaultActive = true;
+
+  private excludeMenuItems = [];
 
   eventPublishId = "PUBLISH";
   eventRevertId = "REVERT";
@@ -62,10 +61,7 @@ export class PublishPlugin extends SaveBase {
   private addressTreeStore = inject(AddressTreeStore);
 
   constructor(
-    public formToolbarService: FormToolbarService,
     private modalService: ModalService,
-    public dialog: MatDialog,
-    public documentService: DocumentService,
     private docEvents: DocEventsService,
     private transloco: TranslocoService,
   ) {
@@ -160,7 +156,7 @@ export class PublishPlugin extends SaveBase {
       align: "right",
       active: signal(false),
       isPrimary: true,
-      menu: publishMenu,
+      menu: this.removeExcludedItems(publishMenu),
     });
   }
 
@@ -221,7 +217,7 @@ export class PublishPlugin extends SaveBase {
     this.modalService.showIgeError(error);
   }
 
-  publish() {
+  private publish() {
     // show confirm dialog
     const message = this.transloco.translate("publish.confirmMessage");
     this.dialog
@@ -292,7 +288,7 @@ export class PublishPlugin extends SaveBase {
       });
   }
 
-  saveWithData(data, delay: Date = null) {
+  protected saveWithData(data, delay: Date = null) {
     const metadata = this.getMetadata();
     this.documentService
       .publish(
@@ -320,7 +316,11 @@ export class PublishPlugin extends SaveBase {
       .subscribe();
   }
 
-  revert() {
+  setExcludedMenuItems(items: string[]) {
+    this.excludeMenuItems = items;
+  }
+
+  private revert() {
     const docId = this.getMetadata().wrapperId;
 
     const message =
@@ -473,5 +473,11 @@ export class PublishPlugin extends SaveBase {
       if (planned) this.showPlanPublishingDialog();
       else this.publish();
     });
+  }
+
+  private removeExcludedItems(items) {
+    return items.filter(
+      (item) => !this.excludeMenuItems.includes(item.eventId),
+    );
   }
 }

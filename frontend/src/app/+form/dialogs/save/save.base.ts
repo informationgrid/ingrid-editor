@@ -38,10 +38,9 @@ export abstract class SaveBase extends Plugin {
   protected generalStore = inject(GeneralStore);
   protected messageService = inject(FormMessageService);
   protected formStateService = inject(FormStateService);
-
-  dialog: MatDialog;
-  documentService: DocumentService;
-  formToolbarService: FormToolbarService;
+  protected dialog = inject(MatDialog);
+  protected documentService = inject(DocumentService);
+  protected formToolbarService = inject(FormToolbarService);
 
   handleError(
     error,
@@ -141,7 +140,7 @@ export abstract class SaveBase extends Plugin {
     this.generalStore.setServerValidationErrors(invalidFieldsErrors);
   }
 
-  abstract saveWithData(data: IgeDocument);
+  protected abstract saveWithData(data: IgeDocument);
 
   private handleAfterConflictChoice(
     choice: VersionConflictChoice,

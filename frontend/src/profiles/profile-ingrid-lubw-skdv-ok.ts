@@ -22,19 +22,19 @@ import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw-skdv-ok/doctypes/geo-dataset.doctype";
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
 import { ConfigService } from "../app/services/config/config.service";
+import { PublishPlugin } from "../app/+form/dialogs/save/publish.plugin";
 
 @Component({
   template: "",
-  standalone: true,
 })
 class InGridLubwSkdvOkComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeLubwSkdvOk);
   behaviourService = inject(BehaviourService);
   configService = inject(ConfigService);
+  publishPlugin = inject(PublishPlugin);
 
   constructor() {
     super();
-    // this.isoView.isoExportFormat = "ingridISOExternalBast";
     this.isoView.isoExportFormat = "ingridISOLubwSkdvOk";
     this.modifyFormFieldConfiguration();
 
@@ -45,6 +45,11 @@ class InGridLubwSkdvOkComponent extends InGridComponent {
         "plugin.folder",
         "plugin.copy.cut.paste",
         "plugin.deleteDocs",
+      ]);
+      this.publishPlugin.setExcludedMenuItems([
+        this.publishPlugin.eventValidate,
+        this.publishPlugin.eventUnpublishId,
+        this.publishPlugin.eventRevertId,
       ]);
     }
   }
