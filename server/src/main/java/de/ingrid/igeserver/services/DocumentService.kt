@@ -580,7 +580,7 @@ class DocumentService(
 
         // run pre-publish pipe(s)
         val prePublishPayload =
-            PrePublishPayload(docType, catalogId, preUpdatePayload.document, preUpdatePayload.wrapper)
+            PrePublishPayload(docType, catalogId, preUpdatePayload.document, preUpdatePayload.wrapper, publishDate)
         prePublishPipe.runFilters(prePublishPayload, filterContext)
 
         try {

@@ -21,7 +21,8 @@ package de.ingrid.igeserver.profiles.ingrid_lubw_skdv_ok.pipes
 
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
-import de.ingrid.igeserver.persistence.filter.PostPublishPayload
+import de.ingrid.igeserver.persistence.filter.PrePublishPayload
+import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
@@ -30,19 +31,20 @@ import org.springframework.stereotype.Component
  *
  */
 @Component
-class PostEmailPublisher(
+class PreEmailPublisherPending(
     @Lazy val publishEmailService: PublishEmailService,
     val authUtils: AuthUtils,
-) : Filter<PostPublishPayload> {
+
+) : Filter<PrePublishPayload> {
 
     override val profiles = emptyArray<String>()
 
-    override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
+    override fun invoke(payload: PrePublishPayload, context: Context): PrePublishPayload {
         val isDataset = payload.wrapper.category == "data"
-        if (isDataset && !authUtils.isAuthor(context.principal!!)) return payload
-
         val doc = payload.document
-        publishEmailService.sendEmail(doc, context.catalogId)
+        if (isDataset && doc.state == DocumentState.PENDING && !authUtils.isAuthor(context.principal!!)) return payload
+
+        publishEmailService.sendEmail(doc, context.catalogId, payload.publishDate)
 
         return payload
     }
