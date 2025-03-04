@@ -83,6 +83,11 @@ export class DeleteDocsPlugin extends Plugin {
     super.registerForm();
 
     this.formToolbarService.addButton({
+      id: "toolBtnRemoveSeparator",
+      isSeparator: true,
+      pos: 99,
+    });
+    this.formToolbarService.addButton({
       id: "toolBtnRemove",
       tooltip: "Löschen",
       matSvgVariable: "outline-delete-24px",

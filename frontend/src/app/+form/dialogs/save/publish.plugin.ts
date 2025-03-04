@@ -110,13 +110,6 @@ export class PublishPlugin extends SaveBase {
   }
 
   private addToolbarButtons() {
-    // add button to toolbar for publish action
-    this.formToolbarService.addButton({
-      id: "toolBtnPublishSeparator",
-      isSeparator: true,
-      pos: 100,
-    });
-
     const publishMenu = [
       {
         eventId: this.eventPublishId,
