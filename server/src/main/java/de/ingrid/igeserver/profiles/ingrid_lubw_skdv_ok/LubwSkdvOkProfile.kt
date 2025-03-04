@@ -30,10 +30,12 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.CodelistHandler.Companion.toCodelistEntry
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
+@EnableConfigurationProperties(LubwSkdvOkProperties::class)
 class LubwSkdvOkProfile(
     catalogRepo: CatalogRepository,
     codelistHandler: CodelistHandler,

@@ -50,5 +50,7 @@ class AuthUtilsMock : AuthUtils {
 
     override fun isSuperAdmin(principal: Principal): Boolean = containsRole(principal, "ige-super-admin")
 
+    override fun isAuthor(principal: Principal): Boolean = containsRole(principal, "author")
+
     override fun getCurrentUserRoles(catalogId: String): Set<Group> = emptySet()
 }
