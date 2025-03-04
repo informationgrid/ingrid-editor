@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lubw_skdv_ok.pipes
 
+import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.mail.EmailServiceImpl
@@ -42,6 +43,7 @@ class PostEmailPublisher(
     @Lazy val documentService: DocumentService,
     val authUtils: AuthUtils,
     val properties: LubwSkdvOkProperties,
+    val generalProperties: GeneralProperties,
 ) : Filter<PostPublishPayload> {
 
     override val profiles = emptyArray<String>()
@@ -49,12 +51,13 @@ class PostEmailPublisher(
     private val germanFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
 
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
-        if (!authUtils.isAuthor(context.principal!!)) return payload
+        val isDataset = payload.wrapper.category == "data"
+        if (isDataset && !authUtils.isAuthor(context.principal!!)) return payload
 
         val doc = payload.document
 
         val subject = prepareSubject(doc, context.catalogId)
-        val content = prepareContent(doc, context)
+        val content = prepareContent(doc)
 
         emailService.sendEmail(properties.publishEmailTo, subject, content)
 
@@ -63,19 +66,19 @@ class PostEmailPublisher(
 
     private fun prepareContent(
         doc: Document,
-        context: Context,
     ): String {
         val isPending = doc.state == DocumentState.PENDING
-        val editor = context.principal?.name ?: "???"
         val whenInfo = if (isPending) " (zeitgesteuert)" else ""
         return MessageFormat.format(
             properties.publishEmailContent,
-            doc.title,
+            generateLink(doc),
             doc.uuid,
-            editor,
+            doc.contentmodifiedby,
             doc.contentmodified!!.format(germanFormatter) + whenInfo,
         )
     }
+
+    private fun generateLink(document: Document): String = "<a href='${generalProperties.host}/trefferanzeige?docuuid=${document.uuid}'>${document.title}</a>"
 
     private fun prepareSubject(
         doc: Document,
