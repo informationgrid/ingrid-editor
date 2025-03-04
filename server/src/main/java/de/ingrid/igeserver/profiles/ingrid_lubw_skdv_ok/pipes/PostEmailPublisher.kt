@@ -31,6 +31,7 @@ import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
+import java.net.URI
 import java.text.MessageFormat
 import java.time.format.DateTimeFormatter
 
@@ -59,7 +60,7 @@ class PostEmailPublisher(
         val subject = prepareSubject(doc, context.catalogId)
         val content = prepareContent(doc)
 
-        emailService.sendEmail(properties.publishEmailTo, subject, content)
+        emailService.sendHTMLEmail(properties.publishEmailTo, subject, content)
 
         return payload
     }
@@ -78,7 +79,10 @@ class PostEmailPublisher(
         )
     }
 
-    private fun generateLink(document: Document): String = "<a href='${generalProperties.host}/trefferanzeige?docuuid=${document.uuid}'>${document.title}</a>"
+    private fun generateLink(document: Document): String {
+        val url = URI(generalProperties.host).toURL()
+        return "<a href='${url.protocol}://${url.host}/trefferanzeige?docuuid=${document.uuid}'>${document.title}</a>"
+    }
 
     private fun prepareSubject(
         doc: Document,
