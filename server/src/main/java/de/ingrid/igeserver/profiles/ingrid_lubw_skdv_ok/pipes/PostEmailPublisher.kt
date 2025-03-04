@@ -28,6 +28,7 @@ import de.ingrid.igeserver.profiles.ingrid_lubw_skdv_ok.LubwSkdvOkProperties
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.utils.AuthUtils
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
 import java.text.MessageFormat
 import java.time.format.DateTimeFormatter
@@ -38,7 +39,7 @@ import java.time.format.DateTimeFormatter
 @Component
 class PostEmailPublisher(
     val emailService: EmailServiceImpl,
-    val documentService: DocumentService,
+    @Lazy val documentService: DocumentService,
     val authUtils: AuthUtils,
     val properties: LubwSkdvOkProperties,
 ) : Filter<PostPublishPayload> {

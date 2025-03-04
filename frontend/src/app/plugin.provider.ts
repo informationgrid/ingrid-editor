@@ -43,7 +43,7 @@ import { ExpiredDocumentsBehaviour } from "./+catalog/+behaviours/system/expired
 
 export const pluginProvider = [
   { provide: PluginToken, useClass: ShowJsonBehaviour, multi: true },
-  // { provide: PluginToken, useClass: PublishPlugin, multi: true },
+  { provide: PluginToken, useClass: PublishPlugin, multi: true },
   { provide: PluginToken, useClass: CreateDocumentPlugin, multi: true },
   { provide: PluginToken, useClass: SavePlugin, multi: true },
   { provide: PluginToken, useClass: CreateFolderPlugin, multi: true },

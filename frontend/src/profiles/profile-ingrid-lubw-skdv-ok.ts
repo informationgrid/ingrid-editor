@@ -22,7 +22,7 @@ import { InGridComponent } from "./profile-ingrid";
 import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw-skdv-ok/doctypes/geo-dataset.doctype";
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
 import { ConfigService } from "../app/services/config/config.service";
-import { PublishPlugin } from "../app/+form/dialogs/save/publish.plugin";
+import { FormMenuService } from "../app/+form/form-menu.service";
 
 @Component({
   template: "",
@@ -31,12 +31,11 @@ class InGridLubwSkdvOkComponent extends InGridComponent {
   geoDataset = inject(GeoDatasetDoctypeLubwSkdvOk);
   behaviourService = inject(BehaviourService);
   configService = inject(ConfigService);
-  publishPlugin = inject(PublishPlugin);
+  formMenuService = inject(FormMenuService);
 
   constructor() {
     super();
     this.isoView.isoExportFormat = "ingridISOLubwSkdvOk";
-    this.modifyFormFieldConfiguration();
 
     const isAuthor = this.configService.$userInfo.value.role === "author";
     if (isAuthor) {
@@ -46,10 +45,10 @@ class InGridLubwSkdvOkComponent extends InGridComponent {
         "plugin.copy.cut.paste",
         "plugin.deleteDocs",
       ]);
-      this.publishPlugin.setExcludedMenuItems([
-        this.publishPlugin.eventValidate,
-        this.publishPlugin.eventUnpublishId,
-        this.publishPlugin.eventRevertId,
+      this.formMenuService.addExcludedMenuItems("publish", [
+        "VALIDATE",
+        "UNPUBLISH",
+        "REVERT",
       ]);
     }
   }
@@ -60,8 +59,6 @@ class InGridLubwSkdvOkComponent extends InGridComponent {
     this.person,
     this.organisation,
   ];
-
-  private modifyFormFieldConfiguration() {}
 
   private disablePlugins(pluginIds: string[]) {
     pluginIds.forEach((id) => {

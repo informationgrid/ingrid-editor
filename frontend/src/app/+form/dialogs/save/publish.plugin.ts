@@ -38,8 +38,9 @@ import { ProfileService } from "../../../services/profile.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
+import { FormMenuService } from "../../form-menu.service";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class PublishPlugin extends SaveBase {
   id = "plugin.publish";
   name = "Publish Plugin";
@@ -47,8 +48,6 @@ export class PublishPlugin extends SaveBase {
     "Fügt einen Button zum Veröffentlichen eines Datensatzes hinzu.";
   group = "Toolbar";
   defaultActive = true;
-
-  private excludeMenuItems = [];
 
   eventPublishId = "PUBLISH";
   eventRevertId = "REVERT";
@@ -59,6 +58,7 @@ export class PublishPlugin extends SaveBase {
   private profileService = inject(ProfileService);
   private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);
+  private formMenuService = inject(FormMenuService);
 
   constructor(
     private modalService: ModalService,
@@ -109,6 +109,7 @@ export class PublishPlugin extends SaveBase {
     this.formSubscriptions.push(...toolbarEventSubscription);
   }
 
+  // TODO: Menu should be separated into additional plugins, that use FormMenuService to register menu items
   private addToolbarButtons() {
     const publishMenu = [
       {
@@ -309,10 +310,6 @@ export class PublishPlugin extends SaveBase {
       .subscribe();
   }
 
-  setExcludedMenuItems(items: string[]) {
-    this.excludeMenuItems = items;
-  }
-
   private revert() {
     const docId = this.getMetadata().wrapperId;
 
@@ -469,8 +466,7 @@ export class PublishPlugin extends SaveBase {
   }
 
   private removeExcludedItems(items) {
-    return items.filter(
-      (item) => !this.excludeMenuItems.includes(item.eventId),
-    );
+    const excludedItems = this.formMenuService.getExcludedMenuItems("publish");
+    return items.filter((item) => !excludedItems.includes(item.eventId));
   }
 }
