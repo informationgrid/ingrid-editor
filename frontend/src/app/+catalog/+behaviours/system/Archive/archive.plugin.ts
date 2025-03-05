@@ -27,9 +27,8 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../../dialogs/confirm/confirm-dialog.component";
-import { TagsService } from "../tags/tags.service";
 import { DocumentService } from "../../../../services/document/document.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { ConfigService } from "../../../../services/config/config.service";
 
 @Injectable()

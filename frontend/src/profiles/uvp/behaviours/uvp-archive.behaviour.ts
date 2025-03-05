@@ -22,8 +22,7 @@ import { inject, Injectable } from "@angular/core";
 import { AuthGuard } from "../../../app/security/auth.guard";
 import { CatalogRoutesService } from "../../../app/+catalog/catalog-routes.service";
 import { Router } from "@angular/router";
-import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 
 @Injectable({ providedIn: "root" })
 export class UvpArchiveBehaviour extends Plugin {

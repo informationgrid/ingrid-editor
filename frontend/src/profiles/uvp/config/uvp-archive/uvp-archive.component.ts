@@ -33,7 +33,7 @@ import { map, tap } from "rxjs/operators";
 import { RxStompService } from "../../../../app/rx-stomp.service";
 import { BaseLogResult } from "../../../../app/shared/base-log-result";
 import { DatePipe } from "@angular/common";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 
 @UntilDestroy()
 @Component({
