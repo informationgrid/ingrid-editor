@@ -42,7 +42,7 @@ class PreEmailPublisherPending(
     override fun invoke(payload: PrePublishPayload, context: Context): PrePublishPayload {
         val isDataset = payload.wrapper.category == "data"
         val doc = payload.document
-        if (isDataset && doc.state == DocumentState.PENDING && !authUtils.isAuthor(context.principal!!)) return payload
+        if (!isDataset || doc.state != DocumentState.PENDING || !authUtils.isAuthor(context.principal!!)) return payload
 
         publishEmailService.sendEmail(doc, context.catalogId, payload.publishDate)
 

@@ -185,6 +185,7 @@ export class DeleteDocsPlugin extends Plugin {
 
     if (this.isActive) {
       this.formToolbarService.removeButton("toolBtnRemove");
+      this.formToolbarService.removeButton("toolBtnRemoveSeparator");
     }
   }
 }

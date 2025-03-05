@@ -89,6 +89,7 @@
     "formSingular": "Datensatz"
   },
   "publish": {
+    "buttonLabel": "Veröffentlichen",
     "formWithPronoun": "Dieser Datensatz",
     "confirmMessage": "Wollen Sie diesen Datensatz wirklich veröffentlichen?"
   },

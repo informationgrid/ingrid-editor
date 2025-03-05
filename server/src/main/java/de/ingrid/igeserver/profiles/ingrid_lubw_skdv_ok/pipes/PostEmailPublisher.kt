@@ -39,7 +39,7 @@ class PostEmailPublisher(
 
     override fun invoke(payload: PostPublishPayload, context: Context): PostPublishPayload {
         val isDataset = payload.wrapper.category == "data"
-        if (isDataset && !authUtils.isAuthor(context.principal!!)) return payload
+        if (!isDataset || !authUtils.isAuthor(context.principal!!)) return payload
 
         val doc = payload.document
         publishEmailService.sendEmail(doc, context.catalogId)

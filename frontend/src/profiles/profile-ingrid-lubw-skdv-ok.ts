@@ -23,6 +23,7 @@ import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw-skdv-ok/doctypes/geo-
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
 import { ConfigService } from "../app/services/config/config.service";
 import { FormMenuService } from "../app/+form/form-menu.service";
+import { TranslocoService } from "@ngneat/transloco";
 
 @Component({
   template: "",
@@ -32,6 +33,7 @@ class InGridLubwSkdvOkComponent extends InGridComponent {
   behaviourService = inject(BehaviourService);
   configService = inject(ConfigService);
   formMenuService = inject(FormMenuService);
+  translocoService = inject(TranslocoService);
 
   constructor() {
     super();
@@ -50,6 +52,16 @@ class InGridLubwSkdvOkComponent extends InGridComponent {
         "UNPUBLISH",
         "REVERT",
       ]);
+      this.translocoService.setTranslation(
+        {
+          publish: {
+            confirmMessage:
+              "Mit der Bestätigung dieser Meldung wird der Metadatensatz gespeichert und im Web-Auftritt der RIPS-Metadaten veröffentlicht. Eine automatische Benachrichtigung wird an RIPS-Metadaten@lubw.bwl.de gesendet.",
+          },
+        },
+        "de",
+        { merge: true },
+      );
     }
   }
 

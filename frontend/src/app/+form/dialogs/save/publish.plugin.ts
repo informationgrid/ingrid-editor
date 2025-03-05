@@ -59,12 +59,11 @@ export class PublishPlugin extends SaveBase {
   private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);
   private formMenuService = inject(FormMenuService);
+  private transloco = inject(TranslocoService);
+  private modalService = inject(ModalService);
+  private docEvents = inject(DocEventsService);
 
-  constructor(
-    private modalService: ModalService,
-    private docEvents: DocEventsService,
-    private transloco: TranslocoService,
-  ) {
+  constructor() {
     super();
     this.fields.push({
       key: "unpublishDisabled",
@@ -144,7 +143,7 @@ export class PublishPlugin extends SaveBase {
 
     this.formToolbarService.addButton({
       id: "toolBtnPublish",
-      label: "Veröffentlichen",
+      label: this.transloco.translate("publish.buttonLabel"),
       eventId: this.eventPublishId,
       pos: 25,
       align: "right",
@@ -350,7 +349,6 @@ export class PublishPlugin extends SaveBase {
     super.unregisterForm();
 
     if (this.isActive) {
-      this.formToolbarService.removeButton("toolBtnPublishSeparator");
       this.formToolbarService.removeButton("toolBtnPublish");
     }
   }
