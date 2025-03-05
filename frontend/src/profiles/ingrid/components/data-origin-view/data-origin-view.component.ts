@@ -29,6 +29,8 @@ import { Router } from "@angular/router";
 import { DocumentService } from "../../../../app/services/document/document.service";
 import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
 import { NgClass } from "@angular/common";
+import { DocumentWithMetadata } from "../../../../app/models/ige-document";
+import { ConfigService } from "../../../../app/services/config/config.service";
 
 interface DataOriginItem {
   _type: "internalDataOrigin" | "freeDescription";
@@ -52,6 +54,7 @@ export class DataOriginViewComponent {
 
   private documentService = inject(DocumentService);
   private codelistStore = inject(CodelistStore);
+  private configService = inject(ConfigService);
 
   private router = inject(Router);
   type = computed<string>(() => {
@@ -84,9 +87,9 @@ export class DataOriginViewComponent {
       if (this.item()._type == "internalDataOrigin") {
         return this.documentService
           .load(this.item().uuidRef, false, false, true)
-          .subscribe((doc) => {
+          .subscribe((doc: DocumentWithMetadata) => {
             this.title.set(doc.document.title);
-            this.resourceIdentifier.set(doc.document.identifier);
+            this.resourceIdentifier.set(this.getFormattedIdentifier(doc));
             this.state.set(doc.metadata.state);
           });
       } else {
@@ -94,5 +97,16 @@ export class DataOriginViewComponent {
         this.resourceIdentifier.set(this.item().identifier);
       }
     });
+  }
+
+  private getFormattedIdentifier(doc: DocumentWithMetadata) {
+    const identifier = doc.document.identifier;
+    const currentCatalog = this.configService.$userInfo.value.currentCatalog;
+    const namespace =
+      currentCatalog.settings.config?.namespace?.trim() ||
+      `https://registry.gdi-de.org/id/${currentCatalog.id}/`;
+    return identifier?.includes("://")
+      ? identifier
+      : `${namespace}${identifier}`;
   }
 }

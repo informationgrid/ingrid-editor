@@ -260,7 +260,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
                     try {
                         val doc = documentService.getLastPublishedDocument(catalogIdentifier, it.uuidRef!!, false)
                         title = doc.title
-                        identifier = doc.data.getString("identifier")
+                        identifier = doc.data.getString("identifier")?.let { id -> addNamespaceIfNeeded(id) }
                     } catch (e: Exception) {
                         return@mapNotNull null
                     }
