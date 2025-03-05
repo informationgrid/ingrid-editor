@@ -330,7 +330,6 @@ export class FormFieldHelper {
       props: { ...options },
       expressions: options.expressions,
       hooks: options.hooks,
-      asyncValidators: options.asyncValidators,
     };
   }
 
@@ -419,7 +418,6 @@ export class FormFieldHelper {
       },
       expressions: expressions,
       validators: options?.validators,
-      asyncValidators: options?.asyncValidators,
     };
   }
 
