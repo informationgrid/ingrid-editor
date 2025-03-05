@@ -23,10 +23,12 @@ import { AuthGuard } from "../../../app/security/auth.guard";
 import { CatalogRoutesService } from "../../../app/+catalog/catalog-routes.service";
 import { Router } from "@angular/router";
 import { TranslocoService } from "@jsverse/transloco";
+import { FormToolbarService } from "../../../app/+form/form-shared/toolbar/form-toolbar.service";
 
 @Injectable({ providedIn: "root" })
 export class UvpArchiveBehaviour extends Plugin {
   private transloco = inject(TranslocoService);
+  private formToolbarService = inject(FormToolbarService);
 
   id = "plugin.uvp.archive";
   name = "UVP Archivierung";
@@ -41,10 +43,16 @@ export class UvpArchiveBehaviour extends Plugin {
   hide = false;
 
   private catalogRouteService = inject(CatalogRoutesService);
-  private router = inject(Router);
 
   constructor() {
     super();
+
+    this.formToolbarService.setToolbarButtonEnabledFn(
+      "toolBtnRemove",
+      (docs) => {
+        return docs.every((doc) => !doc._tags.split(",").includes("archived"));
+      },
+    );
 
     this.fields.push({
       key: "uvpArchiveType",
