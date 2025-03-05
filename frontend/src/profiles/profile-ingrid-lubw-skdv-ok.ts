@@ -48,6 +48,7 @@ class InGridLubwSkdvOkComponent extends InGridComponent {
         "plugin.deleteDocs",
       ]);
       this.formMenuService.addExcludedMenuItems("publish", [
+        "PUBLISH",
         "VALIDATE",
         "UNPUBLISH",
         "REVERT",
