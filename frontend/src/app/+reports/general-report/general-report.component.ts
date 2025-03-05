@@ -51,7 +51,7 @@ import {
 import { debounceTime, startWith, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ProfileService } from "../../services/profile.service";
-import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-template-no-header.component";
 import {
   MatButtonToggle,

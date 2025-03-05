@@ -22,7 +22,7 @@ import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
 import { HttpClient } from "@angular/common/http";
 import { Component, inject } from "@angular/core";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
 

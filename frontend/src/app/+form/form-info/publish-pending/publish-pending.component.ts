@@ -20,7 +20,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Metadata } from "../../../models/ige-document";
 import { DocumentService } from "../../../services/document/document.service";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MatButton } from "@angular/material/button";
 import { DatePipe } from "@angular/common";
 

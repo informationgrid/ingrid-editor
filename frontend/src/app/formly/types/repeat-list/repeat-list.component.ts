@@ -89,7 +89,7 @@ import {
 } from "@angular/material/form-field";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 import { MatDivider } from "@angular/material/divider";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MatInput } from "@angular/material/input";
 import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";

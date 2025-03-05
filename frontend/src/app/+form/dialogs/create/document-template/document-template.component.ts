@@ -30,7 +30,7 @@ import { DocumentAbstract } from "../../../../store/document/document.model";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
 import { ProfileAbstract } from "../../../../store/profile/profile.model";
 import { ProfileService } from "../../../../services/profile.service";
-import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import { MatError, MatFormField } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../../directives/focus.directive";

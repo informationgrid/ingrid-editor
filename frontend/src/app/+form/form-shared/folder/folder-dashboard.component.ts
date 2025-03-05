@@ -25,7 +25,7 @@ import { DocumentService } from "../../../services/document/document.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { DocEventsService } from "../../../services/event/doc-events.service";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { ActionButtonComponent } from "../../../shared/action-button/action-button.component";
 import { CardBoxComponent } from "../../../shared/card-box/card-box.component";
 import { DocumentListItemComponent } from "../../../shared/document-list-item/document-list-item.component";

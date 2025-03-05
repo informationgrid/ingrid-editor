@@ -20,7 +20,7 @@
 import { Component, HostBinding, Input, OnChanges } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { TreeNode } from "../../store/tree/tree-node.model";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { DocumentState } from "../../models/ige-document";
 import { ProfileService } from "../../services/profile.service";
 import { MatTooltip } from "@angular/material/tooltip";

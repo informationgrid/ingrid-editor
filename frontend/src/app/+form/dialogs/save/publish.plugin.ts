@@ -36,7 +36,7 @@ import {
 } from "../../../services/event/doc-events.service";
 import { IgeError } from "../../../models/ige-error";
 import { PluginService } from "../../../services/plugin/plugin.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { ProfileService } from "../../../services/profile.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { TreeStore } from "../../../store/tree/tree.store";
