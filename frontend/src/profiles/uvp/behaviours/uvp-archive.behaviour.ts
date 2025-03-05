@@ -18,17 +18,25 @@
  * limitations under the Licence.
  */
 import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { AuthGuard } from "../../../app/security/auth.guard";
 import { CatalogRoutesService } from "../../../app/+catalog/catalog-routes.service";
 import { Router } from "@angular/router";
 import { TranslocoService } from "@jsverse/transloco";
-import { FormToolbarService } from "../../../app/+form/form-shared/toolbar/form-toolbar.service";
+import {
+  FormToolbarService,
+  ToolbarItem,
+} from "../../../app/+form/form-shared/toolbar/form-toolbar.service";
+import { TreeStore } from "../../../app/store/tree/tree.store";
+import { AddressTreeStore } from "../../../app/store/address-tree/address-tree.store";
+import { IgeEvent } from "../../../app/services/event/event.service";
+import { DocEventsService } from "../../../app/services/event/doc-events.service";
 
 @Injectable({ providedIn: "root" })
 export class UvpArchiveBehaviour extends Plugin {
   private transloco = inject(TranslocoService);
   private formToolbarService = inject(FormToolbarService);
+  private docEvents = inject(DocEventsService);
 
   id = "plugin.uvp.archive";
   name = "UVP Archivierung";
@@ -44,44 +52,56 @@ export class UvpArchiveBehaviour extends Plugin {
 
   private catalogRouteService = inject(CatalogRoutesService);
 
+  private documentTreeStore = inject(TreeStore);
+  private addressTreeStore = inject(AddressTreeStore);
+
+  private archiveUpdateBtn: ToolbarItem = {
+    id: "toolBtnUpdateArchive",
+    label: "Im Archiv speichern",
+    eventId: "UPDATE_ARCHIVE",
+    pos: 100,
+    align: "right",
+    active: signal(true),
+  };
+
   constructor() {
     super();
 
     this.formToolbarService.setToolbarButtonEnabledFn(
       "toolBtnRemove",
       (docs) => {
-        return docs.every((doc) => !doc._tags.split(",").includes("archived"));
+        return docs.every(
+          (doc) => !doc._tags?.split(",")?.includes("archived"),
+        );
       },
     );
+    this.setPluginConfig();
 
-    this.fields.push({
-      key: "uvpArchiveType",
-      type: "radio",
-      defaultValue: "showAll",
-      wrappers: ["form-field"],
-      props: {
-        labelProp: "label",
-        valueProp: "value",
-        appearance: "outline",
-        options: [
-          { value: "hideAll", label: "Alle Dokumente im Portal ausblenden" },
-          {
-            value: "showAll",
-            label: "Alle Dokumente im Portal sichtbar belassen",
-          },
-          {
-            value: "showOnlyDecision",
-            label: "Nur Dokumente der Entscheidung sichtbar belassen",
-          },
-        ],
-        required: true,
-      },
+    effect(() => {
+      if (!this.formRegistered()) return;
+      this.toggleUpdateArchiveButton();
     });
   }
 
   register() {
     super.register();
     this.addUVPArchiveTab();
+  }
+
+  registerForm() {
+    super.registerForm();
+
+    this.formSubscriptions.push(
+      this.docEvents.onEvent("UPDATE_ARCHIVE").subscribe(() => {
+        /*const docs = this.activeNodes().map((item) => this.getStore().entityMap()[item]);
+        if (docs.length > 0) {
+          this.eventService
+            .sendEventAndContinueOnSuccess(IgeEvent.DELETE, docs)
+            .subscribe(() => this.showDeleteDialog(docs));
+        }*/
+        console.log("UPDATE_ARCHIVE");
+      }),
+    );
   }
 
   unregister() {
@@ -122,5 +142,54 @@ export class UvpArchiveBehaviour extends Plugin {
 
   private removeUVPArchiveTab() {
     // this.catalogRouteService.
+  }
+
+  private setPluginConfig() {
+    this.fields.push({
+      key: "uvpArchiveType",
+      type: "radio",
+      defaultValue: "showAll",
+      wrappers: ["form-field"],
+      props: {
+        labelProp: "label",
+        valueProp: "value",
+        appearance: "outline",
+        options: [
+          { value: "hideAll", label: "Alle Dokumente im Portal ausblenden" },
+          {
+            value: "showAll",
+            label: "Alle Dokumente im Portal sichtbar belassen",
+          },
+          {
+            value: "showOnlyDecision",
+            label: "Nur Dokumente der Entscheidung sichtbar belassen",
+          },
+        ],
+        required: true,
+      },
+    });
+  }
+
+  private getStore() {
+    return this.forAddress() ? this.addressTreeStore : this.documentTreeStore;
+  }
+
+  private toggleUpdateArchiveButton() {
+    const publishBtn = this.formToolbarService.getButtonById(
+      "toolBtnPublish",
+    ) as ToolbarItem;
+    const isArchivedDocs = this.activeNodes()
+      .map((item) => this.getStore().entityMap()[item])
+      .map((doc) => doc?._tags?.split(",")?.includes("archived"));
+
+    if (isArchivedDocs.length === 1 && isArchivedDocs[0] === true) {
+      if (!this.formToolbarService.getButtonById("toolBtnUpdateArchive")) {
+        this.formToolbarService.addButton(this.archiveUpdateBtn);
+        publishBtn.hidden = true;
+      }
+    } else {
+      this.formToolbarService.removeButton("toolBtnUpdateArchive");
+      publishBtn.hidden = false;
+    }
   }
 }

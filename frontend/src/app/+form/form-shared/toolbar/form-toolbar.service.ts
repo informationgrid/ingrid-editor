@@ -47,6 +47,7 @@ export interface ToolbarItem extends DefaultToolbarItem {
   isPrimary?: boolean;
   menu?: ToolbarMenuItem[];
   hiddenMenu?: ToolbarMenuItem[];
+  hidden?: boolean;
 }
 
 export interface Separator extends DefaultToolbarItem {
