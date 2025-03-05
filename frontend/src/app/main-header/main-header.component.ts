@@ -32,7 +32,7 @@ import { AuthenticationFactory } from "../security/auth.factory";
 import { CatalogService } from "../+catalog/services/catalog.service";
 import { default as settingsRoutes } from "../+settings/routes";
 import { FormMenuService, FormularMenuItem } from "../+form/form-menu.service";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MatToolbar, MatToolbarRow } from "@angular/material/toolbar";
 import { SessionTimeoutInfoComponent } from "./session-timeout-info/session-timeout-info.component";
 import { MatButton, MatIconButton } from "@angular/material/button";

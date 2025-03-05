@@ -31,7 +31,7 @@ import { PublishNegativeAssessmentBehaviour } from "./uvp/behaviours/publish-neg
 import { ReportsService } from "../app/+reports/reports.service";
 import { UvpNumberBehaviour } from "./uvp/behaviours/uvp-number.behaviour";
 import { PluginService } from "../app/services/plugin/plugin.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { TagsService } from "../app/+catalog/+behaviours/system/tags/tags.service";
 import { ZabbixReportBehaviour } from "./uvp/behaviours/zabbix-report.behaviour";
 import { ActivityReportBehaviour } from "./uvp/behaviours/activity-report.behaviour";

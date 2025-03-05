@@ -35,7 +35,7 @@
                                     <gmd:specification>
                                         <gmd:CI_Citation>
                                             <gmd:title>
-                                                <gco:CharacterString>${page.getCodelists().getValue("6005",conformanceResult.getSpecification(), "iso")}</gco:CharacterString>
+                                                <gco:CharacterString>${page.mapConformanceResultTitle(conformanceResult)}</gco:CharacterString>
                                             </gmd:title>
                                             <gmd:date>
                                                 <gmd:CI_Date>

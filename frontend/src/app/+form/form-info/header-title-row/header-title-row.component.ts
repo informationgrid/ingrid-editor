@@ -32,7 +32,7 @@ import { IgeDocument } from "../../../models/ige-document";
 import { FormMenuService, FormularMenuItem } from "../../form-menu.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { FormStateService } from "../../form-state.service";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatIcon } from "@angular/material/icon";

@@ -72,7 +72,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { FormMessageService } from "../../../services/form-message.service";
 import { ConfigService } from "../../../services/config/config.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { IgeError } from "../../../models/ige-error";
 import { FormToolbarComponent } from "../toolbar/form-toolbar.component";
 import { AngularSplitModule } from "angular-split";

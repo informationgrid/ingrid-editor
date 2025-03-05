@@ -47,7 +47,7 @@ import { ConfigService } from "../../../services/config/config.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { TreeHeaderComponent } from "./tree-header/tree-header.component";
 import { MatIcon } from "@angular/material/icon";
 import {

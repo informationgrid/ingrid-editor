@@ -97,7 +97,6 @@ class PostMigrationTask(
         saveAllGroupsOfCatalog(catalogIdentifier)
         initializeCatalogCodelistsAndQueries(catalogIdentifier)
         restructureObjectsWithChildren(catalogIdentifier)
-        uvpSplitFreeAddresses(catalogIdentifier)
         fixSpatialSystems(catalogIdentifier)
         fixPathsTask.migratePaths(catalogIdentifier)
         enhanceGroupsTask.enhanceGroupsWithReferencedAddresses(catalogIdentifier)
@@ -137,81 +136,15 @@ class PostMigrationTask(
             }
     }
 
-    private fun uvpSplitFreeAddresses(catalogIdentifier: String) {
-        if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
-
-        val auth = SecurityContextHolder.getContext().authentication
-
-        // root Addresses which aren't organizations are free addresses
-        val freeAddresses = documentService.findChildrenDocs(
-            catalogIdentifier,
-            null,
-            isAddress = true,
-        ).hits.filter { "UvpAddressDoc" == it.wrapper.type }
-
-        if (freeAddresses.isEmpty()) return
-
-        val rootFolderId = createFreeAddressFolder(catalogIdentifier)
-        freeAddresses.forEach {
-            val doc = it.document
-            val organization = doc.data.get("organization").asText()
-
-            if (organization.isNullOrEmpty() || organization == "null") {
-                // free address without organization. no action needed
-                it.wrapper.path = listOf(rootFolderId)
-                it.wrapper.parent = documentService.docWrapperRepo.findById(rootFolderId).get()
-                return
-            } else {
-                // {"_type":"UvpOrganisationDoc","_parent":null,"organization":"Testorga","title":"Testorga"}
-                // create parent organization
-                val organizationData = jacksonObjectMapper().createObjectNode()
-                    .put("_type", "UvpOrganisationDoc")
-                    .putNull("_parent")
-                    .put("title", organization)
-                    .put("organization", organization)
-                val document = convertToDocument(organizationData)
-                val organizationDoc = documentService.createDocument(
-                    auth as Principal,
-                    catalogIdentifier,
-                    document,
-                    rootFolderId,
-                    address = true,
-                )
-                val parentId = organizationDoc.wrapper.id!!
-
-                it.wrapper.path = listOf(parentId)
-                it.wrapper.parent = documentService.docWrapperRepo.findById(parentId).get()
-                // save
-                documentService.aclService.updateParent(it.wrapper.id!!, parentId)
-                documentService.docWrapperRepo.save(it.wrapper)
-            }
-        }
-    }
-
-    private fun createFreeAddressFolder(catalogIdentifier: String): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        val folderData = jacksonObjectMapper().createObjectNode()
-            .put("_type", "FOLDER")
-            .putNull("_parent")
-            .put("title", "Freie Adressen")
-        val document = convertToDocument(folderData)
-        val folderDoc =
-            documentService.createDocument(auth as Principal, catalogIdentifier, document, null, true)
-        documentService.docWrapperRepo.flush()
-        return folderDoc.wrapper.id!!
-    }
-
     private fun createNewFolderFor(
         migratedObject: DocumentWrapper,
         title: String,
     ): Int {
         val auth = SecurityContextHolder.getContext().authentication
         val catalogIdentifier = migratedObject.catalog!!.identifier
-        val folderData = jacksonObjectMapper().createObjectNode()
-            .put("_type", "FOLDER")
-            .put("title", title)
+        val folderData = jacksonObjectMapper().createObjectNode().put("title", title)
 
-        val document = convertToDocument(folderData)
+        val document = convertToDocument(folderData, docType = "FOLDER")
         val folderDoc =
             documentService.createDocument(
                 auth as Principal,

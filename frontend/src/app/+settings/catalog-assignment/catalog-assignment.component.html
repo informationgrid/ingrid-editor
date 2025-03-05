@@ -10,22 +10,20 @@
     >
         <ige-filter-select
             [options]="userIds$()"
-            class="white-bg"
-            style="max-width: 460px"
+            class="white-bg limit-field-width"
             placeholder="Nutzer auswählen..."
             (reset)="selectedUserId = null"
             (optionSelect)="selectedUserId = $event.label"
         ></ige-filter-select>
         <ige-filter-select
             [options]="catalogs$()"
-            class="white-bg"
-            style="max-width: 460px"
+            class="white-bg limit-field-width"
             placeholder="Katalog auswählen..."
             (reset)="selectedCatalogId = null"
             (optionSelect)="selectedCatalogId = $event.value"
         ></ige-filter-select>
         <button
-            style="max-width: 460px"
+            class="limit-field-width"
             mat-flat-button
             color="primary"
             [disabled]="!(selectedCatalogId && selectedUserId)"

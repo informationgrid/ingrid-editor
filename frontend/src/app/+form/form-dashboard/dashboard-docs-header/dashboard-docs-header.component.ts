@@ -21,7 +21,7 @@ import { Component, Input, OnInit } from "@angular/core";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Router } from "@angular/router";
 import { ConfigService } from "../../../services/config/config.service";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { ActionButtonComponent } from "../../../shared/action-button/action-button.component";
 
 @Component({

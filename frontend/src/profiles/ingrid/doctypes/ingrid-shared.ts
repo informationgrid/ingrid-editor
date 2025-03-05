@@ -127,8 +127,6 @@ export abstract class IngridShared extends BaseDoctype {
   isGeoDataset: boolean = false;
   private thesaurusTopics: boolean = false;
 
-  defaultKeySpatialScope = null; // Regional
-
   codelistIds = {
     distributionFormat: "1320",
     urlDataType: "1320",
@@ -256,6 +254,7 @@ export abstract class IngridShared extends BaseDoctype {
                 items: [
                   {
                     label: "kompatibel",
+                    completeLabel: "AdV kompatibel",
                     key: "isAdVCompatible",
                     value: true,
                     contextHelpKey: "isAdVCompatible",
@@ -1855,12 +1854,6 @@ export abstract class IngridShared extends BaseDoctype {
 
   handleActivateInspireIdentified(field: FormlyFieldConfig) {
     const isOpenData = field.formControl.value.isOpenData === true;
-
-    if (this.defaultKeySpatialScope) {
-      field.form.get("spatialScope")?.setValue({
-        key: this.defaultKeySpatialScope,
-      });
-    }
 
     if (this.isGeoService) {
       if (isOpenData) {

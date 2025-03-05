@@ -31,7 +31,7 @@ import { IgeDocument } from "../../models/ige-document";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ShortTreeNode } from "../sidebars/tree/tree.types";
 import { Router } from "@angular/router";
-import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import { ConfigService } from "../../services/config/config.service";
 import { FormStateService } from "../form-state.service";
 import { BreadcrumbComponent } from "./breadcrumb/breadcrumb.component";

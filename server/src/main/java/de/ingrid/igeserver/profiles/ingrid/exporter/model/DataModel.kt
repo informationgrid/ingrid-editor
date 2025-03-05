@@ -235,6 +235,15 @@ data class ServiceUrl(
 //        "other" to Protocol("", ""),
     )
     fun getProtocol(): Protocol? {
+        if (serviceversion?.contains("wcs", true) == true) {
+            return Protocol("wcs", "OGC Web Coverage Service")
+        } else if (serviceversion?.contains("wfs", true) == true) {
+            return Protocol("wfs", "OGC Web Feature Service")
+        } else if (serviceversion?.contains("wms", true) == true) {
+            return Protocol("wms", "OGC Web Map Service")
+        } else if (serviceversion?.contains("wmts", true) == true) {
+            return Protocol("wmts", "OGC Web Map Tile Service")
+        }
         if (serviceType == null) return null
         return protocolMap[serviceType]
     }

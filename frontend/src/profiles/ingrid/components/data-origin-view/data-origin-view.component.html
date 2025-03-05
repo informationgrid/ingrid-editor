@@ -1,4 +1,9 @@
 <div>{{ type() }}</div>
-<div>{{ title() }}</div>
+@if (resourceIdentifier()) {
+    <div class="data-origin-identifier">{{ resourceIdentifier() }}</div>
+}
+<div>
+    <b>{{ title() }}</b>
+</div>
 <div>{{ date() }}</div>
 <div>{{ description() }}</div>

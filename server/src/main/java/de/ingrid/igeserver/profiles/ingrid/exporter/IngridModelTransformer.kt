@@ -33,6 +33,7 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.CoupledResource
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileName
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileReferenceTransferOption
@@ -1135,7 +1136,19 @@ open class IngridModelTransformer(
 
     // if the document is a service with "Zugang geschützt" or it has access constraints other than "1" ("Es gelten keine Zugriffsbeschränkungen") #4377 #7280
     fun hasAccessConstraints(): Boolean = data.service.hasAccessConstraintsOrFalse() || (data.resource?.accessConstraints?.any { it.key != "1" } == true)
+
+    fun mapConformanceResultTitle(result: ConformanceResult): String? = when (result.isInspire) {
+        true -> if (codelists.catalogLanguage == "en") {
+            codelists.getValue("6005", result.specification, "en")
+        } else {
+            codelists.getValue("6005", result.specification, "iso") ?: codelists.getValue("6005", result.specification, "de")
+        }
+
+        else -> codelists.getCatalogCodelistValue("6006", result.specification)
+    }
 }
+
+data class AccessConstraint(val codelistValues: List<String>, val otherConstraints: List<CharacterStringModel>)
 
 enum class CoordinateType { Lat1, Lat2, Lon1, Lon2 }
 
