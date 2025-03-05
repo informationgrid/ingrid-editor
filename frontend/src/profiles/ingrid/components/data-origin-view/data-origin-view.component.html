@@ -1,15 +1,4 @@
-<div>
-    @if (state() === "W") {
-        <span [ngClass]="{ unpublished: state() === 'W' }"></span>
-    }
-
-    {{ type() }}
-
-    @if (state() === "W") {
-        unveröffentlicht
-    }
-</div>
-
+<div>{{ type() }}</div>
 @if (resourceIdentifier()) {
     <div class="data-origin-identifier">{{ resourceIdentifier() }}</div>
 }

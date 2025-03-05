@@ -28,7 +28,6 @@ import {
 import { Router } from "@angular/router";
 import { DocumentService } from "../../../../app/services/document/document.service";
 import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
-import { NgClass } from "@angular/common";
 import { DocumentWithMetadata } from "../../../../app/models/ige-document";
 import { ConfigService } from "../../../../app/services/config/config.service";
 
@@ -47,7 +46,6 @@ interface DataOriginItem {
   standalone: true,
   templateUrl: "./data-origin-view.component.html",
   styleUrl: "./data-origin-view.component.scss",
-  imports: [NgClass],
 })
 export class DataOriginViewComponent {
   item = input<DataOriginItem>();
@@ -80,7 +78,6 @@ export class DataOriginViewComponent {
     return value;
   });
   description = computed<string>(() => this.item().value);
-  state = signal<string>("");
 
   constructor() {
     effect(() => {
@@ -90,7 +87,6 @@ export class DataOriginViewComponent {
           .subscribe((doc: DocumentWithMetadata) => {
             this.title.set(doc.document.title);
             this.resourceIdentifier.set(this.getFormattedIdentifier(doc));
-            this.state.set(doc.metadata.state);
           });
       } else {
         this.title.set(this.item().title);
