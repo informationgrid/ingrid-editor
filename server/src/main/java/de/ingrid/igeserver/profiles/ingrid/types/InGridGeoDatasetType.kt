@@ -19,8 +19,12 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.types
 
+import de.ingrid.igeserver.api.InvalidField
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.services.InitiatorAction
+import de.ingrid.igeserver.utils.getString
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -36,5 +40,16 @@ class InGridGeoDatasetType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemp
         if (initiator == InitiatorAction.COPY) {
             doc.data.put("identifier", "")
         }
+    }
+
+    override fun onPublish(doc: Document) {
+        super.onPublish(doc)
+
+        val allCoupledResourcesPublished = doc.data.get("dataQualityInfo")?.get("lineage")?.get("source")?.get("descriptions")
+            ?.filter { it.getString("_type") == "internalDataOrigin" }
+            ?.map { documentService.docRepo.getByCatalogAndUuidAndIsLatestIsTrue(doc.catalog!!, it.get("uuidRef").asText()) }
+            ?.all { it.state == DocumentState.PUBLISHED } ?: true
+
+        if (!allCoupledResourcesPublished) throw ValidationException.withInvalidFields(InvalidField("dataQualityInfo.lineage.source.descriptions", "COUPLED_RESOURCES_MUST_BE_PUBLISHED"))
     }
 }
