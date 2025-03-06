@@ -56,7 +56,6 @@ import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-
   ],
 })
 export class PrintViewDialogComponent {
-  profile: any;
   form = new UntypedFormGroup({});
   formCompare = new UntypedFormGroup({});
   options: FormlyFormOptions = {};

@@ -148,7 +148,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
       doc.isFolder =
         igeDoc._type === "FOLDER" || igeDoc._type.endsWith("OrganisationDoc");
       doc.title = igeDoc.title;
-      doc.iconClass = this.profileService.getProfile(igeDoc._type).iconClass;
+      doc.iconClass = this.profileService.getDoctype(igeDoc._type).iconClass;
 
       // downgrade permission if rights are not sufficient
       this.adjustPermission(doc);

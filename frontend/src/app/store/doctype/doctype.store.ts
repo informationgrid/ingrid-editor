@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ProfileAbstract } from "./profile.model";
+import { DoctypeAbstract } from "./doctype.model";
 import {
   patchState,
   signalStore,
@@ -27,27 +27,24 @@ import {
 import { setAllEntities, withEntities } from "@ngrx/signals/entities";
 import { computed } from "@angular/core";
 
-export const ProfileStore = signalStore(
+export const DoctypeStore = signalStore(
   { providedIn: "root" },
-  withEntities<ProfileAbstract>(),
+  withEntities<DoctypeAbstract>(),
   withComputed((store) => ({
-    documentProfiles: computed(() => {
+    dataDoctypes: computed(() => {
       return store
         .entities()
-        .filter((entity) => !entity.isAddressProfile && entity.id !== "FOLDER");
+        .filter((entity) => !entity.isAddressDoctype && entity.id !== "FOLDER");
     }),
-    addressProfiles: computed(() => {
+    addressDoctypes: computed(() => {
       return store
         .entities()
-        .filter((entity) => entity.isAddressProfile && entity.id !== "FOLDER");
+        .filter((entity) => entity.isAddressDoctype && entity.id !== "FOLDER");
     }),
   })),
   withMethods((store) => ({
-    set(profiles: ProfileAbstract[]): void {
-      patchState(store, setAllEntities(profiles));
-    } /*
-      update(profile: ProfileAbstract): void {
-        patchState(store, updateEntity({ id: group.id, changes: profile }));
-      }*/,
+    set(doctypes: DoctypeAbstract[]): void {
+      patchState(store, setAllEntities(doctypes));
+    },
   })),
 );

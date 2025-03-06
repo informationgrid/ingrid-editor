@@ -34,7 +34,7 @@ import {
   UntypedFormGroup,
   Validators,
 } from "@angular/forms";
-import { ProfileAbstract } from "../../../../store/profile/profile.model";
+import { DoctypeAbstract } from "../../../../store/doctype/doctype.model";
 import { filter, map, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DocBehavioursService } from "../../../../services/event/doc-behaviours.service";
@@ -44,7 +44,7 @@ import { MatFormField } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../../directives/focus.directive";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
-import { ProfileStore } from "../../../../store/profile/profile.store";
+import { DoctypeStore } from "../../../../store/doctype/doctype.store";
 import { toObservable } from "@angular/core/rxjs-interop";
 
 interface AddressDocumentAbstract extends DocumentAbstract {
@@ -66,7 +66,7 @@ interface AddressDocumentAbstract extends DocumentAbstract {
   ],
 })
 export class AddressTemplateComponent implements OnInit {
-  private profileStore = inject(ProfileStore);
+  private doctypeStore = inject(DoctypeStore);
 
   @Input() form: UntypedFormGroup;
   parent = input<number>();
@@ -83,7 +83,7 @@ export class AddressTemplateComponent implements OnInit {
 
   documentTypes = signal<AddressDocumentAbstract[]>([]);
 
-  private addressProfiles$ = toObservable(this.profileStore.addressProfiles);
+  private addressDoctypes$ = toObservable(this.doctypeStore.addressDoctypes);
 
   constructor(
     private docBehaviours: DocBehavioursService,
@@ -92,16 +92,16 @@ export class AddressTemplateComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeDocumentTypes(
-      this.addressProfiles$,
+      this.addressDoctypes$,
       this.parent(),
     ).subscribe((value) => this.documentTypes.set(value));
   }
 
   private initializeDocumentTypes(
-    profiles: Observable<ProfileAbstract[]>,
+    doctypes: Observable<DoctypeAbstract[]>,
     parent: number,
   ) {
-    return profiles.pipe(
+    return doctypes.pipe(
       untilDestroyed(this),
       filter((types) => types.length > 0),
       map((types) => this.filterDocTypesByParent(types, parent)),
@@ -133,16 +133,16 @@ export class AddressTemplateComponent implements OnInit {
   }
 
   private prepareDocumentTypes(
-    result: ProfileAbstract[],
+    result: DoctypeAbstract[],
   ): AddressDocumentAbstract[] {
     return result
-      .map((profile) => {
+      .map((doctype) => {
         return {
-          id: profile.id,
-          title: this.translocoService.translate(`docType.${profile.id}`),
-          icon: profile.iconClass,
-          _type: profile.id,
-          addressType: profile.addressType,
+          id: doctype.id,
+          title: this.translocoService.translate(`docType.${doctype.id}`),
+          icon: doctype.iconClass,
+          _type: doctype.id,
+          addressType: doctype.addressType,
           _state: "P",
         } as AddressDocumentAbstract;
       })
@@ -173,9 +173,9 @@ export class AddressTemplateComponent implements OnInit {
   }
 
   private filterDocTypesByParent(
-    types: ProfileAbstract[],
+    types: DoctypeAbstract[],
     parent: number,
-  ): ProfileAbstract[] {
+  ): DoctypeAbstract[] {
     return this.docBehaviours.filterDocTypesByParent(types, parent);
   }
 }

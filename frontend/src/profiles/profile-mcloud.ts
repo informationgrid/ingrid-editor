@@ -39,7 +39,7 @@ class MCloudComponent {
   ) {
     const types = [mcloud, folder, mcloudAddress];
 
-    service.registerProfiles(types);
+    service.registerDoctypes(types);
   }
 }
 

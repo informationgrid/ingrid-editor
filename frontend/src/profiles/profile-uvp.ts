@@ -65,7 +65,7 @@ class UVPComponent {
     this.tagsService.addAdditionalTags(["negative-assessment-not-publish"]);
     this.addStylesheet();
 
-    profileService.registerProfiles([
+    profileService.registerDoctypes([
       folder,
       approvalProcedureDoctype,
       spatialPlanningProcedureDoctype,

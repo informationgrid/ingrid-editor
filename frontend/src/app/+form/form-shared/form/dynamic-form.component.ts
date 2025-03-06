@@ -175,8 +175,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private waitForCodelistsLoaded$ = toObservable(
     this.generalStore.codelistsLoaded,
   );
-  private waitForProfilesLoaded$ = toObservable(
-    this.generalStore.profilesLoaded,
+  private waitForDoctypesLoaded$ = toObservable(
+    this.generalStore.doctypesLoaded,
   );
 
   constructor(
@@ -234,16 +234,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    this.formularService.currentProfile = null;
+    this.formularService.currentDoctypeId = null;
 
     // reset selected documents if we revisit the page
     this.formularService.setSelectedDocuments([], this.address);
   }
 
   ngOnInit() {
-    // wait for profile and codelists to be loaded before opening first dataset
+    // wait for doctypes and codelists to be loaded before opening first dataset
     combineLatest([
-      this.waitForProfilesLoaded$.pipe(filter((isLoaded) => isLoaded === true)),
+      this.waitForDoctypesLoaded$.pipe(filter((isLoaded) => isLoaded === true)),
       this.waitForCodelistsLoaded$.pipe(
         filter((isLoaded) => isLoaded === true),
       ),
@@ -261,7 +261,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(untilDestroyed(this))
       .subscribe((params) => this.loadDocument(params[2]));
 
-    this.formularService.currentProfile = null;
+    this.formularService.currentDoctypeId = null;
 
     this.documentService.publishState$
       .pipe(untilDestroyed(this))
@@ -449,15 +449,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const profile = data.metadata.docType;
+    const doctype = data.metadata.docType;
 
-    if (profile === null) {
+    if (doctype === null) {
       throw new Error("Dieses Dokument hat keinen Dokumententyp!");
     }
 
     try {
-      if (this.needProfileSwitch(profile)) {
-        this.handleProfileSwitch(profile);
+      if (this.needDoctypeSwitch(doctype)) {
+        this.handleDoctypeSwitch(doctype);
         // make sure to create a new form to prevent data coming from another
         // form type into the new form
         this.createNewForm();
@@ -485,34 +485,34 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private needProfileSwitch(profile: string): boolean {
+  private needDoctypeSwitch(doctypeId: string): boolean {
     return (
       this.fields.length === 0 ||
-      this.formularService.currentProfile !== profile
+      this.formularService.currentDoctypeId !== doctypeId
     );
   }
 
-  private handleProfileSwitch(profile: string) {
+  private handleDoctypeSwitch(doctypeId: string) {
     this.formStateService.unobserveTextareaHeights();
 
-    // switch to the right profile depending on the data
-    this.fields = this.switchProfile(profile);
+    // switch to the right doctype depending on the data
+    this.fields = this.switchDoctype(doctypeId);
 
     this.formStateService.restoreAndObserveTextareaHeights(this.fields);
 
-    this.formularService.getSectionsFromProfile(this.fields);
+    this.formularService.getSectionsForDoctype(this.fields);
     this.hasOptionalFields =
-      this.profileService.getProfile(profile).hasOptionalFields;
+      this.profileService.getDoctype(doctypeId).hasOptionalFields;
   }
 
   /**
    *
-   * @param profile
+   * @param doctypeId
    */
-  private switchProfile(profile: string): FormlyFieldConfig[] {
-    this.formularService.currentProfile = profile;
+  private switchDoctype(doctypeId: string): FormlyFieldConfig[] {
+    this.formularService.currentDoctypeId = doctypeId;
 
-    return this.formularService.getFields(profile);
+    return this.formularService.getFields(doctypeId);
   }
 
   rememberSizebarWidth(info: any) {
