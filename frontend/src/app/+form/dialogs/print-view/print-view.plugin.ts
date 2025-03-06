@@ -91,7 +91,7 @@ export class PrintViewPlugin extends Plugin {
   private showPrintDialog() {
     let openedDocument = this.generalStore.getOpenedDocument(this.forAddress());
     const type = openedDocument._type;
-    const profile = this.profileService.getProfile(type);
+    const doctype = this.profileService.getDoctype(type);
 
     combineLatest([
       this.documentDataService.load(openedDocument._uuid, true),
@@ -107,10 +107,10 @@ export class PrintViewPlugin extends Plugin {
           published.documentWithMetadata,
           {},
         );
-        fields = profile.getFieldsForPrint(diff);
+        fields = doctype.getFieldsForPrint(diff);
         fieldsPublished = clone(fields);
       } else {
-        fields = profile.getFieldsForPrint(null);
+        fields = doctype.getFieldsForPrint(null);
       }
       this.dialog.open(PrintViewDialogComponent, {
         width: "80%",

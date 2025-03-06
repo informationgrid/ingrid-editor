@@ -22,7 +22,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 export type AddressType = "person" | "organization";
 
 /**
- * A profile defines the formular fields for a document and its' validation rules, as well as the behaviours on user
+ * A Doctype defines the formular fields for a document and its' validation rules, as well as the behaviours on user
  * actions.
  */
 export interface Doctype {
@@ -38,7 +38,7 @@ export interface Doctype {
   label: string;
 
   /**
-   * The css-image-class for the profile document. This will be shown in a tree and other places where necessary.
+   * The css-image-class for the document. This will be shown in a tree and other places where necessary.
    */
   iconClass?: string;
 

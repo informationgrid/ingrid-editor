@@ -178,13 +178,13 @@ export class GeneralReportComponent implements OnInit {
   }
 
   getIcon(type: string): string {
-    return this.profileService.getProfile(type)?.iconClass ?? "";
+    return this.profileService.getDoctype(type)?.iconClass ?? "";
   }
 
   getTitle(type: string): string {
     return (
       this.translocoService.translate(
-        `docType.${this.profileService.getProfile(type)?.id}`,
+        `docType.${this.profileService.getDoctype(type)?.id}`,
       ) ?? type
     );
   }
