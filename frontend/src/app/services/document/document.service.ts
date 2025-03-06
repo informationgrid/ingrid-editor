@@ -481,7 +481,7 @@ export class DocumentService {
       filter((response) => response !== null && response !== undefined),
       tap(() => {
         if (!publishDate)
-          this.messageService.sendInfo("Das Dokument wurde veröffentlicht.");
+          this.messageService.sendInfo("Der Datensatz wurde veröffentlicht.");
       }),
       tap((json) =>
         // @ts-ignore
