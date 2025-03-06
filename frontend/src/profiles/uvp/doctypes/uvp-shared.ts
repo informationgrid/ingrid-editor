@@ -31,6 +31,13 @@ export class UvpShared extends BaseDoctype {
   private uploadService = inject(UploadService);
   private behaviourService = inject(BehaviourService);
 
+  protected disabledWhenNotArchived = (field: FormlyFieldConfig) =>
+    (field.options?.formState?.disabled &&
+      field.options.formState.metadata?.tags
+        ?.split(",")
+        ?.indexOf("archived") === -1) ??
+    false;
+
   isInitialized(): Promise<void> {
     this.setUvpCodelistId();
     return Promise.resolve();
@@ -135,12 +142,18 @@ export class UvpShared extends BaseDoctype {
             required: true,
             columns: this.columnsForDocumentTable,
             batchValidUntil: "validUntil",
+            expressions: {
+              "props.disabled": this.disabledWhenNotArchived,
+            },
           }),
           this.addPublishConditionCheckbox("announcementDocs"),
           this.addTable("applicationDocs", "UVP Bericht/Antragsunterlagen", {
             required: true,
             columns: this.columnsForDocumentTable,
             batchValidUntil: "validUntil",
+            expressions: {
+              "props.disabled": this.disabledWhenNotArchived,
+            },
           }),
           this.addPublishConditionCheckbox("applicationDocs"),
           this.addTable(
@@ -150,6 +163,9 @@ export class UvpShared extends BaseDoctype {
               required: false,
               columns: this.columnsForDocumentTable,
               batchValidUntil: "validUntil",
+              expressions: {
+                "props.disabled": this.disabledWhenNotArchived,
+              },
             },
           ),
           this.addPublishConditionCheckbox("reportsRecommendationDocs"),
@@ -157,6 +173,9 @@ export class UvpShared extends BaseDoctype {
             required: false,
             columns: this.columnsForDocumentTable,
             batchValidUntil: "validUntil",
+            expressions: {
+              "props.disabled": this.disabledWhenNotArchived,
+            },
           }),
           this.addPublishConditionCheckbox("furtherDocs"),
         ]),
@@ -200,6 +219,9 @@ export class UvpShared extends BaseDoctype {
               required: true,
               columns: this.columnsForDocumentTable,
               batchValidUntil: "validUntil",
+              expressions: {
+                "props.disabled": this.disabledWhenNotArchived,
+              },
             },
           ),
         ]),
@@ -231,11 +253,17 @@ export class UvpShared extends BaseDoctype {
             required: true,
             columns: this.columnsForDocumentTable,
             batchValidUntil: "validUntil",
+            expressions: {
+              "props.disabled": this.disabledWhenNotArchived,
+            },
           }),
           this.addTable("decisionDocs", "Entscheidung", {
             required: true,
             columns: this.columnsForDocumentTable,
             batchValidUntil: "validUntil",
+            expressions: {
+              "props.disabled": this.disabledWhenNotArchived,
+            },
           }),
         ]),
       ],

@@ -90,6 +90,9 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
                 required: true,
                 columns: this.columnsForDocumentTable,
                 batchValidUntil: "validUntil",
+                expressions: {
+                  "props.disabled": this.disabledWhenNotArchived,
+                },
               },
             ),
           ]),

@@ -58,7 +58,7 @@ export class UvpArchiveBehaviour extends Plugin {
   private archiveUpdateBtn: ToolbarItem = {
     id: "toolBtnUpdateArchive",
     label: "Im Archiv speichern",
-    eventId: "UPDATE_ARCHIVE",
+    eventId: "PUBLISH",
     pos: 100,
     align: "right",
     active: signal(true),
@@ -178,6 +178,9 @@ export class UvpArchiveBehaviour extends Plugin {
     const publishBtn = this.formToolbarService.getButtonById(
       "toolBtnPublish",
     ) as ToolbarItem;
+    const saveBtn = this.formToolbarService.getButtonById(
+      "toolBtnSave",
+    ) as ToolbarItem;
     const isArchivedDocs = this.activeNodes()
       .map((item) => this.getStore().entityMap()[item])
       .map((doc) => doc?._tags?.split(",")?.includes("archived"));
@@ -186,10 +189,12 @@ export class UvpArchiveBehaviour extends Plugin {
       if (!this.formToolbarService.getButtonById("toolBtnUpdateArchive")) {
         this.formToolbarService.addButton(this.archiveUpdateBtn);
         publishBtn.hidden = true;
+        saveBtn.hidden = true;
       }
     } else {
       this.formToolbarService.removeButton("toolBtnUpdateArchive");
       publishBtn.hidden = false;
+      saveBtn.hidden = false;
     }
   }
 }
