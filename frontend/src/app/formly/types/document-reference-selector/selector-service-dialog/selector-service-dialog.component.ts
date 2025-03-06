@@ -55,7 +55,7 @@ export interface SelectServiceResponse {
   imports: [DialogTemplateComponent, TreeComponent, FormlyModule],
 })
 export class SelectorServiceDialogComponent {
-  protected generalStore = inject(GeneralStore);
+  private generalStore = inject(GeneralStore);
   private treeStore = inject(TreeStore);
   selectedNode: number = null;
   field: FormlyFieldConfig[] = [
@@ -87,16 +87,23 @@ export class SelectorServiceDialogComponent {
     this.label = data.titleOfDocumentSelectorDialog;
   }
 
-  enableDesiredDocuments() {
-    const openedDocument = this.generalStore.getOpenedDocument(false);
+  disableTreeNodes() {
+    const currentDocUuid = this.generalStore.getOpenedDocument(false)._uuid;
     return (node: TreeNode) => {
       return (
-        (this.docTypeFilter.length &&
-          !this.docTypeFilter.includes(node.type)) ||
-        this.data.currentRefs.indexOf(node._uuid) !== -1 ||
-        node._uuid === openedDocument._uuid
+        this.isDoctypeNotAllowed(node.type) ||
+        this.isNodeAlreadyPresent(node) ||
+        node._uuid === currentDocUuid
       );
     };
+  }
+
+  private isNodeAlreadyPresent(node: TreeNode) {
+    return this.data.currentRefs.indexOf(node._uuid) !== -1;
+  }
+
+  private isDoctypeNotAllowed(docType: string) {
+    return this.docTypeFilter.length && !this.docTypeFilter.includes(docType);
   }
 
   async submit() {

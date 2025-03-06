@@ -222,7 +222,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
         }
     }
 
-    fun getDisplayableQuality(quality: Quality): DisplayableQuality = DisplayableQuality(
+    private fun getDisplayableQuality(quality: Quality): DisplayableQuality = DisplayableQuality(
         nameOfMeasure = codelists.getValue(
             qualitytypeCodelistMap.getOrDefault(quality._type, ""),
             quality.measureType,

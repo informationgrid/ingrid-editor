@@ -25,7 +25,6 @@ import {
   input,
   signal,
 } from "@angular/core";
-import { Router } from "@angular/router";
 import { DocumentService } from "../../../../app/services/document/document.service";
 import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
 import { DocumentWithMetadata } from "../../../../app/models/ige-document";
@@ -54,7 +53,6 @@ export class DataOriginViewComponent {
   private codelistStore = inject(CodelistStore);
   private configService = inject(ConfigService);
 
-  private router = inject(Router);
   type = computed<string>(() => {
     return this.item()._type === "internalDataOrigin"
       ? "Geodatensatz"

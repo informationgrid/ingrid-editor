@@ -17,7 +17,7 @@
         }
         <ige-tree
             [allowMultiSelectionMode]="false"
-            [disabledCondition]="enableDesiredDocuments()"
+            [disabledCondition]="disableTreeNodes()"
             (selected)="selectDatasets($event)"
             [setActiveNode]="initialNode"
         ></ige-tree>
