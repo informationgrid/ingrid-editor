@@ -80,10 +80,18 @@ class PublishEmailService(
         catalogId: String,
     ): String {
         val isPending = doc.state == DocumentState.PENDING
+        val docVersions = documentService.docWrapperRepo.getAllDocumentVersions(doc.wrapperId!!)
         val firstPublish = if (isPending) {
-            documentService.docWrapperRepo.getDocumentByState(catalogId, doc.uuid, DocumentState.PUBLISHED).isEmpty()
+            // dataset is not yet published
+            // it's first published when:
+            //  * latest version is draft
+            docVersions.first().state == DocumentState.DRAFT
         } else {
-            documentService.docWrapperRepo.getDocumentByState(catalogId, doc.uuid, DocumentState.ARCHIVED).isEmpty()
+            // dataset has already been published
+            // it's first published when:
+            //  * only one version exists
+            //  * previous version was not published (archived-state) (e.g. withdrawn)
+            docVersions.size == 1 || docVersions[1].state != DocumentState.ARCHIVED
         }
         return "${if (firstPublish) "Erstveröffentlichung" else "Aktualisierung"}: ${doc.title}"
     }

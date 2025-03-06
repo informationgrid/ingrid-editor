@@ -584,7 +584,7 @@ class DocumentService(
         prePublishPipe.runFilters(prePublishPayload, filterContext)
 
         try {
-            val updatedDoc = docRepo.save(preUpdatePayload.document)
+            val updatedDoc = docRepo.save(preUpdatePayload.document).apply { wrapperId = docData.wrapper.id }
             val updatedWrapper = if (publishDate != null) {
                 preUpdatePayload.wrapper.pending_date = publishDate.toInstant().atOffset(ZoneOffset.UTC)
                 docWrapperRepo.save(preUpdatePayload.wrapper)
