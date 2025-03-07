@@ -67,6 +67,8 @@ class IndexTargetWorker(
     fun indexAll() {
         log.info("Indexing to target '${config.target}' in category: " + config.category.value)
 
+        config.target.setCatalogId(catalogId)
+
         // pre phase
         val (oldIndex, newIndex) = indexPrePhase() ?: return
 

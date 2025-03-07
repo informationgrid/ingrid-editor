@@ -93,8 +93,7 @@ class CSWClient(
                     "Update" -> transactionSummaryNode.getElementsByTagNameNS("http://www.opengis.net/cat/csw/2.0.2", "totalUpdated").item(0)?.textContent?.toIntOrNull() ?: 0
                     else -> 0
                 }
-                log.info("CSW $operation operation successful. $count record" + (if (count > 1) "s" else "") + " ${operation.lowercase()}" + (if (operation == "Insert") "ed" else "d") + ".")
-
+                log.debug("CSW $operation operation successful. $count record" + (if (count > 1) "s" else "") + " ${operation.lowercase()}" + (if (operation == "Insert") "ed" else "d") + ".")
             } else {
                 log.warn("CSW $operation operation successful, but no TransactionSummary was found in the response. Response: $response")
             }
