@@ -314,6 +314,7 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         allowedTypes: options?.allowedTypes,
+        allowedTypesByDoctype: options?.allowedTypesByDoctype,
         max: options?.max,
       },
       validators: {
