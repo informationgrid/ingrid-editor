@@ -57,8 +57,14 @@ class CSWClient(
         }
     }
 
+    fun delete(uuid: String) {
+        val deleteRequest = createDeleteRequest(uuid.toString())
+        val deleteResponse = executeCswXMLPostRequest(getOperationEndpoint("Transaction", "POST"), deleteRequest)
+        handleCswTransactionResponse(deleteResponse, "Delete")
+    }
+
     fun cleanupOrphans(catalogId: String, transactionId: String) {
-        val deleteRequest = createDeleteRequest(catalogId, transactionId)
+        val deleteRequest = createDeleteStaleRecordsRequest(catalogId, transactionId)
         val deleteResponse = executeCswXMLPostRequest(getOperationEndpoint("Transaction", "POST"), deleteRequest)
         handleCswTransactionResponse(deleteResponse, "Delete")
     }
@@ -85,7 +91,7 @@ class CSWClient(
                     "Update" -> transactionSummaryNode.getElementsByTagNameNS("http://www.opengis.net/cat/csw/2.0.2", "totalUpdated").item(0)?.textContent?.toIntOrNull() ?: 0
                     else -> 0
                 }
-                log.info("CSW $operation operation successful. $count records $operation" + (if (operation == "Insert") "ed" else "d"))
+                log.info("CSW $operation operation successful. $count record" + (if (count > 1) "s" else "") + " ${operation.lowercase()}" + (if (operation == "Insert") "ed" else "d") + ".")
 
             } else {
                 log.warn("CSW $operation operation successful, but no TransactionSummary was found in the response. Response: $response")
@@ -169,7 +175,26 @@ class CSWClient(
         """.trimIndent()
     }
 
-    private fun createDeleteRequest(datasource: String, transactionId: String): String {
+    private fun createDeleteRequest(uuid: String): String {
+        return """
+            <csw:Transaction xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" xmlns:dc="http://purl.org/dc/elements/1.1/" service="CSW" version="2.0.2">
+                <csw:Delete>
+                    <csw:Constraint version="1.1.0">
+                        <ogc:Filter>
+                            <ogc:PropertyIsLike wildCard="*" singleChar="?" escapeChar="\">
+                                <ogc:PropertyName>dc:identifier</ogc:PropertyName>
+                                <ogc:Literal>*$uuid*</ogc:Literal>
+                            </ogc:PropertyIsLike>
+                        </ogc:Filter>
+                    </csw:Constraint>
+                
+                </csw:Delete>
+            </csw:Transaction>
+        """.trimIndent()
+    }
+
+
+    private fun createDeleteStaleRecordsRequest(datasource: String, transactionId: String): String {
         return """
             <csw:Transaction xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" xmlns:dc="http://purl.org/dc/elements/1.1/" service="CSW" version="2.0.2">
                 <csw:Delete>
