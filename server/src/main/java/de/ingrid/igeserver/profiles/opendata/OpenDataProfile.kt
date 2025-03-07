@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -138,17 +138,6 @@ class OpenDataProfile(
                 }
             }
         }
-        val codelist20008 = Codelist().apply {
-            identifier = "20008"
-            catalog = catalogRef
-            name = "HVD-Kategorie"
-            description = "Liste der HVD-Kategorie"
-            data = jacksonObjectMapper().createArrayNode().apply {
-                codelist20008.forEach { (key, value) ->
-                    add(toCodelistEntry(key, value))
-                }
-            }
-        }
 
         when (codelistId) {
 //            "505" -> codelistHandler.removeAndAddCodelist(catalogId, codelist505)
@@ -159,7 +148,6 @@ class OpenDataProfile(
             "20005" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20005)
             "20006" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20006)
             "20007" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20007)
-            "20008" -> codelistHandler.removeAndAddCodelist(catalogId, codelist20008)
             null -> {
 //                codelistHandler.removeAndAddCodelist(catalogId, codelist505)
 //                codelistRepo.save(codelist505)
@@ -175,8 +163,6 @@ class OpenDataProfile(
                 codelistRepo.save(codelist20006)
                 codelistHandler.removeAndAddCodelist(catalogId, codelist20007)
                 codelistRepo.save(codelist20007)
-                codelistHandler.removeAndAddCodelist(catalogId, codelist20008)
-                codelistRepo.save(codelist20008)
             }
 
             else -> throw ClientException.withReason("Codelist $codelistId is not supported by this profile: $identifier")

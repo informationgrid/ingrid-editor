@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -51,31 +51,25 @@ class ConfigApiController(
     @Value("\${frontend.keycloak.enable}")
     var keycloakEnabled: Boolean = true
 
-    override fun get(): ResponseEntity<FrontendConfiguration> {
-        return ResponseEntity.ok().body(
-            FrontendConfiguration(
-                keycloakUrl = keycloakUrlFrontend,
-                keycloakRealm = keycloakRealm,
-                keycloakClientId = keycloakClientId,
-                keycloakEnabled = keycloakEnabled,
-                supportEmail = supportEmail,
-            ),
-        )
-    }
+    override fun get(): ResponseEntity<FrontendConfiguration> = ResponseEntity.ok().body(
+        FrontendConfiguration(
+            keycloakUrl = keycloakUrlFrontend,
+            keycloakRealm = keycloakRealm,
+            keycloakClientId = keycloakClientId,
+            keycloakEnabled = keycloakEnabled,
+            supportEmail = supportEmail,
+        ),
+    )
 
-    override fun getConnections(): ResponseEntity<ConnectionConfig> {
-        return ResponseEntity.ok().body(
-            ConnectionConfig(
-                settingsService.getIBusConfig(),
-                settingsService.getElasticConfig(),
-                settingsService.getCSWTConfig(),
-            ),
-        )
-    }
+    override fun getConnections(): ResponseEntity<ConnectionConfig> = ResponseEntity.ok().body(
+        ConnectionConfig(
+            settingsService.getIBusConfig(),
+            settingsService.getElasticConfig(),
+            settingsService.getCSWTConfig(),
+        ),
+    )
 
-    override fun isConnected(id: String): ResponseEntity<Boolean> {
-        return ResponseEntity.ok().body(connectionService.isConnected(id))
-    }
+    override fun isConnected(id: String): ResponseEntity<Boolean> = ResponseEntity.ok().body(connectionService.isConnected(id))
 
     override fun setConnections(config: ConnectionConfig): ResponseEntity<ConnectionConfig> {
         config.ibus?.let {

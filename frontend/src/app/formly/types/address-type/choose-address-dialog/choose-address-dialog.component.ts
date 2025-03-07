@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,6 +21,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   Inject,
   OnDestroy,
   OnInit,
@@ -30,11 +31,8 @@ import {
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { BehaviorSubject, Observable } from "rxjs";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
-import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
-import { CodelistQuery } from "../../../../store/codelist/codelist.query";
 import {
   CodelistService,
-  SelectOption,
   SelectOptionUi,
 } from "../../../../services/codelist/codelist.service";
 import { map, tap } from "rxjs/operators";
@@ -47,7 +45,6 @@ import {
   MatDialogTitle,
 } from "@angular/material/dialog";
 import { ResolvedAddressWithType } from "../address-card/address-card.component";
-import { SessionQuery } from "../../../../store/session.query";
 import { DocumentService } from "../../../../services/document/document.service";
 import { ConfigService } from "../../../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -58,13 +55,17 @@ import { MatSelect } from "@angular/material/select";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
+import { CodelistStore } from "../../../../store/codelist/codelist.store";
+import { toObservable } from "@angular/core/rxjs-interop";
+import { AddressTreeStore } from "../../../../store/address-tree/address-tree.store";
+import { GeneralStore } from "../../../../store/general.store";
 
 export interface ChooseAddressDialogData {
   address: ResolvedAddressWithType;
   allowedTypes: string[];
+  allowedTypesByDoctype: { [key: string]: string[] } | null;
   skipToType: boolean;
 }
 
@@ -79,7 +80,6 @@ export interface ChooseAddressResponse {
   templateUrl: "./choose-address-dialog.component.html",
   styleUrls: ["./choose-address-dialog.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,
@@ -87,7 +87,6 @@ export interface ChooseAddressResponse {
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     TreeComponent,
     DocumentListItemComponent,
@@ -96,28 +95,30 @@ export interface ChooseAddressResponse {
   ],
 })
 export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
+  private codelistStore = inject(CodelistStore);
+  private addressTreeStore = inject(AddressTreeStore);
+  private generalStore = inject(GeneralStore);
   @ViewChild(MatSelect) recentAddressSelect: MatSelect;
   selection = signal<DocumentAbstract>(null);
   selectedType: string;
   selectedNode = new BehaviorSubject<number>(null);
-  recentAddresses$: Observable<DocumentAbstract[]>;
-  initialActiveAddressType = new BehaviorSubject<Partial<DocumentAbstract>>(
-    null,
-  );
+  recentAddresses$: Observable<DocumentAbstract[]> = toObservable(
+    this.generalStore.recentAddresses,
+  ).pipe(map((allRecent) => allRecent[ConfigService.catalogId] ?? []));
+  initialActiveAddressType = new BehaviorSubject<Partial<any>>(null);
   typeSelectionEnabled = signal<boolean>(false);
   activeStep = 1;
-  referenceTypes: DocumentAbstract[];
+  availableReferenceTypes: DocumentAbstract[];
+  allowedReferenceTypes: DocumentAbstract[];
+  private codelists$ = toObservable(this.codelistStore.entityMap);
 
   disabledCondition: (node: TreeNode) => boolean = (node: TreeNode) => {
     return node.type === "FOLDER";
   };
 
   constructor(
-    private addressTreeQuery: AddressTreeQuery,
     @Inject(MAT_DIALOG_DATA) private data: ChooseAddressDialogData,
-    private codelistQuery: CodelistQuery,
     private codelistService: CodelistService,
-    private sessionQuery: SessionQuery,
     private documentService: DocumentService,
     private dlgRef: MatDialogRef<ChooseAddressDialogComponent>,
     private cdr: ChangeDetectorRef,
@@ -125,32 +126,31 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.codelistService.byId("505");
-    this.codelistQuery
-      .selectEntity("505")
+    this.codelists$
       .pipe(
         untilDestroyed(this),
+        map((item) => item["505"]),
         map((codelist) => CodelistService.mapToSelect(codelist)),
-        map((items) => this.filterByAllowedTypes(items)),
-        tap((items) => this.preselectIfOnlyOneType(items)),
-        tap(
-          (items) => (this.referenceTypes = this.prepareReferenceTypes(items)),
-        ),
         tap((items) => {
-          this.typeSelectionEnabled.set(items.length > 1);
-          this.cdr.markForCheck();
+          this.availableReferenceTypes = this.prepareReferenceTypes(items);
+          this.updateTypes();
         }),
       )
       .subscribe();
-
-    this.recentAddresses$ = this.sessionQuery.recentAddresses$.pipe(
-      untilDestroyed(this),
-      map((allRecent) => allRecent[ConfigService.catalogId] ?? []),
-    );
 
     this.updateModel(this.data.address);
     if (this.data.skipToType && this.typeSelectionEnabled()) {
       this.activeStep = 2;
     }
+  }
+
+  private updateTypes(): void {
+    this.allowedReferenceTypes = this.filterByAllowedTypes(
+      this.availableReferenceTypes,
+    );
+    this.preselectIfOnlyOneType(this.allowedReferenceTypes);
+    this.typeSelectionEnabled.set(this.allowedReferenceTypes.length > 1);
+    this.cdr.markForCheck();
   }
 
   private prepareReferenceTypes(result: SelectOptionUi[]): DocumentAbstract[] {
@@ -166,7 +166,8 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   }
 
   updateAddressTree(addressId: number) {
-    this.selection.set(this.addressTreeQuery.getEntity(addressId));
+    this.selection.set(this.addressTreeStore.entityMap()[addressId]);
+    this.updateTypes();
   }
 
   getResult(): void {
@@ -178,8 +179,8 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     });
   }
 
-  private preselectIfOnlyOneType(items: SelectOptionUi[]) {
-    if (items.length === 1) this.selectedType = items[0].value;
+  private preselectIfOnlyOneType(items: DocumentAbstract[]) {
+    if (items.length === 1) this.selectedType = items[0].id as string;
   }
 
   private updateModel(address: ResolvedAddressWithType) {
@@ -188,7 +189,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     }
 
     // in case the previous type is not allowed anymore, we use the new allowed type
-    const isAllowed = this.isTypeAllowed(address);
+    const isAllowed = this.isTypeAllowed(address.type?.key);
     if (isAllowed) {
       this.selectedType = address.type.key;
       this.initialActiveAddressType.next({
@@ -214,11 +215,16 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     throw error;
   }
 
-  private filterByAllowedTypes(items: SelectOptionUi[]) {
-    if (!this.data.allowedTypes) return items;
+  private filterByAllowedTypes(items: DocumentAbstract[]) {
+    const filterTypes =
+      this.data.allowedTypesByDoctype?.[this.selection()?._type] ??
+      this.data.allowedTypes;
+
+    // if no allowed types are set, we return all
+    if (!filterTypes) return items;
 
     return items.filter(
-      (item) => this.data.allowedTypes.indexOf(item.value) !== -1,
+      (item) => filterTypes.indexOf(item.id as string) !== -1,
     );
   }
 
@@ -226,10 +232,13 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     this.selectedType = $event.id.toString();
   }
 
-  private isTypeAllowed(address: ResolvedAddressWithType) {
+  private isTypeAllowed(typeId: string) {
     return (
-      this.filterByAllowedTypes([new SelectOption(address.type?.key, "")])
-        .length > 0
+      this.filterByAllowedTypes([
+        {
+          id: typeId,
+        } as DocumentAbstract,
+      ]).length > 0
     );
   }
 }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -30,6 +30,7 @@ import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.mapping.DateDeserializer
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
@@ -95,7 +96,8 @@ data class UVPModel(
             ?.ref ?: return null
 
         val address = documentService?.getLastPublishedDocument(catalogId, ref)!!
-        val codelistTransformer = CodelistTransformer(codelistHandler!!, catalogId)
+        val catalogLanguage = catalogService?.getCatalogById(catalogId)?.settings?.config?.language ?: "de"
+        val codelistTransformer = CodelistTransformer(codelistHandler!!, catalogId, catalogLanguage)
         val addressTransformer =
             AddressModelTransformer(
                 AddressTransformerConfig(
@@ -132,7 +134,7 @@ data class UVPModel(
         ?.map { prepareSpatialString(it) }
         ?.getOrNull(0)
 
-    fun getSpatial(field: String): Float? {
+    fun getSpatial(field: String): Double? {
         val value = getSpatialBoundingBox() ?: return null
 
         return when (field) {
@@ -148,12 +150,12 @@ data class UVPModel(
         ?.getOrNull(0)
         ?.value
 
-    fun getSpatialLatCenter(): Float? {
+    fun getSpatialLatCenter(): Double? {
         val bbox = getSpatialBoundingBox() ?: return null
         return bbox.lat1 + (bbox.lat2 - bbox.lat1) / 2
     }
 
-    fun getSpatialLonCenter(): Float? {
+    fun getSpatialLonCenter(): Double? {
         val bbox = getSpatialBoundingBox() ?: return null
         return bbox.lon1 + (bbox.lon2 - bbox.lon1) / 2
     }
@@ -187,9 +189,22 @@ data class UVPModel(
             .map { formatDate(formatterNoSeparator, it) }
     }
 
+    fun getDecisionDateAsDate(): List<OffsetDateTime> {
+        val decisionDates =
+            data.steps.filterIsInstance<StepDecisionOfAdmission>().map { it.decisionDate }.toMutableList()
+        if (data.decisionDate != null) decisionDates += data.decisionDate
+
+        return decisionDates
+            .map { OffsetDateTime.parse(it) }
+    }
+
     companion object {
         val codelistHandler: CodelistHandler? by lazy {
             SpringContext.getBean(CodelistHandler::class.java)
+        }
+
+        val catalogService: CatalogService? by lazy {
+            SpringContext.getBean(CatalogService::class.java)
         }
 
         val documentService: DocumentService? by lazy { SpringContext.getBean(DocumentService::class.java) }
@@ -215,11 +230,9 @@ data class UVPModel(
 
     fun hasPoBox(): Boolean = !pointOfContact?.poBox.isNullOrEmpty()
 
-    fun getUvpAddressParents(): List<DocumentData> =
-        if (pointOfContact!!.parentAddresses.isEmpty()) emptyList() else nonHiddenAncestorAddresses!!.dropLast(1)
+    fun getUvpAddressParents(): List<DocumentData> = if (pointOfContact!!.parentAddresses.isEmpty()) emptyList() else nonHiddenAncestorAddresses!!.dropLast(1).reversed()
 
-    fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> =
-        if (pointOfContact == null) emptyList() else nonHiddenAncestorAddresses!!.map { getAddressShort(it.document) }
+    fun getUvpAddressParentsIncludingCurrent(): List<AddressShort> = if (pointOfContact == null) emptyList() else nonHiddenAncestorAddresses!!.map { getAddressShort(it.document) }
 
     fun getAddressShort(address: Document): AddressShort = if (address.data.getString("organization") == null) {
         AddressShort(address.uuid, getPersonStringFromJson(address))

@@ -2,15 +2,25 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/informationBase",
   "type": "object",
+  "definitions": {
+    "propertiesInformation": {
+      "type": "object",
+      "properties": {
+        "isAdVCompatible": {
+          "type": ["null", "boolean"]
+        },
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        },
+        "isInspireIdentified": {
+          "type": ["null", "string"]
+        }
+      }
+    }
+  },
   "properties": {
-    "isAdVCompatible": {
-      "type": ["null", "boolean"]
-    },
-    "isOpenData": {
-      "type": ["null", "boolean"]
-    },
-    "isInspireIdentified": {
-      "type": ["null", "boolean"]
+    "properties": {
+      "$ref": "#/definitions/propertiesInformation"
     },
     "_uuid": {
       "type": "string"

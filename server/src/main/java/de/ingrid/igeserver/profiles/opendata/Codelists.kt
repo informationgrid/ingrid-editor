@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -286,13 +286,4 @@ val codelist20006 = mapOf(
 val codelist20007 = mapOf(
     "DEU" to "Deutsch",
     "ENG" to "Englisch",
-)
-
-val codelist20008 = mapOf(
-    "c_ac64a52d" to "Georaum",
-    "c_dd313021" to "Erdbeobachtung und Umwelt",
-    "c_164e0bf5" to "Meteorologie",
-    "c_e1da4e07" to "Statistik",
-    "c_a9135398" to "Unternehmen und Eigentümerschaft von Unternehmen",
-    "c_b79e35eb" to "Mobilität",
 )

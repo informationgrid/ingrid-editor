@@ -1,3 +1,4 @@
+@import de.ingrid.igeserver.exporter.AddressModelTransformer
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.exporter.model.CharacterStringModel
 @import de.ingrid.igeserver.exporter.model.SpatialModel
@@ -11,6 +12,7 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.CrossReference
 @import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOption
 @import gg.jte.Content
+@import java.util.List
 
 @param IngridModelTransformer page
 @param Content contentInfo = null
@@ -45,7 +47,7 @@
     <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode"
                       codeListValue="${page.getHierarchyLevel()}">${page.getHierarchyLevel()}</gmd:MD_ScopeCode>
 </gmd:hierarchyLevel>
-@if(page.getHierarchyLevelName() != null)
+@if( TransformationTools.hasValue(page.getHierarchyLevelName()))
     <gmd:hierarchyLevelName>
         <gco:CharacterString>${page.getHierarchyLevelName()}</gco:CharacterString>
     </gmd:hierarchyLevelName>
@@ -78,7 +80,7 @@
         </gmd:PT_Locale>
     </gmd:locale>
 @endif
-@if(page.getGridSpatialRepresentation() != null)
+@if(page.containsSpatialRepresentation())
     <gmd:spatialRepresentationInfo>
         <gmd:MD_${page.getGridType()}>
             @if(page.getGridSpatialRepresentation().getNumberOfDimensions() != null)
@@ -115,7 +117,7 @@
                     </gmd:MD_Dimension>
                 </gmd:axisDimensionProperties>
             @endfor
-            @if(page.getCellGeometry() != null)
+            @if( TransformationTools.hasValue(page.getCellGeometry()))
             <gmd:cellGeometry>
                 <gmd:MD_CellGeometryCode
                         codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode"
@@ -265,7 +267,7 @@
     </gmd:referenceSystemInfo>
 @endfor
 <gmd:identificationInfo>
-    <${page.getIdentificationType()} @if(page.getCitationURL() != null ) uuid="${page.getCitationURL()}" @endif>
+    <${page.getIdentificationType()} @if( TransformationTools.hasValue(page.getCitationURL()) ) uuid="${page.getCitationURL()}" @endif>
     <gmd:citation>
         <gmd:CI_Citation>
             <gmd:title>
@@ -276,7 +278,7 @@
                     <gco:CharacterString>${advGroup}</gco:CharacterString>
                 </gmd:alternateTitle>
             @endfor
-            @if(page.getAlternateTitle() != null)
+            @if(TransformationTools.hasValue(page.getAlternateTitle()))
                 <gmd:alternateTitle>
                     <gco:CharacterString>${page.getAlternateTitle()}</gco:CharacterString>
                 </gmd:alternateTitle>
@@ -299,7 +301,7 @@
                     </gmd:date>
                 @endfor
             @endif
-            @if( page.getModel().getType().equals("InGridGeoDataset") && page.getCitationURL() != null )
+            @if( page.getModel().getType().equals("InGridGeoDataset") &&  TransformationTools.hasValue(page.getCitationURL()))
                 <gmd:identifier>
                     <gmd:MD_Identifier>
                         <gmd:code>
@@ -329,10 +331,10 @@
         </gmd:status>
     @endif
     @template.export.ingrid.idf.addresses(addresses = page.getPointOfContact(), wrapperElement = "gmd:pointOfContact")
-    @if( page.getMaintenanceAndUpdateFrequency() != null || TransformationTools.hasValue(page.getMaintenanceNote()) )
+    @if(  TransformationTools.hasValue(page.getMaintenanceAndUpdateFrequency()) || TransformationTools.hasValue(page.getMaintenanceNote()) )
         <gmd:resourceMaintenance>
             <gmd:MD_MaintenanceInformation>
-                @if( page.getMaintenanceAndUpdateFrequency() != null )
+                @if(  TransformationTools.hasValue(page.getMaintenanceAndUpdateFrequency()) )
                     <gmd:maintenanceAndUpdateFrequency>
                         <gmd:MD_MaintenanceFrequencyCode
                                 codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_MaintenanceFrequencyCode"
@@ -341,7 +343,7 @@
                 @else
                     <gmd:maintenanceAndUpdateFrequency gco:nilReason="missing" />
                 @endif
-                @if( page.getUserDefinedMaintenanceFrequency() != null)
+                @if(  TransformationTools.hasValue(page.getUserDefinedMaintenanceFrequency()))
                     <gmd:userDefinedMaintenanceFrequency>
                         <gts:TM_PeriodDuration>${page.getUserDefinedMaintenanceFrequency()}</gts:TM_PeriodDuration>
                     </gmd:userDefinedMaintenanceFrequency>
@@ -495,11 +497,6 @@
             <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="${language}" />
         </gmd:language>
     @endfor
-    @if(TransformationTools.hasValue(page.getSystemEnvironment()))
-        <gmd:environmentDescription>
-            <gco:CharacterString>${page.getSystemEnvironment()}</gco:CharacterString>
-        </gmd:environmentDescription>
-    @endif
     @if(TransformationTools.hasValue(page.getDatasetCharacterSet()))
         <gmd:characterSet>
             <gmd:MD_CharacterSetCode
@@ -507,7 +504,7 @@
                     codeListValue="${page.getDatasetCharacterSet()}" />
         </gmd:characterSet>
     @endif
-    @for(String category : page.getTopicCategories())
+    @for(String category : page.getTopicCategoriesISO())
         <gmd:topicCategory>
             <gmd:MD_TopicCategoryCode>${category}</gmd:MD_TopicCategoryCode>
         </gmd:topicCategory>
@@ -522,6 +519,11 @@
             <gco:CharacterString>${version}</gco:CharacterString>
         </srv:serviceTypeVersion>
     @endfor
+    @if(TransformationTools.hasValue(page.getSystemEnvironment()))
+        <gmd:environmentDescription>
+            <gco:CharacterString>${page.getSystemEnvironment()}</gco:CharacterString>
+        </gmd:environmentDescription>
+    @endif
     <${page.getExtentType()}>
     <gmd:EX_Extent>
         @if(TransformationTools.hasValue(spatial.getDescription()))
@@ -737,7 +739,7 @@
         </srv:containsOperations>
     @endfor
     @for( OperatesOn operatesOn : page.getOperatesOn() )
-        <srv:operatesOn uuidref="${operatesOn.getUuidref()}" xlink:href="${operatesOn.getHref()}" @if(operatesOn.getTitle() != null)xlink:title="${operatesOn.getTitle()}"@endif />
+        <srv:operatesOn uuidref="${operatesOn.getUuidref()}" xlink:href="${operatesOn.getHref()}" @if( TransformationTools.hasValue(operatesOn.getTitle()))xlink:title="${operatesOn.getTitle()}"@endif />
     @endfor
 @endif
 @if(TransformationTools.hasValue(page.getSupplementalInformation()))
@@ -789,20 +791,49 @@ ${contentInfo}
                     </gmd:MD_Format>
                 </gmd:distributionFormat>
             @endif
-            @if(page.hasDistributorInfo())
+            @for( AddressModelTransformer distributor : page.getOrderInfoContact() )
+            <gmd:distributor>
+                <gmd:MD_Distributor>
+                    <gmd:distributorContact>
+                        @template.export.ingrid.idf.addresses(addresses = List.of(distributor))
+                        @if(page.getOrderInfoContact().isEmpty())
+                            <gmd:CI_ResponsibleParty>
+                                <gmd:role>
+                                    <gmd:CI_RoleCode
+                                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
+                                            codeListValue="distributor" />
+                                </gmd:role>
+                            </gmd:CI_ResponsibleParty>
+                        @endif
+                    </gmd:distributorContact>
+                    <gmd:distributionOrderProcess>
+                        <gmd:MD_StandardOrderProcess>
+                            @if(TransformationTools.hasValue(page.getData().getFees()))
+                                <gmd:fees>
+                                    <gco:CharacterString>${page.getData().getFees()}</gco:CharacterString>
+                                </gmd:fees>
+                            @endif
+                            @if(TransformationTools.hasValue(page.getData().getOrderInfo()))
+                                <gmd:orderingInstructions>
+                                    <gco:CharacterString>${page.getData().getOrderInfo()}</gco:CharacterString>
+                                </gmd:orderingInstructions>
+                            @endif
+                        </gmd:MD_StandardOrderProcess>
+                    </gmd:distributionOrderProcess>
+                </gmd:MD_Distributor>
+            </gmd:distributor>
+            @endfor
+            @if(page.getOrderInfoContact().isEmpty() && page.hasDistributorInfo())
                 <gmd:distributor>
                     <gmd:MD_Distributor>
                         <gmd:distributorContact>
-                            @template.export.ingrid.idf.addresses(addresses = page.getOrderInfoContact())
-                            @if(page.getOrderInfoContact().isEmpty())
-                                <gmd:CI_ResponsibleParty>
-                                    <gmd:role>
-                                        <gmd:CI_RoleCode
-                                                codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
-                                                codeListValue="distributor" />
-                                    </gmd:role>
-                                </gmd:CI_ResponsibleParty>
-                            @endif
+                            <gmd:CI_ResponsibleParty>
+                                <gmd:role>
+                                    <gmd:CI_RoleCode
+                                            codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode"
+                                            codeListValue="distributor" />
+                                </gmd:role>
+                            </gmd:CI_ResponsibleParty>
                         </gmd:distributorContact>
                         <gmd:distributionOrderProcess>
                             <gmd:MD_StandardOrderProcess>
@@ -833,6 +864,11 @@ ${contentInfo}
                                 <gmd:linkage>
                                     <gmd:URL>${serviceUrl.getUrl()}</gmd:URL>
                                 </gmd:linkage>
+                                @if (serviceUrl.getProtocol() != null)
+                                    <gmd:protocol>
+                                        <gmx:Anchor xlink:href="http://www.opengis.net/def/serviceType/ogc/${serviceUrl.getProtocol().getId()}">${serviceUrl.getProtocol().getLabel()}</gmx:Anchor>
+                                    </gmd:protocol>
+                                @endif
                                 @if(TransformationTools.hasValue(serviceUrl.getApplicationProfile()))
                                     <gmd:applicationProfile>
                                         <gco:CharacterString>${serviceUrl.getApplicationProfile()}</gco:CharacterString>
@@ -898,8 +934,11 @@ ${contentInfo}
             @for( FileReferenceTransferOption fileReference : page.getFileReferenceTransferOptions() )
                 <gmd:transferOptions>
                     <gmd:MD_DigitalTransferOptions>
+                        <gmd:unitsOfDistribution>
+                            <gco:CharacterString>MB</gco:CharacterString>
+                        </gmd:unitsOfDistribution>
                         <gmd:transferSize>
-                           <gco:Real>${fileReference.getLink().getSizeInBytes()}</gco:Real>
+                           <gco:Real>${(TransformationTools.bytesToMegabytes(fileReference.getLink().getSizeInBytes()))}</gco:Real>
                         </gmd:transferSize>
                         <gmd:onLine>
                             <gmd:CI_OnlineResource>

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,7 +22,7 @@ import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { BehaviorSubject, of } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { DocBehavioursService } from "../../../../services/event/doc-behaviours.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { TreeComponent } from "../../../sidebars/tree/tree.component";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
 
@@ -30,7 +30,6 @@ import { DocumentListItemComponent } from "../../../../shared/document-list-item
   selector: "ige-destination-selection",
   templateUrl: "./destination-selection.component.html",
   styleUrls: ["./destination-selection.component.scss"],
-  standalone: true,
   imports: [TreeComponent, DocumentListItemComponent],
 })
 export class DestinationSelectionComponent implements OnInit {

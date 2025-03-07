@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   page-break-inside: avoid;
@@ -61,7 +61,7 @@
   }
 
   .spatialBtn {
-    background-color: $ige-secondary;
+    background-color: vars.$ige-secondary;
 
     ::ng-deep .coloring {
       fill: #ffffff;
@@ -77,7 +77,7 @@
     }
 
     &.has-error {
-      background-color: $error-color;
+      background-color: vars.$error-color;
     }
   }
 }

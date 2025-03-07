@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,7 +21,11 @@ package de.ingrid.igeserver.services
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.*
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ElasticConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.IBusConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Settings
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.WithId
 import de.ingrid.igeserver.repository.SettingsRepository
 import de.ingrid.utils.PlugDescription
 import org.springframework.stereotype.Service
@@ -50,9 +54,7 @@ class SettingsService(
         return jacksonObjectMapper().convertValue(cswtJson, object : TypeReference<List<CSWConfig>>() {})
     }
 
-    fun getConnectionConfig(id: String): WithId? {
-        return getIBusConfig().find { it.id!! == id } ?: getElasticConfig().find { it.id!! == id } ?: getCSWTConfig().find { it.id!! == id }
-    }
+    fun getConnectionConfig(id: String): WithId? = getIBusConfig().find { it.id!! == id } ?: getElasticConfig().find { it.id!! == id } ?: getCSWTConfig().find { it.id!! == id }
 
     fun setIBusConfig(config: List<IBusConfig>) {
         addIdIfNeeded(config)

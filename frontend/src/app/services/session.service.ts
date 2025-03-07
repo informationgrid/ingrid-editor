@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,12 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { SessionStore } from "../store/session.store";
-import { SessionQuery } from "../store/session.query";
-import { Observable } from "rxjs";
+import { effect, inject, Injectable } from "@angular/core";
 import { ActivatedRouteSnapshot } from "@angular/router";
 import { ConfigService } from "./config/config.service";
+import { UiStore } from "../store/ui.store";
 
 // the values must match with the actual route!
 export type TabPage = "research" | "manage" | "importExport" | "catalogs";
@@ -37,32 +35,30 @@ export interface Tab {
   providedIn: "root",
 })
 export class SessionService {
-  constructor(
-    private sessionStore: SessionStore,
-    private sessionQuery: SessionQuery,
-    private configService: ConfigService,
-  ) {}
-
-  updateCurrentTab(page: TabPage, tabIndex: string) {
-    this.sessionStore.update((state) => {
-      const newTabState = {};
-      newTabState[page] = tabIndex;
-      return {
-        ...state,
-        ui: {
-          ...state.ui,
-          currentTab: {
-            ...state.ui.currentTab,
-            ...newTabState,
-          },
-        },
-      };
+  private uiStore = inject(UiStore);
+  constructor(private configService: ConfigService) {
+    effect(() => {
+      this.saveToLocalStorage(
+        "sidebarExpanded",
+        this.uiStore.sidebarExpanded(),
+      );
+    });
+    effect(() => {
+      const value = this.uiStore.textAreaHeights();
+      if (Object.keys(value).length === 0) return;
+      this.saveToLocalStorage("textAreaHeights", JSON.stringify(value));
     });
   }
 
-  observeTabChange(page: TabPage): Observable<string> {
-    return this.sessionQuery.select((state) => state.ui.currentTab[page]);
+  updateCurrentTab(page: TabPage, tabIndex: string) {
+    const newTabState = {};
+    newTabState[page] = tabIndex;
+    this.uiStore.updateCurrentTab(newTabState);
   }
+
+  /*observeTabChange(page: TabPage): Observable<string> {
+    return this.uiStore.select((state) => state.ui.currentTab[page]);
+  }*/
 
   /*getCurrentTab(page: TabPage): number {
     return this.sessionQuery.getValue().ui.currentTab[page];
@@ -82,5 +78,9 @@ export class SessionService {
     return activeRoute.routeConfig.children
       .filter((item) => item.path)
       .map((item) => item.path);
+  }
+
+  private saveToLocalStorage(key: string, value: any) {
+    localStorage.setItem(key, value);
   }
 }

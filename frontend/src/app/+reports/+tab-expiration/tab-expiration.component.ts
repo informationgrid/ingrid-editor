@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,28 +17,25 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, OnInit } from "@angular/core";
+import {
+  Component,
+  computed,
+  EventEmitter,
+  OnInit,
+  signal,
+} from "@angular/core";
 
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import {
   ResearchResponse,
   ResearchService,
 } from "../../+research/research.service";
-import {
-  BehaviorSubject,
-  combineLatest,
-  combineLatestWith,
-  concatMap,
-  debounce,
-  of,
-  timer,
-} from "rxjs";
+import { combineLatestWith, concatMap, debounce, of, timer } from "rxjs";
 import { ExpirationTableComponent } from "./expiration-table/expiration-table.component";
 import { MatButtonModule } from "@angular/material/button";
 import { catchError, filter, map, tap } from "rxjs/operators";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { AsyncPipe, NgTemplateOutlet } from "@angular/common";
 import { MatDividerModule } from "@angular/material/divider";
 import { CatalogService } from "../../+catalog/services/catalog.service";
 import { MatTabsModule } from "@angular/material/tabs";
@@ -54,7 +51,6 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
   selector: "ige-tab-expiration",
   templateUrl: "./tab-expiration.component.html",
   styleUrls: ["./tab-expiration.component.scss"],
-  standalone: true,
   imports: [
     MatCheckboxModule,
     ExpirationTableComponent,
@@ -62,24 +58,27 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
     MatDividerModule,
     MatTabsModule,
     MatProgressSpinnerModule,
-    AsyncPipe,
-    NgTemplateOutlet,
     FormsModule,
     PageTemplateComponent,
   ],
 })
 export class TabExpirationComponent implements OnInit {
   currentUserId: number;
-  expiryDurationInDays: number;
+  expiryDurationInDays = signal<number | null>(null);
 
-  isSearching: boolean = false;
+  isSearching = signal<boolean>(false);
   onSearch = new EventEmitter<void>();
 
-  isFiltered$ = new BehaviorSubject<boolean>(false);
-  expiredData$ = new BehaviorSubject<ExpiredData>(undefined);
-  shownData = combineLatest([this.expiredData$, this.isFiltered$]).pipe(
-    map(() => this.getShownData()),
-  );
+  isFiltered = signal<boolean>(false);
+  expiredData = signal<ExpiredData>(undefined);
+
+  showData = computed(() => {
+    if (this.isFiltered() && this.currentUserId != undefined) {
+      return this.expiredData()?.filterById(this.currentUserId);
+    } else {
+      return this.expiredData();
+    }
+  });
 
   constructor(
     private researchService: ResearchService,
@@ -99,10 +98,10 @@ export class TabExpirationComponent implements OnInit {
     this.onSearch
       .pipe(
         untilDestroyed(this),
-        tap(() => (this.isSearching = true)),
+        tap(() => this.isSearching.set(true)),
         debounce(() => timer(500)),
         concatMap(() => this.updateResult()),
-        tap(() => (this.isSearching = false)),
+        tap(() => this.isSearching.set(false)),
       )
       .subscribe();
   }
@@ -112,7 +111,7 @@ export class TabExpirationComponent implements OnInit {
       .getExpiryDuration()
       .pipe(
         untilDestroyed(this),
-        tap((expiryDuration) => (this.expiryDurationInDays = expiryDuration)),
+        tap((expiryDuration) => this.expiryDurationInDays.set(expiryDuration)),
         tap(() => this.onSearch.emit()),
       )
       .subscribe();
@@ -133,12 +132,12 @@ export class TabExpirationComponent implements OnInit {
   }
 
   private updateResult() {
-    if (!this.expiryDurationInDays) return of();
+    if (!this.expiryDurationInDays()) return of();
 
     return this.search("selectDocuments").pipe(
       combineLatestWith(this.search("selectAddresses")),
       map(([objects, addresses]) =>
-        this.expiredData$.next(new ExpiredData(objects.hits, addresses.hits)),
+        this.expiredData.set(new ExpiredData(objects.hits, addresses.hits)),
       ),
     );
   }
@@ -165,21 +164,13 @@ export class TabExpirationComponent implements OnInit {
 
   private filterByExpiry(res: ResearchResponse): ResearchResponse {
     const filtered = res.hits.filter((doc) =>
-      isExpired(doc._contentModified, this.expiryDurationInDays),
+      isExpired(doc._contentModified, this.expiryDurationInDays()),
     );
     return { totalHits: filtered.length, hits: filtered };
   }
 
-  getShownData(): ExpiredData {
-    if (this.isFiltered$.value && this.currentUserId != undefined) {
-      return this.expiredData$.value?.filterById(this.currentUserId);
-    } else {
-      return this.expiredData$.value;
-    }
-  }
-
   toggleFilter() {
-    this.isFiltered$.next(!this.isFiltered$.value);
+    this.isFiltered.set(!this.isFiltered());
   }
 
   private updateOnError(error: any) {

@@ -35,6 +35,10 @@
       "type": "keyword",
       "store": true
     },
+    "capabilities_download_url": {
+      "type": "keyword",
+      "store": true
+    },
     "capabilities_url_with_client": {
       "type": "keyword",
       "store": true
@@ -391,6 +395,10 @@
       "type": "keyword",
       "store": true
     },
+    "is_hvd": {
+      "type": "keyword",
+      "store": true
+    },
     "wkt_geo": {
       "type": "geo_shape"
     },
@@ -402,6 +410,10 @@
       "type": "keyword"
     },
     "distributor": {
+      "type": "keyword",
+      "store": true
+    },
+    "topic_categories": {
       "type": "keyword",
       "store": true
     }

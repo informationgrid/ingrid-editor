@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -96,9 +96,7 @@ class PostMigrationTask(
         // Warning: Execution Order is important
         saveAllGroupsOfCatalog(catalogIdentifier)
         initializeCatalogCodelistsAndQueries(catalogIdentifier)
-        uvpAdaptFolderStructure(catalogIdentifier)
         restructureObjectsWithChildren(catalogIdentifier)
-        uvpSplitFreeAddresses(catalogIdentifier)
         fixSpatialSystems(catalogIdentifier)
         fixPathsTask.migratePaths(catalogIdentifier)
         enhanceGroupsTask.enhanceGroupsWithReferencedAddresses(catalogIdentifier)
@@ -138,81 +136,15 @@ class PostMigrationTask(
             }
     }
 
-    private fun uvpSplitFreeAddresses(catalogIdentifier: String) {
-        if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
-
-        val auth = SecurityContextHolder.getContext().authentication
-
-        // root Addresses which aren't organizations are free addresses
-        val freeAddresses = documentService.findChildrenDocs(
-            catalogIdentifier,
-            null,
-            isAddress = true,
-        ).hits.filter { "UvpAddressDoc" == it.wrapper.type }
-
-        if (freeAddresses.isEmpty()) return
-
-        val rootFolderId = createFreeAddressFolder(catalogIdentifier)
-        freeAddresses.forEach {
-            val doc = it.document
-            val organization = doc.data.get("organization").asText()
-
-            if (organization.isNullOrEmpty() || organization == "null") {
-                // free address without organization. no action needed
-                it.wrapper.path = listOf(rootFolderId)
-                it.wrapper.parent = documentService.docWrapperRepo.findById(rootFolderId).get()
-                return
-            } else {
-                // {"_type":"UvpOrganisationDoc","_parent":null,"organization":"Testorga","title":"Testorga"}
-                // create parent organization
-                val organizationData = jacksonObjectMapper().createObjectNode()
-                    .put("_type", "UvpOrganisationDoc")
-                    .putNull("_parent")
-                    .put("title", organization)
-                    .put("organization", organization)
-                val document = convertToDocument(organizationData)
-                val organizationDoc = documentService.createDocument(
-                    auth as Principal,
-                    catalogIdentifier,
-                    document,
-                    rootFolderId,
-                    address = true,
-                )
-                val parentId = organizationDoc.wrapper.id!!
-
-                it.wrapper.path = listOf(parentId)
-                it.wrapper.parent = documentService.docWrapperRepo.findById(parentId).get()
-                // save
-                documentService.aclService.updateParent(it.wrapper.id!!, parentId)
-                documentService.docWrapperRepo.save(it.wrapper)
-            }
-        }
-    }
-
-    private fun createFreeAddressFolder(catalogIdentifier: String): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        val folderData = jacksonObjectMapper().createObjectNode()
-            .put("_type", "FOLDER")
-            .putNull("_parent")
-            .put("title", "Freie Adressen")
-        val document = convertToDocument(folderData)
-        val folderDoc =
-            documentService.createDocument(auth as Principal, catalogIdentifier, document, null, true)
-        documentService.docWrapperRepo.flush()
-        return folderDoc.wrapper.id!!
-    }
-
     private fun createNewFolderFor(
         migratedObject: DocumentWrapper,
         title: String,
     ): Int {
         val auth = SecurityContextHolder.getContext().authentication
         val catalogIdentifier = migratedObject.catalog!!.identifier
-        val folderData = jacksonObjectMapper().createObjectNode()
-            .put("_type", "FOLDER")
-            .put("title", title)
+        val folderData = jacksonObjectMapper().createObjectNode().put("title", title)
 
-        val document = convertToDocument(folderData)
+        val document = convertToDocument(folderData, docType = "FOLDER")
         val folderDoc =
             documentService.createDocument(
                 auth as Principal,
@@ -230,20 +162,8 @@ class PostMigrationTask(
         return folderDoc.wrapper.id!!
     }
 
-    private fun uvpAdaptFolderStructure(catalogIdentifier: String) {
-        if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
-        documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = true).forEach { doc ->
-            log.debug("Migrate document: ${doc.id}")
-            migratePath(doc)
-        }
-
-        removeOldStructure(catalogIdentifier)
-        // save all groups again to update transferred rights
-        saveAllGroupsOfCatalog(catalogIdentifier)
-    }
-
     private fun restructureObjectsWithChildren(catalogIdentifier: String) {
-        documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = false).forEach { doc ->
+        documentService.getAllDataDocumentWrappers(catalogIdentifier, includeFolders = false).forEach { doc ->
             val foundChildren = documentService.findChildren(
                 catalogIdentifier,
                 doc.id,
@@ -269,7 +189,7 @@ class PostMigrationTask(
             foundChildren.forEach { child ->
                 child.wrapper.parent = newFolder
                 documentService.docWrapperRepo.saveAndFlush(child.wrapper)
-                documentService.aclService.updateParent(doc.id!!, newFolderId)
+                documentService.aclService.updateParent(child.wrapper.id!!, newFolderId)
 
                 // only set parentIdentifier if not already set. do not overwrite explicitly set parentIdentifier
                 if (child.document.data.get("parentIdentifier") == null || child.document.data.get("parentIdentifier") is NullNode) {
@@ -302,69 +222,6 @@ class PostMigrationTask(
             // recursively update children
             replacePathIDinDescendants(catalogIdentifier, child, oldId, newId)
         }
-    }
-
-    private fun removeOldStructure(catalogIdentifier: String) {
-        listOf(
-            "Ausländische Vorhaben",
-            "Vorgelagerte Verfahren",
-            "Zulassungsverfahren",
-            "Vorprüfungen, negativ",
-        ).forEach { title ->
-            val oldldBaseFolder = documentService.findChildren(
-                catalogIdentifier,
-                null,
-            ).hits.find { it.document.title == title }
-            val auth = SecurityContextHolder.getContext().authentication
-            if (oldldBaseFolder != null) {
-                documentService.deleteDocument(
-                    auth as Principal,
-                    catalogIdentifier,
-                    oldldBaseFolder.wrapper.id!!,
-                )
-            }
-        }
-    }
-
-    private fun migratePath(doc: DocumentWrapper) {
-        val oldPath = doc.path // Style: [typeFolderId, FolderId, ...]
-        // skip root folders
-        if (oldPath.isEmpty()) return
-        val reducedPath = oldPath.subList(1, oldPath.size) // Style: [FolderId, ...]
-        val pathTitles = reducedPath.map {
-            documentService.getDocumentByWrapperId(doc.catalog?.identifier!!, it).title!!
-        }
-
-        val newPath = createAndGetPathByTitles(pathTitles, doc.catalog!!.identifier)
-
-        if (doc.type == "FOLDER") {
-            // make sure folders with the same name and path are not saved more than once
-            val folderWithSameNameAndPath = documentService.findChildren(
-                doc.catalog!!.identifier,
-                newPath.lastOrNull(),
-            ).hits.find {
-                it.document.title == documentService.getDocumentByWrapperId(doc.catalog?.identifier!!, doc.id!!).title
-            }
-
-            if (folderWithSameNameAndPath != null) {
-                if (doc == folderWithSameNameAndPath.wrapper) {
-                    // already transferred via parent node. only adjust path
-                    doc.path = newPath
-                    documentService.docWrapperRepo.saveAndFlush(doc)
-                    return
-                } else {
-                    // doc gets replaced by folderWithSameNameAndPath so adjust permission in groups
-                    transferRights(doc, folderWithSameNameAndPath.wrapper)
-                }
-                return
-            }
-        }
-
-        doc.path = newPath
-        doc.parent = if (newPath.isEmpty()) null else documentService.docWrapperRepo.findById(newPath.last()).get()
-        // save
-        documentService.aclService.updateParent(doc.id!!, newPath.lastOrNull())
-        documentService.docWrapperRepo.saveAndFlush(doc)
     }
 
     private fun transferRights(
@@ -432,36 +289,6 @@ class PostMigrationTask(
     }
 
     private fun removeIDinPermissions(sourceId: Int, permissions: List<JsonNode>): List<JsonNode> = permissions.filter { it.get("id").asInt() != sourceId }
-
-    private fun createAndGetPathByTitles(titles: List<String>, catalogIdentifier: String): MutableList<Int> {
-        val auth = SecurityContextHolder.getContext().authentication
-        val createdPathIds = mutableListOf<Int>()
-        var parentId: Int? = null
-        for (title in titles) {
-            val foundChild = documentService.findChildren(
-                catalogIdentifier,
-                parentId,
-            ).hits.filter { it.document.title == title }
-            if (foundChild.isEmpty()) {
-                // create new folder
-                val folderData = jacksonObjectMapper().createObjectNode()
-                    .put("_type", "FOLDER")
-                    .put("_parent", parentId.toString())
-                    .put("title", title)
-                val document = convertToDocument(folderData)
-                val folderDoc =
-                    documentService.createDocument(auth as Principal, catalogIdentifier, document, parentId)
-                documentService.docWrapperRepo.flush()
-
-                parentId = folderDoc.wrapper.id!!
-            } else {
-                // found folder
-                parentId = foundChild.first().wrapper.id!!
-            }
-            createdPathIds.add(parentId)
-        }
-        return createdPathIds
-    }
 
     private fun initializeCatalogCodelistsAndQueries(catalogIdentifier: String) {
         val catalogType = catalogService.getCatalogById(catalogIdentifier).type

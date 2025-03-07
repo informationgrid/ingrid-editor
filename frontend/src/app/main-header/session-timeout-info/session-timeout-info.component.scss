@@ -1,8 +1,8 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 .timeout-wrapper {
-  background-color: $ige-background;
-  color: $ige-text-color;
+  background-color: vars.$ige-background;
+  color: vars.$ige-text-color;
   padding: 0 0 0 12px;
   border-radius: 4px;
   font-size: 14px;

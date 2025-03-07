@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -34,7 +34,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatButtonModule } from "@angular/material/button";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 
 import { firstValueFrom } from "rxjs";
 import { map } from "rxjs/operators";
@@ -62,7 +62,6 @@ import { BreadcrumbComponent } from "../../../+form/form-info/breadcrumb/breadcr
     TranslocoModule,
     BreadcrumbComponent,
   ],
-  standalone: true,
 })
 export class PermissionTableComponent implements ControlValueAccessor {
   @Input() label: string;
@@ -87,7 +86,6 @@ export class PermissionTableComponent implements ControlValueAccessor {
   callAddPermissionDialog() {
     return this.dialog
       .open(PermissionAddDialogComponent, {
-        minWidth: 500,
         hasBackdrop: true,
         data: {
           forAddress: this.forAddress,
@@ -150,7 +148,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
       doc.isFolder =
         igeDoc._type === "FOLDER" || igeDoc._type.endsWith("OrganisationDoc");
       doc.title = igeDoc.title;
-      doc.iconClass = this.profileService.getProfile(igeDoc._type).iconClass;
+      doc.iconClass = this.profileService.getDoctype(igeDoc._type).iconClass;
 
       // downgrade permission if rights are not sufficient
       this.adjustPermission(doc);

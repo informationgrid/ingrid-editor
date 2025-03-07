@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -37,6 +37,7 @@ import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExp
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.features.ogc_api_records.model.LimitAndOffset
 import de.ingrid.igeserver.features.ogc_api_records.model.Link
+import de.ingrid.igeserver.features.ogc_api_records.model.MoveRecordsDTO
 import de.ingrid.igeserver.features.ogc_api_records.model.RecordCollection
 import de.ingrid.igeserver.features.ogc_api_records.model.RecordsResponse
 import de.ingrid.igeserver.imports.ImportService
@@ -48,7 +49,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportResult
 import de.ingrid.igeserver.services.ExportService
-import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.getBoolean
 import org.keycloak.util.JsonSerialization
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -106,6 +107,7 @@ class OgcRecordService(
     private val ogcHtmlConverterService: OgcHtmlConverterService,
     generalProperties: GeneralProperties,
 ) {
+    val hostUrl = generalProperties.host
     val hostnameOgcApi = generalProperties.host + "/api/ogc"
 
     fun handleLandingPageRequest(requestedFormat: CollectionFormat): ByteArray {
@@ -119,6 +121,7 @@ class OgcRecordService(
                     Link(href = "$hostnameOgcApi?f=$it", rel = "alternate", type = it.mimeType, title = "Link to the landing page in format '$it'"),
                 )
             }
+        linkList.add(Link(href = "$hostUrl/v3/api-docs", rel = "service-doc", type = "application/json", title = "The API documentation"))
         linkList.add(Link(href = "$hostnameOgcApi/conformance", rel = "conformance", type = "application/json", title = "OGC API conformance classes implemented by this server"))
         linkList.add(Link(href = "$hostnameOgcApi/collections", rel = "collections", type = "application/json", title = "Information about the record collections"))
 
@@ -216,19 +219,14 @@ class OgcRecordService(
             var jsonData: JsonNode = jacksonObjectMapper().readValue(docData, JsonNode::class.java)
             // wrap data in array if single dataset without array
             jsonData = if (jsonData[0] == null) jacksonObjectMapper().createArrayNode().add(jsonData) else jsonData
-            // check json format
-            val jsonFormat = if (jsonData[0].get("properties") == null) "internal" else "geojson"
-
             for (doc in jsonData) {
-                if (jsonFormat == "internal") {
-                    val internalDoc = internalExporter.addExportWrapper(collectionId, doc, null)
-                    documents.add(internalDoc.toString())
+                val document = if (jsonData[0].getBoolean("isGeojson") == true) {
+                    doc.get("properties")
+                } else {
+                    doc
                 }
-                if (jsonFormat == "geojson") {
-                    val relevantNode = doc.get("properties")
-                    val geoJsonDoc = internalExporter.addExportWrapper(collectionId, relevantNode, null)
-                    documents.add(geoJsonDoc.toString())
-                }
+                val docWithWrapper = internalExporter.addExportWrapper(collectionId, document, null)
+                documents.add(docWithWrapper.toString())
             }
         }
         return documents
@@ -460,7 +458,7 @@ class OgcRecordService(
     }
 
     fun prepareRecords(records: ResearchResponse, collectionId: String, format: RecordFormat, links: List<Link>, queryMetadata: QueryMetadata): ByteArray {
-        val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record._uuid!!, collectionId, format) }
+        val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record.uuid!!, collectionId, format) }
         val unwrappedRecords = removeDefaultWrapper(format, recordList)
         return addWrapperToRecords(unwrappedRecords, format, links, false, queryMetadata)
     }
@@ -584,11 +582,11 @@ class OgcRecordService(
     }
 
     @Transactional
-    fun moveRecords(collectionId: String, data: String) {
-        val moveTasks = jacksonObjectMapper().readValue(data, JsonNode::class.java)
-        for (action in moveTasks) {
-            val recordId = action.getString("recordId") ?: throw ClientException.withReason("Failed to move records to folder: Missing recordId.")
-            val folderId = action.getString("folderId")
+    fun moveRecords(collectionId: String, data: List<MoveRecordsDTO>) {
+        for (moveAction in data) {
+            if (moveAction.recordId.isBlank()) throw ClientException.withReason("Failed to move records to folder: Missing recordId.")
+            val recordId = moveAction.recordId
+            val folderId = moveAction.folderId
             val recordWrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
             val folderWrapper = if (folderId == "" || folderId == null) null else documentService.getWrapperByCatalogAndDocumentUuid(collectionId, folderId)
             val folderWrapperId = if (folderWrapper == null) {

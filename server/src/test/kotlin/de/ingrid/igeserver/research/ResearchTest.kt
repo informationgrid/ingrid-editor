@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -63,16 +63,14 @@ class ResearchTest : IntegrationTest() {
         (list[0] as Array<*>)[2] as String shouldBe "4e91e8f8-1e16-c4d2-6689-02adc03fb352"
     }
 
-    private fun execQuery(sql: String): List<Any> {
-        return entityManager
-            .createNativeQuery(sql)
-            .unwrap(NativeQuery::class.java)
-            .addScalar("data")
-            .addScalar("title")
-            .addScalar("uuid")
-            .addScalar("type")
-            .addScalar("created")
-            .addScalar("modified")
-            .resultList
-    }
+    private fun execQuery(sql: String): List<Any> = entityManager
+        .createNativeQuery(sql)
+        .unwrap(NativeQuery::class.java)
+        .addScalar("data")
+        .addScalar("title")
+        .addScalar("uuid")
+        .addScalar("type")
+        .addScalar("created")
+        .addScalar("modified")
+        .resultList
 }

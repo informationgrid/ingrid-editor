@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -37,7 +37,7 @@ import { Subscription } from "rxjs";
 import { GeothesaurusWfsGndeService } from "./geothesaurus-wfs-gnde.service";
 import { SearchInputComponent } from "../../../../../shared/search-input/search-input.component";
 import { SpatialBoundingBox } from "../spatial-result.model";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import {
   MatCheckboxChange,
   MatCheckboxModule,
@@ -63,7 +63,6 @@ interface GeoThesaurusResult {
     "../free-spatial/free-spatial.component.scss",
     "./geothesaurus-wfsgnde.component.scss",
   ],
-  standalone: true,
   imports: [
     MatDividerModule,
     MatListModule,

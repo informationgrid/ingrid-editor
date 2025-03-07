@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -23,21 +23,43 @@ import de.ingrid.igeserver.model.GetRecordUrlAnalysis
 import de.ingrid.igeserver.services.CapabilitiesService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.getCapabilities.CapabilitiesBean
+import io.swagger.v3.oas.annotations.Hidden
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 
+@Hidden
+@Tag(name = "GetCapabilities", description = "the groups API")
 @RestController
 @RequestMapping(path = ["/api/getCapabilities"])
-class GetCapabilitiesApiController(private val capabilitiesService: CapabilitiesService, private val catalogService: CatalogService) : GetCapabilitiesApi {
+class GetCapabilitiesApiController(
+    private val capabilitiesService: CapabilitiesService,
+    private val catalogService: CatalogService,
+) {
 
-    override fun analyzeGetRecordUrl(url: String): ResponseEntity<GetRecordUrlAnalysis> {
+    @Operation
+    @PostMapping(
+        value = ["/analyzeGetRecordUrl"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+    )
+    fun analyzeGetRecordUrl(@Parameter(required = true) @RequestBody url: String): ResponseEntity<GetRecordUrlAnalysis> {
         val response = capabilitiesService.analyzeGetRecordUrl(url)
         return ResponseEntity.ok(response)
     }
 
-    override fun analyzeGetCapabilties(principal: Principal, url: String): ResponseEntity<CapabilitiesBean> {
+    @Operation
+    @PostMapping(value = ["/analyzeGetCapabilities"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun analyzeGetCapabilties(
+        principal: Principal,
+        @Parameter(required = true) @RequestBody url: String,
+    ): ResponseEntity<CapabilitiesBean> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val response = capabilitiesService.analyzeGetCapabilitiesUrl(principal, catalogId, url)
         return ResponseEntity.ok(response)

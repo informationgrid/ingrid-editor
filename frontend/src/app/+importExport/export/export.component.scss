@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   overflow: hidden;
@@ -19,10 +19,14 @@ mat-horizontal-stepper {
 }
 
 form {
-  background-color: $ige-background;
+  background-color: vars.$ige-background;
   padding: 24px;
 }
 
 ige-tree {
   max-height: 500px;
+}
+
+.explicit-width {
+  width: 300px;
 }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -33,8 +33,6 @@ open class NoElasticsearchConnectionException : ServerException {
         /**
          * Factory method for an arbitrary reason
          */
-        fun withReason(reason: String, cause: Throwable? = null): NoElasticsearchConnectionException {
-            return NoElasticsearchConnectionException(STATUS_CODE, ERROR_CODE, reason, null, cause)
-        }
+        fun withReason(reason: String, cause: Throwable? = null): NoElasticsearchConnectionException = NoElasticsearchConnectionException(STATUS_CODE, ERROR_CODE, reason, null, cause)
     }
 }

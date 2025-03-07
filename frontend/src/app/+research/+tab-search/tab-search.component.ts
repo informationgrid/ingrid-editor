@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, OnInit } from "@angular/core";
+import { Component, EventEmitter, inject, OnInit } from "@angular/core";
 import {
   ReactiveFormsModule,
   UntypedFormBuilder,
@@ -33,14 +33,13 @@ import {
   startWith,
   tap,
 } from "rxjs/operators";
-import { QueryQuery } from "../../store/query/query.query";
 import { SaveQueryDialogComponent } from "../save-query-dialog/save-query-dialog.component";
 import { ActivatedRoute } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FacetQuery } from "../../store/query/query.model";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { FacetsComponent } from "../+facets/facets.component";
 import { MatFormField, MatPrefix } from "@angular/material/form-field";
@@ -49,13 +48,14 @@ import { MatOption } from "@angular/material/core";
 import { SearchInputComponent } from "../../shared/search-input/search-input.component";
 import { MatButton } from "@angular/material/button";
 import { ResultTableComponent } from "../result-table/result-table.component";
+import { GeneralStore } from "../../store/general.store";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @UntilDestroy()
 @Component({
   selector: "ige-tab-search",
   templateUrl: "./tab-search.component.html",
   styleUrls: ["./tab-search.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     PageTemplateComponent,
@@ -71,6 +71,8 @@ import { ResultTableComponent } from "../result-table/result-table.component";
   ],
 })
 export class TabSearchComponent implements OnInit {
+  private generalStore = inject(GeneralStore);
+
   form: UntypedFormGroup;
 
   result: ResearchResponse;
@@ -82,9 +84,9 @@ export class TabSearchComponent implements OnInit {
 
   facets: Facets;
   private initialValue: any;
+  private activeQuery$ = toObservable(this.generalStore.activeQuery);
 
   constructor(
-    private queryQuery: QueryQuery,
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private researchService: ResearchService,
@@ -103,8 +105,7 @@ export class TabSearchComponent implements OnInit {
       .pipe(untilDestroyed(this), startWith(""), debounceTime(300))
       .subscribe(() => this.startSearch());
 
-    this.queryQuery
-      .selectActive()
+    this.activeQuery$
       .pipe(
         untilDestroyed(this),
         filter((a) => a && a.type === "facet"),

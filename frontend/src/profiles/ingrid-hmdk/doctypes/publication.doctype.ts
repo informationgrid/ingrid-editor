@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,7 +20,6 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { inject, Injectable } from "@angular/core";
 import { SharedHmdk } from "./shared-hmdk";
-import { Observable } from "rxjs";
 import { PublicationDoctype } from "../../ingrid/doctypes/publication-doctype.service";
 
 @Injectable({
@@ -28,6 +27,14 @@ import { PublicationDoctype } from "../../ingrid/doctypes/publication-doctype.se
 })
 export class PublicationDoctypeHMDK extends PublicationDoctype {
   private sharedHmdk = inject(SharedHmdk);
+
+  metadataOptions = () => {
+    const options = super.metadataOptions();
+    options
+      .find((item) => item.label === "Open Data")
+      .typeOptions[0].items.push(this.sharedHmdk.metadataOptions(this));
+    return options;
+  };
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     return this.sharedHmdk.manipulateDocumentFields(this, fieldConfig);
@@ -44,12 +51,8 @@ export class PublicationDoctypeHMDK extends PublicationDoctype {
     return this.sharedHmdk.hmdkHandleDeactivateOpenData(field);
   }
 
-  handleActivateInspireIdentified(
-    field: FormlyFieldConfig,
-  ): Observable<boolean> {
-    return this.sharedHmdk.hmdkHandleActivateInspireIdentified(
-      field,
-      super.handleActivateInspireIdentified(field),
-    );
+  handleActivateInspireIdentified(field: FormlyFieldConfig) {
+    super.handleActivateInspireIdentified(field);
+    this.sharedHmdk.hmdkHandleActivateInspireIdentified(field);
   }
 }

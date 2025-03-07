@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -63,14 +63,12 @@ class InternalExporter(
         return addExportWrapper(catalogId, versions.first, versions.second)
     }
 
-    private fun getPublished(catalogId: String, uuid: String): JsonNode? {
-        return try {
-            val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
-            getRawJsonFromDocument(document, true)
-        } catch (ex: Exception) {
-            // allow to export only draft versions
-            null
-        }
+    private fun getPublished(catalogId: String, uuid: String): JsonNode? = try {
+        val document = documentService.getLastPublishedDocument(catalogId, uuid, true)
+        getRawJsonFromDocument(document, true)
+    } catch (ex: Exception) {
+        // allow to export only draft versions
+        null
     }
 
     fun addExportWrapper(catalogId: String, publishedVersion: JsonNode?, draftVersion: JsonNode?): ObjectNode {
@@ -78,7 +76,7 @@ class InternalExporter(
 
         return jacksonObjectMapper().createObjectNode().apply {
             put("_export_date", OffsetDateTime.now().toString())
-            put("_version", "1.1.0")
+            put("_version", "1.3.0")
             put("_profile", profile)
             set<ObjectNode>(
                 "resources",
@@ -90,7 +88,5 @@ class InternalExporter(
         }
     }
 
-    override fun toString(exportedObject: Any): String {
-        return exportedObject as String
-    }
+    override fun toString(exportedObject: Any): String = exportedObject as String
 }

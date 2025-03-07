@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -34,7 +34,5 @@ class ContexthelpApiController(val helpService: ContextHelpService) : Contexthel
         return ResponseEntity.ok(help)
     }
 
-    override fun listContextHelpIds(profile: String, docType: String): ResponseEntity<List<String>> {
-        return ResponseEntity.ok(helpService.getHelpIDs(profile, docType))
-    }
+    override fun listContextHelpIds(profile: String, docType: String): ResponseEntity<List<String>> = ResponseEntity.ok(helpService.getHelpIDs(profile, docType))
 }

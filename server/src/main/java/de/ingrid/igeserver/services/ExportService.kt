@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -52,8 +52,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
     @Lazy
     private lateinit var documentService: DocumentService
 
-    fun getExporter(category: DocumentCategory, format: String): IgeExporter =
-        exporterFactory.getExporter(category, format)
+    fun getExporter(category: DocumentCategory, format: String): IgeExporter = exporterFactory.getExporter(category, format)
 
     fun getExportTypes(catalogId: String, profileId: String, onlyPublic: Boolean = true): List<ExportTypeInfo> {
         val profile = documentService.catalogService.getProfileFromCatalog(catalogId)
@@ -73,26 +72,7 @@ class ExportService(val exporterFactory: ExporterFactory) {
                 ?: throw ServerException.withReason("Document was not exported: ${doc.wrapper.uuid}")
 
             if (exporter is InternalExporter) {
-                val referencedUuids = documentService.getReferencedUuids(doc.document)
-                val refData = referencedUuids.flatMap {
-                    val ref = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, it)
-                    handleSingleDataset(options, ref, catalogId)?.let {
-                        listOf(Pair(ref.uuid, it))
-                    } ?: emptyList()
-                }.toSet().toList()
-                return if (options.addressReferences) {
-                    ExportResult(
-                        zipToFile(refData + Pair(doc.wrapper.uuid, data), exporter.typeInfo.fileExtension),
-                        "export.zip",
-                        MediaType.valueOf("application/zip"),
-                    )
-                } else {
-                    ExportResult(
-                        data.toByteArray(),
-                        doc.wrapper.uuid + "." + exporter.typeInfo.fileExtension,
-                        MediaType.valueOf(exporter.typeInfo.dataType),
-                    )
-                }
+                return handleInternalExport(options, doc, catalogId, data, exporter)
             }
 
             val fileName = "${doc.wrapper.uuid}.${exporter.typeInfo.fileExtension}"
@@ -104,20 +84,8 @@ class ExportService(val exporterFactory: ExporterFactory) {
                     handleWithSubDocuments(document.wrapper, options, catalogId)
                 } else {
                     handleSingleDataset(options, document.wrapper, catalogId)
-                        ?.let {
-                            if (exporter is InternalExporter) {
-                                val referencedUuids = documentService.getReferencedUuids(document.document)
-                                val refData = referencedUuids.flatMap {
-                                    val ref = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, it)
-                                    handleSingleDataset(options, ref, catalogId)?.let {
-                                        listOf(Pair(ref.uuid, it))
-                                    } ?: emptyList()
-                                }.toSet().toList()
-                                refData + Pair(document.wrapper.uuid, it)
-                            } else {
-                                listOf(Pair(document.wrapper.uuid, it))
-                            }
-                        } ?: emptyList()
+                        ?.let { prepareDataForMultiExport(exporter, options, document, catalogId, it) }
+                        ?: emptyList()
                 }
             }.toSet().toList() // remove duplicates
 
@@ -129,18 +97,73 @@ class ExportService(val exporterFactory: ExporterFactory) {
         }
     }
 
+    private fun prepareDataForMultiExport(
+        exporter: IgeExporter,
+        options: ExportRequestParameter,
+        document: DocumentData,
+        catalogId: String,
+        it: String,
+    ) = if (exporter is InternalExporter) {
+        if (options.addressReferences) {
+            val refData = getReferencedExportedDatasets(document, catalogId, options)
+            refData + Pair(document.wrapper.uuid, it)
+        } else {
+            listOf(Pair(document.wrapper.uuid, it))
+        }
+    } else {
+        listOf(Pair(document.wrapper.uuid, it))
+    }
+
+    private fun handleInternalExport(
+        options: ExportRequestParameter,
+        doc: DocumentData,
+        catalogId: String,
+        data: String,
+        exporter: IgeExporter,
+    ) = if (options.addressReferences) {
+        val refData = getReferencedExportedDatasets(doc, catalogId, options)
+        ExportResult(
+            zipToFile(refData + Pair(doc.wrapper.uuid, data), exporter.typeInfo.fileExtension),
+            "export.zip",
+            MediaType.valueOf("application/zip"),
+        )
+    } else {
+        ExportResult(
+            data.toByteArray(),
+            doc.wrapper.uuid + "." + exporter.typeInfo.fileExtension,
+            MediaType.valueOf(exporter.typeInfo.dataType),
+        )
+    }
+
+    private fun getReferencedExportedDatasets(
+        document: DocumentData,
+        catalogId: String,
+        options: ExportRequestParameter,
+    ): List<Pair<String, String>> {
+        val referencedUuids = documentService.getReferencedUuids(document.document)
+        val refData = referencedUuids.flatMap {
+            val ref = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, it)
+            handleSingleDataset(options, ref, catalogId)?.let {
+                listOf(Pair(ref.uuid, it))
+            } ?: emptyList()
+        }.toSet().toList()
+        return refData
+    }
+
     private fun zipToFile(result: List<Pair<String, String>>, fileExtension: String): ByteArray {
         val byteArrayOutputStream = ByteArrayOutputStream()
         ZipOutputStream(BufferedOutputStream(byteArrayOutputStream)).use { outZip ->
-            result.forEach { item ->
-                item.second.byteInputStream().use { fi ->
-                    BufferedInputStream(fi).use { origin ->
-                        val entry = ZipEntry("${item.first}.$fileExtension")
-                        outZip.putNextEntry(entry)
-                        origin.copyTo(outZip, 1024)
+            result
+                .associateBy { it.first }.values
+                .forEach { item ->
+                    item.second.byteInputStream().use { fi ->
+                        BufferedInputStream(fi).use { origin ->
+                            val entry = ZipEntry("${item.first}.$fileExtension")
+                            outZip.putNextEntry(entry)
+                            origin.copyTo(outZip, 1024)
+                        }
                     }
                 }
-            }
         }
 
         return byteArrayOutputStream.toByteArray()
@@ -173,16 +196,14 @@ class ExportService(val exporterFactory: ExporterFactory) {
     private fun getPublishedVersion(
         catalogId: String,
         doc: DocumentWrapper,
-    ): Document {
-        return try {
-            documentService.getLastPublishedDocument(
-                catalogId,
-                doc.uuid,
-                true,
-            )
-        } catch (ex: Exception) {
-            throw NotFoundException.withMissingPublishedVersion(doc.uuid)
-        }
+    ): Document = try {
+        documentService.getLastPublishedDocument(
+            catalogId,
+            doc.uuid,
+            true,
+        )
+    } catch (ex: Exception) {
+        throw NotFoundException.withMissingPublishedVersion(doc.uuid)
     }
 
     private fun handleWithSubDocuments(

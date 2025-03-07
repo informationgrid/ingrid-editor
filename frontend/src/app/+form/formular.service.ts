@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,97 +17,85 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable, Signal } from "@angular/core";
 import { DocumentAbstract } from "../store/document/document.model";
 import { Doctype } from "../services/formular/doctype";
 import { ProfileService } from "../services/profile.service";
-import { TreeStore } from "../store/tree/tree.store";
-import { SessionStore } from "../store/session.store";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { ProfileQuery } from "../store/profile/profile.query";
 import { BehaviorSubject, of } from "rxjs";
 import { filter, map, mergeMap, toArray } from "rxjs/operators";
+import { GeneralStore } from "../store/general.store";
+import { UiStore } from "../store/ui.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class FormularService {
+  private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
+
   data = {};
 
-  currentProfile: string;
+  currentDoctypeId: string;
 
-  profileDefinitions: Doctype[];
+  private availableDoctypes: Signal<Doctype[]> = this.profile.getDoctypes();
 
   sections$ = new BehaviorSubject<string[]>([]);
-  private profileSections: string[] = [];
+  private doctypeSections: string[] = [];
 
-  constructor(
-    private profiles: ProfileService,
-    private treeStore: TreeStore,
-    private sessionStore: SessionStore,
-    private profileQuery: ProfileQuery,
-  ) {
-    // create profiles after we have logged in
-    console.debug("init profiles");
-    this.profileQuery.selectLoading().subscribe((isLoading) => {
-      if (!isLoading) {
-        this.profileDefinitions = this.profiles.getProfiles();
-      }
-    });
-  }
+  constructor(private profile: ProfileService) {}
 
-  getFields(profile: string): FormlyFieldConfig[] {
+  getFields(doctypeId: string): FormlyFieldConfig[] {
     let fields: FormlyFieldConfig[];
 
-    const nextProfile = this.getProfile(profile);
+    const nextDoctype = this.getDoctype(doctypeId);
 
-    if (nextProfile) {
-      fields = nextProfile.getFields().slice(0);
+    if (nextDoctype) {
+      fields = nextDoctype.getFields().slice(0);
 
-      this.currentProfile = profile;
+      this.currentDoctypeId = doctypeId;
 
       // return a copy of our fields (immutable data!)
       return fields; // .sort((a, b) => a.order - b.order);
     } else {
-      throw new Error("Document type not found: " + profile);
+      throw new Error("Document type not found: " + doctypeId);
     }
   }
 
-  private getProfile(id: string): Doctype {
-    if (this.profileDefinitions) {
-      const profile = this.profileDefinitions.find((p) => p.id === id);
-      if (!profile) {
-        // throw Error('Unknown profile: ' + id);
-        console.error("Unknown profile: " + id);
-        return null;
-      }
-      return profile;
-    } else {
+  private getDoctype(id: string): Doctype {
+    const doctypes = this.availableDoctypes();
+    if (!doctypes) {
       return null;
     }
+
+    const doctype = doctypes.find((p) => p.id === id);
+    if (!doctype) {
+      console.error("Unknown doctype: " + id);
+      return null;
+    }
+
+    return doctype;
   }
 
-  setSelectedDocuments(docs: DocumentAbstract[]) {
-    this.treeStore.setActive(docs.map((d) => d.id));
+  setSelectedDocuments(docs: DocumentAbstract[], isAddress: boolean) {
+    this.generalStore.setActiveTreeNodes(
+      docs.map((d) => d.id as number),
+      isAddress,
+    );
   }
 
   updateSidebarWidth(size: number) {
-    this.sessionStore.update((state) => ({
-      ui: {
-        ...state.ui,
-        sidebarWidth: size,
-      },
-    }));
+    this.uiStore.setSidebarWidth(size);
   }
 
-  getSectionsFromProfile(profile: FormlyFieldConfig[]): void {
+  getSectionsForDoctype(fields: FormlyFieldConfig[]): void {
     const getSectionItem = (item: FormlyFieldConfig) => {
       return item?.wrappers?.indexOf("section") >= 0
         ? [item]
         : (item.fieldGroup ?? []);
     };
 
-    of(profile)
+    of(fields)
       .pipe(
         mergeMap((items) => items),
         mergeMap((item) => getSectionItem(item)),
@@ -116,7 +104,7 @@ export class FormularService {
         toArray(),
       )
       .subscribe((sections) => {
-        this.profileSections = sections;
+        this.doctypeSections = sections;
         this.sections$.next(sections);
       });
   }
@@ -124,7 +112,7 @@ export class FormularService {
   setAdditionalSections(sections: string[]) {
     // prevent ExpressionChangedAfterItHasBeenCheckedError
     setTimeout(() =>
-      this.sections$.next([...this.profileSections, ...sections]),
+      this.sections$.next([...this.doctypeSections, ...sections]),
     );
   }
 }

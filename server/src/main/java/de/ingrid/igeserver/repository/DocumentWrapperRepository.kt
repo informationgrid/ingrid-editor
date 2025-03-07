@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -52,10 +52,6 @@ interface DocumentWrapperRepository :
     @Query("SELECT dw.*, 0 as countChildren FROM document_wrapper dw JOIN catalog cat ON dw.catalog_id = cat.id WHERE cat.identifier = ?1 AND dw.uuid = ?2", nativeQuery = true)
     fun findByCatalogAndUuidIncludingDeleted(catalogIdentifier: String, uuid: String): DocumentWrapper
 
-    @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
-    @Query("SELECT d FROM DocumentWrapper d")
-    fun getAll(): List<DocumentWrapper?>
-
     @Deprecated("Is not secured")
     @Query("SELECT d.parent FROM DocumentWrapper d WHERE d.id = ?1")
     fun getParentWrapper(id: Int): DocumentWrapper?
@@ -80,28 +76,14 @@ interface DocumentWrapperRepository :
 
     @Deprecated("Is not secured")
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.type != 'FOLDER' AND d.deleted != 1")
-    fun findAllDocumentsByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>
+    fun findAllDataDocumentsByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>
 
     @Deprecated("Is not secured")
     @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.deleted != 1")
-    fun findAllDocumentsAndFoldersByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>
+    fun findAllDataDocumentsAndFoldersByCatalog_Identifier(catalog_identifier: String): List<DocumentWrapper>
 
     @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
-    @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = ?2 AND d.deleted != 1")
-    fun findAllByCatalog_IdentifierAndCategory(catalog_identifier: String, category: String): List<DocumentWrapper>
-
-    @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
-//    @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.draft IS NOT NULL AND d.type != 'FOLDER' AND d.deleted != 1")
-    @Query("SELECT dw FROM DocumentWrapper dw, Document d WHERE dw.uuid = d.uuid AND d.isLatest = true AND d.catalog.identifier = ?1 AND dw.category = 'data' AND (d.state = 'DRAFT' OR d.state = 'DRAFT_AND_PUBLISHED') AND d.type != 'FOLDER' AND dw.deleted != 1")
-    fun findAllDrafts(catalogId: String): List<DocumentWrapper>
-
-    @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
-//    @Query("SELECT d FROM DocumentWrapper d WHERE d.catalog.identifier = ?1 AND d.category = 'data' AND d.published IS NOT NULL AND d.type != 'FOLDER' AND d.deleted != 1" )
-    @Query("SELECT dw FROM DocumentWrapper dw, Document d WHERE dw.uuid = d.uuid AND d.isLatest = true AND d.catalog.identifier = ?1 AND dw.category = 'data' AND d.state = 'PUBLISHED' AND d.type != 'FOLDER' AND dw.deleted != 1")
-    fun findAllPublished(catalogId: String): List<DocumentWrapper>
-
-    @PostFilter("hasAnyAuthority('ROLE_cat-admin', 'ROLE_ige-super-admin') || hasPermission(filterObject, 'READ')")
-    @Query("SELECT dw FROM DocumentWrapper dw JOIN Document doc ON dw.uuid = doc.uuid WHERE dw.catalog.identifier = ?1 AND dw.category = 'data' AND doc.state = 'PENDING' AND dw.type != 'FOLDER' AND dw.deleted = 0")
+    @Query("SELECT dw FROM DocumentWrapper dw JOIN Document doc ON dw.uuid = doc.uuid WHERE dw.catalog.identifier = ?1 AND doc.state = 'PENDING' AND dw.type != 'FOLDER' AND dw.deleted = 0")
     fun findAllPending(catalogId: String): List<DocumentWrapper>
 
     @PreAuthorize("hasPermission(#id, 'de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper', 'WRITE')")

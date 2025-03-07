@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2022-2024 wemove digital solutions GmbH
+ * Copyright (C) 2022-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -38,11 +38,7 @@ class Agent : Serializable {
         return name == agent.name && type == agent.type
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(name, type)
-    }
+    override fun hashCode(): Int = Objects.hash(name, type)
 
-    override fun toString(): String {
-        return "Agent{name=$name, type=$type}"
-    }
+    override fun toString(): String = "Agent{name=$name, type=$type}"
 }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,7 +20,7 @@
 import { Injectable } from "@angular/core";
 import { TreeNode } from "../../store/tree/tree-node.model";
 import { ProfileService } from "../profile.service";
-import { ProfileAbstract } from "../../store/profile/profile.model";
+import { DoctypeAbstract } from "../../store/doctype/doctype.model";
 
 @Injectable({
   providedIn: "root",
@@ -31,34 +31,47 @@ export class DocBehavioursService {
     node: TreeNode,
     typeToInsert: string = null,
   ) => {
+    if (this.hasNoWritePermission(node)) return true;
+
     if (forAddress) {
-      const profile = this.profileService.getProfile(node.type);
+      const doctype = this.profileService.getDoctype(node.type);
       return (
-        (!node.hasWritePermission && !node.hasOnlySubtreeWritePermission) ||
-        profile.addressType === "person" ||
+        doctype.addressType === "person" ||
         (typeToInsert === "FOLDER" && node.type !== "FOLDER")
       );
     }
-    return (
-      (!node.hasWritePermission && !node.hasOnlySubtreeWritePermission) ||
-      node.type !== "FOLDER"
-    );
+    return node.type !== "FOLDER";
   };
+
+  private hasNoWritePermission(node: TreeNode) {
+    return !node.hasWritePermission && !node.hasOnlySubtreeWritePermission;
+  }
+
   private disabledConditionAlternative;
 
   private showOnlyFoldersInTree = (forAddress: boolean) => !forAddress;
+  // TODO override/use
   private showOnlyFoldersInTreeAlternative;
 
   constructor(private profileService: ProfileService) {}
 
-  registerFunction(type: "disabledCondition", fn) {
-    const altName = type + "Alternative";
-    if (fn !== null && this[altName] !== null) {
+  registerDisabledConditionFunction(fn) {
+    if (fn !== null && this.disabledConditionAlternative != null) {
       console.error(
-        "There are multiple sort functions registered for the tree. Will ignore others!",
+        "There are multiple DisabledCondition functions registered for the tree. Will ignore others!",
       );
     } else {
-      this[altName] = fn;
+      this.disabledConditionAlternative = fn;
+    }
+  }
+
+  registerShowOnlyFoldersInTreeAlternativeFunction(fn) {
+    if (fn !== null && this.showOnlyFoldersInTreeAlternative != null) {
+      console.error(
+        "There are multiple showOnlyFoldersInTreeAlternative functions registered for the tree. Will ignore others!",
+      );
+    } else {
+      this.showOnlyFoldersInTreeAlternative = fn;
     }
   }
 
@@ -67,18 +80,19 @@ export class DocBehavioursService {
   }
 
   showOnlyFoldersInTreeForDestinationSelection(forAddress: boolean): boolean {
+    console.warn(this.showOnlyFoldersInTreeAlternative);
     return this.showOnlyFoldersInTreeAlternative
       ? this.showOnlyFoldersInTreeAlternative(forAddress)
       : this.showOnlyFoldersInTree(forAddress);
   }
 
-  filterDocTypesByParent(types: ProfileAbstract[], parent: number) {
-    /*const parentType = this.tree.getEntity(parent)._type;
-    const profile = this.profileService.getProfile(parentType);
-    if (profile.addressType === "organization") {
-      return types.filter((type) => type.addressType === "person");
-    }
-    return types;*/
+  filterDocTypesByParent(types: DoctypeAbstract[], parent: number) {
+    // TODO: reimplement this?
+    // const parentType = this.tree.getEntity(parent)._type;
+    // const profile = this.profileService.getProfile(parentType);
+    // if (profile.addressType === "organization") {
+    //   return types.filter((type) => type.addressType === "person");
+    // }
     return types;
   }
 }

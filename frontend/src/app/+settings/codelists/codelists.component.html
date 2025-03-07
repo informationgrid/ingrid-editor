@@ -37,7 +37,6 @@
             <ige-filter-select
                 [options]="codelists()"
                 class="white-bg"
-                style="flex: 1; max-width: 460px"
                 placeholder="Codeliste wählen..."
                 (reset)="resetInput()"
                 (optionSelect)="updateCodelistSelection($event)"
@@ -58,8 +57,7 @@
 
         @if (!selectedCodelist) {
             <div
-                class="flex-row justify-content-center align-items-stretch"
-                style="padding-top: 60px"
+                class="image-wrapper flex-row justify-content-center align-items-stretch"
             >
                 <img
                     src="assets/icons/codelist-repository.png"

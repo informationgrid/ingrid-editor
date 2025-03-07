@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,8 +19,13 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.types
 
+import de.ingrid.igeserver.api.InvalidField
+import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.services.InitiatorAction
+import de.ingrid.igeserver.utils.getPath
+import de.ingrid.igeserver.utils.getString
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -36,5 +41,16 @@ class InGridGeoDatasetType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemp
         if (initiator == InitiatorAction.COPY) {
             doc.data.put("identifier", "")
         }
+    }
+
+    override fun onPublish(doc: Document) {
+        super.onPublish(doc)
+
+        val allCoupledResourcesPublished = doc.data.getPath("dataQualityInfo.lineage.source.descriptions")
+            ?.filter { it.getString("_type") == "internalDataOrigin" }
+            ?.map { documentService.docRepo.getByCatalogAndUuidAndIsLatestIsTrue(doc.catalog!!, it.getString("uuidRef")!!) }
+            ?.all { it.state == DocumentState.PUBLISHED } ?: true
+
+        if (!allCoupledResourcesPublished) throw ValidationException.withInvalidFields(InvalidField("dataQualityInfo.lineage.source.descriptions", "INTERNAL_REFERENCES_MUST_BE_PUBLISHED"))
     }
 }

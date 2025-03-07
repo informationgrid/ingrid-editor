@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -31,7 +31,7 @@ import { PublishNegativeAssessmentBehaviour } from "./uvp/behaviours/publish-neg
 import { ReportsService } from "../app/+reports/reports.service";
 import { UvpNumberBehaviour } from "./uvp/behaviours/uvp-number.behaviour";
 import { PluginService } from "../app/services/plugin/plugin.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { TagsService } from "../app/+catalog/+behaviours/system/tags/tags.service";
 import { ZabbixReportBehaviour } from "./uvp/behaviours/zabbix-report.behaviour";
 import { ActivityReportBehaviour } from "./uvp/behaviours/activity-report.behaviour";
@@ -65,7 +65,7 @@ class UVPComponent {
     this.tagsService.addAdditionalTags(["negative-assessment-not-publish"]);
     this.addStylesheet();
 
-    profileService.registerProfiles([
+    profileService.registerDoctypes([
       folder,
       approvalProcedureDoctype,
       spatialPlanningProcedureDoctype,
@@ -90,9 +90,7 @@ class UVPComponent {
   }
 
   private modifyFormHeader() {
-    this.profileService.updateUIProfileStore({
-      hideFormHeaderInfos: ["_metadataDate"],
-    });
+    this.profileService.updateUIProfileStore(["_metadataDate"]);
   }
 
   private addBehaviour(

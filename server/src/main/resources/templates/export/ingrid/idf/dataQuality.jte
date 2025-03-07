@@ -9,7 +9,7 @@
         <gmd:scope>
             <gmd:DQ_Scope>
                 <gmd:level>
-                    <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+                    <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="${page.getHierarchyLevel()}"/>
                 </gmd:level>
             </gmd:DQ_Scope>
         </gmd:scope>
@@ -240,12 +240,38 @@
                     </gmd:LI_ProcessStep>
                 </gmd:processStep>
                 @endfor
-                @for( String description : page.getLineageSourceDescriptions())
+                @for( GeodatasetModelTransformer.LineageSourceDescription description : page.getLineageSourceDescriptions())
                 <gmd:source>
                     <gmd:LI_Source>
                         <gmd:description>
-                            <gco:CharacterString>${description}</gco:CharacterString>
+                            <gco:CharacterString>${description.getValue()}</gco:CharacterString>
                         </gmd:description>
+                        @if(description.getIdentifier() != null  && description.getTitle() != null && description.getDateType() != null && description.getDate() != null)
+                            <gmd:sourceCitation>
+                                <gmd:CI_Citation>
+                                    <gmd:title>
+                                        <gco:CharacterString>${description.getTitle()}</gco:CharacterString>
+                                    </gmd:title>
+                                    <gmd:date>
+                                        <gmd:CI_Date>
+                                            <gmd:date>
+                                                <gco:DateTime>${description.getDate()}</gco:DateTime>
+                                            </gmd:date>
+                                            <gmd:dateType>
+                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="${description.getDateType()}">${description.getDateType()}</gmd:CI_DateTypeCode>
+                                            </gmd:dateType>
+                                        </gmd:CI_Date>
+                                    </gmd:date>
+                                    <gmd:identifier>
+                                        <gmd:MD_Identifier>
+                                            <gmd:code>
+                                                <gco:CharacterString>${description.getIdentifier()}</gco:CharacterString>
+                                            </gmd:code>
+                                        </gmd:MD_Identifier>
+                                    </gmd:identifier>
+                                </gmd:CI_Citation>
+                            </gmd:sourceCitation>
+                        @endif
                     </gmd:LI_Source>
                 </gmd:source>
                 @endfor

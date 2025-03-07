@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   overflow: hidden;
@@ -29,7 +29,7 @@
 }
 
 .fileover {
-  background-color: $ige-mark-color;
+  background-color: vars.$ige-mark-color;
 
   .alternative-text,
   ige-file-upload {
@@ -38,7 +38,7 @@
 }
 
 .content {
-  background-color: $ige-background;
+  background-color: vars.$ige-background;
   padding: 24px;
   display: flex;
   flex-direction: column;

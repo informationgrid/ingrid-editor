@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -45,8 +45,6 @@ import {
 } from "@angular/material/core";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { MatCheckboxHarness } from "@angular/material/checkbox/testing";
-import { CodelistQuery } from "../../../app/store/codelist/codelist.query";
-import { CodelistEntry } from "../../../app/store/codelist/codelist.model";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {
   CodelistService,
@@ -63,6 +61,7 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 
 describe("ConformityDialogComponent", () => {
   let spectator: Spectator<ConformityDialogComponent>;
@@ -129,7 +128,7 @@ describe("ConformityDialogComponent", () => {
         },
       }),
     ],
-    componentMocks: [CodelistQuery],
+    // componentMocks: [CodelistStore],
     detectChanges: false,
   });
 
@@ -220,21 +219,31 @@ describe("ConformityDialogComponent", () => {
   });
 
   function mockCodelists() {
-    const codelistQuery = spectator.inject(CodelistQuery, true);
-    codelistQuery.getCodelistEntryByKey.withArgs("6005", "1").and.returnValue(<
-      CodelistEntry
-    >{
-      id: "1",
-      fields: { de: "Eins" },
-      data: "2009-10-20",
-      description: "",
-    });
-    codelistQuery.getCodelistEntryByKey.withArgs("6006", "1").and.returnValue(<
-      CodelistEntry
-    >{
-      id: "1",
-      fields: { de: "Zehn" },
-      description: "",
-    });
+    const codelistStore = spectator.inject(CodelistStore, true);
+    codelistStore.addCodelists([
+      {
+        id: "6005",
+        entries: [
+          {
+            id: "1",
+            fields: { de: "Eins" },
+            data: "2009-10-20",
+            description: "",
+          },
+        ],
+      },
+    ]);
+    codelistStore.addCodelists([
+      {
+        id: "6006",
+        entries: [
+          {
+            id: "1",
+            fields: { de: "Zehn" },
+            description: "",
+          },
+        ],
+      },
+    ]);
   }
 });

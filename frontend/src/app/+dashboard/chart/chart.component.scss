@@ -1,4 +1,4 @@
-@import "../../../variables";
+@use "src/variables" as vars;
 
 :host {
   max-width: 900px;
@@ -16,7 +16,7 @@
 
   .circle-bg {
     fill: none;
-    stroke: $ige-background;
+    stroke: vars.$ige-background;
     stroke-width: 2;
   }
 
@@ -54,11 +54,11 @@
   }
 
   .circle-1 {
-    stroke: $ige-icon-color;
+    stroke: vars.$ige-icon-color;
   }
 
   .circle-2 {
-    stroke: $state-working-color;
+    stroke: vars.$state-working-color;
   }
 
   .circle-3 {
@@ -67,7 +67,7 @@
   }
 
   .text {
-    fill: $ige-icon-color;
+    fill: vars.$ige-icon-color;
     font-size: 0.8em;
     text-anchor: middle;
   }
@@ -75,12 +75,12 @@
 
 .box {
   text-align: center;
-  color: $ige-icon-color;
+  color: vars.$ige-icon-color;
   font-size: 24px;
   font-weight: 500;
 
   &.working {
-    color: $state-working-color;
+    color: vars.$state-working-color;
   }
 
   .count {

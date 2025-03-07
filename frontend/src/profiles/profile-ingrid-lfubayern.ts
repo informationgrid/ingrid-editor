@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,7 +19,6 @@
  */
 import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent, InGridDoctype } from "./profile-ingrid";
-import { CodelistQuery } from "../app/store/codelist/codelist.query";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { CommonFieldsLfuBayern } from "./ingrid-lfubayern/doctypes/common-fields";
 import { AnonymousAddressPlugin } from "./ingrid-lfubayern/behaviours/anonymous-address.plugin";
@@ -30,7 +29,6 @@ import { PluginService } from "../app/services/plugin/plugin.service";
   standalone: true,
 })
 class InGridLFUBayernComponent extends InGridComponent {
-  codelistQuery = inject(CodelistQuery);
   common = inject(CommonFieldsLfuBayern);
   pluginService = inject(PluginService);
   anonymousAddressPlugin = inject(AnonymousAddressPlugin);

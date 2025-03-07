@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -32,7 +32,7 @@ import { IgeDocument } from "../../../models/ige-document";
 import { FormMenuService, FormularMenuItem } from "../../form-menu.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { FormStateService } from "../../form-state.service";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatIcon } from "@angular/material/icon";
@@ -47,7 +47,6 @@ import { HeaderMoreComponent } from "../header-more/header-more.component";
   templateUrl: "./header-title-row.component.html",
   styleUrls: ["./header-title-row.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     TranslocoDirective,
     DocumentIconComponent,

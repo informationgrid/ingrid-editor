@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,6 +22,8 @@ package de.ingrid.igeserver.imports
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import de.ingrid.igeserver.utils.getString
+import java.nio.file.Files
+import java.nio.file.Paths
 
 fun changeUuidOfOrganisationTo(json: JsonNode, name: String, uuid: String) {
     val addressIndex = json.withIndex().find { it.value.getString("organization") == name }?.index
@@ -45,3 +47,5 @@ fun changeUuidOfOrganisationTo(json: JsonNode, name: String, uuid: String) {
         }
     }
 }
+
+fun getFile(file: String) = String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource(file).toURI())))

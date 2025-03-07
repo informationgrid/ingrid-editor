@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -110,7 +110,8 @@ export const getNewUserFormFields = (
         },
       ],
       expressions: {
-        className: "formState.showGroups ? 'hide' : ''",
+        className: (field: FormlyFieldConfig) =>
+          field.options.formState.showGroups ? "hide" : "",
       },
     },
     {
@@ -128,8 +129,10 @@ export const getNewUserFormFields = (
         asSelect: true,
       },
       expressions: {
-        className: "formState.showGroups ? '' : 'hide'",
-        "props.required": "formState.showGroups",
+        className: (field: FormlyFieldConfig) =>
+          field.options.formState.showGroups ? "" : "hide",
+        "props.required": (field: FormlyFieldConfig) =>
+          field.options.formState.showGroups,
       },
     },
   ];

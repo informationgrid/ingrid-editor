@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -227,7 +227,7 @@ class InGridProfile(
     private fun createCodelist1350(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "1350"
         catalog = catalogRef
-        name = "Weitere rechtliche Grundlagen"
+        name = "Rechtliche Grundlagen"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "Atomgesetz (AtG)"))

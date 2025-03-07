@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -88,19 +88,17 @@ class FixPathsTask(
         }
     }
 
-    private fun getCatalogsForPostMigration(): List<String> {
-        return try {
-            entityManager
-                .createQuery(
-                    "SELECT version FROM VersionInfo version WHERE version.key = 'doFixPaths'",
-                    VersionInfo::class.java,
-                )
-                .resultList
-                .map { it.value!! }
-        } catch (e: Exception) {
-            log.warn("Could not query version_info table")
-            emptyList()
-        }
+    private fun getCatalogsForPostMigration(): List<String> = try {
+        entityManager
+            .createQuery(
+                "SELECT version FROM VersionInfo version WHERE version.key = 'doFixPaths'",
+                VersionInfo::class.java,
+            )
+            .resultList
+            .map { it.value!! }
+    } catch (e: Exception) {
+        log.warn("Could not query version_info table")
+        emptyList()
     }
 
     private fun removePostMigrationInfo(catalogIdentifier: String) {

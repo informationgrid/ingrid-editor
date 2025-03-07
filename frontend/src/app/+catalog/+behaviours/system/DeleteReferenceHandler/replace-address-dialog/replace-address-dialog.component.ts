@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -34,7 +34,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../../../dialogs/confirm/confirm-dialog.component";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
@@ -51,7 +51,6 @@ export interface ReplaceAddressDialogData {
   selector: "ige-replace-address-dialog",
   templateUrl: "./replace-address-dialog.component.html",
   styleUrls: ["./replace-address-dialog.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     CdkDrag,
@@ -60,7 +59,6 @@ export interface ReplaceAddressDialogData {
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     MatTabGroup,
     MatTab,

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -45,7 +45,7 @@ import { HttpErrorResponse, HttpResponse } from "@angular/common/http";
 import { IgeException } from "../../server-validation.util";
 import { TreeComponent } from "../../+form/sidebars/tree/tree.component";
 import { MatSelect, MatSelectChange } from "@angular/material/select";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { FeatureFlagDirective } from "../../directives/feature-flag.directive";
 import { MatButton, MatIconButton } from "@angular/material/button";
@@ -63,7 +63,6 @@ import { AsyncPipe } from "@angular/common";
   selector: "ige-export",
   templateUrl: "./export.component.html",
   styleUrls: ["./export.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     PageTemplateComponent,

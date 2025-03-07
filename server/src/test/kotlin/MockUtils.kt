@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -87,17 +87,15 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
     every { documentService.findChildrenDocs(any(), any(), any()) } answers { FindAllResults(0, emptyList()) }
 }
 
-fun mockedDocumentSimple(id: Number, document: MockDocument): DocumentWrapper {
-    return createDocumentWrapper().apply {
-        this.id = id.toInt()
-        type = document.type ?: "testDocType"
-        parent = document.parent?.let {
-            DocumentWrapper().apply {
-                this.id = it
-            }
+fun mockedDocumentSimple(id: Number, document: MockDocument): DocumentWrapper = createDocumentWrapper().apply {
+    this.id = id.toInt()
+    type = document.type ?: "testDocType"
+    parent = document.parent?.let {
+        DocumentWrapper().apply {
+            this.id = it
         }
-        uuid = document.uuid
     }
+    uuid = document.uuid
 }
 
 fun createDocumentWrapper() = DocumentWrapper().apply { type = "testDocType" }

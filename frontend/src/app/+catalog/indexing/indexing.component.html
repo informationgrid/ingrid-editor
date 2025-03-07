@@ -20,6 +20,8 @@
                             class="start-index"
                             [disabled]="!initialized || hasNoConnections()"
                             (click)="index()"
+                            matomoClickCategory="Indexing"
+                            matomoClickAction="StartIndexing"
                         >
                             Indizieren
                         </button>
@@ -28,6 +30,8 @@
                             mat-flat-button
                             (click)="cancelIndexing()"
                             class="cancel-index"
+                            matomoClickCategory="Indexing"
+                            matomoClickAction="CancelIndexing"
                         >
                             Indizierung abbrechen
                         </button>
@@ -61,7 +65,7 @@
     </div>
 
     <div main-content>
-        <section>Ausführungsintervall</section>
+        <h2>Ausführungsintervall</h2>
         <div class="padding section">
             <mat-form-field class="width-100" appearance="outline">
                 <mat-label>Cron Ausdruck</mat-label>
@@ -92,7 +96,7 @@
         </div>
 
         @if (!hasNoConnections()) {
-            <section>Konfiguration</section>
+            <h2>Konfiguration</h2>
             <div class="padding section config">
                 @if (exportModel?.["catalog-index-config"]?.length === 0) {
                     <p>

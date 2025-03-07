@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,7 +20,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Metadata } from "../../../models/ige-document";
 import { DocumentService } from "../../../services/document/document.service";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MatButton } from "@angular/material/button";
 import { DatePipe } from "@angular/common";
 
@@ -28,7 +28,6 @@ import { DatePipe } from "@angular/common";
   selector: "ige-publish-pending",
   templateUrl: "./publish-pending.component.html",
   styleUrls: ["./publish-pending.component.scss"],
-  standalone: true,
   imports: [TranslocoDirective, MatButton, DatePipe],
 })
 export class PublishPendingComponent implements OnInit {

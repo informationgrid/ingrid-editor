@@ -2,15 +2,19 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/projectBase",
   "type": "object",
+  "definitions": {
+    "propertiesProject": {
+      "type": "object",
+      "properties": {
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        }
+      }
+    }
+  },
   "properties": {
-    "isAdVCompatible": {
-      "type": ["null", "boolean"]
-    },
-    "isOpenData": {
-      "type": ["null", "boolean"]
-    },
-    "isInspireIdentified": {
-      "type": ["null", "boolean"]
+    "properties": {
+      "$ref": "#/definitions/propertiesProject"
     },
     "_uuid": {
       "type": "string"
@@ -82,9 +86,6 @@
         "$ref": "../../general.schema.json#/definitions/PointOfContact"
       },
       "minItems": 1
-    },
-    "advProductGroups": {
-      "$ref": "refs/general.schema.json#/definitions/advProductGroups"
     },
     "themes": {
       "$ref": "refs/general.schema.json#/definitions/themes"

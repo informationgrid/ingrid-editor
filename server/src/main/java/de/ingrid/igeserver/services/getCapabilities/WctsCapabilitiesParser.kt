@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,40 +19,33 @@
  */
 package de.ingrid.igeserver.services.getCapabilities
 
-import de.ingrid.igeserver.services.CodelistHandler
-import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.utils.xml.WctsNamespaceContext
 import de.ingrid.utils.xpath.XPathUtils
 import org.w3c.dom.Document
 
-class WctsCapabilitiesParser(
-    codelistHandler: CodelistHandler,
-    private val researchService: ResearchService,
-    catalogId: String,
-) :
-    GeneralCapabilitiesParser(XPathUtils(WctsNamespaceContext()), codelistHandler, catalogId), ICapabilitiesParser {
+class WctsCapabilitiesParser(params: CapabilitiesParameter) :
+    GeneralCapabilitiesParser(XPathUtils(WctsNamespaceContext()), params),
+    ICapabilitiesParser {
 
     private val versionSyslistMap = mapOf("1.0" to "1")
 
-    override fun getCapabilitiesData(doc: Document): CapabilitiesBean {
-        return CapabilitiesBean().apply {
-            serviceType = "WCTS"
-            dataServiceType = "4" // transformation
-            title = xPathUtils.getString(doc, XPATH_EXP_WCTS_TITLE)
-            description = xPathUtils.getString(doc, XPATH_EXP_WCTS_ABSTRACT)
-            val versionList = getNodesContentAsList(doc, XPATH_EXP_WCTS_VERSION)
-            versions = mapVersionsFromCodelist("5154", versionList, versionSyslistMap)
-            fees = getKeyValueForPath(doc, XPATH_EXP_WCTS_FEES, "6500")
-            accessConstraints =
-                mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WCTS_ACCESS_CONSTRAINTS))
+    override fun getCapabilitiesData(doc: Document): CapabilitiesBean = CapabilitiesBean().apply {
+        serviceType = "WCTS"
+        dataServiceType = "4" // transformation
+        title = xPathUtils.getString(doc, XPATH_EXP_WCTS_TITLE)
+        description = xPathUtils.getString(doc, XPATH_EXP_WCTS_ABSTRACT)
+        val versionList = getNodesContentAsList(doc, XPATH_EXP_WCTS_VERSION)
+        versions = mapVersionsFromCodelist("5154", versionList, versionSyslistMap)
+        fees = getKeyValueForPath(doc, XPATH_EXP_WCTS_FEES, "6500")
+        accessConstraints =
+            mapValuesFromCodelist("6010", getNodesContentAsList(doc, XPATH_EXP_WCTS_ACCESS_CONSTRAINTS))
 
-            // TODO: Resource Locator / Type
-            // ...
+        // TODO: Resource Locator / Type
+        // ...
 
-            keywords = getKeywords(doc, XPATH_EXP_WCTS_KEYWORDS).toMutableList()
-            address = getAddress(doc)
-            operations = getOperations(doc)
-        }
+        keywords = getKeywords(doc, XPATH_EXP_WCTS_KEYWORDS).toMutableList()
+        address = getAddress(doc)
+        operations = getOperations(doc)
     }
 
     private fun getOperations(doc: Document): List<OperationBean> {
@@ -73,7 +66,7 @@ class WctsCapabilitiesParser(
         )
         if (getCapabilitiesOp.addressList!!.isNotEmpty()) {
             getCapabilitiesOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "GetCapabilities", "de"),
+                params.codelistHandler.getCodeListEntryId("5130", "GetCapabilities", "de"),
                 "GetCapabilities",
             )
             getCapabilitiesOp.methodCall = "GetCapabilities"
@@ -95,7 +88,7 @@ class WctsCapabilitiesParser(
         )
         if (transformOp.addressList!!.isNotEmpty()) {
             transformOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "Transform", "de"),
+                params.codelistHandler.getCodeListEntryId("5130", "Transform", "de"),
                 "Transform",
             )
             transformOp.methodCall = "Transform"
@@ -117,7 +110,7 @@ class WctsCapabilitiesParser(
         )
         if (isTransformableOp.addressList!!.isNotEmpty()) {
             isTransformableOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "IsTransformable", "de"),
+                params.codelistHandler.getCodeListEntryId("5130", "IsTransformable", "de"),
                 "IsTransformable",
             )
             isTransformableOp.methodCall = "IsTransformable"
@@ -139,7 +132,7 @@ class WctsCapabilitiesParser(
         )
         if (getTransformationOp.addressList!!.isNotEmpty()) {
             getTransformationOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "GetTransformation", "de"),
+                params.codelistHandler.getCodeListEntryId("5130", "GetTransformation", "de"),
                 "GetTransformation",
             )
             getTransformationOp.methodCall = "GetTransformation"
@@ -162,7 +155,7 @@ class WctsCapabilitiesParser(
         )
         if (describeTransformationOp.addressList!!.isNotEmpty()) {
             describeTransformationOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "DescribeTransformation", "de"),
+                params.codelistHandler.getCodeListEntryId("5130", "DescribeTransformation", "de"),
                 "DescribeTransformation",
             )
             describeTransformationOp.methodCall = "DescribeTransformation"
@@ -184,7 +177,7 @@ class WctsCapabilitiesParser(
         )
         if (getResourceByIdOp.addressList!!.isNotEmpty()) {
             getResourceByIdOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "GetResourceById", "de"),
+                params.codelistHandler.getCodeListEntryId("5130", "GetResourceById", "de"),
                 "GetResourceById",
             )
             getResourceByIdOp.methodCall = "GetResourceByID"
@@ -206,7 +199,7 @@ class WctsCapabilitiesParser(
         )
         if (describeCRSOp.addressList!!.isNotEmpty()) {
             describeCRSOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "DescribeCRS", "de"),
+                params.codelistHandler.getCodeListEntryId("5130", "DescribeCRS", "de"),
                 "DescribeCRS",
             )
             describeCRSOp.methodCall = "DescribeCRS"
@@ -228,7 +221,7 @@ class WctsCapabilitiesParser(
         )
         if (describeMethodOp.addressList!!.isNotEmpty()) {
             describeMethodOp.name = KeyValue(
-                codelistHandler.getCodeListEntryId("5130", "DescribeMethod", "de"),
+                params.codelistHandler.getCodeListEntryId("5130", "DescribeMethod", "de"),
                 "DescribeMethod",
             )
             describeMethodOp.methodCall = "DescribeMethod"
@@ -257,7 +250,7 @@ class WctsCapabilitiesParser(
         )
 
         // try to find address in database and set the uuid if found
-        searchForAddress(researchService, catalogId, address)
+        searchForAddress(params.researchService, params.catalogId, address)
 
         address.street = xPathUtils.getString(
             doc,

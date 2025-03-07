@@ -12,11 +12,13 @@
   "_state": "P",
   "data": {
     "_parent": 1238,
-    "isInspireIdentified": true,
-    "isAdVCompatible": true,
-    "isOpenData": true,
-    "subType": {
-      "key": "5"
+    "properties": {
+      "isInspireIdentified": "conform",
+      "isAdVCompatible": true,
+      "isOpenData": true,
+      "subType": {
+        "key": "5"
+      }
     },
     "parentIdentifier": "93CD0919-5A2F-4286-B731-645C34614AA1",
     "alternateTitle": "Hier ist die Kurzbezeichnung.",
@@ -102,8 +104,8 @@
         "source": {
           "descriptions": [
             {
-              "key": null,
-              "value": "Datengrundlage"
+              "value": "Datengrundlage",
+              "_type": "freeDescription"
             }
           ],
           "processStep": {
@@ -385,7 +387,6 @@
         "explanation": "Beschreibung"
       }
     ],
-    "isInspireConform": true,
     "themes": [
       {
         "key": "302"

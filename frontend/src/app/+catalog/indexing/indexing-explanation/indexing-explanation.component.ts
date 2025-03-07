@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,13 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { Component, EventEmitter, Output } from "@angular/core";
 import { MatChip, MatChipListbox } from "@angular/material/chips";
 
 @Component({
   selector: "ige-indexing-explanation",
-  standalone: true,
   imports: [MatChipListbox, MatChip],
   templateUrl: "./indexing-explanation.component.html",
   styleUrl: "./indexing-explanation.component.scss",

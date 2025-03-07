@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -25,9 +25,9 @@ import { DocEventsService } from "../../../app/services/event/doc-events.service
 import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { FormMenuService } from "../../../app/+form/form-menu.service";
-import { TreeQuery } from "../../../app/store/tree/tree.query";
 import { DocumentAbstract } from "../../../app/store/document/document.model";
 import { ZabbixReportDialogComponent } from "../reports/zabbix-report-dialog/zabbix-report-dialog.component";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @Injectable({ providedIn: "root" })
 export class ZabbixReportBehaviour extends Plugin {
@@ -42,6 +42,8 @@ export class ZabbixReportBehaviour extends Plugin {
   private menuItemId = "show-zabbix-report";
   private eventName = "SHOW_ZABBIX_REPORT";
 
+  private openedDocument$ = toObservable(this.generalStore.openedDocument);
+
   constructor(
     private reportsService: ReportsService,
     private docEvents: DocEventsService,
@@ -49,7 +51,6 @@ export class ZabbixReportBehaviour extends Plugin {
     private docEventsService: DocEventsService,
     private configService: ConfigService,
     private formMenuService: FormMenuService,
-    private documentTreeQuery: TreeQuery,
   ) {
     super();
   }
@@ -65,8 +66,8 @@ export class ZabbixReportBehaviour extends Plugin {
         });
       this.subscriptions.push(onEvent);
 
-      const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
-        (doc) => this.updateZabbixReportButton(doc),
+      const onDocLoad = this.openedDocument$.subscribe((doc) =>
+        this.updateZabbixReportButton(doc),
       );
 
       this.subscriptions.push(onDocLoad);

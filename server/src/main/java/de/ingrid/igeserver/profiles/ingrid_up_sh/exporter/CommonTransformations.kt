@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,9 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_up_sh.exporter
 
 import kotlin.reflect.KClass
 
-fun getUPSHTransformer(docType: String): KClass<out Any>? {
-    return when (docType) {
-        "InGridGeoDataset" -> GeodatasetTransformerUPSH::class
-        else -> null
-    }
+fun getUPSHTransformer(docType: String): KClass<out Any>? = when (docType) {
+    "InGridGeoDataset" -> GeodatasetTransformerUPSH::class
+    else -> null
 }

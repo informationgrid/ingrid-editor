@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 ige-add-button {
   display: block;
@@ -6,26 +6,49 @@ ige-add-button {
 }
 
 .cdk-drag {
-  background: $ige-background;
+  background-color: white;
+  border: 2px solid vars.$ige-background;
+  border-radius: 6px;
+  margin-bottom: 4px;
 }
 
+.mdc-list {
+  padding-bottom: 0;
+}
 .mat-mdc-list-item {
   height: auto;
   padding: 6px;
-  border-bottom: 2px solid #fff;
+  margin-bottom: 10px;
 
   .type {
     font-size: 14px;
+  }
+
+  .category {
+    opacity: 0.6;
+    margin-bottom: 6px;
+    width: 100%;
   }
 
   .title {
     font-size: 16px;
     font-weight: 500;
   }
+  .url {
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    color: #352d79;
+  }
+  .url:hover {
+    color: #196ea2;
+  }
 
   .url,
+  .category,
   .title,
-  .explanation {
+  .subtitle,
+  .description {
     white-space: normal;
     overflow: hidden;
     overflow-wrap: anywhere;
@@ -33,12 +56,16 @@ ige-add-button {
     -webkit-box-orient: vertical;
   }
 
+  .description {
+    opacity: 0.6;
+  }
+
   .url {
     -webkit-line-clamp: 1;
   }
 
   .title,
-  .explanation {
+  .description {
     -webkit-line-clamp: 2;
   }
 }

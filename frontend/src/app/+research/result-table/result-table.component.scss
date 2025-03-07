@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 /*.settings button {
   visibility: hidden;
@@ -24,6 +24,6 @@
   }
 
   &.readonly .mat-mdc-cell {
-    color: $ige-comment-color;
+    color: vars.$ige-comment-color;
   }
 }

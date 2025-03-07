@@ -29,6 +29,12 @@
             "type": "string"
           },
           "min": {
+            "type": ["null", "number"]
+          },
+          "max": {
+            "type": ["null", "number"]
+          },
+          "unit": {
             "type": ["null", "string"]
           },
           "attributes": {

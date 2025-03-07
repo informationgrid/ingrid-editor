@@ -18,7 +18,7 @@ title: Verweistyp
 
 # Verweistyp
 
-Angabe des fachlichen Bezuges, der zwischen dem aktuellen Objekt und dem Verweisobjekt (URL oder uuid) besteht. Über das Dropdown-Menü kann aus einer Auswahlliste ein Eintrag gewählt werden.
+Angabe des fachlichen Bezuges, der zwischen dem aktuellen Objekt und dem Verweisobjekt (Externe URL oder interner Datensatz) besteht. Über das Dropdown-Menü kann aus einer Auswahlliste ein Eintrag gewählt werden.
 
 ## Beispiel:
 

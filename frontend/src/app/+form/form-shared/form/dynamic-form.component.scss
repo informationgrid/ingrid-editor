@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   display: flex;
@@ -20,7 +20,7 @@
 }
 
 :host ::ng-deep .as-split-gutter {
-  background-color: $ige-background-bar !important;
+  background-color: vars.$ige-background-bar !important;
 }
 
 .loading {
@@ -88,7 +88,7 @@ pre {
 .requiredDescription {
   font-size: 14px;
   line-height: 20px;
-  color: $ige-hint-color;
+  color: vars.$ige-hint-color;
   margin-left: 296px;
   margin-bottom: 10px;
 }

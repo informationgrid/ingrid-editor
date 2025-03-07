@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -41,15 +41,13 @@ open class ApplicationMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         return KeyValue(entryId)
     }
 
-    fun getLanguages(): List<String> {
-        return identificationInfo?.language
-            ?.mapNotNull { it.code?.codeListValue }
-            ?.map {
-                iso639LanguageMapping[it]
-                    ?: throw ServerException.withReason("Could not map document language key: $it")
-            }
-            ?: emptyList()
-    }
+    fun getLanguages(): List<String> = identificationInfo?.language
+        ?.mapNotNull { it.code?.codeListValue }
+        ?.map {
+            iso639LanguageMapping[it]
+                ?: throw ServerException.withReason("Could not map document language key: $it")
+        }
+        ?: emptyList()
 
     fun getServiceType(): KeyValue? = null // not supported yet, even in export!
 
@@ -57,13 +55,11 @@ open class ApplicationMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
 
     fun getSystemEnvironment(): String = identificationInfo?.environmentDescription?.value ?: ""
 
-    fun getImplementationHistory(): String =
-        metadata.dataQualityInfo?.get(0)?.dqDataQuality?.lineage?.liLinage?.processStep?.get(0)?.liProcessStep?.description?.value
-            ?: ""
+    fun getImplementationHistory(): String = metadata.dataQualityInfo?.get(0)?.dqDataQuality?.lineage?.liLinage?.processStep?.get(0)?.liProcessStep?.description?.value
+        ?: ""
 
-    fun getBaseDataText(): String =
-        metadata.dataQualityInfo?.get(0)?.dqDataQuality?.lineage?.liLinage?.source?.get(0)?.liSource?.description?.value
-            ?: ""
+    fun getBaseDataText(): String = metadata.dataQualityInfo?.get(0)?.dqDataQuality?.lineage?.liLinage?.source?.get(0)?.liSource?.description?.value
+        ?: ""
 
     fun getExplanation(): String = identificationInfo?.supplementalInformation?.value ?: ""
 

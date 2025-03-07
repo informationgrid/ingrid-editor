@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -40,7 +40,7 @@ import { debounceTime, distinctUntilChanged, tap } from "rxjs/operators";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
-import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import { MatButton, MatFabButton } from "@angular/material/button";
 import { MatTooltip } from "@angular/material/tooltip";
 import { NgClass } from "@angular/common";
@@ -52,7 +52,6 @@ import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/fo
   selector: "ige-formly-leaflet-type",
   templateUrl: "leaflet-type.component.html",
   styleUrls: ["leaflet-type.component.scss"],
-  standalone: true,
   imports: [
     MatFabButton,
     MatTooltip,
@@ -200,7 +199,7 @@ export class LeafletTypeComponent
         width: "90%",
         disableClose: true,
         maxWidth: 1260,
-        minWidth: 600,
+        minWidth: "min(600px, 100%)",
         data: {
           ...this.locations[locationIndex],
           limitTypes: this.props.limitTypes,

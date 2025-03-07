@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   overflow: auto;
@@ -7,7 +7,7 @@
 .item {
   align-items: center;
   gap: 16px;
-  border-bottom: 1px solid $ige-background-bar;
+  border-bottom: 1px solid vars.$ige-background-bar;
   padding: 10px;
   min-height: 59px;
 }
@@ -15,4 +15,8 @@
 ige-card-box {
   display: block;
   padding-bottom: 24px;
+}
+
+.placeholder {
+  width: 66px;
 }

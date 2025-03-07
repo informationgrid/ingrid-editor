@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,33 +17,39 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  Signal,
+  signal,
+} from "@angular/core";
 import { ConfigService } from "../services/config/config.service";
 import { DocumentService } from "../services/document/document.service";
 import { DocumentAbstract } from "../store/document/document.model";
-import { BehaviorSubject, Observable } from "rxjs";
-import { SessionQuery } from "../store/session.query";
+import { BehaviorSubject } from "rxjs";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import {
   CreateNodeComponent,
   CreateOptions,
 } from "../+form/dialogs/create/create-node.component";
-import { map } from "rxjs/operators";
 import { MessageService } from "../services/messages/message.service";
 import { Message } from "../services/messages/message";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { QuickSearchComponent } from "./quick-search/quick-search.component";
 import { ActionButtonComponent } from "../shared/action-button/action-button.component";
 import { CardBoxComponent } from "../shared/card-box/card-box.component";
 import { ChartComponent } from "./chart/chart.component";
 import { DocumentListItemComponent } from "../shared/document-list-item/document-list-item.component";
 import { AsyncPipe } from "@angular/common";
+import { GeneralStore } from "../store/general.store";
+import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 
 @Component({
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     QuickSearchComponent,
@@ -52,15 +58,24 @@ import { AsyncPipe } from "@angular/common";
     ChartComponent,
     DocumentListItemComponent,
     AsyncPipe,
+    MATOMO_DIRECTIVES,
   ],
 })
 export class DashboardComponent implements OnInit {
+  private generalStore = inject(GeneralStore);
+
   canCreateAddress: boolean;
   canCreateDataset: boolean;
   canImport: boolean;
-  recentDocs$: Observable<DocumentAbstract[]>;
-  recentPublishedDocs$: Observable<DocumentAbstract[]>;
-  oldestExpiredDocs$: Observable<DocumentAbstract[]>;
+  recentDocs: Signal<DocumentAbstract[]> = computed(() => {
+    return this.generalStore.latestDocuments().slice(0, 5);
+  });
+  recentPublishedDocs: Signal<DocumentAbstract[]> = computed(() => {
+    return this.generalStore.latestPublishedDocuments().slice(0, 5);
+  });
+  oldestExpiredDocs: Signal<DocumentAbstract[]> = computed(() => {
+    return this.generalStore.oldestExpiredDocuments().slice(0, 5);
+  });
   chartDataPublished = signal<number[]>(null);
   messages$: BehaviorSubject<Message[]>;
 
@@ -69,7 +84,6 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private dialog: MatDialog,
     private docService: DocumentService,
-    private sessionQuery: SessionQuery,
     private messageService: MessageService,
   ) {
     this.messages$ = this.messageService.messages$;
@@ -79,16 +93,6 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.recentDocs$ = this.sessionQuery.latestDocuments$.pipe(
-      map((docs) => docs.slice(0, 5)),
-    );
-    this.recentPublishedDocs$ =
-      this.sessionQuery.latestPublishedDocuments$.pipe(
-        map((docs) => docs.slice(0, 5)),
-      );
-    this.oldestExpiredDocs$ = this.sessionQuery.oldestExpiredDocuments$.pipe(
-      map((docs) => docs.slice(0, 5)),
-    );
     this.fetchStatistic();
     this.fetchData();
     this.messageService.loadStoredMessages();
@@ -108,9 +112,7 @@ export class DashboardComponent implements OnInit {
 
   createNewDocument() {
     this.dialog.open(CreateNodeComponent, {
-      minWidth: 500,
       maxWidth: 600,
-      minHeight: 400,
       disableClose: true,
       hasBackdrop: true,
       data: {
@@ -123,9 +125,7 @@ export class DashboardComponent implements OnInit {
 
   createNewAddress() {
     this.dialog.open(CreateNodeComponent, {
-      minWidth: 500,
       maxWidth: 600,
-      minHeight: 400,
       disableClose: true,
       hasBackdrop: true,
       data: {
@@ -158,9 +158,7 @@ export class DashboardComponent implements OnInit {
 
   createNewFolder() {
     this.dialog.open(CreateNodeComponent, {
-      minWidth: 500,
       maxWidth: 600,
-      minHeight: 400,
       disableClose: true,
       hasBackdrop: true,
       data: {
@@ -178,7 +176,9 @@ export class DashboardComponent implements OnInit {
     this.docService.findRecentPublished(fromCurrentUser);
   }
 
+  showExpiredFromCurrentUser = signal<boolean>(false);
   updateExpired(fromCurrentUser: boolean = false) {
     this.docService.findExpired(fromCurrentUser);
+    this.showExpiredFromCurrentUser.set(fromCurrentUser);
   }
 }

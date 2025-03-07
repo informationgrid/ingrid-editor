@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable } from "@angular/core";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { MatDialog } from "@angular/material/dialog";
 import { PermissionsDialogComponent } from "./permissions-dialog/permissions-dialog.component";
@@ -26,8 +26,6 @@ import { UserService } from "../../../../services/user/user.service";
 import { Router } from "@angular/router";
 import { UserWithDocPermission } from "../../../../+user/user";
 import { FormMenuService } from "../../../../+form/form-menu.service";
-import { AddressTreeQuery } from "../../../../store/address-tree/address-tree.query";
-import { TreeQuery } from "../../../../store/tree/tree.query";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
@@ -47,12 +45,19 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
     private docEventsService: DocEventsService,
     private configService: ConfigService,
     private formMenuService: FormMenuService,
-    private addressTreeQuery: AddressTreeQuery,
-    private documentTreeQuery: TreeQuery,
     private router: Router,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
+
+    effect(() => {
+      if (!this.configService.hasMdAdminRights()) return;
+      if (this.forAddress()) {
+        this.updateShowRightsButton(this.generalStore.openedAddress(), true);
+      } else {
+        this.updateShowRightsButton(this.generalStore.openedDocument(), false);
+      }
+    });
   }
 
   unregister() {
@@ -68,19 +73,8 @@ export class ShowDocumentPermissionsHandlerPlugin extends Plugin {
     if (this.configService.hasMdAdminRights()) {
       const onEvent = this.docEvents
         .onEvent("SHOW_DOCUMENT_PERMISSIONS")
-        .subscribe((event) => {
-          console.debug("SHOW_DOCUMENT_PERMISSIONS", event);
-          this.showDialog(event.data.id);
-        });
+        .subscribe((event) => this.showDialog(event.data.id));
       this.subscriptions.push(onEvent);
-
-      const onDocLoad = this.documentTreeQuery.openedDocument$.subscribe(
-        (doc) => this.updateShowRightsButton(doc, false),
-      );
-      const onDocLoadAdress = this.addressTreeQuery.openedDocument$.subscribe(
-        (doc) => this.updateShowRightsButton(doc, true),
-      );
-      this.subscriptions.push(onDocLoad, onDocLoadAdress);
     }
   }
 

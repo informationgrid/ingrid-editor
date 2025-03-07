@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   //display: flex;
@@ -42,10 +42,11 @@
   .page-title {
     height: 110px;
     margin-top: 0;
+    margin-bottom: 0;
     font-size: 34px;
     letter-spacing: 0.25px;
     line-height: 44px;
-    color: $ige-primary;
+    color: vars.$ige-primary;
   }
 }
 

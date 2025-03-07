@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -57,12 +57,10 @@ class SNSUbaUmthesThesaurus : ThesaurusService() {
         )
     }
 
-    private fun convertType(searchType: ThesaurusSearchType): String {
-        return when (searchType) {
-            ThesaurusSearchType.EXACT -> "exact"
-            ThesaurusSearchType.BEGINS_WITH -> "begins_with"
-            ThesaurusSearchType.ENDS_WITH -> "ends_with"
-            ThesaurusSearchType.CONTAINS -> "contains"
-        }
+    private fun convertType(searchType: ThesaurusSearchType): String = when (searchType) {
+        ThesaurusSearchType.EXACT -> "exact"
+        ThesaurusSearchType.BEGINS_WITH -> "begins_with"
+        ThesaurusSearchType.ENDS_WITH -> "ends_with"
+        ThesaurusSearchType.CONTAINS -> "contains"
     }
 }

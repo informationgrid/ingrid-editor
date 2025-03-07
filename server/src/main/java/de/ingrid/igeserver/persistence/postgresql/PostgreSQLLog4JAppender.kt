@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -66,8 +66,7 @@ class PostgreSQLLog4JAppender(
     @Value("PostgreSQL") name: String?,
     @Suppress("SpringJavaInjectionPointsAutowiringInspection") filter: Filter?,
     @Suppress("SpringJavaInjectionPointsAutowiringInspection") var table: String?,
-) :
-    AbstractAppender(name, filter, null, false, null) {
+) : AbstractAppender(name, filter, null, false, null) {
 
     companion object {
         // type column name used ot define the EmbeddedData type in the database

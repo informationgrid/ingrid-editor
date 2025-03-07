@@ -53,18 +53,26 @@
           }
         ]
       }
+    },
+    "propertiesGeoService": {
+      "type": "object",
+      "properties": {
+        "isAdVCompatible": {
+          "type": ["null", "boolean"]
+        },
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        },
+        "isInspireIdentified": {
+          "type": ["null", "string"]
+        }
+      }
     }
   },
   "type": "object",
   "properties": {
-    "isAdVCompatible": {
-      "type": ["null", "boolean"]
-    },
-    "isOpenData": {
-      "type": ["null", "boolean"]
-    },
-    "isInspireIdentified": {
-      "type": ["null", "boolean"]
+    "properties": {
+      "$ref": "#/definitions/propertiesGeoService"
     },
     "_uuid": {
       "type": "string"

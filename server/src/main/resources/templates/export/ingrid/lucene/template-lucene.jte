@@ -2,7 +2,6 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.CoordinateType
 @import gg.jte.support.ForSupport
-@import java.util.List
 @import java.util.Map
 @import gg.jte.Content
 
@@ -45,6 +44,7 @@
         "IDF_1.0"
     ],
     "isfolder": "false",
+    "is_hvd": ${page.isHvd()},
     "sort_hash": "${page.getSortHash()}",
     "lang": "de",
     "boost": 1,
@@ -145,10 +145,9 @@
     "t03_catalogue.mod_time": "",
     "t03_catalogue.mod_uuid": "",
 
-
     "t01_object.org_obj_id": null,
+    "t011_obj_serv.has_access_constraint": "${page.hasAccessConstraints() ? 'Y' : 'N'}",
     @if("3".equals(page.getDocumentType()))
-    "t011_obj_serv.has_access_constraint": "${page.getModel().getData().getService().hasAccessConstraintsOrFalse()}",
     "t011_obj_serv.type": "${page.getServiceType(null)}",
     @if(page.getData().getService().getType() != null)
         "t011_obj_serv.type_key": "${page.getData().getService().getType().getKey()}",
@@ -184,15 +183,22 @@
         "<img src='${entry.get().getUri()}' height='100' class='preview_image' alt='${entry.get().getDescription()}' title='${entry.get().getDescription()}' >"@if (!entry.isLast()),@endif
     @endfor
     ],
-    @if("3".equals(page.getDocumentType()) && !page.getModel().getData().getService().hasAccessConstraintsOrFalse())
+    @if("3".equals(page.getDocumentType()))
     "capabilities_url": "${page.getCapabilitiesUrl()}",
+    "capabilities_download_url": "${page.getCapabilitiesDownloadUrl()}",
     @elseif("1".equals(page.getDocumentType()))
     "capabilities_url": [
         @for(var entry : ForSupport.of(page.getCapabilitiesUrlsFromService()))
             "${entry.get()}"@if (!entry.isLast()),@endif
         @endfor
         ],
+    "capabilities_download_url": [
+        @for(var entry : ForSupport.of(page.getCapabilitiesDownloadUrlsFromService()))
+            "${entry.get()}"@if (!entry.isLast()),@endif
+        @endfor
+        ],
     @endif
+
     "refering_service_uuid": [
     @for(var entry : ForSupport.of(page.getGetCoupledServicesForGeodataset()))
         "${page.getReferingServiceUuid(entry.get())}"@if (!entry.isLast()),@endif
@@ -337,6 +343,11 @@
     "spatial_ref_value.y1": ${page.getSpatialReferenceComponents(CoordinateType.Lat1)},
     "spatial_ref_value.x2": ${page.getSpatialReferenceComponents(CoordinateType.Lon2)},
     "spatial_ref_value.y2": ${page.getSpatialReferenceComponents(CoordinateType.Lat2)},
+    "topic_categories": [
+    @for(var entry : ForSupport.of(page.getTopicCategories()))
+        "${page.handleContent(entry.get())}"@if (!entry.isLast()),@endif
+    @endfor
+    ],
 
     "t03_catalogue.create_time": "",
     "t01_object.is_adv_compatible": "",

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -27,7 +27,6 @@ import { ConfigService, UserInfo } from "./config/config.service";
 import { BehaviorSubject } from "rxjs";
 import { ContextHelpService } from "./context-help/context-help.service";
 import { ModalService } from "./modal/modal.service";
-import { Catalog } from "../+catalog/services/catalog.model";
 
 describe("ProfileService", () => {
   let spectator: SpectatorService<ProfileService>;
@@ -37,7 +36,7 @@ describe("ProfileService", () => {
       mockProvider(ConfigService, {
         $userInfo: new BehaviorSubject<UserInfo>({
           assignedCatalogs: [],
-          currentCatalog: {},
+          currentCatalog: { id: "" },
           name: "x",
           firstName: "x",
           lastName: "x",
@@ -51,6 +50,7 @@ describe("ProfileService", () => {
           permissions: [],
         }),
       }),
+      // provideMatomoTesting(),
     ],
     mocks: [ContextHelpService, ModalService],
   });
@@ -60,6 +60,6 @@ describe("ProfileService", () => {
   });
 
   it("should get catalogs", () => {
-    expect(spectator.service.getProfiles().length).toBe(0);
+    expect(spectator.service.getDoctypes().length).toBe(0);
   });
 });

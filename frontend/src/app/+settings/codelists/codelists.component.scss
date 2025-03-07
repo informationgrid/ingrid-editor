@@ -1,5 +1,3 @@
-@import "src/variables";
-
 :host {
   display: flex;
   flex: 1;
@@ -23,4 +21,13 @@ ige-codelist-presenter {
 .description {
   padding-bottom: 24px;
   line-height: 22px;
+}
+
+ige-filter-select {
+  flex: 1;
+  max-width: 460px;
+}
+
+.image-wrapper {
+  padding-top: 60px;
 }

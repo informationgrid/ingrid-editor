@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,12 +20,12 @@
 import { inject, Injectable } from "@angular/core";
 import { FormStateService } from "../../../../+form/form-state.service";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
-import { SessionQuery } from "../../../../store/session.query";
 import { Observable } from "rxjs";
 import { filter } from "rxjs/operators";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { toObservable } from "@angular/core/rxjs-interop";
 
 @Injectable()
 export class AutosavePlugin extends Plugin {
@@ -36,14 +36,15 @@ export class AutosavePlugin extends Plugin {
   // group = "Toolbar";
   defaultActive = false;
   hide = false;
-  private timeout$: Observable<number>;
 
+  private timeout$: Observable<number> = toObservable(
+    this.generalStore.sessionTimeoutIn,
+  );
   private tenMinutes = 10 * 60;
 
   constructor(
     private formStateService: FormStateService,
     private docEvents: DocEventsService,
-    private session: SessionQuery,
     private snackBar: MatSnackBar,
   ) {
     super();
@@ -51,8 +52,7 @@ export class AutosavePlugin extends Plugin {
   }
 
   register() {
-    this.timeout$ = this.session.select("sessionTimeoutIn");
-    const sessionDuration = this.session.getValue().sessionTimeoutDuration;
+    const sessionDuration = 1800;
 
     this.timeout$
       .pipe(

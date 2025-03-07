@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -36,250 +36,251 @@ import org.hibernate.query.NativeQuery
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-class UploadExpiredTaskTest : FunSpec({
-    val tomorrow = ZonedDateTime.now().plusDays(1).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-    val yesterday = ZonedDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME).toString()
+class UploadExpiredTaskTest :
+    FunSpec({
+        val tomorrow = ZonedDateTime.now().plusDays(1).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+        val yesterday = ZonedDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME).toString()
 
-    val fileSystemStorage = mockk<FileSystemStorage>(relaxed = true)
-    val entityManager = mockk<EntityManager>()
-    val task = UploadExpiredTask(fileSystemStorage, entityManager, UvpReferenceHandler(entityManager))
+        val fileSystemStorage = mockk<FileSystemStorage>(relaxed = true)
+        val entityManager = mockk<EntityManager>()
+        val task = UploadExpiredTask(fileSystemStorage, entityManager, UvpReferenceHandler(entityManager))
 
-    fun init(docs: String) {
-        clearAllMocks()
-        val input = jacksonObjectMapper().readValue("""{"applicationDocs": $docs}""", JsonNode::class.java)
+        fun init(docs: String) {
+            clearAllMocks()
+            val input = jacksonObjectMapper().readValue("""{"applicationDocs": $docs}""", JsonNode::class.java)
 
 //        every { fileSystemStorage.docsDir } returns ""
-        every {
-            entityManager.createNativeQuery(sqlStepsPublished).unwrap(NativeQuery::class.java)
-                .addScalar("uuid")
-                .addScalar("catalogId")
-                .addScalar("step")
-                .addScalar("title")
-                .addScalar("type").resultList
-        } returns listOf(arrayOf("123", "test-cat", input, "title", "type"))
-        every {
-            entityManager.createNativeQuery(sqlNegativeDecisionDocsPublished).unwrap(NativeQuery::class.java)
-                .addScalar("uuid")
-                .addScalar("catalogId")
-                .addScalar("negativeDocs")
-                .addScalar("title")
-                .addScalar("type").resultList
-        } returns emptyList()
-    }
-
-    test("empty list") {
-        init("[]")
-        task.start()
-
-        verify(exactly = 0) {
-            fileSystemStorage.archive(any(), any(), any())
+            every {
+                entityManager.createNativeQuery(sqlStepsPublished).unwrap(NativeQuery::class.java)
+                    .addScalar("uuid")
+                    .addScalar("catalogId")
+                    .addScalar("step")
+                    .addScalar("title")
+                    .addScalar("type").resultList
+            } returns listOf(arrayOf("123", "test-cat", input, "title", "type"))
+            every {
+                entityManager.createNativeQuery(sqlNegativeDecisionDocsPublished).unwrap(NativeQuery::class.java)
+                    .addScalar("uuid")
+                    .addScalar("catalogId")
+                    .addScalar("negativeDocs")
+                    .addScalar("title")
+                    .addScalar("type").resultList
+            } returns emptyList()
         }
-    }
 
-    test("one item with expire = null") {
-        init("""[{"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""")
-        task.start()
+        test("empty list") {
+            init("[]")
+            task.start()
 
-        verify(exactly = 0) {
-            fileSystemStorage.archive(any(), any(), any())
+            verify(exactly = 0) {
+                fileSystemStorage.archive(any(), any(), any())
+            }
         }
-    }
 
-    test("one item not yet expired") {
-        init("""[{"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""")
-        task.start()
+        test("one item with expire = null") {
+            init("""[{"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""")
+            task.start()
 
-        verify(exactly = 0) {
-            fileSystemStorage.archive(any(), any(), any())
+            verify(exactly = 0) {
+                fileSystemStorage.archive(any(), any(), any())
+            }
         }
-    }
 
-    test("one item expired") {
-        init("""[{"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""")
-        task.start()
+        test("one item not yet expired") {
+            init("""[{"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""")
+            task.start()
 
-        verify(exactly = 1) {
-            fileSystemStorage.archive("test-cat", "123", "abc")
+            verify(exactly = 0) {
+                fileSystemStorage.archive(any(), any(), any())
+            }
         }
-    }
 
-    test("two different items with expire = null") {
-        init(
-            """[
+        test("one item expired") {
+            init("""[{"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""")
+            task.start()
+
+            verify(exactly = 1) {
+                fileSystemStorage.archive("test-cat", "123", "abc")
+            }
+        }
+
+        test("two different items with expire = null") {
+            init(
+                """[
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "def"}}]
-            """.trimMargin(),
-        )
-        task.start()
+                """.trimMargin(),
+            )
+            task.start()
 
-        verify(exactly = 0) {
-            fileSystemStorage.archive(any(), any(), any())
+            verify(exactly = 0) {
+                fileSystemStorage.archive(any(), any(), any())
+            }
         }
-    }
 
-    test("two different items with expire = null AND not yet expired") {
-        init(
-            """[
+        test("two different items with expire = null AND not yet expired") {
+            init(
+                """[
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "def"}}]
-            """.trimMargin(),
-        )
-        task.start()
+                """.trimMargin(),
+            )
+            task.start()
 
-        verify(exactly = 0) {
-            fileSystemStorage.archive(any(), any(), any())
+            verify(exactly = 0) {
+                fileSystemStorage.archive(any(), any(), any())
+            }
         }
-    }
 
-    test("two different items with expire = null AND expired") {
-        init(
-            """[
+        test("two different items with expire = null AND expired") {
+            init(
+                """[
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]
-            """.trimMargin(),
-        )
-        task.start()
+                """.trimMargin(),
+            )
+            task.start()
 
-        verify(exactly = 1) {
-            fileSystemStorage.archive("test-cat", "123", "def")
+            verify(exactly = 1) {
+                fileSystemStorage.archive("test-cat", "123", "def")
+            }
         }
-    }
 
-    test("two different items with not yet expire AND expired") {
-        init(
-            """[
+        test("two different items with not yet expire AND expired") {
+            init(
+                """[
             {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]
-            """.trimMargin(),
-        )
-        task.start()
+                """.trimMargin(),
+            )
+            task.start()
 
-        verify(exactly = 1) {
-            fileSystemStorage.archive("test-cat", "123", "def")
+            verify(exactly = 1) {
+                fileSystemStorage.archive("test-cat", "123", "def")
+            }
         }
-    }
 
-    test("two different items with expired AND expired") {
-        init(
-            """[
+        test("two different items with expired AND expired") {
+            init(
+                """[
             {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "def"}}]
-            """.trimMargin(),
-        )
-        task.start()
+                """.trimMargin(),
+            )
+            task.start()
 
-        verify(exactly = 1) {
-            fileSystemStorage.archive("test-cat", "123", "abc")
-            fileSystemStorage.archive("test-cat", "123", "def")
+            verify(exactly = 1) {
+                fileSystemStorage.archive("test-cat", "123", "abc")
+                fileSystemStorage.archive("test-cat", "123", "def")
+            }
         }
-    }
 
-    test("two same items with expire = null") {
-        init(
-            """[
+        test("two same items with expire = null") {
+            init(
+                """[
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}]
-            """.trimMargin(),
-        )
-        task.start()
+                """.trimMargin(),
+            )
+            task.start()
 
-        verify(exactly = 0) {
-            fileSystemStorage.archive(any(), any(), any())
+            verify(exactly = 0) {
+                fileSystemStorage.archive(any(), any(), any())
+            }
         }
-    }
 
-    test("two same items with expire = null AND not yet expired") {
-        init(
-            """[
+        test("two same items with expire = null AND not yet expired") {
+            init(
+                """[
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]
-            """.trimMargin(),
-        )
-        task.start()
+                """.trimMargin(),
+            )
+            task.start()
 
-        verify(exactly = 0) {
-            fileSystemStorage.archive(any(), any(), any())
+            verify(exactly = 0) {
+                fileSystemStorage.archive(any(), any(), any())
+            }
         }
-    }
 
-    test("two same items with expire = null AND expired") {
-        init(
-            """[
+        test("two same items with expire = null AND expired") {
+            init(
+                """[
             {"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]
-            """.trimMargin(),
-        )
-        task.start()
+                """.trimMargin(),
+            )
+            task.start()
 
-        verify(exactly = 0) {
-            fileSystemStorage.archive(any(), any(), any())
+            verify(exactly = 0) {
+                fileSystemStorage.archive(any(), any(), any())
+            }
         }
-    }
 
-    test("two same items with not yet expire AND expired") {
-        init(
-            """[
+        test("two same items with not yet expire AND expired") {
+            init(
+                """[
             {"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]
-            """.trimMargin(),
-        )
-        task.start()
+                """.trimMargin(),
+            )
+            task.start()
 
-        verify(exactly = 0) {
-            fileSystemStorage.archive(any(), any(), any())
+            verify(exactly = 0) {
+                fileSystemStorage.archive(any(), any(), any())
+            }
         }
-    }
 
-    test("two same items with expired AND expired") {
-        init(
-            """[
+        test("two same items with expired AND expired") {
+            init(
+                """[
             {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}, 
             {"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]
-            """.trimMargin(),
-        )
-        task.start()
+                """.trimMargin(),
+            )
+            task.start()
 
-        verify(exactly = 1) {
-            fileSystemStorage.archive("test-cat", "123", "abc")
+            verify(exactly = 1) {
+                fileSystemStorage.archive("test-cat", "123", "abc")
+            }
         }
-    }
 
-    test("archive file is not restored when still expired") {
-        init(
-            """[{"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin(),
-        )
-        every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
+        test("archive file is not restored when still expired") {
+            init(
+                """[{"validUntil": "$yesterday", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin(),
+            )
+            every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
 
-        task.start()
+            task.start()
 
-        verify(exactly = 0) {
-            fileSystemStorage.restore(any(), any(), any())
+            verify(exactly = 0) {
+                fileSystemStorage.restore(any(), any(), any())
+            }
         }
-    }
 
-    test("archive file is restored when not yet expired") {
-        init(
-            """[{"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin(),
-        )
-        every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
+        test("archive file is restored when not yet expired") {
+            init(
+                """[{"validUntil": "$tomorrow", "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin(),
+            )
+            every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
 
-        task.start()
+            task.start()
 
-        verify(exactly = 1) {
-            fileSystemStorage.restore("test-cat", "123", "abc")
+            verify(exactly = 1) {
+                fileSystemStorage.restore("test-cat", "123", "abc")
+            }
         }
-    }
 
-    test("archive file is restored when expired = null") {
-        init(
-            """[{"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin(),
-        )
-        every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
+        test("archive file is restored when expired = null") {
+            init(
+                """[{"validUntil": null, "downloadURL": { "asLink": false, "uri": "abc"}}]""".trimMargin(),
+            )
+            every { fileSystemStorage.isArchived("test-cat", "123", "abc") } returns true
 
-        task.start()
+            task.start()
 
-        verify(exactly = 1) {
-            fileSystemStorage.restore("test-cat", "123", "abc")
+            verify(exactly = 1) {
+                fileSystemStorage.restore("test-cat", "123", "abc")
+            }
         }
-    }
-})
+    })

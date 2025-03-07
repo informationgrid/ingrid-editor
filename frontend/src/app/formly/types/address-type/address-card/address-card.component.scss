@@ -1,17 +1,17 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 mat-card {
   padding: 12px 12px 12px 16px;
   border-radius: 5px;
   border-width: 0;
-  background-color: $ige-background;
+  background-color: vars.$ige-background;
 
   &.warning {
-    background-color: $error-color;
+    background-color: vars.$error-color;
   }
 
   &.disabled {
-    color: $ige-hint-color;
+    color: vars.$ige-hint-color;
   }
 
   .header {

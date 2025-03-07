@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -68,13 +68,15 @@ export class WktTools {
   }
 
   private readWKTString(wktString: string) {
+    // Convert to uppercase to avoid case sensitivity issues
+    const preProcessedWkt = wktString.toUpperCase();
     try {
       // Catch any malformed WKT strings
-      return wktToGeoJSON(wktString);
+      return wktToGeoJSON(preProcessedWkt);
     } catch (e1) {
       try {
         return wktToGeoJSON(
-          wktString.replace("\n", "").replace("\r", "").replace("\t", ""),
+          preProcessedWkt.replace("\n", "").replace("\r", "").replace("\t", ""),
         );
       } catch (e2) {
         if (e2.name === "WKTError") {
@@ -82,6 +84,8 @@ export class WktTools {
             "We could not understand the WKT string you entered. Check that you have parentheses " +
               "balanced, and try removing tabs and newline characters.",
           );
+        } else {
+          throw e2;
         }
       }
     }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,8 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
-open class InformationSystemModelTransformer(transformerConfig: TransformerConfig) :
-    IngridModelTransformer(transformerConfig) {
+open class InformationSystemModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
     override val hierarchyLevel = "application"
     override val hierarchyLevelName = "application"

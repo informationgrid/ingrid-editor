@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,28 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { EntityStore, StoreConfig } from "@datorama/akita";
 import { DocumentAbstract } from "../document/document.model";
-import { TreeState } from "./tree.state";
+import { signalStore, withMethods } from "@ngrx/signals";
+import { withEntities } from "@ngrx/signals/entities";
+import { getTreeStoreMethods } from "./tree.base";
 
-const initialState = {
-  active: [],
-  openedDocument: null,
-  expandedNodes: [],
-  breadcrumb: [],
-  explicitActiveNode: undefined,
-  scrollPosition: 0,
-  isDocLoading: false,
-  multiSelectMode: false,
-  datasetsChanged: null,
-  needsReload: false,
-};
-
-@Injectable({ providedIn: "root" })
-@StoreConfig({ name: "tree" })
-export class TreeStore extends EntityStore<TreeState, DocumentAbstract> {
-  constructor() {
-    super(initialState);
-  }
-}
+export const TreeStore = signalStore(
+  { providedIn: "root" },
+  withEntities<DocumentAbstract>(),
+  withMethods(getTreeStoreMethods.call(this)),
+);

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,7 +19,7 @@
  */
 package de.ingrid.mdek.upload.configuration;
 
-import de.ingrid.mdek.upload.Config;
+import de.ingrid.mdek.upload.UploadConfig;
 import de.ingrid.mdek.upload.storage.impl.FileSystemStorage;
 import de.ingrid.mdek.upload.storage.validate.Validator;
 import org.springframework.beans.factory.BeanCreationException;
@@ -40,7 +40,7 @@ import java.util.Map;
 public class SpringConfiguration {
 
     @Bean
-    public FileSystemStorage storage(Config config) {
+    public FileSystemStorage storage(UploadConfig config) {
         switch (config.uploadImpl) {
             case "de.ingrid.mdek.upload.storage.impl.FileSystemStorage":
             default:

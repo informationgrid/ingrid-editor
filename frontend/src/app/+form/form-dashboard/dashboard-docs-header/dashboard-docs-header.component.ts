@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,14 +21,13 @@ import { Component, Input, OnInit } from "@angular/core";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Router } from "@angular/router";
 import { ConfigService } from "../../../services/config/config.service";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { ActionButtonComponent } from "../../../shared/action-button/action-button.component";
 
 @Component({
   selector: "dashboard-docs-header",
   templateUrl: "./dashboard-docs-header.component.html",
   styleUrls: ["./dashboard-docs-header.component.scss"],
-  standalone: true,
   imports: [TranslocoDirective, ActionButtonComponent],
 })
 export class DashboardDocsHeaderComponent implements OnInit {

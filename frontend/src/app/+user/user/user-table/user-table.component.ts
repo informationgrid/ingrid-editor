@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -47,7 +47,7 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { GroupDataService } from "../../../services/role/group-data.service";
 import { Group } from "../../../models/user-group";
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 import { MatIconModule } from "@angular/material/icon";
 
 import { MatButtonModule } from "@angular/material/button";
@@ -73,7 +73,6 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     TranslocoModule,
     MatTooltipModule,
   ],
-  standalone: true,
 })
 export class UserTableComponent
   extends GeneralTable
@@ -134,23 +133,17 @@ export class UserTableComponent
       return combined.includes(filterValue.trim().toLowerCase());
     };
 
-    effect(
-      () => {
-        this.handleSelectedUserChange();
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      this.handleSelectedUserChange();
+    });
 
-    effect(
-      () => {
-        if (this.users() === null) return;
-        this.selection.clear();
-        this.dataSource.data = this.users();
-        this.isLoading.set(false);
-        this.handleSelectedUserChange();
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      if (this.users() === null) return;
+      this.selection.clear();
+      this.dataSource.data = this.users();
+      this.isLoading.set(false);
+      this.handleSelectedUserChange();
+    });
 
     effect(() => {
       this.dataSource.filter = this.query();

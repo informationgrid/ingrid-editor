@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   display: flex;
@@ -10,11 +10,12 @@
   background-color: #ffffff;
   box-shadow: 0 2px 2px -2px #808080;
   margin-bottom: 1px;
-  color: $ige-primary;
+  color: vars.$ige-primary;
   letter-spacing: 0.74px;
   z-index: 1000;
 
   .greetings {
+    margin: unset;
     font-size: 24px;
     padding: 14px 0;
   }
@@ -27,8 +28,8 @@
 
     span {
       flex: 1 1 auto;
-      background-color: $ige-mark-color;
-      color: $ige-primary;
+      background-color: vars.$ige-mark-color;
+      color: vars.$ige-primary;
       padding: 16px 0;
     }
   }

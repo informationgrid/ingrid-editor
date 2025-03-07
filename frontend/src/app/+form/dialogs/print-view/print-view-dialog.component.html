@@ -6,20 +6,20 @@
                 name="compareView"
                 value="false"
                 aria-label="Ansicht"
-                (change)="this.compareView = !this.compareView"
+                (change)="this.toggleCompareView()"
             >
                 <mat-button-toggle value="false"
-                    >Druckansicht</mat-button-toggle
-                >
+                    >Druckansicht
+                </mat-button-toggle>
                 <mat-button-toggle value="true"
-                    >Vergleichsansicht</mat-button-toggle
-                >
+                    >Vergleichsansicht
+                </mat-button-toggle>
             </mat-button-toggle-group>
         }
     </ng-container>
 
     <div content id="print-content" class="preview-dialog">
-        @if (!compareView) {
+        @if (!compareView()) {
             <div class="preview-print">
                 <formly-form
                     [form]="form"
@@ -28,8 +28,7 @@
                     [options]="options"
                 ></formly-form>
             </div>
-        }
-        @if (compareView) {
+        } @else {
             <as-split>
                 <as-split-area class="working">
                     <formly-form

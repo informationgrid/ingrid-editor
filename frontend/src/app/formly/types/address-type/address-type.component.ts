@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -53,15 +53,16 @@ import {
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
 import { ConfigService } from "../../../services/config/config.service";
-import { firstValueFrom } from "rxjs";
+import { firstValueFrom, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { BackendOption } from "../../../store/codelist/codelist.model";
 import { DocumentWithMetadata } from "../../../models/ige-document";
-import { ValidationErrors } from "@angular/forms";
+import { AsyncValidatorFn, ValidationErrors } from "@angular/forms";
 import { HttpErrorResponse } from "@angular/common/http";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
 import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabelledby.pipe";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
+import { waitForCondition } from "../../../services/utils";
 
 @UntilDestroy()
 @Component({
@@ -76,7 +77,6 @@ import { AddButtonComponent } from "../../../shared/add-button/add-button.compon
     AddButtonComponent,
     FieldToAiraLabelledbyPipe,
   ],
-  standalone: true,
 })
 export class AddressTypeComponent
   extends FieldType<FieldTypeConfig>
@@ -100,7 +100,7 @@ export class AddressTypeComponent
       )
       .subscribe((value) => this.prepareAddressCards(value));
 
-    this.formControl.addValidators(this.allAddressesPublishedValidator());
+    this.formControl.addAsyncValidators(this.allAddressesPublishedValidator());
 
     // when coming from another page and a dataset already has been loaded then update the references
     // in case they have changed, like address state or data
@@ -221,10 +221,10 @@ export class AddressTypeComponent
     if (foundAddresses) {
       return this.dialog
         .open(ChooseAddressDialogComponent, {
-          minWidth: 500,
           data: <ChooseAddressDialogData>{
             address: address,
             allowedTypes: this.props.allowedTypes,
+            allowedTypesByDoctype: this.props.allowedTypesByDoctype,
             skipToType: skipToType,
           },
           hasBackdrop: true,
@@ -343,28 +343,44 @@ export class AddressTypeComponent
     });
   }
 
-  private allAddressesPublishedValidator() {
-    return (): ValidationErrors | null => {
-      const oneNotPublished = this.resolvedAddresses().some(
-        (address) => address.address?.metadata?.state !== "P",
+  private allAddressesPublishedValidator(): AsyncValidatorFn {
+    return (): Observable<ValidationErrors | null> => {
+      return waitForCondition(() => !this.containsNotLoadedAddress()).pipe(
+        map((conditionMet) => {
+          if (!conditionMet) return this.generateValidationErrorForTimeout();
+          return this.oneNotPublished() ? this.generateValidationError() : null;
+        }),
       );
-
-      const stillLoading = this.resolvedAddresses().some(
-        (address) =>
-          address.address === null &&
-          address.type === null &&
-          address.error === null,
-      );
-      return oneNotPublished || stillLoading
-        ? {
-            addressesPublished: {
-              message: stillLoading
-                ? "Bitte warten Sie bis die Adressreferenzen geladen sind"
-                : "Alle Adressen müssen veröffentlicht sein",
-            },
-          }
-        : null;
     };
+  }
+
+  private oneNotPublished() {
+    return this.resolvedAddresses().some(
+      (address) => address.address?.metadata?.state !== "P",
+    );
+  }
+
+  private generateValidationErrorForTimeout() {
+    return this.generateValidationError(
+      "Die Adressreferenzen konnten für die Prüfung noch nicht geladen werden",
+    );
+  }
+
+  private generateValidationError(override?: string) {
+    return {
+      addressesPublished: {
+        message: override ?? "Alle Adressen müssen veröffentlicht sein",
+      },
+    };
+  }
+
+  private containsNotLoadedAddress() {
+    return this.resolvedAddresses().some(
+      (address) =>
+        address.address === null &&
+        address.type === null &&
+        address.error === null,
+    );
   }
 
   private prepareAddressLoadError(err: HttpErrorResponse) {

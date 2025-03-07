@@ -1,7 +1,7 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 mat-table {
-  background-color: $ige-background;
+  background-color: vars.$ige-background;
 }
 
 .padding-bottom {
@@ -35,7 +35,7 @@ mat-table {
 }
 
 .table-batch-edit-row {
-  border-top: 1px solid $ige-background-bar;
+  border-top: 1px solid vars.$ige-background-bar;
   padding: 4px 0 4px 12px;
 }
 
@@ -79,15 +79,15 @@ ige-form-label {
 
 mat-row,
 mat-header-row {
-  background-color: $ige-background;
-  border-bottom-color: $ige-background-bar;
+  background-color: vars.$ige-background;
+  border-bottom-color: vars.$ige-background-bar;
 }
 
 .select-controls {
   padding-right: 4px;
 
   mat-icon {
-    color: $ige-placeholder-color;
+    color: vars.$ige-placeholder-color;
   }
 }
 

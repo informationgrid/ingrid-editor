@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -44,7 +44,6 @@ import {
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import {
   MatFormField,
   MatHint,
@@ -63,7 +62,6 @@ import { MatCardSubtitle } from "@angular/material/card";
   selector: "ige-new-message-dialog",
   templateUrl: "./new-message-dialog.component.html",
   styleUrls: ["./new-message-dialog.component.scss"],
-  standalone: true,
   imports: [
     CdkDrag,
     CdkDragHandle,
@@ -71,7 +69,6 @@ import { MatCardSubtitle } from "@angular/material/card";
     MatDialogClose,
     MatIcon,
     MatDialogTitle,
-    CdkScrollable,
     MatDialogContent,
     ReactiveFormsModule,
     MatFormField,

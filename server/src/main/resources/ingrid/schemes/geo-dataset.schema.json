@@ -2,11 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/geodataset",
   "type": "object",
-  "allOf": [
-    {
-      "$ref": "geo-dataset-base.schema.json"
-    }
-  ],
+  "$ref": "geo-dataset-base.schema.json",
   "properties": {
     "resource": {
       "$ref": "refs/general.schema.json#/definitions/resource",

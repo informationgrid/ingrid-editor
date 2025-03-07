@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -23,7 +23,7 @@ open class DataCollectionModelTransformer(transformerConfig: TransformerConfig) 
 
     override val hierarchyLevelName = "database"
 
-    val isAdVCompatible = data.isAdVCompatible ?: false
+    val isAdVCompatible = data.properties?.isAdVCompatible ?: false
     val databaseContent =
         data.databaseContent?.map { content -> content.parameter + content.moreInfo?.let { " ($it)" } } ?: emptyList()
     val categoryCatalog = data.categoryCatalog ?: emptyList()

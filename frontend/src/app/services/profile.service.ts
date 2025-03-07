@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,21 +17,26 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable, Signal, signal } from "@angular/core";
 import { ConfigService, UserInfo } from "./config/config.service";
 import { Doctype } from "./formular/doctype";
-import { ProfileStore } from "../store/profile/profile.store";
-import { ProfileAbstract } from "../store/profile/profile.model";
+import { DoctypeAbstract } from "../store/doctype/doctype.model";
 import { ContextHelpService } from "./context-help/context-help.service";
 import { forkJoin } from "rxjs";
 import { tap } from "rxjs/operators";
 import { Metadata } from "../models/ige-document";
+import { DoctypeStore } from "../store/doctype/doctype.store";
+import { UiStore } from "../store/ui.store";
+import { GeneralStore } from "../store/general.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class ProfileService {
-  private doctypes: Doctype[] = [];
+  private doctypeStore = inject(DoctypeStore);
+  private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
+  private doctypes = signal<Doctype[]>([]);
   private defaultDataDocType?: Doctype = null;
   private defaultAddressType?: Doctype = null;
 
@@ -44,7 +49,6 @@ export class ProfileService {
 
   constructor(
     private configService: ConfigService,
-    private profileStore: ProfileStore,
     private contextHelpService: ContextHelpService,
   ) {}
 
@@ -56,16 +60,16 @@ export class ProfileService {
     );
   }
 
-  getProfiles(): Doctype[] {
+  getDoctypes(): Signal<Doctype[]> {
     return this.doctypes;
   }
 
-  getProfile(id: string): Doctype {
-    return this.getProfiles().find((profile) => profile.id === id);
+  getDoctype(id: string): Doctype {
+    return this.doctypes().find((doctype) => doctype.id === id);
   }
 
   getDocumentIcon(docType: string): string {
-    const iconClass = this.doctypes
+    const iconClass = this.doctypes()
       .filter((doctype) => doctype.id === docType)
       .map(
         (doctype) =>
@@ -81,32 +85,32 @@ export class ProfileService {
     return iconClass[0];
   }
 
-  private mapDocumentTypes(doctypes: Doctype[]): ProfileAbstract[] {
+  private mapDocumentTypes(doctypes: Doctype[]): DoctypeAbstract[] {
     return doctypes.map((doctype) => {
-      return <ProfileAbstract>{
+      return <DoctypeAbstract>{
         id: doctype.id,
         label: doctype.label,
         iconClass: doctype.iconClass,
-        isAddressProfile: doctype.isAddressType,
+        isAddressDoctype: doctype.isAddressType,
         addressType: doctype.addressType,
         hasOptionalFields: doctype.hasOptionalFields,
       };
     });
   }
 
-  registerProfiles(doctypes: Doctype[]) {
-    console.debug("Registering profile");
-    this.doctypes = doctypes;
+  registerDoctypes(doctypes: Doctype[]) {
+    console.debug("Registering doctypes");
+    this.doctypes.set(doctypes);
 
     // TODO: get ContextHelpIDs of all document types at once to improve speed
     const profile = this.configService.$userInfo.value.currentCatalog.type;
-    const helpIdsObservables = this.doctypes.map((type) =>
+    const helpIdsObservables = this.doctypes().map((type) =>
       this.contextHelpService.getAvailableHelpFieldIds(profile, type.id),
     );
     forkJoin(helpIdsObservables)
       .pipe(
         tap((results) => this.initDocumentTypes(results)),
-        tap(() => this.finishProfileInitialization()),
+        tap(() => this.finishDoctypesInitialization()),
       )
       .subscribe();
   }
@@ -128,18 +132,15 @@ export class ProfileService {
   }
 
   private initDocumentTypes(results: string[][]) {
-    results.forEach((result, index) => this.doctypes[index].init(result));
+    results.forEach((result, index) => this.doctypes()[index].init(result));
   }
 
-  private finishProfileInitialization() {
-    this.profileStore.set(this.mapDocumentTypes(this.doctypes));
+  private finishDoctypesInitialization() {
+    this.doctypeStore.set(this.mapDocumentTypes(this.doctypes()));
+    this.generalStore.setDoctypesLoaded();
   }
 
-  updateUIProfileStore(data: any) {
-    this.profileStore.update(() => ({
-      ui: {
-        ...data,
-      },
-    }));
+  updateUIProfileStore(hideFormHeaderInfos: string[]) {
+    this.uiStore.setHideFormHeaderInfos(hideFormHeaderInfos);
   }
 }

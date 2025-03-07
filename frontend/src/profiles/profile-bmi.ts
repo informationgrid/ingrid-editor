@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -25,8 +25,6 @@ import { ReportsService } from "../app/+reports/reports.service";
 import { OpenDataComponent } from "./profile-opendata";
 import { OpenDataAddressDoctype } from "./opendata/doctypes/open-data-address.doctype";
 import { OpenDataDoctype } from "./opendata/doctypes/open-data.doctype";
-import { CodelistStore } from "../app/store/codelist/codelist.store";
-import { CodelistQuery } from "../app/store/codelist/codelist.query";
 
 @Component({
   template: "",
@@ -39,18 +37,8 @@ class BmiComponent extends OpenDataComponent {
     dataset: OpenDataDoctype,
     folder: FolderDoctype,
     address: OpenDataAddressDoctype,
-    codelistStore: CodelistStore,
-    codelistQuery: CodelistQuery,
   ) {
-    super(
-      service,
-      reportsService,
-      dataset,
-      folder,
-      address,
-      codelistStore,
-      codelistQuery,
-    );
+    super(service, reportsService, dataset, folder, address);
     reportsService.setFilter((route) => route.path != "url-check");
   }
 }

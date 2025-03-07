@@ -4,9 +4,11 @@
     "_uuid": "D9EE3448-8224-4B08-926B-B9E5EDE360FC",
     "_parent": "my-specified-parent",
     "_type": "InGridGeoService",
-    "isInspireIdentified": true,
-    "isAdVCompatible": false,
-    "isOpenData": true,
+    "properties": {
+      "isInspireIdentified": "relevant",
+      "isAdVCompatible": false,
+      "isOpenData": true
+    },
     "description": "Dienst für den Test um externe gekoppelte Datensätze hinzuzufügen",
     "alternateTitle": "Short",
     "parentIdentifier": "my-specified-parent",
@@ -86,10 +88,10 @@
           "type": "free",
           "title": "Hannover",
           "value": {
-            "lat1": 52.130035,
-            "lon1": 9.235984,
-            "lat2": 52.678265,
-            "lon2": 10.309714
+            "lat1": 52.130035400390625,
+            "lon1": 9.235983848571777,
+            "lat2": 52.67826461791992,
+            "lon2": 10.309714317321777
           }
         },
         {
@@ -245,6 +247,7 @@
           "key": "9999"
         },
         "title": "Ein Verweis",
+        "referenceType": "url",
         "url": "http://my-link",
         "explanation": "Link Erläuterung"
       },
@@ -253,6 +256,7 @@
           "key": "5304"
         },
         "title": "Bestell Link",
+        "referenceType": "url",
         "url": "http://order-me.com",
         "explanation": "Meine Bestellungen"
       },
@@ -261,10 +265,12 @@
           "key": "5302"
         },
         "title": "Dienst \"Coupling Service\" (GetCapabilities)",
+        "referenceType": "url",
         "url": "https://my-getcapabilities",
         "explanation": ""
       }
     ],
+    "fileReferences": [],
     "metadata": {
       "language": {
         "key": "150"

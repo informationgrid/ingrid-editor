@@ -2,15 +2,19 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/publicationBase",
   "type": "object",
+  "definitions": {
+    "propertiesPublication": {
+      "type": "object",
+      "properties": {
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        }
+      }
+    }
+  },
   "properties": {
-    "isAdVCompatible": {
-      "type": ["null", "boolean"]
-    },
-    "isOpenData": {
-      "type": ["null", "boolean"]
-    },
-    "isInspireIdentified": {
-      "type": ["null", "boolean"]
+    "properties": {
+      "$ref": "#/definitions/propertiesPublication"
     },
     "_uuid": {
       "type": "string"
@@ -131,9 +135,6 @@
           "type": ["null", "string"]
         }
       }
-    },
-    "advProductGroups": {
-      "$ref": "refs/general.schema.json#/definitions/advProductGroups"
     },
     "themes": {
       "$ref": "refs/general.schema.json#/definitions/themes"

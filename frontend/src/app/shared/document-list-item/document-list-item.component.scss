@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   ::ng-deep .mdc-list-item__end {
@@ -18,7 +18,7 @@ mat-divider {
 }
 
 .disabled .card-title {
-  color: $ige-comment-color;
+  color: vars.$ige-comment-color;
 }
 
 .doc-item {

@@ -1,10 +1,10 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   display: block;
 
   .navigation-bar-wrapper {
-    background-color: $ige-background;
+    background-color: vars.$ige-background;
     box-shadow: 0 2px 2px -2px #666666;
   }
 
@@ -45,7 +45,7 @@
   }
 
   a {
-    color: $ige-secondary;
+    color: vars.$ige-secondary;
     //font-size: 13px;
     padding: 0 10px;
     text-transform: none;
@@ -79,12 +79,12 @@
     width: 1000px;
     height: 36px;
     left: 1260px;
-    background: $ige-background;
+    background: vars.$ige-background;
     z-index: 1;
   }
 
   .mat-mdc-slide-toggle {
-    background: $ige-background;
+    background: vars.$ige-background;
   }
 
   ::ng-deep .mat-mdc-slide-toggle.mat-disabled {
@@ -102,13 +102,13 @@
       transparent 0%,
       transparent 50%,
       #666 50%,
-      $ige-background 50%,
-      $ige-background 100%
+      vars.$ige-background 50%,
+      vars.$ige-background 100%
     );
     //background: -webkit-linear-gradient(
     //  45deg,
     //  #00000000 45%,
-    //  $ige-background 0%
+    //  vars.$ige-background 0%
     //);
   }
   /*TODO(mdc-migration): The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version.*/

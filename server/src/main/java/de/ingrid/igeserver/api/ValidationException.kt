@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -44,8 +44,6 @@ open class ValidationException protected constructor(
             return ValidationException(STATUS_CODE, ERROR_CODE_FIELD, errorText, mapOf("fields" to fields), cause)
         }
 
-        fun withReason(data: Any?, cause: Throwable? = null, errorCode: String? = null): ValidationException {
-            return ValidationException(STATUS_CODE, errorCode ?: ERROR_CODE, ERROR_TEXT, mapOf("error" to data), cause)
-        }
+        fun withReason(data: Any?, cause: Throwable? = null, errorCode: String? = null): ValidationException = ValidationException(STATUS_CODE, errorCode ?: ERROR_CODE, ERROR_TEXT, mapOf("error" to data), cause)
     }
 }

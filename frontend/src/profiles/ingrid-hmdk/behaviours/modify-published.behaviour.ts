@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -29,7 +29,6 @@ import { MatDialog } from "@angular/material/dialog";
 import { ResearchService } from "../../../app/+research/research.service";
 import { DocumentDataService } from "../../../app/services/document/document-data.service";
 import { DocEventsService } from "../../../app/services/event/doc-events.service";
-import { TreeQuery } from "../../../app/store/tree/tree.query";
 import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
 import {
   ConfirmDialogComponent,
@@ -38,6 +37,7 @@ import {
 import { DocumentAbstract } from "../../../app/store/document/document.model";
 import { firstValueFrom } from "rxjs";
 import { map } from "rxjs/operators";
+import { GeneralStore } from "../../../app/store/general.store";
 
 @Injectable({ providedIn: "root" })
 export class ModifyPublishedBehaviour extends Plugin {
@@ -53,7 +53,7 @@ export class ModifyPublishedBehaviour extends Plugin {
   researchService = inject(ResearchService);
   documentDataService = inject(DocumentDataService);
   docEvents = inject(DocEventsService);
-  treeQuery = inject(TreeQuery);
+  generalStore = inject(GeneralStore);
 
   constructor() {
     super();
@@ -72,14 +72,14 @@ export class ModifyPublishedBehaviour extends Plugin {
 
   private handleUpdate() {
     // ignore addresses
-    if (this.forAddress) return;
+    if (this.forAddress()) return;
     // if the document is published and if it is published in HmbTG. then show message
-    let openedDocument = this.treeQuery.getOpenedDocument();
+    let openedDocument = this.generalStore.getOpenedDocument(this.forAddress());
     if (openedDocument._state !== "P") return;
     this.documentDataService
       .loadPublished(openedDocument._uuid, true)
       .subscribe((published) => {
-        if (published?.document.publicationHmbTG)
+        if (published?.document.properties?.publicationHmbTG)
           this.dialog
             .open(ConfirmDialogComponent, {
               data: {
@@ -147,8 +147,8 @@ export class ModifyPublishedBehaviour extends Plugin {
                  WHERE document1.uuid = ANY(('{<uuids>}'))
                    AND document1.is_latest = true
                    AND document_wrapper.deleted = 0
-                   AND jsonb_path_exists(jsonb_strip_nulls(data), '$.publicationHmbTG')
-                   AND data->>'publicationHmbTG' = 'true'`.replace(
+                   AND jsonb_path_exists(jsonb_strip_nulls(data), '$.properties.publicationHmbTG')
+                   AND data->'properties'->>'publicationHmbTG' = 'true'`.replace(
       "<uuids>",
       uuids.join(", "),
     );

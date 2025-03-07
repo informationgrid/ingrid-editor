@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -67,9 +67,7 @@ private class DevelopmentAuthenticationFilter : AbstractAuthenticationProcessing
 
     private val securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy()
 
-    override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
-        return DummyAuthenticationToken(emptyList())
-    }
+    override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication = DummyAuthenticationToken(emptyList())
 
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         val auths = listOf(SimpleGrantedAuthority("admin"))
@@ -81,16 +79,11 @@ private class DevelopmentAuthenticationFilter : AbstractAuthenticationProcessing
     }
 }
 
-private class DummyAuthenticationToken(grantedAuthorities: List<GrantedAuthority>) :
-    AbstractAuthenticationToken(grantedAuthorities) {
+private class DummyAuthenticationToken(grantedAuthorities: List<GrantedAuthority>) : AbstractAuthenticationToken(grantedAuthorities) {
 
     private val token = "DummyPrincipal"
 
-    override fun getCredentials(): Any {
-        return token
-    }
+    override fun getCredentials(): Any = token
 
-    override fun getPrincipal(): Any {
-        return token
-    }
+    override fun getPrincipal(): Any = token
 }

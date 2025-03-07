@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -26,18 +26,18 @@ import {
 import { IgeError } from "../../../models/ige-error";
 import { FormMessageService } from "../../../services/form-message.service";
 import { MatDialog } from "@angular/material/dialog";
-import { SessionStore, ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { tap } from "rxjs/operators";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { inject } from "@angular/core";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
+import { GeneralStore, ValidationError } from "../../../store/general.store";
 
 export abstract class SaveBase extends Plugin {
-  sessionStore = inject(SessionStore);
-  messageService = inject(FormMessageService);
-  formStateService = inject(FormStateService);
+  protected generalStore = inject(GeneralStore);
+  protected messageService = inject(FormMessageService);
+  protected formStateService = inject(FormStateService);
 
   dialog: MatDialog;
   documentService: DocumentService;
@@ -96,11 +96,7 @@ export abstract class SaveBase extends Plugin {
 
   protected prepareValidationError(error) {
     if (error.error.errorCode === "VALIDATION_ERROR_FIELD") {
-      this.sessionStore.update(() => {
-        return {
-          serverValidationErrors: error.error.data.fields,
-        };
-      });
+      this.generalStore.setServerValidationErrors(error.error.data.fields);
       throw new IgeError(
         "Bei der Validierung trat ein Fehler auf. Bitte prüfen Sie das Formular.",
       );
@@ -142,11 +138,7 @@ export abstract class SaveBase extends Plugin {
       errorCode: "JSON_SCHEMA",
     }));
 
-    this.sessionStore.update(() => {
-      return {
-        serverValidationErrors: invalidFieldsErrors,
-      };
-    });
+    this.generalStore.setServerValidationErrors(invalidFieldsErrors);
   }
 
   abstract saveWithData(data: IgeDocument);

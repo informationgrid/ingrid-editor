@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -35,11 +35,12 @@ import java.util.concurrent.Flow
 
 class ZabbixServiceTest : ShouldSpec() {
 
-    val props = ZabbixProperties("", "", "https://abc.de", "", emptyList(), "", 0)
+    val props = ZabbixProperties("", "", "https://abc.de", "", emptyList(), "", 0, "")
     val service = ZabbixService(props)
     val x = mockkStatic(HttpClient::newBuilder)
     val httpClientMock = mockk<HttpClient>(relaxed = true)
     val responseCreateHost = mockk<HttpResponse<String>>()
+    val responseCreateUser = mockk<HttpResponse<String>>()
     val responseGetHostGroup = mockk<HttpResponse<String>>()
     val response = mockk<HttpResponse<String>>()
 
@@ -54,6 +55,7 @@ class ZabbixServiceTest : ShouldSpec() {
             every { HttpClient.newBuilder().build() } returns httpClientMock
             every { responseGetHostGroup.body() } returns """{ "result": [{ "groupid": "1"}] }"""
             every { responseCreateHost.body() } returns """{ "result": { "hostids": [ "1" ] } }"""
+            every { responseCreateUser.body() } returns """{ "result": { "userids": [ "1" ] } }"""
             every { response.body() } returns """{ "result": [] }"""
 
             val bodyHandler = HttpResponse.BodyHandlers.ofString()
@@ -65,6 +67,8 @@ class ZabbixServiceTest : ShouldSpec() {
                     responseGetHostGroup
                 } else if (requestAsString.contains("host.create")) {
                     responseCreateHost
+                } else if (requestAsString.contains("user.create")) {
+                    responseCreateUser
                 } else {
                     response
                 }
@@ -73,7 +77,7 @@ class ZabbixServiceTest : ShouldSpec() {
             val data = prepareZabbixData(emptyList())
             service.addOrUpdateDocument(data)
 
-            verify(exactly = 3) { httpClientMock.send(any(), bodyHandler) }
+            verify(exactly = 8) { httpClientMock.send(any(), bodyHandler) }
         }
 
         should("get Problems for a catalog") {
@@ -143,9 +147,7 @@ class ZabbixServiceTest : ShouldSpec() {
         }
     }
 
-    private fun prepareZabbixData(uploads: List<ZabbixModel.Upload>): ZabbixModel.ZabbixData {
-        return ZabbixModel.ZabbixData("", "", "", "", uploads)
-    }
+    private fun prepareZabbixData(uploads: List<ZabbixModel.Upload>): ZabbixModel.ZabbixData = ZabbixModel.ZabbixData("", "", "", "", "", "", uploads)
 
     private fun getRequestParameter(request: HttpRequest): String {
         val res = (request.bodyPublisher().get())

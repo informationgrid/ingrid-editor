@@ -1,4 +1,4 @@
-@import "src/variables.scss";
+@use "src/variables" as vars;
 
 :host {
   display: block;
@@ -18,18 +18,18 @@
     }
 
     &.info {
-      background-color: $ige-info-background;
+      background-color: vars.$ige-info-background;
 
       .mat-icon {
-        color: $ige-check-color;
+        color: vars.$ige-check-color;
       }
     }
 
     &.error {
-      background-color: $error-background;
+      background-color: vars.$error-background;
 
       .mat-icon {
-        color: $error-color;
+        color: vars.$error-color;
       }
     }
 

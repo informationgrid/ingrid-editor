@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   display: flex;
@@ -27,6 +27,10 @@
   width: 150px;
 }
 
+:host-context(.small-label-width) .label-wrapper {
+  width: 150px;
+}
+
 :host-context(ige-form-wrapper) .label-wrapper {
   width: 272px;
 }
@@ -38,7 +42,7 @@
 :host-context(.hasContextHelp) {
   label:hover,
   label:focus {
-    color: $ige-primary;
+    color: vars.$ige-primary;
     cursor: pointer;
 
     & + .context-help mat-icon {
@@ -67,11 +71,11 @@
       height: 24px;
       display: block;
       border-radius: 50%;
-      background-color: $ige-background;
+      background-color: vars.$ige-background;
     }
 
     ::ng-deep .mat-icon svg rect {
-      fill: $ige-secondary;
+      fill: vars.$ige-secondary;
     }
   }
 }

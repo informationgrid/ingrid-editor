@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -38,14 +38,12 @@ open class ConcurrentModificationException : ConflictException {
         /**
          * Factory method for a conflicting resource
          */
-        fun withConflictingResource(id: String, databaseVersion: Int, recordVersion: Int, cause: Throwable? = null): ConcurrentModificationException {
-            return ConcurrentModificationException(
-                STATUS_CODE,
-                ERROR_CODE,
-                ERROR_TEXT.format(id),
-                mapOf("id" to id, "databaseVersion" to databaseVersion, "recordVersion" to recordVersion),
-                cause,
-            )
-        }
+        fun withConflictingResource(id: String, databaseVersion: Int, recordVersion: Int, cause: Throwable? = null): ConcurrentModificationException = ConcurrentModificationException(
+            STATUS_CODE,
+            ERROR_CODE,
+            ERROR_TEXT.format(id),
+            mapOf("id" to id, "databaseVersion" to databaseVersion, "recordVersion" to recordVersion),
+            cause,
+        )
     }
 }

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,13 +21,20 @@ import { inject, Injectable } from "@angular/core";
 import { InformationSystemDoctype } from "../../ingrid/doctypes/information-system.doctype";
 import { SharedHmdk } from "./shared-hmdk";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
 })
 export class InformationSystemDoctypeHMDK extends InformationSystemDoctype {
   private sharedHmdk = inject(SharedHmdk);
+
+  metadataOptions = () => {
+    const options = super.metadataOptions();
+    options
+      .find((item) => item.label === "Open Data")
+      .typeOptions[0].items.push(this.sharedHmdk.metadataOptions(this));
+    return options;
+  };
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     return this.sharedHmdk.manipulateDocumentFields(this, fieldConfig);
@@ -44,12 +51,8 @@ export class InformationSystemDoctypeHMDK extends InformationSystemDoctype {
     return this.sharedHmdk.hmdkHandleDeactivateOpenData(field);
   }
 
-  handleActivateInspireIdentified(
-    field: FormlyFieldConfig,
-  ): Observable<boolean> {
-    return this.sharedHmdk.hmdkHandleActivateInspireIdentified(
-      field,
-      super.handleActivateInspireIdentified(field),
-    );
+  handleActivateInspireIdentified(field: FormlyFieldConfig) {
+    super.handleActivateInspireIdentified(field);
+    this.sharedHmdk.hmdkHandleActivateInspireIdentified(field);
   }
 }

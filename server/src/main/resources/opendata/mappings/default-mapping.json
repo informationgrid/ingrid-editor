@@ -35,6 +35,10 @@
       "type": "keyword",
       "store": true
     },
+    "capabilities_download_url": {
+      "type": "keyword",
+      "store": true
+    },
     "capabilities_url_with_client": {
       "type": "keyword",
       "store": true

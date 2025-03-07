@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,19 +20,18 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.exporter.TransformationTools
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
+import de.ingrid.igeserver.utils.getString
 
-open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
-    IngridModelTransformer(transformerConfig) {
+open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
-    private val isSeries = model.data.subType?.key == "6"
+    private val isSeries = model.data.properties?.subType?.key == "6"
 
     override val hierarchyLevel = if (isSeries) "series" else "dataset"
     override val hierarchyLevelName: String? = if (isSeries) "series" else null
 
     val featureCatalogueDescription = model.data.featureCatalogueDescription
-    val isAdVCompatible = model.data.isAdVCompatible ?: false
+    val isAdVCompatible = model.data.properties?.isAdVCompatible ?: false
     val featureTypes =
         model.data.featureCatalogueDescription?.featureTypes?.map { codelists.getValue("", it) } ?: emptyList()
     val citations = model.data.featureCatalogueDescription?.citation ?: emptyList()
@@ -143,13 +142,6 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
         }
     }
 
-    fun mapConformanceResultTitle(result: ConformanceResult): String? {
-        return when (result.isInspire) {
-            true -> codelists.getValue("6005", result.specification, "iso") ?: codelists.getValue("6005", result.specification, "de")
-            else -> codelists.getCatalogCodelistValue("6006", result.specification)
-        }
-    }
-
     private val unknownValueUnit = "<gmd:valueUnit gco:nilReason=\"unknown\"/>"
     private val inapplicableValueUnit = "<gmd:valueUnit gco:nilReason=\"inapplicable\"/>"
     private fun percentageValueUnit(quantityType: String) = """
@@ -230,18 +222,17 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
         }
     }
 
-    fun getDisplayableQuality(quality: Quality): DisplayableQuality {
-        return DisplayableQuality(
-            nameOfMeasure = codelists.getValue(
-                qualitytypeCodelistMap.getOrDefault(quality._type, ""), quality.measureType,
-            ) ?: "",
-            tagName = qualitytypeTagnameMap.getOrDefault(quality._type, ""),
-            measureIdentification = getMeasureIdentification(quality._type, quality.measureType?.key),
-            measureDescription = quality.parameter,
-            value = quality.value.toString(),
-            unitDefinition = getUnitDefinition(quality._type, quality.measureType?.key ?: "-1"),
-        )
-    }
+    private fun getDisplayableQuality(quality: Quality): DisplayableQuality = DisplayableQuality(
+        nameOfMeasure = codelists.getValue(
+            qualitytypeCodelistMap.getOrDefault(quality._type, ""),
+            quality.measureType,
+        ) ?: "",
+        tagName = qualitytypeTagnameMap.getOrDefault(quality._type, ""),
+        measureIdentification = getMeasureIdentification(quality._type, quality.measureType?.key),
+        measureDescription = quality.parameter,
+        value = quality.value.toString(),
+        unitDefinition = getUnitDefinition(quality._type, quality.measureType?.key ?: "-1"),
+    )
 
     val qualities = model.data.qualities?.map { getDisplayableQuality(it) } ?: emptyList()
 
@@ -249,8 +240,47 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) :
     val lineageProcessStepDescriptions =
         data.dataQualityInfo?.lineage?.source?.processStep?.description?.map { codelists.getValue("", it) }
             ?: emptyList()
+
+    data class LineageSourceDescription(
+        val value: String,
+        val title: String?,
+        val identifier: String?,
+        val date: String?,
+        val dateType: String?,
+        val uuidRef: String?,
+        val url: String?,
+    )
+
     val lineageSourceDescriptions =
-        data.dataQualityInfo?.lineage?.source?.descriptions?.map { codelists.getValue("", it) } ?: emptyList()
+        data.dataQualityInfo?.lineage?.source?.descriptions?.mapNotNull {
+            val title: String?
+            val identifier: String?
+            when (it._type) {
+                "internalDataOrigin" -> {
+                    try {
+                        val doc = documentService.getLastPublishedDocument(catalogIdentifier, it.uuidRef!!, false)
+                        title = doc.title
+                        identifier = doc.data.getString("identifier")?.let { id -> addNamespaceIfNeeded(id) }
+                    } catch (e: Exception) {
+                        return@mapNotNull null
+                    }
+                }
+                else -> {
+                    title = it.title
+                    identifier = it.identifier
+                }
+            }
+            LineageSourceDescription(
+                value = it.value,
+                title,
+                identifier,
+                date = it.date,
+                dateType = (codelists.getValue("502", it.dateType, "iso")),
+                uuidRef = it.uuidRef,
+                url = it.url,
+            )
+        } ?: emptyList()
+
     val hasLineageInformation =
         !lineageStatement.isNullOrEmpty() || lineageProcessStepDescriptions.isNotEmpty() || lineageSourceDescriptions.isNotEmpty()
 

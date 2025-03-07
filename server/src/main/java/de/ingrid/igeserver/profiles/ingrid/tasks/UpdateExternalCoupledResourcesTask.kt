@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.model.GetRecordUrlAnalysis
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.CoupledResource
 import de.ingrid.igeserver.services.CapabilitiesService
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.setAdminAuthentication
@@ -133,15 +134,13 @@ class UpdateExternalCoupledResourcesTask(
         }
     }
 
-    private fun mapToCoupledResourceResult(result: Array<Any>): CoupledResourceResult {
-        return CoupledResourceResult(
-            result[0] as Int,
-            result[1].toString(),
-            mapper.readValue(result[2] as String, object : TypeReference<List<CoupledResource>>() {})
-                .filter { it.isExternalRef },
-            result[3] as Int,
-        )
-    }
+    private fun mapToCoupledResourceResult(result: Array<Any>): CoupledResourceResult = CoupledResourceResult(
+        result[0] as Int,
+        result[1].toString(),
+        mapper.readValue(result[2] as String, object : TypeReference<List<CoupledResource>>() {})
+            .filter { it.isExternalRef },
+        result[3] as Int,
+    )
 
     private data class Summary(var count: Int, var corrupt: Int, var updated: Int)
 
@@ -150,13 +149,5 @@ class UpdateExternalCoupledResourcesTask(
         val uuid: String,
         val links: List<CoupledResource>,
         val catalogId: Int,
-    )
-
-    private data class CoupledResource(
-        var uuid: String?,
-        var identifier: String?,
-        val url: String?,
-        val title: String?,
-        val isExternalRef: Boolean,
     )
 }

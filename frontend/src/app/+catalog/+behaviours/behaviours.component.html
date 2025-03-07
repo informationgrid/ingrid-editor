@@ -11,7 +11,7 @@
         <div class="scrollable">
             @for (item of pluginsGrouped | keyvalue; track item) {
                 <div class="section">
-                    <div class="section-title">{{ item.key }}</div>
+                    <h2 class="section-title">{{ item.key }}</h2>
                     @for (plugin of item.value; track plugin) {
                         <ige-behaviour-item
                             [title]="plugin.name"

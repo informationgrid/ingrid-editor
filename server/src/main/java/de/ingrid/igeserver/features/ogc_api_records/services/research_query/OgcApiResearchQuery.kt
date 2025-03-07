@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,10 +20,12 @@
 package de.ingrid.igeserver.features.ogc_api_records.services.research_query
 
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.configuration.ConfigurationException
 import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import java.time.Instant
+import kotlin.reflect.full.memberProperties
 
 data class OgcFilterParameter(
     val queryLimit: Int,
@@ -31,19 +33,30 @@ data class OgcFilterParameter(
     val type: List<String>?,
     val bbox: List<Float>?,
     val datetime: String?,
-    val qParameter: List<String>?,
+    val q: List<String>?,
 )
 
 abstract class OgcApiResearchQuery {
     abstract val profiles: List<String>
 
-    abstract var ogcParameter: OgcFilterParameter
+    open var unsupportedParameters: List<String> = listOf()
 
-    abstract fun profileSpecificClauses(): MutableList<BoolFilter>?
-
-    fun profiles(): List<String> {
-        return profiles
+    private fun checkForUnsupportedParameters(ogcFilterParameter: OgcFilterParameter) {
+        unsupportedParameters.forEach { unsupportedParameter ->
+            if (unallowedParameterExists(ogcFilterParameter, unsupportedParameter)) {
+                throw ConfigurationException.withReason("Request parameter '$unsupportedParameter' is not yet supported for current profile. Please remove the parameter.")
+            }
+        }
     }
+
+    private fun unallowedParameterExists(ogcFilterParameter: OgcFilterParameter, unsupportedParameter: String): Boolean {
+        val property = OgcFilterParameter::class.memberProperties.find { it.name == unsupportedParameter }
+        return property?.get(ogcFilterParameter) != null
+    }
+
+    abstract fun profileSpecificClauses(ogcParameter: OgcFilterParameter): MutableList<BoolFilter>?
+
+    fun profiles(): List<String> = profiles
 
     private fun ogcDateTimeConverter(datetime: String): List<String> {
         val dateArray = datetime.split("/")
@@ -68,40 +81,26 @@ abstract class OgcApiResearchQuery {
         clausesList.add(BoolFilter("OR", listOf("exceptFolders"), null, null, true))
 
         clausesList.add(BoolFilter("OR", listOf("document1.state = 'PUBLISHED'"), null, null, false))
-        // bbox // check if 4 values is true
-        if (ogcParameter.bbox != null) {
-            val boundingBox = ogcParameter.bbox.map { coordinate -> coordinate.toString() }
-            clausesList.add(BoolFilter("OR", listOf("ingridSelectSpatial"), null, boundingBox, true))
-        }
-        // time span
-        if (ogcParameter.datetime != null) {
-            val dateList = ogcDateTimeConverter(ogcParameter.datetime)
-            clausesList.add(BoolFilter("OR", listOf("selectTimespan"), null, dateList, true))
-        }
-        // filter by doc type
-        if (ogcParameter.type != null) {
-            val typeList = mutableListOf<String>()
-            for (name in ogcParameter.type) {
-                typeList.add("document_wrapper.type = '$name'")
-            }
-            clausesList.add(BoolFilter("OR", typeList, null, null, false))
+
+        ogcParameter.datetime?.let { datetime ->
+            clausesList.add(BoolFilter("OR", listOf("selectTimespan"), null, ogcDateTimeConverter(datetime), true))
         }
 
-        val profileSpecificClausesList = profileSpecificClauses()
-
-        if (profileSpecificClausesList != null) {
-            clausesList.addAll(profileSpecificClausesList)
+        ogcParameter.type?.let { type ->
+            clausesList.add(BoolFilter("OR", type.map { "document_wrapper.type = '$it'" }, null, null, false))
         }
+
+        profileSpecificClauses(ogcParameter)?.let { clausesList.addAll(it) }
 
         return clausesList
     }
 
     fun createQuery(ogcFilterParameter: OgcFilterParameter): ResearchQuery {
-        ogcParameter = ogcFilterParameter
+        checkForUnsupportedParameters(ogcFilterParameter)
         return ResearchQuery(
             term = null,
             clauses = BoolFilter(op = "AND", value = null, clauses = clauses(ogcFilterParameter), parameter = null, isFacet = true),
-            pagination = ResearchPaging(1, ogcParameter.queryLimit, ogcParameter.queryOffset),
+            pagination = ResearchPaging(1, ogcFilterParameter.queryLimit, ogcFilterParameter.queryOffset),
         )
     }
 }

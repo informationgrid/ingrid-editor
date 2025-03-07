@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2024 wemove digital solutions GmbH
+ * Copyright (C) 2024-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -36,33 +36,27 @@ class ConnectionService(
     private val cswService: CSWService,
     private val settingsService: SettingsService,
 ) {
-    fun getIndexerForConnection(id: String): IIndexManager {
-        return when (val connection = settingsService.getConnectionConfig(id)) {
-            is IBusConfig -> IBusIndexer(connection.name, iBusService.getIBus(id))
-            is ElasticConfig -> ElasticIndexer(
-                connection.name,
-                elasticsearchService.getClient(id),
-            )
-            is CSWConfig -> CSWIndexer(connection.name, cswService.getClient(id))
-            else -> throw ServerException.withReason("Unknown Connection-Config Class: ${connection?.javaClass}")
-        }
+    fun getIndexerForConnection(id: String): IIndexManager = when (val connection = settingsService.getConnectionConfig(id)) {
+        is IBusConfig -> IBusIndexer(connection.name, iBusService.getIBus(id))
+        is ElasticConfig -> ElasticIndexer(
+            connection.name,
+            elasticsearchService.getClient(id),
+        )
+        is CSWConfig -> CSWIndexer(connection.name, cswService.getClient(id))
+        else -> throw ServerException.withReason("Unknown Connection-Config Class: ${connection?.javaClass}")
     }
 
-    private fun getConnectionService(id: String): IConnection {
-        return if (iBusService.containsId(id)) {
-            iBusService
-        } else if (elasticsearchService.containsId(id)) {
-            elasticsearchService
-        } else if (cswService.containsId(id)) {
-            cswService
-        } else {
-            throw ServerException.withReason("Connection-ID not found: $id")
-        }
+    private fun getConnectionService(id: String): IConnection = if (iBusService.containsId(id)) {
+        iBusService
+    } else if (elasticsearchService.containsId(id)) {
+        elasticsearchService
+    } else if (cswService.containsId(id)) {
+        cswService
+    } else {
+        throw ServerException.withReason("Connection-ID not found: $id")
     }
 
-    fun isConnected(id: String): Boolean {
-        return getConnectionService(id).isConnected(id)
-    }
+    fun isConnected(id: String): Boolean = getConnectionService(id).isConnected(id)
 
     fun setupConnections() {
         iBusService.setupConnections()

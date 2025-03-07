@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import {
   FormToolbarService,
   Separator,
@@ -25,9 +25,7 @@ import {
 } from "../../form-shared/toolbar/form-toolbar.service";
 import { PrintViewDialogComponent } from "./print-view-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
-import { TreeQuery } from "../../../store/tree/tree.query";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { ProfileService } from "../../../services/profile.service";
 import { DocumentDataService } from "../../../services/document/document-data.service";
@@ -47,19 +45,24 @@ export class PrintViewPlugin extends Plugin {
   group = "Toolbar";
   defaultActive = true;
 
-  private treeQuery: TreeQuery | AddressTreeQuery;
-
   constructor(
     private documentDataService: DocumentDataService,
     private toolbarService: FormToolbarService,
     private docEvents: DocEventsService,
-    private docTreeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
     private dialog: MatDialog,
     private profileService: ProfileService,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
+
+    effect(() => {
+      if (!this.formRegistered) return;
+      const doc = this.generalStore.getOpenedDocument(this.forAddress());
+      this.toolbarService.setButtonState(
+        "toolBtnPrint",
+        doc !== null && doc._type != "FOLDER",
+      );
+    });
   }
 
   registerForm() {
@@ -74,34 +77,21 @@ export class PrintViewPlugin extends Plugin {
         matSvgVariable: "Vorschau-Druckansicht",
         eventId: "PRINT",
         pos: 20,
-        active: false,
+        active: signal(false),
       },
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));
 
-    this.treeQuery = this.forAddress
-      ? this.addressTreeQuery
-      : this.docTreeQuery;
-
     this.formSubscriptions.push(
       // react on event when button is clicked
       this.docEvents.onEvent("PRINT").subscribe(() => this.showPrintDialog()),
-
-      this.treeQuery.openedDocument$
-        .pipe(untilDestroyed(this))
-        .subscribe((openedDoc) => {
-          this.toolbarService.setButtonState(
-            "toolBtnPrint",
-            openedDoc !== null && openedDoc._type != "FOLDER",
-          );
-        }),
     );
   }
 
   private showPrintDialog() {
-    let openedDocument = this.treeQuery.getOpenedDocument();
+    let openedDocument = this.generalStore.getOpenedDocument(this.forAddress());
     const type = openedDocument._type;
-    const profile = this.profileService.getProfile(type);
+    const doctype = this.profileService.getDoctype(type);
 
     combineLatest([
       this.documentDataService.load(openedDocument._uuid, true),
@@ -117,10 +107,10 @@ export class PrintViewPlugin extends Plugin {
           published.documentWithMetadata,
           {},
         );
-        fields = profile.getFieldsForPrint(diff);
+        fields = doctype.getFieldsForPrint(diff);
         fieldsPublished = clone(fields);
       } else {
-        fields = profile.getFieldsForPrint(null);
+        fields = doctype.getFieldsForPrint(null);
       }
       this.dialog.open(PrintViewDialogComponent, {
         width: "80%",
@@ -129,7 +119,7 @@ export class PrintViewPlugin extends Plugin {
           fields: fields,
           fieldsPublished: fieldsPublished,
           model: current.documentWithMetadata,
-          modelPublished: published,
+          modelPublished: published?.documentWithMetadata,
         },
       });
     });

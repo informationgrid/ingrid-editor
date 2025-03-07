@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -72,8 +72,14 @@ class Catalog {
     var modified: OffsetDateTime? = null
 
     @JdbcTypeCode(SqlTypes.JSON)
-    var settings: CatalogSettings = CatalogSettings()
-        get() = field ?: CatalogSettings() // can actually be null
+    @Column(name = "settings", columnDefinition = "jsonb")
+    private var _settings: CatalogSettings? = null
+
+    var settings: CatalogSettings
+        get() = _settings ?: CatalogSettings().also { _settings = it }
+        set(value) {
+            _settings = value
+        }
 
     @PrePersist
     fun setPersistDate() {

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -20,7 +20,9 @@
 import {
   AfterViewInit,
   Component,
+  effect,
   EventEmitter,
+  input,
   Input,
   OnInit,
   Output,
@@ -43,8 +45,7 @@ import {
 import { MatPaginator } from "@angular/material/paginator";
 import { SelectionModel } from "@angular/cdk/collections";
 import { Group } from "../../../models/user-group";
-import { firstValueFrom, Observable } from "rxjs";
-import { filter } from "rxjs/operators";
+import { firstValueFrom } from "rxjs";
 import { GeneralTable } from "../../general.table";
 import { GroupService } from "../../../services/role/group.service";
 import {
@@ -61,7 +62,6 @@ import { MatButton } from "@angular/material/button";
   selector: "groups-table",
   templateUrl: "./groups-table.component.html",
   styleUrls: ["../../table.styles.scss"],
-  standalone: true,
   imports: [
     MatTable,
     MatSort,
@@ -100,7 +100,7 @@ export class GroupsTableComponent
     this.dataSource.filter = filter;
   }
 
-  @Input() selectedGroup: Observable<number>;
+  selectedGroup = input<number>();
   @Input() userGroupNames: string[];
 
   @Output() onGroupSelect = new EventEmitter<Group>();
@@ -132,16 +132,17 @@ export class GroupsTableComponent
         .toLowerCase();
       return searchIn.includes(filterValue.trim().toLowerCase());
     };
-  }
 
-  ngOnInit() {
-    this.selectedGroup
-      .pipe(filter((groupId) => this.selection.selected[0]?.id !== groupId))
-      .subscribe((groupId) => {
+    effect(() => {
+      const groupId = this.selectedGroup();
+      if (this.selection.selected[0]?.id !== groupId) {
         this.setSelectionToItem(groupId, "id");
         this.updatePaginator(groupId, "id");
-      });
+      }
+    });
   }
+
+  ngOnInit() {}
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;

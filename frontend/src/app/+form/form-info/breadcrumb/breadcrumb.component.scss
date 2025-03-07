@@ -1,10 +1,10 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 button {
   padding: 3px;
   border: unset;
   background: unset;
-  color: $ige-secondary;
+  color: vars.$ige-secondary;
 }
 
 :host {
@@ -18,26 +18,26 @@ button {
   }
 
   &.disabled {
-    color: $ige-hint-color;
+    color: vars.$ige-hint-color;
   }
 
   .emphasize {
     font-size: 16px;
     font-weight: 500;
-    color: $ige-primary;
+    color: vars.$ige-primary;
 
     .selectable:hover {
-      color: $ige-secondary;
+      color: vars.$ige-secondary;
     }
   }
 
   .selectable:hover {
     cursor: pointer;
-    color: $ige-primary;
+    color: vars.$ige-primary;
   }
 
   .disabled {
-    color: $ige-hint-color;
+    color: vars.$ige-hint-color;
     cursor: default;
   }
 }
@@ -47,5 +47,5 @@ mat-icon {
   margin-top: -2px;
   vertical-align: middle;
   line-height: 18px;
-  color: $ige-hint-color;
+  color: vars.$ige-hint-color;
 }

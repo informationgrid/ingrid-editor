@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,15 +19,13 @@
  */
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
-import { MatDivider } from "@angular/material/divider";
 import { MatButton } from "@angular/material/button";
 
 @Component({
   selector: "ige-result-table-header",
   templateUrl: "./result-table-header.component.html",
   styleUrls: ["./result-table-header.component.scss"],
-  standalone: true,
-  imports: [MatProgressSpinner, MatDivider, MatButton],
+  imports: [MatProgressSpinner, MatButton],
 })
 export class ResultTableHeaderComponent implements OnInit {
   @Input() isLoading = false;

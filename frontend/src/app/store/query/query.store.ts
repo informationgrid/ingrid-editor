@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,52 +17,45 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import {
-  ActiveState,
-  EntityState,
-  EntityStore,
-  StoreConfig,
-} from "@datorama/akita";
 import { Query } from "./query.model";
-import { FacetUpdate } from "../../+research/+facets/facets.component";
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withMethods,
+} from "@ngrx/signals";
+import {
+  addEntity,
+  removeEntity,
+  setAllEntities,
+  updateEntity,
+  withEntities,
+} from "@ngrx/signals/entities";
+import { computed } from "@angular/core";
 
-export interface QueryState extends EntityState<Query>, ActiveState {
-  ui: {
-    search: {
-      category: "selectDocuments" | "selectAddresses";
-      query: string;
-      facets: FacetUpdate;
-    };
-    sql: {
-      query: string;
-    };
-  };
-}
-
-export function createInitialState(): QueryState {
-  return {
-    active: null,
-    ui: {
-      search: {
-        category: "selectDocuments",
-        query: "",
-        facets: {
-          model: {},
-          fieldsWithParameters: {},
-        },
-      },
-      sql: {
-        query: "",
-      },
+export const QueryStore = signalStore(
+  { providedIn: "root" },
+  withEntities<Query>(),
+  withComputed((store) => ({
+    userQueries: computed(() => {
+      return store.entities().filter((entity) => !entity.isCatalogQuery);
+    }),
+    catalogQueries: computed(() => {
+      return store.entities().filter((entity) => entity.isCatalogQuery);
+    }),
+  })),
+  withMethods((store) => ({
+    set(queries: Query[]): void {
+      patchState(store, setAllEntities(queries));
     },
-  };
-}
-
-@Injectable({ providedIn: "root" })
-@StoreConfig({ name: "query" })
-export class QueryStore extends EntityStore<QueryState, Query> {
-  constructor() {
-    super(createInitialState());
-  }
-}
+    add(query: Query): void {
+      patchState(store, addEntity(query));
+    },
+    remove(id: string): void {
+      patchState(store, removeEntity(id));
+    },
+    update(id: number, query: Query): void {
+      patchState(store, updateEntity({ id: id, changes: query }));
+    },
+  })),
+);

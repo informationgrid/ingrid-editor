@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,12 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../../../+form/form-shared/toolbar/form-toolbar.service";
-import { SessionStore } from "../../../../store/session.store";
 import { DocEventsService } from "../../../../services/event/doc-events.service";
 import { Plugin } from "../../plugin";
 import { PluginService } from "../../../../services/plugin/plugin.service";
+import { UiStore } from "../../../../store/ui.store";
 
 @Injectable()
 export class ShowJsonBehaviour extends Plugin {
@@ -30,14 +30,15 @@ export class ShowJsonBehaviour extends Plugin {
   name = "Anzeige JSON Formular";
   group = "Toolbar";
   description =
-    "Ein neuer Button ermöglicht die Anzeige des JSON-Dokuments neben dem Formular.";
+    "Fügt einen Button hinzu, mit dem das JSON-Dokument neben dem Formular angezeigt werden kann.";
   defaultActive = false;
+
+  private uiStore = inject(UiStore);
   private eventShowJsonId = "SHOW_JSON";
 
   constructor(
     private formToolbarService: FormToolbarService,
     private docEvents: DocEventsService,
-    private sessionStore: SessionStore,
   ) {
     super();
     inject(PluginService).registerPlugin(this);
@@ -57,7 +58,7 @@ export class ShowJsonBehaviour extends Plugin {
       matIconVariable: "bug_report",
       eventId: this.eventShowJsonId,
       pos: 1000,
-      active: true,
+      active: signal(true),
     });
 
     // add event handler for revert
@@ -69,12 +70,7 @@ export class ShowJsonBehaviour extends Plugin {
   }
 
   private toggleJSONView(forceState?: boolean) {
-    this.sessionStore.update((state) => ({
-      ui: {
-        ...state.ui,
-        showJSONView: forceState ?? !state.ui.showJSONView,
-      },
-    }));
+    this.uiStore.toggleJsonView(forceState);
   }
 
   unregisterForm() {

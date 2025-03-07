@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -139,16 +139,14 @@ class ExpiredDatasetsTask(
         }
     }
 
-    private fun mapToDataset(dbResponse: Array<Any?>): ExpiredDataset {
-        return ExpiredDataset(
-            dbResponse[0].toString(),
-            dbResponse[1].toString(),
-            dbResponse[2].toString(),
-            dbResponse[3] as OffsetDateTime,
-            dbResponse[4].toString(),
-            dbResponse[5].toString(),
-        )
-    }
+    private fun mapToDataset(dbResponse: Array<Any?>): ExpiredDataset = ExpiredDataset(
+        dbResponse[0].toString(),
+        dbResponse[1].toString(),
+        dbResponse[2].toString(),
+        dbResponse[3] as OffsetDateTime,
+        dbResponse[4].toString(),
+        dbResponse[5].toString(),
+    )
 
     private fun getDatasetsEditedBefore(
         catalog: Catalog,

@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -27,8 +27,7 @@ import de.ingrid.igeserver.profiles.ingrid_bast.exporter.getBastKeywords
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
 
-class GeoserviceTransformerBast(transformerConfig: TransformerConfig) :
-    GeodataserviceModelTransformer(transformerConfig) {
+class GeoserviceTransformerBast(transformerConfig: TransformerConfig) : GeodataserviceModelTransformer(transformerConfig) {
 
     private val docData = doc.data
 

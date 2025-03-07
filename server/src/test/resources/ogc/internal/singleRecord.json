@@ -10,16 +10,21 @@
     "_modifiedBy": "Mike Cat-Miller",
     "_contentModifiedBy": "Mike Cat-Miller",
     "_id": null,
+    "properties": {
+      "isInspireIdentified": "conform",
+      "isOpenData": true,
+      "isAdVCompatible": true,
+      "subType": {
+        "key": "5"
+      }
+    },
     "themes": [
       {
         "key": "105"
       }
     ],
     "dataset": {
-      "languages": [
-        "150",
-        "134"
-      ]
+      "languages": ["150", "134"]
     },
     "lineage": {
       "statement": "vergl. eGovernment Vorhaben \"PLIS\""
@@ -73,9 +78,6 @@
           "key": "9001"
         }
       }
-    },
-    "subType": {
-      "key": "5"
     },
     "keywords": {
       "free": [
@@ -224,7 +226,6 @@
       }
     ],
     "identifier": "http://portalu.de/igc_testNS#/4915275a-733a-47cd-b1a6-1a3f1e976948",
-    "isOpenData": true,
     "references": [
       {
         "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf",
@@ -396,14 +397,20 @@
           },
           "descriptions": [
             {
-              "key": null,
-              "value": "Meine Datengrundlage"
+              "value": "Meine Datengrundlage",
+              "_type": "freeDescription"
+            },
+            {
+              "value": "Beschreibung der Datengrundlage eines Geodatensatzes",
+              "date": "2024-11-18T23:00:00.000Z",
+              "dateType": { "key": "1" },
+              "uuidRef": "00000000-0000-0000-0000-000000000000",
+              "_type": "internalDataOrigin"
             }
           ]
         }
       }
     },
-    "isAdVCompatible": true,
     "topicCategories": [
       {
         "key": "4"
@@ -463,7 +470,6 @@
         "key": "6"
       }
     ],
-    "isInspireIdentified": true,
     "digitalTransferOptions": [
       {
         "name": {
@@ -565,8 +571,7 @@
       "griddedDataPositionalAccuracy": 43
     },
     "_parent": null
-  }
-,
+  },
   {
     "title": "Doc 2: Bebauungsplan Barmbek-Nord 18",
     "_uuid": "1235275a-733a-47cd-b1a6-1a3f1e976948",
@@ -578,16 +583,21 @@
     "_modifiedBy": "Mike Cat-Miller",
     "_contentModifiedBy": "Mike Cat-Miller",
     "_id": null,
+    "properties": {
+      "isInspireIdentified": "conform",
+      "isOpenData": true,
+      "isAdVCompatible": true,
+      "subType": {
+        "key": "5"
+      }
+    },
     "themes": [
       {
         "key": "105"
       }
     ],
     "dataset": {
-      "languages": [
-        "150",
-        "134"
-      ]
+      "languages": ["150", "134"]
     },
     "lineage": {
       "statement": "vergl. eGovernment Vorhaben \"PLIS\""
@@ -641,9 +651,6 @@
           "key": "9001"
         }
       }
-    },
-    "subType": {
-      "key": "5"
     },
     "keywords": {
       "free": [
@@ -792,7 +799,6 @@
       }
     ],
     "identifier": "http://portalu.de/igc_testNS#/4915275a-733a-47cd-b1a6-1a3f1e976948",
-    "isOpenData": true,
     "references": [
       {
         "url": "http://daten-hamburg.de/infrastruktur_bauen_wohnen/bebauungsplaene/pdfs/bplan/Barmbek-Nord18(1Aend).pdf",
@@ -964,14 +970,20 @@
           },
           "descriptions": [
             {
-              "key": null,
-              "value": "Meine Datengrundlage"
+              "value": "Meine Datengrundlage",
+              "_type": "freeDescription"
+            },
+            {
+              "value": "Beschreibung der Datengrundlage eines Geodatensatzes",
+              "date": "2024-11-18T23:00:00.000Z",
+              "dateType": { "key": "1" },
+              "uuidRef": "00000000-0000-0000-0000-000000000000",
+              "_type": "internalDataOrigin"
             }
           ]
         }
       }
     },
-    "isAdVCompatible": true,
     "topicCategories": [
       {
         "key": "4"
@@ -1031,7 +1043,6 @@
         "key": "6"
       }
     ],
-    "isInspireIdentified": true,
     "digitalTransferOptions": [
       {
         "name": {
@@ -1134,5 +1145,4 @@
     },
     "_parent": null
   }
-
 ]

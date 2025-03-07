@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -37,6 +37,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 
 import { ErrorStateMatcher } from "@angular/material/core";
+import { FocusDirective } from "../../directives/focus.directive";
 
 class MyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private component: SearchInputComponent) {}
@@ -61,8 +62,8 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
     MatProgressSpinnerModule,
     MatIconModule,
     MatButtonModule,
+    FocusDirective,
   ],
-  standalone: true,
 })
 export class SearchInputComponent {
   @Input() searchSub: Subscription;

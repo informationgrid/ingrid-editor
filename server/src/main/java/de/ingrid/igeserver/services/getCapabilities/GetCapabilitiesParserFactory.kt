@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -81,17 +81,23 @@ class GetCapabilitiesParserFactory(val codelistHandler: CodelistHandler, val res
         private const val SERVICE_TYPE_WMTS = "WMTS"
     }
 
-    fun get(doc: Document, catalogId: String): ICapabilitiesParser = when (getServiceType(doc)) {
-        ServiceType.WMS111 -> Wms111CapabilitiesParser(codelistHandler, researchService, catalogId)
-        ServiceType.WMS130 -> Wms130CapabilitiesParser(codelistHandler, researchService, catalogId)
-        ServiceType.WFS110 -> Wfs110CapabilitiesParser(codelistHandler, researchService, catalogId)
-        ServiceType.WFS200 -> Wfs200CapabilitiesParser(codelistHandler, researchService, catalogId)
-        ServiceType.WCS -> WcsCapabilitiesParser(codelistHandler, researchService, catalogId)
-        ServiceType.WCS11 -> Wcs11CapabilitiesParser(codelistHandler, researchService, catalogId)
-        ServiceType.WCS201 -> Wcs201CapabilitiesParser(codelistHandler, researchService, catalogId)
-        ServiceType.CSW -> CswCapabilitiesParser(codelistHandler, researchService, catalogId)
-        ServiceType.WCTS -> WctsCapabilitiesParser(codelistHandler, researchService, catalogId)
-        ServiceType.WMTS -> WmtsCapabilitiesParser(codelistHandler, researchService, catalogId)
+    fun get(
+        doc: Document,
+        catalogId: String,
+    ): ICapabilitiesParser {
+        val params = CapabilitiesParameter(codelistHandler, researchService, catalogId)
+        return when (getServiceType(doc)) {
+            ServiceType.WMS111 -> Wms111CapabilitiesParser(params)
+            ServiceType.WMS130 -> Wms130CapabilitiesParser(params)
+            ServiceType.WFS110 -> Wfs110CapabilitiesParser(params)
+            ServiceType.WFS200 -> Wfs200CapabilitiesParser(params)
+            ServiceType.WCS -> WcsCapabilitiesParser(params)
+            ServiceType.WCS11 -> Wcs11CapabilitiesParser(params)
+            ServiceType.WCS201 -> Wcs201CapabilitiesParser(params)
+            ServiceType.CSW -> CswCapabilitiesParser(params)
+            ServiceType.WCTS -> WctsCapabilitiesParser(params)
+            ServiceType.WMTS -> WmtsCapabilitiesParser(params)
+        }
     }
 
     private fun getServiceType(doc: Document): ServiceType = when {

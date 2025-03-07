@@ -1,4 +1,4 @@
-@import "src/variables";
+@use "src/variables" as vars;
 
 :host {
   display: flex;
@@ -24,7 +24,7 @@
 }
 
 .title {
-  color: $ige-primary;
+  color: vars.$ige-primary;
   font-size: 24px;
   font-weight: 500;
   padding-bottom: 4px;
@@ -37,7 +37,7 @@
 
 .mat-mdc-card {
   &.selected {
-    border: 1px solid $ige-primary;
+    border: 1px solid vars.$ige-primary;
   }
 }
 
@@ -52,11 +52,12 @@
 }
 
 .section-title {
+  margin: unset;
   padding-bottom: 12px;
 }
 
 .selected {
-  background-color: $ige-mark-color;
+  background-color: vars.$ige-mark-color;
 }
 
 .content {
@@ -65,4 +66,8 @@
 
 .mat-mdc-progress-spinner {
   display: inline-block;
+}
+
+.padding-bottom {
+  padding-bottom: 48px;
 }

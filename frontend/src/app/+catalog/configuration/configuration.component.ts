@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -30,7 +30,6 @@ import { FormlyModule } from "@ngx-formly/core";
   selector: "ige-configuration",
   templateUrl: "./configuration.component.html",
   styleUrls: ["./configuration.component.scss"],
-  standalone: true,
   imports: [PageTemplateComponent, MatButton, FormlyModule],
 })
 export class ConfigurationComponent implements OnInit {

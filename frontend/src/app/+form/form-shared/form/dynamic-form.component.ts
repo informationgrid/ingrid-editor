@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -21,11 +21,16 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
+  computed,
+  effect,
   ElementRef,
   HostListener,
+  inject,
   Input,
   OnDestroy,
   OnInit,
+  Signal,
+  signal,
   ViewChild,
 } from "@angular/core";
 import {
@@ -45,17 +50,14 @@ import {
   IgeDocument,
 } from "../../../models/ige-document";
 import { FormUtils } from "../../form.utils";
-import { TreeQuery } from "../../../store/tree/tree.query";
 import {
   FormlyFieldConfig,
   FormlyFormOptions,
   FormlyModule,
 } from "@ngx-formly/core";
-import { SessionQuery } from "../../../store/session.query";
 import { FormularService } from "../../formular.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { catchError, debounceTime, filter, map, tap } from "rxjs/operators";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import {
   combineLatest,
   fromEvent,
@@ -63,18 +65,14 @@ import {
   Observable,
   Subscription,
 } from "rxjs";
-import { ProfileQuery } from "../../../store/profile/profile.query";
-import { Behaviour } from "../../../services/behavior/behaviour";
 import { TreeService } from "../../sidebars/tree/tree.service";
-import { ValidationError } from "../../../store/session.store";
 import { FormStateService } from "../../form-state.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../services/event/doc-events.service";
-import { CodelistQuery } from "../../../store/codelist/codelist.query";
 import { FormMessageService } from "../../../services/form-message.service";
 import { ConfigService } from "../../../services/config/config.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { IgeError } from "../../../models/ige-error";
 import { FormToolbarComponent } from "../toolbar/form-toolbar.component";
 import { AngularSplitModule } from "angular-split";
@@ -85,13 +83,17 @@ import { FormInfoComponent } from "../../form-info/form-info.component";
 import { QuickNavbarComponent } from "./quick-navbar/quick-navbar.component";
 import { FolderDashboardComponent } from "../folder/folder-dashboard.component";
 import { AsyncPipe, JsonPipe } from "@angular/common";
+import { GeneralStore } from "../../../store/general.store";
+import { toObservable } from "@angular/core/rxjs-interop";
+import { ProfileService } from "../../../services/profile.service";
+import { UiStore } from "../../../store/ui.store";
+import { BehaviourService } from "../../../services/behavior/behaviour.service";
 
 @UntilDestroy()
 @Component({
   selector: "ige-form-wrapper",
   templateUrl: "./dynamic-form.component.html",
   styleUrls: ["./dynamic-form.component.scss"],
-  standalone: true,
   imports: [
     FormToolbarComponent,
     AngularSplitModule,
@@ -110,6 +112,11 @@ import { AsyncPipe, JsonPipe } from "@angular/common";
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() address = false;
+
+  private generalStore = inject(GeneralStore);
+  private profileService = inject(ProfileService);
+  private uiStore = inject(UiStore);
+  private behaviourService = inject(BehaviourService);
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
   @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
@@ -139,8 +146,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   // initial model for form info header
   formInfoModel: any = null;
 
-  behaviours: Behaviour[];
-  error = false;
   // @ts-ignore
   model: IgeDocument = {};
 
@@ -148,23 +153,31 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   paddingWithHeader: string;
 
-  showValidationErrors = false;
-
-  showAllFields = this.session.select(
-    (state) => state.ui.toggleFieldsButtonShowAll,
-  );
+  showAllFields: Signal<boolean> = this.uiStore.toggleFieldsButtonShowAll;
 
   hasOptionalFields = false;
 
-  private query: TreeQuery | AddressTreeQuery;
   isLoading = true;
-  showJson = false;
+
+  showJson: Signal<boolean> = computed(() => {
+    const plugin = this.behaviourService.getBehaviour("plugin.show.json");
+    return plugin.isActive && this.uiStore.showJSONView();
+  });
+
   private readonly: boolean;
   private loadSubscription: Subscription[] = [];
-  showBlocker = false;
+  showBlocker = signal<boolean>(false);
   isStickyHeader = false;
   numberOfErrors = 0;
+  showValidationErrors = false;
   private errorCounterSubscription: Subscription;
+
+  private waitForCodelistsLoaded$ = toObservable(
+    this.generalStore.codelistsLoaded,
+  );
+  private waitForDoctypesLoaded$ = toObservable(
+    this.generalStore.doctypesLoaded,
+  );
 
   constructor(
     private formularService: FormularService,
@@ -174,11 +187,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private messageService: FormMessageService,
     public formStateService: FormStateService,
     private treeService: TreeService,
-    private treeQuery: TreeQuery,
-    private addressTreeQuery: AddressTreeQuery,
-    private session: SessionQuery,
-    private profileQuery: ProfileQuery,
-    private codelistQuery: CodelistQuery,
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog,
@@ -186,34 +194,59 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private translocoService: TranslocoService,
   ) {
-    this.sidebarWidth = this.session.getValue().ui.sidebarWidth;
+    this.sidebarWidth = this.uiStore.sidebarWidth();
+
+    effect(() => {
+      const serverValidationErrors = this.generalStore.serverValidationErrors();
+      if (serverValidationErrors.length > 0) {
+        serverValidationErrors.forEach((error) => {
+          console.error("Received server side validation error", error);
+          const message = this.translocoService.translate(
+            `form.validationMessages.${error.errorCode}`,
+          );
+          this.form.get(error.name)?.setErrors([{ message: message }]);
+        });
+        this.numberOfErrors = serverValidationErrors.length;
+      }
+    });
+
+    effect(() => {
+      this.isLoading = this.generalStore.isDocumentLoading();
+    });
+
+    effect(() => {
+      const activeNode = this.generalStore.explicitActiveNode();
+      // execute only ofter init, otherwise initial loading of dataset will not work
+      if (activeNode === null) return;
+
+      if (activeNode.id === null) {
+        // when clicking on root node in breadcrumb we need to set opened document to null
+        // otherwise the last one will be loaded again
+        this.documentService.updateOpenedDocumentInTreestore(
+          null,
+          this.address,
+        );
+        this.router.navigate([
+          ConfigService.catalogId + (this.address ? "/address" : "/form"),
+        ]);
+      }
+    });
   }
 
   ngOnDestroy() {
-    this.formularService.currentProfile = null;
+    this.formularService.currentDoctypeId = null;
 
     // reset selected documents if we revisit the page
-    this.formularService.setSelectedDocuments([]);
+    this.formularService.setSelectedDocuments([], this.address);
   }
 
   ngOnInit() {
-    if (this.address) {
-      this.query = this.addressTreeQuery;
-    } else {
-      this.query = this.treeQuery;
-    }
-
-    this.query
-      .select("isDocLoading")
-      .pipe(untilDestroyed(this))
-      .subscribe((state) => (this.isLoading = state));
-
-    // wait for profile and codelists to be loaded before opening first dataset
+    // wait for doctypes and codelists to be loaded before opening first dataset
     combineLatest([
-      this.profileQuery.selectLoading().pipe(filter((isLoading) => !isLoading)),
-      this.codelistQuery
-        .selectLoading()
-        .pipe(filter((isLoading) => !isLoading)),
+      this.waitForDoctypesLoaded$.pipe(filter((isLoaded) => isLoaded === true)),
+      this.waitForCodelistsLoaded$.pipe(
+        filter((isLoaded) => isLoaded === true),
+      ),
       merge(
         this.route.params.pipe(map((param) => param.id)),
         this.documentService.reload$.pipe(
@@ -228,7 +261,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(untilDestroyed(this))
       .subscribe((params) => this.loadDocument(params[2]));
 
-    this.formularService.currentProfile = null;
+    this.formularService.currentDoctypeId = null;
 
     this.documentService.publishState$
       .pipe(untilDestroyed(this))
@@ -245,55 +278,6 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
           this.form._updateTreeValidity({ emitEvent: true });
         }
       });
-
-    const showFormDashboard$ = this.query.explicitActiveNode$.pipe(
-      untilDestroyed(this),
-      filter(
-        (node) => node !== undefined && (node === null || node.id === null),
-      ),
-    );
-
-    showFormDashboard$.subscribe(() => {
-      // when clicking on root node in breadcrumb we need to set opened document to null
-      // otherwise the last one will be loaded again
-      this.documentService.updateOpenedDocumentInTreestore(null, this.address);
-      this.router.navigate([
-        ConfigService.catalogId + (this.address ? "/address" : "/form"),
-      ]);
-    });
-
-    this.handleJsonViewPlugin();
-
-    this.handleServerSideValidationErrors();
-  }
-
-  private handleJsonViewPlugin() {
-    this.session.showJSONView$
-      .pipe(untilDestroyed(this))
-      .subscribe((show) => (this.showJson = show));
-  }
-
-  private handleServerSideValidationErrors() {
-    // handle server validation errors
-    // 1) wait for server publish validation errors
-    // 2) set error on control
-
-    this.session.selectServerValidationErrors$
-      .pipe(
-        untilDestroyed(this),
-        filter((errors) => errors.length > 0),
-      )
-      .subscribe((errors: ValidationError[]) => {
-        this.showValidationErrors = true;
-        errors.forEach((error) => {
-          console.error("Received server side validation error", error);
-          const message = this.translocoService.translate(
-            `form.validationMessages.${error.errorCode}`,
-          );
-          this.form.get(error.name)?.setErrors([{ message: message }]);
-        });
-        this.numberOfErrors = errors.length;
-      });
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -304,7 +288,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // during save
     this.docEvents
       .beforeSave$(this.address)
-      .subscribe(() => (this.showBlocker = true));
+      .subscribe(() => this.showBlocker.set(true));
 
     // reset dirty flag after save
     this.docEvents.afterSave$(this.address).subscribe((data) => {
@@ -315,7 +299,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.documentService.documentOperationFinished$
       .pipe(untilDestroyed(this))
-      .subscribe((finished) => (this.showBlocker = !finished));
+      .subscribe((finished) => this.showBlocker.set(!finished));
 
     this.initScrollBehavior();
   }
@@ -440,7 +424,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private updateScrollPosition() {
     // form might not be available on first visit
     setTimeout(() => (this.scrollForm.nativeElement.scrollTop = 0));
-    const scrollPosition = this.query.getValue().scrollPosition;
+    const scrollPosition = this.uiStore.scrollPosition();
     if (scrollPosition !== 0) {
       setTimeout(
         () => (this.scrollForm.nativeElement.scrollTop = scrollPosition),
@@ -465,15 +449,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const profile = data.metadata.docType;
+    const doctype = data.metadata.docType;
 
-    if (profile === null) {
+    if (doctype === null) {
       throw new Error("Dieses Dokument hat keinen Dokumententyp!");
     }
 
     try {
-      if (this.needProfileSwitch(profile)) {
-        this.handleProfileSwitch(profile);
+      if (this.needDoctypeSwitch(doctype)) {
+        this.handleDoctypeSwitch(doctype);
         // make sure to create a new form to prevent data coming from another
         // form type into the new form
         this.createNewForm();
@@ -494,41 +478,41 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.formInfoModel = { ...this.model };
 
-      this.documentService.setDocLoadingState(false, this.address);
+      this.documentService.setDocLoadingState(false);
     } catch (ex) {
       console.error(ex);
       this.modalService.showJavascriptError(ex);
     }
   }
 
-  private needProfileSwitch(profile: string): boolean {
+  private needDoctypeSwitch(doctypeId: string): boolean {
     return (
       this.fields.length === 0 ||
-      this.formularService.currentProfile !== profile
+      this.formularService.currentDoctypeId !== doctypeId
     );
   }
 
-  private handleProfileSwitch(profile: string) {
+  private handleDoctypeSwitch(doctypeId: string) {
     this.formStateService.unobserveTextareaHeights();
 
-    // switch to the right profile depending on the data
-    this.fields = this.switchProfile(profile);
+    // switch to the right doctype depending on the data
+    this.fields = this.switchDoctype(doctypeId);
 
     this.formStateService.restoreAndObserveTextareaHeights(this.fields);
 
-    this.formularService.getSectionsFromProfile(this.fields);
+    this.formularService.getSectionsForDoctype(this.fields);
     this.hasOptionalFields =
-      this.profileQuery.getProfile(profile).hasOptionalFields;
+      this.profileService.getDoctype(doctypeId).hasOptionalFields;
   }
 
   /**
    *
-   * @param profile
+   * @param doctypeId
    */
-  private switchProfile(profile: string): FormlyFieldConfig[] {
-    this.formularService.currentProfile = profile;
+  private switchDoctype(doctypeId: string): FormlyFieldConfig[] {
+    this.formularService.currentDoctypeId = doctypeId;
 
-    return this.formularService.getFields(profile);
+    return this.formularService.getFields(doctypeId);
   }
 
   rememberSizebarWidth(info: any) {

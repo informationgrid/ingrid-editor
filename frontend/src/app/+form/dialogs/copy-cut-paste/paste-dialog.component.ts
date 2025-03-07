@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,8 +19,6 @@
  */
 import { Component, Inject, OnInit } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { TreeQuery } from "../../../store/tree/tree.query";
-import { AddressTreeQuery } from "../../../store/address-tree/address-tree.query";
 import { ConfigService } from "../../../services/config/config.service";
 import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-template.component";
 import { DestinationSelectionComponent } from "../create/destination-selection/destination-selection.component";
@@ -37,24 +35,18 @@ export interface PasteDialogOptions {
 @Component({
   templateUrl: "./paste-dialog.component.html",
   styleUrls: ["./paste-dialog.component.scss"],
-  standalone: true,
   imports: [DialogTemplateComponent, DestinationSelectionComponent],
 })
 export class PasteDialogComponent implements OnInit {
   selection: string = null;
   path: string[];
-  query: TreeQuery | AddressTreeQuery;
   hasWriteRootPermission = this.config.hasWriteRootPermission();
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: PasteDialogOptions,
-    treeQuery: TreeQuery,
-    addressTreeQuery: AddressTreeQuery,
     private config: ConfigService,
     private dlgRef: MatDialogRef<PasteDialogComponent>,
-  ) {
-    this.query = data.forAddress ? addressTreeQuery : treeQuery;
-  }
+  ) {}
 
   ngOnInit() {}
 

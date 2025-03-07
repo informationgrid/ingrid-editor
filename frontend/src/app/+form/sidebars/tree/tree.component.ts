@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -27,12 +27,14 @@ import {
   Input,
   OnInit,
   Output,
+  signal,
   ViewChild,
+  WritableSignal,
 } from "@angular/core";
 import { FlatTreeControl } from "@angular/cdk/tree";
 import { TreeNode } from "../../../store/tree/tree-node.model";
-import { combineLatest, firstValueFrom, Observable, Subject } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { firstValueFrom, Observable, Subject } from "rxjs";
+import { debounceTime, distinctUntilChanged, map, tap } from "rxjs/operators";
 import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
 import { UpdateType } from "../../../models/update-type.enum";
 import { DynamicDataSource } from "./dynamic.datasource";
@@ -45,7 +47,7 @@ import { ConfigService } from "../../../services/config/config.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { TreeHeaderComponent } from "./tree-header/tree-header.component";
 import { MatIcon } from "@angular/material/icon";
 import {
@@ -76,7 +78,6 @@ export enum TreeActionType {
   styleUrls: ["./tree.component.scss"],
   providers: [DynamicDatabase],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     TranslocoDirective,
     TreeHeaderComponent,
@@ -97,7 +98,6 @@ export enum TreeActionType {
 })
 export class TreeComponent implements OnInit {
   @Input() forAddresses: boolean;
-  @Input() expandNodeIds: Subject<number[]>;
   @Input() showHeader = true;
   @Input() showMultiSelectButton = false;
   @Input() showReloadButton = true;
@@ -145,7 +145,7 @@ export class TreeComponent implements OnInit {
 
   // signal to show that a tree node is loading
   isLoading: TreeNode;
-  activeNodeId: number = null;
+  activeNodeId: WritableSignal<number> = signal<number>(null);
 
   dataSource: DynamicDataSource;
   hasData: boolean;
@@ -234,20 +234,22 @@ export class TreeComponent implements OnInit {
       return;
     }
 
-    this.setActiveNode.pipe(untilDestroyed(this)).subscribe(async (id) => {
-      if (this.treeService.isReloadNeededWithReset(this.forAddresses)) {
-        this.activeNodeId = id;
-        await firstValueFrom(this.reloadTree(true));
-        // reloadTree will jump to node
-        return;
-      }
+    this.setActiveNode
+      .pipe(untilDestroyed(this), debounceTime(100), distinctUntilChanged())
+      .subscribe(async (id) => {
+        if (this.treeService.isReloadNeededWithReset(this.forAddresses)) {
+          this.activeNodeId.set(id);
+          await firstValueFrom(this.reloadTree(true));
+          // reloadTree will jump to node
+          return;
+        }
 
-      if (this.activeNodeId === id) {
-        return;
-      }
-      // when setting a node from the outside, then do not emit activate event again
-      this.jumpToNode(id, true, false).catch((e) => this.error.next(e));
-    });
+        if (this.activeNodeId() === id) {
+          return;
+        }
+        // when setting a node from the outside, then do not emit activate event again
+        this.jumpToNode(id, true, false).catch((e) => this.error.next(e));
+      });
   }
 
   private expandOnDataChange(ids: number[]): Promise<void> {
@@ -304,7 +306,7 @@ export class TreeComponent implements OnInit {
         this.dataSource.data = rootElements;
         this.selection.model.clear();
         if (this.activeNodeId) {
-          this.jumpToNode(this.activeNodeId);
+          this.jumpToNode(this.activeNodeId());
         }
         // after new data has arrived call change detection
         this.cdr.detectChanges();
@@ -312,34 +314,26 @@ export class TreeComponent implements OnInit {
     );
   }
 
-  /**
-   * Improve rendering speed so that we only render modified nodes.
-   * @param index
-   * @param item
-   */
-
-  /*trackByNodeId(index, item: TreeNode) {
-    return item._id;
-  }*/
-
   private handleUpdate(updateInfo: UpdateDatasetInfo) {
     // disable multi selection mode after a tree operation
     this.selection.multiSelectionModeEnabled.set(false);
-
-    switch (updateInfo.type) {
-      case UpdateType.New:
-        return this.addNewNodes(updateInfo);
-      case UpdateType.Update:
-        return this.dataSource.updateNode(updateInfo.data);
-      case UpdateType.Delete:
-        this.deleteNode(updateInfo);
-        return;
-      case UpdateType.Move:
-        const srcDocIds = updateInfo.data.map((doc) => <number>doc.id);
-        this.moveNodes(srcDocIds, updateInfo.parent);
-        return;
-      default:
-        throw new Error("Tree Action type not known: " + updateInfo.type);
+    // if we have no data yet, ignore updates
+    if (this.dataSource.data != null) {
+      switch (updateInfo.type) {
+        case UpdateType.New:
+          return this.addNewNodes(updateInfo);
+        case UpdateType.Update:
+          return this.dataSource.updateNode(updateInfo.data);
+        case UpdateType.Delete:
+          this.deleteNode(updateInfo);
+          return;
+        case UpdateType.Move:
+          const srcDocIds = updateInfo.data.map((doc) => <number>doc.id);
+          this.moveNodes(srcDocIds, updateInfo.parent);
+          return;
+        default:
+          throw new Error("Tree Action type not known: " + updateInfo.type);
+      }
     }
   }
 
@@ -365,7 +359,7 @@ export class TreeComponent implements OnInit {
 
   private async addNewNodes(updateInfo: UpdateDatasetInfo) {
     if (!updateInfo.doNotSelect) {
-      this.activeNodeId = updateInfo.data[0].id as number;
+      this.activeNodeId.set(updateInfo.data[0].id as number);
     }
 
     if (updateInfo.parent) {
@@ -373,24 +367,23 @@ export class TreeComponent implements OnInit {
         (item) => item._id === updateInfo.parent,
       );
 
-      // parent node seems to be nested deeper
       if (parentNodeIndex === -1) {
+        // parent node seems to be nested deeper: jump to node to open all parents
         console.debug(
           "Parent not found, expanding tree nodes: ",
           updateInfo.path,
         );
-        if (this.expandNodeIds) {
-          this.expandNodeIds.next(updateInfo.path);
-        }
-        return;
+        await this.jumpToNode(updateInfo.data[0].id as number, false);
+      } else {
+        //parent node found only update store
+        this.updateChildrenFromServer(
+          updateInfo.parent,
+          <number>updateInfo.data[0].id,
+          updateInfo.doNotSelect,
+        );
       }
-      // TODO: use function jumpToNode
-      this.updateChildrenFromServer(
-        updateInfo.parent,
-        <number>updateInfo.data[0].id,
-        updateInfo.doNotSelect,
-      );
     } else {
+      // no parent node, add to root
       const newRootTreeNodes = this.database.mapDocumentsToTreeNodes(
         updateInfo.data,
         0,
@@ -480,7 +473,7 @@ export class TreeComponent implements OnInit {
     }
 
     if (id === null || id === undefined) {
-      this.activeNodeId = null;
+      this.activeNodeId.set(null);
       return Promise.resolve();
     }
 
@@ -567,29 +560,11 @@ export class TreeComponent implements OnInit {
   }
 
   private handleTreeExpandToInitialNode() {
-    if (this.expandNodeIds) {
-      // FIXME: this path might not be used anymore, since tree takes care of expanded nodes
-      //        itself, when setting activeNodeId
-      combineLatest([this.reloadTree(), this.expandNodeIds])
-        .pipe(untilDestroyed(this))
-        .subscribe((result) => {
-          setTimeout(() => {
-            const ids = result[1];
-            this.handleExpandNodes(ids).then(() => {
-              const node = this.dataSource.getNode(this.activeNodeId);
-              this.selectNode(node);
-              this.initialized = true;
-              this.cdr.detectChanges();
-            });
-          });
-        });
-    } else {
-      this.reloadTree().subscribe(() => {
-        this.handleActiveNodeSubscription();
-        this.initialized = true;
-        this.cdr.detectChanges();
-      });
-    }
+    this.reloadTree().subscribe(() => {
+      this.handleActiveNodeSubscription();
+      this.initialized = true;
+      this.cdr.detectChanges();
+    });
   }
 
   handleFolderClick(node: TreeNode, $event: MouseEvent) {
@@ -697,7 +672,7 @@ export class TreeComponent implements OnInit {
 
     if (!id) return;
 
-    this.activeNodeId = id;
+    this.activeNodeId.set(id);
     if (emitActive) {
       this.activate.next([node._uuid]);
     }

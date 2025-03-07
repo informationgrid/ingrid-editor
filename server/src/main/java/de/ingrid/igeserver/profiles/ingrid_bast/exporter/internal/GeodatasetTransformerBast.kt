@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -30,7 +30,7 @@ import de.ingrid.igeserver.utils.getStringOrEmpty
 class GeodatasetTransformerBast(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
     init {
-        this.citationURL = if (model.data.identifier.isNullOrBlank() && model.data.isOpenData == true) {
+        this.citationURL = if (model.data.identifier.isNullOrBlank() && model.data.properties?.isOpenData == true) {
             null
         } else {
             super.addNamespaceIfNeeded(model.data.identifier ?: model.uuid)

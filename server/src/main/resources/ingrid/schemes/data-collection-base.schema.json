@@ -2,12 +2,19 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/dataCollectionBase",
   "type": "object",
+  "definitions": {
+    "propertiesDataCollection": {
+      "type": "object",
+      "properties": {
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        }
+      }
+    }
+  },
   "properties": {
-    "isAdVCompatible": {
-      "type": ["null", "boolean"]
-    },
-    "isOpenData": {
-      "type": ["null", "boolean"]
+    "properties": {
+      "$ref": "#/definitions/propertiesDataCollection"
     },
     "_uuid": {
       "type": "string"

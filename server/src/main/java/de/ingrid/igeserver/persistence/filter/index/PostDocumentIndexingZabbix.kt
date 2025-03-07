@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -87,10 +87,12 @@ class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler
         val documentTitle = xpath.getString(xmlDocument, "//idfMdMetadata/name")
         val uuid = xpath.getString(xmlDocument, "//idfMdMetadata/id")
         val detailUrl = zabbixService.detailUrl.format(uuid)
+        val addressName = xpath.getString(xmlDocument, "//idfMdMetadata/addresses/address/name")
+        val addressMail = xpath.getString(xmlDocument, "//idfMdMetadata/addresses/address/mail")?.trim()
 
         val uploadsToAdd = getUploadsToAdd(xmlDocument, uploadUrl)
 
-        return ZabbixModel.ZabbixData(catalogIdentifier, uuid, documentTitle, detailUrl, uploadsToAdd)
+        return ZabbixModel.ZabbixData(catalogIdentifier, uuid, documentTitle, detailUrl, addressName, addressMail, uploadsToAdd)
     }
 
     private fun convertToDocument(payload: PostIndexPayload): Document {

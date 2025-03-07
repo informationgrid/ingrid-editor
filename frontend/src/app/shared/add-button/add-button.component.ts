@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -31,14 +31,19 @@ import { MatButton } from "@angular/material/button";
 import { NgTemplateOutlet } from "@angular/common";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MatIcon } from "@angular/material/icon";
+
+export interface AddButtonOptions {
+  key: string;
+  value: string;
+  icon?: string;
+}
 
 @Component({
   selector: "ige-add-button",
   templateUrl: "./add-button.component.html",
   styleUrls: ["./add-button.component.scss"],
-  standalone: true,
   imports: [
     MatButton,
     NgTemplateOutlet,
@@ -67,7 +72,7 @@ export class AddButtonComponent implements OnInit {
 
   @Output() add = new EventEmitter();
 
-  _options: { key; value }[] = [];
+  _options: AddButtonOptions[] = [];
 
   constructor() {}
 

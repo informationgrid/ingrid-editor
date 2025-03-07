@@ -46,7 +46,7 @@
       }
     },
     "spatialGrid": {
-      "type": "object",
+      "type": ["null", "object"],
       "unevaluatedProperties": false,
       "properties": {
         "type": {
@@ -133,7 +133,52 @@
         "descriptions": {
           "type": "array",
           "items": {
-            "$ref": "../../general.schema.json#/definitions/KeyValue"
+            "_type": "string",
+            "uuidRef": ["null", "string"],
+            "url": ["null", "string"],
+            "identifier": ["null", "string"],
+            "date": {
+              "type": ["null", "string"],
+              "format": "date-time"
+            },
+            "dateType": {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            }
+          }
+        }
+      }
+    },
+    "propertiesGeoDataset": {
+      "type": "object",
+      "properties": {
+        "isAdVCompatible": {
+          "type": ["null", "boolean"]
+        },
+        "isHvd": {
+          "type": ["null", "boolean"]
+        },
+        "isOpenData": {
+          "type": ["null", "boolean"]
+        },
+        "isInspireIdentified": {
+          "type": ["null", "string"]
+        },
+        "subType": {
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "invekos": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            }
           }
         }
       }
@@ -141,27 +186,8 @@
   },
   "type": "object",
   "properties": {
-    "isAdVCompatible": {
-      "type": ["null", "boolean"]
-    },
-    "isOpenData": {
-      "type": ["null", "boolean"]
-    },
-    "isInspireIdentified": {
-      "type": ["null", "boolean"]
-    },
-    "isInspireConform": {
-      "type": ["null", "boolean"]
-    },
-    "subType": {
-      "anyOf": [
-        {
-          "$ref": "../../general.schema.json#/definitions/KeyValue"
-        },
-        {
-          "type": "null"
-        }
-      ]
+    "properties": {
+      "$ref": "#/definitions/propertiesGeoDataset"
     },
     "identifier": {
       "type": "string"
@@ -268,7 +294,7 @@
             "type": ["null", "number"]
           },
           "parameter": {
-            "type": "string"
+            "type": ["null", "string"]
           },
           "measureType": {
             "$ref": "../../general.schema.json#/definitions/KeyValue"
@@ -377,14 +403,6 @@
         "$ref": "../../general.schema.json#/definitions/KeyValue"
       }
     },
-    "invekos": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "$ref": "../../general.schema.json#/definitions/KeyValue"
-        }
-      }
-    },
     "invekosKeywords": {
       "type": "array",
       "items": {
@@ -448,7 +466,7 @@
                 "type": "string"
               },
               "description": {
-                "type": "string"
+                "type": ["null", "string"]
               }
             }
           }
@@ -499,7 +517,7 @@
             "$ref": "../../general.schema.json#/definitions/KeyValue"
           },
           "isInspire": {
-            "type": "boolean"
+            "type": ["null", "boolean"]
           },
           "explanation": {
             "type": ["null", "string"]

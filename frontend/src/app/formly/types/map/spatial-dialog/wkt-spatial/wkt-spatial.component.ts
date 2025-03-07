@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -29,7 +29,7 @@ import { Layer, Map } from "leaflet";
 import { LeafletService } from "../../leaflet.service";
 import { MatDialog } from "@angular/material/dialog";
 import { finalize } from "rxjs/operators";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MatFormField, MatHint, MatSuffix } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../../../directives/focus.directive";
@@ -42,7 +42,6 @@ import { FormErrorComponent } from "../../../../../+form/form-shared/ige-form-er
   selector: "ige-wkt-spatial",
   templateUrl: "./wkt-spatial.component.html",
   styleUrls: ["./wkt-spatial.component.scss"],
-  standalone: true,
   imports: [
     TranslocoDirective,
     MatFormField,

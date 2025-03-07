@@ -2,12 +2,19 @@
     <div left-side>Auf dieser Seite können die Kataloge verwaltet werden.</div>
 
     <div main-header class="flex-col justify-content-start align-items-stretch">
-        @if (profiles) {
-            <div>
-                <ige-add-button
-                    buttonType="flat"
-                    (add)="showCreateCatalogDialog()"
-                ></ige-add-button>
+        @if (profiles().length > 0) {
+            <div class="flex-row gap-12">
+                <div>
+                    <ige-add-button
+                        buttonType="flat"
+                        (add)="showCreateCatalogDialog()"
+                    ></ige-add-button>
+                </div>
+                <div>
+                    <button mat-stroked-button (click)="showImportDialog()">
+                        Importieren
+                    </button>
+                </div>
             </div>
         }
         @if (noAssignedCatalogs) {
@@ -19,9 +26,9 @@
     </div>
 
     <div main-content>
-        <div class="section-title">Aktiver Katalog</div>
-        <div class="flex-row" style="padding-bottom: 48px">
-            @if (activeCatalog | async; as catalog) {
+        <h2 class="section-title">Aktiver Katalog</h2>
+        <div class="flex-row padding-bottom">
+            @if (activeCatalog(); as catalog) {
                 <div class="catalog-wrapper">
                     <ng-container
                         [ngTemplateOutlet]="catContent"
@@ -31,12 +38,9 @@
             }
         </div>
 
-        <div class="section-title">Weitere Kataloge</div>
+        <h2 class="section-title">Weitere Kataloge</h2>
         <div class="flex-row flex-wrap gap-36">
-            @for (
-                cat of nonActiveCatalogs | async;
-                track trackByCatalogId($index, cat)
-            ) {
+            @for (cat of nonActiveCatalogs(); track cat.id) {
                 <div class="catalog-wrapper">
                     <ng-container
                         [ngTemplateOutlet]="catContent"
@@ -78,10 +82,14 @@
                         <button mat-menu-item (click)="chooseCatalog(cat.id)">
                             Aktivieren
                         </button>
+                        <button mat-menu-item (click)="exportCatalog(cat.id)">
+                            Exportieren
+                        </button>
                     </mat-menu>
                 </div>
 
                 <div class="title">{{ cat.label }}</div>
+                <div class="subtitle">{{ cat.id }}</div>
                 @if (cat.lastDocModification) {
                     <div class="subtitle">
                         Letzte Änderung am

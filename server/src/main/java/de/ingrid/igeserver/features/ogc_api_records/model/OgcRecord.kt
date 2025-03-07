@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -41,6 +41,7 @@ data class RecordCollection(
 
 data class Record(
     val id: JsonNode,
+    val isGeojson: Boolean?,
     val conformsTo: List<String>?,
     val type: String,
     val time: RecordTime?,
@@ -74,9 +75,7 @@ data class LimitAndOffset(
     val queryOffset: Int,
 )
 
-data class Bbox(
-    val lowerLeftLongitude: Float,
-    val lowerLeftLatitude: Float,
-    val upperRightLongitude: Float,
-    val uppperRightLatitude: Float,
+data class MoveRecordsDTO(
+    val recordId: String,
+    val folderId: String?,
 )

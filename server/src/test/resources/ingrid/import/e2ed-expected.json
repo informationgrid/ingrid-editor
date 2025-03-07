@@ -3,9 +3,11 @@
   "_uuid": "4915275a-733a-47cd-b1a6-1a3f1e976948",
   "_parent": "CBA54D12-110A-48BE-8BC9-66E5902F18F4",
   "_type": "InGridGeoDataset",
-  "isInspireIdentified": true,
-  "isAdVCompatible": true,
-  "isOpenData": true,
+  "properties": {
+    "isInspireIdentified": "notConform",
+    "isAdVCompatible": true,
+    "isOpenData": true
+  },
   "description": "siehe Originalplan",
   "alternateTitle": "Short",
   "parentIdentifier": "CBA54D12-110A-48BE-8BC9-66E5902F18F4",
@@ -388,8 +390,15 @@
       "source": {
         "descriptions": [
           {
-            "key": null,
-            "value": "Meine Datengrundlage"
+            "value": "Meine Datengrundlage",
+            "_type": "freeDescription"
+          },
+          {
+            "value": "Beschreibung der Datengrundlage eines Geodatensatzes",
+            "date": "2024-11-18T23:00:00.000Z",
+            "dateType": { "key": "1" },
+            "uuidRef": "00000000-0000-0000-0000-000000000000",
+            "_type": "internalDataOrigin"
           }
         ],
         "processStep": {
@@ -498,7 +507,6 @@
   "dataset": {
     "languages": ["150", "134"]
   },
-  "isInspireConform": false,
   "vectorSpatialRepresentation": [
     {
       "topologyLevel": {

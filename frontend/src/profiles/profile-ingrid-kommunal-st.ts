@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -49,8 +49,7 @@ class InGridKommunalStComponent extends InGridComponent {
     ].forEach((docType) => {
       docType.options.required.freeKeywords = true;
       docType.options.required.useLimitation = true;
-      docType.options.dynamicRequired.accessConstraints = undefined;
-      docType.options.required.accessConstraints = true;
+      docType.options.dynamicRequired.accessConstraints = () => true;
     });
   }
 }

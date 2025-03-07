@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -39,25 +39,15 @@ class KeycloakMockService : UserManagementService {
     @Autowired
     lateinit var config: DevelopmentProperties
 
-    override fun getUsersWithIgeRoles(): Set<User> {
-        return config.logins?.mapIndexed { index, _ -> mapUser(index) }?.toSet() ?: emptySet()
-    }
+    override fun getUsersWithIgeRoles(): Set<User> = config.logins?.mapIndexed { index, _ -> mapUser(index) }?.toSet() ?: emptySet()
 
-    override fun getUsers(): Set<User> {
-        return getUsersWithIgeRoles()
-    }
+    override fun getUsers(): Set<User> = getUsersWithIgeRoles()
 
-    override fun getLatestLoginDate(login: String): Date? {
-        return Date()
-    }
+    override fun getLatestLoginDate(login: String): Date? = Date()
 
-    override fun getRoles(principal: Authentication): Set<String> {
-        return principal.authorities.map { it.authority }.toSet()
-    }
+    override fun getRoles(principal: Authentication): Set<String> = principal.authorities.map { it.authority }.toSet()
 
-    override fun getName(principal: Principal): String {
-        return principal.name
-    }
+    override fun getName(principal: Principal): String = principal.name
 
     override fun getUser(login: String): User {
         val index = config.logins?.indexOf(login) ?: throw NotFoundException("Login not found $login")
@@ -70,10 +60,10 @@ class KeycloakMockService : UserManagementService {
     }
 
     private fun mapUser(index: Int) = User(
-        config.logins?.get(index) ?: "",
-        config.firstName?.get(index) ?: "",
-        config.lastName?.get(index) ?: "",
-        "${config.firstName?.get(index)}.${config.lastName?.get(index)}@test.com",
+        config.logins?.getOrNull(index) ?: "",
+        config.firstName?.getOrNull(index) ?: "",
+        config.lastName?.getOrNull(index) ?: "",
+        "${config.firstName?.getOrNull(index)}.${config.lastName?.getOrNull(index)}@test.com",
         "",
         "",
         "",
@@ -91,9 +81,7 @@ class KeycloakMockService : UserManagementService {
         email = "${config.firstName?.get(index)}.${config.lastName?.get(index)}@test.com"
     }
 
-    override fun getCurrentPrincipal(): Principal? {
-        return Principal { config.logins?.get(config.currentUser) ?: "unknown" }
-    }
+    override fun getCurrentPrincipal(): Principal? = Principal { config.logins?.get(config.currentUser) ?: "unknown" }
 
     override fun userExists(userId: String): Boolean {
         TODO("Not yet implemented")

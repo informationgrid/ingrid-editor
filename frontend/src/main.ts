@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2024 wemove digital solutions GmbH
+ * Copyright (C) 2023-2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -18,16 +18,16 @@
  * limitations under the Licence.
  */
 import {
-  APP_INITIALIZER,
   enableProdMode,
   ErrorHandler,
   importProvidersFrom,
+  inject,
   LOCALE_ID,
+  provideAppInitializer,
 } from "@angular/core";
 
 import { ConfigLoader } from "./app/config.loader";
 import { environment } from "./environments/environment";
-import { enableAkitaProdMode, persistState } from "@datorama/akita";
 import {
   HTTP_INTERCEPTORS,
   HttpClient,
@@ -43,7 +43,7 @@ import {
   MatDialog,
   MatDialogModule,
 } from "@angular/material/dialog";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import {
   DateAdapter,
   MAT_DATE_LOCALE,
@@ -68,7 +68,6 @@ import { rxStompServiceFactory } from "./app/rx-stomp-service-factory";
 import { FORMLY_CONFIG, FormlyModule } from "@ngx-formly/core";
 import { registerTranslateExtension } from "./app/formly/translate.extension";
 import { pluginProvider } from "./app/plugin.provider";
-import { AkitaNgDevtools } from "@datorama/akita-ngdevtools";
 import { KeycloakAngularModule } from "keycloak-angular";
 import { AngularSplitModule } from "angular-split";
 import { DragDropModule } from "@angular/cdk/drag-drop";
@@ -123,6 +122,7 @@ import { UnitInputComponent } from "./app/formly/types/unit-type/unit-input.comp
 import { UvpSectionsComponent } from "./app/formly/types/uvp-sections/uvp-sections.component";
 import { ReferencedDocumentsTypeComponent } from "./app/formly/types/referenced-documents-type/referenced-documents-type.component";
 import { DocumentReferenceTypeComponent } from "./app/formly/types/document-reference-type/document-reference-type.component";
+import { DocumentReferenceSelectorComponent } from "./app/formly/types/document-reference-selector/document-reference-selector.component";
 import { UpdateGetCapabilitiesComponent } from "./app/formly/types/update-get-capabilities/update-get-capabilities.component";
 import { PreviewImageComponent } from "./app/formly/types/preview-image/preview-image.component";
 import { PrintTypeComponent } from "./app/formly/types/print/print-type.component";
@@ -138,12 +138,21 @@ import {
 } from "./app/formly/input.validators";
 import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
 import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
+import { MetadataTypeComponent } from "./app/formly/types/metadata-type/metadata-type.component";
+import { MatDatepickerIntl } from "@angular/material/datepicker";
+import { GermanDateIntl } from "./app/services/german-date.intl";
+import { GeneralStore } from "./app/store/general.store";
+import {
+  MatomoInitializerService,
+  provideMatomo,
+  withRouter,
+} from "ngx-matomo-client";
 
 if (environment.production) {
   enableProdMode();
-  enableAkitaProdMode();
 }
 
+/*
 persistState({
   include: ["session"],
   preStorageUpdate: (storeName: string, state: any) => {
@@ -160,13 +169,11 @@ persistState({
     return state;
   },
 });
+*/
 
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(
-      environment.production
-        ? []
-        : AkitaNgDevtools.forRoot({ logTrace: false }),
       KeycloakAngularModule,
       AngularSplitModule,
       DragDropModule,
@@ -244,12 +251,20 @@ bootstrapApplication(AppComponent, {
             component: DocumentReferenceTypeComponent,
           },
           {
+            name: "documentReferenceSelector",
+            component: DocumentReferenceSelectorComponent,
+          },
+          {
             name: "updateGetCapabilities",
             component: UpdateGetCapabilitiesComponent,
           },
           {
             name: "previewImage",
             component: PreviewImageComponent,
+          },
+          {
+            name: "metadata",
+            component: MetadataTypeComponent,
           },
           /* FOR PREVIEW */
           {
@@ -270,6 +285,10 @@ bootstrapApplication(AppComponent, {
           },
           {
             name: "repeatListPrint",
+            component: PrintTypeComponent,
+          },
+          {
+            name: "repeatChipPrint",
             component: PrintTypeComponent,
           },
           {
@@ -359,19 +378,19 @@ bootstrapApplication(AppComponent, {
     ),
     provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
     // make sure we are authenticated by keycloak before bootstrap
-    {
-      provide: APP_INITIALIZER,
-      useFactory: ConfigLoader,
-      deps: [
-        ConfigService,
-        AuthenticationFactory,
-        Router,
-        HttpClient,
-        MatDialog,
-        TranslocoService,
-      ],
-      multi: true,
-    },
+    provideAppInitializer(() => {
+      const initializerFn = ConfigLoader(
+        inject(ConfigService),
+        inject(AuthenticationFactory),
+        inject(Router),
+        inject(HttpClient),
+        inject(MatDialog),
+        inject(TranslocoService),
+        inject(GeneralStore),
+        inject(MatomoInitializerService),
+      );
+      return initializerFn();
+    }),
     // set locale for dates
     {
       provide: LOCALE_ID,
@@ -384,6 +403,10 @@ bootstrapApplication(AppComponent, {
     {
       provide: DateAdapter,
       useClass: GermanDateAdapter,
+    },
+    {
+      provide: MatDatepickerIntl,
+      useClass: GermanDateIntl,
     },
     // add authorization header to all requests
     {
@@ -419,6 +442,8 @@ bootstrapApplication(AppComponent, {
         panelClass: "mat-dialog-override",
         hasBackdrop: true,
         maxWidth: "min(950px, 90vw)",
+        minWidth: "min(500px, 100%)",
+        minHeight: "min(0px, 100%)",
         role: "dialog",
         autoFocus: "dialog",
         restoreFocus: true,
@@ -456,5 +481,12 @@ bootstrapApplication(AppComponent, {
     // PLUGINS
     pluginProvider,
     provideAnimations(),
+    // Matomo
+    provideMatomo(
+      {
+        mode: "deferred",
+      },
+      withRouter(),
+    ),
   ],
 });
