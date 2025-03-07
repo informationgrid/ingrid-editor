@@ -60,10 +60,10 @@
             </div>
 
             <ige-card-box
+                data-cy="card-latest-docs"
                 label="{{ t('mostRecent') }}"
                 nameOfToggle="Von mir"
                 (toggle)="updateRecent($event)"
-                data-cy="card-latest-docs"
             >
                 <ige-document-list-item
                     [docs]="recentDocs()"
