@@ -31,11 +31,11 @@ class IBusIndexer(override val name: String, private val iBus: IBus) : IIndexMan
     val log = logger()
 
     override fun onFinishIndexAll() {
-        TODO("Not yet implemented")
+        // nothing to do here
     }
 
     override fun setCatalogId(catalogId: String) {
-        TODO("Not yet implemented")
+        // nothing to do here
     }
 
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? {

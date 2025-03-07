@@ -1,3 +1,5 @@
+package de.ingrid.igeserver.services.csw
+
 import de.ingrid.utils.ElasticDocument
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -40,7 +42,7 @@ class CSWClient(
     }
 
     fun insertOrUpdate(doc: ElasticDocument, catalogId: String, transactionId: String) {
-        val response = doc.get("idf").toString()
+        val response = doc["idf"].toString()
         val idfXml = documentBuilder.parse(InputSource(StringReader(response)))
         val transformedXml = transformXml(idfXml)
 
@@ -58,7 +60,7 @@ class CSWClient(
     }
 
     fun delete(uuid: String) {
-        val deleteRequest = createDeleteRequest(uuid.toString())
+        val deleteRequest = createDeleteRequest(uuid)
         val deleteResponse = executeCswXMLPostRequest(getOperationEndpoint("Transaction", "POST"), deleteRequest)
         handleCswTransactionResponse(deleteResponse, "Delete")
     }
@@ -82,7 +84,7 @@ class CSWClient(
 
         try {
             val doc = documentBuilder.parse(InputSource(StringReader(response)))
-            val transactionSummaryNode = doc.documentElement.getElementsByTagNameNS("http://www.opengis.net/cat/csw/2.0.2", "TransactionSummary").item(0) as? org.w3c.dom.Element
+            val transactionSummaryNode = doc.documentElement.getElementsByTagNameNS("http://www.opengis.net/cat/csw/2.0.2", "TransactionSummary").item(0) as? Element
 
             if (transactionSummaryNode != null) {
                 val count = when (operation) {
@@ -102,16 +104,8 @@ class CSWClient(
         }
     }
 
-    private fun extractIdentifiers(response: String): List<String> {
-        val document = documentBuilder.parse(InputSource(StringReader(response)))
-        val records = document.getElementsByTagNameNS("http://purl.org/dc/elements/1.1/", "identifier")
-        return (0 until records.length).mapNotNull { i ->
-            records.item(i).textContent
-        }
-    }
-
-    fun recordExists(doc: ElasticDocument): Boolean = runBlocking {
-        val uuid = doc.get("t01_object.id")
+    private fun recordExists(doc: ElasticDocument): Boolean = runBlocking {
+        val uuid = doc["t01_object.id"]
         try {
             val response: String = client.get( getOperationEndpoint("GetRecordById", "GET") + "?REQUEST=GetRecordById&ID=$uuid&SERVICE=CSW&VERSION=2.0.2&elementSetName=brief&startPosition=1&maxRecords=1").bodyAsText()
             val cswResponse = documentBuilder.parse(InputSource(StringReader(response)))
@@ -131,12 +125,12 @@ class CSWClient(
 
             val endpoints = mutableMapOf<String, String>()
 
-            val getRecordsPost = doc.evaluateXPath("//ows:Operation[@name='GetRecords']/ows:DCP/ows:HTTP/ows:Post").item(0) as? org.w3c.dom.Element
-            val getRecordsGet = doc.evaluateXPath("//ows:Operation[@name='GetRecords']/ows:DCP/ows:HTTP/ows:Get").item(0) as? org.w3c.dom.Element
-            val getRecordByIdPost = doc.evaluateXPath("//ows:Operation[@name='GetRecordById']/ows:DCP/ows:HTTP/ows:Post").item(0) as? org.w3c.dom.Element
-            val getRecordByIdGet = doc.evaluateXPath("//ows:Operation[@name='GetRecordById']/ows:DCP/ows:HTTP/ows:Get").item(0) as? org.w3c.dom.Element
-            val transactionPost = doc.evaluateXPath("//ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post").item(0) as? org.w3c.dom.Element
-            val transactionGet = doc.evaluateXPath("//ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Get").item(0) as? org.w3c.dom.Element
+            val getRecordsPost = doc.evaluateXPath("//ows:Operation[@name='GetRecords']/ows:DCP/ows:HTTP/ows:Post").item(0) as? Element
+            val getRecordsGet = doc.evaluateXPath("//ows:Operation[@name='GetRecords']/ows:DCP/ows:HTTP/ows:Get").item(0) as? Element
+            val getRecordByIdPost = doc.evaluateXPath("//ows:Operation[@name='GetRecordById']/ows:DCP/ows:HTTP/ows:Post").item(0) as? Element
+            val getRecordByIdGet = doc.evaluateXPath("//ows:Operation[@name='GetRecordById']/ows:DCP/ows:HTTP/ows:Get").item(0) as? Element
+            val transactionPost = doc.evaluateXPath("//ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Post").item(0) as? Element
+            val transactionGet = doc.evaluateXPath("//ows:Operation[@name='Transaction']/ows:DCP/ows:HTTP/ows:Get").item(0) as? Element
 
             getRecordsPost?.let { endpoints["GetRecords-POST"] = it.getAttribute("xlink:href") }
             getRecordsGet?.let { endpoints["GetRecords-GET"] = it.getAttribute("xlink:href") }
@@ -166,7 +160,7 @@ class CSWClient(
         }
     }
 
-    private fun createCswTransactionRequest(xmlDoc: org.w3c.dom.Document, operation: String): String {
+    private fun createCswTransactionRequest(xmlDoc: Document, operation: String): String {
         val elementName = if (operation == "Update") "csw:Update" else "csw:Insert"
         return """
             <csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2">
@@ -220,7 +214,7 @@ class CSWClient(
         """.trimIndent()
     }
 
-    private fun transformDocumentToString(doc: org.w3c.dom.Document): String {
+    private fun transformDocumentToString(doc: Document): String {
         val writer = StringWriter()
         transformerFactory.newTransformer().apply {
             setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes")
@@ -229,15 +223,14 @@ class CSWClient(
         return writer.toString()
     }
 
-    private fun transformXml(xmlDoc: org.w3c.dom.Document): org.w3c.dom.Document {
-        val xslStream = this.javaClass.classLoader.getResourceAsStream(xslResourcePath) // Use the path
-        if (xslStream == null) {
-            throw IllegalStateException("XSLT resource not found at: $xslResourcePath") // Handle missing resource
-        }
+    private fun transformXml(xmlDoc: Document): Document {
+        val xslStream = this.javaClass.classLoader.getResourceAsStream(xslResourcePath)
+            ?: throw IllegalStateException("XSLT resource not found at: $xslResourcePath") // Handle missing resource
+        // Use the path
         return transformerFactory.newTransformer(javax.xml.transform.stream.StreamSource(xslStream)).run {
             val result = javax.xml.transform.dom.DOMResult()
             transform(DOMSource(xmlDoc), result)
-            result.node as org.w3c.dom.Document
+            result.node as Document
         }
     }
 
@@ -277,7 +270,7 @@ class CSWClient(
         return xpath.evaluate(expression, this, javax.xml.xpath.XPathConstants.NODESET) as NodeList
     }
 
-    fun Document.addDescriptiveKeywordsWithThesaurus(
+    private fun Document.addDescriptiveKeywordsWithThesaurus(
         keywords: List<String>,
         thesaurusTitle: String,
         thesaurusPublicationDate: String, // Format: "yyyy-MM-dd"

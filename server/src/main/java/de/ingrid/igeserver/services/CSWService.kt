@@ -19,7 +19,7 @@
  */
 package de.ingrid.igeserver.services
 
-import CSWClient
+import de.ingrid.igeserver.services.csw.CSWClient
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CSWConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.java.Java

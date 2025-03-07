@@ -18,17 +18,15 @@
  * limitations under the Licence.
  */
 package de.ingrid.igeserver.index
-import CSWClient
+import de.ingrid.igeserver.services.csw.CSWClient
 import de.ingrid.elasticsearch.IndexInfo
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.utils.ElasticDocument
 import kotlinx.coroutines.runBlocking
-import org.apache.logging.log4j.kotlin.logger
 import java.time.Instant
 import java.util.*
 
 class CSWIndexer(override val name: String, private val client: CSWClient) : IIndexManager {
-    private val log = logger()
 
     private var transactionId : String = "transaction:" + generateTimeBasedTransactionId()
     private lateinit var catalogId : String
@@ -38,10 +36,10 @@ class CSWIndexer(override val name: String, private val client: CSWClient) : IIn
     }
 
     override fun setCatalogId(catalogId: String) {
-        this.catalogId = "catalog:" + catalogId
+        this.catalogId = "catalog:$catalogId"
     }
 
-    override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? = runBlocking {
+    override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String = runBlocking {
         client.getName()
     }
 
@@ -84,7 +82,7 @@ class CSWIndexer(override val name: String, private val client: CSWClient) : IIn
         return listOf(DocumentCategory.DATA)
     }
 
-    fun generateTimeBasedTransactionId(): String {
+    private fun generateTimeBasedTransactionId(): String {
         val timestamp = Instant.now().toEpochMilli().toString(36) // Base 36 for shorter timestamp
         val randomUUID = UUID.randomUUID().toString().replace("-", "").substring(0,10) // shorter UUID
 
