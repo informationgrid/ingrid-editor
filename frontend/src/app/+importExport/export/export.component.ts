@@ -45,7 +45,7 @@ import { HttpErrorResponse, HttpResponse } from "@angular/common/http";
 import { IgeException } from "../../server-validation.util";
 import { TreeComponent } from "../../+form/sidebars/tree/tree.component";
 import { MatSelect, MatSelectChange } from "@angular/material/select";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { FeatureFlagDirective } from "../../directives/feature-flag.directive";
 import { MatButton, MatIconButton } from "@angular/material/button";

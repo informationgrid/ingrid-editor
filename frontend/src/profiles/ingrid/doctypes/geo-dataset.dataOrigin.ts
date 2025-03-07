@@ -22,6 +22,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { GeoDatasetDoctype } from "./geo-dataset.doctype";
 import { DataOriginViewComponent } from "../components/data-origin-view/data-origin-view.component";
 import { DocumentService } from "../../../app/services/document/document.service";
+import { DocumentWithMetadata } from "src/app/models/ige-document";
 
 export function dataOrigin(
   geoDatasetDoctype: GeoDatasetDoctype,
@@ -71,37 +72,11 @@ export function dataOrigin(
                   return e.type === "valueChanges" && e.field.key === "uuidRef";
                 }),
                 tap((value) => {
-                  if (
-                    field.form.value.date === null &&
-                    field.form.value.dateType === null
-                  ) {
+                  const formValue = field.form.value;
+                  if (formValue.date === null && formValue.dateType === null) {
                     documentService
                       .load(value.value, false, false, true)
-                      .subscribe((doc) => {
-                        const sortedTemporalEvents =
-                          doc.document.temporal.events.sort((a, b) => {
-                            return (
-                              new Date(b.referenceDate).getTime() -
-                              new Date(a.referenceDate).getTime()
-                            );
-                          });
-                        if (sortedTemporalEvents.length === 0) {
-                          console.warn("No temporal events found!");
-                          return;
-                        }
-                        const allRevisionEvents = sortedTemporalEvents.filter(
-                          (event) => event.referenceDateType.key === "3",
-                        );
-                        const revisionFound = allRevisionEvents.length > 0;
-                        field.formControl.root.patchValue({
-                          date: revisionFound
-                            ? allRevisionEvents[0].referenceDate
-                            : sortedTemporalEvents[0].referenceDate,
-                          dateType: revisionFound
-                            ? allRevisionEvents[0].referenceDateType
-                            : sortedTemporalEvents[0].referenceDateType,
-                        });
-                      });
+                      .subscribe((doc) => loadAndSetEvent(doc, field));
                   }
                 }),
               );
@@ -176,4 +151,41 @@ export function dataOrigin(
       ],
     },
   );
+}
+
+function loadAndSetEvent(doc: DocumentWithMetadata, field: FormlyFieldConfig) {
+  const sortedTemporalEvents = getSortedEvents(doc);
+
+  if (sortedTemporalEvents.length === 0) {
+    console.warn("No temporal events found!");
+    return;
+  }
+  const allRevisionEvents = sortedTemporalEvents.filter(
+    (event) => event.referenceDateType.key === "3",
+  );
+  const revisionFound = allRevisionEvents.length > 0;
+  field.formControl.root.patchValue({
+    date: revisionFound
+      ? allRevisionEvents[0].referenceDate
+      : sortedTemporalEvents[0].referenceDate,
+    dateType: revisionFound
+      ? allRevisionEvents[0].referenceDateType
+      : sortedTemporalEvents[0].referenceDateType,
+  });
+}
+
+function getSortedEvents(doc: DocumentWithMetadata) {
+  const events = doc.document.temporal.events;
+  if (
+    events.length <= 0 ||
+    events[0].referenceDate == null ||
+    events[0].referenceDateType == null
+  )
+    return;
+
+  return events.sort((a, b) => {
+    return (
+      new Date(b.referenceDate).getTime() - new Date(a.referenceDate).getTime()
+    );
+  });
 }

@@ -37,7 +37,7 @@ import {
 } from "../+form/dialogs/create/create-node.component";
 import { MessageService } from "../services/messages/message.service";
 import { Message } from "../services/messages/message";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { QuickSearchComponent } from "./quick-search/quick-search.component";
 import { ActionButtonComponent } from "../shared/action-button/action-button.component";
 import { CardBoxComponent } from "../shared/card-box/card-box.component";
@@ -176,7 +176,9 @@ export class DashboardComponent implements OnInit {
     this.docService.findRecentPublished(fromCurrentUser);
   }
 
+  showExpiredFromCurrentUser = signal<boolean>(false);
   updateExpired(fromCurrentUser: boolean = false) {
     this.docService.findExpired(fromCurrentUser);
+    this.showExpiredFromCurrentUser.set(fromCurrentUser);
   }
 }

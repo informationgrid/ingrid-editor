@@ -43,7 +43,7 @@ import {
   MatDialog,
   MatDialogModule,
 } from "@angular/material/dialog";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import {
   DateAdapter,
   MAT_DATE_LOCALE,

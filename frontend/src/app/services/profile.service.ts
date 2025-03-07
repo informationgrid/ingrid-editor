@@ -20,20 +20,20 @@
 import { inject, Injectable, Signal, signal } from "@angular/core";
 import { ConfigService, UserInfo } from "./config/config.service";
 import { Doctype } from "./formular/doctype";
-import { ProfileAbstract } from "../store/profile/profile.model";
+import { DoctypeAbstract } from "../store/doctype/doctype.model";
 import { ContextHelpService } from "./context-help/context-help.service";
 import { forkJoin } from "rxjs";
 import { tap } from "rxjs/operators";
 import { Metadata } from "../models/ige-document";
-import { ProfileStore } from "../store/profile/profile.store";
-import { UiState, UiStore } from "../store/ui.store";
+import { DoctypeStore } from "../store/doctype/doctype.store";
+import { UiStore } from "../store/ui.store";
 import { GeneralStore } from "../store/general.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class ProfileService {
-  private profileStore = inject(ProfileStore);
+  private doctypeStore = inject(DoctypeStore);
   private generalStore = inject(GeneralStore);
   private uiStore = inject(UiStore);
   private doctypes = signal<Doctype[]>([]);
@@ -60,12 +60,12 @@ export class ProfileService {
     );
   }
 
-  getProfiles(): Signal<Doctype[]> {
+  getDoctypes(): Signal<Doctype[]> {
     return this.doctypes;
   }
 
-  getProfile(id: string): Doctype {
-    return this.doctypes().find((profile) => profile.id === id);
+  getDoctype(id: string): Doctype {
+    return this.doctypes().find((doctype) => doctype.id === id);
   }
 
   getDocumentIcon(docType: string): string {
@@ -85,21 +85,21 @@ export class ProfileService {
     return iconClass[0];
   }
 
-  private mapDocumentTypes(doctypes: Doctype[]): ProfileAbstract[] {
+  private mapDocumentTypes(doctypes: Doctype[]): DoctypeAbstract[] {
     return doctypes.map((doctype) => {
-      return <ProfileAbstract>{
+      return <DoctypeAbstract>{
         id: doctype.id,
         label: doctype.label,
         iconClass: doctype.iconClass,
-        isAddressProfile: doctype.isAddressType,
+        isAddressDoctype: doctype.isAddressType,
         addressType: doctype.addressType,
         hasOptionalFields: doctype.hasOptionalFields,
       };
     });
   }
 
-  registerProfiles(doctypes: Doctype[]) {
-    console.debug("Registering profile");
+  registerDoctypes(doctypes: Doctype[]) {
+    console.debug("Registering doctypes");
     this.doctypes.set(doctypes);
 
     // TODO: get ContextHelpIDs of all document types at once to improve speed
@@ -110,7 +110,7 @@ export class ProfileService {
     forkJoin(helpIdsObservables)
       .pipe(
         tap((results) => this.initDocumentTypes(results)),
-        tap(() => this.finishProfileInitialization()),
+        tap(() => this.finishDoctypesInitialization()),
       )
       .subscribe();
   }
@@ -135,9 +135,9 @@ export class ProfileService {
     results.forEach((result, index) => this.doctypes()[index].init(result));
   }
 
-  private finishProfileInitialization() {
-    this.profileStore.set(this.mapDocumentTypes(this.doctypes()));
-    this.generalStore.setProfilesLoaded();
+  private finishDoctypesInitialization() {
+    this.doctypeStore.set(this.mapDocumentTypes(this.doctypes()));
+    this.generalStore.setDoctypesLoaded();
   }
 
   updateUIProfileStore(hideFormHeaderInfos: string[]) {

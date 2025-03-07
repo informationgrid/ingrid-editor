@@ -54,7 +54,7 @@ import {
   ResearchService,
 } from "../../+research/research.service";
 import { DocEventsService } from "../event/doc-events.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { TagRequest } from "../../models/tag-request.model";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { CatalogService } from "../../+catalog/services/catalog.service";
@@ -201,7 +201,7 @@ export class DocumentService {
           page: 1,
           pageSize: 5,
         },
-        ["selectOnlyPublished"],
+        ["selectConditions"],
       ),
       this.researchService.search(
         "",

@@ -36,44 +36,45 @@ export class FormularService {
 
   data = {};
 
-  currentProfile: string;
+  currentDoctypeId: string;
 
-  private profileDefinitions: Signal<Doctype[]> = this.profiles.getProfiles();
+  private availableDoctypes: Signal<Doctype[]> = this.profile.getDoctypes();
 
   sections$ = new BehaviorSubject<string[]>([]);
-  private profileSections: string[] = [];
+  private doctypeSections: string[] = [];
 
-  constructor(private profiles: ProfileService) {}
+  constructor(private profile: ProfileService) {}
 
-  getFields(profile: string): FormlyFieldConfig[] {
+  getFields(doctypeId: string): FormlyFieldConfig[] {
     let fields: FormlyFieldConfig[];
 
-    const nextProfile = this.getProfile(profile);
+    const nextDoctype = this.getDoctype(doctypeId);
 
-    if (nextProfile) {
-      fields = nextProfile.getFields().slice(0);
+    if (nextDoctype) {
+      fields = nextDoctype.getFields().slice(0);
 
-      this.currentProfile = profile;
+      this.currentDoctypeId = doctypeId;
 
       // return a copy of our fields (immutable data!)
       return fields; // .sort((a, b) => a.order - b.order);
     } else {
-      throw new Error("Document type not found: " + profile);
+      throw new Error("Document type not found: " + doctypeId);
     }
   }
 
-  private getProfile(id: string): Doctype {
-    if (this.profileDefinitions()) {
-      const profile = this.profileDefinitions().find((p) => p.id === id);
-      if (!profile) {
-        // throw Error('Unknown profile: ' + id);
-        console.error("Unknown profile: " + id);
-        return null;
-      }
-      return profile;
-    } else {
+  private getDoctype(id: string): Doctype {
+    const doctypes = this.availableDoctypes();
+    if (!doctypes) {
       return null;
     }
+
+    const doctype = doctypes.find((p) => p.id === id);
+    if (!doctype) {
+      console.error("Unknown doctype: " + id);
+      return null;
+    }
+
+    return doctype;
   }
 
   setSelectedDocuments(docs: DocumentAbstract[], isAddress: boolean) {
@@ -87,14 +88,14 @@ export class FormularService {
     this.uiStore.setSidebarWidth(size);
   }
 
-  getSectionsFromProfile(profile: FormlyFieldConfig[]): void {
+  getSectionsForDoctype(fields: FormlyFieldConfig[]): void {
     const getSectionItem = (item: FormlyFieldConfig) => {
       return item?.wrappers?.indexOf("section") >= 0
         ? [item]
         : (item.fieldGroup ?? []);
     };
 
-    of(profile)
+    of(fields)
       .pipe(
         mergeMap((items) => items),
         mergeMap((item) => getSectionItem(item)),
@@ -103,7 +104,7 @@ export class FormularService {
         toArray(),
       )
       .subscribe((sections) => {
-        this.profileSections = sections;
+        this.doctypeSections = sections;
         this.sections$.next(sections);
       });
   }
@@ -111,7 +112,7 @@ export class FormularService {
   setAdditionalSections(sections: string[]) {
     // prevent ExpressionChangedAfterItHasBeenCheckedError
     setTimeout(() =>
-      this.sections$.next([...this.profileSections, ...sections]),
+      this.sections$.next([...this.doctypeSections, ...sections]),
     );
   }
 }

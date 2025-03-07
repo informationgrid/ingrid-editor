@@ -51,7 +51,7 @@ class InGridBastComponent extends InGridComponent {
 
   private modifyFormFieldConfiguration() {
     const openDataActiveNotRequired = (field: FormlyFieldConfig) =>
-      !field.form.root.get("isOpenData")?.value;
+      !field.form.root.get("properties")?.value?.isOpenData;
     [this.geoDataset, this.geoService].forEach((docType) => {
       const options = docType.options;
       options.required.resourceDateType = true;

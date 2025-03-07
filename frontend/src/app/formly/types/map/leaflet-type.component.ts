@@ -40,7 +40,7 @@ import { debounceTime, distinctUntilChanged, tap } from "rxjs/operators";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
-import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import { MatButton, MatFabButton } from "@angular/material/button";
 import { MatTooltip } from "@angular/material/tooltip";
 import { NgClass } from "@angular/common";

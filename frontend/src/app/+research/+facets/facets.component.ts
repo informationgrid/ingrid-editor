@@ -62,7 +62,7 @@ import {
   MatDatepickerInput,
   MatDatepickerToggle,
 } from "@angular/material/datepicker";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MatSelect } from "@angular/material/select";
 import { MatOption } from "@angular/material/core";
 import { AsyncPipe, DecimalPipe } from "@angular/common";

@@ -34,7 +34,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatButtonModule } from "@angular/material/button";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 
 import { firstValueFrom } from "rxjs";
 import { map } from "rxjs/operators";
@@ -148,7 +148,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
       doc.isFolder =
         igeDoc._type === "FOLDER" || igeDoc._type.endsWith("OrganisationDoc");
       doc.title = igeDoc.title;
-      doc.iconClass = this.profileService.getProfile(igeDoc._type).iconClass;
+      doc.iconClass = this.profileService.getDoctype(igeDoc._type).iconClass;
 
       // downgrade permission if rights are not sufficient
       this.adjustPermission(doc);
