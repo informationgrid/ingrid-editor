@@ -60,10 +60,10 @@
             </div>
 
             <ige-card-box
+                data-cy="card-latest-docs"
                 label="{{ t('mostRecent') }}"
                 nameOfToggle="Von mir"
                 (toggle)="updateRecent($event)"
-                data-cy="card-latest-docs"
             >
                 <ige-document-list-item
                     [docs]="recentDocs()"
@@ -87,6 +87,7 @@
 
             @if (oldestExpiredDocs().length > 0) {
                 <ige-card-box
+                    data-cy="oldest-expired-docs"
                     label="{{ t('oldestExpired') }}"
                     endBtnTitle="Zur übersicht"
                     (endBtnOnClick)="goToExpiryPage()"
