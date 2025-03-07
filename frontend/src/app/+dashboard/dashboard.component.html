@@ -87,6 +87,7 @@
 
             @if (oldestExpiredDocs().length > 0) {
                 <ige-card-box
+                    data-cy="oldest-expired-docs"
                     label="{{ t('oldestExpired') }}"
                     endBtnTitle="Zur übersicht"
                     (endBtnOnClick)="goToExpiryPage()"
