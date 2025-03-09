@@ -99,7 +99,7 @@ fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadIn
     ?: emptyList()
 
 fun sqlDecisionDateBefore(catalogId: String, date: OffsetDateTime): String = """
-    SELECT dw.id, doc.id
+    SELECT dw.id, doc.id, doc.type
     FROM catalog,
          document_wrapper dw,
          document doc,
