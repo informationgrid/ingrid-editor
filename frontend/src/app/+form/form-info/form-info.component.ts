@@ -76,7 +76,8 @@ export class FormInfoComponent implements OnInit {
   private configService = inject(ConfigService);
 
   private hideUnarchiveForAuthors: boolean =
-    inject(BehaviourService).getBehaviour("plugin.archive").data.hideForAuthors;
+    inject(BehaviourService).getBehaviour("plugin.archive").data
+      ?.hideForAuthors ?? false;
 
   path = computed<ShortTreeNode[]>(() => {
     if (this.forAddress()) {
