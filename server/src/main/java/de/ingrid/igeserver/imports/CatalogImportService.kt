@@ -60,7 +60,7 @@ class CatalogImportService(
         importQueries(exportedCatalog.query, catalogId, userMigrationMap)
 
         val documentWrapperMigrationMap = importDocumentWrapper(exportedCatalog.documentWrapper, catalogId, userMigrationMap)
-        createObjectIdentities(documentWrapperMigrationMap.values.toList())
+        createObjectIdentities(documentWrapperMigrationMap.values.toList(), catalogId)
         log.info("Imported ${documentWrapperMigrationMap.size} DocumentWrappers")
 
         importDocuments(exportedCatalog.document, catalogId, userMigrationMap)
@@ -167,7 +167,7 @@ class CatalogImportService(
         return wrapperIdMigrationMap
     }
 
-    private fun createObjectIdentities(wrapperIds: List<Int>) {
+    private fun createObjectIdentities(wrapperIds: List<Int>, catalogId: Int) {
         @Suppress("UNCHECKED_CAST")
         val objectIdentityData = wrapperIds.map { wrapperId ->
             mapOf(
@@ -179,6 +179,31 @@ class CatalogImportService(
             )
         } as List<Map<String?, Any?>>
         importToTable("acl_object_identity", objectIdentityData)
+        // set acl_object_identity.parent_object according to the parent_id of the DocumentWrapper
+        updateACLParents(catalogId)
+    }
+
+    private fun updateACLParents(catalogId: Int) {
+        ClosableTransaction(transactionManager).use {
+            entityManager.createNativeQuery(
+                """
+            UPDATE acl_object_identity aoi
+            SET parent_object = (
+                SELECT parent_aoi.id
+                FROM document_wrapper dw
+                         JOIN acl_object_identity parent_aoi ON dw.parent_id = CAST(parent_aoi.object_id_identity AS INTEGER)
+                WHERE dw.id = CAST(aoi.object_id_identity AS INTEGER)
+                  AND dw.catalog_id = $catalogId
+            )
+            WHERE EXISTS (
+                SELECT 1
+                FROM document_wrapper dw
+                WHERE dw.id = CAST(aoi.object_id_identity AS INTEGER)
+                  AND dw.catalog_id = $catalogId
+                );
+                """.trimIndent(),
+            ).executeUpdate()
+        }
     }
 
     private fun importDocuments(document: List<MutableMap<String?, Any?>>, catalogId: Int, userMigrationMap: Map<Int, Int>) {

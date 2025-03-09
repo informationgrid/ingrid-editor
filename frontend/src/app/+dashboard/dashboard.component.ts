@@ -176,7 +176,9 @@ export class DashboardComponent implements OnInit {
     this.docService.findRecentPublished(fromCurrentUser);
   }
 
+  showExpiredFromCurrentUser = signal<boolean>(false);
   updateExpired(fromCurrentUser: boolean = false) {
     this.docService.findExpired(fromCurrentUser);
+    this.showExpiredFromCurrentUser.set(fromCurrentUser);
   }
 }

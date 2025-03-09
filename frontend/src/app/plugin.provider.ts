@@ -40,6 +40,7 @@ import { DefaultUserBehaviour } from "./+catalog/+behaviours/system/User/default
 import { ShowDocumentPermissionsHandlerPlugin } from "./+catalog/+behaviours/system/ShowDocumentPermissions/show-document-permissions-handler";
 import { FieldsToggleButtonBehaviour } from "./+catalog/+behaviours/system/FieldsToggleButton/fields-toggle-button.behaviour";
 import { ExpiredDocumentsBehaviour } from "./+catalog/+behaviours/system/expiredDocuments/expired-documents.behaviour";
+import { DocumentsAsParentBehaviour } from "./+catalog/+behaviours/system/AllowDocumentsAsParent/documents-as-parent.behaviour";
 import { ArchivePlugin } from "./+catalog/+behaviours/system/Archive/archive.plugin";
 
 export const pluginProvider = [
@@ -56,6 +57,7 @@ export const pluginProvider = [
   { provide: PluginToken, useClass: TagsBehaviour, multi: true },
   { provide: PluginToken, useClass: FieldsToggleButtonBehaviour, multi: true },
   { provide: PluginToken, useClass: AssignedUserBehaviour, multi: true },
+  { provide: PluginToken, useClass: DocumentsAsParentBehaviour, multi: true },
   {
     provide: PluginToken,
     useClass: DeleteEmptyFoldersBehaviour,

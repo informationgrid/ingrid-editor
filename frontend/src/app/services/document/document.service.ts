@@ -212,7 +212,7 @@ export class DocumentService {
           page: 1,
           pageSize: 5,
         },
-        ["selectOnlyPublished"],
+        ["selectConditions"],
       ),
       this.researchService.search(
         "",

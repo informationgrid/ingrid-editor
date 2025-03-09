@@ -222,7 +222,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
         }
     }
 
-    fun getDisplayableQuality(quality: Quality): DisplayableQuality = DisplayableQuality(
+    private fun getDisplayableQuality(quality: Quality): DisplayableQuality = DisplayableQuality(
         nameOfMeasure = codelists.getValue(
             qualitytypeCodelistMap.getOrDefault(quality._type, ""),
             quality.measureType,
@@ -252,14 +252,18 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
     )
 
     val lineageSourceDescriptions =
-        data.dataQualityInfo?.lineage?.source?.descriptions?.map {
+        data.dataQualityInfo?.lineage?.source?.descriptions?.mapNotNull {
             val title: String?
             val identifier: String?
             when (it._type) {
                 "internalDataOrigin" -> {
-                    val doc = documentService.getLastPublishedDocument(catalogIdentifier, it.uuidRef!!, false)
-                    title = doc.title
-                    identifier = doc.data.getString("identifier")
+                    try {
+                        val doc = documentService.getLastPublishedDocument(catalogIdentifier, it.uuidRef!!, false)
+                        title = doc.title
+                        identifier = doc.data.getString("identifier")?.let { id -> addNamespaceIfNeeded(id) }
+                    } catch (e: Exception) {
+                        return@mapNotNull null
+                    }
                 }
                 else -> {
                     title = it.title

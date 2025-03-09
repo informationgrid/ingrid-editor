@@ -70,7 +70,7 @@ class UVPComponent {
     this.addBehaviour(negativeAssessmentDoctype);
     this.addStylesheet();
 
-    profileService.registerProfiles([
+    profileService.registerDoctypes([
       folder,
       approvalProcedureDoctype,
       spatialPlanningProcedureDoctype,

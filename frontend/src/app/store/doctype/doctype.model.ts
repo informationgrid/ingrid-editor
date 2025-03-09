@@ -17,12 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-export interface SelectedDocument {
+export interface DoctypeAbstract {
   id: string;
   label: string;
-  profile: string;
-  state?: string;
-  editable?: boolean;
-  _parent?: string;
-  forceLoad?: boolean;
+  isInitialized?: boolean;
+  iconClass: string;
+  isAddressDoctype?: boolean;
+  addressType?: "person" | "organization";
+  hasOptionalFields?: boolean;
 }

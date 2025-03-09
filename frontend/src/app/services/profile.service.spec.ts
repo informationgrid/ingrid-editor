@@ -27,7 +27,6 @@ import { ConfigService, UserInfo } from "./config/config.service";
 import { BehaviorSubject } from "rxjs";
 import { ContextHelpService } from "./context-help/context-help.service";
 import { ModalService } from "./modal/modal.service";
-import { provideMatomoTesting } from "ngx-matomo-client/testing";
 
 describe("ProfileService", () => {
   let spectator: SpectatorService<ProfileService>;
@@ -61,6 +60,6 @@ describe("ProfileService", () => {
   });
 
   it("should get catalogs", () => {
-    expect(spectator.service.getProfiles().length).toBe(0);
+    expect(spectator.service.getDoctypes().length).toBe(0);
   });
 });

@@ -15,7 +15,8 @@
       "fileFormat": "Dateiformat"
     },
     "validationMessages": {
-      "COUPLED_RESOURCES_MUST_BE_PUBLISHED": "Alle gekoppelten Daten müssen veröffentlicht sein"
+      "COUPLED_RESOURCES_MUST_BE_PUBLISHED": "Alle gekoppelten Daten müssen veröffentlicht sein",
+      "INTERNAL_REFERENCES_MUST_BE_PUBLISHED": "Alle referenzierten Datensätze müssen veröffentlicht sein"
     }
   }
 }
