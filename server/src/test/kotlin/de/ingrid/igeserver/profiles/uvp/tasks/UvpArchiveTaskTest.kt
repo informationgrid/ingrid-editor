@@ -157,6 +157,7 @@ class UvpArchiveTaskTest : IntegrationTest() {
         }
         every { jobExecutionContext.mergedJobDataMap } returns jobDataMap
 
+        every { behaviourService.get("uvp_catalog", "plugin.archive")?.data?.get("showInPortal") } returns true
         every { behaviourService.get("uvp_catalog", "plugin.uvp.archive")?.data?.get("uvpArchiveType") } returns mapArchiveType(option)
 
         uvpArchiveTask.run(jobExecutionContext)
