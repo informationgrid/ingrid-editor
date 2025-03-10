@@ -29,6 +29,7 @@ import de.ingrid.igeserver.api.TagRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
+import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -163,6 +164,10 @@ class PostMigrationTask(
     }
 
     private fun restructureObjectsWithChildren(catalogIdentifier: String) {
+        if (catalogService.getCatalogById(catalogIdentifier).type == BawProfile.ID) {
+            log.info("No restructuring of objects with children for catalogs with BAW-Profile: $catalogIdentifier")
+            return
+        }
         documentService.getAllDataDocumentWrappers(catalogIdentifier, includeFolders = false).forEach { doc ->
             val foundChildren = documentService.findChildren(
                 catalogIdentifier,
