@@ -274,7 +274,7 @@ export class UvpShared extends BaseDoctype {
     return [];
   }
 
-  addPointOfContact() {
+  addPointOfContact(expressions?: any): FormlyFieldConfig {
     return this.addAddressCard(
       "pointOfContact",
       "Kontaktdaten der verfahrensführenden Behörde",
@@ -295,6 +295,7 @@ export class UvpShared extends BaseDoctype {
             message: "Es darf maximal nur ein Kontakt angegeben sein",
           },
         },
+        expressions,
       },
     );
   }

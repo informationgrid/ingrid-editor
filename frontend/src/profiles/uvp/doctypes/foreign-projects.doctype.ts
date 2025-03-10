@@ -42,7 +42,9 @@ export class ForeignProjectsDoctype extends UvpShared {
             required: true,
           },
         ),
-        this.addPointOfContact(),
+        this.addPointOfContact({
+          "props.disabled": this.disabledWhenNotArchived,
+        }),
       ]),
       this.addSection("Raumbezug", [
         this.addSpatial("spatial", null, {
