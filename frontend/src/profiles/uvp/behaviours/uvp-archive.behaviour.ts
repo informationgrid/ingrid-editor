@@ -21,7 +21,6 @@ import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
 import { effect, inject, Injectable, signal } from "@angular/core";
 import { AuthGuard } from "../../../app/security/auth.guard";
 import { CatalogRoutesService } from "../../../app/+catalog/catalog-routes.service";
-import { Router } from "@angular/router";
 import { TranslocoService } from "@jsverse/transloco";
 import {
   FormToolbarService,
@@ -29,14 +28,19 @@ import {
 } from "../../../app/+form/form-shared/toolbar/form-toolbar.service";
 import { TreeStore } from "../../../app/store/tree/tree.store";
 import { AddressTreeStore } from "../../../app/store/address-tree/address-tree.store";
-import { IgeEvent } from "../../../app/services/event/event.service";
 import { DocEventsService } from "../../../app/services/event/doc-events.service";
+import { MatDialog } from "@angular/material/dialog";
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from "../../../app/dialogs/confirm/confirm-dialog.component";
 
 @Injectable({ providedIn: "root" })
 export class UvpArchiveBehaviour extends Plugin {
   private transloco = inject(TranslocoService);
   private formToolbarService = inject(FormToolbarService);
   private docEvents = inject(DocEventsService);
+  private dialog = inject(MatDialog);
 
   id = "plugin.uvp.archive";
   name = "UVP Archivierung";
@@ -58,7 +62,7 @@ export class UvpArchiveBehaviour extends Plugin {
   private archiveUpdateBtn: ToolbarItem = {
     id: "toolBtnUpdateArchive",
     label: "Im Archiv speichern",
-    eventId: "PUBLISH",
+    eventId: "UPDATE_ARCHIVE",
     pos: 100,
     align: "right",
     active: signal(true),
@@ -93,13 +97,34 @@ export class UvpArchiveBehaviour extends Plugin {
 
     this.formSubscriptions.push(
       this.docEvents.onEvent("UPDATE_ARCHIVE").subscribe(() => {
-        /*const docs = this.activeNodes().map((item) => this.getStore().entityMap()[item]);
-        if (docs.length > 0) {
-          this.eventService
-            .sendEventAndContinueOnSuccess(IgeEvent.DELETE, docs)
-            .subscribe(() => this.showDeleteDialog(docs));
-        }*/
-        console.log("UPDATE_ARCHIVE");
+        this.dialog
+          .open(ConfirmDialogComponent, {
+            data: <ConfirmDialogData>{
+              title: "Archiv aktualisieren",
+              message:
+                "Wollen Sie dieses Vorhaben wirklich im Archiv aktualisieren?",
+              buttons: [
+                { text: "Abbrechen" },
+                {
+                  text: "Im Archiv speichern",
+                  id: "confirm",
+                  emphasize: true,
+                  alignRight: true,
+                },
+              ],
+            },
+            maxWidth: 700,
+            delayFocusTrap: true,
+          })
+          .afterClosed()
+          .subscribe((result) => {
+            if (result !== "confirm") return;
+
+            this.docEvents.sendEvent({
+              type: "PUBLISH",
+              data: { withoutConfirmation: true },
+            });
+          });
       }),
     );
   }
