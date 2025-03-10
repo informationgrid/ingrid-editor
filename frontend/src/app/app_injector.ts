@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injector } from '@angular/core';
+import { Injector } from "@angular/core";
 
 export class AppInjector {
   private static injector: Injector;
@@ -28,7 +28,7 @@ export class AppInjector {
 
   static getInjector(): Injector {
     if (!this.injector) {
-      throw new Error('Injector has not been set!');
+      throw new Error("Injector has not been set!");
     }
     return this.injector;
   }
