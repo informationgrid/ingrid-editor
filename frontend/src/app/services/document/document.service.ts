@@ -1124,6 +1124,7 @@ export class DocumentService {
       tap((doc) => {
         this.updateTreeStore(doc, false);
         const docAbstract = this.mapToDocumentAbstracts([doc]);
+        this.documentTreeStore.update(wrapperId, docAbstract[0]);
         this.generalStore.setDatasetsChanged(
           {
             type: UpdateType.Update,
@@ -1141,6 +1142,7 @@ export class DocumentService {
       tap((doc) => {
         this.updateTreeStore(doc, false);
         const docAbstract = this.mapToDocumentAbstracts([doc]);
+        this.documentTreeStore.update(wrapperId, docAbstract[0]);
         this.generalStore.setDatasetsChanged(
           {
             type: UpdateType.Update,
