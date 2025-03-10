@@ -1,5 +1,16 @@
 # Changelog
 
+## 7.4.3 (10.03.2025)
+
+### Features
+
+* Regression Fehler: Checkbox "Erst mit Beginn des Auslegungszeitraums veröffentlichen" nicht sichtbar (#7335)
+
+### Bugfixes
+
+* Geodatensatz mit Open Data: optionale Felder sind wieder Pflichtfelder (#7394)
+* Fehler bei der Veröffentlichung von Adressen (#7370)
+    
 ## 7.4.2 (07.02.2025)
 
 
