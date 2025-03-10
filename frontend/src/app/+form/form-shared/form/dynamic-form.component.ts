@@ -400,7 +400,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.readonly =
       !doc.hasWritePermission ||
       doc._state === "PENDING" ||
-      doc._tags.split(",").indexOf("archived") !== -1;
+      DocumentService.isDocumentArchived(doc._tags);
   }
 
   private updateBreadcrumb(id: number) {

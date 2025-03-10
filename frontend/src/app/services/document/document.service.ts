@@ -74,6 +74,8 @@ export interface ReloadData {
   providedIn: "root",
 })
 export class DocumentService {
+  static archivePluginActive = false;
+
   private generalStore = inject(GeneralStore);
   private addressTreeStore = inject(AddressTreeStore);
   private documentTreeStore = inject(TreeStore);
@@ -90,7 +92,14 @@ export class DocumentService {
       doc !== null &&
       doc._pendingDate == null &&
       doc.hasWritePermission &&
-      doc._tags.split(",").indexOf("archived") === -1
+      !DocumentService.isDocumentArchived(doc._tags)
+    );
+  }
+
+  static isDocumentArchived(docTags: string): boolean {
+    return (
+      DocumentService.archivePluginActive &&
+      docTags.split(",").indexOf("archived") !== -1
     );
   }
 

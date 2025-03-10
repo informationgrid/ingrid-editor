@@ -34,6 +34,8 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
+import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
+import { DocumentService } from "../../../app/services/document/document.service";
 
 @Injectable({ providedIn: "root" })
 export class UvpArchiveBehaviour extends Plugin {
@@ -41,6 +43,8 @@ export class UvpArchiveBehaviour extends Plugin {
   private formToolbarService = inject(FormToolbarService);
   private docEvents = inject(DocEventsService);
   private dialog = inject(MatDialog);
+  // private archivePluginActive =
+  //   inject(BehaviourService).getBehaviour("plugin.archive").isActive;
 
   id = "plugin.uvp.archive";
   name = "UVP Archivierung";
@@ -71,6 +75,8 @@ export class UvpArchiveBehaviour extends Plugin {
   constructor() {
     super();
 
+    if (!DocumentService.archivePluginActive) return;
+
     this.formToolbarService.setToolbarButtonEnabledFn(
       "toolBtnRemove",
       (docs) => {
@@ -94,6 +100,8 @@ export class UvpArchiveBehaviour extends Plugin {
 
   registerForm() {
     super.registerForm();
+
+    if (!DocumentService.archivePluginActive) return;
 
     this.formSubscriptions.push(
       this.docEvents.onEvent("UPDATE_ARCHIVE").subscribe(() => {

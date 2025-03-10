@@ -87,6 +87,14 @@ export class ArchivePlugin extends Plugin {
     });
   }
 
+  register() {
+    DocumentService.archivePluginActive = true;
+  }
+
+  unregister() {
+    DocumentService.archivePluginActive = false;
+  }
+
   registerForm() {
     super.registerForm();
 

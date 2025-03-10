@@ -74,10 +74,11 @@ export class FormInfoComponent implements OnInit {
   private documentService = inject(DocumentService);
   private docEvents = inject(DocEventsService);
   private configService = inject(ConfigService);
+  private archivePlugin =
+    inject(BehaviourService).getBehaviour("plugin.archive");
 
   private hideUnarchiveForAuthors: boolean =
-    inject(BehaviourService).getBehaviour("plugin.archive").data
-      ?.hideForAuthors ?? false;
+    this.archivePlugin.data?.hideForAuthors ?? false;
 
   path = computed<ShortTreeNode[]>(() => {
     if (this.forAddress()) {
@@ -91,7 +92,7 @@ export class FormInfoComponent implements OnInit {
   metadata = this.formStateService.metadata;
 
   canRemoveFromArchive = computed(() => {
-    const isArchived = this.metadata().tags.split(",").includes("archived");
+    const isArchived = DocumentService.isDocumentArchived(this.metadata().tags);
     const canUnarchive =
       !this.hideUnarchiveForAuthors || !this.configService.isAuthor();
     return isArchived && canUnarchive;
