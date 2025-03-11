@@ -21,12 +21,12 @@ import { Component, input, output } from "@angular/core";
 import { MatButton } from "@angular/material/button";
 
 @Component({
-  selector: "ige-publish-pending",
-  templateUrl: "./publish-pending.component.html",
-  styleUrls: ["./publish-pending.component.scss"],
+  selector: "ige-doc-state-notification",
+  templateUrl: "./doc-state-notification.component.html",
+  styleUrls: ["./doc-state-notification.component.scss"],
   imports: [MatButton],
 })
-export class PublishPendingComponent {
+export class DocStateNotificationComponent {
   message = input<string>();
   buttonLabel = input<string>();
   allowCancel = input<boolean>(false);

@@ -7,7 +7,7 @@
             (select)="scrollToTreeNode($event)"
         ></ige-breadcrumb>
         @if (isPending()) {
-            <ige-publish-pending
+            <ige-doc-state-notification
                 [message]="
                     t('publish.formWithPronoun') +
                     ' wird am ' +
@@ -21,15 +21,15 @@
                 "
                 [allowCancel]="metadata().hasWritePermission"
                 (cancel)="stopPublish()"
-            ></ige-publish-pending>
+            ></ige-doc-state-notification>
         }
         @if (canRemoveFromArchive()) {
-            <ige-publish-pending
+            <ige-doc-state-notification
                 [message]="t('publish.formWithPronoun') + ' wurde archiviert.'"
                 buttonLabel="Aus dem Archiv holen"
                 [allowCancel]="metadata().hasWritePermission"
                 (cancel)="unarchive()"
-            ></ige-publish-pending>
+            ></ige-doc-state-notification>
         }
         <ige-header-title-row
             [form]="form()"

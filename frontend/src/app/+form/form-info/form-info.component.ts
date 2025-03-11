@@ -35,7 +35,7 @@ import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import { ConfigService } from "../../services/config/config.service";
 import { FormStateService } from "../form-state.service";
 import { BreadcrumbComponent } from "./breadcrumb/breadcrumb.component";
-import { PublishPendingComponent } from "./publish-pending/publish-pending.component";
+import { DocStateNotificationComponent } from "./publish-pending/doc-state-notification.component";
 import { HeaderTitleRowComponent } from "./header-title-row/header-title-row.component";
 import { GeneralStore } from "../../store/general.store";
 import { TreeStore } from "../../store/tree/tree.store";
@@ -52,7 +52,7 @@ import { BehaviourService } from "../../services/behavior/behaviour.service";
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BreadcrumbComponent,
-    PublishPendingComponent,
+    DocStateNotificationComponent,
     HeaderTitleRowComponent,
     TranslocoDirective,
   ],
