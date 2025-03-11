@@ -48,18 +48,15 @@ export class CatalogSettingsComponent implements OnInit {
   @ViewChild("navigation") tabNav: MatTabNav;
   @ViewChild("behaviours") behaviourComponent: BehavioursComponent;
 
-  tabs: Tab[] = [
-    { label: "Codelisten", path: "codelists" },
-    { label: "Verhalten", path: "form-behaviours" },
-    { label: "Indizierung", path: "indexing" },
-    { label: "Konfiguration", path: "config" },
-  ];
+  tabs: Tab[];
 
   constructor(
     private router: Router,
     private activeRoute: ActivatedRoute,
     private sessionService: SessionService,
   ) {
+    this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
+
     // only update tab from route if it was set explicitly in URL
     // otherwise the remembered state from store is used
     const currentPath = this.router.parseUrl(this.router.url).root.children

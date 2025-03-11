@@ -132,6 +132,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     },
     formState: {
       disabled: true,
+      metadata: null,
       updateModel: () => {
         this.model = { ...this.model };
         this.formOptions.formState.mainModel = this.model;
@@ -396,7 +397,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private handleReadOnlyState(doc: IgeDocument) {
-    this.readonly = !doc.hasWritePermission || doc._state === "PENDING";
+    this.readonly =
+      !doc.hasWritePermission ||
+      doc._state === "PENDING" ||
+      DocumentService.isDocumentArchived(doc._tags);
   }
 
   private updateBreadcrumb(id: number) {
@@ -526,6 +530,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       ...this.formOptions.formState,
       disabled: !writePermission,
       mainModel: this.model,
+      metadata: this.metadata(),
     };
   }
 

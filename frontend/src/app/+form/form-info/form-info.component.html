@@ -1,20 +1,41 @@
 <div class="form-info-bar">
-    <div class="form-info-bar-inner">
+    <div class="form-info-bar-inner" *transloco="let t">
         <ige-breadcrumb
             [path]="path()"
             [rootName]="rootName"
             [selectable]="true"
             (select)="scrollToTreeNode($event)"
         ></ige-breadcrumb>
-        <ige-publish-pending
-            [metadata]="metadata()"
-            [forAddress]="forAddress"
-        ></ige-publish-pending>
+        @if (isPending()) {
+            <ige-publish-pending
+                [message]="
+                    t('publish.formWithPronoun') +
+                    ' wird am ' +
+                    metadata().pendingDate +
+                    ' veröffentlicht.'
+                "
+                [buttonLabel]="
+                    'Veröffentlichung abbrechen und ' +
+                    t('dashboard.formSingular') +
+                    ' bearbeiten'
+                "
+                [allowCancel]="metadata().hasWritePermission"
+                (cancel)="stopPublish()"
+            ></ige-publish-pending>
+        }
+        @if (canRemoveFromArchive()) {
+            <ige-publish-pending
+                [message]="t('publish.formWithPronoun') + ' wurde archiviert.'"
+                buttonLabel="Aus dem Archiv holen"
+                [allowCancel]="metadata().hasWritePermission"
+                (cancel)="unarchive()"
+            ></ige-publish-pending>
+        }
         <ige-header-title-row
-            [form]="form"
+            [form]="form()"
             [model]="_model"
-            [disableEdit]="disableTitleEdit"
-            [address]="forAddress"
+            [disableEdit]="disableTitleEdit()"
+            [address]="forAddress()"
         ></ige-header-title-row>
     </div>
 </div>

@@ -22,7 +22,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { GeoDatasetDoctype } from "./geo-dataset.doctype";
 import { DataOriginViewComponent } from "../components/data-origin-view/data-origin-view.component";
 import { DocumentService } from "../../../app/services/document/document.service";
-import { DocumentWithMetadata } from "src/app/models/ige-document";
+import { DocumentWithMetadata } from "../../../app/models/ige-document";
 
 export function dataOrigin(
   geoDatasetDoctype: GeoDatasetDoctype,

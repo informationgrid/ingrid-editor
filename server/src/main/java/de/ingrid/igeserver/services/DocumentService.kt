@@ -29,6 +29,8 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
 import de.ingrid.igeserver.persistence.ConcurrentModificationException
 import de.ingrid.igeserver.persistence.FindAllResults
+import de.ingrid.igeserver.persistence.filter.PostArchivePayload
+import de.ingrid.igeserver.persistence.filter.PostArchivePipe
 import de.ingrid.igeserver.persistence.filter.PostCreatePayload
 import de.ingrid.igeserver.persistence.filter.PostCreatePipe
 import de.ingrid.igeserver.persistence.filter.PostDeletePayload
@@ -83,6 +85,12 @@ enum class InitiatorAction {
     DEFAULT,
     COPY,
     IMPORT,
+}
+
+enum class DocumentTag(val value: String) {
+    ARCHIVED("archived"),
+    INTRANET("intranet"),
+    AMTSINTERN("amtsintern"),
 }
 
 data class DocumentInfo(
@@ -162,6 +170,9 @@ class DocumentService(
 
     @Autowired
     private lateinit var postDeletePipe: PostDeletePipe
+
+    @Autowired
+    private lateinit var postArchivePipe: PostArchivePipe
 
     @Autowired
     private lateinit var entityManager: EntityManager
@@ -611,6 +622,21 @@ class DocumentService(
                 data.version!!,
             )
         }
+    }
+
+    fun archiveDocument(principal: Principal?, catalogId: String, wrapperId: Int): DocumentData {
+        updateTags(catalogId, wrapperId, TagRequest(listOf(DocumentTag.ARCHIVED.value), null))
+
+        val doc = getLastPublishedDocument(wrapperId)
+        val postArchivePayload = PostArchivePayload(wrapperId, doc)
+        postArchivePipe.runFilters(postArchivePayload, DefaultContext.withCurrentProfile(catalogId, catalogService, principal))
+
+        return getDocumentFromCatalog(catalogId, wrapperId)
+    }
+
+    fun unarchiveDocument(principal: Principal?, catalogId: String, wrapperId: Int): DocumentData {
+        updateTags(catalogId, wrapperId, TagRequest(null, listOf(DocumentTag.ARCHIVED.value)))
+        return getDocumentFromCatalog(catalogId, wrapperId)
     }
 
     private fun prepareDocBeforeUpdate(newDocument: Document, dbDocument: Document, principal: Principal): Document {

@@ -66,6 +66,10 @@ mat-tree-node {
   //&.folder {
   border-color: transparent;
 
+  &.archived {
+    opacity: 0.5;
+  }
+
   &.expanded {
     .toggle {
       color: vars.$ige-text-color;
