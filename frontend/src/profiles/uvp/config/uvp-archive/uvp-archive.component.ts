@@ -29,7 +29,7 @@ import { UvpArchiveService } from "./uvp-archive.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { switchMap } from "rxjs";
 import { ConfigService } from "../../../../app/services/config/config.service";
-import { map, tap } from "rxjs/operators";
+import { filter, map, tap } from "rxjs/operators";
 import { RxStompService } from "../../../../app/rx-stomp.service";
 import { BaseLogResult } from "../../../../app/shared/base-log-result";
 import { DatePipe } from "@angular/common";
@@ -66,9 +66,9 @@ export class UvpArchiveComponent implements OnInit {
   status = signal<BaseLogResult>(null);
   explanation = computed<string>(() => {
     const type =
-      this.behaviourService.getBehaviour("plugin.uvp.archive").data[
+      this.behaviourService.getBehaviour("plugin.uvp.archive")?.data?.[
         "uvpArchiveType"
-      ];
+      ] ?? "showAll";
     return this.transloco.translate("uvp.archive." + type);
   });
 
@@ -76,6 +76,7 @@ export class UvpArchiveComponent implements OnInit {
     this.dateControl.valueChanges
       .pipe(
         untilDestroyed(this),
+        filter((value) => value instanceof Date && !isNaN(value.getTime())),
         switchMap((value) =>
           this.uvpArchiveService.checkDatasetsBeforeDecisionDate(value),
         ),
