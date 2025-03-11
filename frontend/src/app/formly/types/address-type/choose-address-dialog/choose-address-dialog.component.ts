@@ -67,6 +67,7 @@ export interface ChooseAddressDialogData {
   allowedTypes: string[];
   allowedTypesByDoctype: { [key: string]: string[] } | null;
   skipToType: boolean;
+  disabledCondition: (node: TreeNode) => boolean | null;
 }
 
 export interface ChooseAddressResponse {
@@ -125,6 +126,8 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    if (this.data.disabledCondition != null)
+      this.disabledCondition = this.data.disabledCondition;
     this.codelistService.byId("505");
     this.codelists$
       .pipe(

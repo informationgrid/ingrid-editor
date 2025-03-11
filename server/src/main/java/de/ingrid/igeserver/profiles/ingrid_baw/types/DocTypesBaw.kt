@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid_baw.types
 
 import de.ingrid.igeserver.profiles.ingrid.types.InGridInformationSystemType
+import de.ingrid.igeserver.profiles.ingrid.types.address.InGridOrganisationType
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -36,4 +37,10 @@ class BawGeoDatasetMeasurement(jdbcTemplate: JdbcTemplate) : BawGeoDatasetBaseTy
 @Component
 class BawSoftware(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
     override val className = "BawSoftware"
+}
+
+@Component
+class PublicationAddressDoc(jdbcTemplate: JdbcTemplate) : InGridOrganisationType(jdbcTemplate) {
+    override val className = "PublicationAddressDoc"
+    override val jsonSchema = ""
 }

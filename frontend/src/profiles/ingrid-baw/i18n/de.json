@@ -4,6 +4,7 @@
     "InGridProject": "Projekt / Auftrag",
     "BawSimulation": "Simulationsdaten",
     "BawMeasurement": "Messdaten",
-    "BawSoftware": "Software"
+    "BawSoftware": "Software",
+    "PublicationAddressDoc": "Literaturadresse"
   }
 }

@@ -315,6 +315,7 @@ export class FormFieldHelper {
         required: options?.required,
         allowedTypes: options?.allowedTypes,
         allowedTypesByDoctype: options?.allowedTypesByDoctype,
+        disabledCondition: options?.disabledCondition,
         max: options?.max,
       },
       validators: {
@@ -970,6 +971,18 @@ export class FormFieldHelper {
 
   addBefore(info: FieldConfigPosition, ...field: FormlyFieldConfig[]) {
     info.fieldConfig.splice(info.index, 0, ...field);
+  }
+
+  updateProps(
+    id: string,
+    propsToUpdate: { [key: string]: any },
+    fieldConfig: FormlyFieldConfig[],
+  ) {
+    const field = this.findFieldElementWithId(fieldConfig, id);
+    field.fieldConfig[field.index].props = {
+      ...field.fieldConfig[field.index].props,
+      ...propsToUpdate,
+    };
   }
 
   private initExpressions(expressions = {}) {

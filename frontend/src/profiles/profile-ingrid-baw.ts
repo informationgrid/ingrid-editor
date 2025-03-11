@@ -30,6 +30,7 @@ import { ProjectDoctypeBaw } from "./ingrid-baw/doctypes/project.doctype";
 import { PublicationDoctypeBaw } from "./ingrid-baw/doctypes/publication.doctype";
 import { SimulationDoctypeBaw } from "./ingrid-baw/doctypes/simulation.doctype";
 import { MeasurementDoctypeBaw } from "./ingrid-baw/doctypes/measurement.doctype";
+import { PublicationAddressDoctype } from "./ingrid-baw/doctypes/publicationAddress.doctype";
 
 @UntilDestroy()
 @Component({
@@ -44,6 +45,8 @@ class InGridBawComponent extends InGridComponent {
   software = inject(SoftwareDoctypeBaw);
   simulation = inject(SimulationDoctypeBaw);
   measurement = inject(MeasurementDoctypeBaw);
+
+  publicationAddress = inject(PublicationAddressDoctype);
 
   dialog = inject(MatDialog);
   docEvents = inject(DocEventsService);
@@ -60,6 +63,7 @@ class InGridBawComponent extends InGridComponent {
     this.measurement,
     this.person,
     this.organisation,
+    this.publicationAddress,
   ];
 
   constructor() {

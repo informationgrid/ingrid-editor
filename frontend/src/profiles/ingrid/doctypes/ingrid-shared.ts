@@ -111,6 +111,8 @@ export abstract class IngridShared extends BaseDoctype {
       digitalTransferOptions: false,
       orderInfo: false,
       resourceGroup: false,
+      maintenanceInformation: false,
+      temporalStatus: false,
     },
     spatialTypes: ["free", "wkt", "wfsgnde"],
   };
@@ -1003,166 +1005,182 @@ export abstract class IngridShared extends BaseDoctype {
   }
 
   addTimeReferenceSection() {
-    return this.addSection("Zeitbezug", [
-      this.addGroupSimple("temporal", [
-        this.addRepeat("events", "Zeitbezug der Ressource", {
-          required: true,
-          fields: [
-            this.addDatepicker("referenceDate", null, {
-              fieldLabel: "Datum",
-              required: true,
-              wrappers: ["form-field"],
-            }),
-            this.addSelect("referenceDateType", null, {
-              showSearch: true,
-              fieldLabel: "Typ",
-              wrappers: ["form-field"],
-              className: "flex-3",
-              required: true,
-              options: this.getCodelistForSelect(
-                "502",
-                "temporal.events.referenceDateType",
-              ),
-              codelistId: "502",
-            }),
-          ],
-          validators: {
-            ...(this.showInVeKoSField && {
-              invekos: {
-                expression: (ctrl: FormControl, field: FormlyFieldConfig) => {
-                  const invekosValue =
-                    field.options.formState.mainModel?.properties?.invekos?.key;
-                  if (invekosValue !== "gsaa" && invekosValue !== "lpis")
-                    return true;
-
-                  // Mindestens ein Datum vom Typ "revision" muss vorhanden
-                  return ctrl.value?.some(
-                    (item: any) => item.referenceDateType?.key === "3",
-                  );
-                },
-                message:
-                  "Es muss mindestens ein Datum vom Typ 'Letzte Änderung' vorhanden sein",
-              },
-            }),
-          },
-        }),
-        this.addGroup(
-          null,
-          "Durch die Ressource abgedeckte Zeitspanne",
+    return this.addSection(
+      "Zeitbezug",
+      [
+        this.addGroupSimple(
+          "temporal",
           [
-            this.addSelect("resourceDateType", null, {
-              required: this.options.required.resourceDateType,
-              showSearch: true,
-              wrappers: ["form-field"],
-              options: [
-                { label: "am", value: "at" },
-                { label: "bis", value: "till" },
-                { label: "von", value: "since" },
+            this.addRepeat("events", "Zeitbezug der Ressource", {
+              required: true,
+              fields: [
+                this.addDatepicker("referenceDate", null, {
+                  fieldLabel: "Datum",
+                  required: true,
+                  wrappers: ["form-field"],
+                }),
+                this.addSelect("referenceDateType", null, {
+                  showSearch: true,
+                  fieldLabel: "Typ",
+                  wrappers: ["form-field"],
+                  className: "flex-3",
+                  required: true,
+                  options: this.getCodelistForSelect(
+                    "502",
+                    "temporal.events.referenceDateType",
+                  ),
+                  codelistId: "502",
+                }),
               ],
-            }),
-            this.addSelect("resourceDateTypeSince", null, {
-              required: this.options.required.resourceDateType,
-              showSearch: true,
-              wrappers: ["form-field"],
-              options: [
-                {
-                  label: "bis: gegenwärtige Aktualität unklar",
-                  value: "unknown",
-                },
-                { label: "bis: gegenwärtig aktuell", value: "requestTime" },
-                { label: "bis: genaues Datum", value: "exactDate" },
-              ],
-              expressions: {
-                hide: (field: FormlyFieldConfig) =>
-                  field.options.formState.mainModel?.temporal?.resourceDateType
-                    ?.key !== "since",
-              },
-            }),
-            this.addDatepicker("resourceDate", null, {
-              required: this.options.required.resourceDateType,
-              placeholder: "TT.MM.JJJJ",
-              wrappers: ["form-field"],
-              expressions: {
-                hide: (field: FormlyFieldConfig) =>
-                  field.options.formState.mainModel?.temporal
-                    ?.resourceDateTypeSince?.key === "exactDate",
-              },
-            }),
-            this.addDateRange("resourceRange", null, {
-              required: this.options.required.resourceDateType,
-              wrappers: [],
-              expressions: {
-                hide: (field: FormlyFieldConfig) =>
-                  field.options.formState.mainModel?.temporal
-                    ?.resourceDateTypeSince?.key !== "exactDate",
-              },
-            }),
-          ],
-          {
-            className: this.options.required.resourceDateType ? "" : "optional",
-            required: this.options.required.resourceDateType,
-            contextHelpId: "resourceTime",
-          },
-        ),
-        this.addSelect("status", "Status", {
-          showSearch: true,
-          options: this.getCodelistForSelect("523", "temporal.status"),
-          codelistId: "523",
-          className: "optional",
-        }),
-      ]),
-      this.addGroupSimple("maintenanceInformation", [
-        this.addSelect("maintenanceAndUpdateFrequency", "Periodizität", {
-          showSearch: true,
-          options: this.getCodelistForSelect(
-            "518",
-            "maintenanceInformation.maintenanceAndUpdateFrequency",
-          ),
-          codelistId: "518",
-          className: "optional",
-        }),
-        this.addGroup(
-          "userDefinedMaintenanceFrequency",
-          "Intervall der Erhebung",
-          [
-            this.addInputInline("number", "Anzahl", {
-              type: "number",
-              expressions: {
-                "props.required": (field: FormlyFieldConfig) =>
-                  isNotEmptyObject(field.form.value),
-              },
               validators: {
-                validation: ["positiveNum"],
+                ...(this.showInVeKoSField && {
+                  invekos: {
+                    expression: (
+                      ctrl: FormControl,
+                      field: FormlyFieldConfig,
+                    ) => {
+                      const invekosValue =
+                        field.options.formState.mainModel?.properties?.invekos
+                          ?.key;
+                      if (invekosValue !== "gsaa" && invekosValue !== "lpis")
+                        return true;
+
+                      // Mindestens ein Datum vom Typ "revision" muss vorhanden
+                      return ctrl.value?.some(
+                        (item: any) => item.referenceDateType?.key === "3",
+                      );
+                    },
+                    message:
+                      "Es muss mindestens ein Datum vom Typ 'Letzte Änderung' vorhanden sein",
+                  },
+                }),
               },
             }),
-            this.addSelectInline("unit", "Einheit", {
-              showSearch: true,
-              options: this.getCodelistForSelect(
-                "1230",
-                "maintenanceInformation.userDefinedMaintenanceFrequency.unit",
-              ),
-              codelistId: "1230",
-              className: "flex-3",
-              allowNoValue: true,
-              expressions: {
-                "props.required": (field: FormlyFieldConfig) =>
-                  isNotEmptyObject(field.form.value),
+            this.addGroup(
+              null,
+              "Durch die Ressource abgedeckte Zeitspanne",
+              [
+                this.addSelect("resourceDateType", null, {
+                  required: this.options.required.resourceDateType,
+                  showSearch: true,
+                  wrappers: ["form-field"],
+                  options: [
+                    { label: "am", value: "at" },
+                    { label: "bis", value: "till" },
+                    { label: "von", value: "since" },
+                  ],
+                }),
+                this.addSelect("resourceDateTypeSince", null, {
+                  required: this.options.required.resourceDateType,
+                  showSearch: true,
+                  wrappers: ["form-field"],
+                  options: [
+                    {
+                      label: "bis: gegenwärtige Aktualität unklar",
+                      value: "unknown",
+                    },
+                    { label: "bis: gegenwärtig aktuell", value: "requestTime" },
+                    { label: "bis: genaues Datum", value: "exactDate" },
+                  ],
+                  expressions: {
+                    hide: (field: FormlyFieldConfig) =>
+                      field.options.formState.mainModel?.temporal
+                        ?.resourceDateType?.key !== "since",
+                  },
+                }),
+                this.addDatepicker("resourceDate", null, {
+                  required: this.options.required.resourceDateType,
+                  placeholder: "TT.MM.JJJJ",
+                  wrappers: ["form-field"],
+                  expressions: {
+                    hide: (field: FormlyFieldConfig) =>
+                      field.options.formState.mainModel?.temporal
+                        ?.resourceDateTypeSince?.key === "exactDate",
+                  },
+                }),
+                this.addDateRange("resourceRange", null, {
+                  required: this.options.required.resourceDateType,
+                  wrappers: [],
+                  expressions: {
+                    hide: (field: FormlyFieldConfig) =>
+                      field.options.formState.mainModel?.temporal
+                        ?.resourceDateTypeSince?.key !== "exactDate",
+                  },
+                }),
+              ],
+              {
+                className: this.options.required.resourceDateType
+                  ? ""
+                  : "optional",
+                required: this.options.required.resourceDateType,
+                contextHelpId: "resourceTime",
               },
-            }),
-          ],
-          {
-            expressions: {
-              className: (field: FormlyFieldConfig) =>
-                isNotEmptyObject(field.form.value) ? "" : "optional",
-            },
-          },
+            ),
+            this.options.hide.temporalStatus
+              ? null
+              : this.addSelect("status", "Status", {
+                  showSearch: true,
+                  options: this.getCodelistForSelect("523", "temporal.status"),
+                  codelistId: "523",
+                  className: "optional",
+                }),
+          ].filter(Boolean),
         ),
-        this.addTextArea("description", "Erläuterungen", "dataset", {
-          className: "optional flex-1",
-          contextHelpId: "maintenanceNote",
-        }),
-      ]),
-    ]);
+        this.options.hide.maintenanceInformation
+          ? null
+          : this.addGroupSimple("maintenanceInformation", [
+              this.addSelect("maintenanceAndUpdateFrequency", "Periodizität", {
+                showSearch: true,
+                options: this.getCodelistForSelect(
+                  "518",
+                  "maintenanceInformation.maintenanceAndUpdateFrequency",
+                ),
+                codelistId: "518",
+                className: "optional",
+              }),
+              this.addGroup(
+                "userDefinedMaintenanceFrequency",
+                "Intervall der Erhebung",
+                [
+                  this.addInputInline("number", "Anzahl", {
+                    type: "number",
+                    expressions: {
+                      "props.required": (field: FormlyFieldConfig) =>
+                        isNotEmptyObject(field.form.value),
+                    },
+                    validators: {
+                      validation: ["positiveNum"],
+                    },
+                  }),
+                  this.addSelectInline("unit", "Einheit", {
+                    showSearch: true,
+                    options: this.getCodelistForSelect(
+                      "1230",
+                      "maintenanceInformation.userDefinedMaintenanceFrequency.unit",
+                    ),
+                    codelistId: "1230",
+                    className: "flex-3",
+                    allowNoValue: true,
+                    expressions: {
+                      "props.required": (field: FormlyFieldConfig) =>
+                        isNotEmptyObject(field.form.value),
+                    },
+                  }),
+                ],
+                {
+                  expressions: {
+                    className: (field: FormlyFieldConfig) =>
+                      isNotEmptyObject(field.form.value) ? "" : "optional",
+                  },
+                },
+              ),
+              this.addTextArea("description", "Erläuterungen", "dataset", {
+                className: "optional flex-1",
+                contextHelpId: "maintenanceNote",
+              }),
+            ]),
+      ].filter(Boolean),
+    );
   }
 
   addAdditionalInformationSection(

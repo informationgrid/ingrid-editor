@@ -23,20 +23,23 @@ import { Injectable } from "@angular/core";
 import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 import { FormControl } from "@angular/forms";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
+import { TreeNode } from "../../../app/store/tree/tree-node.model";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
-  getOrderTitleFieldConfig(): FormlyFieldConfig {
+  getOrderTitleFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
     return this.addInput("orderTitle", "Auftragstitel", {
       required: true,
       wrappers: ["panel", "form-field"],
+      ...options,
     });
   }
 
-  getOrderNumberFieldConfig(): FormlyFieldConfig {
+  getOrderNumberFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
     return this.addInput("orderNumber", "Auftragsnummer", {
       required: true,
       wrappers: ["panel", "form-field"],
+      ...options,
     });
   }
 
@@ -55,12 +58,11 @@ export class CommonFieldsBaw extends FormFieldHelper {
       fieldLabel: "Zeitliche Genauigkeit",
       type: "number",
       className: "single-field width-25 right-align",
-      required: options.required,
-      validators: options.validators,
       suffix: {
         text: "s",
       },
       wrappers: ["panel", "form-field", "addons"],
+      ...options,
     });
   }
 
@@ -129,15 +131,43 @@ export class CommonFieldsBaw extends FormFieldHelper {
     );
 
     // Require reference to address 'Bundesanstalt für Wasserbau' as 'Ansprechpartner'
-    const pointOfContact = doc.findFieldElementWithId(
+    const pointOfContactPosition = doc.findFieldElementWithId(
       fieldConfig,
       "pointOfContact",
     );
-    // TODO refactor to  this.addValidators(pointOfContact, [this.hasBAWPointOfContact]);
-    pointOfContact.fieldConfig[pointOfContact.index].validators = {
-      ...pointOfContact.fieldConfig[pointOfContact.index].validators,
-      hasBAWPointOfContact: this.hasBAWPointOfContact,
-    };
+
+    // reuse existing ingrid field validators
+    pointOfContactPosition.fieldConfig[pointOfContactPosition.index] =
+      this.getBAWPointOfContactFieldConfig(
+        pointOfContactPosition.fieldConfig[pointOfContactPosition.index]
+          .validators,
+      );
+
+    this.addAfter(pointOfContactPosition, this.getPublisherFieldConfig());
+  }
+
+  getBAWPointOfContactFieldConfig(
+    additionalValidators: {} = {},
+  ): FormlyFieldConfig {
+    return this.addAddressCard("pointOfContact", "Adressen", {
+      required: true,
+      allowedTypes: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "12"],
+      // allowedTypesByDoctype: { PublicationAddressDoc: "10" },
+      validators: {
+        hasBAWPointOfContact: this.hasBAWPointOfContact,
+        ...additionalValidators,
+      },
+      disabledCondition: (node: TreeNode) => {
+        return node.type === "FOLDER" || node.type === "PublicationAddressDoc";
+      },
+    });
+  }
+
+  getPublisherFieldConfig(): FormlyFieldConfig {
+    return this.addAddressCard("publisher", "Herausgeber", {
+      required: true,
+      allowedTypes: ["10"],
+    });
   }
 
   addSharedGeoDatasetFields(
@@ -171,14 +201,14 @@ export class CommonFieldsBaw extends FormFieldHelper {
   }
 
   hasBAWPointOfContact = {
-    expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
+    expression: (ctrl: FormControl, _: FormlyFieldConfig) =>
       // equals "Herausgeber"
       ctrl.value
         ? ctrl.value.some(
             // TODO: was address.institution (title) in ige classic. refactor or define reserved address.ref
             (address) =>
               address.type?.key === "7" &&
-              address.ref === "481a36a4-3288-4d99-90a9-2814dd7af151",
+              address.ref === "891d8fdf-e6cf-3f61-9ca4-668880483ca8",
           )
         : false,
     message:
@@ -186,7 +216,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
   };
 
   hasPublicationDate = {
-    expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
+    expression: (ctrl: FormControl, _: FormlyFieldConfig) =>
       // equals "Publikation"
       ctrl.value
         ? ctrl.value.some((item) => item.referenceDateType?.key === "2")
