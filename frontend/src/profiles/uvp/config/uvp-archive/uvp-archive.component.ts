@@ -22,7 +22,7 @@ import { BehaviourService } from "../../../../app/services/behavior/behaviour.se
 import { MatFormField } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatDatepickerModule } from "@angular/material/datepicker";
-import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { FormControl, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
 import { PageTemplateNoHeaderComponent } from "../../../../app/shared/page-template/page-template-no-header.component";
 import { UvpArchiveService } from "./uvp-archive.service";
@@ -61,7 +61,7 @@ export class UvpArchiveComponent implements OnInit {
     const archivePlugin = this.behaviourService.getBehaviour("plugin.archive");
     return archivePlugin.isActive && archivePlugin.data["showInPortal"];
   });
-  dateControl = new FormControl<Date>(null);
+  dateControl = new FormControl<Date>(null, Validators.required);
   numOfDatasetsHint = signal<string>("");
   status = signal<BaseLogResult>(null);
   explanation = computed<string>(() => {
