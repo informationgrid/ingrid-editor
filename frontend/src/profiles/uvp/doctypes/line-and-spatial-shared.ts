@@ -36,6 +36,9 @@ export class LineAndSpatialShared extends UvpShared {
               this.id,
               {
                 required: true,
+                expressions: {
+                  "props.disabled": this.disabledWhenNotArchived,
+                },
               },
             ),
             this.addPointOfContact({

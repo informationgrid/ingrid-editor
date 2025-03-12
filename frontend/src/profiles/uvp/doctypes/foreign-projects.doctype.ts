@@ -40,6 +40,9 @@ export class ForeignProjectsDoctype extends UvpShared {
           this.id,
           {
             required: true,
+            expressions: {
+              "props.disabled": this.disabledWhenNotArchived,
+            },
           },
         ),
         this.addPointOfContact({
