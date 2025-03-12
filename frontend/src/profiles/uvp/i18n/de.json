@@ -31,6 +31,9 @@
   "publish": {
     "formWithPronoun": "Dieses Vorhaben"
   },
+  "archive": {
+    "message": "Das Vorhaben ist danach nur eingeschränkt bearbeitbar. Je nach Konfiguration des Katalogs, werden die Dokumente des Verfahrens für die Anzeige im Portal entfernt. Dies geschieht durch das Setzen des 'gültig bis'-Datums. Ein archiviertes Vorhaben kann aus dem Archiv wieder zurückgeholt werden. Dies kann unter Umständen nur durch einen Administrator geschehen."
+  },
   "docType": {
     "UvpSpatialPlanningProcedureDoc": "Raumordnungsverfahren",
     "UvpNegativePreliminaryAssessmentDoc": "Negative Vorprüfung",

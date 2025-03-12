@@ -106,7 +106,8 @@
   "tags": {
     "internet": "Internet",
     "intranet": "Intranet",
-    "amtsintern": "amtsintern"
+    "amtsintern": "amtsintern",
+    "archived": "archiviert"
   },
   "replace-address": {
     "reference-error": "Diese Adresse wird von mindestens einem Datensatz referenziert. Möchten Sie die Adresse ersetzen?",
