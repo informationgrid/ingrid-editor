@@ -95,8 +95,7 @@ export class FormUtils {
     dialog: MatDialog,
     metadata: Metadata,
   ): Promise<undefined | string> {
-    const isArchived =
-      metadata.tags.split(",").indexOf("archived") > -1 ? "true" : "false";
+    const isArchived = DocumentService.isDocumentArchived(metadata.tags);
     const message = isArchived
       ? "Es wurden Änderungen am aktuellen Dokument vorgenommen.\nSie können abbrechen, um die Änderungen speichern zu können. Beim Verwerfen gehen Ihre Änderungen verloren."
       : "Es wurden Änderungen am aktuellen Dokument vorgenommen.\nMöchten Sie die Änderungen speichern?";
