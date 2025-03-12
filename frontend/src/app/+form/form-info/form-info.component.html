@@ -11,7 +11,7 @@
                 [message]="
                     t('publish.formWithPronoun') +
                     ' wird am ' +
-                    metadata().pendingDate +
+                    (metadata().pendingDate | date) +
                     ' veröffentlicht.'
                 "
                 [buttonLabel]="

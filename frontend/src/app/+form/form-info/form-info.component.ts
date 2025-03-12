@@ -43,6 +43,7 @@ import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { DocumentService } from "../../services/document/document.service";
 import { DocEventsService } from "../../services/event/doc-events.service";
 import { BehaviourService } from "../../services/behavior/behaviour.service";
+import { DatePipe } from "@angular/common";
 
 @UntilDestroy()
 @Component({
@@ -55,6 +56,7 @@ import { BehaviourService } from "../../services/behavior/behaviour.service";
     DocStateNotificationComponent,
     HeaderTitleRowComponent,
     TranslocoDirective,
+    DatePipe,
   ],
 })
 export class FormInfoComponent implements OnInit {
