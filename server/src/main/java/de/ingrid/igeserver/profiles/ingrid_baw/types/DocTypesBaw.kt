@@ -43,4 +43,6 @@ class BawSoftware(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbc
 class PublicationAddressDoc(jdbcTemplate: JdbcTemplate) : InGridOrganisationType(jdbcTemplate) {
     override val className = "PublicationAddressDoc"
     override val jsonSchema = ""
+
+    override val referenceFieldsInDocuments = listOf("pointOfContact", "publisher")
 }
