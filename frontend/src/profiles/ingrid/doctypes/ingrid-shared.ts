@@ -87,11 +87,14 @@ export abstract class IngridShared extends BaseDoctype {
       accessConstraints: (field: FormlyFieldConfig) =>
         field.options.formState.mainModel?.properties?.isInspireIdentified !==
         undefined,
-      openDataCategories: (field: FormlyFieldConfig) => true,
-      spatialReferences: (field: FormlyFieldConfig) => true,
-      spatialSystems: (field: FormlyFieldConfig) => false,
-      dataFormat: (field: FormlyFieldConfig) => false,
-      spatialScope: (field: FormlyFieldConfig) => false,
+      openDataCategories: (_: FormlyFieldConfig) => true,
+      spatialReferences: (_: FormlyFieldConfig) => true,
+      spatialSystems: (_: FormlyFieldConfig) => false,
+      dataFormat: (_: FormlyFieldConfig) => false,
+      spatialScope: (_: FormlyFieldConfig) => false,
+      inspireTopics: (field: FormlyFieldConfig) =>
+        field.options.formState.mainModel?.properties?.isInspireIdentified !==
+        undefined,
     },
     dynamicHide: {
       openDataCategories: (field: FormlyFieldConfig) =>
@@ -558,9 +561,7 @@ export abstract class IngridShared extends BaseDoctype {
               options: this.getCodelistForSelect("6100", "themes"),
               codelistId: "6100",
               expressions: {
-                "props.required": (field: FormlyFieldConfig) =>
-                  field.options.formState.mainModel?.properties
-                    ?.isInspireIdentified !== undefined,
+                "props.required": this.options.dynamicRequired.inspireTopics,
                 className: (field: FormlyFieldConfig) =>
                   field.props.required ? "" : "optional",
                 hide: (field: FormlyFieldConfig) =>

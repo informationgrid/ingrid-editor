@@ -82,6 +82,7 @@ class InGridBkgComponent extends InGridComponent {
 
       if (docType === this.geoService) {
         (docType as GeoServiceDoctype).showHasAccessConstraints = false;
+        docType.options.dynamicRequired.inspireTopics = undefined;
       }
       docType.showFileReferences = false;
       docType.showLegalBasicsDescriptions = false;
