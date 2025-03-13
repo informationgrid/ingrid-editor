@@ -57,10 +57,7 @@ export class PublicationAddressDoctype extends AddressShared {
             : []),
         ].filter(Boolean),
       ),
-      this.addSection("Zugeordnete Datensätze", [
-        this.addReferencesForAddress("pointOfContact", null, "Andere"),
-        this.addReferencesForAddress("publisher", null, "Als Herausgeber"),
-      ]),
+      this.addIncomingReferences(),
     ];
   }
 
