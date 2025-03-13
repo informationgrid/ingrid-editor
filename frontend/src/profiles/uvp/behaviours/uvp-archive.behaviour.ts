@@ -36,6 +36,8 @@ import {
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 import { DocumentService } from "../../../app/services/document/document.service";
+import { ConfigService } from "../../../app/services/config/config.service";
+import { DocumentAbstract } from "../../../app/store/document/document.model";
 
 @Injectable({ providedIn: "root" })
 export class UvpArchiveBehaviour extends Plugin {
@@ -59,6 +61,7 @@ export class UvpArchiveBehaviour extends Plugin {
   hide = false;
 
   private catalogRouteService = inject(CatalogRoutesService);
+  private configService = inject(ConfigService);
 
   private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);
@@ -79,11 +82,11 @@ export class UvpArchiveBehaviour extends Plugin {
 
     this.formToolbarService.setToolbarButtonEnabledFn(
       "toolBtnRemove",
-      (docs) => {
-        return docs.every(
-          (doc) => !doc._tags?.split(",")?.includes("archived"),
-        );
-      },
+      this.disableForAuthorsAndArchivedDocument(),
+    );
+    this.formToolbarService.setToolbarButtonEnabledFn(
+      "toolBtnCopy.copy",
+      this.disableForAuthorsAndArchivedDocument(),
     );
     this.setPluginConfig();
 
@@ -91,6 +94,16 @@ export class UvpArchiveBehaviour extends Plugin {
       if (!this.formRegistered()) return;
       this.toggleUpdateArchiveButton();
     });
+  }
+
+  private disableForAuthorsAndArchivedDocument() {
+    return (docs: DocumentAbstract[]) => {
+      return docs.every(
+        (doc) =>
+          !this.configService.isAuthor() ||
+          !doc._tags?.split(",")?.includes("archived"),
+      );
+    };
   }
 
   register() {
