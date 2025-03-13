@@ -258,6 +258,19 @@ export class DocumentService {
       .subscribe();
   }
 
+  findIncomingReferences(
+    uuid: string,
+    options?: string[],
+    page?: number,
+    pageSize?: number,
+  ): Observable<ResearchResponse> {
+    return this.dataService.findIncomingReferences(
+      uuid,
+      options,
+      page,
+      pageSize,
+    );
+  }
   getChildren(
     parentId: number,
     isAddress?: boolean,

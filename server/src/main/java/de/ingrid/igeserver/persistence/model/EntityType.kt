@@ -23,17 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.services.FIELD_CONTENT_MODIFIED
-import de.ingrid.igeserver.services.FIELD_CREATED
-import de.ingrid.igeserver.services.FIELD_DOCUMENT_TYPE
-import de.ingrid.igeserver.services.FIELD_ID
-import de.ingrid.igeserver.services.FIELD_MODIFIED
-import de.ingrid.igeserver.services.FIELD_PARENT
-import de.ingrid.igeserver.services.FIELD_STATE
-import de.ingrid.igeserver.services.FIELD_TAGS
-import de.ingrid.igeserver.services.FIELD_UUID
 import de.ingrid.igeserver.services.InitiatorAction
-import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -116,59 +106,23 @@ abstract class EntityType {
     /**
      * Get all referenced document UUIDs
      */
-    open fun getReferenceIds(doc: Document): List<String> = emptyList()
+    open fun getReferenceUUIDs(doc: Document): List<String> = emptyList()
 
     /**
      * Get all document UUIDs which reference this document
      */
-    open fun getIncomingReferenceIds(doc: Document): List<String> = emptyList()
+    open fun getIncomingReferenceUUIDs(doc: Document, options: List<String> = emptyList<String>()): List<String> = emptyList()
 
-    /**
-     * Replace document/address references with their latest version
-     */
-//    open fun updateReferences(doc: Document, options: UpdateReferenceOptions) {}
+    // TODO: evaluate refactoring with builder pattern
+    open fun getIncomingReferenceQuery(doc: Document, options: List<String> = emptyList<String>()): String = ""
 
     /**
      * Extract referenced uploads
      */
     open fun getUploads(doc: Document): List<String> = emptyList()
 
-    private fun getDocumentForReferenceUuid(
-        options: UpdateReferenceOptions,
-        uuid: String,
-    ): JsonNode {
-        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(options.catalogId!!, uuid)
-        val documentData = documentService.getDocumentFromCatalog(options.catalogId, wrapper.id!!).also {
-            if (!options.forExport) {
-                it.document.data.put(FIELD_TAGS, wrapper.tags.joinToString(","))
-            }
-        }
-
-        // TODO AW: the extra mapping should not be needed once addresses will be loaded explicitly
-        return if (options.forExport) {
-            getRawJsonFromDocument(documentData.document, true)
-        } else {
-            getRawJsonFromDocument(documentData.document).apply {
-                put(FIELD_UUID, uuid)
-                put(FIELD_STATE, documentData.document.state.getState())
-                put(FIELD_DOCUMENT_TYPE, documentData.document.type)
-                put(FIELD_CREATED, documentData.document.created.toString())
-                put(FIELD_MODIFIED, documentData.document.modified.toString())
-                put(FIELD_CONTENT_MODIFIED, documentData.document.contentmodified.toString())
-                put(FIELD_ID, documentData.wrapper.id)
-                put(FIELD_PARENT, documentData.wrapper.id)
-            }
-        }
-    }
-
     protected fun getUploadsFromFileList(fileList: JsonNode?, field: String = "downloadURL"): List<String> = fileList
         ?.filter { it.get(field)?.get("asLink")?.asBoolean()?.not() ?: true }
         ?.map { it.get(field).get("uri").textValue() }
         ?: emptyList()
 }
-
-data class UpdateReferenceOptions(
-    val onlyPublished: Boolean = false,
-    val forExport: Boolean = false,
-    val catalogId: String? = null,
-)

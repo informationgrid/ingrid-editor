@@ -22,6 +22,7 @@ package de.ingrid.igeserver.api
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.DocumentWithMetadata
+import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.services.DocumentInfo
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
@@ -239,6 +240,16 @@ interface DatasetsApi {
         @PathVariable source: String,
         @PathVariable target: String,
     ): ResponseEntity<Unit>
+
+    @Operation(description = "Get all incoming references accessible to the user")
+    @PostMapping(value = ["/datasets/{uuid}/accessibleReferences"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getAccessibleReferences(
+        principal: Principal,
+        @PathVariable uuid: String,
+        @Parameter(description = "the page of the results") @RequestParam page: Int?,
+        @Parameter(description = "the size of the results to show") @RequestParam pageSize: Int?,
+        @RequestBody options: List<String> = emptyList<String>(),
+    ): ResponseEntity<ResearchResponse>
 
     @Operation(description = "Get all users with access to the document")
     @PostMapping(value = ["/datasets/{id}/users"], produces = [MediaType.APPLICATION_JSON_VALUE])

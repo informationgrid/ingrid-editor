@@ -873,9 +873,7 @@ export class FormFieldHelper {
     };
   }
 
-  addReferencesForAddress(
-    referenceField: string,
-    uuidField: string = null,
+  addIncomingReferences(
     label = "Zugeordnete Datensätze",
     showOnStart?: boolean,
     showToggleButton?: boolean,
@@ -889,14 +887,13 @@ export class FormFieldHelper {
       className: options?.className,
       props: {
         externalLabel: label,
-        referenceField: referenceField,
-        uuidField: uuidField ?? "ref",
         showOnStart: showOnStart,
         showToggleButton: showToggleButton,
         messageNoReferences: messageNoReferences,
         referencesHint: referencesHint,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
+        queryOptions: options?.queryOptions,
       },
     };
   }

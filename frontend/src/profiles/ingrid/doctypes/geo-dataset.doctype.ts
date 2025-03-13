@@ -409,9 +409,7 @@ export class GeoDatasetDoctype extends IngridShared {
           },
         ),
         this.addResolutionFields(),
-        this.addReferencesForAddress(
-          "service.coupledResources",
-          "uuid",
+        this.addIncomingReferences(
           "Darstellender Dienst",
           true,
           false,
@@ -420,6 +418,7 @@ export class GeoDatasetDoctype extends IngridShared {
           {
             className: "optional",
             contextHelpId: "coupledResources",
+            queryOptions: ["onlyInCoupledResources"],
           },
         ),
         this.addGroupSimple("dataQualityInfo", [

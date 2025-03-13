@@ -152,14 +152,14 @@ class Geodataservice : ShouldSpec() {
          * address has no organization assigned.
          **/
         should("downloadDiensteExport") {
-            every { documentService.getIncomingReferences(any(), "test-catalog") } returns emptySet()
+            every { documentService.getIncomingReferenceUUIDs(any(), "test-catalog", any()) } returns emptySet()
             val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.DownloadDienste.json")
             result shouldNotBe null
             result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.DownloadDienste.expected.idf.xml")
         }
 
         xshould("completeLuceneExport") {
-            every { documentService.getIncomingReferences(any(), "test-catalog") } returns emptySet()
+            every { documentService.getIncomingReferenceUUIDs(any(), "test-catalog", any()) } returns emptySet()
 
             var result = exportJsonToJson(indexExporter, "/export/ingrid/geo-service.maximal.sample.json")
             // replace generated UUIDs and windows line endings
@@ -193,7 +193,7 @@ class Geodataservice : ShouldSpec() {
         }
 
         should("checkSubordinateReferences") {
-            every { documentService.getIncomingReferences(any(), "test-catalog") } returns setOf("1000")
+            every { documentService.getIncomingReferenceUUIDs(any(), "test-catalog", any()) } returns setOf("1000")
             every {
                 documentService.getLastPublishedDocument(
                     "test-catalog",

@@ -625,7 +625,7 @@ open class IngridModelTransformer(
 
     fun getCapabilitiesUrlsFromService(serviceTypeKey: String): List<String> = if (model.type == "InGridGeoDataset") {
         val doc = getLastPublishedDocument(model.uuid)
-        documentService.getIncomingReferences(doc, catalogIdentifier)
+        documentService.getIncomingReferenceUUIDs(doc, catalogIdentifier, listOf("onlyPublished"))
             .map { documentService.getLastPublishedDocument(catalogIdentifier, it) }
             .filter {
                 it.type == "InGridGeoService" &&
@@ -1078,7 +1078,7 @@ open class IngridModelTransformer(
 
     private fun getIncomingReferences(): List<CrossReference> {
         val doc = getLastPublishedDocument(model.uuid)
-        return documentService.getIncomingReferences(doc, catalogIdentifier).mapNotNull {
+        return documentService.getIncomingReferenceUUIDs(doc, catalogIdentifier, listOf("onlyPublished")).mapNotNull {
             getCrossReference(it, null, "IN")
         }
     }

@@ -27,7 +27,7 @@ export class UvpOrganisationDoctype extends OrganisationDoctype {
   id = "UvpOrganisationDoc";
 
   constructor() {
-    super("pointOfContact");
+    super();
     this.options = {
       hideAdministrativeArea: true,
       defaultCountry: { key: "276" },

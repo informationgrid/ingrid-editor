@@ -27,6 +27,7 @@ import { TagRequest } from "../../models/tag-request.model";
 import { map } from "rxjs/operators";
 import { SaveOptions } from "./document.service";
 import { DocumentAbstract } from "../../store/document/document.model";
+import { ResearchResponse } from "../../+research/research.service";
 
 @Injectable({
   providedIn: "root",
@@ -242,5 +243,21 @@ export class DocumentDataService {
       params += "address=true";
     }
     return params;
+  }
+
+  findIncomingReferences(
+    uuid: string,
+    options: string[],
+    page: number,
+    pageSize: number,
+  ): Observable<ResearchResponse> {
+    let paging = "";
+    if (page && pageSize) {
+      paging = `?page=${page}&pageSize=${pageSize}`;
+    }
+    return this.http.post<ResearchResponse>(
+      `${this.configuration.backendUrl}datasets/${uuid}/accessibleReferences${paging}`,
+      options,
+    );
   }
 }

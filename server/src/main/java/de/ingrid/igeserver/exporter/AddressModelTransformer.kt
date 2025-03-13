@@ -184,7 +184,7 @@ open class AddressModelTransformer(
      */
     fun getObjectReferences(): List<ObjectReference> {
         val addressDoc = getLastPublishedDocument(catalogIdentifier, doc.uuid)
-        return documentService.getIncomingReferences(addressDoc, catalogIdentifier).map {
+        return documentService.getIncomingReferenceUUIDs(addressDoc, catalogIdentifier, listOf("onlyPublished")).map {
             val doc = getLastPublishedDocument(catalogIdentifier, it) ?: return@map null
             val docTags = documentService.getWrapperById(doc.wrapperId ?: return@map null).tags
             kotlin.runCatching { checkPublicationTags(docTags, tags) }.onFailure { return@map null }

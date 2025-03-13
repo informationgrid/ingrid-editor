@@ -927,20 +927,21 @@ class DocumentService(
         val profile = document.catalog!!.type
         val catalogProfile = catalogService.getCatalogProfile(profile)
         val docType = getDocumentType(document.type, profile, catalogProfile.parentProfile)
-        return docType.getReferenceIds(document).toSet()
+        return docType.getReferenceUUIDs(document).toSet()
     }
 
     /**
      * Get all document UUIDs which reference this document
      */
-    fun getIncomingReferences(
+    fun getIncomingReferenceUUIDs(
         document: Document?,
         catalogId: String,
+        options: List<String>,
     ): Set<String> {
         if (document == null) return setOf()
         val profile = catalogService.getProfileFromCatalog(catalogId)
         val docType = getDocumentType(document.type, profile.identifier, profile.parentProfile)
-        return docType.getIncomingReferenceIds(document).toSet()
+        return docType.getIncomingReferenceUUIDs(document, options).toSet()
     }
 
     fun validate(principal: Principal, catalogId: String, docId: Int) {

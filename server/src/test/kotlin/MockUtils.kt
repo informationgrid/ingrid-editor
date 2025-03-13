@@ -83,7 +83,7 @@ fun initDocumentMocks(documents: List<MockDocument>, documentService: DocumentSe
             }
         }
     }
-    every { documentService.getIncomingReferences(any(), any()) } answers { emptySet() }
+    every { documentService.getIncomingReferenceUUIDs(any(), any(), any()) } answers { emptySet() }
     every { documentService.findChildrenDocs(any(), any(), any()) } answers { FindAllResults(0, emptyList()) }
 }
 

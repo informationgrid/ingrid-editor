@@ -27,7 +27,7 @@ export class IngridPersonDoctype extends PersonDoctype {
   id = "InGridPersonDoc";
 
   constructor() {
-    super("pointOfContact");
+    super();
     this.options = {
       defaultCountry: { key: "276" },
       requiredField: { administrativeArea: true },

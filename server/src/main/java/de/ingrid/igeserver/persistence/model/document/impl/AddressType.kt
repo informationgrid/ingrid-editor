@@ -44,7 +44,7 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
 
     override val className = "AddressDoc"
 
-    val referenceFieldInDocuments = "addresses"
+    val referenceFieldsInDocuments = listOf("addresses")
 
     override fun onCreate(doc: Document, initiator: InitiatorAction) {
         super.onCreate(doc, initiator)
@@ -75,57 +75,56 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
 
     override fun onDelete(doc: Document) {
         super.onDelete(doc)
-        val sqlQuery = """
-            SELECT DISTINCT d.uuid, title 
-            FROM document d, document_wrapper dw, catalog
-            WHERE (
-                dw.deleted = 0
-                AND dw.uuid = d.uuid
-                AND d.catalog_id = ${doc.catalog?.id}
-                AND dw.catalog_id = ${doc.catalog?.id}
-                AND (d.state = 'DRAFT' OR d.state = 'DRAFT_AND_PUBLISHED' OR d.state = 'PENDING' OR d.state = 'PUBLISHED')
-                AND data->'$referenceFieldInDocuments' @> '[{"ref": "${doc.uuid}"}]');
-        """.trimIndent()
-        val result = jdbcTemplate.queryForList(sqlQuery)
+        val result = this.getIncomingReferenceUUIDs(doc, listOf("allStates"))
 
-        if (result.size > 0) {
-            throw IsReferencedException.byUuids(result.map { it["uuid"] as String })
+        if (result.isNotEmpty()) {
+            throw IsReferencedException.byUuids(result)
         }
     }
 
     override fun onUnpublish(doc: Document) {
         super.onUnpublish(doc)
-        val sqlQuery = """
-            SELECT DISTINCT d.uuid, title 
-            FROM document d, document_wrapper dw 
-            WHERE (
-                dw.deleted = 0
-                AND dw.catalog_id = ${doc.catalog!!.id}
-                AND dw.uuid = d.uuid
-                AND (d.state = 'PENDING' OR d.state = 'PUBLISHED')
-                AND data->'$referenceFieldInDocuments' @> '[{"ref": "${doc.uuid}"}]');
-        """.trimIndent()
-        val result = jdbcTemplate.queryForList(sqlQuery)
+        val result = getIncomingReferenceUUIDs(doc, listOf("pendingOrPublished"))
 
-        if (result.size > 0) {
-            throw IsReferencedException.addressByPublishedDatasets(result.map { it["uuid"] as String })
+        if (result.isNotEmpty()) {
+            throw IsReferencedException.addressByPublishedDatasets(result)
         }
     }
 
-    override fun getIncomingReferenceIds(doc: Document): List<String> {
-        // only return published documents. as this is used for export. and specificaly not for prePublish Check
-        val sqlQuery = """
-            SELECT DISTINCT d.uuid, title 
-            FROM document d, document_wrapper dw 
-            WHERE (
-                dw.deleted = 0
-                AND dw.catalog_id = ${doc.catalog!!.id}
-                AND dw.uuid = d.uuid
-                AND d.state = 'PUBLISHED'
-                AND data->'$referenceFieldInDocuments' @> '[{"ref": "${doc.uuid}"}]');
-        """.trimIndent()
+    override fun getIncomingReferenceUUIDs(doc: Document, options: List<String>): List<String> {
+        val sqlQuery = getIncomingReferenceQuery(doc, options)
         val result = jdbcTemplate.queryForList(sqlQuery)
 
         return result.map { it["uuid"] as String }
     }
+
+    override fun getIncomingReferenceQuery(
+        doc: Document,
+        options: List<String>,
+    ): String = """
+                SELECT DISTINCT document1.uuid
+                FROM document document1, document_wrapper
+                WHERE (
+                    document_wrapper.deleted = 0
+                    AND document_wrapper.catalog_id = ${doc.catalog!!.id}
+                    AND document_wrapper.uuid = document1.uuid
+                    AND ${
+        if (options.contains("onlyPublished")) {
+            "document1.state = 'PUBLISHED'"
+        } else if (options.contains("pendingOrPublished")) {
+            "(document1.state = 'PENDING' OR document1.state = 'PUBLISHED')"
+        } else if (options.contains("allStates")) {
+            "(document1.state = 'DRAFT' OR document1.state = 'DRAFT_AND_PUBLISHED' OR document1.state = 'PENDING' OR document1.state = 'PUBLISHED')"
+        } else {
+            // get latest
+            "document1.is_latest = true"
+        }
+    }
+                    AND ( ${
+        referenceFieldsInDocuments.joinToString(separator = " OR ", transform = { field ->
+            "data->'$field' @> '[{\"ref\": \"${doc.uuid}\"}]'"
+        })
+    })
+                   )
+    """.trimIndent()
 }
