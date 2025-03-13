@@ -22,7 +22,7 @@ import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { BehaviorSubject, of } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { DocBehavioursService } from "../../../../services/event/doc-behaviours.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { TreeComponent } from "../../../sidebars/tree/tree.component";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
 

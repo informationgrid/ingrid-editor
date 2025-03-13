@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,12 +17,26 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-export interface SelectedDocument {
-  id: string;
-  label: string;
-  profile: string;
-  state?: string;
-  editable?: boolean;
-  _parent?: string;
-  forceLoad?: boolean;
+import { inject, Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { ConfigService } from "../../../../app/services/config/config.service";
+import { Observable } from "rxjs";
+
+@Injectable()
+export class UvpArchiveService {
+  private http = inject(HttpClient);
+  private configuration = inject(ConfigService).getConfiguration();
+
+  archive(date: Date): Observable<any> {
+    return this.http.post(`${this.configuration.backendUrl}uvp/archive`, {
+      date,
+    });
+  }
+
+  checkDatasetsBeforeDecisionDate(date: Date) {
+    return this.http.post(
+      `${this.configuration.backendUrl}uvp/archive/check`,
+      date,
+    );
+  }
 }

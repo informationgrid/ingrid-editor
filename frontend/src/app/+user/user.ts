@@ -78,7 +78,8 @@ export class TreePermission {
   isFolder: boolean;
   hasWritePermission: boolean;
   hasOnlySubtreeWritePermission: boolean;
-  iconClass?: string; // either "UvpOrganisationDoc" or "UvpAddressDoc"
+  iconClass?: string;
+  permission: PermissionLevel;
 }
 
 export enum PermissionType {

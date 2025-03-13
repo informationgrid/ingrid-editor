@@ -72,9 +72,12 @@ export class DeleteDocsPlugin extends Plugin {
       // if store has not received all updates (e.g. node is nested structure is loaded but children not yet)
       if (docs.some((item) => item === undefined)) return;
 
+      const notAllWritable = !docs?.find((doc) => !doc.hasWritePermission);
       this.formToolbarService.setButtonState(
         "toolBtnRemove",
-        docs?.length > 0 && !docs?.find((doc) => !doc.hasWritePermission),
+        docs?.length > 0 &&
+          notAllWritable &&
+          this.formToolbarService.isToolbarButtonEnabled("toolBtnRemove", docs),
       );
     });
   }

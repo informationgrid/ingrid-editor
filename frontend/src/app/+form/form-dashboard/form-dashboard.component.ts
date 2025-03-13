@@ -35,7 +35,7 @@ import { DashboardDocsHeaderComponent } from "./dashboard-docs-header/dashboard-
 import { CardBoxComponent } from "../../shared/card-box/card-box.component";
 import { DocumentListItemComponent } from "../../shared/document-list-item/document-list-item.component";
 import { MatIcon } from "@angular/material/icon";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { GeneralStore } from "../../store/general.store";
 
 @UntilDestroy()

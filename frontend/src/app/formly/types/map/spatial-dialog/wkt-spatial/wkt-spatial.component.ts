@@ -29,7 +29,7 @@ import { Layer, Map } from "leaflet";
 import { LeafletService } from "../../leaflet.service";
 import { MatDialog } from "@angular/material/dialog";
 import { finalize } from "rxjs/operators";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MatFormField, MatHint, MatSuffix } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../../../directives/focus.directive";

@@ -55,7 +55,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
 import { firstValueFrom } from "rxjs";
-import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import { TreeNode } from "../../../store/tree/tree-node.model";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";

@@ -17,21 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-export interface ProfileAbstract {
-  id: string;
-  label: string;
-  isInitialized?: boolean;
-  iconClass: string;
-  isAddressProfile?: boolean;
-  addressType?: "person" | "organization";
-  hasOptionalFields?: boolean;
-}
+package de.ingrid.igeserver.research.quickfilter
 
-/**
- * A factory function that creates Profile
- */
-export function createProfile(params: Partial<ProfileAbstract>) {
-  return {
-    isInitialized: false,
-  } as ProfileAbstract;
+import de.ingrid.igeserver.model.QuickFilter
+import org.springframework.stereotype.Component
+
+@Component
+class ArchivedDocs : QuickFilter() {
+    override val id = "archivedDocs"
+    override val label = "Archivierte Datensätze anzeigen"
+    override val filter = "'archived' = ANY(document_wrapper.tags)"
 }

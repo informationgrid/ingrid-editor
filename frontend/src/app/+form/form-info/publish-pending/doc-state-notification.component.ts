@@ -17,30 +17,18 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit } from "@angular/core";
-import { Metadata } from "../../../models/ige-document";
-import { DocumentService } from "../../../services/document/document.service";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { Component, input, output } from "@angular/core";
 import { MatButton } from "@angular/material/button";
-import { DatePipe } from "@angular/common";
 
 @Component({
-  selector: "ige-publish-pending",
-  templateUrl: "./publish-pending.component.html",
-  styleUrls: ["./publish-pending.component.scss"],
-  imports: [TranslocoDirective, MatButton, DatePipe],
+  selector: "ige-doc-state-notification",
+  templateUrl: "./doc-state-notification.component.html",
+  styleUrls: ["./doc-state-notification.component.scss"],
+  imports: [MatButton],
 })
-export class PublishPendingComponent implements OnInit {
-  @Input() metadata: Metadata;
-  @Input() forAddress: boolean;
-
-  constructor(private documentService: DocumentService) {}
-
-  ngOnInit(): void {}
-
-  stopPublish() {
-    this.documentService
-      .cancelPendingPublishing(this.metadata.wrapperId, this.forAddress)
-      .subscribe();
-  }
+export class DocStateNotificationComponent {
+  message = input<string>();
+  buttonLabel = input<string>();
+  allowCancel = input<boolean>(false);
+  cancel = output<void>();
 }

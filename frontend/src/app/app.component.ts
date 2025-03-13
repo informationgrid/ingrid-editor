@@ -39,7 +39,7 @@ import { ProfileService } from "./services/profile.service";
 import { PluginToken } from "./tokens/plugin.token";
 import { Plugin } from "./+catalog/+behaviours/plugin";
 import { NavigationEnd, Router, RouterOutlet } from "@angular/router";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import {
   MatDrawer,
   MatDrawerContainer,

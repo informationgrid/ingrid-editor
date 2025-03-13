@@ -39,7 +39,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FacetQuery } from "../../store/query/query.model";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 import { FacetsComponent } from "../+facets/facets.component";
 import { MatFormField, MatPrefix } from "@angular/material/form-field";

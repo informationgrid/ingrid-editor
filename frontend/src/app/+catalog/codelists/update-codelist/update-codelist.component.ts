@@ -41,6 +41,7 @@ import {
   UntypedFormGroup,
   ValidationErrors,
   ValidatorFn,
+  Validators,
 } from "@angular/forms";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
@@ -106,7 +107,7 @@ export class UpdateCodelistComponent implements OnInit {
           value: this.data.entry.id,
           disabled: this.data.entry.id !== undefined,
         },
-        this.checkForExistingId(),
+        [Validators.required, this.checkForExistingId()],
       ),
       description: this.fb.control(this.data.entry.description),
       data: this.fb.control(this.data.entry.data),
@@ -144,8 +145,10 @@ export class UpdateCodelistComponent implements OnInit {
 
   private checkForExistingId(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      const alreadyExists = this.existingIds.indexOf(control.value) !== -1;
-      return alreadyExists ? { duplicate: { value: control.value } } : null;
+      const value = control.value;
+      if (!value || value?.trim()?.length === 0) return { required: true };
+      const alreadyExists = this.existingIds.indexOf(value) !== -1;
+      return alreadyExists ? { duplicate: { value: value } } : null;
     };
   }
 }

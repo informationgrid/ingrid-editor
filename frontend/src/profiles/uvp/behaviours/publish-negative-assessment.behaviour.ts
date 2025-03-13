@@ -19,7 +19,7 @@
  */
 import { Plugin } from "../../../app/+catalog/+behaviours/plugin";
 import { FormMenuService, MenuId } from "../../../app/+form/form-menu.service";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { filter } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -30,6 +30,7 @@ import { DocumentAbstract } from "../../../app/store/document/document.model";
 import { TagsService } from "../../../app/+catalog/+behaviours/system/tags/tags.service";
 import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 import { toObservable } from "@angular/core/rxjs-interop";
+import { DocumentService } from "../../../app/services/document/document.service";
 
 @Injectable({ providedIn: "root" })
 export class PublishNegativeAssessmentBehaviour extends Plugin {
@@ -42,6 +43,8 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
   defaultActive = false;
   group = "UVP";
   formMenuId: MenuId = "dataset";
+
+  private documentService = inject(DocumentService);
 
   private openedDocument$ = toObservable(this.generalStore.openedDocument);
 
@@ -58,6 +61,7 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
         key: "onlyWithSpatial",
         type: "toggle",
         props: {
+          appearance: "outline",
           label: "Nur mit Raumbezügen",
         },
       },
@@ -65,6 +69,7 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
         key: "controlledByDataset",
         type: "toggle",
         props: {
+          appearance: "outline",
           label: "Veröffentlichung im Portal auf Datensatzebene steuern",
         },
       },
@@ -135,7 +140,21 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
       .afterClosed()
       .subscribe((newTag: string) => {
         if (!newTag) return;
-        this.tagsService.updateTagForDocument(doc, newTag, this.forAddress());
+        this.tagsService
+          .addTags(doc.id as number, [newTag], this.forAddress())
+          .subscribe(() => {
+            this.documentService.reload$.next({
+              uuid: doc._uuid,
+              forAddress: this.forAddress(),
+            });
+          });
+        if (newTag === "negative-assessment-not-publish") {
+          this.tagsService.removeTags(
+            doc.id as number,
+            [newTag],
+            this.forAddress(),
+          );
+        }
       });
   }
 }

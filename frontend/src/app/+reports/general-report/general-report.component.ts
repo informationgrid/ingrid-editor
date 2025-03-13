@@ -51,7 +51,7 @@ import {
 import { debounceTime, startWith, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ProfileService } from "../../services/profile.service";
-import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import { PageTemplateNoHeaderComponent } from "../../shared/page-template/page-template-no-header.component";
 import {
   MatButtonToggle,
@@ -178,13 +178,13 @@ export class GeneralReportComponent implements OnInit {
   }
 
   getIcon(type: string): string {
-    return this.profileService.getProfile(type)?.iconClass ?? "";
+    return this.profileService.getDoctype(type)?.iconClass ?? "";
   }
 
   getTitle(type: string): string {
     return (
       this.translocoService.translate(
-        `docType.${this.profileService.getProfile(type)?.id}`,
+        `docType.${this.profileService.getDoctype(type)?.id}`,
       ) ?? type
     );
   }

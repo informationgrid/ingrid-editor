@@ -47,7 +47,7 @@
     <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode"
                       codeListValue="${page.getHierarchyLevel()}">${page.getHierarchyLevel()}</gmd:MD_ScopeCode>
 </gmd:hierarchyLevel>
-@if(page.getHierarchyLevelName() != null)
+@if( TransformationTools.hasValue(page.getHierarchyLevelName()))
     <gmd:hierarchyLevelName>
         <gco:CharacterString>${page.getHierarchyLevelName()}</gco:CharacterString>
     </gmd:hierarchyLevelName>
@@ -117,7 +117,7 @@
                     </gmd:MD_Dimension>
                 </gmd:axisDimensionProperties>
             @endfor
-            @if(page.getCellGeometry() != null)
+            @if( TransformationTools.hasValue(page.getCellGeometry()))
             <gmd:cellGeometry>
                 <gmd:MD_CellGeometryCode
                         codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_GeometricObjectTypeCode"
@@ -267,7 +267,7 @@
     </gmd:referenceSystemInfo>
 @endfor
 <gmd:identificationInfo>
-    <${page.getIdentificationType()} @if(page.getCitationURL() != null ) uuid="${page.getCitationURL()}" @endif>
+    <${page.getIdentificationType()} @if( TransformationTools.hasValue(page.getCitationURL()) ) uuid="${page.getCitationURL()}" @endif>
     <gmd:citation>
         <gmd:CI_Citation>
             <gmd:title>
@@ -278,7 +278,7 @@
                     <gco:CharacterString>${advGroup}</gco:CharacterString>
                 </gmd:alternateTitle>
             @endfor
-            @if(page.getAlternateTitle() != null)
+            @if(TransformationTools.hasValue(page.getAlternateTitle()))
                 <gmd:alternateTitle>
                     <gco:CharacterString>${page.getAlternateTitle()}</gco:CharacterString>
                 </gmd:alternateTitle>
@@ -301,7 +301,7 @@
                     </gmd:date>
                 @endfor
             @endif
-            @if( page.getModel().getType().equals("InGridGeoDataset") && page.getCitationURL() != null )
+            @if( page.getModel().getType().equals("InGridGeoDataset") &&  TransformationTools.hasValue(page.getCitationURL()))
                 <gmd:identifier>
                     <gmd:MD_Identifier>
                         <gmd:code>
@@ -331,10 +331,10 @@
         </gmd:status>
     @endif
     @template.export.ingrid.idf.addresses(addresses = page.getPointOfContact(), wrapperElement = "gmd:pointOfContact")
-    @if( page.getMaintenanceAndUpdateFrequency() != null || TransformationTools.hasValue(page.getMaintenanceNote()) )
+    @if(  TransformationTools.hasValue(page.getMaintenanceAndUpdateFrequency()) || TransformationTools.hasValue(page.getMaintenanceNote()) )
         <gmd:resourceMaintenance>
             <gmd:MD_MaintenanceInformation>
-                @if( page.getMaintenanceAndUpdateFrequency() != null )
+                @if(  TransformationTools.hasValue(page.getMaintenanceAndUpdateFrequency()) )
                     <gmd:maintenanceAndUpdateFrequency>
                         <gmd:MD_MaintenanceFrequencyCode
                                 codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_MaintenanceFrequencyCode"
@@ -343,7 +343,7 @@
                 @else
                     <gmd:maintenanceAndUpdateFrequency gco:nilReason="missing" />
                 @endif
-                @if( page.getUserDefinedMaintenanceFrequency() != null)
+                @if(  TransformationTools.hasValue(page.getUserDefinedMaintenanceFrequency()))
                     <gmd:userDefinedMaintenanceFrequency>
                         <gts:TM_PeriodDuration>${page.getUserDefinedMaintenanceFrequency()}</gts:TM_PeriodDuration>
                     </gmd:userDefinedMaintenanceFrequency>
@@ -745,7 +745,7 @@
         </srv:containsOperations>
     @endfor
     @for( OperatesOn operatesOn : page.getOperatesOn() )
-        <srv:operatesOn uuidref="${operatesOn.getUuidref()}" xlink:href="${operatesOn.getHref()}" @if(operatesOn.getTitle() != null)xlink:title="${operatesOn.getTitle()}"@endif />
+        <srv:operatesOn uuidref="${operatesOn.getUuidref()}" xlink:href="${operatesOn.getHref()}" @if( TransformationTools.hasValue(operatesOn.getTitle()))xlink:title="${operatesOn.getTitle()}"@endif />
     @endfor
 @endif
 @if(TransformationTools.hasValue(page.getSupplementalInformation()))

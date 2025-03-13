@@ -31,6 +31,7 @@ export interface DocumentAbstract {
   _contentModified: any;
   _pendingDate: any;
   _uuid: any;
+  // TODO: convert tags to string[] for easier usage
   _tags: string;
   hasWritePermission?: boolean;
   hasOnlySubtreeWritePermission?: boolean;
