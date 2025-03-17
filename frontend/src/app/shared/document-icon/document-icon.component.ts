@@ -58,9 +58,13 @@ export class DocumentIconComponent implements OnChanges {
     const publicationType =
       (<DocumentAbstract>doc)._tags || (<TreeNode>doc).tags;
 
-    this.documentState = this.getStateClass(state, type, publicationType);
+    this.documentState = this.getStateClass(
+      state,
+      type,
+      publicationType.join(","),
+    );
     this.hasTags = publicationType?.length > 0;
-    const tooltip = this.getTooltip(type, state, publicationType);
+    const tooltip = this.getTooltip(type, state, publicationType.join(","));
     this.tooltip = this.toolTipModifier?.(tooltip) || tooltip;
     this.iconClass =
       (<DocumentAbstract>doc).icon ||

@@ -104,7 +104,7 @@ data class DocumentInfo(
     val _modified: OffsetDateTime,
     val _contentModified: OffsetDateTime,
     val _pendingDate: OffsetDateTime?,
-    val _tags: String,
+    val _tags: List<String>,
     val hasWritePermission: Boolean,
     val hasOnlySubtreeWritePermission: Boolean,
     val isAddress: Boolean,

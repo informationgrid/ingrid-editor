@@ -101,7 +101,7 @@ export class UvpArchiveBehaviour extends Plugin {
       return docs.every(
         (doc) =>
           !this.configService.isAuthor() ||
-          !doc._tags?.split(",")?.includes("archived"),
+          !doc._tags?.includes("archived"),
       );
     };
   }
@@ -229,7 +229,7 @@ export class UvpArchiveBehaviour extends Plugin {
     ) as ToolbarItem;
     const isArchivedDocs = this.activeNodes()
       .map((item) => this.getStore().entityMap()[item])
-      .map((doc) => doc?._tags?.split(",")?.includes("archived"));
+      .map((doc) => doc?._tags?.includes("archived"));
 
     if (isArchivedDocs.length === 1 && isArchivedDocs[0] === true) {
       if (!this.formToolbarService.getButtonById("toolBtnUpdateArchive")) {

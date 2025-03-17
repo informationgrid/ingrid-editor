@@ -96,10 +96,9 @@ export class DocumentService {
     );
   }
 
-  static isDocumentArchived(docTags: string): boolean {
+  static isDocumentArchived(docTags: string[]): boolean {
     return (
-      DocumentService.archivePluginActive &&
-      docTags.split(",").indexOf("archived") !== -1
+      DocumentService.archivePluginActive && docTags.indexOf("archived") !== -1
     );
   }
 
@@ -374,8 +373,8 @@ export class DocumentService {
 
     return this.dataService.updateTags(id, data).pipe(
       tap((newTags: string[]) => {
-        store.update(id, {
-          _tags: newTags?.join(","),
+        store.update(id, <DocumentAbstract>{
+          _tags: newTags,
         });
         const info = store.entityMap()[id];
         this.generalStore.setDatasetsChanged(
@@ -885,7 +884,7 @@ export class DocumentService {
         _modified: doc.metadata.modified,
         _contentModified: doc.metadata.contentModified,
         _pendingDate: doc.metadata.pendingDate,
-        _tags: doc.metadata.tags,
+        _tags: doc.metadata.tags, //.filter(),
         hasWritePermission: doc.metadata.hasWritePermission ?? false,
         hasOnlySubtreeWritePermission:
           doc.metadata.hasOnlySubtreeWritePermission ?? false,

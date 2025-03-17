@@ -354,7 +354,7 @@ class DatasetsApiController(
         data.document.modified!!,
         data.document.contentmodified!!,
         data.wrapper.pending_date,
-        data.wrapper.tags.joinToString(","),
+        data.wrapper.tags,
         data.wrapper.hasWritePermission,
         data.wrapper.hasOnlySubtreeWritePermission,
         isAddress,
