@@ -34,7 +34,6 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
-import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 import { DocumentService } from "../../../app/services/document/document.service";
 import { ConfigService } from "../../../app/services/config/config.service";
 import { DocumentAbstract } from "../../../app/store/document/document.model";
@@ -45,8 +44,6 @@ export class UvpArchiveBehaviour extends Plugin {
   private formToolbarService = inject(FormToolbarService);
   private docEvents = inject(DocEventsService);
   private dialog = inject(MatDialog);
-  // private archivePluginActive =
-  //   inject(BehaviourService).getBehaviour("plugin.archive").isActive;
 
   id = "plugin.uvp.archive";
   name = "UVP Archivierung";
@@ -100,8 +97,7 @@ export class UvpArchiveBehaviour extends Plugin {
     return (docs: DocumentAbstract[]) => {
       return docs.every(
         (doc) =>
-          !this.configService.isAuthor() ||
-          !doc._tags?.includes("archived"),
+          !this.configService.isAuthor() || !doc._tags?.includes("archived"),
       );
     };
   }
