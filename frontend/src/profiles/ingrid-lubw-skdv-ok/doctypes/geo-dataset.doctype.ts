@@ -87,6 +87,24 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
       fieldConfig,
       "accessConstraints",
     );
+    const currentValidaors = positionAccessConstraints.field.validators ?? {};
+    positionAccessConstraints.field.validators = {
+      ...currentValidaors,
+      personalDataLink: {
+        expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
+          !field.form.value.personalData ||
+          ctrl.value?.some((item) => item.key === "7"),
+        message:
+          "Bei personenbezogenen Daten muss der Wert 'aufgrund der Vertraulichkeit personenbezogener Daten' vorhanden sein",
+      },
+      ifNoneThenSingle: {
+        expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
+          !ctrl.value?.some((item) => item.key === "1") ||
+          ctrl.value?.length === 1,
+        message:
+          "Neben 'Es gelten keine Zugriffsbeschränkungen' dürfen keine weiteren Zugriffsbeschränkungen angegeben sein",
+      },
+    };
     this.addMultipleAfter(positionAccessConstraints, [
       this.addRadioboxes("personalData", "Personenbezogene Daten", {
         required: true,
