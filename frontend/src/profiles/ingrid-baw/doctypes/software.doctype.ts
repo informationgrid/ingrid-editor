@@ -29,7 +29,6 @@ import { TextAreaOptions } from "../../form-field-helper";
 export class SoftwareDoctypeBaw extends InformationSystemDoctype {
   common = inject(CommonFieldsBaw);
 
-  id = "BawSoftware";
   label = "Software";
 
   constructor() {

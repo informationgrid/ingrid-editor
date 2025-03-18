@@ -40,15 +40,11 @@ export class ProjectDoctypeBaw extends ProjectDoctype {
       this.common.getOrderNumberFieldConfig(),
     );
 
-    const temporalEvents = this.common.findFieldElementWithId(
-      fieldConfig,
+    this.updateValidators(
       "events",
+      { hasPublicationDate: this.common.hasPublicationDate },
+      fieldConfig,
     );
-    // TODO refactor to this.common.addValidators(temporalEvents, [this.common.hasPublicationDate]);
-    temporalEvents.fieldConfig[temporalEvents.index].validators = {
-      ...temporalEvents.fieldConfig[temporalEvents.index].validators,
-      hasPublicationDate: this.common.hasPublicationDate,
-    };
 
     return fieldConfig;
   };

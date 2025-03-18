@@ -77,6 +77,7 @@ class BawProfile(
             "3950031" to createCodelist3950031(catalogRef),
             "3950032" to createCodelist3950032(catalogRef),
             "3950033" to createCodelist3950033(catalogRef),
+            "identifierType" to createCodelistIdentifierType(catalogRef),
             "verticalCoordinateReferenceSystem" to createCodelistPlaceholder("verticalCoordinateReferenceSystem", catalogRef),
         )
 
@@ -329,6 +330,18 @@ class BawProfile(
             add(CodelistHandler.toCodelistEntry("22", "UnTRIM2009"))
 //            add(CodelistHandler.toCodelistEntry("999", "kein"))
             add(CodelistHandler.toCodelistEntry("23", "DuMuˣ"))
+        }
+    }
+
+    private fun createCodelistIdentifierType(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "identifierType"
+        catalog = catalogRef
+        name = "Identifier Type"
+        description = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Handle"))
+            add(CodelistHandler.toCodelistEntry("2", "ISBN"))
+            add(CodelistHandler.toCodelistEntry("3", "ISSN"))
         }
     }
 

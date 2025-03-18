@@ -19,30 +19,42 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.types
 
-import de.ingrid.igeserver.profiles.ingrid.types.InGridInformationSystemType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridPublicationType
 import de.ingrid.igeserver.profiles.ingrid.types.address.InGridOrganisationType
+import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class BawGeoDatasetSimulation(jdbcTemplate: JdbcTemplate) : BawGeoDatasetBaseType(jdbcTemplate) {
+class BawGeoDatasetSimulation(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetTypeBaw(jdbcTemplate) {
+    // TODO: Add schema
+    override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
+    override val profiles = arrayOf(BawProfile.ID)
     override val className = "BawSimulation"
 }
 
 @Component
-class BawGeoDatasetMeasurement(jdbcTemplate: JdbcTemplate) : BawGeoDatasetBaseType(jdbcTemplate) {
+class BawGeoDatasetMeasurement(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetTypeBaw(jdbcTemplate) {
+    // TODO: Add schema
+    override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
+    override val profiles = arrayOf(BawProfile.ID)
     override val className = "BawMeasurement"
 }
 
 @Component
-class BawSoftware(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
-    override val className = "BawSoftware"
+class BawPublication(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTemplate) {
+    // TODO: Add schema
+    override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
+    override val profiles = arrayOf(BawProfile.ID)
+    override val className = "BawPublication"
 }
 
 @Component
 class PublicationAddressDoc(jdbcTemplate: JdbcTemplate) : InGridOrganisationType(jdbcTemplate) {
+    // TODO: Add schema
+    override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
+    override val profiles = arrayOf(BawProfile.ID)
     override val className = "PublicationAddressDoc"
-    override val jsonSchema = ""
 
     override val referenceFieldsInDocuments = listOf("pointOfContact", "publisher")
 }

@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_baw.types
 
 import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoDatasetType
 import de.ingrid.igeserver.profiles.ingrid.types.InGridGeoServiceType
+import de.ingrid.igeserver.profiles.ingrid.types.InGridInformationSystemType
 import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
@@ -35,6 +36,14 @@ class InGridGeoDatasetTypeBaw(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType
 
 @Component
 class InGridGeoServiceTypeBaw(jdbcTemplate: JdbcTemplate) : InGridGeoServiceType(jdbcTemplate) {
-//    override val jsonSchema = "/ingrid/schemes/baw/geo-service_baw.schema.json"
+    // TODO: Add schema
+    override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
     override val profiles = arrayOf(PROFILE_ID)
+}
+
+@Component
+class BawSoftware(jdbcTemplate: JdbcTemplate) : InGridInformationSystemType(jdbcTemplate) {
+    // TODO: Add schema
+    override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
+    override val profiles = arrayOf(BawProfile.ID)
 }

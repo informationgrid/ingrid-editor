@@ -1,10 +1,10 @@
 {
   "docType": {
-    "InGridPublication": "Literatur / Medien",
+    "BawPublication": "Literatur / Medien",
     "InGridProject": "Projekt / Auftrag",
     "BawSimulation": "Simulationsdaten",
     "BawMeasurement": "Messdaten",
-    "BawSoftware": "Software",
+    "InGridInformationSystem": "Software",
     "PublicationAddressDoc": "Literaturadresse"
   }
 }

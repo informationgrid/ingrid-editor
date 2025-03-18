@@ -113,6 +113,7 @@ export abstract class IngridShared extends BaseDoctype {
       resourceGroup: false,
       maintenanceInformation: false,
       temporalStatus: false,
+      legalBasicsDescriptions: false,
     },
     spatialTypes: ["free", "wkt", "wfsgnde"],
   };
@@ -1372,22 +1373,24 @@ export abstract class IngridShared extends BaseDoctype {
               },
             })
           : null,
-        this.addGroupSimple("extraInfo", [
-          this.addRepeatList(
-            "legalBasicsDescriptions",
-            "Rechtliche Grundlagen",
-            {
-              asSelect: false,
-              showSearch: true,
-              options: this.getCodelistForSelect(
-                "1350",
-                "extraInfo.legalBasicsDescriptions",
+        this.options.hide.legalBasicsDescriptions
+          ? null
+          : this.addGroupSimple("extraInfo", [
+              this.addRepeatList(
+                "legalBasicsDescriptions",
+                "Rechtliche Grundlagen",
+                {
+                  asSelect: false,
+                  showSearch: true,
+                  options: this.getCodelistForSelect(
+                    "1350",
+                    "extraInfo.legalBasicsDescriptions",
+                  ),
+                  codelistId: "1350",
+                  className: "optional",
+                },
               ),
-              codelistId: "1350",
-              className: "optional",
-            },
-          ),
-        ]),
+            ]),
         this.options.hide.resourceGroup
           ? null
           : this.addGroup(

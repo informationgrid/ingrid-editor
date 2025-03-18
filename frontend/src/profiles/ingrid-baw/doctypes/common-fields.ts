@@ -24,6 +24,7 @@ import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 import { FormControl } from "@angular/forms";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
 import { TreeNode } from "../../../app/store/tree/tree-node.model";
+import { isNotEmptyObject } from "../../../app/shared/utils";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
@@ -71,7 +72,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
   ): FormlyFieldConfig {
     return this.addRepeatList(
       "verticalCoordinateReferenceSystem",
-      "Vertikale Koordinatenreferenzsysteme",
+      "Raumbezugssystem (Höhe)",
       {
         asSelect: false,
         showSearch: true,
@@ -123,11 +124,27 @@ export class CommonFieldsBaw extends FormFieldHelper {
       fieldConfig,
       "spatialSystems",
     );
+    this.updateProps(
+      "spatialSystems",
+      { externalLabel: "Raumbezugssystem (Lage)" },
+      fieldConfig,
+    );
 
     // Vertikale Koordinatenreferenzsysteme
     this.addAfter(
       spatialSystemPosition,
       this.getVerticalCoordinateReferenceSystemFieldConfig(doc),
+    );
+
+    // replace existing vertical extent section with baw specific one
+    const verticalExtentPosition = this.findFieldElementWithId(
+      fieldConfig,
+      "verticalExtent",
+    );
+    verticalExtentPosition.fieldConfig.splice(
+      verticalExtentPosition.index,
+      1,
+      this.getBAWVerticalExtentFieldConfig(doc),
     );
 
     // Require reference to address 'Bundesanstalt für Wasserbau' as 'Ansprechpartner'
@@ -151,10 +168,12 @@ export class CommonFieldsBaw extends FormFieldHelper {
   ): FormlyFieldConfig {
     return this.addAddressCard("pointOfContact", "Adressen", {
       required: true,
+      // all but "Herausgeber"
       allowedTypes: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "12"],
       // allowedTypesByDoctype: { PublicationAddressDoc: "10" },
       validators: {
-        hasBAWPointOfContact: this.hasBAWPointOfContact,
+        // TODO: add if needed
+        // hasBAWPointOfContact: this.hasBAWPointOfContact,
         ...additionalValidators,
       },
       disabledCondition: (node: TreeNode) => {
@@ -163,9 +182,87 @@ export class CommonFieldsBaw extends FormFieldHelper {
     });
   }
 
+  getBAWVerticalExtentFieldConfig(doc: IngridShared) {
+    return this.addGroup(
+      "verticalExtent",
+      "Vertikale Ausdehnung",
+      [
+        this.addGroup(
+          null,
+          null,
+          [
+            this.addInputInline("minimumValue", "Minimum", {
+              type: "number",
+              hasInlineContextHelp: true,
+              wrappers: ["inline-help", "form-field"],
+              expressions: {
+                "props.required": (field: FormlyFieldConfig) =>
+                  isNotEmptyObject(field.form.value),
+              },
+            }),
+            this.addInputInline("maximumValue", "Maximum", {
+              type: "number",
+              hasInlineContextHelp: true,
+              wrappers: ["inline-help", "form-field"],
+              expressions: {
+                "props.required": (field: FormlyFieldConfig) =>
+                  isNotEmptyObject(field.form.value),
+              },
+            }),
+          ],
+          {
+            wrappers: [],
+            validators: {
+              bigger: {
+                expression: (_: any, b: any) => {
+                  return (
+                    !b.model?.minimumValue ||
+                    b.model?.minimumValue <= b.model?.maximumValue
+                  );
+                },
+                message: () => "Der Wert muss größer als Minimum sein",
+                errorPath: "maximumValue",
+              },
+            },
+          },
+        ),
+        this.addGroup(
+          null,
+          null,
+          [
+            this.addAutoCompleteInline("Datum", "Raumbezugssystem", {
+              options: doc.getCodelistForSelect(
+                "verticalCoordinateReferenceSystem",
+                "null",
+              ),
+              codelistId: "verticalCoordinateReferenceSystem",
+              expressions: {
+                "props.required": (field: FormlyFieldConfig) =>
+                  isNotEmptyObject(field.form.value),
+              },
+              hasInlineContextHelp: true,
+              wrappers: ["inline-help", "form-field"],
+            }),
+          ],
+          { wrappers: [], hasInlineContextHelp: true },
+        ),
+      ],
+      {
+        fieldGroupClassName: "",
+        expressions: {
+          className: (field: FormlyFieldConfig) =>
+            isNotEmptyObject(field.form.value?.verticalExtent)
+              ? ""
+              : "optional",
+        },
+      },
+    );
+  }
+
   getPublisherFieldConfig(): FormlyFieldConfig {
     return this.addAddressCard("publisher", "Herausgeber", {
-      required: true,
+      // required: true,
+      max: 1,
       allowedTypes: ["10"],
     });
   }
@@ -206,6 +303,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
       ctrl.value
         ? ctrl.value.some(
             // TODO: was address.institution (title) in ige classic. refactor or define reserved address.ref
+            // also check if functionality is still needed
             (address) =>
               address.type?.key === "7" &&
               address.ref === "891d8fdf-e6cf-3f61-9ca4-668880483ca8",
