@@ -82,7 +82,7 @@ class IsoImporterTest : AnnotationSpec() {
                         category = null,
                         hasWritePermission = null,
                         hasOnlySubtreeWritePermission = null,
-                        tags = null,
+                        tags = emptyList(),
                         responsibleUser = null,
                         additional = null,
                     ),

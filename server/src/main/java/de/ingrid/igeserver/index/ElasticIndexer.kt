@@ -160,16 +160,16 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
         elastic.client.getAliases().keys.filter { it.startsWith(filter) }
     }
 
-    override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
+    override fun delete(indexinfo: IndexInfo, uuid: String, updateOldIndex: Boolean) {
         runBlocking {
-            elastic.bulkProcessor.delete(id, indexinfo.getRealIndexName())
+            elastic.bulkProcessor.delete(uuid, indexinfo.getRealIndexName())
 
             if (updateOldIndex) {
                 val oldIndex: String? = getIndexNameFromAliasName(indexinfo.toAlias!!)
                 if (oldIndex != null && oldIndex != indexinfo.getRealIndexName()) {
                     val otherIndexInfo: IndexInfo = indexinfo.copy()
                     otherIndexInfo.setRealIndexName(oldIndex)
-                    delete(otherIndexInfo, id, false)
+                    delete(otherIndexInfo, uuid, false)
                 }
             }
         }

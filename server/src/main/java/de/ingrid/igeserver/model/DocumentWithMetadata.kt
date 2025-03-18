@@ -34,7 +34,7 @@ data class DocMetadata(
     val createdUserExists: Boolean,
     val modifiedUserExists: Boolean,
     val pendingDate: String?,
-    val tags: String,
+    val tags: List<String>,
     val responsibleUser: Int?,
     val metadataDate: String?,
     val hasWritePermission: Boolean,

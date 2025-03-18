@@ -110,7 +110,7 @@
 
         <span class="save-buttons">
             <ng-container *ngFor="let button of buttons_right">
-                @if (!button.isSeparator && !button.label) {
+                @if (!button.isSeparator && !button.label && !button.hidden) {
                     <button
                         mat-icon-button
                         [matTooltip]="button.tooltip"
@@ -124,7 +124,7 @@
                         <mat-icon>{{ button.matIconVariable }}</mat-icon>
                     </button>
                 }
-                @if (button.label && !button.isPrimary) {
+                @if (button.label && !button.isPrimary && !button.hidden) {
                     <button
                         mat-stroked-button
                         class="toolbar-save-button"
@@ -138,7 +138,7 @@
                         {{ button.label }}
                     </button>
                 }
-                @if (button.label && button.isPrimary) {
+                @if (button.label && button.isPrimary && !button.hidden) {
                     <button
                         class="btnPublish"
                         mat-flat-button

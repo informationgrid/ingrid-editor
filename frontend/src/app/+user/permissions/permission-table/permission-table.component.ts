@@ -169,7 +169,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
     this.onChange(this.val);
   }
 
-  private adjustPermission(doc: any) {
+  private adjustPermission(doc: TreePermission) {
     // all permissions are allowed
     if (doc.hasWritePermission) return;
 

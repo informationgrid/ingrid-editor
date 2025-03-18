@@ -32,6 +32,7 @@ import { SaveBase } from "./save.base";
 import { DelayedPublishDialogComponent } from "./delayed-publish-dialog/delayed-publish-dialog.component";
 import {
   BeforePublishData,
+  DocEvent,
   DocEventsService,
 } from "../../../services/event/doc-events.service";
 import { IgeError } from "../../../models/ige-error";
@@ -98,7 +99,7 @@ export class PublishPlugin extends SaveBase {
       this.docEvents.onEvent(this.eventRevertId).subscribe(() => this.revert()),
       this.docEvents
         .onEvent(this.eventPublishId)
-        .subscribe(() => this.validateAndPublish()),
+        .subscribe((event) => this.validateAndPublish(false, event)),
       this.docEvents
         .onEvent(this.eventPlanPublishId)
         .subscribe(() => this.validateAndPublish(true)),
@@ -221,9 +222,23 @@ export class PublishPlugin extends SaveBase {
     this.modalService.showIgeError(error);
   }
 
-  publish() {
+  publish(withoutConfirmation: boolean = false) {
     // show confirm dialog
     const message = this.transloco.translate("publish.confirmMessage");
+
+    const handlePublish = (decision) => {
+      if (decision === "confirm") {
+        this.saveWithData(this.getForm().getRawValue());
+      } else if (decision === "plan") {
+        this.showPlanPublishingDialog();
+      }
+    };
+
+    if (withoutConfirmation) {
+      handlePublish("confirm");
+      return;
+    }
+
     this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
@@ -244,13 +259,7 @@ export class PublishPlugin extends SaveBase {
         delayFocusTrap: true,
       })
       .afterClosed()
-      .subscribe((decision) => {
-        if (decision === "confirm") {
-          this.saveWithData(this.getForm().getRawValue());
-        } else if (decision === "plan") {
-          this.showPlanPublishingDialog();
-        }
-      });
+      .subscribe((decision) => handlePublish(decision));
   }
 
   private showUnpublishDialog() {
@@ -371,10 +380,8 @@ export class PublishPlugin extends SaveBase {
   private handleDocumentChange(loadedDocument: DocumentAbstract): void {
     this.formToolbarService.setButtonState(
       "toolBtnPublish",
-      loadedDocument !== null &&
-        loadedDocument._pendingDate == null &&
-        loadedDocument._type !== "FOLDER" &&
-        loadedDocument.hasWritePermission,
+      DocumentService.canWriteDocument(loadedDocument) &&
+        loadedDocument._type !== "FOLDER",
     );
     this.formToolbarService.setMenuItemStateOfButton(
       "toolBtnPublish",
@@ -459,7 +466,7 @@ export class PublishPlugin extends SaveBase {
     return errors;
   }
 
-  private async validateAndPublish(planned: boolean = false) {
+  private async validateAndPublish(planned: boolean = false, event?: DocEvent) {
     this.validateBeforePublish().subscribe(async (isValid) => {
       if (!isValid) return;
 
@@ -471,7 +478,7 @@ export class PublishPlugin extends SaveBase {
       if (!profileCheck) return;
 
       if (planned) this.showPlanPublishingDialog();
-      else this.publish();
+      else this.publish(event?.data?.withoutConfirmation);
     });
   }
 }

@@ -114,6 +114,8 @@ class DatasetsApiController(
         unpublish: Boolean,
         cancelPendingPublishing: Boolean,
         revert: Boolean,
+        archive: Boolean,
+        unarchive: Boolean,
         version: Int?,
     ): ResponseEntity<DocumentWithMetadata> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -126,6 +128,10 @@ class DatasetsApiController(
         } else if (publish) {
             val doc = convertToDocument(data, docVersion = version)
             documentService.publishDocument(principal, catalogId, id, doc, publishDate)
+        } else if (archive) {
+            documentService.archiveDocument(principal, catalogId, id)
+        } else if (unarchive) {
+            documentService.unarchiveDocument(principal, catalogId, id)
         } else {
             val doc = convertToDocument(data, docVersion = version)
             documentService.updateDocument(principal, catalogId, id, doc)
@@ -376,7 +382,7 @@ class DatasetsApiController(
         data.document.modified!!,
         data.document.contentmodified!!,
         data.wrapper.pending_date,
-        data.wrapper.tags.joinToString(","),
+        data.wrapper.tags,
         data.wrapper.hasWritePermission,
         data.wrapper.hasOnlySubtreeWritePermission,
         isAddress,

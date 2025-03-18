@@ -28,6 +28,7 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { MatIconTestingModule } from "@angular/material/icon/testing";
 
 @Injectable({
   providedIn: "root",
@@ -61,7 +62,7 @@ describe("Document Type", () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [MatSnackBarModule, getTranslocoModule()],
+      imports: [MatSnackBarModule, getTranslocoModule(), MatIconTestingModule],
       providers: [
         DummyDocType,
         provideHttpClient(withInterceptorsFromDi()),

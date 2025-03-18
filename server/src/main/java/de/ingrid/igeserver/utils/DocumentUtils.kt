@@ -52,7 +52,7 @@ fun prepareDocumentWithMetadata(
         docData.document.createdByUser != null,
         docData.document.contentModifiedByUser != null,
         docData.wrapper.pending_date?.format(DateTimeFormatter.ISO_DATE_TIME),
-        docData.wrapper.tags.joinToString(","),
+        docData.wrapper.tags,
         docData.wrapper.responsibleUser?.id,
         docData.wrapper.fingerprint?.let { it[0].date.toString() },
         docData.wrapper.hasWritePermission,

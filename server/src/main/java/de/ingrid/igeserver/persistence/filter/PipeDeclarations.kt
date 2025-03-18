@@ -174,6 +174,11 @@ open class PostDeletePayload(type: EntityType, catalogIdentifier: String, docume
 open class PostIndexPayload(var indexDoc: ElasticDocument, var category: String, val exportType: String) : Payload
 
 /**
+ * Payload holding document data after archiving the document
+ */
+open class PostArchivePayload(val wrapperId: Int, val publishedDoc: Document) : Payload
+
+/**
  * Declarations of pipes for different payloads
  *
  * NOTE An explicit @Component declaration for each payload type is necessary when using spring's autowired annotation
@@ -225,3 +230,6 @@ class PostDeletePipe : Pipe<PostDeletePayload>("PostDeletePipe")
 
 @Component
 class PostIndexPipe : Pipe<PostIndexPayload>("PostIndexPipe")
+
+@Component
+class PostArchivePipe : Pipe<PostArchivePayload>("PostArchivePipe")
