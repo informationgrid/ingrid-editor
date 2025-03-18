@@ -210,7 +210,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
           isNew: boolean,
           _index: number,
         ) => {
-          const index = this.findLastWithKey(allData, item.group);
+          const index = this.findLastWithItem(allData, item.group);
           if (index === undefined) {
             allData.push(item);
           } else {
@@ -389,13 +389,13 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
     }
   }
 
-  private findLastWithKey(
+  private findLastWithItem(
     list: any[],
     item: { key: string; value: string },
   ): number {
     for (let i = list.length - 1; i >= 0; i--) {
-      if (item.key && item.key === list[i].group.key) return i + 1;
-      else if (item.value && item.value === list[i].group.value) return i + 1;
+      if (item?.key && item.key === list[i].group?.key) return i + 1;
+      else if (item?.value && item.value === list[i].group?.value) return i + 1;
     }
     return undefined;
   }

@@ -31,10 +31,6 @@ export function objectAttributesFields(
     fieldHelper.addAutocomplete("group", "Gruppe", {
       options: groupCodelist,
     }),
-    fieldHelper.addInput("number", "Nummer", {
-      wrappers: ["panel", "form-field"],
-      type: "number",
-    }),
     fieldHelper.addInput("designation", "Bezeichnung", {
       required: true,
       wrappers: ["panel", "form-field"],
