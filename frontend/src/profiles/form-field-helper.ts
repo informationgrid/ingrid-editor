@@ -970,15 +970,45 @@ export class FormFieldHelper {
     info.fieldConfig.splice(info.index, 0, ...field);
   }
 
+  /**
+   * Updates or adds the properties of a field with the given ID.
+   *
+   * @param id - The ID of the field to update.
+   * @param propsToUpdate - An object containing the properties to add or update.
+   * @param fieldConfig - The configuration array of form fields.
+   */
   updateProps(
     id: string,
     propsToUpdate: { [key: string]: any },
     fieldConfig: FormlyFieldConfig[],
   ) {
-    const field = this.findFieldElementWithId(fieldConfig, id);
-    field.fieldConfig[field.index].props = {
-      ...field.fieldConfig[field.index].props,
+    const fieldPostion = this.findFieldElementWithId(fieldConfig, id);
+    const targetField = fieldPostion.fieldConfig[fieldPostion.index];
+    targetField.props = {
+      ...targetField.props,
       ...propsToUpdate,
+    };
+  }
+
+  /**
+   * Updates or adds validators to a field with the given ID.
+   *
+   * @param id - The ID of the field to update.
+   * @param validators - An object containing the validators to add or update.
+   * @param fieldConfig - The configuration array of form fields.
+   */
+  updateValidators(
+    id: string,
+    validators: {
+      [key: string]: { expression: any; message: string } | string[];
+    },
+    fieldConfig: FormlyFieldConfig[],
+  ) {
+    const fieldPosition = this.findFieldElementWithId(fieldConfig, id);
+    const targetField = fieldPosition.fieldConfig[fieldPosition.index];
+    targetField.validators = {
+      ...targetField.validators,
+      ...validators,
     };
   }
 
