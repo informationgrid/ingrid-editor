@@ -261,7 +261,7 @@ export class TableTypeComponent
       });
   }
 
-  private handleItemUpdate(result, newEntry: boolean, index: number) {
+  private handleItemUpdate(result: any, newEntry: boolean, index: number) {
     if (this.props.customAddFn) {
       this.props.customAddFn(this.dataSource.data, result, newEntry, index);
     } else {
@@ -497,8 +497,6 @@ export class TableTypeComponent
   }
 
   duplicateRow(rowIndex: number) {
-    this.formControl.value.push(this.formControl.value[rowIndex]);
-    this.formControl.updateValueAndValidity();
-    this.formControl.markAsDirty();
+    this.handleItemUpdate(this.formControl.value[rowIndex], true, rowIndex);
   }
 }
