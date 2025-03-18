@@ -985,7 +985,7 @@ export class FormFieldHelper {
     const fieldPostion = this.findFieldElementWithId(fieldConfig, id);
     const targetField = fieldPostion.fieldConfig[fieldPostion.index];
     targetField.props = {
-      ...targetField.props,
+      ...(targetField.props ?? {}),
       ...propsToUpdate,
     };
   }
@@ -1007,7 +1007,7 @@ export class FormFieldHelper {
     const fieldPosition = this.findFieldElementWithId(fieldConfig, id);
     const targetField = fieldPosition.fieldConfig[fieldPosition.index];
     targetField.validators = {
-      ...targetField.validators,
+      ...(targetField.validators ?? {}),
       ...validators,
     };
   }
