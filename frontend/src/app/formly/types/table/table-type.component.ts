@@ -91,6 +91,12 @@ export interface TableProps {
   batchValidUntil?: any;
   batchActions?: any[];
   allowDuplicate?: boolean;
+  customAddFn?: (
+    allData: any[],
+    item: any,
+    isNew: boolean,
+    index: number,
+  ) => void;
 }
 
 @UntilDestroy()
@@ -250,14 +256,22 @@ export class TableTypeComponent
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          if (newEntry) {
-            this.dataSource.data.push(result);
-          } else {
-            this.dataSource.data.splice(index, 1, result);
-          }
-          this.updateTableDataToForm(this.dataSource.data);
+          this.handleItemUpdate(result, newEntry, index);
         }
       });
+  }
+
+  private handleItemUpdate(result, newEntry: boolean, index: number) {
+    if (this.props.customAddFn) {
+      this.props.customAddFn(this.dataSource.data, result, newEntry, index);
+    } else {
+      if (newEntry) {
+        this.dataSource.data.push(result);
+      } else {
+        this.dataSource.data.splice(index, 1, result);
+      }
+    }
+    this.updateTableDataToForm(this.dataSource.data);
   }
 
   private updateFormControl(value: any[]) {

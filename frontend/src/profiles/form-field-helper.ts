@@ -151,6 +151,12 @@ export interface TableOptions extends Options {
   dialog?: any;
   batchActions?: any[];
   allowDuplicate?: boolean;
+  customAddFn?: (
+    allData: any[],
+    item: any,
+    isNew: boolean,
+    index: number,
+  ) => void;
 }
 
 export interface CheckboxOptions extends Options {
@@ -724,6 +730,7 @@ export class FormFieldHelper {
         dialog: options?.dialog,
         batchActions: options?.batchActions ?? [],
         allowDuplicate: options?.allowDuplicate,
+        customAddFn: options?.customAddFn,
       },
       validators: options?.validators,
       expressions: expressions,

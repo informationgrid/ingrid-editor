@@ -167,11 +167,6 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
             },
           },
           {
-            key: "number",
-            label: "Nummer",
-            // type: "number",
-          },
-          {
             key: "designation",
             label: "Bezeichnung",
             props: { required: true },
@@ -209,6 +204,19 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
             },
           },
         ],
+        customAddFn: (
+          allData: any[],
+          item: any,
+          isNew: boolean,
+          _index: number,
+        ) => {
+          const index = this.findLastWithKey(allData, item.group);
+          if (index === undefined) {
+            allData.push(item);
+          } else {
+            allData.splice(index, isNew ? 0 : 1, item);
+          }
+        },
       }),
       this.addTable("geometries", "Geometrie", {
         supportUpload: false,
@@ -379,5 +387,16 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
     if (fieldElement.expressions?.className) {
       fieldElement.expressions.className = undefined;
     }
+  }
+
+  private findLastWithKey(
+    list: any[],
+    item: { key: string; value: string },
+  ): number {
+    for (let i = list.length - 1; i >= 0; i--) {
+      if (item.key && item.key === list[i].group.key) return i + 1;
+      else if (item.value && item.value === list[i].group.value) return i + 1;
+    }
+    return undefined;
   }
 }
