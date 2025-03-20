@@ -68,6 +68,10 @@ class IgeAclService(
         val hasRootWrite = checkForRootPermissions(sids, listOf(BasePermission.WRITE))
         val hasRootRead = checkForRootPermissions(sids, listOf(BasePermission.READ))
 
+        // check for group root permissions
+        if (group.permissions?.rootPermission == RootPermissionType.WRITE && hasRootWrite.not()) return false
+        if (group.permissions?.rootPermission == RootPermissionType.READ && (hasRootWrite || hasRootRead).not()) return false
+
         var isAllowed: Boolean
         permissionLevels.forEach { permissionLevel ->
             val permissionLevelIds = getDatasetIdsSetInGroups(listOf(group), permissionLevel)

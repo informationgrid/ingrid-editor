@@ -32,7 +32,7 @@ export class GeneralTable {
   updatePaginator(id: any, field: string) {
     if (this.paginator) {
       let indexInDatasource = this.dataSource
-        .sortData(this.dataSource.data, this.dataSource.sort)
+        .sortData(this.dataSource.filteredData, this.dataSource.sort)
         .findIndex((d) => d[field] === id);
 
       const pageNumber = Math.max(

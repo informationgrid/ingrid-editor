@@ -26,9 +26,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.TagRequest
-import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
 import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.CatalogService
@@ -37,11 +35,7 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.utils.convertToDocument
-import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.kotlin.logger
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.event.EventListener
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
@@ -49,8 +43,8 @@ import java.security.Principal
 
 @Component
 class PostMigrationTask(
-    val entityManager: EntityManager,
-    val transactionManager: PlatformTransactionManager,
+    entityManager: EntityManager,
+    transactionManager: PlatformTransactionManager,
     val catalogService: CatalogService,
     val groupService: GroupService,
     val documentService: DocumentService,
@@ -59,43 +53,16 @@ class PostMigrationTask(
     val codelistHandler: CodelistHandler,
     val fixPathsTask: FixPathsTask,
     val enhanceGroupsTask: EnhanceGroupsTask,
-) {
-    val log = logger()
+    val saveGroupsTask: SaveGroupsTask,
+) : DbTriggeredTask(entityManager, transactionManager) {
 
-    // this ensures that the post migration task is executed after the initial db migrations
-    @EventListener(ApplicationReadyEvent::class)
-    fun onStartup() {
-        val catalogs = getCatalogsForPostMigration()
-        if (catalogs.isEmpty()) return
+    override val taskKey = "doPostMigrationFor"
 
-        setAdminAuthentication("Postmigration", "Task")
-
-        catalogs.forEach { catalog ->
-            log.info("Execute post migration for catalog: $catalog")
-            ClosableTransaction(transactionManager).use {
-                doPostMigration(catalog)
-                removePostMigrationInfo(catalog)
-                log.info("Finished post migration for catalog: $catalog")
-            }
-        }
-    }
-
-    private fun getCatalogsForPostMigration(): List<String> = try {
-        entityManager
-            .createQuery(
-                "SELECT version FROM VersionInfo version WHERE version.key = 'doPostMigrationFor'",
-                VersionInfo::class.java,
-            )
-            .resultList
-            .map { it.value!! }
-    } catch (e: Exception) {
-        log.warn("Could not query version_info table")
-        emptyList()
-    }
+    override fun executeTaskOnCatalog(catalogIdentifier: String) = doPostMigration(catalogIdentifier)
 
     private fun doPostMigration(catalogIdentifier: String) {
         // Warning: Execution Order is important
-        saveAllGroupsOfCatalog(catalogIdentifier)
+        saveGroupsTask.saveAllGroupsOfCatalog(catalogIdentifier)
         initializeCatalogCodelistsAndQueries(catalogIdentifier)
         restructureObjectsWithChildren(catalogIdentifier)
         fixSpatialSystems(catalogIdentifier)
@@ -127,14 +94,6 @@ class PostMigrationTask(
             (spatialSystem as ObjectNode).put("key", potentialId)
         }
         return spatialSystem
-    }
-
-    private fun saveAllGroupsOfCatalog(catalogIdentifier: String) {
-        groupService
-            .getAll(catalogIdentifier)
-            .forEach { group ->
-                groupService.update(catalogIdentifier, group.id!!, group, true)
-            }
     }
 
     private fun createNewFolderFor(
@@ -209,7 +168,7 @@ class PostMigrationTask(
             transferRights(doc, newFolder, removeSourceDoc = false)
         }
         // save all groups again to update transferred rights
-        saveAllGroupsOfCatalog(catalogIdentifier)
+        saveGroupsTask.saveAllGroupsOfCatalog(catalogIdentifier)
     }
 
     private fun replacePathIDinDescendants(catalogIdentifier: String, doc: DocumentWrapper, oldId: Int, newId: Int) {
@@ -298,13 +257,5 @@ class PostMigrationTask(
     private fun initializeCatalogCodelistsAndQueries(catalogIdentifier: String) {
         val catalogType = catalogService.getCatalogById(catalogIdentifier).type
         catalogService.initializeCatalog(catalogIdentifier, catalogType)
-    }
-
-    private fun removePostMigrationInfo(catalogIdentifier: String) {
-        entityManager
-            .createQuery(
-                "DELETE FROM VersionInfo version WHERE version.key = 'doPostMigrationFor' AND version.value = '$catalogIdentifier'",
-            )
-            .executeUpdate()
     }
 }

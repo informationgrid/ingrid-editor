@@ -176,7 +176,12 @@ open class PostIndexPayload(var indexDoc: ElasticDocument, var category: String,
 /**
  * Payload holding document data after archiving the document
  */
-open class PostArchivePayload(val wrapperId: Int, val publishedDoc: Document) : Payload
+open class PostArchivePayload(val wrapperId: Int, val publishedDoc: Document?) : Payload
+
+/**
+ * Payload holding document data after archiving the document
+ */
+open class PostUnarchivePayload(val wrapperId: Int, val publishedDoc: Document?) : Payload
 
 /**
  * Declarations of pipes for different payloads
@@ -233,3 +238,6 @@ class PostIndexPipe : Pipe<PostIndexPayload>("PostIndexPipe")
 
 @Component
 class PostArchivePipe : Pipe<PostArchivePayload>("PostArchivePipe")
+
+@Component
+class PostUnarchivePipe : Pipe<PostUnarchivePayload>("PostUnarchivePipe")

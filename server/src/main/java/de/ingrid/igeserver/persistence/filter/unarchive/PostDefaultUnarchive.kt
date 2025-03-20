@@ -17,12 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.persistence.filter.archive
+package de.ingrid.igeserver.persistence.filter.unarchive
 
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
-import de.ingrid.igeserver.persistence.filter.PostArchivePayload
-import de.ingrid.igeserver.services.BehaviourService
+import de.ingrid.igeserver.persistence.filter.PostUnarchivePayload
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.tasks.IndexingTask
 import org.springframework.core.annotation.Order
@@ -30,21 +29,14 @@ import org.springframework.stereotype.Component
 
 @Component
 @Order(10)
-class PostDefaultArchive(private val behaviourService: BehaviourService, private val indexingTask: IndexingTask) : Filter<PostArchivePayload> {
+class PostDefaultUnarchive(private val indexingTask: IndexingTask) : Filter<PostUnarchivePayload> {
 
     override val profiles = emptyArray<String>()
 
-    override fun invoke(payload: PostArchivePayload, context: Context): PostArchivePayload {
+    override fun invoke(payload: PostUnarchivePayload, context: Context): PostUnarchivePayload {
         if (payload.publishedDoc == null) return payload
 
-        val showInPortal =
-            behaviourService.get(context.catalogId, "plugin.archive")?.data?.get("showInPortal") as? Boolean == true
-
-        if (showInPortal) {
-            indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA, payload.publishedDoc.uuid)
-        } else {
-            indexingTask.removeFromIndex(context.catalogId, payload.publishedDoc.uuid, DocumentCategory.DATA.value)
-        }
+        indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA, payload.publishedDoc.uuid)
         return payload
     }
 }
