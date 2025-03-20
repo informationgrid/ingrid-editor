@@ -22,50 +22,31 @@ package de.ingrid.igeserver.tasks
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.utils.getString
-import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.kotlin.logger
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
 import java.io.InputStream
 
 @Component
 class MigrateUrlDataTypeTask(
-    val entityManager: EntityManager,
-    val transactionManager: PlatformTransactionManager,
+    entityManager: EntityManager,
+    transactionManager: PlatformTransactionManager,
     val docRepo: DocumentRepository,
-) {
+) : DbTriggeredTask(entityManager, transactionManager) {
+
+    override val taskKey = "doFixMigrateUrlDataType"
 
     private data class DataTypeInfo(val url: String, val key: String, val value: String)
 
-    val log = logger()
+    override fun executeTaskOnCatalog(catalog: String) {
+        val resource = MigrateUrlDataTypeTask::class.java.getResource("/url-data-types-$catalog.csv")
+            ?: throw Exception("CSV file not found for migration: url-data-types-$catalog.csv")
+        val migrateData = readCsv(resource.openStream())
 
-    @EventListener(ApplicationReadyEvent::class)
-    fun onStartup() {
-        val catalogs = getCatalogsForPostMigration()
-        if (catalogs.isEmpty()) return
-
-        setAdminAuthentication("MigrateUrlDataType", "Task")
-
-        catalogs.forEach { catalog ->
-            log.info("Execute MigrateUrlDataTypeTask for catalog: $catalog")
-            val resource = MigrateUrlDataTypeTask::class.java.getResource("/url-data-types-$catalog.csv")
-                ?: throw Exception("CSV file not found for migration: url-data-types-$catalog.csv")
-            val migrateData = readCsv(resource.openStream())
-
-            ClosableTransaction(transactionManager).use {
-                migrateData.forEach {
-                    updateDatasetsWithUrls(it)
-                }
-                removePostMigrationInfo(catalog)
-                log.info("Finished MigrateUrlDataTypeTask for catalog: $catalog")
-            }
+        migrateData.forEach {
+            updateDatasetsWithUrls(it)
         }
     }
 
@@ -105,26 +86,5 @@ class MigrateUrlDataTypeTask(
                     value.trim().removeSurrounding("\""),
                 )
             }.toList()
-    }
-
-    private fun getCatalogsForPostMigration(): List<String> = try {
-        entityManager
-            .createQuery(
-                "SELECT version FROM VersionInfo version WHERE version.key = 'doFixMigrateUrlDataType'",
-                VersionInfo::class.java,
-            )
-            .resultList
-            .map { it.value!! }
-    } catch (e: Exception) {
-        log.warn("Could not query version_info table")
-        emptyList()
-    }
-
-    private fun removePostMigrationInfo(catalogIdentifier: String) {
-        entityManager
-            .createQuery(
-                "DELETE FROM VersionInfo version WHERE version.key = 'doFixMigrateUrlDataType' AND version.value = '$catalogIdentifier'",
-            )
-            .executeUpdate()
     }
 }
