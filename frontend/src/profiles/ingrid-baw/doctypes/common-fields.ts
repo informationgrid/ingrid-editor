@@ -23,7 +23,6 @@ import { Injectable } from "@angular/core";
 import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 import { FormControl } from "@angular/forms";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
-import { TreeNode } from "../../../app/store/tree/tree-node.model";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 
 @Injectable({ providedIn: "root" })
@@ -168,16 +167,12 @@ export class CommonFieldsBaw extends FormFieldHelper {
   ): FormlyFieldConfig {
     return this.addAddressCard("pointOfContact", "Adressen", {
       required: true,
-      // all but "Herausgeber"
-      allowedTypes: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "12"],
-      // allowedTypesByDoctype: { PublicationAddressDoc: "10" },
+      // only "Herausgeber" and "Autor"
+      allowedTypesByDoctype: { PublicationAddressDoc: ["10", "11"] },
       validators: {
         // TODO: add if needed
         // hasBAWPointOfContact: this.hasBAWPointOfContact,
         ...additionalValidators,
-      },
-      disabledCondition: (node: TreeNode) => {
-        return node.type === "FOLDER" || node.type === "PublicationAddressDoc";
       },
     });
   }

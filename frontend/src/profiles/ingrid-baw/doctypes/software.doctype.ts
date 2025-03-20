@@ -34,6 +34,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
   constructor() {
     super();
     this.showInspireRelevant = false;
+    this.showAdVCompatible = false;
     this.options.hide = {
       ...this.options.hide,
       ...{

@@ -29,7 +29,7 @@ export class PublicationAddressDoctype extends AddressShared {
 
   id = "PublicationAddressDoc";
 
-  iconClass = "Institution";
+  iconClass = "Publikation-Dokument";
 
   isAddressType = true;
 
