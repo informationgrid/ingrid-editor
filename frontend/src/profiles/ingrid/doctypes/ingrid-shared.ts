@@ -395,13 +395,7 @@ export abstract class IngridShared extends BaseDoctype {
       return of(true);
     }
 
-    const message = `
-      Wird diese Auswahl gewählt, so:
-      <ul>
-        <li>wird "Es gelten keine Zugriffsbeschränkungen" zu den Zugriffsbeschränkungen hinzugefügt</li>
-        <li>wird die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li>
-        <li>wird dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li>
-      </ul>`;
+    const message = this.transloco.translate("form.confirmation.opendata");
     return this.showConfirmDialog(message, cookieId).pipe(
       map((decision) => {
         if (decision === "ok") {

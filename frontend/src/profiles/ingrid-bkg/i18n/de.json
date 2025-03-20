@@ -1,5 +1,8 @@
 {
   "form": {
-    "accessConstraints": "Zugriffsbeschränkungen (INSPIRE-Liste)"
+    "accessConstraints": "Zugriffsbeschränkungen (INSPIRE-Liste)",
+    "confirmation": {
+      "opendata": "Wird diese Auswahl gewählt, so:<ul><li>bei entsprechender Katalogeinstellung wird ggf. die Angabe einer Opendata-Kategorie unter \"Verschlagwortung\" verpflichtend</li><li>wird dem Datensatz beim Export in ISO19139 Format automatisch</li><ul><li>das Schlagwort \"opendata\" hinzugefügt</li><li>zu den Nutzungsbedingungen das für GovData erforderliche json-Codeschnipsel hinzugefügt</li></ul></ul>"
+    }
   }
 }
