@@ -52,6 +52,7 @@ class PostMigrationTask(
     val codelistHandler: CodelistHandler,
     val fixPathsTask: FixPathsTask,
     val enhanceGroupsTask: EnhanceGroupsTask,
+    val saveGroupsTask: SaveGroupsTask,
 ) : DbTriggeredTask(entityManager, transactionManager) {
 
     override val taskKey = "doPostMigrationFor"
@@ -60,7 +61,7 @@ class PostMigrationTask(
 
     private fun doPostMigration(catalogIdentifier: String) {
         // Warning: Execution Order is important
-        saveAllGroupsOfCatalog(catalogIdentifier)
+        saveGroupsTask.saveAllGroupsOfCatalog(catalogIdentifier)
         initializeCatalogCodelistsAndQueries(catalogIdentifier)
         restructureObjectsWithChildren(catalogIdentifier)
         fixSpatialSystems(catalogIdentifier)
@@ -92,14 +93,6 @@ class PostMigrationTask(
             (spatialSystem as ObjectNode).put("key", potentialId)
         }
         return spatialSystem
-    }
-
-    private fun saveAllGroupsOfCatalog(catalogIdentifier: String) {
-        groupService
-            .getAll(catalogIdentifier)
-            .forEach { group ->
-                groupService.update(catalogIdentifier, group.id!!, group, true)
-            }
     }
 
     private fun createNewFolderFor(
@@ -170,7 +163,7 @@ class PostMigrationTask(
             transferRights(doc, newFolder, removeSourceDoc = false)
         }
         // save all groups again to update transferred rights
-        saveAllGroupsOfCatalog(catalogIdentifier)
+        saveGroupsTask.saveAllGroupsOfCatalog(catalogIdentifier)
     }
 
     private fun replacePathIDinDescendants(catalogIdentifier: String, doc: DocumentWrapper, oldId: Int, newId: Int) {
