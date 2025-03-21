@@ -32,7 +32,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { Map, Rectangle } from "leaflet";
+import { GeoJSON, Map, Polyline } from "leaflet";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { LeafletService } from "../../leaflet.service";
 import { debounceTime, filter, tap } from "rxjs/operators";
@@ -66,7 +66,7 @@ export class CoordinatesSpatialComponent
 
   @Output() result = new EventEmitter<any>();
 
-  private boundingBoxes: Rectangle[];
+  private boundingBoxes: (Polyline<any> | GeoJSON)[];
 
   constructor(private leafletService: LeafletService) {}
 
@@ -107,10 +107,9 @@ export class CoordinatesSpatialComponent
         value: <SpatialBoundingBox>values,
       },
     ]);
-    this.boundingBoxes = this.leafletService.drawSpatialRefs(
-      this.map,
-      coloredBoundingBox,
-    );
+    this.leafletService
+      .drawSpatialRefs(this.map, coloredBoundingBox)
+      .then((refs) => (this.boundingBoxes = refs));
   }
 
   private coordinatesValid(value): boolean {

@@ -19,14 +19,17 @@
  */
 import {
   AfterViewInit,
-  ChangeDetectorRef,
+  ChangeDetectionStrategy,
   Component,
+  computed,
   ElementRef,
+  inject,
   OnDestroy,
+  signal,
   ViewChild,
 } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
-import { Map, MapOptions, Rectangle } from "leaflet";
+import { GeoJSON, Map, MapOptions, Polyline } from "leaflet";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatDialog } from "@angular/material/dialog";
 import { SpatialDialogComponent } from "./spatial-dialog/spatial-dialog.component";
@@ -36,8 +39,8 @@ import {
   SpatialLocation,
   SpatialLocationWithColor,
 } from "./spatial-list/spatial-list.component";
-import { debounceTime, distinctUntilChanged, tap } from "rxjs/operators";
-import { BehaviorSubject, Observable, of } from "rxjs";
+import { debounceTime, distinctUntilChanged } from "rxjs/operators";
+import { of } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
 import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
@@ -62,44 +65,39 @@ import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/fo
     SpatialListComponent,
     TranslocoDirective,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LeafletTypeComponent
   extends FieldType<FieldTypeConfig>
   implements AfterViewInit, OnDestroy
 {
+  private dialog = inject(MatDialog);
+  private contextHelpService = inject(ContextHelpService);
+  private leafletService = inject(LeafletService);
+  private translocoService = inject(TranslocoService);
+
   @ViewChild("leaflet") leaflet: ElementRef;
 
-  locationsWithColor$ = new BehaviorSubject<SpatialLocationWithColor[]>([]);
-  hasAnyLocations = false;
-  maxLocationsReached = false;
+  locationsWithColor = signal<SpatialLocationWithColor[]>([]);
+  hasAnyLocations = computed<boolean>(
+    () => this.locationsWithColor().length > 0,
+  );
+  maxLocationsReached = computed<boolean>(
+    () => this.locationsWithColor().length >= this.props.max,
+  );
+  mapHasMoved = signal<boolean>(false);
 
   private leafletReference: L.Map;
-  private locations: SpatialLocation[] = [];
-  private drawnSpatialRefs: Rectangle[] = [];
-  mapHasMoved = false;
-
-  constructor(
-    private dialog: MatDialog,
-    private contextHelpService: ContextHelpService,
-    private leafletService: LeafletService,
-    private _changeDetectionRef: ChangeDetectorRef,
-    private translocoService: TranslocoService,
-  ) {
-    super();
-  }
+  // private locations: SpatialLocation[] = [];
+  private drawnSpatialRefs: (Polyline<any> | GeoJSON)[] = [];
 
   ngAfterViewInit() {
     this.leaflet.nativeElement.style.height = this.props.height + "px";
     this.leaflet.nativeElement.style.width = "100%";
 
     this.formControl.valueChanges
-      .pipe(
-        untilDestroyed(this),
-        debounceTime(0),
-        distinctUntilChanged(),
-        tap((value: SpatialLocation[]) => (this.locations = value || [])),
-      )
-      .subscribe(() => this.updateBoundingBox());
+      .pipe(untilDestroyed(this), debounceTime(0), distinctUntilChanged())
+      .subscribe((value) => this.updateBoundingBox(value || []));
 
     try {
       const options: MapOptions = this.props.mapOptions;
@@ -112,11 +110,11 @@ export class LeafletTypeComponent
       // to call resize event to prevent incorrect map display
       // @ts-ignore
       (<Map>this.leafletReference)._onResize();
-      this.leafletReference.on("dragend", () => (this.mapHasMoved = true));
+      this.leafletReference.on("dragend", () => this.mapHasMoved.set(true));
 
-      this.locations = this.formControl.value || [];
+      // this.locations = this.formControl.value || [];
       // delay update to prevent template error because of 'hasAnyLocations' update
-      setTimeout(() => {
+      /*setTimeout(() => {
         try {
           this.updateBoundingBox();
         } catch (e) {
@@ -125,7 +123,7 @@ export class LeafletTypeComponent
             e,
           );
         }
-      });
+      });*/
     } catch (e) {
       console.error("Problem initializing the map component.", e);
       this.updateLocations([]);
@@ -135,41 +133,38 @@ export class LeafletTypeComponent
   }
 
   private updateLocations(locations: SpatialLocationWithColor[]) {
-    this.hasAnyLocations = locations.length > 0;
-    this.maxLocationsReached = locations.length >= this.props.max;
-    this.locationsWithColor$.next(locations);
-    this._changeDetectionRef.detectChanges();
+    this.locationsWithColor.set(locations);
   }
 
-  private updateBoundingBox() {
+  private updateBoundingBox(locations: SpatialLocation[]) {
     this.updateLocations([]);
     this.leafletService.removeDrawnBoundingBoxes(
       this.leafletReference,
       this.drawnSpatialRefs,
     );
 
-    const hasCoordinates = this.locations.some(
-      (location) => location.value || location.wkt,
+    const hasCoordinates = locations.some((location) =>
+      this.leafletService.containsCoordinates(location),
     );
 
-    if (this.locations.length === 0 || !hasCoordinates) {
+    if (locations.length === 0 || !hasCoordinates) {
       this.leafletService.zoomToInitialBox(this.leafletReference);
       this.leafletReference.dragging.disable();
       this.leafletReference.doubleClickZoom.disable();
     }
 
-    const locationsWithColor = this.leafletService.extendLocationsWithColor(
-      this.locations,
-    );
-    this.updateLocations(locationsWithColor);
+    const coloredLocations =
+      this.leafletService.extendLocationsWithColor(locations);
+    this.updateLocations(coloredLocations);
 
     if (hasCoordinates) {
-      this.drawnSpatialRefs = this.leafletService.drawSpatialRefs(
-        this.leafletReference,
-        locationsWithColor,
-      );
-      this.leafletReference.dragging.enable();
-      this.leafletReference.doubleClickZoom.enable();
+      this.leafletService
+        .drawSpatialRefs(this.leafletReference, coloredLocations)
+        .then((spatialRefs) => {
+          this.drawnSpatialRefs = spatialRefs;
+          this.leafletReference.dragging.enable();
+          this.leafletReference.doubleClickZoom.enable();
+        });
     }
   }
 
@@ -190,10 +185,7 @@ export class LeafletTypeComponent
   }
 
   openSpatialDialog(locationIndex?: number) {
-    console.debug(
-      "The Location index array size before adding / updating: ",
-      this.locations.length,
-    );
+    const locations = this.formControl.value;
     this.dialog
       .open(SpatialDialogComponent, {
         width: "90%",
@@ -201,7 +193,7 @@ export class LeafletTypeComponent
         maxWidth: 1260,
         minWidth: "min(600px, 100%)",
         data: {
-          location: this.locations[locationIndex],
+          location: locations[locationIndex],
           limitTypes: this.props.limitTypes,
         },
         ariaLabel: "Raumbezug hinzufügen",
@@ -209,51 +201,44 @@ export class LeafletTypeComponent
       .afterClosed()
       .subscribe((result: SpatialLocation) => {
         if (result) {
-          console.debug("Spatial result:", result);
           if (locationIndex >= 0) {
-            this.locations[locationIndex] = result;
+            locations[locationIndex] = result;
           } else {
-            this.locations.push(result);
+            locations.push(result);
           }
-          console.debug(
-            "The Location index array size after adding / updating: ",
-            this.locations.length,
-          );
-          this.formControl.setValue(this.locations);
+
+          this.formControl.setValue([...locations]);
           this.formControl.markAsDirty();
-          this.updateBoundingBox();
         }
       });
   }
 
   removeLocation(index: number) {
-    this.locations.splice(index, 1);
-    this.formControl.setValue(this.locations);
+    this.formControl.value.splice(index, 1);
+    this.formControl.setValue([...this.formControl.value]);
     this.formControl.markAsDirty();
-
-    this.updateBoundingBox();
   }
 
   highlightLocation(index: number) {
+    const locations: SpatialLocation[] = this.formControl.value;
     if (index !== null) {
-      if (!this.locations[index].value && !this.locations[index].wkt) return;
+      if (!this.leafletService.containsCoordinates(locations[index])) return;
 
       const bounds = this.leafletService.getBoundingBoxFromLayers([
         this.drawnSpatialRefs[index],
       ]);
       this.leafletReference.fitBounds(bounds);
     } else {
-      this.updateBoundingBox();
+      this.updateBoundingBox(locations);
     }
 
-    this.mapHasMoved = this.locations.length === 1 ? false : index != null;
+    this.mapHasMoved.set(locations.length === 1 ? false : index != null);
   }
 
   showContextHelp() {
-    let desc: Observable<string> = of(
-      this.translocoService.translate("spatial.generalHelp"),
+    this.contextHelpService.showContextHelpPopup(
+      "Raumbezug",
+      of(this.translocoService.translate("spatial.generalHelp")),
     );
-
-    this.contextHelpService.showContextHelpPopup("Raumbezug", desc);
   }
 }

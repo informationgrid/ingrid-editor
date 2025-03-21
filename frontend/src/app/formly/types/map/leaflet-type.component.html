@@ -20,7 +20,7 @@
 
 <div
     #leaflet
-    [class.passive]="!hasAnyLocations"
+    [class.passive]="!hasAnyLocations()"
     [class.required]="props.required"
     aria-label="Karte der Raumbezüge"
 ></div>
@@ -28,9 +28,9 @@
 @if (formControl.enabled) {
     <div
         class="button-wrapper text-center"
-        [class.has-spatial]="hasAnyLocations"
+        [class.has-spatial]="hasAnyLocations()"
     >
-        @if (!hasAnyLocations) {
+        @if (!hasAnyLocations()) {
             <div class="spatialBtnText">
                 Erstellen Sie einen Raumbezug
                 @if (props.required) {
@@ -38,7 +38,7 @@
                 }
             </div>
         }
-        @if (!maxLocationsReached) {
+        @if (!maxLocationsReached()) {
             <button
                 type="button"
                 mat-fab
@@ -60,7 +60,7 @@
     </div>
 }
 
-@if (mapHasMoved) {
+@if (mapHasMoved()) {
     <div class="resetBtn">
         <button type="button" mat-flat-button (click)="highlightLocation(null)">
             Zurücksetzen
@@ -72,11 +72,11 @@
     <ige-form-error>Bitte erstellen Sie einen Raumbezug </ige-form-error>
 }
 
-@if (hasAnyLocations) {
+@if (hasAnyLocations()) {
     <ige-spatial-list
         role="list"
-        [class.list-padding]="!maxLocationsReached"
-        [locations]="locationsWithColor$"
+        [class.list-padding]="!maxLocationsReached()"
+        [locations]="locationsWithColor()"
         [disabled]="formControl.disabled"
         (selectLocation)="highlightLocation($event)"
         (edit)="openSpatialDialog($event)"
@@ -84,7 +84,7 @@
     ></ige-spatial-list>
 }
 
-@if (maxLocationsReached) {
+@if (maxLocationsReached()) {
     <div class="limitHelpText">
         <div class="limitHelpIcon">
             <mat-icon

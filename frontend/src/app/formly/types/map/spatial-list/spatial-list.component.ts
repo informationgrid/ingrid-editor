@@ -17,10 +17,16 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  output,
+} from "@angular/core";
 import { SpatialBoundingBox } from "../spatial-dialog/spatial-result.model";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { Observable } from "rxjs";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -77,40 +83,32 @@ export interface SpatialLocationWithColor extends SpatialLocation {
     MatMenuItem,
     DecimalPipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SpatialListComponent implements OnInit {
-  @Input() locations: Observable<SpatialLocationWithColor[]>;
-  @Input() disabled = false;
+export class SpatialListComponent {
+  locations = input<SpatialLocationWithColor[]>([]);
+  disabled = input<boolean>(false);
 
-  @Output() selectLocation = new EventEmitter<number>();
-  @Output() edit = new EventEmitter<number>();
-  @Output() remove = new EventEmitter<number>();
+  selectLocation = output<number>();
+  edit = output<number>();
+  remove = output<number>();
 
-  typedLocations: { [x: string]: SpatialLocationWithColor[] };
-  types: SpatialLocationType[];
+  private dialog = inject(MatDialog);
 
-  constructor(private dialog: MatDialog) {}
-
-  ngOnInit(): void {
-    this.locations
-      .pipe(untilDestroyed(this))
-      .subscribe((locations) => this.updateLocations(locations));
-  }
-
-  private updateLocations(locations: SpatialLocationWithColor[]): void {
-    this.typedLocations = locations.reduce(
+  typedLocations = computed<{ [x: string]: SpatialLocationWithColor[] }>(() => {
+    return this.locations().reduce(
       (prev, curr) => {
         prev[curr.type].push(curr);
         return prev;
       },
       { free: [], wkt: [], coordinates: [], wfsgnde: [], bwastr: [] },
     );
-
-    // @ts-ignore
-    this.types = Object.keys(this.typedLocations).filter(
-      (type) => this.typedLocations[type].length > 0,
+  });
+  types = computed<string[]>(() => {
+    return Object.keys(this.typedLocations()).filter(
+      (type) => this.typedLocations()[type].length > 0,
     );
-  }
+  });
 
   confirmRemove(location: SpatialLocationWithColor): void {
     this.dialog
