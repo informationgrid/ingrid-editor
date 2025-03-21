@@ -1,8 +1,8 @@
-@for (type of types; track type) {
-    @for (location of typedLocations[type]; track location) {
+@for (type of types(); track type) {
+    @for (location of typedLocations()[type]; track location.color) {
         <div
             class="clickable small-padding-right wrapper"
-            (click)="selectLocation.next(location.indexNumber)"
+            (click)="selectLocation.emit(location.indexNumber)"
             tabindex="0"
             role="listitem"
             [attr.aria-label]="location.title"
@@ -81,7 +81,7 @@
                     }
                 </div>
             </div>
-            @if (!disabled) {
+            @if (!disabled()) {
                 <button
                     #menuButton
                     type="button"
@@ -96,7 +96,7 @@
                     <mat-menu #spatialRef="matMenu">
                         <button
                             mat-menu-item
-                            (click)="selectLocation.next(location.indexNumber)"
+                            (click)="selectLocation.emit(location.indexNumber)"
                         >
                             Anzeigen
                         </button>
@@ -104,7 +104,7 @@
                             mat-menu-item
                             (click)="
                                 menuButton.focus();
-                                edit.next(location.indexNumber)
+                                edit.emit(location.indexNumber)
                             "
                         >
                             Bearbeiten

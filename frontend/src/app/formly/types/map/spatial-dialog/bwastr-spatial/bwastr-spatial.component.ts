@@ -171,42 +171,25 @@ export class BwastrSpatialComponent implements OnInit, OnDestroy {
 
     this.value.bwastr = this._selectedSection;
     this.result.emit(this._selectedSection);
-    this.bwastrLocatorService
-      .getSectionCoordinates(this._selectedSection)
-      .subscribe((response) => {
-        if (!response) {
-          console.warn(
-            "No coordinates found for section! Check backend logs for more information.",
-          );
-          return;
-        }
-        this.drawAndZoomBwastrSection(response);
-      });
-  }
-
-  private drawAndZoomBwastrSection(section: BwastrLocatorCoordinatesResponse) {
     this.removeDrawnBwastrSection();
-    const latLngs = section.coordinates.map((singleLine) =>
-      singleLine.map((coord) => new LatLng(coord[1], coord[0])),
-    );
-
-    this.drawnPolyLine = new Polyline(latLngs, {
-      color: "blue",
-      weight: 1,
-    }).addTo(this.map);
-
-    const bounds = new LatLngBounds(
-      new LatLng(section.bounds.lat1, section.bounds.lon1),
-      new LatLng(section.bounds.lat2, section.bounds.lon2),
-    );
-    this.map.fitBounds(bounds);
+    this.leafletService
+      .drawSpatialRefs(this.map, [
+        {
+          type: "bwastr",
+          indexNumber: 0,
+          color: "blue",
+          title: this.value.title,
+          bwastr: this._selectedSection,
+        },
+      ])
+      .then((geometries) => (this.drawnPolyLine = geometries[0] as Polyline));
   }
 
   private removeDrawnBwastrSection() {
-    if (this.drawnPolyLine) {
-      const line = this.drawnPolyLine;
-      setTimeout(() => this.map.removeLayer(line), 100);
-      this.drawnPolyLine = null;
-    }
+    if (!this.drawnPolyLine) return;
+    this.leafletService.removeDrawnBoundingBoxes(this.map, [
+      this.drawnPolyLine,
+    ]);
+    this.drawnPolyLine = null;
   }
 }

@@ -28,7 +28,7 @@ import {
   ViewChild,
 } from "@angular/core";
 import { FacetGroup, Facets, ResearchService } from "../research.service";
-import { Map, Rectangle } from "leaflet";
+import { GeoJSON, Map, Polyline } from "leaflet";
 import { LeafletService } from "../../formly/types/map/leaflet.service";
 import { MatDialog } from "@angular/material/dialog";
 import { SpatialDialogComponent } from "../../formly/types/map/spatial-dialog/spatial-dialog.component";
@@ -151,7 +151,7 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
   private _forAddresses = false;
   private allFacets: Facets;
-  private boxes: Rectangle[];
+  private boxes: (Polyline<any> | GeoJSON)[];
   private facetsInitialized = new BehaviorSubject<boolean>(false);
   timeGroupId: string;
 
@@ -307,15 +307,17 @@ export class FacetsComponent implements OnInit, ControlValueAccessor {
 
     this.removeSpatialFromMap();
     if (location) {
-      this.boxes = this.leafletService.drawSpatialRefs(this.leafletReference, [
-        {
-          value: location.value,
-          type: location.type,
-          title: location.title,
-          color: this.leafletService.getColor(0),
-          indexNumber: 0,
-        },
-      ]);
+      this.leafletService
+        .drawSpatialRefs(this.leafletReference, [
+          {
+            value: location.value,
+            type: location.type,
+            title: location.title,
+            color: this.leafletService.getColor(0),
+            indexNumber: 0,
+          },
+        ])
+        .then((boxes) => (this.boxes = boxes));
     }
   }
 

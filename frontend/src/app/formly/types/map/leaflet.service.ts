@@ -17,8 +17,9 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import {
+  GeoJSON,
   icon,
   LatLng,
   LatLngBounds,
@@ -28,6 +29,7 @@ import {
   Map,
   MapOptions,
   Marker,
+  Polyline,
   Rectangle,
   TileLayer,
 } from "leaflet";
@@ -41,6 +43,9 @@ import {
   Configuration,
 } from "../../../services/config/config.service";
 import { HttpClient } from "@angular/common/http";
+import { BwastrLocatorService } from "./spatial-dialog/bwastr-spatial/bwastr-locator.service";
+import { firstValueFrom, Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
 export interface WktValidateResponse {
   isValid: boolean;
@@ -51,6 +56,10 @@ export interface WktValidateResponse {
   providedIn: "root",
 })
 export class LeafletService {
+  private bwastrLocatorService = inject(BwastrLocatorService);
+  private config = inject(ConfigService);
+  private http = inject(HttpClient);
+
   private defaultOptions: MapOptions = {};
 
   private colors = [
@@ -99,10 +108,7 @@ export class LeafletService {
     }
   };
 
-  constructor(
-    private config: ConfigService,
-    private http: HttpClient,
-  ) {
+  constructor() {
     this.configuration = this.config.getConfiguration();
     this.wktTools = new WktTools();
 
@@ -147,9 +153,7 @@ export class LeafletService {
   drawSpatialRefs(
     map: Map,
     locations: SpatialLocationWithColor[],
-  ): Rectangle[] {
-    let bounds: LatLngBoundsExpression;
-
+  ): Promise<(Polyline<any> | GeoJSON)[]> {
     const wktLocations = locations.filter(
       (location) => location.type === "wkt" && location.wkt,
     );
@@ -158,12 +162,15 @@ export class LeafletService {
         (location.type === "free" && location.value) ||
         location.type === "wfsgnde",
     );
+    const bwastrLocations = locations.filter(
+      (location) => location.type === "bwastr",
+    );
 
     const drawnWktLocations = this.drawWktLocations(map, wktLocations);
     const drawnBoxLocations = this.drawBoxLocations(map, boxLocations);
 
     // fix order of drawn layers since we use them for selection and more
-    const drawnBoxes = [];
+    const drawnBoxes: (Polyline<any> | GeoJSON)[] = [];
     wktLocations.forEach(
       (location, index) =>
         (drawnBoxes[location.indexNumber] = drawnWktLocations[index]),
@@ -172,14 +179,22 @@ export class LeafletService {
       (location, index) =>
         (drawnBoxes[location.indexNumber] = drawnBoxLocations[index]),
     );
+    const promises = bwastrLocations.map((location) => {
+      return firstValueFrom(this.drawBwastrLocations(map, location)).then(
+        (geometry) => (drawnBoxes[location.indexNumber] = geometry),
+      );
+    });
 
-    bounds = this.getBoundingBoxFromLayers(drawnBoxes);
+    // Warte, bis alle Promises aufgelöst sind
+    return Promise.all(promises).then(() => {
+      const bounds = this.getBoundingBoxFromLayers(drawnBoxes);
 
-    if (bounds) {
-      map.fitBounds(bounds, { maxZoom: 18 });
-    }
+      if (bounds) {
+        map.fitBounds(bounds, { maxZoom: 18 });
+      }
 
-    return drawnBoxes;
+      return drawnBoxes;
+    });
   }
 
   getColor(index: number): string {
@@ -197,7 +212,7 @@ export class LeafletService {
     return new Rectangle(latLonBounds, { color: color, weight: 1 }).addTo(map);
   }
 
-  removeDrawnBoundingBoxes(map: Map, boxes: Rectangle[]) {
+  removeDrawnBoundingBoxes(map: Map, boxes: (Polyline<any> | GeoJSON)[]) {
     if (!boxes) return;
     boxes.forEach((box) => setTimeout(() => map.removeLayer(box), 100));
   }
@@ -223,7 +238,10 @@ export class LeafletService {
     }
   }
 
-  private drawBoxLocations(map: Map, locations: SpatialLocationWithColor[]) {
+  private drawBoxLocations(
+    map: Map,
+    locations: SpatialLocationWithColor[],
+  ): Rectangle[] {
     return locations
       .map((location) => ({
         box: LeafletService.getLatLngBoundsFromBox(location.value),
@@ -234,7 +252,10 @@ export class LeafletService {
       });
   }
 
-  private drawWktLocations(map: Map, locations: SpatialLocationWithColor[]) {
+  private drawWktLocations(
+    map: Map,
+    locations: SpatialLocationWithColor[],
+  ): GeoJSON[] {
     return locations.map((location) =>
       this.wktTools.mapIt(
         map,
@@ -248,6 +269,36 @@ export class LeafletService {
         false,
       ),
     );
+  }
+
+  private drawBwastrLocations(
+    mapRef: Map,
+    location: SpatialLocationWithColor,
+  ): Observable<Polyline> {
+    return this.bwastrLocatorService
+      .getSectionCoordinates(location.bwastr)
+      .pipe(
+        map((response) => {
+          if (!response) {
+            console.warn(
+              "No coordinates found for section! Check backend logs for more information.",
+            );
+            return;
+          }
+
+          const latLngs = response.coordinates.map((singleLine) =>
+            singleLine.map((coord) => new LatLng(coord[1], coord[0])),
+          );
+
+          const polyline = new Polyline(latLngs, {
+            color: "blue",
+            weight: 1,
+          });
+          console.log("Adding polyline to map");
+          polyline.addTo(mapRef);
+          return polyline;
+        }),
+      );
   }
 
   getBoundingBoxFromLayers(layers: Layer[]): LatLngBoundsExpression {
@@ -278,5 +329,9 @@ export class LeafletService {
       `${this.configuration.backendUrl}tools/validate/wkt`,
       value,
     );
+  }
+
+  containsCoordinates(locations: SpatialLocation) {
+    return locations.value || locations.wkt || locations.type === "bwastr";
   }
 }
