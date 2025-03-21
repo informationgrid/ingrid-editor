@@ -367,9 +367,13 @@ class IndexingTask(
                     }
                     it.target.flush()
                 } catch (ex: Exception) {
-                    throw NoElasticsearchConnectionException.withReason(
-                        ex.message ?: "No connection to Elasticsearch",
-                    )
+                    if (ex.message?.contains("with status 404") == true) {
+                        log.debug("Document not found in index and cannot be removed: $uuid")
+                    } else {
+                        throw NoElasticsearchConnectionException.withReason(
+                            ex.message ?: "No connection to Elasticsearch",
+                        )
+                    }
                 }
             }
     }

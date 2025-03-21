@@ -632,7 +632,7 @@ class DocumentService(
 
     fun archiveDocument(principal: Principal?, catalogId: String, wrapperId: Int): DocumentData {
         updateTags(catalogId, wrapperId, TagRequest(listOf(DocumentTag.ARCHIVED.value), null))
-        auditLog.log("tags", "archive", "wrapperId", catalogIdentifier = catalogId, principal = principal)
+        auditLog.log("tags", "archive", wrapperId.toString(), catalogIdentifier = catalogId, principal = principal)
 
         val doc = getLastPublishedDocumentOrNull(wrapperId)
         val postArchivePayload = PostArchivePayload(wrapperId, doc)
@@ -646,7 +646,7 @@ class DocumentService(
 
     fun unarchiveDocument(principal: Principal?, catalogId: String, wrapperId: Int): DocumentData {
         updateTags(catalogId, wrapperId, TagRequest(null, listOf(DocumentTag.ARCHIVED.value)))
-        auditLog.log("tags", "unarchive", "wrapperId", catalogIdentifier = catalogId, principal = principal)
+        auditLog.log("tags", "unarchive", wrapperId.toString(), catalogIdentifier = catalogId, principal = principal)
 
         val doc = getLastPublishedDocumentOrNull(wrapperId)
         val postUnarchivePayload = PostUnarchivePayload(wrapperId, doc)
