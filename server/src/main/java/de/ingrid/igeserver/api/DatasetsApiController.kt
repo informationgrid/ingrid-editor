@@ -147,7 +147,7 @@ class DatasetsApiController(
         return ResponseEntity.noContent().build()
     }
 
-    @AuditLog(action = "copy_datasets", target = "options", data = "ids")
+    @AuditLog(category = "datasets", action = "copy_datasets", target = "options", data = "ids")
     @Transactional
     override fun copyDatasets(
         principal: Principal,
@@ -164,7 +164,7 @@ class DatasetsApiController(
         return ResponseEntity.ok(results)
     }
 
-    @AuditLog(action = "move_datasets", target = "options", data = "ids")
+    @AuditLog(category = "datasets", action = "move_datasets", target = "options", data = "ids")
     @Transactional
     override fun moveDatasets(
         principal: Principal,
