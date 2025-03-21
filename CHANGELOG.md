@@ -1,5 +1,54 @@
 # Changelog
 
+## 7.5.0 (21.03.2025)
+
+### Features
+
+* Aktualisierung der Library für Lokalisierung (#7413)
+* Automatische Aktualisierung des Index bei der Archivierung (#7378)
+* Archivierung für Autoren ausblenden (#7377)
+* Anforderungen: Hierarchische Darstellung von Metadaten-Objekten (#7349)
+* Regression Fehler: Checkbox "Erst mit Beginn des Auslegungszeitraums veröffentlichen" nicht sichtbar (#7335)
+* Möglichkeit alle Metadatensätze mittels OGC Records API aus InGrid abzurufen. (#7078)
+* Datensatzverweise werden erst nach Indexierung sichtbar (#6963)
+* Umsetzungsticket Archivierung von Verfahren (#6778)
+* Erweiterung "Kartenansicht öffnen" - Zoomlevel und Center (#6221)
+* "Weitere rechtliche Grundlagen" -> "Rechtliche Grundlagen" (#5392)
+* Beschreibung von APIs durch Metadaten - Objektklasse "Anwendung" nutzen? (#5150)
+* Checkbox Verkehr für das Profil METAVER anlegen (#5147)
+* Funktionalität "Als ATOM-Download Dienst bereitstellen" testen (#5139)
+* Matomo Integration (#4097)
+
+### Bugfixes
+
+* IGE: Nutzer mit ausschließlich allgemeinen Rechten erscheinen als Nutzer bei allen Administratoren (#7479)
+* Unerwartete Anzeige in der Nutzerliste im IGE-NG (#7475)
+* Falscher Baumknoten ausgewählt nach Abbrechen des Dialogs für Änderungen (#7444)
+* Ansicht der abgelaufenen Dokumente im Dashboard enthalten nicht veröffentlichte Dokumente (#7439)
+* Änderungen an manipuliertem XML-Dokument werden bei Import nicht übernommen (#7406)
+* Geodatensatz mit Open Data: optionale Felder sind wieder Pflichtfelder (#7394)
+* Merkmal für AdV kompatibel verbessern (#7375)
+* Fehler bei der Veröffentlichung von Adressen (#7370)
+* Import und Export von BoundingBox ungenau (#7368)
+* Abnahme-Ergebnis BKG-Profil im IGE-NG: Einträge in transferOptions der migrierten Daten unvollständig (#7361)
+* Entfernen von Inline-Styles (#7346)
+* Capabilites-Assistent, Fehler und Fragen (#7305)
+* Fehler bei der Aktualisierung der extern gekoppelten Daten mit layerNames (#7302)
+* Fehler beim Wechsel zu Adressen für Autoren (#7301)
+* Toolbar Buttons disabled nach dem man Auswahlmode schließt  (#7281)
+* Fehlerhafter CSV-Export: capabilites_download_url korrekt befüllen (#7280)
+* Indexfeld access_constraint mit "Y" statt "true" befüllen (#7275)
+* Migrationstask für HVD fixen (#7274)
+* Räumlicher Anwendungsbereich mit Defaultwert (#7269)
+* Datendownloads unter Verweise können jetzt nicht mehr zum Bearbeiten geöffnet werden, wenn die eingetragenen links / und oder Erläuterungen zu lang sind (#7263)
+* Codelisten nach Synchronisation nicht mehr sichtbar (#7260)
+* Abnahme-Ergebnisse des #2601 (#7237)
+* Validierungsfehler über die OGC API (POST & PUT Methode) (#7224)
+* Anzeige "HVD" wird nicht an "Offene Lizenz" angepasst,  (#7217)
+* Automatische Indizierung im IGE-NG funktioniert nicht (#7201)
+* Die Sortierung der Vorschaugrafiken funktioniert nicht (#7193)
+* UVP-Verfahren - Portal - Darstellungsfehler in der Adresse (#6021)
+    
 ## 7.4.0 (10.01.2025)
 
 ### Features
