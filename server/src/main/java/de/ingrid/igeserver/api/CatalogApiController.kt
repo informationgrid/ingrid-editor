@@ -37,8 +37,8 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.utils.FileUploadHandler
+import de.ingrid.igeserver.utils.ifFalse
 import org.apache.logging.log4j.kotlin.logger
-import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
 import org.springframework.http.HttpHeaders.CONTENT_DISPOSITION
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
