@@ -146,7 +146,6 @@ export class CommonFieldsBaw extends FormFieldHelper {
       this.getBAWVerticalExtentFieldConfig(doc),
     );
 
-    // Require reference to address 'Bundesanstalt für Wasserbau' as 'Ansprechpartner'
     const pointOfContactPosition = doc.findFieldElementWithId(
       fieldConfig,
       "pointOfContact",
@@ -158,8 +157,6 @@ export class CommonFieldsBaw extends FormFieldHelper {
         pointOfContactPosition.fieldConfig[pointOfContactPosition.index]
           .validators,
       );
-
-    this.addAfter(pointOfContactPosition, this.getPublisherFieldConfig());
   }
 
   getBAWPointOfContactFieldConfig(
@@ -171,6 +168,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
       allowedTypesByDoctype: { PublicationAddressDoc: ["10", "11"] },
       validators: {
         // TODO: add if needed
+        // Require reference to address 'Bundesanstalt für Wasserbau' as 'Ansprechpartner'
         // hasBAWPointOfContact: this.hasBAWPointOfContact,
         ...additionalValidators,
       },
@@ -189,7 +187,11 @@ export class CommonFieldsBaw extends FormFieldHelper {
             this.addInputInline("minimumValue", "Minimum", {
               type: "number",
               hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
+              wrappers: ["inline-help", "form-field", "addons"],
+              className: "right-align",
+              suffix: {
+                text: "m",
+              },
               expressions: {
                 "props.required": (field: FormlyFieldConfig) =>
                   isNotEmptyObject(field.form.value),
@@ -198,7 +200,11 @@ export class CommonFieldsBaw extends FormFieldHelper {
             this.addInputInline("maximumValue", "Maximum", {
               type: "number",
               hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
+              wrappers: ["inline-help", "form-field", "addons"],
+              className: "right-align",
+              suffix: {
+                text: "m",
+              },
               expressions: {
                 "props.required": (field: FormlyFieldConfig) =>
                   isNotEmptyObject(field.form.value),
@@ -252,14 +258,6 @@ export class CommonFieldsBaw extends FormFieldHelper {
         },
       },
     );
-  }
-
-  getPublisherFieldConfig(): FormlyFieldConfig {
-    return this.addAddressCard("publisher", "Herausgeber", {
-      // required: true,
-      max: 1,
-      allowedTypes: ["10"],
-    });
   }
 
   addSharedGeoDatasetFields(
