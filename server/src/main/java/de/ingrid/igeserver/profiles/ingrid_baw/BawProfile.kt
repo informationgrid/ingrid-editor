@@ -60,7 +60,6 @@ class BawProfile(
     override val indexExportFormatID = "indexInGridIDFBaw"
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
-        super.initCatalogCodelists(catalogId, codelistId)
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
 
         val codelists = mapOf(
@@ -80,6 +79,7 @@ class BawProfile(
             "3950033" to createCodelist3950033(catalogRef),
             "identifierType" to createCodelistIdentifierType(catalogRef),
             "verticalCoordinateReferenceSystem" to createCodelistVerticalCoordinateReferenceSystem(catalogRef),
+            "bwastrids" to createBwaStrIds(catalogRef),
         )
 
         if (codelists.containsKey(codelistId)) {
@@ -87,6 +87,26 @@ class BawProfile(
         } else if (codelistId == null) {
             // remove all codelists and add them again
             codelistHandler.removeAndAddCodelists(catalogId, codelists.values.toList())
+            super.initCatalogCodelists(catalogId)
+        } else {
+            super.initCatalogCodelists(catalogId, codelistId)
+        }
+    }
+
+    private fun createBwaStrIds(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "bwastrids"
+        catalog = catalogRef
+        name = "Bundeswasserstraßen-IDs"
+        description = "Zusätzliche IDs, die nicht im BWaStr. Locator vorhanden sind"
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("7000", "7000 Nordsee", """{ "lat1": 53.28, "lon1": 3.34, "lat2": 56.04, "lon2": 9.05 }"""))
+            add(CodelistHandler.toCodelistEntry("8000", "8000 Ostsee", """{ "lat1": 53.68, "lon1": 9.41, "lat2": 55.11, "lon2": 14.82 }"""))
+            add(CodelistHandler.toCodelistEntry("8300", "8300 Ryck"))
+            add(CodelistHandler.toCodelistEntry("9600", "9600 Binnenwasserstraßen"))
+            add(CodelistHandler.toCodelistEntry("9700", "9700 Seewasserstraßen"))
+            add(CodelistHandler.toCodelistEntry("9800", "9800 Bundeswasserstraßen"))
+            add(CodelistHandler.toCodelistEntry("9900", "9900 Sonstige Gewässer"))
+            add(CodelistHandler.toCodelistEntry("9999", "9999 Sonstiger Ortsbezug"))
         }
     }
 

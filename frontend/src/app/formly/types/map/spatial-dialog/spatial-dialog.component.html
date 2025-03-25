@@ -120,7 +120,11 @@
                 !result.ars &&
                 !result.title) ||
             (view === 'wkt' && !result.wkt) ||
-            (view === 'wfsgnde' && !result.value && !result.title)
+            (view === 'wfsgnde' && !result.value && !result.title) ||
+            (view === 'bwastr' &&
+                !result.bwastr?.bwastrid &&
+                !result.bwastr?.start &&
+                !result.bwastr?.end)
         "
         (click)="returnResult()"
     >

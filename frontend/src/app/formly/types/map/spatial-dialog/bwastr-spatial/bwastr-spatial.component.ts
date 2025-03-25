@@ -93,8 +93,8 @@ export class BwastrSpatialComponent implements OnInit, OnDestroy {
   set selectedSection(value: BwastrSection) {
     this._selectedSection = value;
     this.limitForm.setValue({
-      start: value.start,
-      end: value.end,
+      start: value?.start ?? null,
+      end: value?.end ?? null,
     });
   }
   drawnPolyLine: Polyline;
@@ -139,6 +139,9 @@ export class BwastrSpatialComponent implements OnInit, OnDestroy {
     if (query.trim().length === 0) {
       this.showWelcome = true;
       this.searchResults = [];
+      this.selectedSection = null;
+      this.value.bwastr = null;
+      this.removeDrawnBwastrSection();
       return;
     }
     this.showWelcome = false;

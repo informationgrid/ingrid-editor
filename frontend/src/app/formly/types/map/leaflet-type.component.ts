@@ -185,7 +185,7 @@ export class LeafletTypeComponent
   }
 
   openSpatialDialog(locationIndex?: number) {
-    const locations = this.formControl.value;
+    const locations = this.formControl.value ?? [];
     this.dialog
       .open(SpatialDialogComponent, {
         width: "90%",

@@ -43,9 +43,12 @@ import {
   Configuration,
 } from "../../../services/config/config.service";
 import { HttpClient } from "@angular/common/http";
-import { BwastrLocatorService } from "./spatial-dialog/bwastr-spatial/bwastr-locator.service";
+import {
+  BwastrLocatorCoordinatesResponse,
+  BwastrLocatorService,
+} from "./spatial-dialog/bwastr-spatial/bwastr-locator.service";
 import { firstValueFrom, Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { catchError, map } from "rxjs/operators";
 
 export interface WktValidateResponse {
   isValid: boolean;
@@ -278,7 +281,10 @@ export class LeafletService {
     return this.bwastrLocatorService
       .getSectionCoordinates(location.bwastr)
       .pipe(
-        map((response) => {
+        catchError(() => {
+          return null;
+        }),
+        map((response: BwastrLocatorCoordinatesResponse) => {
           if (!response) {
             console.warn(
               "No coordinates found for section! Check backend logs for more information.",
@@ -305,6 +311,8 @@ export class LeafletService {
     let bounds: LatLngBounds = null;
 
     layers.forEach((layer) => {
+      if (!layer) return;
+
       if ((<Rectangle>layer).getBounds) {
         bounds = this.extendBounds(bounds, (<Rectangle>layer).getBounds());
       } else if ((<Marker>layer).getLatLng) {

@@ -20,32 +20,84 @@
 import { inject, Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ConfigService } from "../../../../../services/config/config.service";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { SpatialBoundingBox } from "../spatial-result.model";
 import { BwastrSection } from "../../spatial-list/spatial-list.component";
+import { CodelistService } from "../../../../../services/codelist/codelist.service";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { map } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
 })
 export class BwastrLocatorService {
   private http = inject(HttpClient);
+  private codelistService = inject(CodelistService);
 
-  constructor() {}
+  private bwaStrIds = toSignal(this.codelistService.observeRaw("bwastrids"));
 
   search(query: string): Observable<BwastrLocatorSearchResponse[]> {
-    return this.http.post<BwastrLocatorSearchResponse[]>(
-      ConfigService.backendApiUrl + "search/bwastr",
-      query,
-    );
+    const entry = this.searchInCodelist(query);
+    const codelistBwastr: BwastrLocatorSearchResponse = entry
+      ? {
+          bwastrid: entry.id,
+          concatName: entry.fields.de,
+          start: null,
+          end: null,
+        }
+      : null;
+
+    return this.http
+      .post<
+        BwastrLocatorSearchResponse[]
+      >(ConfigService.backendApiUrl + "search/bwastr", query)
+      .pipe(
+        map((res) => {
+          return codelistBwastr ? [codelistBwastr, ...res] : res;
+        }),
+      );
   }
 
   getSectionCoordinates(
     section: BwastrSection,
   ): Observable<BwastrLocatorCoordinatesResponse> {
+    const entry = this.searchInCodelist(section.bwastrid);
+    if (entry) {
+      try {
+        const bounds: SpatialBoundingBox = JSON.parse(entry.data);
+        return of(<BwastrLocatorCoordinatesResponse>{
+          coordinates: this.boundsToCoordinates(bounds),
+          bounds: bounds,
+        });
+      } catch (e) {
+        // throw new IgeError("Could not parse bounds: " + entry.data);
+        return of(null);
+      }
+    }
     return this.http.post<BwastrLocatorCoordinatesResponse>(
       ConfigService.backendApiUrl + "search/bwastr/coordinates",
       section,
     );
+  }
+
+  private searchInCodelist(query: string) {
+    return this.bwaStrIds().entries.find(
+      (item) => item.id === query || item.fields.de.indexOf(query) !== -1,
+    );
+  }
+
+  private boundsToCoordinates(bounds: SpatialBoundingBox): number[][][] {
+    const { lat1, lon1, lat2, lon2 } = bounds;
+
+    return [
+      [
+        [lon1, lat1],
+        [lon2, lat1],
+        [lon2, lat2],
+        [lon1, lat2],
+        [lon1, lat1],
+      ],
+    ];
   }
 }
 
