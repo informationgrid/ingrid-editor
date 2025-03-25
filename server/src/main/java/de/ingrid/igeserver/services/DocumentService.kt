@@ -128,6 +128,7 @@ class DocumentService(
     var generalProperties: GeneralProperties,
     val authUtils: AuthUtils,
     val catalogService: CatalogService,
+    val auditLog: AuditLogger,
 ) : MapperService() {
 
     // this must be initialized lazily because of cyclic dependencies otherwise
@@ -631,20 +632,28 @@ class DocumentService(
 
     fun archiveDocument(principal: Principal?, catalogId: String, wrapperId: Int): DocumentData {
         updateTags(catalogId, wrapperId, TagRequest(listOf(DocumentTag.ARCHIVED.value), null))
+        auditLog.log("tags", "archive", wrapperId.toString(), catalogIdentifier = catalogId, principal = principal)
 
         val doc = getLastPublishedDocumentOrNull(wrapperId)
         val postArchivePayload = PostArchivePayload(wrapperId, doc)
-        postArchivePipe.runFilters(postArchivePayload, DefaultContext.withCurrentProfile(catalogId, catalogService, principal))
+        postArchivePipe.runFilters(
+            postArchivePayload,
+            DefaultContext.withCurrentProfile(catalogId, catalogService, principal),
+        )
 
         return getDocumentFromCatalog(catalogId, wrapperId)
     }
 
     fun unarchiveDocument(principal: Principal?, catalogId: String, wrapperId: Int): DocumentData {
         updateTags(catalogId, wrapperId, TagRequest(null, listOf(DocumentTag.ARCHIVED.value)))
+        auditLog.log("tags", "unarchive", wrapperId.toString(), catalogIdentifier = catalogId, principal = principal)
 
         val doc = getLastPublishedDocumentOrNull(wrapperId)
         val postUnarchivePayload = PostUnarchivePayload(wrapperId, doc)
-        postUnarchivePipe.runFilters(postUnarchivePayload, DefaultContext.withCurrentProfile(catalogId, catalogService, principal))
+        postUnarchivePipe.runFilters(
+            postUnarchivePayload,
+            DefaultContext.withCurrentProfile(catalogId, catalogService, principal),
+        )
 
         return getDocumentFromCatalog(catalogId, wrapperId)
     }

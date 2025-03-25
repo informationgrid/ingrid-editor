@@ -61,11 +61,11 @@ class UvpArchiveTask(
         // get all docs whose decision date is before a given date
         val datasets = uvpArchiveService.getDatasetsBeforeDecisionDate(catalogId, date)
 
-        setAdminAuthentication("UVPArchive", "Task")
+        val principal = setAdminAuthentication("UVPArchive", "Task")
 
         ClosableTransaction(transactionManager).use {
             datasets.forEach {
-                documentService.archiveDocument(null, catalogId, it.wrapperId)
+                documentService.archiveDocument(principal, catalogId, it.wrapperId)
                 notify.sendMessage(
                     message.apply { this.progress++ },
                 )

@@ -21,6 +21,7 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.DocumentWithMetadata
@@ -33,6 +34,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.AuditLogger
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentInfo
@@ -72,6 +74,7 @@ class DatasetsApiController(
     private val aclService: IgeAclService,
     private val storage: Storage,
     private val researchService: ResearchService,
+    val auditLog: AuditLogger,
 ) : DatasetsApi {
 
 //    private val log = logger()
@@ -151,7 +154,7 @@ class DatasetsApiController(
         return ResponseEntity.noContent().build()
     }
 
-    @AuditLog(action = "copy_datasets", target = "options", data = "ids")
+    @AuditLog(category = "datasets", action = "copy_datasets", target = "options", data = "ids")
     @Transactional
     override fun copyDatasets(
         principal: Principal,
@@ -168,7 +171,7 @@ class DatasetsApiController(
         return ResponseEntity.ok(results)
     }
 
-    @AuditLog(action = "move_datasets", target = "options", data = "ids")
+    @AuditLog(category = "datasets", action = "move_datasets", target = "options", data = "ids")
     @Transactional
     override fun moveDatasets(
         principal: Principal,
@@ -234,6 +237,8 @@ class DatasetsApiController(
     override fun setTags(principal: Principal, id: Int, tags: TagRequest): ResponseEntity<List<String>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val updatedTags = this.documentService.updateTags(catalogId, id, tags) ?: emptyList()
+        val tagsJsonNode: JsonNode = jacksonObjectMapper().valueToTree(tags)
+        auditLog.log("tags", "update", id.toString(), data = tagsJsonNode, catalogIdentifier = catalogId, principal = principal)
         return ResponseEntity.ok(updatedTags)
     }
 

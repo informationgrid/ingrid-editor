@@ -116,9 +116,7 @@ export class ArchivePlugin extends Plugin {
           .open(ConfirmDialogComponent, {
             data: <ConfirmDialogData>{
               title: "Archivieren",
-              message:
-                "Wollen Sie den Datensatz wirklich archivieren? " +
-                this.transloco.translate("archive.message"),
+              message: this.transloco.translate("archive.message"),
               confirmButtonText: "Jetzt archivieren",
             },
           })
