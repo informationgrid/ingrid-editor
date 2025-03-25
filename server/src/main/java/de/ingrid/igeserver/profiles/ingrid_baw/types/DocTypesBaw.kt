@@ -55,6 +55,4 @@ class PublicationAddressDoc(jdbcTemplate: JdbcTemplate) : InGridOrganisationType
     override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
     override val className = "PublicationAddressDoc"
-
-    override val referenceFieldsInDocuments = listOf("pointOfContact", "publisher")
 }

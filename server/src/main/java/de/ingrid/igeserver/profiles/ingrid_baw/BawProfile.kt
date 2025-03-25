@@ -66,19 +66,20 @@ class BawProfile(
         val codelists = mapOf(
             "3950000" to createCodelistDimensionCode(catalogRef),
             "3950001" to createCodelistModellverfahrenCode(catalogRef),
+            "3950003" to createCodelist3950003(catalogRef),
+            "3950004" to createCodelist3950004(catalogRef),
+            "3950007" to createCodelist3950007(catalogRef),
             "3950011" to createCodelist3950011(catalogRef),
             "3950012" to createCodelist3950012(catalogRef),
             "3950014" to createCodelist3950014(catalogRef),
             "3950020" to createCodelist3950020(catalogRef),
             "3950021" to createCodelist3950021(catalogRef),
-            "3950003" to createCodelist3950003(catalogRef),
-            "3950004" to createCodelist3950004(catalogRef),
             "3950030" to createCodelist3950030(catalogRef),
             "3950031" to createCodelist3950031(catalogRef),
             "3950032" to createCodelist3950032(catalogRef),
             "3950033" to createCodelist3950033(catalogRef),
             "identifierType" to createCodelistIdentifierType(catalogRef),
-            "verticalCoordinateReferenceSystem" to createCodelistPlaceholder("verticalCoordinateReferenceSystem", catalogRef),
+            "verticalCoordinateReferenceSystem" to createCodelistVerticalCoordinateReferenceSystem(catalogRef),
         )
 
         if (codelists.containsKey(codelistId)) {
@@ -92,7 +93,7 @@ class BawProfile(
     private fun createCodelist3950011(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "3950011"
         catalog = catalogRef
-        name = "3950011"
+        name = "Messverfahren"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "Vertikalecholot"))
@@ -114,7 +115,7 @@ class BawProfile(
     private fun createCodelist3950012(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "3950012"
         catalog = catalogRef
-        name = "3950012"
+        name = "Räumlichkeit"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "Querprofil (voll)"))
@@ -128,7 +129,7 @@ class BawProfile(
     private fun createCodelist3950014(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "3950014"
         catalog = catalogRef
-        name = "3950014"
+        name = "Zielparameter - Art"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "Gemessen", english = "Measured"))
@@ -139,7 +140,7 @@ class BawProfile(
     private fun createCodelist3950020(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "3950020"
         catalog = catalogRef
-        name = "3950020"
+        name = "Maßeinheiten"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "s", iso = "s"))
@@ -164,7 +165,7 @@ class BawProfile(
     private fun createCodelist3950021(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "3950021"
         catalog = catalogRef
-        name = "3950021"
+        name = "Zielparameter - Name"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "Frequenz"))
@@ -195,7 +196,7 @@ class BawProfile(
     private fun createCodelist3950003(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "3950003"
         catalog = catalogRef
-        name = "3950003"
+        name = "Simulationsmodellart"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "fahrdynamisch"))
@@ -219,7 +220,7 @@ class BawProfile(
     private fun createCodelist3950004(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "3950004"
         catalog = catalogRef
-        name = "3950004"
+        name = "Simulationsparameter - Rolle"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "Bathymetrie"))
@@ -234,10 +235,92 @@ class BawProfile(
         }
     }
 
+    private fun createCodelist3950007(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "3950007"
+        catalog = catalogRef
+        name = "Baugrunddynamik-Schlagworte"
+        description = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("1", "Beweissicherung"))
+            add(CodelistHandler.toCodelistEntry("2", "Messdaten BD"))
+            add(CodelistHandler.toCodelistEntry("3", "Probemaßnahme"))
+            add(CodelistHandler.toCodelistEntry("4", "Produktion"))
+            add(CodelistHandler.toCodelistEntry("5", "Prognose"))
+            add(CodelistHandler.toCodelistEntry("6", "Baugrund"))
+            add(CodelistHandler.toCodelistEntry("7", "Bauteil"))
+            add(CodelistHandler.toCodelistEntry("8", "Bauwerk"))
+            add(CodelistHandler.toCodelistEntry("9", "Beton"))
+            add(CodelistHandler.toCodelistEntry("10", "Boden"))
+            add(CodelistHandler.toCodelistEntry("11", "Erdbeben"))
+            add(CodelistHandler.toCodelistEntry("12", "Erschütterung"))
+            add(CodelistHandler.toCodelistEntry("13", "Fundament"))
+            add(CodelistHandler.toCodelistEntry("14", "Geophysik"))
+            add(CodelistHandler.toCodelistEntry("15", "Schaden"))
+            add(CodelistHandler.toCodelistEntry("16", "Schiffsschwingung"))
+            add(CodelistHandler.toCodelistEntry("17", "Schiffsstoß"))
+            add(CodelistHandler.toCodelistEntry("18", "Schwingung"))
+            add(CodelistHandler.toCodelistEntry("19", "Schwingungsanregung"))
+            add(CodelistHandler.toCodelistEntry("20", "Schwingungsminderung"))
+            add(CodelistHandler.toCodelistEntry("21", "Seismik"))
+            add(CodelistHandler.toCodelistEntry("22", "Denkmalschutz"))
+            add(CodelistHandler.toCodelistEntry("23", "Erdbauwerk"))
+            add(CodelistHandler.toCodelistEntry("24", "historische Bebauung"))
+            add(CodelistHandler.toCodelistEntry("25", "Hochhaus"))
+            add(CodelistHandler.toCodelistEntry("26", "Industriebau"))
+            add(CodelistHandler.toCodelistEntry("27", "Kernkraftwerk"))
+            add(CodelistHandler.toCodelistEntry("28", "Maschine"))
+            add(CodelistHandler.toCodelistEntry("29", "Massivbauwerk"))
+            add(CodelistHandler.toCodelistEntry("30", "Menschen"))
+            add(CodelistHandler.toCodelistEntry("31", "Rohrleitung"))
+            add(CodelistHandler.toCodelistEntry("32", "Tunnel"))
+            add(CodelistHandler.toCodelistEntry("33", "Wohnhaus"))
+            add(CodelistHandler.toCodelistEntry("34", "Dieselramme"))
+            add(CodelistHandler.toCodelistEntry("35", "Fallgewicht"))
+            add(CodelistHandler.toCodelistEntry("36", "Freifallramme"))
+            add(CodelistHandler.toCodelistEntry("37", "Hydraulikramme"))
+            add(CodelistHandler.toCodelistEntry("38", "Schnellschlagramme"))
+            add(CodelistHandler.toCodelistEntry("39", "Vibrationsramme - HF"))
+            add(CodelistHandler.toCodelistEntry("40", "Vibrieren"))
+            add(CodelistHandler.toCodelistEntry("41", "Dalben"))
+            add(CodelistHandler.toCodelistEntry("42", "Doppelbohle"))
+            add(CodelistHandler.toCodelistEntry("43", "Einzelbohle"))
+            add(CodelistHandler.toCodelistEntry("44", "Frankipfahl"))
+            add(CodelistHandler.toCodelistEntry("45", "Schrägpfahl"))
+            add(CodelistHandler.toCodelistEntry("46", "Sonderprofil"))
+            add(CodelistHandler.toCodelistEntry("47", "Baggern"))
+            add(CodelistHandler.toCodelistEntry("48", "Bohren"))
+            add(CodelistHandler.toCodelistEntry("49", "Bohren - Austausch"))
+            add(CodelistHandler.toCodelistEntry("50", "Fräsen"))
+            add(CodelistHandler.toCodelistEntry("51", "Meißeln Abbruch"))
+            add(CodelistHandler.toCodelistEntry("52", "Meißeln Fels"))
+            add(CodelistHandler.toCodelistEntry("53", "Pressen"))
+            add(CodelistHandler.toCodelistEntry("54", "Reißen"))
+            add(CodelistHandler.toCodelistEntry("55", "Sprengung Abbruch"))
+            add(CodelistHandler.toCodelistEntry("56", "Sprengung Boden"))
+            add(CodelistHandler.toCodelistEntry("57", "Verdichten"))
+            add(CodelistHandler.toCodelistEntry("58", "Verdichten-Intensivverdichtung"))
+            add(CodelistHandler.toCodelistEntry("59", "Verkehr"))
+            add(CodelistHandler.toCodelistEntry("60", "Ziehen"))
+            add(CodelistHandler.toCodelistEntry("61", "Messwerte im Gutachten"))
+            add(CodelistHandler.toCodelistEntry("62", "s-Bauwerk"))
+            add(CodelistHandler.toCodelistEntry("63", "s-Boden"))
+            add(CodelistHandler.toCodelistEntry("64", "Setzung"))
+            add(CodelistHandler.toCodelistEntry("65", "v-1D"))
+            add(CodelistHandler.toCodelistEntry("66", "v-3D"))
+            add(CodelistHandler.toCodelistEntry("67", "v-Bauwerk"))
+            add(CodelistHandler.toCodelistEntry("68", "v-Boden"))
+            add(CodelistHandler.toCodelistEntry("69", "v-Decke"))
+            add(CodelistHandler.toCodelistEntry("70", "v-Fundament"))
+            add(CodelistHandler.toCodelistEntry("71", "v-Obergeschoss"))
+            add(CodelistHandler.toCodelistEntry("72", "v-Vektor"))
+            add(CodelistHandler.toCodelistEntry("73", "Schall"))
+        }
+    }
+
     private fun createCodelist3950030(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "3950030"
         catalog = catalogRef
-        name = "3950030"
+        name = "Programmiersprache"
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "Java", english = "Java"))
             add(CodelistHandler.toCodelistEntry("2", "Fortran", english = "Fortran"))
@@ -257,7 +340,7 @@ class BawProfile(
     private fun createCodelist3950031(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "3950031"
         catalog = catalogRef
-        name = "3950031"
+        name = "Entwicklungsumgebung"
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "Visual Studio", english = "Visual Studio"))
             add(CodelistHandler.toCodelistEntry("2", "Visual Studio Code", english = "Visual Studio Code"))
@@ -267,7 +350,7 @@ class BawProfile(
     private fun createCodelist3950032(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "3950032"
         catalog = catalogRef
-        name = "3950032"
+        name = "Installation über"
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "Ticket", english = "Ticket"))
             add(CodelistHandler.toCodelistEntry("2", "Software Center", english = "Software Center"))
@@ -278,7 +361,7 @@ class BawProfile(
     private fun createCodelist3950033(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "3950033"
         catalog = catalogRef
-        name = "3950033"
+        name = "Name des HLR"
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "Rhenus", english = "Rhenus", iso = "Rhenus"))
             add(CodelistHandler.toCodelistEntry("2", "Automatix", english = "Automatix", iso = "Automatix"))
@@ -342,6 +425,18 @@ class BawProfile(
             add(CodelistHandler.toCodelistEntry("1", "Handle"))
             add(CodelistHandler.toCodelistEntry("2", "ISBN"))
             add(CodelistHandler.toCodelistEntry("3", "ISSN"))
+        }
+    }
+
+    private fun createCodelistVerticalCoordinateReferenceSystem(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "verticalCoordinateReferenceSystem"
+        catalog = catalogRef
+        name = "Vertical Coordinate Reference System"
+        description = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(CodelistHandler.toCodelistEntry("5783", "EPSG:5783 DHHN92 Höhe"))
+            add(CodelistHandler.toCodelistEntry("7699", "EPSG:7699 DHHN12 Höhe"))
+            add(CodelistHandler.toCodelistEntry("7837", "EPSG:7837 DHHN2016 Höhe"))
         }
     }
 

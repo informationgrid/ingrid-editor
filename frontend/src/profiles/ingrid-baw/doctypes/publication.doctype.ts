@@ -138,7 +138,7 @@ export class PublicationDoctypeBaw extends IngridShared {
         view: "chip",
         className: "optional",
         asSelect: true,
-        options: this.getCodelistForSelect("3950005", "null"),
+        options: this.getCodelistForSelect("3950007", "null"),
       }),
     );
 
