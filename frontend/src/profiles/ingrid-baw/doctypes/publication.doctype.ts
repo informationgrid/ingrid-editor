@@ -58,14 +58,14 @@ export class PublicationDoctypeBaw extends IngridShared {
       this.addKeywordsSection(),
       this.addSection("Fachbezug", [
         this.addGroupSimple("publication", [
-          this.addInput("isbn", "ISBN-Nr.", {
-            wrappers: ["panel", "form-field"],
-            className: "optional",
-          }),
-          this.addInput("issn", "ISSN-Nr.", {
-            wrappers: ["panel", "form-field"],
-            className: "optional",
-          }),
+          // this.addInput("isbn", "ISBN-Nr.", {
+          //   wrappers: ["panel", "form-field"],
+          //   className: "optional",
+          // }),
+          // this.addInput("issn", "ISSN-Nr.", {
+          //   wrappers: ["panel", "form-field"],
+          //   className: "optional",
+          // }),
           this.addRepeat("additionalIdentifiers", "Weitere Identifikatoren", {
             fields: [
               this.addSelectInline("type", "Identifikatortyp", {
@@ -123,23 +123,6 @@ export class PublicationDoctypeBaw extends IngridShared {
     this.addBefore(
       parentIdentifierPosition,
       this.addRepeatList("orderTitles", "Auftragstitel"),
-    );
-
-    const gemetKeywordsPosition = this.findFieldElementWithId(
-      fieldConfig,
-      "gemet",
-    );
-
-    // Baugrunddynamik Schlagwortkatalog
-    this.addBefore(
-      gemetKeywordsPosition,
-      this.addRepeatList("subsoilKeywords", "Baugrunddynamik-Schlagworte", {
-        showSearch: true,
-        view: "chip",
-        className: "optional",
-        asSelect: true,
-        options: this.getCodelistForSelect("3950007", "null"),
-      }),
     );
 
     this.updateValidators(

@@ -113,6 +113,18 @@ export class CommonFieldsBaw extends FormFieldHelper {
       "gemet",
     );
 
+    // Baugrunddynamik Schlagwortkatalog
+    this.addBefore(
+      gemetKeywordsPosition,
+      this.addRepeatList("subsoilKeywords", "Baugrunddynamik-Schlagworte", {
+        showSearch: true,
+        view: "chip",
+        className: "optional",
+        asSelect: true,
+        options: doc.getCodelistForSelect("3950007", "null"),
+      }),
+    );
+
     // BAW Schlagwortkatalog
     this.addBefore(
       gemetKeywordsPosition,
