@@ -1,6 +1,8 @@
 import gg.jte.ContentType
-//import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
+
 import java.nio.file.Paths
+
+//import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 
 buildscript {
     ext.kotlin_version = '2.1.0'
@@ -28,7 +30,7 @@ plugins {
     id "com.github.ben-manes.versions" version "0.52.0"
     id "gg.jte.gradle" version "$jte_version"
     id "org.hibernate.orm" version "6.5.2.Final"
-//    id "org.jlleitschuh.gradle.ktlint" version "12.2.0"
+    id "org.jlleitschuh.gradle.ktlint" version "12.2.0"
     id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
 }
 
@@ -426,7 +428,7 @@ tasks.register('checkForSnapshots', {
     }
 })
 
-//ktlint {
-//    version.set("1.5.0")
-//}
+ktlint {
+    version.set("1.5.0")
+}
 
