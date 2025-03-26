@@ -34,6 +34,8 @@ export type UiState = {
     manage: string;
     importExport: string;
     catalogs: string;
+    form: { id: string };
+    address: { id: string };
   };
 };
 
@@ -52,6 +54,8 @@ const initialState: UiState = {
     manage: null,
     importExport: null,
     catalogs: null,
+    form: null,
+    address: null,
   },
 };
 
