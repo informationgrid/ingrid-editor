@@ -83,7 +83,9 @@ export class BwastrLocatorService {
 
   private searchInCodelist(query: string): CodelistEntry {
     return this.bwaStrIds()?.entries?.find(
-      (item) => item.id === query || item.fields.de.indexOf(query) !== -1,
+      (item) =>
+        item.id === query ||
+        item.fields.de?.toLowerCase().indexOf(query?.toLowerCase()) !== -1,
     );
   }
 
