@@ -26,6 +26,7 @@ import { BwastrSection } from "../../spatial-list/spatial-list.component";
 import { CodelistService } from "../../../../../services/codelist/codelist.service";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { map } from "rxjs/operators";
+import { CodelistEntry } from "../../../../../store/codelist/codelist.model";
 
 @Injectable({
   providedIn: "root",
@@ -80,8 +81,8 @@ export class BwastrLocatorService {
     );
   }
 
-  private searchInCodelist(query: string) {
-    return this.bwaStrIds().entries.find(
+  private searchInCodelist(query: string): CodelistEntry {
+    return this.bwaStrIds()?.entries?.find(
       (item) => item.id === query || item.fields.de.indexOf(query) !== -1,
     );
   }

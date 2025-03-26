@@ -87,7 +87,7 @@ class BawProfile(
         } else if (codelistId == null) {
             // remove all codelists and add them again
             codelistHandler.removeAndAddCodelists(catalogId, codelists.values.toList())
-            super.initCatalogCodelists(catalogId)
+            super.initCatalogCodelists(catalogId, null)
         } else {
             super.initCatalogCodelists(catalogId, codelistId)
         }

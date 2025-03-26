@@ -161,7 +161,9 @@ export class LeafletTypeComponent
       this.leafletService
         .drawSpatialRefs(this.leafletReference, coloredLocations)
         .then((spatialRefs) => {
-          this.drawnSpatialRefs = spatialRefs;
+          this.drawnSpatialRefs = spatialRefs.filter(
+            (item) => item !== undefined,
+          );
           this.leafletReference.dragging.enable();
           this.leafletReference.doubleClickZoom.enable();
         });
@@ -227,7 +229,7 @@ export class LeafletTypeComponent
       const bounds = this.leafletService.getBoundingBoxFromLayers([
         this.drawnSpatialRefs[index],
       ]);
-      this.leafletReference.fitBounds(bounds);
+      if (bounds) this.leafletReference.fitBounds(bounds);
     } else {
       this.updateBoundingBox(locations);
     }
