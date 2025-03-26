@@ -57,6 +57,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -228,6 +229,7 @@ class ResearchApiController(
     @Operation
     @PostMapping(value = ["/bwastr"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    @Cacheable(value = ["bwastrSearchCache"], key = "#query")
     fun bwastrSearch(principal: Principal, @RequestBody query: String): ResponseEntity<List<BwastrLocatorSearchResponse>> {
         val response = bwastrLocatorService.search(query)
         return ResponseEntity.ok(response)
@@ -236,6 +238,7 @@ class ResearchApiController(
     @Operation
     @PostMapping(value = ["/bwastr/coordinates"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
+    @Cacheable(value = ["bwastrCoordinatesCache"], key = "#section")
     fun bwastrCoordinateSearch(principal: Principal, @RequestBody section: BwastrSection): ResponseEntity<BwastrCoordinateResponse> {
         try {
             val coordinates = bwastrLocatorService.getCoordinates(section)
