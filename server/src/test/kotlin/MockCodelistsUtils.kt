@@ -74,4 +74,44 @@ fun mockCodelists(codelistHandler: CodelistHandler) {
             }
         }
     }
+
+    every { codelistHandler.getCatalogCodelistKey(any(), "3386", any(), any()) } answers {
+        when (thirdArg<String>()) {
+            "Brochure/Bulletin" -> "2"
+            else -> {
+                println("Catalog-Codelist not mocked: ${thirdArg<String>()}")
+                null
+            }
+        }
+    }
+
+    every { codelistHandler.getCatalogCodelistValue(any(), "3386", any(), any()) } answers {
+        when (thirdArg<String>()) {
+            "2" -> "Brochure/Bulletin"
+            else -> {
+                println("Catalog-Codelist not mocked: ${thirdArg<String>()}")
+                null
+            }
+        }
+    }
+
+    every { codelistHandler.getCatalogCodelistKey(any(), "3390", any(), any()) } answers {
+        when (thirdArg<String>()) {
+            "ComputationalNotebook" -> "5"
+            else -> {
+                println("Catalog-Codelist not mocked: ${thirdArg<String>()}")
+                null
+            }
+        }
+    }
+
+    every { codelistHandler.getCatalogCodelistValue(any(), "3390", any(), any()) } answers {
+        when (thirdArg<String>()) {
+            "5" -> "ComputationalNotebook"
+            else -> {
+                println("Catalog-Codelist not mocked: ${thirdArg<String>()}")
+                null
+            }
+        }
+    }
 }

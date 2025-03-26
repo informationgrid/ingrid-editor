@@ -39,21 +39,29 @@ export class ProjectDoctype extends IngridShared {
   }
 
   documentFields = () => {
+    this.handleDoiBehaviour();
+
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection(),
       this.addKeywordsSection(),
 
-      this.addSection("Fachbezug", [
-        this.addTextArea("participants", "Beteiligte", this.id, {
-          className: "optional flex-1",
-        }),
-        this.addTextArea("manager", "Projektleiter", this.id, {
-          className: "optional flex-1",
-        }),
-        this.addTextArea("explanation", "Erläuterungen", this.id, {
-          className: "optional flex-1",
-        }),
-      ]),
+      this.addSection(
+        "Fachbezug",
+        [
+          this.addTextArea("participants", "Beteiligte", this.id, {
+            className: "optional flex-1",
+          }),
+          this.addTextArea("manager", "Projektleiter", this.id, {
+            className: "optional flex-1",
+          }),
+          this.addTextArea("explanation", "Erläuterungen", this.id, {
+            className: "optional flex-1",
+          }),
+          this.showDoiFields
+            ? this.addGroupSimple("publication", [this.addDoiFields()])
+            : null,
+        ].filter(Boolean),
+      ),
 
       this.addSpatialSection(),
       this.addTimeReferenceSection(),

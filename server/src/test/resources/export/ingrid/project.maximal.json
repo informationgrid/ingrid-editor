@@ -93,5 +93,10 @@
     "description": "more infos",
     "maintenanceAndUpdateFrequency": { "key": "8" },
     "userDefinedMaintenanceFrequency": { "unit": { "key": "5" }, "number": 3 }
+  },
+  "publication": {
+    "doi": "10.1000/1234",
+    "generalResourceType": { "key": "5" },
+    "resourceType": { "key": "2" }
   }
 }

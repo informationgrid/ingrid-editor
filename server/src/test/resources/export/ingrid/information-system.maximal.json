@@ -108,5 +108,10 @@
     "description": "time reference infos",
     "maintenanceAndUpdateFrequency": { "key": "7" },
     "userDefinedMaintenanceFrequency": { "unit": { "key": "5" }, "number": 4 }
+  },
+  "publication": {
+    "doi": "10.1000/1234",
+    "generalResourceType": { "key": "5" },
+    "resourceType": { "key": "2" }
   }
 }
