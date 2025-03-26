@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.exporter.TransformationTools
-import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
 import de.ingrid.igeserver.utils.getString
 
@@ -143,11 +142,6 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
         }
     }
 
-    fun mapConformanceResultTitle(result: ConformanceResult): String? = when (result.isInspire) {
-        true -> codelists.getValue("6005", result.specification, "iso") ?: codelists.getValue("6005", result.specification, "de")
-        else -> codelists.getCatalogCodelistValue("6006", result.specification)
-    }
-
     private val unknownValueUnit = "<gmd:valueUnit gco:nilReason=\"unknown\"/>"
     private val inapplicableValueUnit = "<gmd:valueUnit gco:nilReason=\"inapplicable\"/>"
     private fun percentageValueUnit(quantityType: String) = """
@@ -228,7 +222,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
         }
     }
 
-    fun getDisplayableQuality(quality: Quality): DisplayableQuality = DisplayableQuality(
+    private fun getDisplayableQuality(quality: Quality): DisplayableQuality = DisplayableQuality(
         nameOfMeasure = codelists.getValue(
             qualitytypeCodelistMap.getOrDefault(quality._type, ""),
             quality.measureType,
@@ -258,14 +252,18 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
     )
 
     val lineageSourceDescriptions =
-        data.dataQualityInfo?.lineage?.source?.descriptions?.map {
+        data.dataQualityInfo?.lineage?.source?.descriptions?.mapNotNull {
             val title: String?
             val identifier: String?
             when (it._type) {
                 "internalDataOrigin" -> {
-                    val doc = documentService.getLastPublishedDocument(catalogIdentifier, it.uuidRef!!, false)
-                    title = doc.title
-                    identifier = doc.data.getString("identifier")
+                    try {
+                        val doc = documentService.getLastPublishedDocument(catalogIdentifier, it.uuidRef!!, false)
+                        title = doc.title
+                        identifier = doc.data.getString("identifier")?.let { id -> addNamespaceIfNeeded(id) }
+                    } catch (e: Exception) {
+                        return@mapNotNull null
+                    }
                 }
                 else -> {
                     title = it.title

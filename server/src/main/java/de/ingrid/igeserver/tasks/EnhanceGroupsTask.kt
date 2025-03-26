@@ -20,48 +20,28 @@
 package de.ingrid.igeserver.tasks
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
-import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
-import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.kotlin.logger
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
 
 @Component
 class EnhanceGroupsTask(
-    val entityManager: EntityManager,
+    entityManager: EntityManager,
+    transactionManager: PlatformTransactionManager,
     val groupService: GroupService,
     val aclService: IgeAclService,
     val documentService: DocumentService,
-    val transactionManager: PlatformTransactionManager,
-) {
-    val log = logger()
+) : DbTriggeredTask(entityManager, transactionManager) {
 
-    @EventListener(ApplicationReadyEvent::class)
-    fun onStartup() {
-        val catalogs = getCatalogsForTask()
-        if (catalogs.isEmpty()) return
+    override val taskKey = "doEnhanceGroups"
 
-        setAdminAuthentication("EnhanceGroups", "Task")
-
-        catalogs.forEach { catalog ->
-            log.info("Execute EnhanceGroupTask for catalog: $catalog")
-            ClosableTransaction(transactionManager).use {
-                enhanceGroupsWithReferencedAddresses(catalog)
-                removePostMigrationInfo(catalog)
-                log.info("Finished EnhanceGroupTask for catalog: $catalog")
-            }
-        }
-    }
+    override fun executeTaskOnCatalog(catalogIdentifier: String) = enhanceGroupsWithReferencedAddresses(catalogIdentifier)
 
     fun enhanceGroupsWithReferencedAddresses(catalogIdentifier: String) {
         groupService
@@ -141,26 +121,5 @@ class EnhanceGroupsTask(
             // ignore invalid references
             emptySet()
         }
-    }
-
-    private fun getCatalogsForTask(): List<String> = try {
-        entityManager
-            .createQuery(
-                "SELECT version FROM VersionInfo version WHERE version.key = 'doEnhanceGroups'",
-                VersionInfo::class.java,
-            )
-            .resultList
-            .map { it.value!! }
-    } catch (e: Exception) {
-        log.warn("Could not query version_info table")
-        emptyList()
-    }
-
-    private fun removePostMigrationInfo(catalogIdentifier: String) {
-        entityManager
-            .createQuery(
-                "DELETE FROM VersionInfo version WHERE version.key = 'doEnhanceGroups' AND version.value = '$catalogIdentifier'",
-            )
-            .executeUpdate()
     }
 }

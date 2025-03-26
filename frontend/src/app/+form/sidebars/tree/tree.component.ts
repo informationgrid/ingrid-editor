@@ -33,7 +33,7 @@ import {
 } from "@angular/core";
 import { FlatTreeControl } from "@angular/cdk/tree";
 import { TreeNode } from "../../../store/tree/tree-node.model";
-import { combineLatest, firstValueFrom, Observable, Subject } from "rxjs";
+import { firstValueFrom, Observable, Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged, map, tap } from "rxjs/operators";
 import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
 import { UpdateType } from "../../../models/update-type.enum";
@@ -47,7 +47,7 @@ import { ConfigService } from "../../../services/config/config.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { DocBehavioursService } from "../../../services/event/doc-behaviours.service";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { TreeHeaderComponent } from "./tree-header/tree-header.component";
 import { MatIcon } from "@angular/material/icon";
 import {
@@ -98,7 +98,6 @@ export enum TreeActionType {
 })
 export class TreeComponent implements OnInit {
   @Input() forAddresses: boolean;
-  @Input() expandNodeIds: Subject<number[]>;
   @Input() showHeader = true;
   @Input() showMultiSelectButton = false;
   @Input() showReloadButton = true;
@@ -318,21 +317,23 @@ export class TreeComponent implements OnInit {
   private handleUpdate(updateInfo: UpdateDatasetInfo) {
     // disable multi selection mode after a tree operation
     this.selection.multiSelectionModeEnabled.set(false);
-
-    switch (updateInfo.type) {
-      case UpdateType.New:
-        return this.addNewNodes(updateInfo);
-      case UpdateType.Update:
-        return this.dataSource.updateNode(updateInfo.data);
-      case UpdateType.Delete:
-        this.deleteNode(updateInfo);
-        return;
-      case UpdateType.Move:
-        const srcDocIds = updateInfo.data.map((doc) => <number>doc.id);
-        this.moveNodes(srcDocIds, updateInfo.parent);
-        return;
-      default:
-        throw new Error("Tree Action type not known: " + updateInfo.type);
+    // if we have no data yet, ignore updates
+    if (this.dataSource.data != null) {
+      switch (updateInfo.type) {
+        case UpdateType.New:
+          return this.addNewNodes(updateInfo);
+        case UpdateType.Update:
+          return this.dataSource.updateNode(updateInfo.data);
+        case UpdateType.Delete:
+          this.deleteNode(updateInfo);
+          return;
+        case UpdateType.Move:
+          const srcDocIds = updateInfo.data.map((doc) => <number>doc.id);
+          this.moveNodes(srcDocIds, updateInfo.parent);
+          return;
+        default:
+          throw new Error("Tree Action type not known: " + updateInfo.type);
+      }
     }
   }
 
@@ -366,24 +367,23 @@ export class TreeComponent implements OnInit {
         (item) => item._id === updateInfo.parent,
       );
 
-      // parent node seems to be nested deeper
       if (parentNodeIndex === -1) {
+        // parent node seems to be nested deeper: jump to node to open all parents
         console.debug(
           "Parent not found, expanding tree nodes: ",
           updateInfo.path,
         );
-        if (this.expandNodeIds) {
-          this.expandNodeIds.next(updateInfo.path);
-        }
-        return;
+        await this.jumpToNode(updateInfo.data[0].id as number, false);
+      } else {
+        //parent node found only update store
+        this.updateChildrenFromServer(
+          updateInfo.parent,
+          <number>updateInfo.data[0].id,
+          updateInfo.doNotSelect,
+        );
       }
-      // TODO: use function jumpToNode
-      this.updateChildrenFromServer(
-        updateInfo.parent,
-        <number>updateInfo.data[0].id,
-        updateInfo.doNotSelect,
-      );
     } else {
+      // no parent node, add to root
       const newRootTreeNodes = this.database.mapDocumentsToTreeNodes(
         updateInfo.data,
         0,
@@ -560,29 +560,11 @@ export class TreeComponent implements OnInit {
   }
 
   private handleTreeExpandToInitialNode() {
-    if (this.expandNodeIds) {
-      // FIXME: this path might not be used anymore, since tree takes care of expanded nodes
-      //        itself, when setting activeNodeId
-      combineLatest([this.reloadTree(), this.expandNodeIds])
-        .pipe(untilDestroyed(this))
-        .subscribe((result) => {
-          setTimeout(() => {
-            const ids = result[1];
-            this.handleExpandNodes(ids).then(() => {
-              const node = this.dataSource.getNode(this.activeNodeId());
-              this.selectNode(node);
-              this.initialized = true;
-              this.cdr.detectChanges();
-            });
-          });
-        });
-    } else {
-      this.reloadTree().subscribe(() => {
-        this.handleActiveNodeSubscription();
-        this.initialized = true;
-        this.cdr.detectChanges();
-      });
-    }
+    this.reloadTree().subscribe(() => {
+      this.handleActiveNodeSubscription();
+      this.initialized = true;
+      this.cdr.detectChanges();
+    });
   }
 
   handleFolderClick(node: TreeNode, $event: MouseEvent) {

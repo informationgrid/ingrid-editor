@@ -26,9 +26,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.api.TagRequest
-import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.VersionInfo
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -36,11 +34,7 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.utils.convertToDocument
-import de.ingrid.igeserver.utils.setAdminAuthentication
 import jakarta.persistence.EntityManager
-import org.apache.logging.log4j.kotlin.logger
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.event.EventListener
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
@@ -48,8 +42,8 @@ import java.security.Principal
 
 @Component
 class PostMigrationTask(
-    val entityManager: EntityManager,
-    val transactionManager: PlatformTransactionManager,
+    entityManager: EntityManager,
+    transactionManager: PlatformTransactionManager,
     val catalogService: CatalogService,
     val groupService: GroupService,
     val documentService: DocumentService,
@@ -58,47 +52,18 @@ class PostMigrationTask(
     val codelistHandler: CodelistHandler,
     val fixPathsTask: FixPathsTask,
     val enhanceGroupsTask: EnhanceGroupsTask,
-) {
-    val log = logger()
+    val saveGroupsTask: SaveGroupsTask,
+) : DbTriggeredTask(entityManager, transactionManager) {
 
-    // this ensures that the post migration task is executed after the initial db migrations
-    @EventListener(ApplicationReadyEvent::class)
-    fun onStartup() {
-        val catalogs = getCatalogsForPostMigration()
-        if (catalogs.isEmpty()) return
+    override val taskKey = "doPostMigrationFor"
 
-        setAdminAuthentication("Postmigration", "Task")
-
-        catalogs.forEach { catalog ->
-            log.info("Execute post migration for catalog: $catalog")
-            ClosableTransaction(transactionManager).use {
-                doPostMigration(catalog)
-                removePostMigrationInfo(catalog)
-                log.info("Finished post migration for catalog: $catalog")
-            }
-        }
-    }
-
-    private fun getCatalogsForPostMigration(): List<String> = try {
-        entityManager
-            .createQuery(
-                "SELECT version FROM VersionInfo version WHERE version.key = 'doPostMigrationFor'",
-                VersionInfo::class.java,
-            )
-            .resultList
-            .map { it.value!! }
-    } catch (e: Exception) {
-        log.warn("Could not query version_info table")
-        emptyList()
-    }
+    override fun executeTaskOnCatalog(catalogIdentifier: String) = doPostMigration(catalogIdentifier)
 
     private fun doPostMigration(catalogIdentifier: String) {
         // Warning: Execution Order is important
-        saveAllGroupsOfCatalog(catalogIdentifier)
+        saveGroupsTask.saveAllGroupsOfCatalog(catalogIdentifier)
         initializeCatalogCodelistsAndQueries(catalogIdentifier)
-        uvpAdaptFolderStructure(catalogIdentifier)
         restructureObjectsWithChildren(catalogIdentifier)
-        uvpSplitFreeAddresses(catalogIdentifier)
         fixSpatialSystems(catalogIdentifier)
         fixPathsTask.migratePaths(catalogIdentifier)
         enhanceGroupsTask.enhanceGroupsWithReferencedAddresses(catalogIdentifier)
@@ -130,89 +95,15 @@ class PostMigrationTask(
         return spatialSystem
     }
 
-    private fun saveAllGroupsOfCatalog(catalogIdentifier: String) {
-        groupService
-            .getAll(catalogIdentifier)
-            .forEach { group ->
-                groupService.update(catalogIdentifier, group.id!!, group, true)
-            }
-    }
-
-    private fun uvpSplitFreeAddresses(catalogIdentifier: String) {
-        if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
-
-        val auth = SecurityContextHolder.getContext().authentication
-
-        // root Addresses which aren't organizations are free addresses
-        val freeAddresses = documentService.findChildrenDocs(
-            catalogIdentifier,
-            null,
-            isAddress = true,
-        ).hits.filter { "UvpAddressDoc" == it.wrapper.type }
-
-        if (freeAddresses.isEmpty()) return
-
-        val rootFolderId = createFreeAddressFolder(catalogIdentifier)
-        freeAddresses.forEach {
-            val doc = it.document
-            val organization = doc.data.get("organization").asText()
-
-            if (organization.isNullOrEmpty() || organization == "null") {
-                // free address without organization. no action needed
-                it.wrapper.path = listOf(rootFolderId)
-                it.wrapper.parent = documentService.docWrapperRepo.findById(rootFolderId).get()
-                return
-            } else {
-                // {"_type":"UvpOrganisationDoc","_parent":null,"organization":"Testorga","title":"Testorga"}
-                // create parent organization
-                val organizationData = jacksonObjectMapper().createObjectNode()
-                    .put("_type", "UvpOrganisationDoc")
-                    .putNull("_parent")
-                    .put("title", organization)
-                    .put("organization", organization)
-                val document = convertToDocument(organizationData)
-                val organizationDoc = documentService.createDocument(
-                    auth as Principal,
-                    catalogIdentifier,
-                    document,
-                    rootFolderId,
-                    address = true,
-                )
-                val parentId = organizationDoc.wrapper.id!!
-
-                it.wrapper.path = listOf(parentId)
-                it.wrapper.parent = documentService.docWrapperRepo.findById(parentId).get()
-                // save
-                documentService.aclService.updateParent(it.wrapper.id!!, parentId)
-                documentService.docWrapperRepo.save(it.wrapper)
-            }
-        }
-    }
-
-    private fun createFreeAddressFolder(catalogIdentifier: String): Int {
-        val auth = SecurityContextHolder.getContext().authentication
-        val folderData = jacksonObjectMapper().createObjectNode()
-            .put("_type", "FOLDER")
-            .putNull("_parent")
-            .put("title", "Freie Adressen")
-        val document = convertToDocument(folderData)
-        val folderDoc =
-            documentService.createDocument(auth as Principal, catalogIdentifier, document, null, true)
-        documentService.docWrapperRepo.flush()
-        return folderDoc.wrapper.id!!
-    }
-
     private fun createNewFolderFor(
         migratedObject: DocumentWrapper,
         title: String,
     ): Int {
         val auth = SecurityContextHolder.getContext().authentication
         val catalogIdentifier = migratedObject.catalog!!.identifier
-        val folderData = jacksonObjectMapper().createObjectNode()
-            .put("_type", "FOLDER")
-            .put("title", title)
+        val folderData = jacksonObjectMapper().createObjectNode().put("title", title)
 
-        val document = convertToDocument(folderData)
+        val document = convertToDocument(folderData, docType = "FOLDER")
         val folderDoc =
             documentService.createDocument(
                 auth as Principal,
@@ -230,20 +121,8 @@ class PostMigrationTask(
         return folderDoc.wrapper.id!!
     }
 
-    private fun uvpAdaptFolderStructure(catalogIdentifier: String) {
-        if (catalogService.getCatalogById(catalogIdentifier).type != "uvp") return
-        documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = true).forEach { doc ->
-            log.debug("Migrate document: ${doc.id}")
-            migratePath(doc)
-        }
-
-        removeOldStructure(catalogIdentifier)
-        // save all groups again to update transferred rights
-        saveAllGroupsOfCatalog(catalogIdentifier)
-    }
-
     private fun restructureObjectsWithChildren(catalogIdentifier: String) {
-        documentService.getAllDocumentWrappers(catalogIdentifier, includeFolders = false).forEach { doc ->
+        documentService.getAllDataDocumentWrappers(catalogIdentifier, includeFolders = false).forEach { doc ->
             val foundChildren = documentService.findChildren(
                 catalogIdentifier,
                 doc.id,
@@ -284,7 +163,7 @@ class PostMigrationTask(
             transferRights(doc, newFolder, removeSourceDoc = false)
         }
         // save all groups again to update transferred rights
-        saveAllGroupsOfCatalog(catalogIdentifier)
+        saveGroupsTask.saveAllGroupsOfCatalog(catalogIdentifier)
     }
 
     private fun replacePathIDinDescendants(catalogIdentifier: String, doc: DocumentWrapper, oldId: Int, newId: Int) {
@@ -302,69 +181,6 @@ class PostMigrationTask(
             // recursively update children
             replacePathIDinDescendants(catalogIdentifier, child, oldId, newId)
         }
-    }
-
-    private fun removeOldStructure(catalogIdentifier: String) {
-        listOf(
-            "Ausländische Vorhaben",
-            "Vorgelagerte Verfahren",
-            "Zulassungsverfahren",
-            "Vorprüfungen, negativ",
-        ).forEach { title ->
-            val oldldBaseFolder = documentService.findChildren(
-                catalogIdentifier,
-                null,
-            ).hits.find { it.document.title == title }
-            val auth = SecurityContextHolder.getContext().authentication
-            if (oldldBaseFolder != null) {
-                documentService.deleteDocument(
-                    auth as Principal,
-                    catalogIdentifier,
-                    oldldBaseFolder.wrapper.id!!,
-                )
-            }
-        }
-    }
-
-    private fun migratePath(doc: DocumentWrapper) {
-        val oldPath = doc.path // Style: [typeFolderId, FolderId, ...]
-        // skip root folders
-        if (oldPath.isEmpty()) return
-        val reducedPath = oldPath.subList(1, oldPath.size) // Style: [FolderId, ...]
-        val pathTitles = reducedPath.map {
-            documentService.getDocumentByWrapperId(doc.catalog?.identifier!!, it).title!!
-        }
-
-        val newPath = createAndGetPathByTitles(pathTitles, doc.catalog!!.identifier)
-
-        if (doc.type == "FOLDER") {
-            // make sure folders with the same name and path are not saved more than once
-            val folderWithSameNameAndPath = documentService.findChildren(
-                doc.catalog!!.identifier,
-                newPath.lastOrNull(),
-            ).hits.find {
-                it.document.title == documentService.getDocumentByWrapperId(doc.catalog?.identifier!!, doc.id!!).title
-            }
-
-            if (folderWithSameNameAndPath != null) {
-                if (doc == folderWithSameNameAndPath.wrapper) {
-                    // already transferred via parent node. only adjust path
-                    doc.path = newPath
-                    documentService.docWrapperRepo.saveAndFlush(doc)
-                    return
-                } else {
-                    // doc gets replaced by folderWithSameNameAndPath so adjust permission in groups
-                    transferRights(doc, folderWithSameNameAndPath.wrapper)
-                }
-                return
-            }
-        }
-
-        doc.path = newPath
-        doc.parent = if (newPath.isEmpty()) null else documentService.docWrapperRepo.findById(newPath.last()).get()
-        // save
-        documentService.aclService.updateParent(doc.id!!, newPath.lastOrNull())
-        documentService.docWrapperRepo.saveAndFlush(doc)
     }
 
     private fun transferRights(
@@ -433,46 +249,8 @@ class PostMigrationTask(
 
     private fun removeIDinPermissions(sourceId: Int, permissions: List<JsonNode>): List<JsonNode> = permissions.filter { it.get("id").asInt() != sourceId }
 
-    private fun createAndGetPathByTitles(titles: List<String>, catalogIdentifier: String): MutableList<Int> {
-        val auth = SecurityContextHolder.getContext().authentication
-        val createdPathIds = mutableListOf<Int>()
-        var parentId: Int? = null
-        for (title in titles) {
-            val foundChild = documentService.findChildren(
-                catalogIdentifier,
-                parentId,
-            ).hits.filter { it.document.title == title }
-            if (foundChild.isEmpty()) {
-                // create new folder
-                val folderData = jacksonObjectMapper().createObjectNode()
-                    .put("_type", "FOLDER")
-                    .put("_parent", parentId.toString())
-                    .put("title", title)
-                val document = convertToDocument(folderData)
-                val folderDoc =
-                    documentService.createDocument(auth as Principal, catalogIdentifier, document, parentId)
-                documentService.docWrapperRepo.flush()
-
-                parentId = folderDoc.wrapper.id!!
-            } else {
-                // found folder
-                parentId = foundChild.first().wrapper.id!!
-            }
-            createdPathIds.add(parentId)
-        }
-        return createdPathIds
-    }
-
     private fun initializeCatalogCodelistsAndQueries(catalogIdentifier: String) {
         val catalogType = catalogService.getCatalogById(catalogIdentifier).type
         catalogService.initializeCatalog(catalogIdentifier, catalogType)
-    }
-
-    private fun removePostMigrationInfo(catalogIdentifier: String) {
-        entityManager
-            .createQuery(
-                "DELETE FROM VersionInfo version WHERE version.key = 'doPostMigrationFor' AND version.value = '$catalogIdentifier'",
-            )
-            .executeUpdate()
     }
 }

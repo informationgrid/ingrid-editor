@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { DocumentService } from "../../../services/document/document.service";
 import {
   FormToolbarService,
@@ -98,7 +98,7 @@ export class CopyCutPastePlugin extends Plugin {
         matSvgVariable: "Kopieren-Ausschneiden",
         eventId: "COPY",
         pos: 40,
-        active: false,
+        active: signal(false),
         menu: [
           { eventId: "COPY", label: "Kopieren" },
           { eventId: "COPYTREE", label: "Kopieren mit Teilbaum" },
@@ -133,7 +133,14 @@ export class CopyCutPastePlugin extends Plugin {
 
       // set state of menu items
       const docs = ids.map((item) => this.getStore().entityMap()[item]);
-      this.toolbarService.setMenuItemStateOfButton("toolBtnCopy", "COPY", true);
+      // if store has not received all updates (e.g. node is nested structure is loaded but children not yet)
+      if (docs.some((item) => item === undefined)) return;
+
+      this.toolbarService.setMenuItemStateOfButton(
+        "toolBtnCopy",
+        "COPY",
+        this.toolbarService.isToolbarButtonEnabled("toolBtnCopy.copy", docs),
+      );
       this.toolbarService.setMenuItemStateOfButton(
         "toolBtnCopy",
         "CUT",

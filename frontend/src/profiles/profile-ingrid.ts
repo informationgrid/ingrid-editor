@@ -101,7 +101,7 @@ export class InGridComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.profileService.registerProfiles(this.getDocTypes());
+    this.profileService.registerDoctypes(this.getDocTypes());
 
     this.profileService.setDefaultDataDoctype(this.geoDataset);
 

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../../../app/+form/form-shared/toolbar/form-toolbar.service";
 import { IsoViewComponent } from "./iso-view.component";
 import { MatDialog } from "@angular/material/dialog";
@@ -70,7 +70,7 @@ export class IsoViewPlugin extends Plugin {
       matSvgVariable: "ISO-Ansicht",
       eventId: "ISO",
       pos: 80,
-      active: false,
+      active: signal(false),
     });
 
     // react on event when button is clicked

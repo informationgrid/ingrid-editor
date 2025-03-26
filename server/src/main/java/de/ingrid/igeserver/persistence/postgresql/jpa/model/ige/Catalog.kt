@@ -72,8 +72,14 @@ class Catalog {
     var modified: OffsetDateTime? = null
 
     @JdbcTypeCode(SqlTypes.JSON)
-    var settings: CatalogSettings = CatalogSettings()
-        get() = field ?: CatalogSettings() // can actually be null
+    @Column(name = "settings", columnDefinition = "jsonb")
+    private var _settings: CatalogSettings? = null
+
+    var settings: CatalogSettings
+        get() = _settings ?: CatalogSettings().also { _settings = it }
+        set(value) {
+            _settings = value
+        }
 
     @PrePersist
     fun setPersistDate() {

@@ -22,7 +22,7 @@ import { ModalService } from "./services/modal/modal.service";
 import { IgeError } from "./models/ige-error";
 import { HttpErrorResponse } from "@angular/common/http";
 import { IgeException } from "./server-validation.util";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 
 export interface IgeValidationError {
   errorCode: string;

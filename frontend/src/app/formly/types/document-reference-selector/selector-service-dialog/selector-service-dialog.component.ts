@@ -26,6 +26,7 @@ import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 import { TreeStore } from "../../../../store/tree/tree.store";
+import { GeneralStore } from "../../../../store/general.store";
 
 export interface SelectDatasetData {
   currentRefs: string[];
@@ -54,6 +55,7 @@ export interface SelectServiceResponse {
   imports: [DialogTemplateComponent, TreeComponent, FormlyModule],
 })
 export class SelectorServiceDialogComponent {
+  private generalStore = inject(GeneralStore);
   private treeStore = inject(TreeStore);
   selectedNode: number = null;
   field: FormlyFieldConfig[] = [
@@ -85,14 +87,23 @@ export class SelectorServiceDialogComponent {
     this.label = data.titleOfDocumentSelectorDialog;
   }
 
-  enableDesiredDocuments() {
+  disableTreeNodes() {
+    const currentDocUuid = this.generalStore.getOpenedDocument(false)._uuid;
     return (node: TreeNode) => {
       return (
-        (this.docTypeFilter.length &&
-          !this.docTypeFilter.includes(node.type)) ||
-        this.data.currentRefs.indexOf(node._uuid) !== -1
+        this.isDoctypeNotAllowed(node.type) ||
+        this.isNodeAlreadyPresent(node) ||
+        node._uuid === currentDocUuid
       );
     };
+  }
+
+  private isNodeAlreadyPresent(node: TreeNode) {
+    return this.data.currentRefs.indexOf(node._uuid) !== -1;
+  }
+
+  private isDoctypeNotAllowed(docType: string) {
+    return this.docTypeFilter.length && !this.docTypeFilter.includes(docType);
   }
 
   async submit() {

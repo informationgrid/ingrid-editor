@@ -43,7 +43,7 @@ interface IIndexManager {
 
     fun getIndices(filter: String): List<String>
 
-    fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean)
+    fun delete(indexinfo: IndexInfo, uuid: String, updateOldIndex: Boolean)
 
     fun indexExists(indexName: String): Boolean
 }

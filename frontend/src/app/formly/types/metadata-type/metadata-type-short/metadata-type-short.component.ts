@@ -35,6 +35,7 @@ import {
 interface PropertyItem {
   id: string;
   label: string;
+  completeLabel?: string;
 }
 
 @Component({
@@ -93,7 +94,7 @@ export class MetadataTypeShortComponent {
     if (primitiveMatch || objectMatch) {
       const id =
         item.key ?? typeOption.key + "_" + (item.value.key ?? item.value);
-      return { id: id, label: item.label };
+      return { id: id, label: item.completeLabel ?? item.label };
     }
     return null;
   }

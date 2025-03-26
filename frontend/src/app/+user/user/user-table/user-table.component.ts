@@ -47,7 +47,7 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { GroupDataService } from "../../../services/role/group-data.service";
 import { Group } from "../../../models/user-group";
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 import { MatIconModule } from "@angular/material/icon";
 
 import { MatButtonModule } from "@angular/material/button";
@@ -147,8 +147,8 @@ export class UserTableComponent
 
     effect(() => {
       this.dataSource.filter = this.query();
-      const userLogin = this.selection.selected[0]?.login;
-      if (userLogin) this.updatePaginator(userLogin, "login");
+      // reset paginator if the filter has changed
+      this.paginator?.firstPage();
     });
   }
 

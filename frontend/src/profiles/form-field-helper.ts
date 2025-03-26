@@ -22,7 +22,7 @@ import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
 import { HttpClient } from "@angular/common/http";
 import { Component, inject } from "@angular/core";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
 
@@ -314,6 +314,7 @@ export class FormFieldHelper {
         externalLabel: label,
         required: options?.required,
         allowedTypes: options?.allowedTypes,
+        allowedTypesByDoctype: options?.allowedTypesByDoctype,
         max: options?.max,
       },
       validators: {
@@ -329,19 +330,7 @@ export class FormFieldHelper {
       className: "flex-1",
       props: { ...options },
       expressions: options.expressions,
-    };
-  }
-
-  addRadioOptions(id: string, label: string, options) {
-    return <FormlyFieldConfig>{
-      key: id,
-      type: "radioOptions",
-      className: "flex-1",
-      id: id,
-      label: label,
-      props: {
-        radioOptions: options.radioOptions,
-      },
+      hooks: options.hooks,
     };
   }
 
@@ -869,6 +858,7 @@ export class FormFieldHelper {
       type: "radio",
       wrappers: ["panel", "inline-help"],
       className: "ige-radios",
+      defaultValue: options?.defaultValue ?? null,
       props: {
         label: options?.fieldLabel,
         externalLabel: label,

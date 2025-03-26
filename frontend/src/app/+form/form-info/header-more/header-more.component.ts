@@ -28,7 +28,7 @@ import { animate, style, transition, trigger } from "@angular/animations";
 import { ConfigService } from "../../../services/config/config.service";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FormStateService } from "../../form-state.service";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MatTooltip } from "@angular/material/tooltip";
 import { FormLabelComponent } from "../../../formly/wrapper/form-label/form-label.component";
 import { AsyncPipe, DatePipe } from "@angular/common";

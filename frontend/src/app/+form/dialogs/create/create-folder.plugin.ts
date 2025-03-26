@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
 import { CreateNodeComponent, CreateOptions } from "./create-node.component";
@@ -29,7 +29,7 @@ import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
@@ -73,7 +73,7 @@ export class CreateFolderPlugin extends Plugin {
       matSvgVariable: "outline-create_new_folder-24px",
       eventId: this.eventCreateFolderId,
       pos: 10,
-      active: true,
+      active: signal(true),
     });
 
     // add event handler for revert

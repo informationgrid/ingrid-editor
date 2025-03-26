@@ -27,7 +27,7 @@ import {
 import { MainMenuService } from "../menu/main-menu.service";
 import { NavigationEnd, Route, Router } from "@angular/router";
 import { animate, style, transition, trigger } from "@angular/animations";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import {
   MatListItem,
   MatListItemIcon,

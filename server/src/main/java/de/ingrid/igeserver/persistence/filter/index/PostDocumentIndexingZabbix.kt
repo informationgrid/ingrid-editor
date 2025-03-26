@@ -88,7 +88,7 @@ class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler
         val uuid = xpath.getString(xmlDocument, "//idfMdMetadata/id")
         val detailUrl = zabbixService.detailUrl.format(uuid)
         val addressName = xpath.getString(xmlDocument, "//idfMdMetadata/addresses/address/name")
-        val addressMail = xpath.getString(xmlDocument, "//idfMdMetadata/addresses/address/mail")
+        val addressMail = xpath.getString(xmlDocument, "//idfMdMetadata/addresses/address/mail")?.trim()
 
         val uploadsToAdd = getUploadsToAdd(xmlDocument, uploadUrl)
 

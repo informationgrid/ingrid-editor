@@ -72,7 +72,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { FormMessageService } from "../../../services/form-message.service";
 import { ConfigService } from "../../../services/config/config.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { IgeError } from "../../../models/ige-error";
 import { FormToolbarComponent } from "../toolbar/form-toolbar.component";
 import { AngularSplitModule } from "angular-split";
@@ -132,6 +132,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     },
     formState: {
       disabled: true,
+      metadata: null,
       updateModel: () => {
         this.model = { ...this.model };
         this.formOptions.formState.mainModel = this.model;
@@ -171,13 +172,12 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   numberOfErrors = 0;
   showValidationErrors = false;
   private errorCounterSubscription: Subscription;
-  private afterInit = signal<boolean>(false);
 
   private waitForCodelistsLoaded$ = toObservable(
     this.generalStore.codelistsLoaded,
   );
-  private waitForProfilesLoaded$ = toObservable(
-    this.generalStore.profilesLoaded,
+  private waitForDoctypesLoaded$ = toObservable(
+    this.generalStore.doctypesLoaded,
   );
 
   constructor(
@@ -216,10 +216,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     effect(() => {
+      const activeNode = this.generalStore.explicitActiveNode();
       // execute only ofter init, otherwise initial loading of dataset will not work
-      if (!this.afterInit()) return;
-      const activeNode = this.generalStore.getExplicitActiveNode(this.address);
-      if (activeNode === null) {
+      if (activeNode === null) return;
+
+      if (activeNode.id === null) {
         // when clicking on root node in breadcrumb we need to set opened document to null
         // otherwise the last one will be loaded again
         this.documentService.updateOpenedDocumentInTreestore(
@@ -234,16 +235,16 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    this.formularService.currentProfile = null;
+    this.formularService.currentDoctypeId = null;
 
     // reset selected documents if we revisit the page
     this.formularService.setSelectedDocuments([], this.address);
   }
 
   ngOnInit() {
-    // wait for profile and codelists to be loaded before opening first dataset
+    // wait for doctypes and codelists to be loaded before opening first dataset
     combineLatest([
-      this.waitForProfilesLoaded$.pipe(filter((isLoaded) => isLoaded === true)),
+      this.waitForDoctypesLoaded$.pipe(filter((isLoaded) => isLoaded === true)),
       this.waitForCodelistsLoaded$.pipe(
         filter((isLoaded) => isLoaded === true),
       ),
@@ -261,7 +262,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(untilDestroyed(this))
       .subscribe((params) => this.loadDocument(params[2]));
 
-    this.formularService.currentProfile = null;
+    this.formularService.currentDoctypeId = null;
 
     this.documentService.publishState$
       .pipe(untilDestroyed(this))
@@ -396,7 +397,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private handleReadOnlyState(doc: IgeDocument) {
-    this.readonly = !doc.hasWritePermission || doc._state === "PENDING";
+    this.readonly =
+      !doc.hasWritePermission ||
+      doc._state === "PENDING" ||
+      DocumentService.isDocumentArchived(doc._tags);
   }
 
   private updateBreadcrumb(id: number) {
@@ -449,15 +453,15 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const profile = data.metadata.docType;
+    const doctype = data.metadata.docType;
 
-    if (profile === null) {
+    if (doctype === null) {
       throw new Error("Dieses Dokument hat keinen Dokumententyp!");
     }
 
     try {
-      if (this.needProfileSwitch(profile)) {
-        this.handleProfileSwitch(profile);
+      if (this.needDoctypeSwitch(doctype)) {
+        this.handleDoctypeSwitch(doctype);
         // make sure to create a new form to prevent data coming from another
         // form type into the new form
         this.createNewForm();
@@ -485,34 +489,34 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private needProfileSwitch(profile: string): boolean {
+  private needDoctypeSwitch(doctypeId: string): boolean {
     return (
       this.fields.length === 0 ||
-      this.formularService.currentProfile !== profile
+      this.formularService.currentDoctypeId !== doctypeId
     );
   }
 
-  private handleProfileSwitch(profile: string) {
+  private handleDoctypeSwitch(doctypeId: string) {
     this.formStateService.unobserveTextareaHeights();
 
-    // switch to the right profile depending on the data
-    this.fields = this.switchProfile(profile);
+    // switch to the right doctype depending on the data
+    this.fields = this.switchDoctype(doctypeId);
 
     this.formStateService.restoreAndObserveTextareaHeights(this.fields);
 
-    this.formularService.getSectionsFromProfile(this.fields);
+    this.formularService.getSectionsForDoctype(this.fields);
     this.hasOptionalFields =
-      this.profileService.getProfile(profile).hasOptionalFields;
+      this.profileService.getDoctype(doctypeId).hasOptionalFields;
   }
 
   /**
    *
-   * @param profile
+   * @param doctypeId
    */
-  private switchProfile(profile: string): FormlyFieldConfig[] {
-    this.formularService.currentProfile = profile;
+  private switchDoctype(doctypeId: string): FormlyFieldConfig[] {
+    this.formularService.currentDoctypeId = doctypeId;
 
-    return this.formularService.getFields(profile);
+    return this.formularService.getFields(doctypeId);
   }
 
   rememberSizebarWidth(info: any) {
@@ -526,6 +530,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       ...this.formOptions.formState,
       disabled: !writePermission,
       mainModel: this.model,
+      metadata: this.metadata(),
     };
   }
 

@@ -62,7 +62,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 import { SearchInputComponent } from "../../../shared/search-input/search-input.component";
 import { DocumentIconComponent } from "../../../shared/document-icon/document-icon.component";
 import { getTranslocoModule } from "../../../transloco-testing.module";
@@ -364,8 +364,6 @@ describe("TreeComponent", () => {
     });
 
     spectator.component.activeNodeId.set(4);
-    spectator.component.expandNodeIds = new Subject<number[]>();
-    setTimeout(() => spectator.component.expandNodeIds.next([1, 2, 3]));
     spectator.detectChanges();
 
     tick();

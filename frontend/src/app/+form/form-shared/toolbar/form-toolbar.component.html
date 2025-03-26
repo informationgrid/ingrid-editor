@@ -1,6 +1,6 @@
 <mat-toolbar>
     <mat-toolbar-row role="toolbar" aria-label="Formular Toolbar">
-        <ng-container *ngFor="let button of buttons_left">
+        @for (button of buttons_left; track button.id) {
             @if (!button.isSeparator && !button.menu) {
                 <div>
                     <button
@@ -15,7 +15,7 @@
                             )
                         "
                         (shortClick)="sendEvent(button.eventId)"
-                        [disabled]="!button.active || isNotReady"
+                        [disabled]="!button.active() || isNotReady()"
                         [matTooltip]="button.tooltip"
                         [attr.aria-label]="button.tooltip"
                         matomoClickCategory="Toolbar"
@@ -28,7 +28,6 @@
                         </mat-icon>
                     </button>
                     <div
-                        mat-button
                         [matMenuTriggerFor]="hiddenMenu"
                         #hiddenMenuTrigger="matMenuTrigger"
                     ></div>
@@ -64,7 +63,7 @@
                     class="drop-down"
                     [matMenuTriggerFor]="copyMenu"
                     [attr.data-cy]="'toolbar_' + button.eventId"
-                    [disabled]="!button.active || isNotReady"
+                    [disabled]="!button.active() || isNotReady()"
                     (menuOpened)="menu[button.id] = true"
                     (menuClosed)="menu[button.id] = false"
                     [matTooltip]="button.tooltip"
@@ -105,19 +104,19 @@
                     aria-hidden="true"
                 ></mat-divider>
             }
-        </ng-container>
+        }
 
         <div class="flex-1"></div>
 
         <span class="save-buttons">
             <ng-container *ngFor="let button of buttons_right">
-                @if (!button.isSeparator && !button.label) {
+                @if (!button.isSeparator && !button.label && !button.hidden) {
                     <button
                         mat-icon-button
                         [matTooltip]="button.tooltip"
                         [attr.data-cy]="'toolbar_' + button.eventId"
                         (click)="sendEvent(button.eventId)"
-                        [disabled]="!button.active || isNotReady"
+                        [disabled]="!button.active() || isNotReady()"
                         matomoClickCategory="Toolbar"
                         [matomoClickAction]="'IconButton_' + button.eventId"
                     >
@@ -125,12 +124,12 @@
                         <mat-icon>{{ button.matIconVariable }}</mat-icon>
                     </button>
                 }
-                @if (button.label && !button.isPrimary) {
+                @if (button.label && !button.isPrimary && !button.hidden) {
                     <button
                         mat-stroked-button
                         class="toolbar-save-button"
                         [attr.data-cy]="'toolbar_' + button.eventId"
-                        [disabled]="!button.active || isNotReady"
+                        [disabled]="!button.active() || isNotReady()"
                         [attr.aria-label]="button.label"
                         (click)="sendEvent(button.eventId)"
                         matomoClickCategory="Toolbar"
@@ -139,14 +138,14 @@
                         {{ button.label }}
                     </button>
                 }
-                @if (button.label && button.isPrimary) {
+                @if (button.label && button.isPrimary && !button.hidden) {
                     <button
                         class="btnPublish"
                         mat-flat-button
                         color="primary"
                         (click)="sendEvent(button.eventId)"
                         [attr.data-cy]="'toolbar_publish_now'"
-                        [disabled]="!button.active || isNotReady"
+                        [disabled]="!button.active() || isNotReady()"
                         [attr.aria-label]="button.label"
                         matomoClickCategory="Toolbar"
                         matomoClickAction="DirectPublish"
@@ -157,7 +156,7 @@
                         class="btnPublishMore"
                         mat-flat-button
                         color="primary"
-                        [disabled]="!button.active || isNotReady"
+                        [disabled]="!button.active() || isNotReady()"
                         [attr.data-cy]="'toolbar_' + button.eventId"
                         [matMenuTriggerFor]="publishMenu"
                         [matMenuTriggerRestoreFocus]="false"

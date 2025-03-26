@@ -40,6 +40,7 @@ import de.ingrid.igeserver.profiles.ingrid.quickfilter.SpatialInGrid
 import de.ingrid.igeserver.profiles.uvp.quickfilter.TitleSearch
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
+import de.ingrid.igeserver.research.quickfilter.ArchivedDocs
 import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
@@ -92,6 +93,7 @@ class InGridProfile(
                 Published(),
                 ExceptFolders(),
                 TitleSearch(),
+                ArchivedDocs(),
             ),
             viewComponent = ViewComponent.CHECKBOX,
             combine = Operator.AND,
@@ -240,7 +242,7 @@ class InGridProfile(
     private fun createCodelist1350(catalogRef: Catalog): Codelist = Codelist().apply {
         identifier = "1350"
         catalog = catalogRef
-        name = "Weitere rechtliche Grundlagen"
+        name = "Rechtliche Grundlagen"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
             add(CodelistHandler.toCodelistEntry("1", "Atomgesetz (AtG)"))

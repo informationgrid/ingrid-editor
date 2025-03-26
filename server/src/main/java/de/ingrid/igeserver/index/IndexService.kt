@@ -171,7 +171,7 @@ class IndexService(
 
     fun getLastLog(catalogId: String): IndexMessage? = catalogRepo.findByIdentifier(catalogId).settings.lastLogSummary
 
-    fun requestPublishableDocuments(
+    private fun requestPublishableDocuments(
         queryInfo: QueryInfo,
         uuid: String?,
         paging: ResearchPaging = ResearchPaging(pageSize = generalProperties.indexPageSize),

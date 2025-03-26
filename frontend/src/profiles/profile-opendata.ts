@@ -48,7 +48,7 @@ export class OpenDataComponent {
   ) {
     const types = [opendata, folder, opendataAddress];
 
-    service.registerProfiles(types);
+    service.registerDoctypes(types);
 
     reportsService.setFilter((route) => route.path != "url-check");
     // rename codelist entry (should be done in codelist repo!?)

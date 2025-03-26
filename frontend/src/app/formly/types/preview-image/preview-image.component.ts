@@ -54,7 +54,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { FormMessageService } from "../../../services/form-message.service";
 import { of } from "rxjs";
 import { REGEX_URL } from "../../input.validators";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { FormStateService } from "../../../+form/form-state.service";
 
 @UntilDestroy()

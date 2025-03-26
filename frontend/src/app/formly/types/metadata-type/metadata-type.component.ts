@@ -37,7 +37,7 @@ import {
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { debounceTime, distinctUntilChanged, startWith } from "rxjs/operators";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MetadataTypeShortComponent } from "./metadata-type-short/metadata-type-short.component";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
@@ -75,6 +75,7 @@ export interface MetadataOptionItems {
 export interface MetadataOptionItem {
   key?: string;
   label: string;
+  completeLabel?: string;
   value: any;
   contextHelpKey?: string;
   hide?: boolean;

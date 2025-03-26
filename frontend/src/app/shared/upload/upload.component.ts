@@ -43,7 +43,7 @@ import { IgeError } from "../../models/ige-error";
 import { BehaviorSubject, combineLatest, Subject } from "rxjs";
 import { TransfersWithErrorInfo } from "./TransferWithErrors";
 import { UploadError, UploadService } from "./upload.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { MatIcon } from "@angular/material/icon";
 import { MatButton } from "@angular/material/button";
 import { UploadItemComponent } from "./upload-item/upload-item.component";

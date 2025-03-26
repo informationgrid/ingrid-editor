@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -72,9 +72,12 @@ export class DeleteDocsPlugin extends Plugin {
       // if store has not received all updates (e.g. node is nested structure is loaded but children not yet)
       if (docs.some((item) => item === undefined)) return;
 
+      const notAllWritable = !docs?.find((doc) => !doc.hasWritePermission);
       this.formToolbarService.setButtonState(
         "toolBtnRemove",
-        docs?.length > 0 && !docs?.find((doc) => !doc.hasWritePermission),
+        docs?.length > 0 &&
+          notAllWritable &&
+          this.formToolbarService.isToolbarButtonEnabled("toolBtnRemove", docs),
       );
     });
   }
@@ -88,7 +91,7 @@ export class DeleteDocsPlugin extends Plugin {
       matSvgVariable: "outline-delete-24px",
       eventId: "DELETE",
       pos: 100,
-      active: false,
+      active: signal(false),
     });
 
     const store = this.getStore();

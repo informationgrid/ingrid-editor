@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Injectable } from "@angular/core";
+import { effect, inject, Injectable, signal } from "@angular/core";
 import {
   FormToolbarService,
   Separator,
@@ -77,7 +77,7 @@ export class PrintViewPlugin extends Plugin {
         matSvgVariable: "Vorschau-Druckansicht",
         eventId: "PRINT",
         pos: 20,
-        active: false,
+        active: signal(false),
       },
     ];
     buttons.forEach((button) => this.toolbarService.addButton(button));
@@ -91,7 +91,7 @@ export class PrintViewPlugin extends Plugin {
   private showPrintDialog() {
     let openedDocument = this.generalStore.getOpenedDocument(this.forAddress());
     const type = openedDocument._type;
-    const profile = this.profileService.getProfile(type);
+    const doctype = this.profileService.getDoctype(type);
 
     combineLatest([
       this.documentDataService.load(openedDocument._uuid, true),
@@ -107,10 +107,10 @@ export class PrintViewPlugin extends Plugin {
           published.documentWithMetadata,
           {},
         );
-        fields = profile.getFieldsForPrint(diff);
+        fields = doctype.getFieldsForPrint(diff);
         fieldsPublished = clone(fields);
       } else {
-        fields = profile.getFieldsForPrint(null);
+        fields = doctype.getFieldsForPrint(null);
       }
       this.dialog.open(PrintViewDialogComponent, {
         width: "80%",

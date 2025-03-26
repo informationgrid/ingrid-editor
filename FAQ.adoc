@@ -140,12 +140,14 @@ BROKER_URL=wss://<DOMAIN>/ige-ng/ws
 
 === Frontend
 
-Create a new Module with a component inside "`src/profiles`" - directory. For an example look at the file
-"`profile-mcloud.ts`".
+Create a new Module with a component inside `src/profiles` - directory. For an example look at the file
+`profile-mcloud.ts`.
+
+Then update `profile-mapper.ts` to include the new profile.
 
 The ProfileService dynamically loads a profile during load of the website, using the catalog type
 (`profile-<type>.ts`), which comes from the backend. For example, if a catalog of type "mcloud" is used,
-then the file "`profile-mcloud.ts`" is loaded.
+then the file `profile-mcloud.ts` is loaded.
 
 In the profile a component is defined which has to load all the document types, that are used in that
 profile. Normally you need the FolderDoctype, AdressDoctype and one to put your data in. For an example

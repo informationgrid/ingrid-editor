@@ -21,7 +21,7 @@ import de from "../assets/i18n/de.json";
 import {
   TranslocoTestingModule,
   TranslocoTestingOptions,
-} from "@ngneat/transloco";
+} from "@jsverse/transloco";
 
 export function getTranslocoModule(options: TranslocoTestingOptions = {}) {
   return TranslocoTestingModule.forRoot({

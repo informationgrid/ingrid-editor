@@ -17,10 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
+import { Injectable, WritableSignal } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { IgeError } from "../../../models/ige-error";
+import { DocumentAbstract } from "../../../store/document/document.model";
 
 export interface DefaultToolbarItem {
   id: string;
@@ -41,11 +42,12 @@ export interface ToolbarItem extends DefaultToolbarItem {
   matSvgVariable?: string;
   cssClasses?: string;
   eventId: string;
-  active?: boolean;
+  active?: WritableSignal<boolean>;
   label?: string;
   isPrimary?: boolean;
   menu?: ToolbarMenuItem[];
   hiddenMenu?: ToolbarMenuItem[];
+  hidden?: boolean;
 }
 
 export interface Separator extends DefaultToolbarItem {
@@ -60,6 +62,10 @@ export class FormToolbarService {
   toolbar$ = new BehaviorSubject<Array<ToolbarItem | Separator>>([]);
 
   private _buttons: Array<ToolbarItem | Separator> = [];
+
+  private toolbarStateFns: {
+    [x: string]: (docs: DocumentAbstract[]) => boolean;
+  } = {};
 
   constructor(private docEvents: DocEventsService) {}
 
@@ -126,7 +132,7 @@ export class FormToolbarService {
    */
   setButtonState(id: string, active: boolean) {
     const button = this.getButtonById(id) as ToolbarItem | null;
-    if (button) button.active = active;
+    if (button) button.active?.set(active);
   }
 
   setMenuItemStateOfButton(id: string, eventId: string, active: boolean) {
@@ -148,5 +154,17 @@ export class FormToolbarService {
     if (button) {
       button.hiddenMenu = hiddenMenu;
     }
+  }
+
+  setToolbarButtonEnabledFn(
+    btnId: string,
+    fn: (docs: DocumentAbstract[]) => boolean,
+  ) {
+    this.toolbarStateFns[btnId] = fn;
+  }
+
+  isToolbarButtonEnabled(btnId: string, docs: DocumentAbstract[]) {
+    const fn = this.toolbarStateFns[btnId];
+    return !fn ? true : fn(docs);
   }
 }

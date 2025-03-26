@@ -60,10 +60,10 @@ class KeycloakMockService : UserManagementService {
     }
 
     private fun mapUser(index: Int) = User(
-        config.logins?.get(index) ?: "",
-        config.firstName?.get(index) ?: "",
-        config.lastName?.get(index) ?: "",
-        "${config.firstName?.get(index)}.${config.lastName?.get(index)}@test.com",
+        config.logins?.getOrNull(index) ?: "",
+        config.firstName?.getOrNull(index) ?: "",
+        config.lastName?.getOrNull(index) ?: "",
+        "${config.firstName?.getOrNull(index)}.${config.lastName?.getOrNull(index)}@test.com",
         "",
         "",
         "",

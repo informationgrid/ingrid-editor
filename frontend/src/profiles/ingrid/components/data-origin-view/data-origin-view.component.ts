@@ -25,10 +25,10 @@ import {
   input,
   signal,
 } from "@angular/core";
-import { Router } from "@angular/router";
 import { DocumentService } from "../../../../app/services/document/document.service";
-import { map } from "rxjs/operators";
 import { CodelistStore } from "../../../../app/store/codelist/codelist.store";
+import { DocumentWithMetadata } from "../../../../app/models/ige-document";
+import { ConfigService } from "../../../../app/services/config/config.service";
 
 interface DataOriginItem {
   _type: "internalDataOrigin" | "freeDescription";
@@ -51,14 +51,15 @@ export class DataOriginViewComponent {
 
   private documentService = inject(DocumentService);
   private codelistStore = inject(CodelistStore);
+  private configService = inject(ConfigService);
 
-  private router = inject(Router);
   type = computed<string>(() => {
     return this.item()._type === "internalDataOrigin"
-      ? "Geodatensatz " + this.item().uuidRef
+      ? "Geodatensatz"
       : "Freie Beschreibung";
   });
   title = signal<string>("");
+  resourceIdentifier = signal<string>(null);
   date = computed<string>(() => {
     let value: string = this.item().date
       ? new Date(this.item().date).toLocaleDateString("de-DE")
@@ -81,11 +82,25 @@ export class DataOriginViewComponent {
       if (this.item()._type == "internalDataOrigin") {
         return this.documentService
           .load(this.item().uuidRef, false, false, true)
-          .pipe(map((doc) => doc.document.title))
-          .subscribe((value) => this.title.set(value));
+          .subscribe((doc: DocumentWithMetadata) => {
+            this.title.set(doc.document.title);
+            this.resourceIdentifier.set(this.getFormattedIdentifier(doc));
+          });
       } else {
-        return this.title.set(this.item().title);
+        this.title.set(this.item().title);
+        this.resourceIdentifier.set(this.item().identifier);
       }
     });
+  }
+
+  private getFormattedIdentifier(doc: DocumentWithMetadata) {
+    const identifier = doc.document.identifier;
+    const currentCatalog = this.configService.$userInfo.value.currentCatalog;
+    const namespace =
+      currentCatalog.settings.config?.namespace?.trim() ||
+      `https://registry.gdi-de.org/id/${currentCatalog.id}/`;
+    return identifier?.includes("://")
+      ? identifier
+      : `${namespace}${identifier}`;
   }
 }

@@ -21,6 +21,7 @@ package de.ingrid.igeserver.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.annotations.AuditLog
 import de.ingrid.igeserver.model.CopyOptions
 import de.ingrid.igeserver.model.DocumentWithMetadata
@@ -31,6 +32,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
 import de.ingrid.igeserver.repository.DocumentRepository
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.AuditLogger
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentInfo
@@ -68,6 +70,7 @@ class DatasetsApiController(
     private val groupService: GroupService,
     private val aclService: IgeAclService,
     private val storage: Storage,
+    val auditLog: AuditLogger,
 ) : DatasetsApi {
 
 //    private val log = logger()
@@ -110,6 +113,8 @@ class DatasetsApiController(
         unpublish: Boolean,
         cancelPendingPublishing: Boolean,
         revert: Boolean,
+        archive: Boolean,
+        unarchive: Boolean,
         version: Int?,
     ): ResponseEntity<DocumentWithMetadata> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
@@ -122,6 +127,10 @@ class DatasetsApiController(
         } else if (publish) {
             val doc = convertToDocument(data, docVersion = version)
             documentService.publishDocument(principal, catalogId, id, doc, publishDate)
+        } else if (archive) {
+            documentService.archiveDocument(principal, catalogId, id)
+        } else if (unarchive) {
+            documentService.unarchiveDocument(principal, catalogId, id)
         } else {
             val doc = convertToDocument(data, docVersion = version)
             documentService.updateDocument(principal, catalogId, id, doc)
@@ -141,7 +150,7 @@ class DatasetsApiController(
         return ResponseEntity.noContent().build()
     }
 
-    @AuditLog(action = "copy_datasets", target = "options", data = "ids")
+    @AuditLog(category = "datasets", action = "copy_datasets", target = "options", data = "ids")
     @Transactional
     override fun copyDatasets(
         principal: Principal,
@@ -158,7 +167,7 @@ class DatasetsApiController(
         return ResponseEntity.ok(results)
     }
 
-    @AuditLog(action = "move_datasets", target = "options", data = "ids")
+    @AuditLog(category = "datasets", action = "move_datasets", target = "options", data = "ids")
     @Transactional
     override fun moveDatasets(
         principal: Principal,
@@ -200,6 +209,8 @@ class DatasetsApiController(
     override fun setTags(principal: Principal, id: Int, tags: TagRequest): ResponseEntity<List<String>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val updatedTags = this.documentService.updateTags(catalogId, id, tags) ?: emptyList()
+        val tagsJsonNode: JsonNode = jacksonObjectMapper().valueToTree(tags)
+        auditLog.log("tags", "update", id.toString(), data = tagsJsonNode, catalogIdentifier = catalogId, principal = principal)
         return ResponseEntity.ok(updatedTags)
     }
 
@@ -348,7 +359,7 @@ class DatasetsApiController(
         data.document.modified!!,
         data.document.contentmodified!!,
         data.wrapper.pending_date,
-        data.wrapper.tags.joinToString(","),
+        data.wrapper.tags,
         data.wrapper.hasWritePermission,
         data.wrapper.hasOnlySubtreeWritePermission,
         isAddress,

@@ -42,6 +42,10 @@ a {
   }
 }
 
+.overflow-auto {
+  overflow: auto;
+}
+
 .user-popup mat-icon path {
   fill: vars.$ige-primary;
 }
@@ -783,6 +787,10 @@ ige-root .mat-drawer-container {
 
     &.amtsintern {
       background-color: vars.$error-color;
+    }
+
+    &.archived {
+      background-color: vars.$ige-comment-color;
     }
   }
 }

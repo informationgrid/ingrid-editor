@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Inject, Injectable } from "@angular/core";
+import { effect, inject, Inject, Injectable, signal } from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { IgeDocument } from "../../../models/ige-document";
@@ -53,7 +53,7 @@ export class SavePlugin extends SaveBase {
       const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.formToolbarService.setButtonState(
         "toolBtnSave",
-        doc !== null && doc._pendingDate == null && doc.hasWritePermission,
+        DocumentService.canWriteDocument(doc),
       );
     });
   }
@@ -68,7 +68,7 @@ export class SavePlugin extends SaveBase {
       matIconVariable: "save",
       eventId: "SAVE",
       pos: 20,
-      active: false,
+      active: signal(false),
       align: "right",
     });
 
