@@ -197,6 +197,26 @@
                                     </gmd:code>
                                 </gmd:MD_Identifier>
                             </gmd:identifier>
+                            <gmd:identifier>
+                                <gmd:MD_Identifier>
+                                    <gmd:authority>
+                                        <gmd:CI_Citation>
+                                            <gmd:title gco:nilReason="missing"/>
+                                            <gmd:date gco:nilReason="missing"/>
+                                            <gmd:identifier>
+                                                <gmd:MD_Identifier>
+                                                    <gmd:code>
+                                                        <gco:CharacterString>ComputationalNotebook/Brochure/Bulletin</gco:CharacterString>
+                                                    </gmd:code>
+                                                </gmd:MD_Identifier>
+                                            </gmd:identifier>
+                                        </gmd:CI_Citation>
+                                    </gmd:authority>
+                                    <gmd:code>
+                                        <gco:CharacterString>https://doi.org/10.1000/1234</gco:CharacterString>
+                                    </gmd:code>
+                                </gmd:MD_Identifier>
+                            </gmd:identifier>
                         </gmd:CI_Citation>
                     </gmd:citation>
                     <gmd:abstract>

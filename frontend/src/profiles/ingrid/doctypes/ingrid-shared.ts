@@ -129,6 +129,7 @@ export abstract class IngridShared extends BaseDoctype {
   showHVD: boolean = false;
   showAdVCompatible: boolean = false;
   showAdVProductGroup: boolean = false;
+  showDoiFields: boolean = false;
   /** @deprecated: should be defined in geoservice-doctype */
   isGeoService: boolean = false;
   /** @deprecated: should be defined in geodataset-doctype */
@@ -1691,6 +1692,37 @@ export abstract class IngridShared extends BaseDoctype {
     });
   }
 
+  addDoiFields(): FormlyFieldConfig {
+    let doiPrefix =
+      this.behaviourService.getBehaviour("plugin.ingrid.doi")?.data?.doiPrefix;
+    return this.addGroup(null, "DOI", [
+      this.addInputInline("doi", "DOI", {
+        defaultValue: doiPrefix ? doiPrefix + "/" : "",
+        validators: {
+          validation: ["doi"],
+        },
+        hasInlineContextHelp: true,
+        wrappers: ["inline-help", "form-field"],
+      }),
+      this.addAutoCompleteInline(
+        "generalResourceType",
+        "Ressourcen Typ (generell)",
+        {
+          options: this.getCodelistForSelect("3390", "generalResourceType"),
+          codelistId: "3390",
+          hasInlineContextHelp: true,
+          wrappers: ["inline-help", "form-field"],
+        },
+      ),
+      this.addAutoCompleteInline("resourceType", "Ressourcen Typ", {
+        options: this.getCodelistForSelect("3386", "resourceType"),
+        codelistId: "3386",
+        hasInlineContextHelp: true,
+        wrappers: ["inline-help", "form-field"],
+      }),
+    ]);
+  }
+
   protected urlRefFields() {
     return this.addGroupSimple(null, [
       { key: "_type" },
@@ -2087,6 +2119,11 @@ export abstract class IngridShared extends BaseDoctype {
       "plugin.ingrid.invekos",
     );
     this.showInVeKoSField = behaviour?.isActive ?? behaviour?.defaultActive;
+  }
+
+  protected handleDoiBehaviour() {
+    const behaviour = this.behaviourService.getBehaviour("plugin.ingrid.doi");
+    this.showDoiFields = behaviour?.isActive ?? behaviour?.defaultActive;
   }
 
   private handleHVDClick(field: FormlyFieldConfig) {

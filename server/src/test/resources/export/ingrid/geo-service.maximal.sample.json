@@ -370,6 +370,11 @@
     ],
     "spatialScope": {
       "key": "-673152846"
+    },
+    "publication": {
+      "doi": "10.1000/1234",
+      "generalResourceType": { "key": "5" },
+      "resourceType": { "key": "2" }
     }
   }
 }

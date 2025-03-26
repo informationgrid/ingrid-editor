@@ -20,11 +20,13 @@
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.convertToDocument
 import de.ingrid.igeserver.persistence.FindAllResults
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogConfig
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.CatalogSettings
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.schema.SchemaUtils
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
 import io.mockk.every
@@ -44,6 +46,21 @@ fun mockCatalog(catalogService: CatalogService) {
     }
 
     every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog()
+}
+
+fun mockBehaviours(behaviourService: BehaviourService, vararg activeBehaviours: String) {
+    every { behaviourService.get(any(), any()) } answers {
+        Behaviour().apply {
+            active = false
+        }
+    }
+    for (activeBehaviour in activeBehaviours) {
+        every { behaviourService.get(any(), activeBehaviour) } answers {
+            Behaviour().apply {
+                active = true
+            }
+        }
+    }
 }
 
 data class MockDocument(

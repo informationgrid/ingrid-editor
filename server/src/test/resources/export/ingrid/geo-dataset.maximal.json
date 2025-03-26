@@ -167,5 +167,10 @@
       "geometricObjectCount": 2
     }
   ],
-  "absoluteExternalPositionalAccuracy": { "vertical": 5, "horizontal": 3 }
+  "absoluteExternalPositionalAccuracy": { "vertical": 5, "horizontal": 3 },
+  "publication": {
+    "doi": "10.1000/1234",
+    "generalResourceType": { "key": "5" },
+    "resourceType": { "key": "2" }
+  }
 }

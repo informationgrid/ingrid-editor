@@ -24,6 +24,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
@@ -36,11 +37,13 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import mockBehaviours
 import mockCatalog
 import mockCodelists
 
 open class GeodatasetBase : ShouldSpec() {
     protected val documentService = mockk<DocumentService>()
+    protected val behaviourService = mockk<BehaviourService>()
 
     // this bean must be mocked, although it might not be used in this class
     protected val catalogService = mockk<CatalogService>()
@@ -68,6 +71,9 @@ open class GeodatasetBase : ShouldSpec() {
         every { SpringContext.getBean(DocumentService::class.java) } answers {
             this@GeodatasetBase.documentService
         }
+        every { SpringContext.getBean(BehaviourService::class.java) } answers {
+            this@GeodatasetBase.behaviourService
+        }
 
         every { this@GeodatasetBase.codelistHandler.getCatalogCodelistValue(this.any(), this.any(), this.any()) } answers {
             val codelistId = this.secondArg<String>()
@@ -86,6 +92,7 @@ open class GeodatasetBase : ShouldSpec() {
 
         mockCatalog(this.catalogService)
         mockCodelists(this.codelistHandler)
+        mockBehaviours(this.behaviourService, "plugin.ingrid.doi")
 
         val addresses = listOf(
             MockDocument(
