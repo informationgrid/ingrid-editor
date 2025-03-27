@@ -300,6 +300,11 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
 
+        // check if user has permission to all groups of the new user
+        if (user.groups.all { catalogService.hasRightsForGroup(principal, groupService.get(catalogId, it) ?: return@all false) } != true) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
         keycloakService.updateUser(user)
         catalogService.updateUser(catalogId, user)
         return ResponseEntity.ok(getSingleUser(principal, user.login))
