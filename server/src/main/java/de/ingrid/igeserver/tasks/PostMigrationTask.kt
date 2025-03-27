@@ -29,12 +29,14 @@ import de.ingrid.igeserver.api.TagRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
 import de.ingrid.igeserver.repository.DocumentRepository
+import de.ingrid.igeserver.services.BwastrLocatorService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.utils.convertToDocument
+import de.ingrid.igeserver.utils.getPath
 import jakarta.persistence.EntityManager
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
@@ -54,6 +56,7 @@ class PostMigrationTask(
     val fixPathsTask: FixPathsTask,
     val enhanceGroupsTask: EnhanceGroupsTask,
     val saveGroupsTask: SaveGroupsTask,
+    val bwastrLocatorService: BwastrLocatorService,
 ) : DbTriggeredTask(entityManager, transactionManager) {
 
     override val taskKey = "doPostMigrationFor"
@@ -66,6 +69,7 @@ class PostMigrationTask(
         initializeCatalogCodelistsAndQueries(catalogIdentifier)
         restructureObjectsWithChildren(catalogIdentifier)
         fixSpatialSystems(catalogIdentifier)
+        addBWASTRTitles(catalogIdentifier)
         fixPathsTask.migratePaths(catalogIdentifier)
         enhanceGroupsTask.enhanceGroupsWithReferencedAddresses(catalogIdentifier)
     }
@@ -94,6 +98,37 @@ class PostMigrationTask(
             (spatialSystem as ObjectNode).put("key", potentialId)
         }
         return spatialSystem
+    }
+
+    private fun addBWASTRTitles(catalogIdentifier: String) {
+        if (catalogService.getCatalogById(catalogIdentifier).type != BawProfile.ID) {
+            log.info("Only BAW-Profile catalogs are supported for adding BWASTR-Titles")
+            return
+        }
+        val documents = docRepo.findAllByCatalog_Identifier(catalogIdentifier)
+        codelistHandler.fetchCodelists()
+
+        documents.forEach { doc ->
+            val data = doc.data
+            val spatial = data.get("spatial") as ObjectNode? ?: return@forEach
+            val spatialReferences = spatial.get("references") as ArrayNode? ?: return@forEach
+            if (!spatialReferences.isEmpty) {
+                spatialReferences.map { lookupBwastrTitle(it) }
+                spatial.set<ArrayNode>("references", spatialReferences)
+                data.set<JsonNode>("spatial", spatial)
+                doc.data = data
+                docRepo.save(doc)
+            }
+        }
+    }
+
+    private fun lookupBwastrTitle(spatialReference: JsonNode): JsonNode {
+        val bwastrId = spatialReference.getPath("bwastr.bwastrid")?.asText() ?: return spatialReference
+
+        // TODO implement
+        //  val title = bwastrLocatorService.search(  bwastrId  ) . title
+        // (spatialReference as ObjectNode).put("title", title)
+        return spatialReference
     }
 
     private fun createNewFolderFor(
