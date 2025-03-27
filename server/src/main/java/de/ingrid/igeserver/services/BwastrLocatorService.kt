@@ -26,6 +26,7 @@ import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import java.net.URI
 import java.net.URLEncoder
@@ -60,6 +61,7 @@ class BwastrLocatorService {
     private val searchBaseUrl = "https://via.bund.de/wsv/bwastr-locator/rest/bwastrinfo/query?searchfield=all&searchterm="
     private val coordinateSearchURL = "https://via.bund.de/wsv/bwastr-locator/rest/geokodierung/query"
 
+    @Cacheable(value = ["bwastrSearchCache"], key = "#term")
     fun search(term: String): List<BwastrLocatorSearchResponse> {
         if (term.isEmpty()) return emptyList()
         val response = sendRequest("GET", searchBaseUrl + URLEncoder.encode(term, "UTF-8"))

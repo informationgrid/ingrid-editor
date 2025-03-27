@@ -229,7 +229,6 @@ class ResearchApiController(
     @Operation
     @PostMapping(value = ["/bwastr"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    @Cacheable(value = ["bwastrSearchCache"], key = "#query")
     fun bwastrSearch(principal: Principal, @RequestBody query: String): ResponseEntity<List<BwastrLocatorSearchResponse>> {
         val response = bwastrLocatorService.search(query)
         return ResponseEntity.ok(response)

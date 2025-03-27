@@ -100,6 +100,17 @@ class PostMigrationTask(
         return spatialSystem
     }
 
+    val customBWASTRMap = mapOf(
+        "7000" to "7000 Nordsee",
+        "8000" to "8000 Ostsee",
+        "8300" to "8300 Ryck",
+        "9600" to "9600 Binnenwasserstraßen",
+        "9700" to "9700 Seewasserstraßen",
+        "9800" to "9800 Bundeswasserstraßen",
+        "9900" to "9900 Sonstige Gewässer",
+        "9999" to "9999 Sonstiger Ortsbezug",
+    )
+
     private fun addBWASTRTitles(catalogIdentifier: String) {
         if (catalogService.getCatalogById(catalogIdentifier).type != BawProfile.ID) {
             log.info("Only BAW-Profile catalogs are supported for adding BWASTR-Titles")
@@ -124,10 +135,10 @@ class PostMigrationTask(
 
     private fun lookupBwastrTitle(spatialReference: JsonNode): JsonNode {
         val bwastrId = spatialReference.getPath("bwastr.bwastrid")?.asText() ?: return spatialReference
-
-        // TODO implement
-        //  val title = bwastrLocatorService.search(  bwastrId  ) . title
-        // (spatialReference as ObjectNode).put("title", title)
+        val title =
+            customBWASTRMap[bwastrId] ?: bwastrLocatorService.search(bwastrId).map { it.concatName }.firstOrNull()
+                ?: return spatialReference
+        (spatialReference as ObjectNode).put("title", title)
         return spatialReference
     }
 
