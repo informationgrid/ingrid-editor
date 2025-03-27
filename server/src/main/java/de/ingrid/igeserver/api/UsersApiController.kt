@@ -291,21 +291,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok(getSingleUser(principal, user.login))
     }
 
-    override fun updateCurrentUser(principal: Principal, user: User): ResponseEntity<Void> {
-        // TODO set access rights so users can update their own info, but nothing else. especially not other users.
-        val userId = authUtils.getUsernameFromPrincipal(principal)
-        val kcUser = keycloakService.getUser(userId)
-
-        user.apply {
-            login = userId
-            firstName = user.firstName.ifBlank { kcUser.firstName }
-            lastName = user.lastName.ifBlank { kcUser.lastName }
-            email = user.email.ifBlank { kcUser.email }
-        }
-        keycloakService.updateUser(user)
-        return ResponseEntity.ok().build()
-    }
-
     override fun currentUserInfo(principal: Principal): ResponseEntity<ServerUserInfo> {
         principal as Authentication
 
