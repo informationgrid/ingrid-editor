@@ -8,11 +8,11 @@
 |true
 
 |APP_HELP_LINK
-|
+|The URL to an external documentation site
 |https://metaver-bedienungsanleitung.readthedocs.io
 
 |APP_HOST_URL
-|
+|This URL should represent the external accessible URL of the frontend
 |https://ige-ng.informationgrid.eu
 
 |APP_INSTANCE_ID
@@ -20,59 +20,55 @@
 |ige-ng
 
 |APP_PROXY_URL
-|
+|Set a proxy to be used when communicating with Keycloak. Often Keycloak is on the same host, so that communication can be done locally. See KEYCLOAK_URL and KEYCLOAK_URL_FRONTEND
 |
 
 |BROKER_URL
-|
+|The URL to the websocket, e.g. `wss://<DOMAIN>/ige-ng/ws`
 |
 
 |CODELIST_REPO_PASSWORD
-|
+|The password to access the API of the Codelist-Repository
 |
 
 |CODELIST_REPO_URL
-|
+|The URL of the Codelist-Repository
 |https://dev.informationgrid.eu/codelist-repo
 
 |CODELIST_REPO_USER
-|
+|The username to access the API of the Codelist-Repository
 |
 
 |CONTEXT_PATH
-|
+|When the InGrid Editor is access under a context path, then it must be defined here.
 |/
 
 |DATABASE_HOST
-|
+|The IP where the database is located
 |localhost
 
 |DATABASE_NAME
-|
+|The name of the database
 |ige
 
 |DATABASE_PASSWORD
-|
+|The password of the user to access the database
 |admin
 
 |DATABASE_PORT
-|
+|The port of the database
 |5432
 
 |DATABASE_USERNAME
-|
+|The username of the user to access the database
 |admin
 
-|ELASTIC_REMOTE_HOSTS
-|
-|
-
 |ENABLE_AI
-|
+|Option to enable the AI feature, which currently includes the generation of SQL-queries
 |false
 
 |KEYCLOAK_BACKEND_USER
-|Needed for administrative tasks in Keycloak
+|The username of a keycloak user with admin permissions. Needed for administrative tasks in Keycloak
 |
 
 |KEYCLOAK_BACKEND_USER_PASSWORD
@@ -80,15 +76,15 @@
 |
 
 |KEYCLOAK_CLIENT_ID
-|
+|The Client ID in Keycloak
 |ige-ng-backend
 
 |KEYCLOAK_REALM
-|
+|The realm in Keycloak
 |InGrid
 
 |KEYCLOAK_RESOURCE
-|
+|The Client for the frontend in Keycloak
 |ige-ng-frontend
 
 |KEYCLOAK_URL
@@ -100,15 +96,15 @@
 |wie KEYCLOAK_URL
 
 |OPEN_AI_TOKEN
-|
+|The token to authenticate at OpenAI in order to use AI features.
 |
 
 |MAIL_FROM
-|
+|The sender of an email when one is sent.
 |noreply@wemove.com
 
 |MAIL_HOST
-|
+|This host of the mail-server to be used.
 |mailrelay
 
 |MAP_TILE_URL

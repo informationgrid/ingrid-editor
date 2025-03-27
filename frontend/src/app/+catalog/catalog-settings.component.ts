@@ -17,18 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, ViewChild } from "@angular/core";
 import { BehavioursComponent } from "./+behaviours/behaviours.component";
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from "@angular/router";
+import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
-import { SessionService, Tab } from "../services/session.service";
 import { UntilDestroy } from "@ngneat/until-destroy";
+import { TabContainerComponent } from "../+research/tab-container.component";
+import { TabPage } from "../services/session.service";
 
 @UntilDestroy()
 @Component({
@@ -44,36 +39,9 @@ import { UntilDestroy } from "@ngneat/until-destroy";
     RouterOutlet,
   ],
 })
-export class CatalogSettingsComponent implements OnInit {
+export class CatalogSettingsComponent extends TabContainerComponent {
+  tabPage: TabPage = "catalogs";
+
   @ViewChild("navigation") tabNav: MatTabNav;
   @ViewChild("behaviours") behaviourComponent: BehavioursComponent;
-
-  tabs: Tab[];
-
-  constructor(
-    private router: Router,
-    private activeRoute: ActivatedRoute,
-    private sessionService: SessionService,
-  ) {
-    this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
-
-    // only update tab from route if it was set explicitly in URL
-    // otherwise the remembered state from store is used
-    const currentPath = this.router.parseUrl(this.router.url).root.children
-      .primary.segments[2].path;
-    const activeTabIndex = this.tabs.findIndex(
-      (tab) => tab.path === currentPath,
-    );
-    if (activeTabIndex !== 0) {
-      this.updateTab(activeTabIndex);
-    }
-  }
-
-  ngOnInit(): void {}
-
-  updateTab(index: number) {
-    const tabPaths = this.sessionService.getTabPaths(this.activeRoute.snapshot);
-
-    this.sessionService.updateCurrentTab("catalogs", tabPaths[index]);
-  }
 }

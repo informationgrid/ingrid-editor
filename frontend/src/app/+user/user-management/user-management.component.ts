@@ -28,9 +28,10 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from "@angular/router";
-import { SessionService, Tab } from "../../services/session.service";
+import { SessionService, TabPage } from "../../services/session.service";
 import { GroupService } from "../../services/role/group.service";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
+import { TabContainerComponent } from "../../+research/tab-container.component";
 
 @UntilDestroy()
 @Component({
@@ -46,30 +47,21 @@ import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
     RouterOutlet,
   ],
 })
-export class UserManagementComponent implements OnInit {
+export class UserManagementComponent
+  extends TabContainerComponent
+  implements OnInit
+{
+  tabPage: TabPage = "manage";
+
   currentComponent: UserComponent | GroupComponent;
 
-  tabs: Tab[];
-
   constructor(
-    private router: Router,
-    private sessionService: SessionService,
+    protected router: Router,
+    protected sessionService: SessionService,
+    protected activeRoute: ActivatedRoute,
     private groupService: GroupService,
-    private activeRoute: ActivatedRoute,
   ) {
-    this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
-
-    // only update tab from route if it was set explicitly in URL
-    // otherwise the remembered state from store is used
-    // example: reload page being on 2nd tab -> goto dashboard -> come back again
-    const currentPath = this.router.parseUrl(this.router.url).root.children
-      .primary.segments[2].path;
-    const activeTabIndex = this.tabs.findIndex(
-      (tab) => tab.path === currentPath,
-    );
-    if (activeTabIndex !== 0) {
-      this.updateTab(activeTabIndex);
-    }
+    super(router, sessionService, activeRoute);
   }
 
   @HostListener("window:beforeunload", ["$event"])
@@ -83,10 +75,5 @@ export class UserManagementComponent implements OnInit {
 
   ngOnInit(): void {
     this.groupService.getGroups();
-  }
-
-  updateTab(index: number) {
-    const tabPaths = this.sessionService.getTabPaths(this.activeRoute.snapshot);
-    this.sessionService.updateCurrentTab("manage", tabPaths[index]);
   }
 }

@@ -147,8 +147,9 @@ export class LeafletTypeComponent
       this.leafletService.containsCoordinates(location),
     );
 
+    // we need to call fitBounds in order to fully initialize map (see #7508)
+    this.leafletService.zoomToInitialBox(this.leafletReference);
     if (locations.length === 0 || !hasCoordinates) {
-      this.leafletService.zoomToInitialBox(this.leafletReference);
       this.leafletReference.dragging.disable();
       this.leafletReference.doubleClickZoom.disable();
     }
