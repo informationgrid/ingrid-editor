@@ -300,7 +300,7 @@ class ResearchService(
                     hasWritePermission = isAdmin || permissionInfo.canWrite,
                     hasOnlySubtreeWritePermission = !isAdmin && permissionInfo.canOnlyWriteSubtree,
                     id = itemId,
-                    tags = (item.get("tags") as? List<String> ?: emptyList()),
+                    tags = (item.get("tags") as? Array<String>)?.toList() ?: emptyList(),
                     responsibleUser = item.get("responsibleUser"),
                     additional = getAdditionalInfo(item),
                 )
