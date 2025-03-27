@@ -100,8 +100,17 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<User> {
         // user login must be lowercase
         validateLoginName(user)
-
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        // check if principal is allowed to use admin role for this user
+        if (!authUtils.isAdmin(principal) && isAdminRole(user.role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
+        // check if user has permission to all groups of the new user
+        if (user.groups.all { catalogService.hasRightsForGroup(principal, groupService.get(catalogId, it) ?: return@all false) } != true) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
 
         val userExists = keycloakService.userExists(user.login)
         if (userExists && newExternalUser) {
@@ -281,6 +290,11 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
     override fun updateUser(principal: Principal, user: User): ResponseEntity<User> {
         if (!catalogService.canEditUser(principal, user.login)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
+        // check if principal is allowed to use admin role for this user
+        if (!authUtils.isAdmin(principal) && isAdminRole(user.role)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
