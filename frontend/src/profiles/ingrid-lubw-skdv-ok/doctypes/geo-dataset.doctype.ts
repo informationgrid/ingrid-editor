@@ -105,7 +105,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
           "Neben 'Es gelten keine Zugriffsbeschränkungen' dürfen keine weiteren Zugriffsbeschränkungen angegeben sein",
       },
     };
-    this.addMultipleAfter(positionAccessConstraints, [
+    this.addMultipleBefore(positionAccessConstraints, [
       this.addRadioboxes("personalData", "Personenbezogene Daten", {
         required: true,
         options: [
@@ -125,6 +125,8 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
 
             if (isPersonRelated) {
               this.handlePersonRelatedChoice(field);
+            } else {
+              this.handleNonPersonRelatedChoice(field);
             }
           });
         },
@@ -284,6 +286,22 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
     ]);
     return fieldConfig;
   };
+
+  private handleNonPersonRelatedChoice(field: FormlyFieldConfig) {
+    const accessConstraints = field.form.get("accessConstraints").value;
+    const snackMessage = [];
+    // Check if item with key "7" exists, remove it if present
+    const hasPersonRelatedEntry = accessConstraints.findIndex(
+      (item: { key: string }) => item.key === "7",
+    );
+    if (hasPersonRelatedEntry !== -1) {
+      accessConstraints.splice(hasPersonRelatedEntry, 1);
+      this.snack.open(
+        "Den Zugriffsbeschränkungen wurde der Eintrag 'aufgrund der Vertraulichkeit personenbezogener Daten' entfernt",
+      );
+      field.form.get("accessConstraints").setValue(accessConstraints);
+    }
+  }
 
   private handlePersonRelatedChoice(field: FormlyFieldConfig) {
     const accessConstraints = field.form.get("accessConstraints").value;
