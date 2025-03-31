@@ -53,7 +53,7 @@ export class SavePlugin extends SaveBase {
       const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.formToolbarService.setButtonState(
         "toolBtnSave",
-        doc !== null && doc._pendingDate == null && doc.hasWritePermission,
+        DocumentService.canWriteDocument(doc),
       );
     });
   }

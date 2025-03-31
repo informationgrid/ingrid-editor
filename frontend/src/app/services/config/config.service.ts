@@ -211,6 +211,10 @@ export class ConfigService {
     return this.isSuperAdministrator;
   }
 
+  isAuthor(): boolean {
+    return this.$userInfo.value.role === "author";
+  }
+
   hasWriteRootPermission(): boolean {
     return this._hasRootWritePermission;
   }

@@ -1,17 +1,15 @@
 import gg.jte.ContentType
-import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jlleitschuh.gradle.ktlint.KtlintExtension
+
 import java.nio.file.Paths
 
-import static org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+//import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 
 buildscript {
     ext.kotlin_version = '2.1.0'
-    ext.spring_boot_version = '3.4.3'
+    ext.spring_boot_version = '3.4.4'
     ext.kotest_version = '5.9.1'
     ext.jte_version = '3.1.16'
-    ext.geotools_version = '32.1'
+    ext.geotools_version = '32.2'
     ext['log4j2.version'] = '2.23.1'
 }
 
@@ -26,13 +24,13 @@ plugins {
     id "io.spring.dependency-management" version "1.1.7"
     id 'idea'
     id 'maven-publish'
-    id 'com.google.cloud.tools.jib' version '3.4.4'
+    id 'com.google.cloud.tools.jib' version '3.4.5'
     id "com.gorylenko.gradle-git-properties" version "2.4.2"
     id 'io.kotest' version '0.4.11'
     id "com.github.ben-manes.versions" version "0.52.0"
     id "gg.jte.gradle" version "$jte_version"
     id "org.hibernate.orm" version "6.5.2.Final"
-    id "org.jlleitschuh.gradle.ktlint" version "12.1.2"
+    id "org.jlleitschuh.gradle.ktlint" version "12.2.0"
     id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
 }
 
@@ -41,11 +39,11 @@ repositories {
         url = 'https://nexus.informationgrid.eu/repository/maven-public'
     }
     maven {
-        url "https://repo.osgeo.org/repository/release/"
+        url = "https://repo.osgeo.org/repository/release/"
     }
     mavenCentral()
     maven {
-        url "https://maven.tryformation.com/releases"
+        url = "https://maven.tryformation.com/releases"
         content {
             includeGroup("com.jillesvangurp")
         }
@@ -100,7 +98,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation 'org.apache.logging.log4j:log4j-api-kotlin:1.5.0'
-    implementation 'org.apache.tika:tika-core:3.0.0'
+    implementation 'org.apache.tika:tika-core:3.1.0'
     implementation 'org.glassfish.jersey.media:jersey-media-multipart:3.1.10'
 
     // Spring
@@ -123,6 +121,7 @@ dependencies {
     }
 //    annotationProcessor 'org.apache.logging.log4j:log4j-core'
     kapt("org.apache.logging.log4j:log4j-core")
+//    implementation 'io.github.oshai:kotlin-logging:7.0.5'
 
     // spring properties metadata
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
@@ -134,7 +133,7 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     // JSON schema validation
-    implementation 'com.networknt:json-schema-validator:1.5.5'
+    implementation 'com.networknt:json-schema-validator:1.5.6'
 
     // Keycloak
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
@@ -144,7 +143,7 @@ dependencies {
 
     // OpenAI
     // import Kotlin API client BOM
-    implementation platform('com.aallam.openai:openai-client-bom:4.0.0-beta01')
+    implementation platform('com.aallam.openai:openai-client-bom:4.0.1')
 
     // define dependencies without versions
     implementation 'com.aallam.openai:openai-client'
@@ -155,14 +154,14 @@ dependencies {
     implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.24.0"
     implementation "org.commonmark:commonmark-ext-gfm-tables:0.24.0"
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
 
     // PostgreSQL
     implementation 'org.postgresql:postgresql:42.7.5'
     implementation "org.hibernate.orm:hibernate-core"
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.5'
 
-    implementation "de.ingrid:ingrid-codelist-service:7.5.0-SNAPSHOT"
+    implementation "de.ingrid:ingrid-codelist-service:7.5.0"
     implementation 'javax.validation:validation-api:2.0.1.Final'
     implementation 'org.apache.commons:commons-lang3:3.17.0'
     implementation 'org.apache.commons:commons-text:1.13.0'
@@ -190,14 +189,14 @@ dependencies {
     }
 
     // RDF for DCAT-AP.de
-    implementation "org.apache.jena:apache-jena-libs:5.2.0"
+    implementation "org.apache.jena:apache-jena-libs:5.3.0"
 
     // Test
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version" // for kotest framework
     testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version" // for kotest core jvm assertions
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
     testImplementation 'io.kotest.extensions:kotest-extensions-spring:1.3.0' // to wire dependencies using Spring
-    testImplementation 'io.mockk:mockk:1.13.16'
+    testImplementation 'io.mockk:mockk:1.13.17'
     testImplementation "com.ninja-squad:springmockk:4.0.2"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.mockito"
@@ -205,12 +204,9 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // Elasticsearch communication
-    implementation("com.jillesvangurp:search-client:2.3.1")
+    implementation("com.jillesvangurp:search-client:2.3.13")
 
-    // for javax.annotation-support for elasticsearch-tools
-//    implementation("org.jboss.spec.javax.annotation:jboss-annotations-api_1.3_spec:2.0.1.Final")
-
-    implementation('de.ingrid:ingrid-ibus-client:7.0.0') {
+    implementation('de.ingrid:ingrid-ibus-client:7.5.0') {
         exclude group: 'org.apache.logging.log4j'
         exclude group: 'org.slf4j'
     }
@@ -218,21 +214,16 @@ dependencies {
     // template engine jte
     implementation "gg.jte:jte-spring-boot-starter-3:$jte_version"
     implementation "gg.jte:jte:$jte_version"
-    implementation "gg.jte:jte-kotlin:$jte_version"
 }
 
 dependencyManagement {
     dependencies {
-//        dependency "org.elasticsearch:elasticsearch:$elastic_version"
-//        dependency "org.elasticsearch.client:elasticsearch-rest-client:$elastic_version"
-//        dependency "org.elasticsearch.plugin:transport-netty4-client:$elastic_version"
-//        dependency "org.elasticsearch.client:transport:$elastic_version"
         dependency "org.yaml:snakeyaml:2.0"
         dependency "commons-collections:commons-collections:3.2.2"
 
-    }
-    imports {
-//        mavenBom 'com.fasterxml.jackson:jackson-bom:2.18.1' // allow Nulls.SKIP function, which works from 2.16.0 in kotlin data classes
+        // conflict with kotest and search-client -> kotlinx-serialization
+        dependency "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.0"
+        dependency "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.0"
     }
 }
 
@@ -263,12 +254,6 @@ allOpen {
     annotation("jakarta.persistence.Entity")
 }
 
-tasks.withType(KotlinCompile).configureEach {
-    compilerOptions {
-        jvmTarget.set(JVM_21)
-    }
-}
-
 // disable kapt for tests since it leads to an error due to analyzing test sources
 // also disable completely because it takes too much time
 // instead just generate Log4j2Plugins.dat and copy it to resources folder
@@ -283,6 +268,12 @@ tasks.register('updateGitHooks', Copy) {
     into '../.git/hooks'
 }
 
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 kapt {
     includeCompileClasspath=false
 }
@@ -295,9 +286,9 @@ jte {
     generate()
 }
 
-tasks.named('generateJte') {
-    mustRunAfter(tasks.runKtlintCheckOverMainSourceSet)
-}
+//tasks.named('generateJte') {
+//    mustRunAfter(tasks.runKtlintCheckOverMainSourceSet)
+//}
 
 tasks.named('compileKotlin') {
     dependsOn(tasks.updateGitHooks)
@@ -387,9 +378,9 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-tasks.withType(KaptGenerateStubsTask).configureEach {
-    dependsOn 'generateJte'
-}
+//tasks.withType(KaptGenerateStubsTask).configureEach {
+//    dependsOn 'generateJte'
+//}
 
 def isNonStable = { String version ->
     def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }

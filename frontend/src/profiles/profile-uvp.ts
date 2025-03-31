@@ -19,7 +19,7 @@
  */
 import { ApprovalProcedureDoctype } from "./uvp/doctypes/approval-procedure.doctype";
 import { FolderDoctype } from "./folder/folder.doctype";
-import { Component, NgModule, Renderer2 } from "@angular/core";
+import { Component, inject, NgModule, Renderer2 } from "@angular/core";
 import { ProfileService } from "../app/services/profile.service";
 import { SpatialPlanningProcedureDoctype } from "./uvp/doctypes/spatial-planning-procedure.doctype";
 import { NegativePreliminaryAssessmentDoctype } from "./uvp/doctypes/negative-preliminary-assessment.doctype";
@@ -31,17 +31,23 @@ import { PublishNegativeAssessmentBehaviour } from "./uvp/behaviours/publish-neg
 import { ReportsService } from "../app/+reports/reports.service";
 import { UvpNumberBehaviour } from "./uvp/behaviours/uvp-number.behaviour";
 import { PluginService } from "../app/services/plugin/plugin.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { TagsService } from "../app/+catalog/+behaviours/system/tags/tags.service";
 import { ZabbixReportBehaviour } from "./uvp/behaviours/zabbix-report.behaviour";
 import { ActivityReportBehaviour } from "./uvp/behaviours/activity-report.behaviour";
 import { AuthGuard } from "../app/security/auth.guard";
+import { CatalogService } from "../app/+catalog/services/catalog.service";
+import { CatalogRoutesService } from "../app/+catalog/catalog-routes.service";
+import { UvpArchiveBehaviour } from "./uvp/behaviours/uvp-archive.behaviour";
 
 @Component({
   template: "",
   standalone: true,
 })
 class UVPComponent {
+  private catalogRouteService = inject(CatalogRoutesService);
+  private uvpArchiveBehaviour = inject(UvpArchiveBehaviour);
+
   constructor(
     private profileService: ProfileService,
     private translocoService: TranslocoService,
@@ -62,10 +68,9 @@ class UVPComponent {
     private activityReportBehaviour: ActivityReportBehaviour,
   ) {
     this.addBehaviour(negativeAssessmentDoctype);
-    this.tagsService.addAdditionalTags(["negative-assessment-not-publish"]);
     this.addStylesheet();
 
-    profileService.registerProfiles([
+    profileService.registerDoctypes([
       folder,
       approvalProcedureDoctype,
       spatialPlanningProcedureDoctype,
@@ -87,6 +92,8 @@ class UVPComponent {
     this.addUVPUploadCheckReportTab(reportsService);
 
     this.removeExpiredDocumentsTab(reportsService);
+
+    // this.addUVPArchiveTab(this.catalogRouteService);
   }
 
   private modifyFormHeader() {
@@ -101,6 +108,7 @@ class UVPComponent {
     this.pluginService.registerPlugin(uvpNumberPlugin);
     this.pluginService.registerPlugin(this.zabbixReportBehaviour);
     this.pluginService.registerPlugin(this.activityReportBehaviour);
+    this.pluginService.registerPlugin(this.uvpArchiveBehaviour);
 
     if (this.publishNegativeAssessmentBehaviour.isActive) {
       negativeAssessmentDoctype.forPublish = true;
@@ -132,6 +140,21 @@ class UVPComponent {
         ),
       data: {
         title: "UVP Upload Check",
+        permission: "can_create_uvp_report",
+      },
+    });
+  }
+
+  private addUVPArchiveTab(catalogRouteService: CatalogRoutesService) {
+    catalogRouteService.addRoute({
+      canActivate: [AuthGuard],
+      path: "uvp-archive",
+      loadComponent: () =>
+        import("./uvp/config/uvp-archive/uvp-archive.component").then(
+          (m) => m.UvpArchiveComponent,
+        ),
+      data: {
+        title: "UVP Archivierung",
         permission: "can_create_uvp_report",
       },
     });

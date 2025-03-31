@@ -93,6 +93,9 @@
     "formWithPronoun": "Dieser Datensatz",
     "confirmMessage": "Wollen Sie diesen Datensatz wirklich veröffentlichen?"
   },
+  "archive": {
+    "message": "Wollen Sie den Datensatz wirklich archivieren? Der Datensatz kann danach nicht mehr bearbeitet werden, allerdings kann dieser wieder aus dem Archiv zurückgeholt werden."
+  },
   "docType": {
     "FOLDER": "Ordner"
   },
@@ -105,7 +108,8 @@
   "tags": {
     "internet": "Internet",
     "intranet": "Intranet",
-    "amtsintern": "amtsintern"
+    "amtsintern": "amtsintern",
+    "archived": "archiviert"
   },
   "replace-address": {
     "reference-error": "Diese Adresse wird von mindestens einem Datensatz referenziert. Möchten Sie die Adresse ersetzen?",

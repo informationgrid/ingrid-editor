@@ -21,6 +21,7 @@ import { Injectable, WritableSignal } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { IgeError } from "../../../models/ige-error";
+import { DocumentAbstract } from "../../../store/document/document.model";
 
 export interface DefaultToolbarItem {
   id: string;
@@ -46,6 +47,7 @@ export interface ToolbarItem extends DefaultToolbarItem {
   isPrimary?: boolean;
   menu?: ToolbarMenuItem[];
   hiddenMenu?: ToolbarMenuItem[];
+  hidden?: boolean;
 }
 
 export interface Separator extends DefaultToolbarItem {
@@ -60,6 +62,10 @@ export class FormToolbarService {
   toolbar$ = new BehaviorSubject<Array<ToolbarItem | Separator>>([]);
 
   private _buttons: Array<ToolbarItem | Separator> = [];
+
+  private toolbarStateFns: {
+    [x: string]: (docs: DocumentAbstract[]) => boolean;
+  } = {};
 
   constructor(private docEvents: DocEventsService) {}
 
@@ -148,5 +154,17 @@ export class FormToolbarService {
     if (button) {
       button.hiddenMenu = hiddenMenu;
     }
+  }
+
+  setToolbarButtonEnabledFn(
+    btnId: string,
+    fn: (docs: DocumentAbstract[]) => boolean,
+  ) {
+    this.toolbarStateFns[btnId] = fn;
+  }
+
+  isToolbarButtonEnabled(btnId: string, docs: DocumentAbstract[]) {
+    const fn = this.toolbarStateFns[btnId];
+    return !fn ? true : fn(docs);
   }
 }

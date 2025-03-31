@@ -15,6 +15,12 @@
     },
     "dataSetURI": {
       "type": ["null", "string"]
+    },
+    "mapZoomLevel": {
+      "type": ["null", "number"]
+    },
+    "mapCenter": {
+      "type": ["null", "string"]
     }
   },
   "unevaluatedProperties": false

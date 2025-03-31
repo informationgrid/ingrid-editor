@@ -37,7 +37,7 @@ import { Subscription } from "rxjs";
 import { GeothesaurusWfsGndeService } from "./geothesaurus-wfs-gnde.service";
 import { SearchInputComponent } from "../../../../../shared/search-input/search-input.component";
 import { SpatialBoundingBox } from "../spatial-result.model";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import {
   MatCheckboxChange,
   MatCheckboxModule,

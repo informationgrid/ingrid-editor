@@ -19,15 +19,10 @@
  */
 import { Component } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { SessionService, Tab } from "../services/session.service";
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from "@angular/router";
+import { TabPage } from "../services/session.service";
+import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
+import { TabContainerComponent } from "./tab-container.component";
 
 @UntilDestroy()
 @Component({
@@ -43,30 +38,6 @@ import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
     RouterOutlet,
   ],
 })
-export class ResearchComponent {
-  tabs: Tab[];
-
-  constructor(
-    private router: Router,
-    private sessionService: SessionService,
-    private activeRoute: ActivatedRoute,
-  ) {
-    this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
-
-    // only update tab from route if it was set explicitly in URL
-    // otherwise the remembered state from store is used
-    const currentPath = this.router.parseUrl(this.router.url).root.children
-      .primary.segments[2].path;
-    const activeTabIndex = this.tabs.findIndex(
-      (tab) => tab.path === currentPath,
-    );
-    if (activeTabIndex !== 0) {
-      this.updateTab(activeTabIndex);
-    }
-  }
-
-  updateTab(index: number) {
-    const tabPaths = this.sessionService.getTabPaths(this.activeRoute.snapshot);
-    this.sessionService.updateCurrentTab("research", tabPaths[index]);
-  }
+export class ResearchComponent extends TabContainerComponent {
+  tabPage: TabPage = "research";
 }

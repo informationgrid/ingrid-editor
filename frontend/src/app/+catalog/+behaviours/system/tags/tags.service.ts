@@ -25,42 +25,50 @@ import { DocumentAbstract } from "../../../../store/document/document.model";
 export class TagsService {
   private documentService = inject(DocumentService);
 
-  private additionalTags: string[] = [];
-
+  /**
+   * @deprecated This method is deprecated and will be removed in future releases.
+   */
   updateTagForDocument(
     doc: DocumentAbstract,
     newTag: string,
     forAddress: boolean,
   ) {
-    this.updatePublicationType(doc.id as number, newTag, forAddress).subscribe(
-      () => {
-        this.documentService.reload$.next({
-          uuid: doc._uuid,
-          forAddress: forAddress,
-        });
-      },
-    );
+    this.addTags(doc.id as number, [newTag], forAddress).subscribe(() => {
+      this.documentService.reload$.next({
+        uuid: doc._uuid,
+        forAddress: forAddress,
+      });
+    });
   }
 
-  addAdditionalTags(tags: string[]) {
-    this.additionalTags.push(...tags);
-  }
+  addTags(id: number, newTags: string[], forAddress: boolean) {
+    const tagsToRemove = [];
 
-  /*
-   * We handle the "internet"-type as null-value, which is the default value and to be consistent
-   */
-  updatePublicationType(id: number, newTag: string, forAddress: boolean) {
-    const values = ["intranet", "amtsintern", ...this.additionalTags];
-    let tagToAdd = [newTag];
-    if (newTag === "internet") {
-      tagToAdd = [];
+    // handle publication tags
+    if (newTags.indexOf("internet") !== -1) {
+      newTags = newTags.filter((item) => item !== "internet");
+      tagsToRemove.push(...["intranet", "amtsintern"]);
+    } else if (newTags.indexOf("intranet") !== -1) {
+      tagsToRemove.push("amtsintern");
+    } else if (newTags.indexOf("amtsintern") !== -1) {
+      tagsToRemove.push("intranet");
     }
 
     return this.documentService.updateTags(
       id,
       {
-        add: tagToAdd,
-        remove: values.filter((item) => item !== newTag),
+        add: newTags,
+        remove: tagsToRemove,
+      },
+      forAddress,
+    );
+  }
+
+  removeTags(id: number, tagsToRemove: string[], forAddress: boolean) {
+    return this.documentService.updateTags(
+      id,
+      {
+        remove: tagsToRemove,
       },
       forAddress,
     );

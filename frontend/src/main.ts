@@ -43,7 +43,7 @@ import {
   MatDialog,
   MatDialogModule,
 } from "@angular/material/dialog";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import {
   DateAdapter,
   MAT_DATE_LOCALE,
@@ -127,6 +127,8 @@ import { UpdateGetCapabilitiesComponent } from "./app/formly/types/update-get-ca
 import { PreviewImageComponent } from "./app/formly/types/preview-image/preview-image.component";
 import { PrintTypeComponent } from "./app/formly/types/print/print-type.component";
 import {
+  DoiPrefixValidator,
+  DoiValidator,
   ElasticsearchAliasValidator,
   EmailValidator,
   IpValidator,
@@ -147,6 +149,7 @@ import {
   provideMatomo,
   withRouter,
 } from "ngx-matomo-client";
+import { AppInjector } from "./app/app_injector";
 
 if (environment.production) {
   enableProdMode();
@@ -321,6 +324,8 @@ bootstrapApplication(AppComponent, {
           { name: "notEmptyArray", validation: NotEmptyArrayValidator },
           { name: "url", validation: UrlValidator },
           { name: "positiveNum", validation: PositiveNumValidator },
+          { name: "doiPrefix", validation: DoiPrefixValidator },
+          { name: "doi", validation: DoiValidator },
         ],
         /*,
             wrappers: [
@@ -489,4 +494,6 @@ bootstrapApplication(AppComponent, {
       withRouter(),
     ),
   ],
+}).then((appRef) => {
+  AppInjector.setInjector(appRef.injector);
 });

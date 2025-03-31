@@ -87,6 +87,35 @@
       },
       "minItems": 1
     },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "doi": {
+          "type": ["null", "string"]
+        },
+        "generalResourceType": {
+          "anyOf": [
+            {
+              "$ref": "refs/general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resourceType": {
+          "anyOf": [
+            {
+              "$ref": "refs/general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
     "themes": {
       "$ref": "refs/general.schema.json#/definitions/themes"
     },

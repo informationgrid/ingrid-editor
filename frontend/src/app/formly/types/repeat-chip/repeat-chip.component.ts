@@ -62,7 +62,7 @@ import {
   MatHint,
   MatSuffix,
 } from "@angular/material/form-field";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MatInput } from "@angular/material/input";
 import { MatIconButton } from "@angular/material/button";
 import { MatSelect } from "@angular/material/select";

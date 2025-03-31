@@ -30,6 +30,7 @@ import de.ingrid.igeserver.profiles.uvp.quickfilter.ProcessStep
 import de.ingrid.igeserver.profiles.uvp.quickfilter.TitleSearch
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
+import de.ingrid.igeserver.research.quickfilter.ArchivedDocs
 import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.Spatial
@@ -70,6 +71,7 @@ class UvpProfile(
                 Published(),
                 ExceptFolders(),
                 TitleSearch(),
+                ArchivedDocs(),
             ),
             viewComponent = ViewComponent.CHECKBOX,
             combine = Operator.AND,

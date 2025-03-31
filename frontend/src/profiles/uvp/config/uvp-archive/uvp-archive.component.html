@@ -1,0 +1,86 @@
+<page-template-no-header label="Archivierung">
+    <ng-container left-side>
+        <p>
+            Hier können Sie Verfahren archivieren lassen, dessen Datum der
+            Entscheidung vor dem eingestellten Archivierungsdatum liegt.
+        </p>
+        <p>
+            In der Konfiguration des Verhaltens, können sie bestimmen, was mit
+            den Dokumenten der archivierten Verfahren geschieht.
+        </p>
+    </ng-container>
+
+    <div main-content>
+        @if (!active()) {
+            Bitte aktivieren Sie erst das Verhalten "Archivierung" und stellen
+            Sie sicher, dass die Option "archivierte Datensätze im Portal
+            anzeigen" ausgewählt ist.
+        } @else {
+            <p class="comment-field">
+                Wählen Sie ein Datum aus, um alle Verfahren zu archivieren,
+                deren Entscheidungsdatum vor oder an diesem Datum liegt.
+            </p>
+
+            <div class="flex-row gap-12">
+                <mat-form-field appearance="outline" class="white-bg">
+                    <mat-label>Datum auswählen</mat-label>
+                    <input
+                        matInput
+                        [matDatepicker]="picker"
+                        [formControl]="dateControl"
+                    />
+                    <mat-datepicker-toggle
+                        matIconSuffix
+                        [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-hint>{{ numOfDatasetsHint() }}</mat-hint>
+                </mat-form-field>
+
+                <button
+                    mat-flat-button
+                    color="primary"
+                    (click)="archiveNow()"
+                    [disabled]="!dateControl.valid"
+                >
+                    Jetzt archivieren
+                </button>
+            </div>
+
+            <div class="border flex-col gap-12">
+                <div>
+                    <span class="section-title">Hinweis:</span> Das folgende
+                    konfigurierte Verhalten wird angewendet:
+                </div>
+                <div class="explanation" [innerHTML]="explanation()"></div>
+            </div>
+
+            @if (status() != null) {
+                <div class="status">
+                    <div>
+                        Start:
+                        {{ status().startTime | date: "dd.LL.yyyy HH:mm:ss" }}
+                    </div>
+                    <div>
+                        &nbsp;Ende:
+                        {{ status().endTime | date: "dd.LL.yyyy HH:mm:ss" }}
+                    </div>
+                    <div>Archivierte Verfahren: {{ status().progress }}</div>
+                    @if (status().errors?.length > 0) {
+                        <div>
+                            Fehler:
+                            <span data-cy="count-errors">{{
+                                status().errors.length
+                            }}</span>
+                            <ul>
+                                @for (error of status().errors; track error) {
+                                    <li>{{ error }}</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</page-template-no-header>

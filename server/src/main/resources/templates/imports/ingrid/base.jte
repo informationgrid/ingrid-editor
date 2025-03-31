@@ -205,3 +205,11 @@
     }@if (!fileReference.isLast()),@endif
 @endfor
 ],
+!{var publication = model.getPublication();}
+@if(publication != null)
+"publication": {
+    "doi": "${publication.getDoi()}",
+    "generalResourceType": @template.imports.ingrid.partial.key-value(item = publication.getGeneralResourceType()),
+    "resourceType": @template.imports.ingrid.partial.key-value(item = publication.getResourceType())
+},
+@endif

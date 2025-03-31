@@ -32,7 +32,7 @@ import { AuthenticationFactory } from "./security/auth.factory";
 import { Router } from "@angular/router";
 import { Catalog } from "./+catalog/services/catalog.model";
 import { firstValueFrom } from "rxjs";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { ProfileService } from "./services/profile.service";
 import { catchError, filter, map, switchMap, take } from "rxjs/operators";
 import { ProfileMapper } from "../profiles/profile.mapper";

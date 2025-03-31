@@ -100,8 +100,17 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<User> {
         // user login must be lowercase
         validateLoginName(user)
-
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        // check if principal is allowed to use admin role for this user
+        if (!authUtils.isAdmin(principal) && isAdminRole(user.role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
+        // check if user has permission to all groups of the new user
+        if (user.groups.all { catalogService.hasRightsForGroup(principal, groupService.get(catalogId, it) ?: return@all false) } != true) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
 
         val userExists = keycloakService.userExists(user.login)
         if (userExists && newExternalUser) {
@@ -284,26 +293,21 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
+        // check if principal is allowed to use admin role for this user
+        if (!authUtils.isAdmin(principal) && isAdminRole(user.role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        // check if user has permission to all groups of the new user
+        if (user.groups.all { catalogService.hasRightsForGroup(principal, groupService.get(catalogId, it) ?: return@all false) } != true) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
 
         keycloakService.updateUser(user)
         catalogService.updateUser(catalogId, user)
         return ResponseEntity.ok(getSingleUser(principal, user.login))
-    }
-
-    override fun updateCurrentUser(principal: Principal, user: User): ResponseEntity<Void> {
-        // TODO set access rights so users can update their own info, but nothing else. especially not other users.
-        val userId = authUtils.getUsernameFromPrincipal(principal)
-        val kcUser = keycloakService.getUser(userId)
-
-        user.apply {
-            login = userId
-            firstName = user.firstName.ifBlank { kcUser.firstName }
-            lastName = user.lastName.ifBlank { kcUser.lastName }
-            email = user.email.ifBlank { kcUser.email }
-        }
-        keycloakService.updateUser(user)
-        return ResponseEntity.ok().build()
     }
 
     override fun currentUserInfo(principal: Principal): ResponseEntity<ServerUserInfo> {

@@ -31,7 +31,7 @@ import { MatButton } from "@angular/material/button";
 import { NgTemplateOutlet } from "@angular/common";
 import { MatTooltip } from "@angular/material/tooltip";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MatIcon } from "@angular/material/icon";
 
 export interface AddButtonOptions {

@@ -37,8 +37,8 @@ import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.utils.AuthUtils
 import de.ingrid.igeserver.utils.FileUploadHandler
+import de.ingrid.igeserver.utils.ifFalse
 import org.apache.logging.log4j.kotlin.logger
-import org.jetbrains.kotlin.utils.addToStdlib.ifFalse
 import org.springframework.http.HttpHeaders.CONTENT_DISPOSITION
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -117,7 +117,7 @@ class CatalogApiController(
         }
     }
 
-    @AuditLog(action = "create_catalog")
+    @AuditLog(category = "catalogs", action = "create_catalog")
     override fun createCatalog(settings: Catalog): ResponseEntity<Catalog> {
         if (catalogService.catalogWithNameExists(settings.name)) throw ConflictException.withReason("Catalog '${settings.name}' already exists")
         val catalog = catalogService.createCatalog(settings)
@@ -127,13 +127,13 @@ class CatalogApiController(
         return ResponseEntity.ok().body(catalog)
     }
 
-    @AuditLog(action = "update_catalog")
+    @AuditLog(category = "catalogs", action = "update_catalog")
     override fun updateCatalog(name: String, settings: Catalog): ResponseEntity<Void> {
         catalogService.updateCatalog(settings)
         return ResponseEntity.ok().build()
     }
 
-    @AuditLog(action = "delete_catalog")
+    @AuditLog(category = "catalogs", action = "delete_catalog")
     override fun deleteCatalog(name: String): ResponseEntity<Void> {
         catalogService.removeCatalog(name)
         return ResponseEntity.ok().build()

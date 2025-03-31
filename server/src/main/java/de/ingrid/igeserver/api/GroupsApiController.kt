@@ -58,6 +58,8 @@ class GroupsApiController(
     }
 
     override fun deleteGroup(principal: Principal, id: Int): ResponseEntity<Void> {
+        if (!hasAccessToGroup(principal, id)) return ResponseEntity(HttpStatus.FORBIDDEN)
+
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isCatAdmin = authUtils.isAdmin(principal)
         // user is not allowed to delete groups he is a member of except for cat admin
@@ -72,7 +74,7 @@ class GroupsApiController(
 
         return when (val group = groupService.get(catalogId, id)) {
             null -> ResponseEntity.notFound().build()
-            else -> ResponseEntity.ok(FrontendGroup(group, userBelongsToGroup(principal, id)))
+            else -> if (hasAccessToGroup(principal, id)) ResponseEntity.ok(FrontendGroup(group, userBelongsToGroup(principal, id))) else ResponseEntity(HttpStatus.FORBIDDEN)
         }
     }
 
@@ -125,6 +127,8 @@ class GroupsApiController(
     }
 
     override fun updateGroup(principal: Principal, id: Int, group: Group): ResponseEntity<Group> {
+        if (!hasAccessToGroup(principal, id)) return ResponseEntity(HttpStatus.FORBIDDEN)
+
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isCatAdmin = authUtils.isAdmin(principal)
         // user is not allowed to edit groups he is a member of except for cat admin
@@ -147,6 +151,8 @@ class GroupsApiController(
     }
 
     override fun getUsersOfGroup(principal: Principal, id: Int): ResponseEntity<List<UserResponse>> {
+        if (!hasAccessToGroup(principal, id)) return ResponseEntity(HttpStatus.FORBIDDEN)
+
         val users = groupService.getUsersOfGroup(id, principal)
         val editableUsernames = catalogService.filterEditableUsers(principal, users.map { it.login })
         return ResponseEntity.ok(
@@ -160,7 +166,7 @@ class GroupsApiController(
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         return when (val manager = groupService.get(catalogId, id)?.manager) {
             null -> ResponseEntity.notFound().build()
-            else -> ResponseEntity.ok(User(manager.userId))
+            else -> if (hasAccessToGroup(principal, id)) ResponseEntity.ok(User(manager.userId)) else ResponseEntity(HttpStatus.FORBIDDEN)
         }
     }
 
@@ -170,9 +176,18 @@ class GroupsApiController(
         val newManager = catalogService.getUser(userId)
         if (group != null && newManager != null) {
             group.manager = newManager
-            return ResponseEntity.ok(groupService.update(catalogId, id, group, false))
+            return if (hasAccessToGroup(principal, id)) ResponseEntity.ok(groupService.update(catalogId, id, group, false)) else ResponseEntity(HttpStatus.FORBIDDEN)
         } else {
             return ResponseEntity.notFound().build()
         }
+    }
+
+    private fun hasAccessToGroup(
+        principal: Principal,
+        groupId: Int,
+    ): Boolean {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val group = groupService.get(catalogId, groupId) ?: return false
+        return igeAclService.hasRightsForGroup(principal as Authentication, group)
     }
 }

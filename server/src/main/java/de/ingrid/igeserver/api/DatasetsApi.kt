@@ -54,7 +54,8 @@ interface DatasetsApi {
             ApiResponse(
                 responseCode = "200",
                 description = "The stored dataset, which might contain additional storage information.",
-            ), ApiResponse(responseCode = "500", description = "Unexpected error"),
+            ),
+            ApiResponse(responseCode = "500", description = "Unexpected error"),
         ],
     )
     fun createDataset(
@@ -77,7 +78,8 @@ interface DatasetsApi {
             ApiResponse(
                 responseCode = "200",
                 description = "The stored dataset, which might contain additional storage information.",
-            ), ApiResponse(responseCode = "200", description = "Unexpected error"),
+            ),
+            ApiResponse(responseCode = "200", description = "Unexpected error"),
         ],
     )
     fun updateDataset(
@@ -104,6 +106,8 @@ interface DatasetsApi {
             value = "revert",
             required = false,
         ) revert: Boolean,
+        @RequestParam(value = "archive", required = false) archive: Boolean,
+        @RequestParam(value = "unarchive", required = false) unarchive: Boolean,
         @Parameter(description = "Document version") @RequestParam(
             value = "version",
             required = false,
@@ -126,7 +130,8 @@ interface DatasetsApi {
     @Operation(description = "Deletes a dataset")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "204"), ApiResponse(
+            ApiResponse(responseCode = "204"),
+            ApiResponse(
                 responseCode = "500",
                 description = "Unexpected error",
             ),
@@ -167,7 +172,8 @@ interface DatasetsApi {
             ApiResponse(
                 responseCode = "200",
                 description = "The dataset with the given ID.",
-            ), ApiResponse(responseCode = "500", description = "Unexpected error"),
+            ),
+            ApiResponse(responseCode = "500", description = "Unexpected error"),
         ],
     )
     @RequestMapping(
@@ -190,7 +196,8 @@ interface DatasetsApi {
             ApiResponse(
                 responseCode = "200",
                 description = "The dataset with the given ID.",
-            ), ApiResponse(responseCode = "500", description = "Unexpected error"),
+            ),
+            ApiResponse(responseCode = "500", description = "Unexpected error"),
         ],
     )
     @RequestMapping(
@@ -248,7 +255,10 @@ interface DatasetsApi {
     ): ResponseEntity<DatasetsApiController.UserAccessResponse>
 
     @Operation(description = "Set the responsible user for a dataset")
-    @PostMapping(value = ["/datasets/{datasetId}/responsibleUser/{userId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(
+        value = ["/datasets/{datasetId}/responsibleUser/{userId}"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+    )
     fun setResponsibleUser(
         principal: Principal,
         @PathVariable datasetId: Int,

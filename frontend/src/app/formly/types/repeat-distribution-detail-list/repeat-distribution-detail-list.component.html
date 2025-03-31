@@ -97,6 +97,7 @@
                                         (showMore[i] ? 'Schließen' : 'Öffnen') +
                                         ' Details des Ressource'
                                     "
+                                    data-cy="toggle-details"
                                 >
                                     <mat-icon class="animated"
                                         >keyboard_arrow_down
@@ -114,6 +115,7 @@
                                     (keydown)="$event.stopPropagation()"
                                     matTooltip="Bearbeiten"
                                     aria-label="Ressource bearbeiten"
+                                    data-cy="show-actions"
                                 >
                                     <mat-icon svgIcon="Mehr"></mat-icon>
                                     <mat-menu #menu>
