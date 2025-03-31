@@ -1,5 +1,17 @@
 # Changelog
 
+## 7.5.1 (31.03.2025)
+
+### Features
+
+* Archivierung für Metadaten-Administratoren deaktivieren (#7520)
+
+### Bugfixes
+
+* Archivierung - Katalogeinstellung (#7516)
+* Archivierung von Verfahren (#7515)
+* Fehlende Anzeige des Veröffentlichungsrecht in der Suche (#7509)
+    
 ## 7.5.0 (21.03.2025)
 
 ### Features
