@@ -55,7 +55,7 @@ class UvpArchiveTask(
 
         val message = ArchiveMessage(catalogId)
         notify.sendMessage(
-            message.apply { this.message = "Start Indexing for catalog: $catalogId" },
+            message.apply { this.message = "Start archiving for catalog: $catalogId" },
         )
 
         // get all docs whose decision date is before a given date
