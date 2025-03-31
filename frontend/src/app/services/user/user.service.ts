@@ -35,7 +35,7 @@ import { Group } from "../../models/user-group";
 // @ts-ignore
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
 import { GroupStore } from "../../store/group/group.store";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 
 @Injectable({
   providedIn: "root",

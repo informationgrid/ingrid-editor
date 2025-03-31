@@ -23,7 +23,7 @@ import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw-skdv-ok/doctypes/geo-
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
 import { ConfigService } from "../app/services/config/config.service";
 import { FormMenuService } from "../app/+form/form-menu.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 
 @Component({
   template: "",

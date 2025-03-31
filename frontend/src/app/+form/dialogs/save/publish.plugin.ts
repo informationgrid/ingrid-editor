@@ -40,6 +40,7 @@ import { DocumentAbstract } from "../../../store/document/document.model";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 import { FormMenuService } from "../../form-menu.service";
+import { DocumentService } from "../../../services/document/document.service";
 
 @Injectable()
 export class PublishPlugin extends SaveBase {
