@@ -210,13 +210,27 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
           allData: any[],
           item: any,
           isNew: boolean,
-          _index: number,
+          currentIndex: number,
         ) => {
+          if (!isNew) {
+            if (
+              (item.group.key !== null &&
+                item.group.key === allData[currentIndex].group.key) ||
+              (item.group.value !== null &&
+                item.group.value === allData[currentIndex].group.value)
+            ) {
+              allData.splice(currentIndex, 1, item);
+              return;
+            } else {
+              allData.splice(currentIndex, 1);
+            }
+          }
+
           const index = this.findLastWithItem(allData, item.group);
           if (index === undefined) {
             allData.push(item);
           } else {
-            allData.splice(index, isNew ? 0 : 1, item);
+            allData.splice(index, 0, item);
           }
         },
       }),
