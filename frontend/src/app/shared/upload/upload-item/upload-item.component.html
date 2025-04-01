@@ -1,14 +1,21 @@
 @let currentFile = file();
 <div class="main">
-    @if (currentFile.transfer.progress < 1) {
-        <mat-spinner diameter="24"></mat-spinner>
-    }
-    @if (currentFile.error === null) {
-        <mat-icon class="green" svgIcon="baseline-check-24px"></mat-icon>
-    }
-    @if (currentFile.error) {
-        <mat-icon class="error-color">error_outline</mat-icon>
-    }
+    <div>
+        @if (currentFile.transfer.progress < 1) {
+            <mat-spinner diameter="24"></mat-spinner>
+        } @else {
+            @if (currentFile.error === null) {
+                <mat-icon
+                    class="green"
+                    svgIcon="baseline-check-24px"
+                ></mat-icon>
+            }
+            @if (currentFile.error) {
+                <mat-icon class="error-color">error_outline</mat-icon>
+            }
+        }
+    </div>
+
     <div>
         <div>{{ currentFile.transfer.name }}</div>
         <div class="comment">
@@ -28,7 +35,7 @@
         }
     </div>
 
-    <div class="flex-1"></div>
+    <!--    <div class="flex-1"></div>-->
 
     @if (!showOnlyProgress()) {
         @if (currentFile.transfer.complete) {
