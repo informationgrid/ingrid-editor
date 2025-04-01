@@ -1546,7 +1546,7 @@ export abstract class IngridShared extends BaseDoctype {
         infoText:
           "Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten.",
         jsonTemplate: {
-          format: { key: null },
+          format: null,
           title: "",
           description: "",
         },
@@ -1608,7 +1608,7 @@ export abstract class IngridShared extends BaseDoctype {
                 return true;
               }
               return ctrl.value?.every(
-                (entry: any) => entry?.format?.key || entry?.format.value,
+                (entry: any) => entry?.format?.key || entry?.format?.value,
               );
             },
             message:
