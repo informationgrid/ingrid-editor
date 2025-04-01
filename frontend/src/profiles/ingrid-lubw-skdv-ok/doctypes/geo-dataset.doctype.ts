@@ -97,6 +97,13 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
         message:
           "Bei personenbezogenen Daten muss der Wert 'aufgrund der Vertraulichkeit personenbezogener Daten' vorhanden sein",
       },
+      noPersonalDataLink: {
+        expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
+          field.form.value.personalData ||
+          ctrl.value?.every((item) => item.key !== "7"),
+        message:
+          "Bei keinen personenbezogenen Daten darf der Wert 'aufgrund der Vertraulichkeit personenbezogener Daten' nicht verwendet werden",
+      },
       ifNoneThenSingle: {
         expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
           !ctrl.value?.some((item) => item.key === "1") ||
