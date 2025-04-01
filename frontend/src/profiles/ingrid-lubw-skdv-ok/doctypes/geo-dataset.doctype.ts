@@ -159,6 +159,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
       this.addTable("objectAttributes", "Sachattribute", {
         supportUpload: false,
         allowDuplicate: true,
+        duplicatePostfixField: "designation",
         dialog: ObjectAttributesDialogComponent,
         columns: [
           {

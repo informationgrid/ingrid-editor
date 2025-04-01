@@ -25,6 +25,7 @@ import { Component, inject } from "@angular/core";
 import { TranslocoService } from "@jsverse/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
+import { TableProps } from "../app/formly/types/table/table-type.component";
 
 export interface FieldConfigPosition {
   fieldConfig: FormlyFieldConfig[];
@@ -143,21 +144,7 @@ export interface SelectOptions extends Options {
   useFirstValueInitially?: boolean;
 }
 
-export interface TableOptions extends Options {
-  columns?: any[];
-  batchValidUntil?: string;
-  validators?: any;
-  supportUpload?: boolean;
-  dialog?: any;
-  batchActions?: any[];
-  allowDuplicate?: boolean;
-  customAddFn?: (
-    allData: any[],
-    item: any,
-    isNew: boolean,
-    index: number,
-  ) => void;
-}
+export interface TableOptions extends Options, TableProps {}
 
 export interface CheckboxOptions extends Options {
   fieldLabel?: string;
@@ -732,6 +719,7 @@ export class FormFieldHelper {
         batchActions: options?.batchActions ?? [],
         allowDuplicate: options?.allowDuplicate,
         customAddFn: options?.customAddFn,
+        duplicatePostfixField: options?.duplicatePostfixField,
       },
       validators: options?.validators,
       expressions: expressions,

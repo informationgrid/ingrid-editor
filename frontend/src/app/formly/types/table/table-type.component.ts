@@ -80,9 +80,9 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 
 export interface TableProps {
-  hidden: boolean;
+  hidden?: boolean;
   columns: any[];
-  externalLabel: string;
+  externalLabel?: string;
   dialog?: any;
   supportUpload?: boolean;
   hasContextHelp?: boolean;
@@ -97,6 +97,7 @@ export interface TableProps {
     isNew: boolean,
     index: number,
   ) => void;
+  duplicatePostfixField?: string;
 }
 
 @UntilDestroy()
@@ -497,6 +498,26 @@ export class TableTypeComponent
   }
 
   duplicateRow(rowIndex: number) {
-    this.handleItemUpdate(this.formControl.value[rowIndex], true, rowIndex);
+    const value = { ...this.formControl.value[rowIndex] };
+    if (this.props.duplicatePostfixField) {
+      value[this.props.duplicatePostfixField] = this.appendTextWithIndex(
+        this.formControl.value,
+        value[this.props.duplicatePostfixField],
+        this.props.duplicatePostfixField,
+      );
+    }
+    this.handleItemUpdate(value, true, rowIndex);
+  }
+
+  appendTextWithIndex(data: any[], appendedText: string, key: string): string {
+    let index = 1;
+    const text = appendedText;
+
+    while (data.some((item) => item[key] === appendedText)) {
+      appendedText = `${text} - Kopie ${index}`;
+      index++;
+    }
+
+    return appendedText;
   }
 }
