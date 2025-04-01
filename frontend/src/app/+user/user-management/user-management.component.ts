@@ -17,18 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, HostListener, OnInit } from "@angular/core";
+import { Component, HostListener, inject, OnInit } from "@angular/core";
 import { UserComponent } from "../user/user.component";
 import { GroupComponent } from "../group/group.component";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from "@angular/router";
-import { SessionService, TabPage } from "../../services/session.service";
+import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
+import { TabPage } from "../../services/session.service";
 import { GroupService } from "../../services/role/group.service";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 import { TabContainerComponent } from "../../+research/tab-container.component";
@@ -47,21 +41,15 @@ import { TabContainerComponent } from "../../+research/tab-container.component";
     RouterOutlet,
   ],
 })
-export class UserManagementComponent
-  extends TabContainerComponent
-  implements OnInit
-{
+export class UserManagementComponent extends TabContainerComponent {
+  private groupService = inject(GroupService);
   tabPage: TabPage = "manage";
 
   currentComponent: UserComponent | GroupComponent;
 
-  constructor(
-    protected router: Router,
-    protected sessionService: SessionService,
-    protected activeRoute: ActivatedRoute,
-    private groupService: GroupService,
-  ) {
-    super(router, sessionService, activeRoute);
+  constructor() {
+    super();
+    this.groupService.getGroups();
   }
 
   @HostListener("window:beforeunload", ["$event"])
@@ -69,11 +57,7 @@ export class UserManagementComponent
     return !this.currentComponent?.form?.dirty;
   }
 
-  onActivate(componentRef) {
+  onActivate(componentRef: any) {
     this.currentComponent = componentRef;
-  }
-
-  ngOnInit(): void {
-    this.groupService.getGroups();
   }
 }
