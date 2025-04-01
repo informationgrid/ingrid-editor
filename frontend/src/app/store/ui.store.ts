@@ -29,11 +29,13 @@ export type UiState = {
   showJSONView?: boolean;
   userTableWidth?: number;
   toggleFieldsButtonShowAll?: boolean;
-  currentTab: {
+  currentSubpage: {
     research: string;
     manage: string;
     importExport: string;
     catalogs: string;
+    form: { id: string };
+    address: { id: string };
   };
 };
 
@@ -47,11 +49,13 @@ const initialState: UiState = {
   showJSONView: false,
   userTableWidth: 35,
   toggleFieldsButtonShowAll: false,
-  currentTab: {
+  currentSubpage: {
     research: null,
     manage: null,
     importExport: null,
     catalogs: null,
+    form: null,
+    address: null,
   },
 };
 
@@ -88,10 +92,10 @@ export const UiStore = signalStore(
     setSidebarExpanded(value: boolean) {
       patchState(store, { sidebarExpanded: value });
     },
-    updateCurrentTab(value: any) {
+    updateCurrentSubpage(value: any) {
       patchState(store, (state) => ({
-        currentTab: {
-          ...state.currentTab,
+        currentSubpage: {
+          ...state.currentSubpage,
           ...value,
         },
       }));

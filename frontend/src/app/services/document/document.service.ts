@@ -62,6 +62,7 @@ import { isExpired } from "../utils";
 import { GeneralStore } from "../../store/general.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { EntityMap } from "@ngrx/signals/entities";
+import { UiStore } from "../../store/ui.store";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -77,6 +78,7 @@ export class DocumentService {
   static archivePluginActive = false;
 
   private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
   private addressTreeStore = inject(AddressTreeStore);
   private documentTreeStore = inject(TreeStore);
   // TODO: check usefulness
@@ -338,8 +340,14 @@ export class DocumentService {
     if (!keepOpenedDocument) {
       if (address) {
         this.generalStore.setOpenedAddress(doc);
+        this.uiStore.updateCurrentSubpage({
+          address: doc?._uuid ? { id: doc._uuid } : null,
+        });
       } else {
         this.generalStore.setOpenedDocument(doc);
+        this.uiStore.updateCurrentSubpage({
+          form: doc?._uuid ? { id: doc._uuid } : null,
+        });
       }
     }
   }

@@ -50,6 +50,6 @@ export abstract class TabContainerComponent {
 
   updateTab(index: number) {
     const tabPaths = this.sessionService.getTabPaths(this.activeRoute.snapshot);
-    this.sessionService.updateCurrentTab(this.tabPage, tabPaths[index]);
+    this.sessionService.updateCurrentSubpage(this.tabPage, tabPaths[index]);
   }
 }
