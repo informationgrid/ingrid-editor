@@ -42,6 +42,9 @@
         },
         "useConstraintsBkgSource": {
           "type": ["null", "string"]
+        },
+        "accessConstraintsBkgComment": {
+          "type": ["null", "string"]
         }
       }
     }
