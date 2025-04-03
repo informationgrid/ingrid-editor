@@ -407,7 +407,7 @@ class CatalogService(
         // catalog and super admins have access to every user
         if (authUtils.isAdmin(principal)) return usernames
         // non admins can not edit any users
-        if (!authUtils.isAdmin(principal) && !authUtils.containsRole(principal, "md-admin")) return emptyList()
+        if (!authUtils.containsRole(principal, "md-admin")) return emptyList()
         val groupAccessCache = mutableMapOf<Int, Boolean>()
 
         return usernames.filter { username ->
