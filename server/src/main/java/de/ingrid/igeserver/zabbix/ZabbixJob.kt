@@ -25,12 +25,10 @@ import de.ingrid.igeserver.tasks.quartz.IgeJob
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
-import org.quartz.PersistJobDataAfterExecution
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
-@PersistJobDataAfterExecution
 @Profile("zabbix")
 class ZabbixJob(
     val zabbixService: ZabbixService,
