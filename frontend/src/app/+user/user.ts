@@ -74,6 +74,7 @@ export class Permissions {
 
 export class TreePermission {
   id: number;
+  uuid: string;
   title: string;
   isFolder: boolean;
   hasWritePermission: boolean;

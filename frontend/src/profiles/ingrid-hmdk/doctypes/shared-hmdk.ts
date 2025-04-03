@@ -137,7 +137,7 @@ export class SharedHmdk {
     const cookieId = "HIDE_HMBTG_INFO";
     const id = this.formStateService.metadata().wrapperId;
 
-    function executeAction(that: any) {
+    function executeAction(that: SharedHmdk) {
       // if inspire set access constraint "keine" else empty
       field.form
         .get("resource.accessConstraints")
@@ -158,7 +158,7 @@ export class SharedHmdk {
       // by ngx-formly, because we update a repeat-component!
       field.options.formState.updateModel();
 
-      that.tagsService.addTags(id, "internet", false).subscribe();
+      that.tagsService.addTags(id, ["internet"], false).subscribe();
     }
 
     if (doc.cookieService.getCookie(cookieId) === "true") {

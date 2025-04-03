@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -17,27 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
+package de.ingrid.igeserver.utils
 
-import { BreadcrumbComponent } from "./breadcrumb.component";
+fun String.prefixIfNot(prefix: String) = if (this.startsWith(prefix)) this else "$prefix$this"
 
-describe("BreadcrumbComponent", () => {
-  let component: BreadcrumbComponent;
-  let fixture: ComponentFixture<BreadcrumbComponent>;
+fun String.suffixIfNot(suffix: String) = if (this.endsWith(suffix)) this else "$this$suffix"
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [BreadcrumbComponent],
-    }).compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(BreadcrumbComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it("should create", () => {
-    expect(component).toBeTruthy();
-  });
-});
+inline fun <T> Boolean.ifFalse(body: () -> T?): T? = if (!this) body() else null

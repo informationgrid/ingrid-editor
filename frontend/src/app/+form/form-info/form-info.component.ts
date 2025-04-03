@@ -81,6 +81,8 @@ export class FormInfoComponent implements OnInit {
 
   private hideUnarchiveForAuthors: boolean =
     this.archivePlugin.data?.hideForAuthors ?? false;
+  private hideUnarchiveForMdAdmins: boolean =
+    this.archivePlugin.data?.hideForMdAdmins ?? false;
 
   path = computed<ShortTreeNode[]>(() => {
     if (this.forAddress()) {
@@ -95,8 +97,10 @@ export class FormInfoComponent implements OnInit {
 
   canRemoveFromArchive = computed(() => {
     const isArchived = DocumentService.isDocumentArchived(this.metadata().tags);
-    const canUnarchive =
-      !this.hideUnarchiveForAuthors || !this.configService.isAuthor();
+    const canUnarchive = !(
+      (this.hideUnarchiveForAuthors && this.configService.isAuthor()) ||
+      (this.hideUnarchiveForMdAdmins && this.configService.isMdAdmin())
+    );
     return isArchived && canUnarchive;
   });
 

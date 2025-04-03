@@ -26,7 +26,7 @@ import { MatIcon } from "@angular/material/icon";
 
 export interface PublicationTypeDialogOptions {
   options: { key: string; value: string }[];
-  current: string;
+  current: string[];
   title: string;
   helpText: string;
 }
@@ -55,10 +55,9 @@ export class PublicationTypeDialog {
     private dlgRef: MatDialogRef<string>,
   ) {
     this.currentValue =
-      value.current
-        .split(",")
-        .find((item) => this.options.find((option) => option.key === item)) ??
-      "internet";
+      value.current.find((item) =>
+        this.options.find((option) => option.key === item),
+      ) ?? "internet";
     if (value.title) this.title = value.title;
     if (value.helpText) this.helpText = value.helpText;
   }

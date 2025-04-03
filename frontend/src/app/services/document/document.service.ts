@@ -62,6 +62,7 @@ import { isExpired } from "../utils";
 import { GeneralStore } from "../../store/general.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { EntityMap } from "@ngrx/signals/entities";
+import { UiStore } from "../../store/ui.store";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -77,6 +78,7 @@ export class DocumentService {
   static archivePluginActive = false;
 
   private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
   private addressTreeStore = inject(AddressTreeStore);
   private documentTreeStore = inject(TreeStore);
   // TODO: check usefulness
@@ -96,10 +98,9 @@ export class DocumentService {
     );
   }
 
-  static isDocumentArchived(docTags: string): boolean {
+  static isDocumentArchived(docTags: string[]): boolean {
     return (
-      DocumentService.archivePluginActive &&
-      docTags.split(",").indexOf("archived") !== -1
+      DocumentService.archivePluginActive && docTags.indexOf("archived") !== -1
     );
   }
 
@@ -339,8 +340,14 @@ export class DocumentService {
     if (!keepOpenedDocument) {
       if (address) {
         this.generalStore.setOpenedAddress(doc);
+        this.uiStore.updateCurrentSubpage({
+          address: doc?._uuid ? { id: doc._uuid } : null,
+        });
       } else {
         this.generalStore.setOpenedDocument(doc);
+        this.uiStore.updateCurrentSubpage({
+          form: doc?._uuid ? { id: doc._uuid } : null,
+        });
       }
     }
   }
@@ -374,8 +381,8 @@ export class DocumentService {
 
     return this.dataService.updateTags(id, data).pipe(
       tap((newTags: string[]) => {
-        store.update(id, {
-          _tags: newTags?.join(","),
+        store.update(id, <DocumentAbstract>{
+          _tags: newTags,
         });
         const info = store.entityMap()[id];
         this.generalStore.setDatasetsChanged(
@@ -885,7 +892,7 @@ export class DocumentService {
         _modified: doc.metadata.modified,
         _contentModified: doc.metadata.contentModified,
         _pendingDate: doc.metadata.pendingDate,
-        _tags: doc.metadata.tags,
+        _tags: doc.metadata.tags, //.filter(),
         hasWritePermission: doc.metadata.hasWritePermission ?? false,
         hasOnlySubtreeWritePermission:
           doc.metadata.hasOnlySubtreeWritePermission ?? false,

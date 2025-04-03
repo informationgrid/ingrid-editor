@@ -34,8 +34,9 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../app/dialogs/confirm/confirm-dialog.component";
-import { BehaviourService } from "../../../app/services/behavior/behaviour.service";
 import { DocumentService } from "../../../app/services/document/document.service";
+import { ConfigService } from "../../../app/services/config/config.service";
+import { DocumentAbstract } from "../../../app/store/document/document.model";
 
 @Injectable({ providedIn: "root" })
 export class UvpArchiveBehaviour extends Plugin {
@@ -43,8 +44,6 @@ export class UvpArchiveBehaviour extends Plugin {
   private formToolbarService = inject(FormToolbarService);
   private docEvents = inject(DocEventsService);
   private dialog = inject(MatDialog);
-  // private archivePluginActive =
-  //   inject(BehaviourService).getBehaviour("plugin.archive").isActive;
 
   id = "plugin.uvp.archive";
   name = "UVP Archivierung";
@@ -59,6 +58,7 @@ export class UvpArchiveBehaviour extends Plugin {
   hide = false;
 
   private catalogRouteService = inject(CatalogRoutesService);
+  private configService = inject(ConfigService);
 
   private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);
@@ -79,11 +79,11 @@ export class UvpArchiveBehaviour extends Plugin {
 
     this.formToolbarService.setToolbarButtonEnabledFn(
       "toolBtnRemove",
-      (docs) => {
-        return docs.every(
-          (doc) => !doc._tags?.split(",")?.includes("archived"),
-        );
-      },
+      this.disableForAuthorsAndArchivedDocument(),
+    );
+    this.formToolbarService.setToolbarButtonEnabledFn(
+      "toolBtnCopy.copy",
+      this.disableForAuthorsAndArchivedDocument(),
     );
     this.setPluginConfig();
 
@@ -91,6 +91,15 @@ export class UvpArchiveBehaviour extends Plugin {
       if (!this.formRegistered()) return;
       this.toggleUpdateArchiveButton();
     });
+  }
+
+  private disableForAuthorsAndArchivedDocument() {
+    return (docs: DocumentAbstract[]) => {
+      return docs.every(
+        (doc) =>
+          !this.configService.isAuthor() || !doc._tags?.includes("archived"),
+      );
+    };
   }
 
   register() {
@@ -216,7 +225,7 @@ export class UvpArchiveBehaviour extends Plugin {
     ) as ToolbarItem;
     const isArchivedDocs = this.activeNodes()
       .map((item) => this.getStore().entityMap()[item])
-      .map((doc) => doc?._tags?.split(",")?.includes("archived"));
+      .map((doc) => doc?._tags?.includes("archived"));
 
     if (isArchivedDocs.length === 1 && isArchivedDocs[0] === true) {
       if (!this.formToolbarService.getButtonById("toolBtnUpdateArchive")) {

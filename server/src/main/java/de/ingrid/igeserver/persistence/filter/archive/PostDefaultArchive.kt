@@ -22,7 +22,6 @@ package de.ingrid.igeserver.persistence.filter.archive
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PostArchivePayload
-import de.ingrid.igeserver.profiles.uvp.exporter.model.DataModel.Companion.behaviourService
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.tasks.IndexingTask
@@ -36,7 +35,10 @@ class PostDefaultArchive(private val behaviourService: BehaviourService, private
     override val profiles = emptyArray<String>()
 
     override fun invoke(payload: PostArchivePayload, context: Context): PostArchivePayload {
-        val showInPortal = behaviourService.get(context.catalogId, "plugin.archive")?.data?.get("showInPortal") as? Boolean == true
+        if (payload.publishedDoc == null) return payload
+
+        val showInPortal =
+            behaviourService.get(context.catalogId, "plugin.archive")?.data?.get("showInPortal") as? Boolean == true
 
         if (showInPortal) {
             indexingTask.updateDocument(context.catalogId, DocumentCategory.DATA, payload.publishedDoc.uuid)

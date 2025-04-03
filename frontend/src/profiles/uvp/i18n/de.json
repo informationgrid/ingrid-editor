@@ -32,7 +32,7 @@
     "formWithPronoun": "Dieses Vorhaben"
   },
   "archive": {
-    "message": "Das Vorhaben ist danach nur eingeschränkt bearbeitbar. Je nach Konfiguration des Katalogs, werden die Dokumente des Verfahrens für die Anzeige im Portal entfernt. Dies geschieht durch das Setzen des 'gültig bis'-Datums. Ein archiviertes Vorhaben kann aus dem Archiv wieder zurückgeholt werden. Dies kann unter Umständen nur durch einen Administrator geschehen."
+    "message": "Wollen Sie den Datensatz wirklich archivieren? Je nach Konfiguration des Katalogs werden die Dokumente des Verfahrens oder das gesamte Verfahren dann nicht mehr im öffentlich zugänglichen Bereich des Portals angezeigt. Das Vorhaben ist nach Archivierung nur eingeschränkt bearbeitbar. Ein archiviertes Vorhaben kann wieder aus dem Archiv zurückgeholt werden. Dies kann unter Umständen nur durch einen Administrator erfolgen.<p>Die Archivierung eines Verfahrens im UVP-Portal entbindet nicht von der ordnungsgemäßen Veraktung des Verfahrens und kann diese auch nicht ersetzen.</p>"
   },
   "docType": {
     "UvpSpatialPlanningProcedureDoc": "Raumordnungsverfahren",

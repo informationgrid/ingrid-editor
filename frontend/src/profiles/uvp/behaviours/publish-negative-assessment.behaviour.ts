@@ -128,7 +128,7 @@ export class PublishNegativeAssessmentBehaviour extends Plugin {
               value: "Nicht veröffentlichen",
             },
           ],
-          current: doc._tags ?? "",
+          current: doc._tags,
           title:
             "Veröffentlichung der negativen Vorprüfung im UVP-Portal steuern.",
           helpText: `

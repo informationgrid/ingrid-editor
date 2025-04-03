@@ -38,6 +38,8 @@ class UVPPostArchive(
     override val profiles = arrayOf("uvp")
 
     override fun invoke(payload: PostArchivePayload, context: Context): PostArchivePayload {
+        if (payload.publishedDoc == null) return payload
+
         val typeString = behaviourService.get(context.catalogId, "plugin.uvp.archive")?.data?.get("uvpArchiveType") as? String
         val type = ArchiveType.valueOf(uvpArchiveService.mapType(typeString))
         val dataset = WrapperAndDocId(payload.wrapperId, payload.publishedDoc.id!!, payload.publishedDoc.type)

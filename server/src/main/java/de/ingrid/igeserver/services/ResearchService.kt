@@ -49,7 +49,7 @@ data class Result(
     @JsonProperty("_category") val category: String?,
     var hasWritePermission: Boolean?,
     var hasOnlySubtreeWritePermission: Boolean?,
-    @JsonProperty("_tags") var tags: String?,
+    @JsonProperty("_tags") var tags: List<String>,
     @JsonProperty("_responsibleUser") val responsibleUser: Any?,
     var additional: Any?,
 )
@@ -300,7 +300,7 @@ class ResearchService(
                     hasWritePermission = isAdmin || permissionInfo.canWrite,
                     hasOnlySubtreeWritePermission = !isAdmin && permissionInfo.canOnlyWriteSubtree,
                     id = itemId,
-                    tags = (item.get("tags") as? Array<*>)?.joinToString(","),
+                    tags = (item.get("tags") as? Array<String>)?.toList() ?: emptyList(),
                     responsibleUser = item.get("responsibleUser"),
                     additional = getAdditionalInfo(item),
                 )

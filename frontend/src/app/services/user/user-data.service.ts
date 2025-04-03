@@ -55,13 +55,6 @@ export class UserDataService {
     );
   }
 
-  saveCurrentUser(user: User): Observable<BackendUser> {
-    return this.http.put<BackendUser>(
-      this.configuration.backendUrl + "users/currentUser",
-      user,
-    );
-  }
-
   createUser(user: User, isNewExternalUser: boolean): Observable<BackendUser> {
     return this.http.post<BackendUser>(
       `${this.configuration.backendUrl}users?newExternalUser=${isNewExternalUser}`,

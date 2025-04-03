@@ -64,6 +64,15 @@ export class ArchivePlugin extends Plugin {
           },
         },
         {
+          key: "hideForMdAdmins",
+          type: "checkbox",
+          wrappers: [],
+          defaultValue: false,
+          props: {
+            label: "Für Metadaten-Administratoren nicht anzeigen",
+          },
+        },
+        {
           key: "showInPortal",
           type: "checkbox",
           wrappers: [],
@@ -99,6 +108,7 @@ export class ArchivePlugin extends Plugin {
     super.registerForm();
 
     if (this.data.hideForAuthors && this.configService.isAuthor()) return;
+    if (this.data.hideForMdAdmins && this.configService.isMdAdmin()) return;
 
     this.formToolbarService.addButton({
       id: "toolBtnArchive",
@@ -116,9 +126,7 @@ export class ArchivePlugin extends Plugin {
           .open(ConfirmDialogComponent, {
             data: <ConfirmDialogData>{
               title: "Archivieren",
-              message:
-                "Wollen Sie den Datensatz wirklich archivieren? " +
-                this.transloco.translate("archive.message"),
+              message: this.transloco.translate("archive.message"),
               confirmButtonText: "Jetzt archivieren",
             },
           })

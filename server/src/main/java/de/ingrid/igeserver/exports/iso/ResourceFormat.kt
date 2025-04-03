@@ -17,27 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
+package de.ingrid.igeserver.exports.iso
 
-import { FormErrorComponent } from "./form-error.component";
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 
-describe("IgeFormErrorComponent", () => {
-  let component: FormErrorComponent;
-  let fixture: ComponentFixture<FormErrorComponent>;
-
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [FormErrorComponent],
-    }).compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(FormErrorComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it("should create", () => {
-    expect(component).toBeTruthy();
-  });
-});
+data class ResourceFormat(
+    @JacksonXmlProperty(localName = "MD_Format") val mdFormat: MDFormat?,
+)

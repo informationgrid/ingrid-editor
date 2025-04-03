@@ -133,7 +133,14 @@ export class CopyCutPastePlugin extends Plugin {
 
       // set state of menu items
       const docs = ids.map((item) => this.getStore().entityMap()[item]);
-      this.toolbarService.setMenuItemStateOfButton("toolBtnCopy", "COPY", true);
+      // if store has not received all updates (e.g. node is nested structure is loaded but children not yet)
+      if (docs.some((item) => item === undefined)) return;
+
+      this.toolbarService.setMenuItemStateOfButton(
+        "toolBtnCopy",
+        "COPY",
+        this.toolbarService.isToolbarButtonEnabled("toolBtnCopy.copy", docs),
+      );
       this.toolbarService.setMenuItemStateOfButton(
         "toolBtnCopy",
         "CUT",

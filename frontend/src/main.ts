@@ -127,6 +127,8 @@ import { UpdateGetCapabilitiesComponent } from "./app/formly/types/update-get-ca
 import { PreviewImageComponent } from "./app/formly/types/preview-image/preview-image.component";
 import { PrintTypeComponent } from "./app/formly/types/print/print-type.component";
 import {
+  DoiPrefixValidator,
+  DoiValidator,
   ElasticsearchAliasValidator,
   EmailValidator,
   IpValidator,
@@ -152,25 +154,6 @@ import { AppInjector } from "./app/app_injector";
 if (environment.production) {
   enableProdMode();
 }
-
-/*
-persistState({
-  include: ["session"],
-  preStorageUpdate: (storeName: string, state: any) => {
-    const { currentTab, toggleFieldsButtonShowAll, ...otherUiState } = state.ui;
-    return {
-      ui: otherUiState,
-      recentAddresses: state.recentAddresses,
-    };
-  },
-  preStoreUpdate(storeName: string, state: any, initialState: any): any {
-    // add initial values for fields that are not persisted
-    if (!state.ui) state.ui = { ...initialState.ui };
-    state.ui.currentTab = initialState.ui.currentTab;
-    return state;
-  },
-});
-*/
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -322,6 +305,8 @@ bootstrapApplication(AppComponent, {
           { name: "notEmptyArray", validation: NotEmptyArrayValidator },
           { name: "url", validation: UrlValidator },
           { name: "positiveNum", validation: PositiveNumValidator },
+          { name: "doiPrefix", validation: DoiPrefixValidator },
+          { name: "doi", validation: DoiValidator },
         ],
         /*,
             wrappers: [

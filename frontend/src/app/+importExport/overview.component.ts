@@ -17,17 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, ViewChild } from "@angular/core";
-import { SessionService, Tab } from "../services/session.service";
+import { Component, ViewChild } from "@angular/core";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from "@angular/router";
+import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
+import { TabContainerComponent } from "../+research/tab-container.component";
+import { TabPage } from "../services/session.service";
 
 @UntilDestroy()
 @Component({
@@ -42,38 +37,7 @@ import {
     RouterOutlet,
   ],
 })
-export class OverviewComponent implements OnInit {
+export class OverviewComponent extends TabContainerComponent {
+  tabPage: TabPage = "importExport";
   @ViewChild("navigation") tabNav: MatTabNav;
-
-  tabs: Tab[];
-
-  constructor(
-    private router: Router,
-    private sessionService: SessionService,
-    private activatedRoute: ActivatedRoute,
-  ) {}
-
-  ngOnInit(): void {
-    this.tabs = this.sessionService.getTabsFromRoute(
-      this.activatedRoute.snapshot,
-    );
-
-    // only update tab from route if it was set explicitly in URL
-    // otherwise the remembered state from store is used
-    const currentPath = this.router.parseUrl(this.router.url).root.children
-      .primary.segments[2].path;
-    const activeTabIndex = this.tabs.findIndex(
-      (tab) => tab.path === currentPath,
-    );
-    if (activeTabIndex !== 0) {
-      this.updateTab(activeTabIndex);
-    }
-  }
-
-  updateTab(index: number) {
-    const tabPath = this.sessionService.getTabPaths(
-      this.activatedRoute.snapshot,
-    );
-    this.sessionService.updateCurrentTab("importExport", tabPath[index]);
-  }
 }

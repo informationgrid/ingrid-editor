@@ -76,6 +76,7 @@ class SwaggerDocumentationConfig : WebMvcConfigurer {
             .addResourceLocations("classpath:/META-INF/resources/webjars/")
         registry.addResourceHandler("/**/*")
             .addResourceLocations("classpath:/static/")
+//            .setCachePeriod(3600)
             .resourceChain(true)
             .addResolver(object : PathResourceResolver() {
                 override fun getResource(resourcePath: String, location: Resource): Resource {

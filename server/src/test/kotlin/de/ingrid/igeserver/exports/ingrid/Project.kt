@@ -23,6 +23,7 @@ import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.schema.SchemaUtils
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
@@ -37,12 +38,14 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import mockBehaviours
 import mockCatalog
 import mockCodelists
 
 class Project : ShouldSpec() {
 
     private val documentService = mockk<DocumentService>()
+    private val behaviourService = mockk<BehaviourService>()
 
     // this bean must be mocked, although it might not be used in this class
     private val catalogService = mockk<CatalogService>()
@@ -59,6 +62,9 @@ class Project : ShouldSpec() {
         mockkObject(SpringContext)
         every { SpringContext.getBean(DocumentService::class.java) } answers {
             documentService
+        }
+        every { SpringContext.getBean(BehaviourService::class.java) } answers {
+            behaviourService
         }
 
         every { codelistHandler.getCatalogCodelistValue(any(), any(), any()) } answers {
@@ -82,6 +88,7 @@ class Project : ShouldSpec() {
 
         mockCatalog(catalogService)
         mockCodelists(codelistHandler)
+        mockBehaviours(behaviourService, "plugin.ingrid.doi")
 
         val addresses = listOf(
             MockDocument(

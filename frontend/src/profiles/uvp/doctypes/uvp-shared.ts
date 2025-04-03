@@ -33,9 +33,7 @@ export class UvpShared extends BaseDoctype {
 
   protected disabledWhenNotArchived = (field: FormlyFieldConfig) =>
     (field.options?.formState?.disabled &&
-      field.options.formState.metadata?.tags
-        ?.split(",")
-        ?.indexOf("archived") === -1) ??
+      field.options.formState.metadata?.tags?.indexOf("archived") === -1) ??
     false;
 
   isInitialized(): Promise<void> {

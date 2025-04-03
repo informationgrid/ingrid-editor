@@ -56,11 +56,16 @@ export class DocumentIconComponent implements OnChanges {
     const state = (<DocumentAbstract>doc)._state || (<TreeNode>doc).state;
     const type = (<DocumentAbstract>doc)._type || (<TreeNode>doc).type;
     const publicationType =
-      (<DocumentAbstract>doc)._tags || (<TreeNode>doc).tags;
+      (<DocumentAbstract>doc)._tags || (<TreeNode>doc).tags || [];
 
-    this.documentState = this.getStateClass(state, type, publicationType);
+    const publicationTypesAsString = publicationType.join(",");
+    this.documentState = this.getStateClass(
+      state,
+      type,
+      publicationTypesAsString,
+    );
     this.hasTags = publicationType?.length > 0;
-    const tooltip = this.getTooltip(type, state, publicationType);
+    const tooltip = this.getTooltip(type, state, publicationTypesAsString);
     this.tooltip = this.toolTipModifier?.(tooltip) || tooltip;
     this.iconClass =
       (<DocumentAbstract>doc).icon ||

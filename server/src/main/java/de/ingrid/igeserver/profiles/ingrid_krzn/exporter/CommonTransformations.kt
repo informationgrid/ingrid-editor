@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_krzn.exporter
 
+import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
@@ -32,6 +33,7 @@ import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.Information
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.ProjectTransformerKrzn
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.PublicationTransformerKrzn
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer.SpecializedTaskTransformerKrzn
+import de.ingrid.igeserver.utils.getString
 import java.net.URI
 import kotlin.reflect.KClass
 
@@ -60,4 +62,29 @@ fun getInternalReferences(modelTransformer: IngridModelTransformer, codelists: C
 
 fun getPortalUrl(transformerConfig: TransformerConfig): String = URI(transformerConfig.uploadConfig.uploadExternalUrl).let {
     if (it.scheme == null) "" else it.scheme + "://" + it.host
+}
+
+fun getMapLink(data: JsonNode?, uuid: String, codelists: CodelistTransformer): String? {
+    val zoom = data?.getString("mapZoomLevel")
+    val center = data?.getString("mapCenter")
+    return data?.getString("mapLink.key")?.let { linkKey ->
+        // do not map specific entry where we do not want to show mapUrl
+        if (linkKey == "0") return@let null
+        codelists.getCatalogCodelistValue("10500", KeyValue(linkKey, null))
+            ?.replace("{ID}", uuid)
+            ?.let { url ->
+                val mapsParameter = buildString {
+                    append("&MAPS={")
+                    if (center != null) {
+                        append("%22center%22: ${center.split(',')}")
+                    }
+                    if (zoom != null) {
+                        if (center != null) append(", ") // Komma nur, wenn `center` vorhanden ist
+                        append("%22zoom%22: $zoom")
+                    }
+                    append("}")
+                }.takeIf { it != "&MAPS={}" } // Nur hinzufügen, wenn mindestens ein Parameter existiert
+                url + (mapsParameter ?: "")
+            }
+    }
 }

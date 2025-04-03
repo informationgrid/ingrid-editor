@@ -17,20 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, HostListener, OnInit } from "@angular/core";
+import { Component, HostListener, inject, OnInit } from "@angular/core";
 import { UserComponent } from "../user/user.component";
 import { GroupComponent } from "../group/group.component";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from "@angular/router";
-import { SessionService, Tab } from "../../services/session.service";
+import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
+import { TabPage } from "../../services/session.service";
 import { GroupService } from "../../services/role/group.service";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
+import { TabContainerComponent } from "../../+research/tab-container.component";
 
 @UntilDestroy()
 @Component({
@@ -46,30 +41,15 @@ import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
     RouterOutlet,
   ],
 })
-export class UserManagementComponent implements OnInit {
+export class UserManagementComponent extends TabContainerComponent {
+  private groupService = inject(GroupService);
+  tabPage: TabPage = "manage";
+
   currentComponent: UserComponent | GroupComponent;
 
-  tabs: Tab[];
-
-  constructor(
-    private router: Router,
-    private sessionService: SessionService,
-    private groupService: GroupService,
-    private activeRoute: ActivatedRoute,
-  ) {
-    this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
-
-    // only update tab from route if it was set explicitly in URL
-    // otherwise the remembered state from store is used
-    // example: reload page being on 2nd tab -> goto dashboard -> come back again
-    const currentPath = this.router.parseUrl(this.router.url).root.children
-      .primary.segments[2].path;
-    const activeTabIndex = this.tabs.findIndex(
-      (tab) => tab.path === currentPath,
-    );
-    if (activeTabIndex !== 0) {
-      this.updateTab(activeTabIndex);
-    }
+  constructor() {
+    super();
+    this.groupService.getGroups();
   }
 
   @HostListener("window:beforeunload", ["$event"])
@@ -77,16 +57,7 @@ export class UserManagementComponent implements OnInit {
     return !this.currentComponent?.form?.dirty;
   }
 
-  onActivate(componentRef) {
+  onActivate(componentRef: any) {
     this.currentComponent = componentRef;
-  }
-
-  ngOnInit(): void {
-    this.groupService.getGroups();
-  }
-
-  updateTab(index: number) {
-    const tabPaths = this.sessionService.getTabPaths(this.activeRoute.snapshot);
-    this.sessionService.updateCurrentTab("manage", tabPaths[index]);
   }
 }

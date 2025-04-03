@@ -36,6 +36,7 @@ class MDDataIdentification(
     override val status: Status?,
     override val pointOfContact: List<Contact>?,
     override val resourceMaintenance: ResourceMaintenance?,
+    override val resourceFormat: ResourceFormat?,
     override val descriptiveKeywords: List<DescriptiveKeyword>?,
     override val resourceSpecificUsage: List<SpecificUsage>?,
     override val resourceConstraints: List<ResourceConstraint>?,
@@ -58,7 +59,7 @@ class MDDataIdentification(
     val supplementalInformation: CharacterString?,
 ) : SVServiceIdentification(
     citation,
-    abstract, purpose, status, pointOfContact, resourceMaintenance, descriptiveKeywords, resourceSpecificUsage,
+    abstract, purpose, status, pointOfContact, resourceMaintenance, resourceFormat, descriptiveKeywords, resourceSpecificUsage,
     resourceConstraints, graphicOverview, serviceType, serviceTypeVersion, extent, coupledResource, couplingType,
     containsOperations, operatesOn,
 )

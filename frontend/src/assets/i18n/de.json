@@ -92,7 +92,7 @@
     "confirmMessage": "Wollen Sie diesen Datensatz wirklich veröffentlichen?"
   },
   "archive": {
-    "message": "Der Datensatz kann danach nicht mehr bearbeitet werden, allerdings kann dieser wieder aus dem Archiv zurückgeholt werden."
+    "message": "Wollen Sie den Datensatz wirklich archivieren? Der Datensatz kann danach nicht mehr bearbeitet werden, allerdings kann dieser wieder aus dem Archiv zurückgeholt werden."
   },
   "docType": {
     "FOLDER": "Ordner"

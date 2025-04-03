@@ -846,6 +846,26 @@ open class GeneralMapper(val isoData: IsoImportData) {
         return result
     }
 
+    fun getPublication(): Publication? {
+        metadata.identificationInfo[0].identificationInfo?.citation?.citation?.identifier?.forEach loop@{ identifier ->
+            val code = identifier.mdIdentifier?.code?.value
+            if (code?.startsWith("https://doi.org/") == true) {
+                val doi = code.replace("https://doi.org/", "")
+                val authorityCode = identifier.mdIdentifier.authority?.citation?.identifier?.get(0)?.mdIdentifier?.code?.value
+                val generalResourceType = convertToCatalogKeyValue("3390", authorityCode?.substringBefore("/"))
+                val resourceType = convertToCatalogKeyValue("3386", authorityCode?.substringAfter("/"), "en")
+                return Publication(doi, generalResourceType, resourceType)
+            }
+        }
+        // is only being used in "literature", which cannot be imported currently - ignore for now
+        val documentType = convertToCatalogKeyValue(
+            "3385",
+            metadata.identificationInfo[0].identificationInfo?.resourceFormat?.mdFormat?.name?.value,
+            "en",
+        )
+        return null
+    }
+
     private fun getUseConstraintNoteWhenJsonExists(
         otherConstraints: List<String>,
         index: Int,
@@ -870,6 +890,12 @@ open class GeneralMapper(val isoData: IsoImportData) {
         if (text == null) return null
         val id = codeListService.getCodeListEntryId("6500", text, isoData.catalogLanguage)
         return if (id == null) KeyValue(null, text) else KeyValue(id)
+    }
+
+    private fun convertToCatalogKeyValue(codelistId: String, value: String?, language: String = "de"): KeyValue? {
+        if (value == null) return null
+        val id = codeListService.getCatalogCodelistKey(catalogId, codelistId, value, language)
+        return if (id == null) KeyValue(null, value) else KeyValue(id)
     }
 
     private fun isJsonString(useConstraint: String?): Boolean {
@@ -1048,4 +1074,10 @@ data class AddressInfo(
     val zipCode: String?,
     val zipPOBox: String?,
     val administrativeArea: KeyValue?,
+)
+
+data class Publication(
+    val doi: String?,
+    val generalResourceType: KeyValue?,
+    val resourceType: KeyValue?,
 )

@@ -17,6 +17,7 @@
 @param IngridModelTransformer page
 @param Content contentInfo = null
 @param Content additionalCitation = null
+@param Content citationEdition = null
 @param Boolean isService = false
 
 !{var spatial = page.getData().getSpatial();}
@@ -301,11 +302,36 @@
                     </gmd:date>
                 @endfor
             @endif
+
+            ${citationEdition}
+
             @if( page.getModel().getType().equals("InGridGeoDataset") &&  TransformationTools.hasValue(page.getCitationURL()))
                 <gmd:identifier>
                     <gmd:MD_Identifier>
                         <gmd:code>
                             <gco:CharacterString>${page.getCitationURL()}</gco:CharacterString>
+                        </gmd:code>
+                    </gmd:MD_Identifier>
+                </gmd:identifier>
+            @endif
+            @if( page.getDoi() != null )
+                <gmd:identifier>
+                    <gmd:MD_Identifier>
+                        <gmd:authority>
+                            <gmd:CI_Citation>
+                                <gmd:title gco:nilReason="missing"/>
+                                <gmd:date gco:nilReason="missing"/>
+                                <gmd:identifier>
+                                    <gmd:MD_Identifier>
+                                        <gmd:code>
+                                            <gco:CharacterString>${page.getGeneralResourceType()}/${page.getResourceType()}</gco:CharacterString>
+                                        </gmd:code>
+                                    </gmd:MD_Identifier>
+                                </gmd:identifier>
+                            </gmd:CI_Citation>
+                        </gmd:authority>
+                        <gmd:code>
+                            <gco:CharacterString>https://doi.org/${page.getDoi()}</gco:CharacterString>
                         </gmd:code>
                     </gmd:MD_Identifier>
                 </gmd:identifier>

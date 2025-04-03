@@ -127,6 +127,7 @@ export abstract class IngridShared extends BaseDoctype {
   showHVD: boolean = false;
   showAdVCompatible: boolean = false;
   showAdVProductGroup: boolean = false;
+  showDoiFields: boolean = false;
   showFileReferences: boolean = true;
   showLegalBasicsDescriptions: boolean = true;
   /** @deprecated: should be defined in geoservice-doctype */
@@ -514,7 +515,7 @@ export abstract class IngridShared extends BaseDoctype {
                     const invekosValue =
                       field.options.formState.mainModel?.properties?.invekos
                         ?.key;
-                    if (!invekosValue || invekosValue === "none") return true;
+                    if (!invekosValue) return true;
 
                     const hasKeyword = (keyword: string) =>
                       ctrl.value?.some(
@@ -1554,7 +1555,7 @@ export abstract class IngridShared extends BaseDoctype {
         infoText:
           "Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten.",
         jsonTemplate: {
-          format: { key: null },
+          format: null,
           title: "",
           description: "",
         },
@@ -1616,7 +1617,7 @@ export abstract class IngridShared extends BaseDoctype {
                 return true;
               }
               return ctrl.value?.every(
-                (entry: any) => entry?.format?.key || entry?.format.value,
+                (entry: any) => entry?.format?.key || entry?.format?.value,
               );
             },
             message:
@@ -1655,6 +1656,37 @@ export abstract class IngridShared extends BaseDoctype {
         }),
       ],
     });
+  }
+
+  addDoiFields(): FormlyFieldConfig {
+    let doiPrefix =
+      this.behaviourService.getBehaviour("plugin.ingrid.doi")?.data?.doiPrefix;
+    return this.addGroup(null, "DOI", [
+      this.addInputInline("doi", "DOI", {
+        defaultValue: doiPrefix ? doiPrefix + "/" : "",
+        validators: {
+          validation: ["doi"],
+        },
+        hasInlineContextHelp: true,
+        wrappers: ["inline-help", "form-field"],
+      }),
+      this.addAutoCompleteInline(
+        "generalResourceType",
+        "Ressourcen Typ (generell)",
+        {
+          options: this.getCodelistForSelect("3390", "generalResourceType"),
+          codelistId: "3390",
+          hasInlineContextHelp: true,
+          wrappers: ["inline-help", "form-field"],
+        },
+      ),
+      this.addAutoCompleteInline("resourceType", "Ressourcen Typ", {
+        options: this.getCodelistForSelect("3386", "resourceType"),
+        codelistId: "3386",
+        hasInlineContextHelp: true,
+        wrappers: ["inline-help", "form-field"],
+      }),
+    ]);
   }
 
   protected urlRefFields() {
@@ -2055,6 +2087,11 @@ export abstract class IngridShared extends BaseDoctype {
     this.showInVeKoSField = behaviour?.isActive ?? behaviour?.defaultActive;
   }
 
+  protected handleDoiBehaviour() {
+    const behaviour = this.behaviourService.getBehaviour("plugin.ingrid.doi");
+    this.showDoiFields = behaviour?.isActive ?? behaviour?.defaultActive;
+  }
+
   private handleHVDClick(field: FormlyFieldConfig) {
     const hvdChecked = field.formControl.value.isHvd;
     const isOpenData = field.formControl.value.isOpenData;
@@ -2082,8 +2119,8 @@ export abstract class IngridShared extends BaseDoctype {
     field: FormlyFieldConfig,
     hasThesaurusTopics: boolean,
   ) {
-    const value = field.formControl.value.invekos?.key ?? "none";
-    if (value === "none") return;
+    const value = field.formControl.value.invekos?.key;
+    if (!value) return;
 
     this.addInVeKoSKeyword(field, "iacs");
 
@@ -2132,7 +2169,11 @@ export abstract class IngridShared extends BaseDoctype {
       cookieId,
     ).subscribe((decision) => {
       if (decision === "ok") executeAction(value);
-      else field.formControl.setValue({ key: "none" });
+      else
+        field.formControl.setValue({
+          ...field.formControl.value,
+          invekos: undefined,
+        });
     });
   }
 

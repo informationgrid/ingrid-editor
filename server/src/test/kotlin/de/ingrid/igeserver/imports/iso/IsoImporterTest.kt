@@ -64,6 +64,8 @@ class IsoImporterTest : AnnotationSpec() {
     fun beforeAll() {
         mockCodelists(codelistService)
         every { codelistService.getCatalogCodelistKey("test", "1350", "Nieders. Abfallgesetz (NAbfG)") } returns "38"
+        every { codelistService.getCatalogCodelistKey("test", "3386", "Brochure/Bulletin", "en") } returns "2"
+        every { codelistService.getCatalogCodelistKey("test", "3390", "ComputationalNotebook", "en") } returns "5"
         every { codelistService.getCatalogCodelistKey("test", "3535", "von Drachenfels 94") } returns "1"
         every { codelistService.getCatalogCodelistKey("test", "3555", "Ganzflächige Biotopkartierung 94") } returns "1"
         every { codelistService.getCatalogCodelistKey("test", "6250", "Hessen") } returns "7"
@@ -83,7 +85,7 @@ class IsoImporterTest : AnnotationSpec() {
                         category = null,
                         hasWritePermission = null,
                         hasOnlySubtreeWritePermission = null,
-                        tags = null,
+                        tags = emptyList(),
                         responsibleUser = null,
                         additional = null,
                     ),

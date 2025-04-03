@@ -155,5 +155,6 @@ data class Identifier(
 )
 
 data class MDIdentifier(
+    val authority: Citation?,
     val code: CharacterString?,
 )

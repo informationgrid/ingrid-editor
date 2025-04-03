@@ -99,11 +99,11 @@ fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadIn
     ?: emptyList()
 
 fun sqlDecisionDateBefore(catalogId: String, date: OffsetDateTime): String = """
-    SELECT dw.id, doc.id, doc.type
-    FROM catalog,
-         document_wrapper dw,
-         document doc,
-         jsonb_array_elements(doc.data -> 'processingSteps') elems
+    SELECT DISTINCT dw.id, doc.id, doc.type
+    FROM document doc
+             JOIN document_wrapper dw ON doc.uuid = dw.uuid
+             JOIN catalog ON dw.catalog_id = catalog.id
+             LEFT JOIN LATERAL jsonb_array_elements(doc.data -> 'processingSteps') AS elems ON jsonb_typeof(doc.data -> 'processingSteps') = 'array'
     WHERE catalog.identifier = '$catalogId'
       AND doc.catalog_id = dw.catalog_id
       AND catalog.id = dw.catalog_id
@@ -112,7 +112,7 @@ fun sqlDecisionDateBefore(catalogId: String, date: OffsetDateTime): String = """
       AND dw.category = 'data'
       AND dw.uuid = doc.uuid
       AND doc.state = 'PUBLISHED'
-      AND elems->>'type' = 'decisionOfAdmission' AND (elems->>'decisionDate')::timestamptz <= '$date'
+      AND ((doc.data->>'decisionDate')::timestamptz <= '$date' AND doc.type='UvpNegativePreliminaryAssessmentDoc' OR elems->>'type' = 'decisionOfAdmission' AND (elems->>'decisionDate')::timestamptz <= '$date')
 """.trimIndent()
 
 fun sqlUpdateValidDate(docId: Int, tableField: String): String = """
