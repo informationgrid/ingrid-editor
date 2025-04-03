@@ -512,7 +512,7 @@ export abstract class IngridShared extends BaseDoctype {
                     const invekosValue =
                       field.options.formState.mainModel?.properties?.invekos
                         ?.key;
-                    if (!invekosValue || invekosValue === "none") return true;
+                    if (!invekosValue) return true;
 
                     const hasKeyword = (keyword: string) =>
                       ctrl.value?.some(
@@ -2110,8 +2110,8 @@ export abstract class IngridShared extends BaseDoctype {
     field: FormlyFieldConfig,
     hasThesaurusTopics: boolean,
   ) {
-    const value = field.formControl.value.invekos?.key ?? "none";
-    if (value === "none") return;
+    const value = field.formControl.value.invekos?.key;
+    if (!value) return;
 
     this.addInVeKoSKeyword(field, "iacs");
 
@@ -2160,7 +2160,11 @@ export abstract class IngridShared extends BaseDoctype {
       cookieId,
     ).subscribe((decision) => {
       if (decision === "ok") executeAction(value);
-      else field.formControl.setValue({ key: "none" });
+      else
+        field.formControl.setValue({
+          ...field.formControl.value,
+          invekos: undefined,
+        });
     });
   }
 
