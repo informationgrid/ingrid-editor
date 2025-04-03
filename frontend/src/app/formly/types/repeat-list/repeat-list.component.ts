@@ -506,13 +506,6 @@ export class RepeatListComponent
       // do nothing
       return;
     }
-
-    /*this.addToList(option);
-    if (this.props.multiSelect || $event.ctrlKey) {
-      // don't close the selection panel for multi select or ctrl key selection
-    } else {
-      this.selector.close();
-    }*/
   }
 
   async addFreeEntry(value: string) {

@@ -54,6 +54,8 @@ import { IgeError } from "../../../app/models/ige-error";
 import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 import { ReferenceViewComponent } from "../components/reference-view/reference-view.component";
 import { DocumentService } from "../../../app/services/document/document.service";
+import { CatalogService } from "../../../app/+catalog/services/catalog.service";
+import { GeneralStore } from "../../../app/store/general.store";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -80,6 +82,7 @@ export abstract class IngridShared extends BaseDoctype {
   private uploadService = inject(UploadService);
 
   protected codelistStore = inject(CodelistStore);
+  protected generalStore = inject(GeneralStore);
   protected codelistService = inject(CodelistService);
 
   options = {
@@ -198,14 +201,14 @@ export abstract class IngridShared extends BaseDoctype {
                     items: [
                       {
                         label: "InVeKoS/IACS (GSAA)",
-                        value: { key: "gsaa" },
+                        value: { key: "gsaa", value: "InVeKoS/IACS (GSAA)" },
                         contextHelpKey: "invekos",
                         onClick: (field) =>
                           this.handleInVeKosChange(field, this.thesaurusTopics),
                       },
                       {
                         label: "InVeKoS/IACS (LPIS)",
-                        value: { key: "lpis" },
+                        value: { key: "lpis", value: "InVeKoS/IACS (LPIS)" },
                         contextHelpKey: "invekos",
                         onClick: (field) =>
                           this.handleInVeKosChange(field, this.thesaurusTopics),
@@ -375,11 +378,14 @@ export abstract class IngridShared extends BaseDoctype {
   handleActivateOpenData(field: FormlyFieldConfig): Observable<boolean> {
     const cookieId = "HIDE_OPEN_DATA_INFO";
 
+    const noAccessConstraint =
+      this.codelistService.getCodelistEntryAsSelectOption("6010", "1");
+
     function executeAction() {
       const accessConstraintsControl = field.form.get(
         "resource.accessConstraints",
       );
-      accessConstraintsControl?.setValue([{ key: "1" }]);
+      accessConstraintsControl?.setValue([noAccessConstraint.forBackend()]);
     }
 
     if (this.cookieService.getCookie(cookieId) === "true") {
@@ -1889,7 +1895,11 @@ export abstract class IngridShared extends BaseDoctype {
 
     if (this.isGeoService) {
       if (isOpenData) {
-        field.form.get("resource.accessConstraints")?.setValue([{ key: "1" }]);
+        const noAccessConstraint =
+          this.codelistService.getCodelistEntryAsSelectOption("6010", "1");
+        field.form
+          .get("resource.accessConstraints")
+          ?.setValue([noAccessConstraint.forBackend()]);
       }
 
       this.addConformanceEntry(field, "10", "1");
@@ -1936,13 +1946,17 @@ export abstract class IngridShared extends BaseDoctype {
     const conformanceValues = (conformanceResultCtrl.value ?? []).filter(
       (item: any) => item.specification?.key !== specificationKey,
     );
+    const specification = this.codelistService.getCodelistEntryAsSelectOption(
+      "6005",
+      specificationKey,
+    );
+    const pass = this.codelistService.getCodelistEntryAsSelectOption(
+      "6000",
+      passKey,
+    );
     conformanceValues.push({
-      specification: {
-        key: specificationKey,
-      },
-      pass: {
-        key: passKey,
-      },
+      specification: specification.forBackend(),
+      pass: pass.forBackend(),
       publicationDate:
         publicationDate?.length > 0 ? new Date(publicationDate) : null,
       isInspire: true,

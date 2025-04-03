@@ -57,16 +57,10 @@ export class SelectOption {
   }
 
   forBackend(): BackendOption {
-    if (this.value === null || this.value === undefined) {
-      return {
-        key: null,
-        value: this.label,
-      };
-    } else {
-      return {
-        key: this.value,
-      };
-    }
+    return {
+      key: this.value,
+      value: this.label,
+    };
   }
 }
 
@@ -124,14 +118,25 @@ export class CodelistService {
     return CodelistService.addFavorites(codelist.id, items);
   };
 
-  private static mapToSelectOptionUi(language: string) {
-    return (entry: CodelistEntry) =>
-      ({
-        label:
-          entry.fields[language] ?? entry.fields["de"] ?? entry.fields["name"],
-        value: entry.id,
-        sortkey: entry.fields["sortkey"],
-      }) as SelectOptionUi;
+  static mapToSelectOptionUi(language: string) {
+    return (entry: CodelistEntry) => {
+      const option: SelectOptionUi = new SelectOption(
+        entry.id,
+        entry.fields[language] ?? entry.fields["de"] ?? entry.fields["name"],
+      );
+      option.sortkey = entry.fields["sortkey"] as CodelistSort;
+      return option;
+    };
+  }
+
+  getCodelistEntryAsSelectOption(
+    codelistId: string,
+    entryId: string,
+  ): SelectOptionUi {
+    const entry = this.store.getCodelistEntryByKey(codelistId, entryId);
+    return CodelistService.mapToSelectOptionUi(
+      this.generalStore.catalogLanguage(),
+    )(entry);
   }
 
   private static getSortFunction(

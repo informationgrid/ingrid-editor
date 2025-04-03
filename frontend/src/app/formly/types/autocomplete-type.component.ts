@@ -89,14 +89,12 @@ export class AutocompleteTypeComponent
 
               if (key === null && !value) {
                 this.formControl.setValue(null);
-              } else if (key === null) {
-                this.formControl.setValue({ key: null, value: value });
               } else {
-                this.formControl.setValue({ key: key });
+                this.formControl.setValue({ key: key, value: value });
               }
               return null;
             } else if (value?.key != null && value?.value !== undefined) {
-              this.formControl.setValue({ key: value.key });
+              this.formControl.setValue({ key: value.key, value: value.value });
               return;
             } else if (value?.key != null && value?.value === undefined) {
               // values should have been filtered already

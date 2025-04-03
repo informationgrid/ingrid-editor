@@ -145,7 +145,7 @@ export class SelectTypeComponent
     } else if (!this.props.simple) {
       // if not simple, value is an object. set as object
       if (value?.key != null && value?.value != null) {
-        this.formControl.setValue({ key: value.key });
+        this.formControl.setValue(value);
       } else if (value?.key === null && !value?.value) {
         this.formControl.setValue(null);
       }
