@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.model.UserResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.FrontendGroup
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
@@ -160,26 +159,6 @@ class GroupsApiController(
                 UserResponse(it, readOnly = editableUsernames.contains(it.login).not())
             },
         )
-    }
-
-    override fun getManagerOfGroup(principal: Principal, id: Int): ResponseEntity<User> {
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        return when (val manager = groupService.get(catalogId, id)?.manager) {
-            null -> ResponseEntity.notFound().build()
-            else -> if (hasAccessToGroup(principal, id)) ResponseEntity.ok(User(manager.userId)) else ResponseEntity(HttpStatus.FORBIDDEN)
-        }
-    }
-
-    override fun updateManager(principal: Principal, id: Int, userId: String): ResponseEntity<Group> {
-        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
-        val group = groupService.get(catalogId, id)
-        val newManager = catalogService.getUser(userId)
-        if (group != null && newManager != null) {
-            group.manager = newManager
-            return if (hasAccessToGroup(principal, id)) ResponseEntity.ok(groupService.update(catalogId, id, group, false)) else ResponseEntity(HttpStatus.FORBIDDEN)
-        } else {
-            return ResponseEntity.notFound().build()
-        }
     }
 
     private fun hasAccessToGroup(
