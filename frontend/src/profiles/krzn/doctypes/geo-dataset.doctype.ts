@@ -60,7 +60,11 @@ export class GeoDatasetDoctypeKrzn extends GeoDatasetDoctype {
       this.addGroupSimple(
         null,
         [
-          this.addInputInline("mapZoomLevel", "Zoomstufe", { type: "number" }),
+          this.addInputInline("mapZoomLevel", "Zoomstufe", {
+            type: "number",
+            min: 1,
+            max: 14,
+          }),
           this.addInputInline("mapCenter", "Kartenmittelpunkt", {}),
         ],
         { wrappers: ["panel"], fieldGroupClassName: "flex-row" },
