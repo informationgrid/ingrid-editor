@@ -29,7 +29,6 @@ import de.ingrid.igeserver.zabbix.ZabbixJob
 import de.ingrid.igeserver.zabbix.ZabbixModel
 import de.ingrid.igeserver.zabbix.ZabbixService
 import de.ingrid.utils.xpath.XPathUtils
-import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
 import org.quartz.JobKey
 import org.springframework.context.annotation.Profile
@@ -45,8 +44,6 @@ import javax.xml.parsers.DocumentBuilderFactory
 @Component
 @Profile("zabbix")
 class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler: SchedulerService) : Filter<PostIndexPayload> {
-
-    private val log = logger()
 
     override val profiles = arrayOf("uvp")
 
