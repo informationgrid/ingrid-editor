@@ -6,7 +6,8 @@
   border-top: 1px solid vars.$ige-background-bar;
 
   .main {
-    display: flex;
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
     align-items: center;
     gap: 16px;
   }
