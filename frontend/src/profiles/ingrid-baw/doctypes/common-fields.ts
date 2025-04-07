@@ -107,7 +107,14 @@ export class CommonFieldsBaw extends FormFieldHelper {
     });
   }
 
-  addSharedFields(doc: IngridShared, fieldConfig: FormlyFieldConfig[]) {
+  addSharedFields(
+    doc: IngridShared,
+    fieldConfig: FormlyFieldConfig[],
+    exclude: {
+      verticalCoordinateReferenceSystem?: boolean;
+      verticalExtent?: boolean;
+    } = {},
+  ) {
     const gemetKeywordsPosition = this.findFieldElementWithId(
       fieldConfig,
       "gemet",
@@ -135,28 +142,27 @@ export class CommonFieldsBaw extends FormFieldHelper {
       fieldConfig,
       "spatialSystems",
     );
-    this.updateProps(
-      "spatialSystems",
-      { externalLabel: "Raumbezugssystem (Lage)" },
-      fieldConfig,
-    );
 
     // Vertikale Koordinatenreferenzsysteme
-    this.addAfter(
-      spatialSystemPosition,
-      this.getVerticalCoordinateReferenceSystemFieldConfig(doc),
-    );
+    if (!exclude.verticalCoordinateReferenceSystem) {
+      this.addAfter(
+        spatialSystemPosition,
+        this.getVerticalCoordinateReferenceSystemFieldConfig(doc),
+      );
+    }
 
     // replace existing vertical extent section with baw specific one
-    const verticalExtentPosition = this.findFieldElementWithId(
-      fieldConfig,
-      "verticalExtent",
-    );
-    verticalExtentPosition.fieldConfig.splice(
-      verticalExtentPosition.index,
-      1,
-      this.getBAWVerticalExtentFieldConfig(doc),
-    );
+    if (!exclude.verticalExtent) {
+      const verticalExtentPosition = this.findFieldElementWithId(
+        fieldConfig,
+        "verticalExtent",
+      );
+      verticalExtentPosition.fieldConfig.splice(
+        verticalExtentPosition.index,
+        1,
+        this.getBAWVerticalExtentFieldConfig(doc),
+      );
+    }
 
     const pointOfContactPosition = doc.findFieldElementWithId(
       fieldConfig,
@@ -200,7 +206,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
               type: "number",
               hasInlineContextHelp: true,
               wrappers: ["inline-help", "form-field", "addons"],
-              className: "right-align",
+              className: "right-align flex-1",
               suffix: {
                 text: "m",
               },
@@ -213,7 +219,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
               type: "number",
               hasInlineContextHelp: true,
               wrappers: ["inline-help", "form-field", "addons"],
-              className: "right-align",
+              className: "right-align flex-1",
               suffix: {
                 text: "m",
               },
@@ -221,6 +227,20 @@ export class CommonFieldsBaw extends FormFieldHelper {
                 "props.required": (field: FormlyFieldConfig) =>
                   isNotEmptyObject(field.form.value),
               },
+            }),
+            this.addAutoCompleteInline("Datum", "Raumbezugssystem", {
+              options: doc.getCodelistForSelect(
+                "verticalCoordinateReferenceSystem",
+                "null",
+              ),
+              codelistId: "verticalCoordinateReferenceSystem",
+              expressions: {
+                "props.required": (field: FormlyFieldConfig) =>
+                  isNotEmptyObject(field.form.value),
+              },
+              hasInlineContextHelp: true,
+              className: "flex-2",
+              wrappers: ["inline-help", "form-field"],
             }),
           ],
           {
@@ -238,26 +258,6 @@ export class CommonFieldsBaw extends FormFieldHelper {
               },
             },
           },
-        ),
-        this.addGroup(
-          null,
-          null,
-          [
-            this.addAutoCompleteInline("Datum", "Raumbezugssystem", {
-              options: doc.getCodelistForSelect(
-                "verticalCoordinateReferenceSystem",
-                "null",
-              ),
-              codelistId: "verticalCoordinateReferenceSystem",
-              expressions: {
-                "props.required": (field: FormlyFieldConfig) =>
-                  isNotEmptyObject(field.form.value),
-              },
-              hasInlineContextHelp: true,
-              wrappers: ["inline-help", "form-field"],
-            }),
-          ],
-          { wrappers: [], hasInlineContextHelp: true },
         ),
       ],
       {

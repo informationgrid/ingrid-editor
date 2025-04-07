@@ -39,6 +39,7 @@ export class PublicationDoctypeBaw extends IngridShared {
   constructor() {
     super();
     this.options.required.extraInfoLangData = true;
+    this.options.required.description = false;
 
     this.options.hide = {
       ...this.options.hide,
@@ -95,18 +96,6 @@ export class PublicationDoctypeBaw extends IngridShared {
   };
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    // Update default fields
-    this.updateProps(
-      "description",
-      { externalLabel: "Kurzfassung/Beschreibung", required: false },
-      fieldConfig,
-    );
-    this.updateProps(
-      "alternateTitle",
-      { externalLabel: "Alternativer Titel" },
-      fieldConfig,
-    );
-
     // Add new fields
     this.common.addSharedFields(this, fieldConfig);
     const parentIdentifierPosition = this.findFieldElementWithId(

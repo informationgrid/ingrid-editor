@@ -857,10 +857,11 @@ export class FormFieldHelper {
     return {
       key: id,
       type: "radio",
-      wrappers: ["panel", "inline-help"],
+      wrappers: ["panel", "form-field", "inline-help"],
       className: "ige-radios",
       defaultValue: options?.defaultValue ?? null,
       props: {
+        appearance: "outline",
         label: options?.fieldLabel,
         externalLabel: label,
         labelProp: "value",
@@ -968,26 +969,6 @@ export class FormFieldHelper {
 
   addBefore(info: FieldConfigPosition, ...field: FormlyFieldConfig[]) {
     info.fieldConfig.splice(info.index, 0, ...field);
-  }
-
-  /**
-   * Updates or adds the properties of a field with the given ID.
-   *
-   * @param id - The ID of the field to update.
-   * @param propsToUpdate - An object containing the properties to add or update.
-   * @param fieldConfig - The configuration array of form fields.
-   */
-  updateProps(
-    id: string,
-    propsToUpdate: { [key: string]: any },
-    fieldConfig: FormlyFieldConfig[],
-  ) {
-    const fieldPostion = this.findFieldElementWithId(fieldConfig, id);
-    const targetField = fieldPostion.fieldConfig[fieldPostion.index];
-    targetField.props = {
-      ...(targetField.props ?? {}),
-      ...propsToUpdate,
-    };
   }
 
   /**

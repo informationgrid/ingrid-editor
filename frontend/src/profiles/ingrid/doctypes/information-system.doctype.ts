@@ -36,6 +36,11 @@ export class InformationSystemDoctype extends IngridShared {
   showAdVCompatible = true;
   showAdVProductGroup = true;
 
+  constructor() {
+    super();
+    this.options.dynamicRequired.spatialReferences = () => false;
+  }
+
   documentFields = () => {
     this.handleDoiBehaviour();
 

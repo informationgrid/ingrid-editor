@@ -130,7 +130,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
       this.disabledCondition = this.data.disabledCondition;
     this.codelistService.byId("505");
     // disable the type selection if only one type is allowed for all doctypes
-    this.typeSelectionEnabled.set(this.data.allowedTypes.length > 1);
+    this.typeSelectionEnabled.set(!(this.data.allowedTypes?.length === 1));
     this.codelists$
       .pipe(
         untilDestroyed(this),

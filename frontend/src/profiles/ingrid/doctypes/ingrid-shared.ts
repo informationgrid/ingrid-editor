@@ -92,6 +92,7 @@ export abstract class IngridShared extends BaseDoctype {
       spatialSystems: (field: FormlyFieldConfig) => false,
       dataFormat: (field: FormlyFieldConfig) => false,
       spatialScope: (field: FormlyFieldConfig) => false,
+      events: (field: FormlyFieldConfig) => true,
     },
     dynamicHide: {
       openDataCategories: (field: FormlyFieldConfig) =>
@@ -104,6 +105,7 @@ export abstract class IngridShared extends BaseDoctype {
       resourceDateType: false,
       extraInfoLangData: false,
       useConstraints: false,
+      description: true,
     },
     hide: {
       openData: false,
@@ -327,14 +329,23 @@ export abstract class IngridShared extends BaseDoctype {
               className: "optional",
             },
           ),
-          this.addInput("alternateTitle", "Kurzbezeichnung", {
-            wrappers: ["panel", "form-field"],
-            className: "optional",
-          }),
-          this.addTextArea("description", "Beschreibung", this.id, {
-            required: true,
-            rows: 6,
-          }),
+          this.addInput(
+            "alternateTitle",
+            this.transloco.translate("form.alternateTitle"),
+            {
+              wrappers: ["panel", "form-field"],
+              className: "optional",
+            },
+          ),
+          this.addTextArea(
+            "description",
+            this.transloco.translate("form.description"),
+            this.id,
+            {
+              required: this.options.required.description,
+              rows: 6,
+            },
+          ),
           this.addPreviewImage("graphicOverviews", "Vorschaugrafik", {
             className: "optional",
           }),
@@ -898,16 +909,23 @@ export abstract class IngridShared extends BaseDoctype {
                 this.options.dynamicRequired.spatialReferences(field),
             },
           }),
-          this.addRepeatList("spatialSystems", "Koordinatenreferenzsysteme", {
-            asSelect: false,
-            showSearch: true,
-            options: this.getCodelistForSelect("100", "spatial.spatialSystems"),
-            codelistId: "100",
-            expressions: {
-              "props.required": (field: FormlyFieldConfig) =>
-                this.options.dynamicRequired.spatialSystems(field),
+          this.addRepeatList(
+            "spatialSystems",
+            this.transloco.translate("form.spatial.spatialSystems"),
+            {
+              asSelect: false,
+              showSearch: true,
+              options: this.getCodelistForSelect(
+                "100",
+                "spatial.spatialSystems",
+              ),
+              codelistId: "100",
+              expressions: {
+                "props.required": (field: FormlyFieldConfig) =>
+                  this.options.dynamicRequired.spatialSystems(field),
+              },
             },
-          }),
+          ),
           this.addGroup(
             "verticalExtent",
             "Höhe",
@@ -1014,7 +1032,9 @@ export abstract class IngridShared extends BaseDoctype {
           "temporal",
           [
             this.addRepeat("events", "Zeitbezug der Ressource", {
-              required: true,
+              expressions: {
+                "props.required": this.options.dynamicRequired.events,
+              },
               fields: [
                 this.addDatepicker("referenceDate", null, {
                   fieldLabel: "Datum",

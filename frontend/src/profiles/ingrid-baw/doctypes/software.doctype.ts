@@ -35,6 +35,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
     super();
     this.showInspireRelevant = false;
     this.showAdVCompatible = false;
+    this.showAdVProductGroup = false;
     this.options.hide = {
       ...this.options.hide,
       ...{
@@ -43,12 +44,19 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
         resourceGroup: true,
         digitalTransferOptions: true,
         orderInfo: true,
+        temporalStatus: true,
+        maintenanceInformation: true,
+        legalBasicsDescriptions: true,
       },
     };
+    this.options.dynamicRequired.events = undefined;
   }
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
-    this.common.addSharedFields(this, fieldConfig);
+    this.common.addSharedFields(this, fieldConfig, {
+      verticalCoordinateReferenceSystem: true,
+      verticalExtent: true,
+    });
 
     // Allgemeines
     const pointOfContactPosition = this.findFieldElementWithId(
@@ -82,6 +90,26 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
         this.getInstallationWithFieldConfig(),
       ],
     );
+    // remove "Weitere Informationen"
+    const moreInfo = this.findParentFieldElementWithId(
+      fieldConfig,
+      "systemEnvironment",
+    );
+    moreInfo.fieldConfig.splice(moreInfo.index, 1);
+
+    // Raumbezug
+    const spatialSystems = this.findFieldElementWithId(
+      fieldConfig,
+      "spatialSystems",
+    );
+    spatialSystems.fieldConfig.splice(spatialSystems.index, 1);
+
+    // Zeitbezug
+    const resourceTimeSpan = this.findParentFieldElementWithId(
+      fieldConfig,
+      "resourceDateType",
+    );
+    resourceTimeSpan.fieldConfig.splice(resourceTimeSpan.index, 1);
 
     // Verfügbarkeit
     const useLimitationPosition = this.findFieldElementWithId(
@@ -96,6 +124,13 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
         ...this.getNutzungsrechteFieldConfig(),
       ],
     );
+    const useConstraintsField = this.findFieldElementWithId(
+      fieldConfig,
+      "useConstraints",
+    );
+    useConstraintsField.fieldConfig[
+      useConstraintsField.index
+    ].expressions.className = undefined;
 
     // this.addAfter(serviceUrlsPosition, this.getErstellungsvertragFieldConfig());
     // this.addAfter(serviceUrlsPosition, this.getSupportvertragFieldConfig());
@@ -128,7 +163,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
       this.addGroup("productiveUse", "Produktiver Einsatz", [
         this.addCheckboxInline("wsv", "WSV-Auftrag"),
         this.addCheckboxInline("baw", "FuE"),
-        this.addCheckboxInline("extern", "Extern"),
+        this.addCheckboxInline("other", "Andere"),
       ]),
       this.getNotesFieldGroupConfig("productiveUse"),
     ];
@@ -139,7 +174,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
     options?: TextAreaOptions,
   ): FormlyFieldConfig {
     return this.addInlineTextAreaGroup(
-      "notes",
+      `${elementIdPrefix}Notes`,
       "Ergänzungen und Erläuterungen",
       elementIdPrefix,
       options,
@@ -191,7 +226,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
   }
 
   getProgrammierspracheFieldConfig(): FormlyFieldConfig {
-    return this.addRepeatList("programmingLanguage", "Programmiersprache", {
+    return this.addRepeatList("programmingLanguage", "Programmiersprache(n)", {
       required: true,
       options: this.getCodelistForSelect("3950030", "null"),
     });
@@ -206,9 +241,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
     );
   }
   getBibliothekenFieldConfig(): FormlyFieldConfig {
-    return this.addTextArea("libraries", "Bibliothek", this.id, {
-      required: true,
-    });
+    return this.addTextArea("libraries", "Bibliothek", this.id);
   }
 
   hasServerInstallation = (field: FormlyFieldConfig) =>

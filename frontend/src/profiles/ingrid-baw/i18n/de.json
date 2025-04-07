@@ -6,5 +6,12 @@
     "BawMeasurement": "Messdaten",
     "InGridInformationSystem": "Software",
     "PublicationAddressDoc": "Literaturadresse"
+  },
+  "form": {
+    "alternateTitle": "Alternativer Titel",
+    "description": "Kurzfassung/Beschreibung",
+    "spatial": {
+      "spatialSystems": "Raumbezugssystem (Lage)"
+    }
   }
 }
