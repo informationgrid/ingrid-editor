@@ -459,16 +459,4 @@ class BawProfile(
             add(CodelistHandler.toCodelistEntry("7837", "EPSG:7837 DHHN2016 Höhe"))
         }
     }
-
-    private fun createCodelistPlaceholder(id: String, catalogRef: Catalog): Codelist = Codelist().apply {
-        // TODO remove when all codelists are implemented
-        identifier = id
-        catalog = catalogRef
-        name = "Placeholder"
-        description = ""
-        data = jacksonObjectMapper().createArrayNode().apply {
-            add(CodelistHandler.toCodelistEntry("1", "Placeholder1"))
-            add(CodelistHandler.toCodelistEntry("2", "Placeholder2"))
-        }
-    }
 }
