@@ -69,8 +69,12 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
     return this.addGroup("measuringDepth", "Messtiefe", [
       this.addInputInline("value", "Messtiefe", {
         type: "number",
+        suffix: {
+          text: "m",
+        },
+        className: "single-field width-25 right-align",
+        wrappers: ["form-field", "addons"],
       }),
-      this.common.getUnitOfMeasurementFieldConfig(this),
       this.common.getInlineVerticalCoordinateReferenceSystemFieldConfig(this),
     ]);
   }
@@ -194,7 +198,6 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
 
   getFrequencyFieldConfig(): FormlyFieldConfig {
     return this.addInput("frequency", "Frequenz der Messung", {
-      fieldLabel: "Frequenz der Messung",
       type: "number",
       suffix: {
         text: "s",

@@ -55,7 +55,6 @@ export class CommonFieldsBaw extends FormFieldHelper {
 
   getTimestepFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
     return this.addInput("timestep", "Zeitliche Genauigkeit", {
-      fieldLabel: "Zeitliche Genauigkeit",
       type: "number",
       className: "single-field width-25 right-align",
       suffix: {
