@@ -109,8 +109,8 @@ export class BwastrSpatialComponent implements OnInit, OnDestroy {
   searchSubscribe: Subscription;
 
   limitForm = new FormGroup({
-    start: new FormControl<number>(null, Validators.required),
-    end: new FormControl<number>(null, Validators.required),
+    start: new FormControl<number>(null),
+    end: new FormControl<number>(null),
   });
 
   ngOnDestroy() {

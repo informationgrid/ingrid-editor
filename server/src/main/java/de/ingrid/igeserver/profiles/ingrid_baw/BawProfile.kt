@@ -58,6 +58,7 @@ class BawProfile(
         isoImport.profileMapper[ID] = isoImportBaw
     }
     override val indexExportFormatID = "indexInGridIDFBaw"
+    private val boundingBoxGermany = """{ "lat1": 47.2701114, "lon1": 5.8663153, "lat2": 55.099161, "lon2": 15.0419309 }"""
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
@@ -102,11 +103,11 @@ class BawProfile(
             add(CodelistHandler.toCodelistEntry("7000", "7000 Nordsee", """{ "lat1": 53.28, "lon1": 3.34, "lat2": 56.04, "lon2": 9.05 }"""))
             add(CodelistHandler.toCodelistEntry("8000", "8000 Ostsee", """{ "lat1": 53.68, "lon1": 9.41, "lat2": 55.11, "lon2": 14.82 }"""))
             add(CodelistHandler.toCodelistEntry("8300", "8300 Ryck"))
-            add(CodelistHandler.toCodelistEntry("9600", "9600 Binnenwasserstraßen"))
-            add(CodelistHandler.toCodelistEntry("9700", "9700 Seewasserstraßen"))
-            add(CodelistHandler.toCodelistEntry("9800", "9800 Bundeswasserstraßen"))
-            add(CodelistHandler.toCodelistEntry("9900", "9900 Sonstige Gewässer"))
-            add(CodelistHandler.toCodelistEntry("9999", "9999 Sonstiger Ortsbezug"))
+            add(CodelistHandler.toCodelistEntry("9600", "9600 Binnenwasserstraßen", boundingBoxGermany))
+            add(CodelistHandler.toCodelistEntry("9700", "9700 Seewasserstraßen", boundingBoxGermany))
+            add(CodelistHandler.toCodelistEntry("9800", "9800 Bundeswasserstraßen", boundingBoxGermany))
+            add(CodelistHandler.toCodelistEntry("9900", "9900 Sonstige Gewässer", boundingBoxGermany))
+            add(CodelistHandler.toCodelistEntry("9999", "9999 Sonstiger Ortsbezug", boundingBoxGermany))
         }
     }
 
