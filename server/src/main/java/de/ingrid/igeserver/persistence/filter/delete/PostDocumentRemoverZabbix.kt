@@ -23,7 +23,6 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PostDeletePayload
 import de.ingrid.igeserver.zabbix.ZabbixService
-import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
@@ -35,8 +34,6 @@ import org.springframework.stereotype.Component
 class PostDocumentRemoverZabbix(
     val zabbixService: ZabbixService,
 ) : Filter<PostDeletePayload> {
-
-    private val log = logger()
 
     override val profiles = arrayOf("uvp")
 

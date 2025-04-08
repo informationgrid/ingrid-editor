@@ -108,7 +108,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         }
 
         // check if user has permission to all groups of the new user
-        if (user.groups.all { catalogService.hasRightsForGroup(principal, groupService.get(catalogId, it) ?: return@all false) } != true) {
+        if (checkGroupPermissionsForPrincipal(user.groups, principal, catalogId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
@@ -146,6 +146,17 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         if (developmentMode) logger.info("Skip sending welcome mail as development mode is active.")
 
         return ResponseEntity.ok(getSingleUser(principal, createdUser.userId))
+    }
+
+    private fun checkGroupPermissionsForPrincipal(
+        groupIds: List<Int>,
+        principal: Principal,
+        catalogId: String,
+    ) = !groupIds.all {
+        catalogService.hasRightsForGroup(
+            principal,
+            groupService.get(catalogId, it) ?: return@all false,
+        )
     }
 
     private fun validateLoginName(user: User) {
@@ -401,6 +412,10 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         principal: Principal,
         info: CatalogAdmin,
     ): ResponseEntity<de.ingrid.igeserver.model.UserInfo?> {
+        if (!authUtils.isAdmin(principal)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
         val userIds = info.userIds
         if (userIds.isEmpty()) {
             throw InvalidParameterException.withInvalidParameters("info.userIds")
@@ -417,6 +432,9 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         userId: String,
         catalogId: String,
     ): ResponseEntity<Void> {
+        if (!authUtils.isSuperAdmin(principal)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val catalog = catalogService.getCatalogById(catalogId)
         val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
 
@@ -425,7 +443,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok().build()
     }
 
-    fun addOrUpdateCatalogAdmin(catalogName: String, userIdent: String) {
+    private fun addOrUpdateCatalogAdmin(catalogName: String, userIdent: String) {
         var user = userRepo.findByUserId(userIdent)
         val catalog = catalogService.getCatalogById(catalogName)
 

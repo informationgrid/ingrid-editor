@@ -49,7 +49,6 @@ export class GeoServiceDoctype extends IngridShared {
 
   geoServiceOptions = {
     required: {
-      operations: true,
       classification: true,
     },
   };
@@ -172,7 +171,10 @@ export class GeoServiceDoctype extends IngridShared {
                 ),
               ]),
               this.addRepeat("operations", "Operationen", {
-                required: this.geoServiceOptions.required.operations,
+              expressions: {
+                "props.required": (field: FormlyFieldConfig) =>
+                  !field.options.formState.mainModel?.service?.isAtomDownload,
+              },
                 fields: [
                   this.addAutoCompleteInline("name", "Name", {
                     required: true,

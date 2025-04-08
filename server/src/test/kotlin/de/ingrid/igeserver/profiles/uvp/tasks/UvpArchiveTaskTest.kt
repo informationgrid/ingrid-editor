@@ -22,7 +22,9 @@ package de.ingrid.igeserver.profiles.uvp.tasks
 import IntegrationTest
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ninjasquad.springmockk.MockkBean
+import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.utils.getString
 import io.kotest.matchers.shouldBe
@@ -34,6 +36,7 @@ import org.quartz.JobExecutionContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
+import org.springframework.transaction.PlatformTransactionManager
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -48,6 +51,9 @@ class UvpArchiveTaskTest : IntegrationTest() {
 
     @Autowired
     private lateinit var entityManager: EntityManager
+
+    @Autowired
+    private lateinit var transactionManager: PlatformTransactionManager
 
     @MockkBean
     private lateinit var behaviourService: BehaviourService
@@ -78,6 +84,12 @@ class UvpArchiveTaskTest : IntegrationTest() {
         getTableRows(steps, 2, "decisionDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
 
         checkIfArchived(1)
+
+        // negative assessment
+        val data = getDataFrom(1002)
+        data.get("uvpNegativeDecisionDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        checkIfArchived(2)
     }
 
     @Test
@@ -97,6 +109,12 @@ class UvpArchiveTaskTest : IntegrationTest() {
         getTableRows(steps, 2, "decisionDocs").forEach { it.getString("validUntil") shouldBe null }
 
         checkIfArchived(1)
+
+        // negative assessment
+        val data = getDataFrom(1002)
+        data.get("uvpNegativeDecisionDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        checkIfArchived(2)
     }
 
     @Test
@@ -116,6 +134,78 @@ class UvpArchiveTaskTest : IntegrationTest() {
         getTableRows(steps, 2, "decisionDocs").forEach { it.getString("validUntil") shouldBe null }
 
         checkIfArchived(1)
+
+        // negative assessment
+        val data = getDataFrom(1002)
+        data.get("uvpNegativeDecisionDocs").forEach { it.getString("validUntil") shouldBe null }
+
+        checkIfArchived(2)
+    }
+
+    @Test
+    fun `archive datasets with option HIDE_ALL with some empty tables`() {
+        // manually empty one of the tables
+        ClosableTransaction(transactionManager).use {
+            entityManager.createNativeQuery(
+                """
+                UPDATE document
+                SET data = jsonb_set(
+                        data,
+                        '{processingSteps}',
+                        (SELECT jsonb_agg(
+                                        jsonb_set(
+                                                step,
+                                                '{reportsRecommendationDocs}',
+                                                '[]'::jsonb,
+                                                TRUE
+                                        )
+                                )
+                         FROM jsonb_array_elements(data -> 'processingSteps') step),
+                        TRUE
+                           )
+                WHERE id = 1001;
+                """.trimIndent(),
+                JsonNode::class.java,
+            ).executeUpdate()
+        }
+        ClosableTransaction(transactionManager).use {
+            entityManager.createNativeQuery(
+                """
+                UPDATE document
+                SET data = jsonb_set(
+                                    data,
+                                    '{uvpNegativeDecisionDocs}',
+                                    '[]'::jsonb,
+                                    TRUE
+                            )
+                WHERE id = 1002;
+                """.trimIndent(),
+                JsonNode::class.java,
+            ).executeUpdate()
+        }
+
+        runWithOption(ArchiveType.HIDE_ALL)
+
+        val steps = getProcessingStepsFrom(1001)
+
+        getTableRows(steps, 0, "announcementDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 0, "applicationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 0, "reportsRecommendationDocs").size() shouldBe 0
+        getTableRows(steps, 0, "furtherDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        getTableRows(steps, 1, "considerationDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        getTableRows(steps, 2, "approvalDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+        getTableRows(steps, 2, "decisionDocs").forEach { it.getString("validUntil") shouldBe expectedDate }
+
+        checkIfArchived(1)
+
+        // negative assessment
+        val data = getDataFrom(1002)
+        data.getString("description") shouldBe "test"
+        data.get("uvpNegativeDecisionDocs").size() shouldBe 0
+
+        checkIfArchived(2)
     }
 
     @Test @Ignore
@@ -177,6 +267,16 @@ class UvpArchiveTaskTest : IntegrationTest() {
                 JsonNode::class.java,
             ).resultList as List<ArrayNode>
         return steps[0]
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun getDataFrom(id: Int): ObjectNode {
+        val data: List<ObjectNode> =
+            entityManager.createNativeQuery(
+                "SELECT data FROM document WHERE id=$id",
+                JsonNode::class.java,
+            ).resultList as List<ObjectNode>
+        return data[0]
     }
 
     @Suppress("UNCHECKED_CAST")
