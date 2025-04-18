@@ -128,7 +128,12 @@ export class SidebarComponent implements OnInit {
       ConfigService.catalogId + this.path,
       { id: selectedDocUuids[0] },
     ]);
-    if (!navigated) this.activeTreeNode.next(currentId);
+    if (!navigated) {
+      // active node state is only updated when value has changed
+      // that's why we need to set two values delayed
+      this.activeTreeNode.next(null);
+      setTimeout(() => this.activeTreeNode.next(currentId), 100);
+    }
   }
 
   handleSelection(selectedDocsId: number[]) {

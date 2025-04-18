@@ -788,6 +788,10 @@ ige-root .mat-drawer-container {
     &.amtsintern {
       background-color: vars.$error-color;
     }
+
+    &.archived {
+      background-color: vars.$ige-comment-color;
+    }
   }
 }
 

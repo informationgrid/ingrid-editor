@@ -77,7 +77,7 @@ export class Metadata {
   // the date when the document will be published next
   pendingDate?: string;
 
-  tags?: string;
+  tags?: string[];
 
   hasWritePermission?: boolean;
 
@@ -132,7 +132,7 @@ export class IgeDocument {
   // the date when the document will be published next
   _pendingDate?: string;
 
-  _tags?: string;
+  _tags?: string[];
 
   hasOnlySubtreeWritePermission?: boolean;
 

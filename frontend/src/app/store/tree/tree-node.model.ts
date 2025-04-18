@@ -36,6 +36,6 @@ export class TreeNode {
     public isLoading = false,
     public hasWritePermission = false,
     public hasOnlySubtreeWritePermission = false,
-    public tags: string = null,
+    public tags: string[] = null,
   ) {}
 }

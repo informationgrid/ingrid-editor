@@ -49,16 +49,18 @@ import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOpti
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.igeserver.utils.checkPublicationTags
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.suffixIfNot
 import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
-import org.jetbrains.kotlin.util.suffixIfNot
 import org.unbescape.json.JsonEscape
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
@@ -651,7 +653,16 @@ open class IngridModelTransformer(
 
     // TODO: move to specific doc type
     // literature
-    val resourceFormat = data.publication?.documentType?.let { codelists.getValue("3385", it, "en") }
+    val resourceFormat = if (!isDoiActive()) data.publication?.documentType?.let { codelists.getValue("3385", it, "en") } else null
+
+    private fun isDoiActive(): Boolean {
+        val doiBehaviour = SpringContext.getBean(BehaviourService::class.java)?.get(catalogIdentifier, "plugin.ingrid.doi")
+        return doiBehaviour?.active == true
+    }
+
+    val doi = if (isDoiActive()) data.publication?.doi else null
+    val generalResourceType = if (isDoiActive()) data.publication?.generalResourceType?.let { codelists.getValue("3390", it, "en") } else null
+    val resourceType = if (isDoiActive()) data.publication?.resourceType?.let { codelists.getValue("3386", it, "en") } else null
 
     val references = data.references ?: emptyList()
     private val externalReferences: List<ServiceUrl> by lazy {

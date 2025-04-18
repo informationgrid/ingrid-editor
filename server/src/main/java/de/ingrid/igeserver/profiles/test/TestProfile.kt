@@ -32,6 +32,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Query
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.CodelistRepository
 import de.ingrid.igeserver.repository.QueryRepository
+import de.ingrid.igeserver.research.quickfilter.ArchivedDocs
 import de.ingrid.igeserver.research.quickfilter.DocTest
 import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
@@ -76,6 +77,7 @@ class TestProfile : CatalogProfile {
             arrayOf(
                 Published(),
                 ExceptFolders(),
+                ArchivedDocs(),
             ),
             viewComponent = ViewComponent.CHECKBOX,
             combine = Operator.AND,

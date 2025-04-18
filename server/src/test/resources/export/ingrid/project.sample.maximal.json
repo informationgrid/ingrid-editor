@@ -189,6 +189,11 @@
         "url": "https://bestellung.com",
         "explanation": "Beschreibung der Bestellung"
       }
-    ]
+    ],
+    "publication": {
+      "doi": "10.1000/1234",
+      "generalResourceType": { "key": "5" },
+      "resourceType": { "key": "2" }
+    }
   }
 }

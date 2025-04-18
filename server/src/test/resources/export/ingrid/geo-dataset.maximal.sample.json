@@ -432,6 +432,11 @@
       "cellGeometry": {
         "key": "2"
       }
+    },
+    "publication": {
+      "doi": "10.1000/1234",
+      "generalResourceType": { "key": "5" },
+      "resourceType": { "key": "2" }
     }
   }
 }

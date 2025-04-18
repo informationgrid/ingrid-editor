@@ -28,6 +28,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.ExportConfig
 import de.ingrid.igeserver.repository.CatalogRepository
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ExportService
@@ -71,6 +72,7 @@ class IndexService(
     private val entityManager: EntityManager,
     private val generalProperties: GeneralProperties,
     private val schedulerService: SchedulerService,
+    private val behaviourService: BehaviourService,
 ) {
 
     private val log = logger()
@@ -96,7 +98,10 @@ class IndexService(
                     try {
                         schedulerService.scheduleByCron(jobKey, IndexingTask::class.java, config.catalogId, config.cron)
                     } catch (e: Exception) {
-                        log.error("Error setting up scheduler for '${config.catalogId}' with expression '${config.cron}'", e)
+                        log.error(
+                            "Error setting up scheduler for '${config.catalogId}' with expression '${config.cron}'",
+                            e,
+                        )
                     }
                 }
         } catch (ex: Exception) {
@@ -171,7 +176,7 @@ class IndexService(
 
     fun getLastLog(catalogId: String): IndexMessage? = catalogRepo.findByIdentifier(catalogId).settings.lastLogSummary
 
-    fun requestPublishableDocuments(
+    private fun requestPublishableDocuments(
         queryInfo: QueryInfo,
         uuid: String?,
         paging: ResearchPaging = ResearchPaging(pageSize = generalProperties.indexPageSize),
@@ -199,7 +204,13 @@ class IndexService(
 
         return result
             .map {
-                IndexDocumentResult(it[0] as String, it[1] as Int, it[2] as String, it[3] as Int?, it[4] as Array<String>? ?: emptyArray())
+                IndexDocumentResult(
+                    it[0] as String,
+                    it[1] as Int,
+                    it[2] as String,
+                    it[3] as Int?,
+                    it[4] as Array<String>? ?: emptyArray(),
+                )
             }
             .map {
                 // FOLDERS do not have a published version
@@ -228,16 +239,26 @@ class IndexService(
         uuid: String?,
     ): String {
         val iBusConditions = getSystemSpecificConditions(queryInfo.types)
+        val archivedCondition = getArchivedCondition(queryInfo.catalogId)
         var sql =
             """
                 SELECT document_wrapper.uuid, document_wrapper.id, document_wrapper.type, document_wrapper.parent_id, document_wrapper.tags
                 FROM document_wrapper JOIN document document ON document_wrapper.uuid=document.uuid, catalog
                 WHERE document_wrapper.catalog_id = catalog.id AND document.catalog_id = catalog.id AND 
                 category = '${queryInfo.category}' AND deleted = 0 AND catalog.identifier = ? AND
-                 $iBusConditions AND (${queryInfo.exporterConditions})
+                 $iBusConditions $archivedCondition AND (${queryInfo.exporterConditions})
             """.trimIndent()
         uuid?.let { sql += " AND document_wrapper.uuid = '$it'" }
         return sql
+    }
+
+    private fun getArchivedCondition(catalogId: String): String {
+        val archivePlugin = behaviourService.get(catalogId, "plugin.archive")
+        val isActive = archivePlugin?.active == true
+        val showInPortal = archivePlugin?.data?.get("showInPortal") as? Boolean == true
+        if (!isActive || showInPortal) return ""
+
+        return "AND (document_wrapper.tags is null OR NOT ('{archived}' && document_wrapper.tags))"
     }
 
     fun getNumberOfPublishableDocuments(queryInfo: QueryInfo): Long {
@@ -247,7 +268,8 @@ class IndexService(
                 null,
             )
         val regex = Regex("(.|\\n)*?\\bFROM\\b")
-        val countSql = sql.replaceFirst(regex, "SELECT COUNT(DISTINCT(document_wrapper.uuid, document_wrapper.id)) FROM")
+        val countSql =
+            sql.replaceFirst(regex, "SELECT COUNT(DISTINCT(document_wrapper.uuid, document_wrapper.id)) FROM")
         val nativeQuery = entityManager.createNativeQuery(countSql)
 
         nativeQuery.setParameter(1, queryInfo.catalogId)

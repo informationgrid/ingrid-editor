@@ -116,9 +116,11 @@ export class SideMenuComponent implements OnInit {
   }
 
   gotoPage(path: string) {
-    const tab = this.uiStore.currentTab()[path];
+    const tab = this.uiStore.currentSubpage()[path];
+
     if (tab) {
-      const tabWithParameter = tab.split(";");
+      // tab is a either a string with the format "tab;parameter" or an object with parameters like { parameter: "parameter" }
+      const tabWithParameter = typeof tab === "string" ? tab.split(";") : [tab];
       const newPath = [
         ConfigService.catalogId + "/" + path,
         tabWithParameter[0],

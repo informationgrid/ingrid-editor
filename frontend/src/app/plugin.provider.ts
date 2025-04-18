@@ -41,6 +41,7 @@ import { ShowDocumentPermissionsHandlerPlugin } from "./+catalog/+behaviours/sys
 import { FieldsToggleButtonBehaviour } from "./+catalog/+behaviours/system/FieldsToggleButton/fields-toggle-button.behaviour";
 import { ExpiredDocumentsBehaviour } from "./+catalog/+behaviours/system/expiredDocuments/expired-documents.behaviour";
 import { DocumentsAsParentBehaviour } from "./+catalog/+behaviours/system/AllowDocumentsAsParent/documents-as-parent.behaviour";
+import { ArchivePlugin } from "./+catalog/+behaviours/system/Archive/archive.plugin";
 
 export const pluginProvider = [
   { provide: PluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -82,4 +83,5 @@ export const pluginProvider = [
     multi: true,
   },
   { provide: PluginToken, useClass: ExpiredDocumentsBehaviour, multi: true },
+  { provide: PluginToken, useClass: ArchivePlugin, multi: true },
 ];

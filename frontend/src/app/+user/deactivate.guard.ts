@@ -55,11 +55,6 @@ export class DeactivateGuard {
       return true;
     }
 
-    // Workaround for https://github.com/angular/angular/issues/9530
-    // canDeactivate is called twice if there is a redirect like in the case
-    // of a selected element   "/form" to "/form;id=xxx"
-    if (nextState?.url.includes(";id=")) return true;
-
     const type = component instanceof UserComponent ? "user" : "group";
     const currentObject = component.form.getRawValue();
 

@@ -152,8 +152,9 @@ export class LeafletTypeComponent
       (location) => location.value || location.wkt,
     );
 
+    // we need to call fitBounds in order to fully initialize map (see #7508)
+    this.leafletService.zoomToInitialBox(this.leafletReference);
     if (this.locations.length === 0 || !hasCoordinates) {
-      this.leafletService.zoomToInitialBox(this.leafletReference);
       this.leafletReference.dragging.disable();
       this.leafletReference.doubleClickZoom.disable();
     }

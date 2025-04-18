@@ -51,11 +51,25 @@ export class GeoDatasetDoctypeKrzn extends GeoDatasetDoctype {
   }
 
   private getMapLinkFieldConfig() {
-    return this.addSelect("mapLink", "Kartenclient", {
-      required: true,
-      allowNoValue: false,
-      options: this.getCodelistForSelect("10500", "mapLink", "description"),
-    });
+    return this.addGroupSimple(null, [
+      this.addSelect("mapLink", "Kartenclient", {
+        required: true,
+        allowNoValue: false,
+        options: this.getCodelistForSelect("10500", "mapLink", "description"),
+      }),
+      this.addGroupSimple(
+        null,
+        [
+          this.addInputInline("mapZoomLevel", "Zoomstufe", {
+            type: "number",
+            min: 1,
+            max: 14,
+          }),
+          this.addInputInline("mapCenter", "Kartenmittelpunkt", {}),
+        ],
+        { wrappers: ["panel"], fieldGroupClassName: "flex-row" },
+      ),
+    ]);
   }
 
   private getGeoLinkFieldConfig(): FormlyFieldConfig {

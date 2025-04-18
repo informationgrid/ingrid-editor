@@ -135,11 +135,11 @@ class IndexingTask(
                         }
                     }
             }
-        } catch (ex: InterruptedException) {
+        } catch (_: InterruptedException) {
             notify.addAndSendMessageError(message, null, "Indexing was cancelled")
         } catch (ex: Exception) {
             notify.addAndSendMessageError(message, ex, "Error during indexing: ")
-        } catch (ex: NotImplementedError) {
+        } catch (_: NotImplementedError) {
             notify.addAndSendMessageError(message, ServerException.withReason("Not Implemented"))
         }
 
@@ -261,7 +261,7 @@ class IndexingTask(
 
     private fun getExporterOrNull(category: DocumentCategory, exporterId: String): IgeExporter? = try {
         indexService.getExporter(category, exporterId)
-    } catch (e: ConfigurationException) {
+    } catch (_: ConfigurationException) {
         null
     }
 
@@ -273,9 +273,9 @@ class IndexingTask(
     fun updateDocument(
         catalogId: String,
         category: DocumentCategory,
-        docId: String,
+        docUuid: String,
     ) {
-        log.info("Export dataset from catalog '$catalogId': $docId")
+        log.info("Export dataset from catalog '$catalogId': $docUuid")
 
         setAdminAuthentication("Indexing", "Task")
 
@@ -290,7 +290,7 @@ class IndexingTask(
                     // TODO: add alias to exporter config
                     val elasticsearchAlias = getElasticsearchAliasFromCatalog(catalog, category, it.target.name)
                     val queryInfo = QueryInfo(catalogId, category.value, it.tags, it.exporter.exportSql(catalogId))
-                    val doc = indexService.getSinglePublishedDocument(queryInfo, docId)
+                    val doc = indexService.getSinglePublishedDocument(queryInfo, docUuid)
                     val indexInfo = getOrPrepareIndex(it, catalogProfile, category, elasticsearchAlias)
                     val plugInfo = createIPlugInfo(catalog, it)
                     IndexTargetWorker(
@@ -311,9 +311,9 @@ class IndexingTask(
 
                     it.target.flush()
                 }
-        } catch (ex: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             log.info(
-                "Document not indexed, probably because of profile specific condition: $catalogId -> $docId",
+                "Document not indexed, probably because of profile specific condition: $catalogId -> $docUuid",
             )
         }
     }
@@ -348,7 +348,7 @@ class IndexingTask(
         )
     }
 
-    fun removeFromIndex(catalogId: String, id: String, category: String) {
+    fun removeFromIndex(catalogId: String, uuid: String, category: String) {
         val catalog = catalogRepo.findByIdentifier(catalogId)
         val catalogProfile = catalogService.getCatalogProfile(catalog.type)
         val configs = getExporterConfigForCatalog(catalog, catalogProfile)
@@ -363,13 +363,17 @@ class IndexingTask(
 
                     if (oldIndex != null && it.target.indexExists(oldIndex)) {
                         val info = IndexInfo(oldIndex, elasticsearchAlias, null)
-                        it.target.delete(info, id, true)
+                        it.target.delete(info, uuid, true)
                     }
                     it.target.flush()
                 } catch (ex: Exception) {
-                    throw NoElasticsearchConnectionException.withReason(
-                        ex.message ?: "No connection to Elasticsearch",
-                    )
+                    if (ex.message?.contains("with status 404") == true) {
+                        log.debug("Document not found in index and cannot be removed: $uuid")
+                    } else {
+                        throw NoElasticsearchConnectionException.withReason(
+                            ex.message ?: "No connection to Elasticsearch",
+                        )
+                    }
                 }
             }
     }

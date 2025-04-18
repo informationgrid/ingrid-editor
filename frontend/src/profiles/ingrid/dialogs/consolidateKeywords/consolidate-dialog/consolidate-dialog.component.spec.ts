@@ -40,11 +40,13 @@ import { ThesaurusType } from "../../../components/thesaurus-result";
 import { KeywordAnalysis } from "../../../utils/keywords";
 import { CodelistStore } from "../../../../../app/store/codelist/codelist.store";
 import { CodelistEntry } from "../../../../../app/store/codelist/codelist.model";
+import { MatIconTestingModule } from "@angular/material/icon/testing";
 
 describe("ConsolidateDialogComponent", () => {
   let spectator: Spectator<ConsolidateDialogComponent>;
   const createComponent = createComponentFactory({
     component: ConsolidateDialogComponent,
+    imports: [MatIconTestingModule],
     providers: [
       { provide: MAT_DIALOG_DATA, useValue: [] },
       { provide: MatDialogRef, useValue: [] },

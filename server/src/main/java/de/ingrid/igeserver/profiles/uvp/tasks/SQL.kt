@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.uvp.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.utils.UploadInfo
+import java.time.OffsetDateTime
 
 val sqlStepsPublished = """
         SELECT doc.uuid as uuid, catalog.identifier as catalogId, elems as step, doc.title, doc.type
@@ -97,8 +98,109 @@ fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadIn
     ?.map { mapToUploadInfo(it) }
     ?: emptyList()
 
+fun sqlDecisionDateBefore(catalogId: String, date: OffsetDateTime): String = """
+    SELECT DISTINCT dw.id, doc.id, doc.type
+    FROM document doc
+             JOIN document_wrapper dw ON doc.uuid = dw.uuid
+             JOIN catalog ON dw.catalog_id = catalog.id
+             LEFT JOIN LATERAL jsonb_array_elements(doc.data -> 'processingSteps') AS elems ON jsonb_typeof(doc.data -> 'processingSteps') = 'array'
+    WHERE catalog.identifier = '$catalogId'
+      AND doc.catalog_id = dw.catalog_id
+      AND catalog.id = dw.catalog_id
+      AND catalog.type = 'uvp'
+      AND dw.deleted = 0
+      AND dw.category = 'data'
+      AND dw.uuid = doc.uuid
+      AND doc.state = 'PUBLISHED'
+      AND ((doc.data->>'decisionDate')::timestamptz <= '$date' AND doc.type='UvpNegativePreliminaryAssessmentDoc' OR elems->>'type' = 'decisionOfAdmission' AND (elems->>'decisionDate')::timestamptz <= '$date')
+""".trimIndent()
+
+fun sqlUpdateValidDate(docId: Int, tableField: String): String = """
+        UPDATE document
+        SET data = jsonb_set(
+        data,
+        '{processingSteps}',
+        COALESCE(
+        (SELECT jsonb_agg(
+                        CASE
+                            WHEN jsonb_typeof(step -> '$tableField') = 'array' THEN
+                                        jsonb_set(
+                                                step,
+                                                '{$tableField}',
+                                                COALESCE(
+                                                    (SELECT jsonb_agg(
+                                                                    CASE
+                                                                        WHEN doc ->> 'validUntil' IS NULL OR
+                                                                             (doc ->> 'validUntil')::timestamp >=
+                                                                             (CURRENT_DATE::timestamp AT TIME ZONE 'Europe/Berlin') AT TIME ZONE 'UTC' THEN
+                                                                            jsonb_set(
+                                                                                    doc,
+                                                                                    '{validUntil}',
+                                                                                    to_jsonb(to_char(
+                                                                                        ((CURRENT_DATE::timestamp - INTERVAL '1 day') AT TIME ZONE 'Europe/Berlin') AT TIME ZONE 'UTC'
+                                                                                    , 'YYYY-MM-DD"T"HH24:MI:SS.MSZ')),
+                                                                                    TRUE
+                                                                            )
+                                                                        ELSE doc
+                                                                        END
+                                                            )
+                                                     FROM jsonb_array_elements(step -> '$tableField') doc),
+                                                     '[]'::jsonb
+                                                ),
+                                                TRUE
+                                        )
+                                    ELSE step
+                                    END
+                        )
+                 FROM jsonb_array_elements(data -> 'processingSteps') step),
+                 COALESCE(data -> 'processingSteps', '[]'::jsonb)
+                 ),
+                TRUE
+                   )
+        WHERE id = $docId
+""".trimIndent()
+
+fun sqlUpdateValidDateNegativeDoc(docId: Int): String = """
+    UPDATE document
+        SET data = CASE
+           WHEN EXISTS (SELECT 1
+                        FROM jsonb_object_keys(data) AS keys
+                        WHERE keys = 'uvpNegativeDecisionDocs') THEN
+               jsonb_set(
+                       data,
+                       '{uvpNegativeDecisionDocs}',
+                       COALESCE(
+                           (SELECT jsonb_agg(
+                                       CASE
+                                           WHEN doc ->> 'validUntil' IS NULL OR
+                                                (doc ->> 'validUntil')::timestamp >=
+                                                (CURRENT_DATE::timestamp AT TIME ZONE 'Europe/Berlin') AT TIME ZONE
+                                                'UTC' THEN
+                                               jsonb_set(
+                                                       doc,
+                                                       '{validUntil}',
+                                                       to_jsonb(to_char(
+                                                               ((CURRENT_DATE::timestamp - INTERVAL '1 day') AT TIME ZONE 'Europe/Berlin') AT TIME ZONE
+                                                               'UTC'
+                                                           , 'YYYY-MM-DD"T"HH24:MI:SS.MSZ')),
+                                                       TRUE
+                                               )
+                                           ELSE doc
+                                           END
+                                   )
+                            FROM jsonb_array_elements(data -> 'uvpNegativeDecisionDocs') doc),
+                            '[]'::jsonb
+                       ),
+                       TRUE
+               )
+           ELSE data
+           END
+   WHERE id = $docId
+"""
+
 private fun mapToUploadInfo(it: JsonNode): UploadInfo {
     val validUntilDateField = it.get("validUntil")
-    val expiredDate = if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
+    val expiredDate =
+        if (validUntilDateField == null || validUntilDateField.isNull) null else validUntilDateField.asText()
     return UploadInfo("", it.get("downloadURL").get("uri").textValue(), expiredDate)
 }

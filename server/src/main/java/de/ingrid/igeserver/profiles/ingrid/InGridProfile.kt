@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
@@ -39,6 +40,7 @@ import de.ingrid.igeserver.profiles.ingrid.quickfilter.SpatialInGrid
 import de.ingrid.igeserver.profiles.uvp.quickfilter.TitleSearch
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
+import de.ingrid.igeserver.research.quickfilter.ArchivedDocs
 import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
@@ -91,6 +93,7 @@ class InGridProfile(
                 Published(),
                 ExceptFolders(),
                 TitleSearch(),
+                ArchivedDocs(),
             ),
             viewComponent = ViewComponent.CHECKBOX,
             combine = Operator.AND,
@@ -149,6 +152,8 @@ class InGridProfile(
         val codelist6250 = createCodelist6250(catalogRef)
         val codelist3535 = createCodelist3535(catalogRef)
         val codelist3555 = createCodelist3555(catalogRef)
+        val codelist3386 = createCodelist3386(catalogRef)
+        val codelist3390 = createCodelist3390(catalogRef)
 
         when (codelistId) {
             "6006" -> codelistHandler.removeAndAddCodelist(catalogId, codelist6006)
@@ -156,10 +161,20 @@ class InGridProfile(
             "6250" -> codelistHandler.removeAndAddCodelist(catalogId, codelist6250)
             "3535" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3535)
             "3555" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3555)
+            "3386" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3386)
+            "3390" -> codelistHandler.removeAndAddCodelist(catalogId, codelist3390)
             null -> {
                 codelistHandler.removeAndAddCodelists(
                     catalogId,
-                    listOf(codelist6006, codelist1350, codelist6250, codelist3535, codelist3555),
+                    listOf(
+                        codelist6006,
+                        codelist1350,
+                        codelist6250,
+                        codelist3535,
+                        codelist3555,
+                        codelist3386,
+                        codelist3390,
+                    ),
                 )
             }
 
@@ -294,6 +309,64 @@ class InGridProfile(
             add(CodelistHandler.toCodelistEntry("68", "Bundesimmissionsschutzverordnung"))
         }
     }
+
+    private fun createCodelist3386(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "3386"
+        catalog = catalogRef
+        name = "Ressourcen-Typ"
+        description =
+            "Die Liste der Ressourcentypen ist initial eine Kopie der Codeliste 3385: Objektklasse 2 - Dokumenttyp"
+        data = jacksonObjectMapper().createArrayNode().apply {
+            codelistHandler.getCodelists(listOf("3385"))?.get(0)?.entries?.let { codelist3385 ->
+                codelist3385.forEach { entry ->
+                    val de = entry.localisations.get("de") ?: entry.localisations.get("en") ?: ""
+                    add(toCodelistEntry(entry.id, de, null, entry.localisations.get("en")))
+                }
+            }
+        }
+    }
+
+    private fun createCodelist3390(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "3390"
+        catalog = catalogRef
+        name = "Ressourcen-Typ (generell)"
+        description =
+            "Die Liste der generellen Ressourcentypen ist übernommen von https://datacite-metadata-schema.readthedocs.io/en/4.5/properties/resourcetype/#a-resourcetypegeneral"
+        data = jacksonObjectMapper().createArrayNode().apply {
+            add(toDualLanguageCodelistEntry("1", "Audiovisual"))
+            add(toDualLanguageCodelistEntry("2", "Book"))
+            add(toDualLanguageCodelistEntry("3", "BookChapter"))
+            add(toDualLanguageCodelistEntry("4", "Collection"))
+            add(toDualLanguageCodelistEntry("5", "ComputationalNotebook"))
+            add(toDualLanguageCodelistEntry("6", "ConferencePaper"))
+            add(toDualLanguageCodelistEntry("7", "ConferenceProceeding"))
+            add(toDualLanguageCodelistEntry("8", "DataPaper"))
+            add(toDualLanguageCodelistEntry("9", "Dataset"))
+            add(toDualLanguageCodelistEntry("10", "Dissertation"))
+            add(toDualLanguageCodelistEntry("11", "Event"))
+            add(toDualLanguageCodelistEntry("12", "Image"))
+            add(toDualLanguageCodelistEntry("13", "InteractiveResource"))
+            add(toDualLanguageCodelistEntry("14", "Instrument"))
+            add(toDualLanguageCodelistEntry("15", "Journal"))
+            add(toDualLanguageCodelistEntry("16", "JournalArticle"))
+            add(toDualLanguageCodelistEntry("17", "Model"))
+            add(toDualLanguageCodelistEntry("18", "OutputManagementPlan"))
+            add(toDualLanguageCodelistEntry("19", "PeerReview"))
+            add(toDualLanguageCodelistEntry("20", "PhysicalObject"))
+            add(toDualLanguageCodelistEntry("21", "Preprint"))
+            add(toDualLanguageCodelistEntry("22", "Report"))
+            add(toDualLanguageCodelistEntry("23", "Service"))
+            add(toDualLanguageCodelistEntry("24", "Software"))
+            add(toDualLanguageCodelistEntry("25", "Sound"))
+            add(toDualLanguageCodelistEntry("26", "Standard"))
+            add(toDualLanguageCodelistEntry("27", "StudyRegistration"))
+            add(toDualLanguageCodelistEntry("28", "Text"))
+            add(toDualLanguageCodelistEntry("29", "Workflow"))
+            add(toDualLanguageCodelistEntry("30", "Other"))
+        }
+    }
+
+    private fun toDualLanguageCodelistEntry(id: String, value: String): JsonNode = toCodelistEntry(id, value, null, value)
 
     override fun initCatalogQueries(catalogId: String) {
         val queryTest = Query().apply {

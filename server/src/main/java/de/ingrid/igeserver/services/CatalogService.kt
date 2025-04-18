@@ -404,8 +404,10 @@ class CatalogService(
      * @return list of usernames that are editable by the principal
      */
     fun filterEditableUsers(principal: Principal, usernames: List<String>): List<String> {
-        // admins have access to every user
+        // catalog and super admins have access to every user
         if (authUtils.isAdmin(principal)) return usernames
+        // non admins can not edit any users
+        if (!authUtils.containsRole(principal, "md-admin")) return emptyList()
         val groupAccessCache = mutableMapOf<Int, Boolean>()
 
         return usernames.filter { username ->
