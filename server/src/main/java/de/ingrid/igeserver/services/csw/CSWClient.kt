@@ -46,7 +46,7 @@ class CSWClient(
         val idfXml = documentBuilder.parse(InputSource(StringReader(response)))
         val transformedXml = transformXml(idfXml)
 
-        transformedXml.addDescriptiveKeywordsWithThesaurus(listOf(catalogId, transactionId), "INGRID - internal system keywords.", "2025-01-01" )
+        transformedXml.addDescriptiveKeywordsWithThesaurus(listOf(catalogId, transactionId), "INGRID - internal system keywords", "2025-01-01" )
 
         if (recordExists(doc)) {
             val updateRequest = createCswTransactionRequest(transformedXml, "Update")
@@ -310,6 +310,7 @@ class CSWClient(
         val dateText = try {
             df.format(df.parse(thesaurusPublicationDate))
         } catch (e: Exception) {
+            log.debug("Could not parse to date yyyy-MM-dd: " + thesaurusPublicationDate, e)
             df.format(Date()) // Fallback to current date if parsing fails
         }
         val gcoDateElement = createElementNS("http://www.isotc211.org/2005/gco", "gco:Date")
@@ -354,7 +355,7 @@ class CSWClient(
             }
 
         } else {
-            println("Warning: Could not find gmd:identificationInfo element to append to.")
+            log.error("Error: Could not find gmd:identificationInfo element to append to.")
         }
     }
 
