@@ -26,7 +26,8 @@ plugins {
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.4.5'
     id "com.gorylenko.gradle-git-properties" version "2.4.2"
-    id 'io.kotest' version '0.4.11'
+// see https://github.com/kotest/kotest-intellij-plugin/issues/354
+//    id 'io.kotest' version '0.4.11'
     id "com.github.ben-manes.versions" version "0.52.0"
     id "gg.jte.gradle" version "$jte_version"
     id "org.hibernate.orm" version "6.5.2.Final"

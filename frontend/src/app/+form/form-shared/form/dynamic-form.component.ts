@@ -88,6 +88,7 @@ import { toObservable } from "@angular/core/rxjs-interop";
 import { ProfileService } from "../../../services/profile.service";
 import { UiStore } from "../../../store/ui.store";
 import { BehaviourService } from "../../../services/behavior/behaviour.service";
+import { LLMPromptFormComponent } from "../../../+catalog/+behaviours/system/LLMPrompt/llm-prompt-form/llm-prompt-form.component";
 
 @UntilDestroy()
 @Component({
@@ -108,6 +109,7 @@ import { BehaviourService } from "../../../services/behavior/behaviour.service";
     FolderDashboardComponent,
     AsyncPipe,
     JsonPipe,
+    LLMPromptFormComponent,
   ],
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -163,6 +165,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   showJson: Signal<boolean> = computed(() => {
     const plugin = this.behaviourService.getBehaviour("plugin.show.json");
     return plugin.isActive && this.uiStore.showJSONView();
+  });
+
+  llmPrompt: Signal<boolean> = computed(() => {
+    const plugin = this.behaviourService.getBehaviour("plugin.llm.prompt");
+    return plugin.isActive && this.uiStore.llmPromptView();
   });
 
   private readonly: boolean;

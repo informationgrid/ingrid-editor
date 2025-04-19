@@ -27,6 +27,7 @@ import { DeleteDocsPlugin } from "./+form/dialogs/delete-docs/delete-docs.plugin
 import { HistoryPlugin } from "./+form/dialogs/history/history.plugin";
 import { DeleteEmptyFoldersBehaviour } from "./+catalog/+behaviours/system/DeleteEmptyFolders/delete-empty-folders.behaviour";
 import { ShowJsonBehaviour } from "./+catalog/+behaviours/system/ShowJson/show-json.behaviour";
+import { LLMPromptBehaviour } from "./+catalog/+behaviours/system/LLMPrompt/llm-prompt.behaviour";
 import { TreeModeToolbarBehaviour } from "./+catalog/+behaviours/system/ToolbarStateTreeMode/tree-mode-toolbar.behaviour";
 import { PrintViewPlugin } from "./+form/dialogs/print-view/print-view.plugin";
 import { TagsBehaviour } from "./+catalog/+behaviours/system/tags/tags.behaviour";
@@ -44,6 +45,7 @@ import { DocumentsAsParentBehaviour } from "./+catalog/+behaviours/system/AllowD
 import { ArchivePlugin } from "./+catalog/+behaviours/system/Archive/archive.plugin";
 
 export const pluginProvider = [
+  { provide: PluginToken, useClass: LLMPromptBehaviour, multi: true },
   { provide: PluginToken, useClass: ShowJsonBehaviour, multi: true },
   { provide: PluginToken, useClass: PublishPlugin, multi: true },
   { provide: PluginToken, useClass: CreateDocumentPlugin, multi: true },

@@ -1,0 +1,35 @@
+<div class="llm-prompt-container">
+    <h1>🤖 LLM Prompt</h1>
+
+    <div class="messages-container">
+        @for (message of messages(); track message.id) {
+            <div class="message" [ngClass]="{
+        'user-message': message.fromUser,
+        'ai-message': !message.fromUser,
+        'generating': message.generating
+      }">
+                <span class="message-prefix">{{ message.fromUser ? '👤' : '🤖' }}</span>
+                <pre>{{ message.text }}</pre>
+            </div>
+        }
+    </div>
+
+    <form #form="ngForm" (ngSubmit)="sendMessage(form, form.value.message)" class="message-form">
+        <input
+            name="message"
+            placeholder="Type your message here..."
+            ngModel
+            required
+            autofocus
+            [disabled]="generatingInProgress()"
+            class="message-input"
+        />
+        <button
+            type="submit"
+            [disabled]="generatingInProgress() || form.invalid"
+            class="send-button"
+        >
+            <mat-icon>send</mat-icon>
+        </button>
+    </form>
+</div>

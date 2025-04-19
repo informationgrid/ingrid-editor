@@ -27,6 +27,7 @@ export type UiState = {
   sidebarExpanded?: boolean;
   sidebarWidth?: number;
   showJSONView?: boolean;
+  llmPromptView?: boolean;
   userTableWidth?: number;
   toggleFieldsButtonShowAll?: boolean;
   currentSubpage: {
@@ -47,6 +48,7 @@ const initialState: UiState = {
   sidebarExpanded: true,
   sidebarWidth: 30,
   showJSONView: false,
+  llmPromptView: false,
   userTableWidth: 35,
   toggleFieldsButtonShowAll: false,
   currentSubpage: {
@@ -77,7 +79,14 @@ export const UiStore = signalStore(
     },
     toggleJsonView(forceValue?: boolean) {
       patchState(store, (state) => ({
+        llmPromptView: false,
         showJSONView: forceValue ?? !state.showJSONView,
+      }));
+    },
+    toggleLLMPromptView(forceValue?: boolean) {
+      patchState(store, (state) => ({
+        showJSONView: false,
+        llmPromptView: forceValue ?? !state.llmPromptView,
       }));
     },
     setTextAreaHeights(value: any) {
