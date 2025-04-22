@@ -61,6 +61,7 @@ export interface Options {
   hideInPreview?: boolean;
   validators?: any;
   asyncValidators?: any;
+  resetOnHide?: boolean;
 }
 
 export interface DatePickerOptions extends Options {
@@ -265,6 +266,7 @@ export class FormFieldHelper {
       className: options?.className ?? "flex-1",
       id: elementIdPrefix + id,
       wrappers: options?.wrappers ?? ["panel", "form-field"],
+      resetOnHide: options?.resetOnHide,
       props: {
         externalLabel: label,
         label: options?.fieldLabel,

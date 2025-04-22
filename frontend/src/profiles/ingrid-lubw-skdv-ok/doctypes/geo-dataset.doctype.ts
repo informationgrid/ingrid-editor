@@ -145,6 +145,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
         {
           wrappers: ["panel", "form-field"],
           required: true,
+          resetOnHide: false,
           expressions: {
             hide: (field: FormlyFieldConfig, a, b) =>
               field.options.formState.mainModel?.resource?.personalData !==
