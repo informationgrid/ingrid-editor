@@ -220,38 +220,15 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
           item: any,
           isNew: boolean,
           currentIndex: number,
-        ) => {
-          if (!isNew) {
-            if (
-              (item.group.key !== null &&
-                item.group.key === allData[currentIndex].group.key) ||
-              (item.group.value !== null &&
-                item.group.value === allData[currentIndex].group.value)
-            ) {
-              allData.splice(currentIndex, 1, item);
-              return;
-            } else {
-              allData.splice(currentIndex, 1);
-            }
-          }
-
-          const index = this.findLastWithItem(allData, item.group);
-          if (index === undefined) {
-            allData.push(item);
-          } else {
-            allData.splice(index, 0, item);
-          }
-        },
+        ) =>
+          this.addSortedTableEntry(isNew, item, allData, currentIndex, "group"),
       }),
       this.addTable("geometries", "Geometrie", {
         supportUpload: false,
         allowDuplicate: true,
+        duplicatePostfixField: "designation",
         dialog: GeometriesDialogComponent,
         columns: [
-          {
-            key: "number",
-            label: "Nummer",
-          },
           {
             key: "designation",
             label: "Bezeichnung",
@@ -305,10 +282,46 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
             },
           },
         ],
+        /*        customAddFn: (
+          allData: any[],
+          item: any,
+          isNew: boolean,
+          currentIndex: number,
+        ) =>
+          this.addSortedTableEntry(isNew, item, allData, currentIndex, "type"),*/
       }),
     ]);
     return fieldConfig;
   };
+
+  private addSortedTableEntry(
+    isNew: boolean,
+    item: any,
+    allData: any[],
+    currentIndex: number,
+    field: string,
+  ) {
+    if (!isNew) {
+      if (
+        (item[field].key !== null &&
+          item[field].key === allData[currentIndex][field].key) ||
+        (item[field].value !== null &&
+          item[field].value === allData[currentIndex][field].value)
+      ) {
+        allData.splice(currentIndex, 1, item);
+        return;
+      } else {
+        allData.splice(currentIndex, 1);
+      }
+    }
+
+    const index = this.findLastWithItem(allData, field, item[field]);
+    if (index === undefined) {
+      allData.push(item);
+    } else {
+      allData.splice(index, 0, item);
+    }
+  }
 
   private handleNonPersonRelatedChoice(field: FormlyFieldConfig) {
     const accessConstraints = field.form.get("accessConstraints").value;
@@ -432,11 +445,13 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
 
   private findLastWithItem(
     list: any[],
+    fieldKey: string,
     item: { key: string; value: string },
   ): number {
     for (let i = list.length - 1; i >= 0; i--) {
-      if (item?.key && item.key === list[i].group?.key) return i + 1;
-      else if (item?.value && item.value === list[i].group?.value) return i + 1;
+      if (item?.key && item.key === list[i][fieldKey]?.key) return i + 1;
+      else if (item?.value && item.value === list[i][fieldKey]?.value)
+        return i + 1;
     }
     return undefined;
   }

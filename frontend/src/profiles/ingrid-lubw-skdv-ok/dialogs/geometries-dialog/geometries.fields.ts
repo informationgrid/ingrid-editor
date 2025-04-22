@@ -29,10 +29,6 @@ export function geometriesFields(
 ) {
   const fieldHelper = new FormFieldHelper();
   return [
-    fieldHelper.addInput("number", "Nummer", {
-      wrappers: ["panel", "form-field"],
-      type: "number",
-    }),
     fieldHelper.addInput("designation", "Bezeichnung", {
       required: true,
       wrappers: ["panel", "form-field"],
