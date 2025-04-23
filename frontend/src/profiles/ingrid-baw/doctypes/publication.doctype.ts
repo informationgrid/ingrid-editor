@@ -38,7 +38,7 @@ export class PublicationDoctypeBaw extends IngridShared {
 
   constructor() {
     super();
-    this.options.required.extraInfoLangData = true;
+    this.options.dynamicRequired.spatialReferences = () => false;
     this.options.required.description = false;
 
     this.options.hide = {
