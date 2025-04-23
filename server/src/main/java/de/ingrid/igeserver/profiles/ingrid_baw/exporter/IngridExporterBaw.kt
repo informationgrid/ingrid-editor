@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_baw.exporter
 
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
@@ -89,6 +90,13 @@ class IngridIdfExporterBaw(
 ) : IngridIDFExporter(codelistHandler, config, catalogService, documentService) {
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getBawModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
+
+    override fun getTemplateForDoctype(type: String): String {
+        if (type == "PublicationAddressDoc") return "export/ingrid/idf/idf-address.jte"
+        return super.getTemplateForDoctype(type)
+    }
+
+    override fun isAddress(json: Document): Boolean = json.type == "PublicationAddressDoc" || super.isAddress(json)
 }
 
 @Service
@@ -125,6 +133,20 @@ class IngridLuceneExporterBaw(
         }
 
         else -> super.getTransformer(data)
+    }
+
+    override fun getTemplateForDoctype(
+        doc: Document,
+        catalog: Catalog,
+        options: ExportOptions,
+    ): Pair<String, Map<String, Any>> {
+        if (doc.type == "PublicationAddressDoc") {
+            return Pair(
+                "export/ingrid/lucene/template-lucene-address.jte",
+                getMapper(IngridDocType.ADDRESS, doc, catalog, options),
+            )
+        }
+        return super.getTemplateForDoctype(doc, catalog, options)
     }
 }
 

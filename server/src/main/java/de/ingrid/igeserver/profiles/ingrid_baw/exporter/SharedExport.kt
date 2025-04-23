@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.exporter
 
+import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTransformerBaw
 import kotlin.reflect.KClass
@@ -26,5 +27,6 @@ import kotlin.reflect.KClass
 fun getBawModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
     "InGridGeoDataset" -> GeodatasetTransformerBaw::class
     "InGridGeoService" -> GeoserviceTransformerBaw::class
+    "PublicationAddressDoc" -> AddressModelTransformer::class
     else -> null
 }

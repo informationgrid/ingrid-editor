@@ -87,7 +87,7 @@ class IngridIDFExporter(
         return prettyXml
     }
 
-    private fun getTemplateForDoctype(type: String): String = when (type) {
+    fun getTemplateForDoctype(type: String): String = when (type) {
         "InGridSpecialisedTask" -> "export/ingrid/idf/idf-specialisedTask.jte"
         "InGridGeoDataset" -> "export/ingrid/idf/idf-geodataset.jte"
         "InGridPublication" -> "export/ingrid/idf/idf-publication.jte"
@@ -103,15 +103,13 @@ class IngridIDFExporter(
     }
 
     private fun getModelTransformer(json: Document, catalogId: String, exportOptions: ExportOptions): Any {
-        val isAddress = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
-
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
         val codelistTransformer = CodelistTransformer(codelistHandler, catalogId, catalogLanguage)
 
         val transformerClass = getModelTransformerClass(json.type)
             ?: throw ServerException.withReason("Cannot get transformer for type: ${json.type}")
 
-        return if (isAddress) {
+        return if (isAddress(json)) {
             transformerClass.constructors.first().call(
                 AddressTransformerConfig(catalogId, codelistTransformer, null, json, documentService, uploadConfig, exportOptions.tags),
             )
@@ -131,6 +129,8 @@ class IngridIDFExporter(
             )
         }
     }
+
+    fun isAddress(json: Document): Boolean = json.type == "InGridOrganisationDoc" || json.type == "InGridPersonDoc"
 
     fun getIngridModel(doc: Document, catalogId: String): IngridModel = mapper.convertValue(doc, IngridModel::class.java)
 
