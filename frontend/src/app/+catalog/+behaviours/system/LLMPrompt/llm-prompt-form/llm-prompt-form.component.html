@@ -1,5 +1,5 @@
 <div class="llm-prompt-container">
-    <h1>🤖 LLM Prompt</h1>
+    <h1 class="page-title left-side" style="font-size:34px">🤖 Assistent</h1>
 
     <div class="messages-container">
         @for (message of messages(); track message.id) {
@@ -9,7 +9,11 @@
         'generating': message.generating
       }">
                 <span class="message-prefix">{{ message.fromUser ? '👤' : '🤖' }}</span>
-                <pre>{{ message.text }}</pre>
+                @if (message.fromUser) {
+                    <pre>{{ message.text }}</pre>
+                } @else {
+                    <markdown [data]="message.text"></markdown>
+                }
             </div>
         }
     </div>

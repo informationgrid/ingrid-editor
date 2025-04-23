@@ -1,10 +1,13 @@
+@use "src/variables" as vars;
+
 .llm-prompt-container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-width: 800px;
+  max-width: 1260px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px 56px 26px;
+  background-color: #fff;
 }
 
 .messages-container {
@@ -21,13 +24,14 @@
   max-width: 80%;
 
   &.user-message {
-    background-color: #e3f2fd;
+    background-color: vars.$ige-mark-color;
     margin-left: auto;
   }
 
   &.ai-message {
-    background-color: #f5f5f5;
+    background-color: vars.$ige-background;
     margin-right: auto;
+    max-width: 100%;
   }
 
   &.generating {
@@ -38,6 +42,37 @@
     margin: 0;
     white-space: pre-wrap;
     word-wrap: break-word;
+    color: vars.$ige-text-color;
+  }
+
+  markdown {
+    display: block;
+    color: vars.$ige-text-color;
+
+    ::ng-deep {
+      p {
+        margin-top: 0;
+        margin-bottom: 0.5em;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      pre {
+        background-color: rgba(0, 0, 0, 0.05);
+        padding: 0.5em;
+        border-radius: 4px;
+        margin: 0.5em 0;
+      }
+
+      code {
+        background-color: rgba(0, 0, 0, 0.05);
+        padding: 0.2em 0.4em;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+    }
   }
 }
 
@@ -51,18 +86,19 @@
   gap: 10px;
   padding: 10px;
   background-color: #fff;
-  border-top: 1px solid #eee;
+  border-top: 1px solid vars.$ige-background-bar;
 }
 
 .message-input {
   flex: 1;
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid vars.$ige-comment-color;
   border-radius: 4px;
   font-size: 16px;
+  color: vars.$ige-text-color;
 
   &:disabled {
-    background-color: #f5f5f5;
+    background-color: vars.$ige-background;
   }
 }
 
@@ -70,12 +106,12 @@
   padding: 8px 16px;
   border: none;
   border-radius: 4px;
-  background-color: #1976d2;
+  background-color: vars.$ige-primary;
   color: white;
   cursor: pointer;
 
   &:disabled {
-    background-color: #ccc;
+    background-color: vars.$ige-comment-color;
     cursor: not-allowed;
   }
 

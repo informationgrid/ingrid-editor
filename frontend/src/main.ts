@@ -144,6 +144,7 @@ import { MetadataTypeComponent } from "./app/formly/types/metadata-type/metadata
 import { MatDatepickerIntl } from "@angular/material/datepicker";
 import { GermanDateIntl } from "./app/services/german-date.intl";
 import { GeneralStore } from "./app/store/general.store";
+import { MarkdownModule } from "ngx-markdown";
 import {
   MatomoInitializerService,
   provideMatomo,
@@ -361,6 +362,7 @@ bootstrapApplication(AppComponent, {
       TranslocoRootModule,
       ClipboardModule,
       MatNativeDateModule,
+      MarkdownModule.forRoot(),
     ),
     provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
     // make sure we are authenticated by keycloak before bootstrap

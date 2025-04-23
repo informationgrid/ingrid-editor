@@ -8,7 +8,8 @@ import { HttpClient } from "@angular/common/http";
 import { NgClass } from "@angular/common";
 import { catchError, finalize } from 'rxjs/operators';
 import { throwError } from 'rxjs';
-import {FormStateService} from "../../../../../+form/form-state.service";
+import { FormStateService } from "../../../../../+form/form-state.service";
+import { MarkdownModule } from 'ngx-markdown';
 
 interface LLMRequest {
   message: string;
@@ -39,7 +40,10 @@ interface Message {
     MatProgressSpinnerModule,
     FormsModule,
     NgClass,
+    MarkdownModule,
   ],
+  providers: [
+  ]
 })
 export class LLMPromptFormComponent {
   private readonly http = inject(HttpClient);
@@ -50,8 +54,7 @@ export class LLMPromptFormComponent {
   readonly generatingInProgress = this._generatingInProgress.asReadonly();
 
   constructor(
-    private formStateService: FormStateService
-
+    private formStateService: FormStateService,
 ) {
   }
 

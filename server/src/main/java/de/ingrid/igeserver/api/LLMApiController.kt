@@ -50,7 +50,7 @@ class LLMApiController : LLMApi {
         log.debug("Processing LLM request: ${request.message}")
 
         val requestBody = mapOf(
-            "model" to "mistral-large-latest",
+            "model" to "mistral-small-latest",
             "messages" to listOf(
                 mapOf(
                     "role" to "user",

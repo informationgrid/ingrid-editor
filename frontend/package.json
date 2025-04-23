@@ -50,6 +50,7 @@
     "keycloak-js": "25.0.6",
     "leaflet": "^1.9.4",
     "material-design-icons-iconfont": "^6.7.0",
+    "ngx-markdown": "^19.0.0",
     "ngx-mat-select-search": "^8.0.0",
     "ngx-matomo-client": "^7.0.1",
     "rxjs": "^7.8.1",
