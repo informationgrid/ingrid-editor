@@ -297,16 +297,16 @@ export class PublishPlugin extends SaveBase {
       .afterClosed()
       .pipe(filter((date) => date))
       .subscribe((date) => {
-        this.saveWithData(this.getForm().getRawValue(), date);
+        this.saveWithData(this.getForm().getRawValue(), undefined, date);
       });
   }
 
-  saveWithData(data, delay: Date = null) {
+  saveWithData(data, overrideVersion?: number, delay: Date = null) {
     const metadata = this.getMetadata();
     this.documentService
       .publish(
         metadata.wrapperId,
-        metadata.version,
+        overrideVersion ?? metadata.version,
         metadata.docType,
         data,
         this.forAddress(),

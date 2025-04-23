@@ -141,7 +141,7 @@ export abstract class SaveBase extends Plugin {
     this.generalStore.setServerValidationErrors(invalidFieldsErrors);
   }
 
-  abstract saveWithData(data: IgeDocument);
+  abstract saveWithData(data: IgeDocument, overrideVersion?: number);
 
   private handleAfterConflictChoice(
     choice: VersionConflictChoice,
@@ -153,19 +153,12 @@ export abstract class SaveBase extends Plugin {
         this.formToolbarService.setButtonState("toolBtnSave", true);
         break;
       case "force":
-        const formData = this.getFormDataWithVersionInfo(latestVersion);
-        this.saveWithData(formData);
+        this.saveWithData(this.getForm()?.getRawValue(), latestVersion);
         break;
       case "reload":
         this.loadDocument(this.getIdFromFormData(), address);
         break;
     }
-  }
-
-  private getFormDataWithVersionInfo(version: number) {
-    const data = this.getForm()?.getRawValue();
-    data["_version"] = version;
-    return data;
   }
 
   protected getIdFromFormData() {
