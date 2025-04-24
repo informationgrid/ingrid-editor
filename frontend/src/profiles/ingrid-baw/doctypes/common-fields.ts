@@ -18,7 +18,11 @@
  * limitations under the Licence.
  */
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { FormFieldHelper, InputOptions } from "../../form-field-helper";
+import {
+  FormFieldHelper,
+  InputOptions,
+  SelectOptions,
+} from "../../form-field-helper";
 import { Injectable } from "@angular/core";
 import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 import { FormControl } from "@angular/forms";
@@ -85,16 +89,17 @@ export class CommonFieldsBaw extends FormFieldHelper {
 
   getInlineVerticalCoordinateReferenceSystemFieldConfig(
     doc: IngridShared,
+    selectOptions: SelectOptions = {},
   ): FormlyFieldConfig {
     return this.addSelectInline(
       "verticalCoordinateReferenceSystem",
       "Höhenbezugssystem",
       {
-        required: true,
         options: doc.getCodelistForSelect(
           "verticalCoordinateReferenceSystem",
           "null",
         ),
+        ...selectOptions,
       },
     );
   }

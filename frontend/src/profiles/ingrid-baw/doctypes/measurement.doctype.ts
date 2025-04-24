@@ -111,6 +111,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
                 this.common.getUnitOfMeasurementFieldConfig(this),
                 this.common.getInlineVerticalCoordinateReferenceSystemFieldConfig(
                   this,
+                  { required: true },
                 ),
               ],
               {
