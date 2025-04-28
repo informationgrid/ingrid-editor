@@ -216,6 +216,18 @@ class JobsApiController(
         return ResponseEntity.ok().build()
     }
 
+    override fun syncCodelistValues(principal: Principal, command: JobCommand): ResponseEntity<Unit> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val jobKey = JobKey.jobKey("CODELIST_SYNC_JOB", catalogId)
+
+        val jobDataMap = JobDataMap().apply {
+            put("catalogId", catalogId)
+        }
+        scheduler.handleJobWithCommand(command, de.ingrid.igeserver.tasks.quartz.CodelistSyncTask::class.java, jobKey, jobDataMap)
+
+        return ResponseEntity.ok().build()
+    }
+
     private fun getJobIdString(id: String, principal: Principal): String {
         val userId = authUtils.getUsernameFromPrincipal(principal)
         return "${id}_$userId"

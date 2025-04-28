@@ -146,4 +146,16 @@ interface JobsApi {
         produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun indexCatalog(principal: Principal, command: JobCommand): ResponseEntity<Unit>
+
+    @PostMapping(
+        value = ["/jobs/codelist-sync"],
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+    )
+    fun syncCodelistValues(
+        principal: Principal,
+        @Parameter(description = "command for the job", required = true) @RequestParam(
+            value = "command",
+            required = true,
+        ) command: JobCommand,
+    ): ResponseEntity<Unit>
 }
