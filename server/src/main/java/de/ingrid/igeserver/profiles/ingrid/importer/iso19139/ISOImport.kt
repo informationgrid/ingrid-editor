@@ -53,6 +53,7 @@ data class IsoImportData(
     val addressMaps: MutableMap<String, String>,
     val researchService: ResearchService,
     val uploadConfig: UploadConfig,
+    val catalogLanguage: String,
 )
 
 data class IsoConverterOutput(
@@ -79,7 +80,8 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
         val finalObject = xmlDeserializer.readValue(data as String, Metadata::class.java)
-        val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps, researchService, uploadConfig)
+        val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
+        val isoData = IsoImportData(finalObject, codelistService, catalogId, documentService, addressMaps, researchService, uploadConfig, catalogLanguage)
         val output = try {
             val catalogProfileId = catalogService.getProfileFromCatalog(catalogId).identifier
             convertIsoToJson(isoData, catalogProfileId)
