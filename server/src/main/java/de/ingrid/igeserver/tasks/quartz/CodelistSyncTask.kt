@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.tasks.quartz
 
 import de.ingrid.igeserver.api.messaging.Message
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
@@ -40,6 +41,7 @@ data class FieldToCodelist(
 class CodelistSyncTask(
     private val jdbcTemplate: JdbcTemplate,
     private val codelistHandler: CodelistHandler,
+    private val catalogService: CatalogService,
 ) : IgeJob() {
 
     override val log = logger()
@@ -49,6 +51,8 @@ class CodelistSyncTask(
 
         val message = Message(Date(), 0)
         message.message = "Starting codelist synchronization"
+        val catalogIdentifier = context.mergedJobDataMap!!.getString("catalogId")
+        val catalogLanguage = catalogService.getCatalogById(catalogIdentifier).settings.config.language ?: "de"
 
         val codelistFields = listOf(
             FieldToCodelist(null, "8010", true, "advProductGroups"),
@@ -88,14 +92,13 @@ class CodelistSyncTask(
             FieldToCodelist(null, "5152", true, "service.version"), // dynamic!!!
             FieldToCodelist("name", "5110", true, "service.operations"), // dynamic!!!
         )
-        val catalogIdentifier = context.mergedJobDataMap!!.getString("catalogId")
 
         codelistFields.forEach {
             try {
                 // Execute the SQL query to update codelist values
                 val sql = when (it.isArray) {
-                    true -> getSQL(it, catalogIdentifier)
-                    false -> getSQLForObject(it, catalogIdentifier)
+                    true -> getSQL(it, catalogIdentifier, catalogLanguage)
+                    false -> getSQLForObject(it, catalogIdentifier, catalogLanguage)
                 }
                 log.info("Executing SQL: $sql")
                 val updatedRows = jdbcTemplate.update(sql)
@@ -112,12 +115,11 @@ class CodelistSyncTask(
         finishJob(context, message)
     }
 
-    private fun getSQL(codelistField: FieldToCodelist, catalogIdentifier: String): String {
+    private fun getSQL(codelistField: FieldToCodelist, catalogIdentifier: String, language: String): String {
         val codelist = codelistHandler.getCodelists(listOf(codelistField.codelist)).firstOrNull() ?: codelistHandler.getCatalogCodelists(catalogIdentifier).find { it.id == codelistField.codelist }
         val fieldPath = if (codelistField.field != null) "-> " + codelistField.field.split(".").joinToString(" -> ") { "'$it'" } else ""
         val generatedWhens = codelist?.entries?.map {
-            // TODO: localize!!!
-            """WHEN elem $fieldPath ->> 'key' = '${it.id}' THEN '${it.fields["de"]}'"""
+            """WHEN elem $fieldPath ->> 'key' = '${it.id}' THEN '${it.fields[language]}'"""
         }
         if (generatedWhens.isNullOrEmpty()) throw IllegalArgumentException("No codelist found for key ${codelistField.codelist}")
 
@@ -161,12 +163,11 @@ class CodelistSyncTask(
         """.trimIndent()
     }
 
-    private fun getSQLForObject(codelistField: FieldToCodelist, catalogIdentifier: String): String {
+    private fun getSQLForObject(codelistField: FieldToCodelist, catalogIdentifier: String, language: String): String {
         val codelist = codelistHandler.getCodelists(listOf(codelistField.codelist)).firstOrNull() ?: codelistHandler.getCatalogCodelists(catalogIdentifier).find { it.id == codelistField.codelist }
         val jsonPath = codelistField.field!!.split(".").joinToString(" -> ") { "'$it'" }
         val generatedWhens = codelist?.entries?.map {
-            // TODO: localize!!!
-            """WHEN d.data -> $jsonPath ->> 'key' = '${it.id}' THEN jsonb_set(d.data -> $jsonPath, '{value}', '"${it.fields["de"]}"', TRUE)"""
+            """WHEN d.data -> $jsonPath ->> 'key' = '${it.id}' THEN jsonb_set(d.data -> $jsonPath, '{value}', '"${it.fields[language]}"', TRUE)"""
         }
         if (generatedWhens.isNullOrEmpty()) throw IllegalArgumentException("No codelist found for key ${codelistField.codelist}")
 
