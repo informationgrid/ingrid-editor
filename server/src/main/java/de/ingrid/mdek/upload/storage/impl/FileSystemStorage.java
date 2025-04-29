@@ -33,8 +33,6 @@ import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
-//import org.joda.time.DateTime;
-//import org.joda.time.Duration;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.*;
@@ -43,8 +41,6 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
@@ -52,8 +48,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
 
 /**
  * FileSystemStorage manages files in the server file system
@@ -788,6 +782,7 @@ public class FileSystemStorage implements Storage {
         });
     }
 
+    @SafeVarargs
     private void checkAndLogForMissingFiles(String datasetID, List<String> referencedFiles, List<FileSystemItem> ...filesOnStorage) {
         List<String> missingFiles = referencedFiles.stream()
                 .filter(ref -> Arrays.stream(filesOnStorage)
@@ -821,10 +816,11 @@ public class FileSystemStorage implements Storage {
     @Override
     public void unpublishDataset(final String catalog, String datasetID, List<String> referencedFiles) throws IOException{
         var publishedFiles = this.listFiles(catalog, null, datasetID, this.docsDir, Scope.PUBLISHED);
+        var archivedFiles = this.listFiles(catalog, null, datasetID, this.docsDir, Scope.ARCHIVED);
 
         final CopyOption[] copyOptions = DEFAULT_COPY_OPTIONS;
 
-        checkAndLogForMissingFiles(datasetID, referencedFiles, publishedFiles);
+        checkAndLogForMissingFiles(datasetID, referencedFiles, publishedFiles, archivedFiles);
 
         publishedFiles.stream().filter(f -> referencedFiles.contains(f.getRelativePath())).forEach(f -> {
             try {
@@ -837,6 +833,32 @@ public class FileSystemStorage implements Storage {
                 }
                 else{
                     var trashPath = this.getTrashPath(catalog, datasetID, srcPath.getFileName().toString(), this.docsDir, Scope.PUBLISHED);
+                    Files.createDirectories(trashPath.getParent());
+                    Files.move(srcPath, trashPath, copyOptions);
+                }
+            }
+            catch (final FileAlreadyExistsException faex) {
+
+                final StorageItem[] items = null;//{this.getFileInfo(faex.getFile())};
+                throw new ConflictException(faex.getMessage(), items, "");
+            }
+            catch (final IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        });
+
+        // Also move published archived files to unpublished archive
+        archivedFiles.stream().filter(f -> referencedFiles.contains(f.getRelativePath())).forEach(f -> {
+            try {
+                var srcPath = this.getRealPath(catalog, datasetID, f.getRelativePath(), this.docsDir);
+                var targetPath = this.getArchivePath(catalog, datasetID, f.getRelativePath(), this.docsDir, Scope.UNPUBLISHED);
+
+                if(!targetPath.toFile().exists()){
+                    Files.createDirectories(targetPath.getParent());
+                    Files.move(srcPath, targetPath);
+                }
+                else{
+                    var trashPath = this.getTrashPath(catalog, datasetID, srcPath.getFileName().toString(), this.docsDir, Scope.ARCHIVED);
                     Files.createDirectories(trashPath.getParent());
                     Files.move(srcPath, trashPath, copyOptions);
                 }
