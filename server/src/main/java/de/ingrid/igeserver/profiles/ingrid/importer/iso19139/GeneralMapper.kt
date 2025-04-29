@@ -52,6 +52,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val fieldToCodelist = FieldToCodelist()
 
     val metadata = isoData.data
+    val catalogLanguage = isoData.catalogLanguage
     val codeListService: CodelistHandler = isoData.codelistService
     val catalogId: String = isoData.catalogId
     val documentService: DocumentService = isoData.documentService
@@ -129,7 +130,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             // then it gets special role: pointOfContactMd (key=12)
             val roleIso = contact.responsibleParty?.role?.codelist?.codeListValue!!
             val role: KeyValue = if (roleIso == "pointOfContact" && index < mainContact.size) {
-                KeyValue("12")
+                KeyValue("12", codeListService.getCodelistValue("505", "12", catalogLanguage))
             } else {
                 mapRoleToContactType(roleIso)
             }
@@ -310,12 +311,12 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     private fun getSalutationKeyValue(value: String): KeyValue? {
         val salutationKey = value.trim().let { codeListService.getCodeListEntryId("4300", it, "de") }
-        return if (salutationKey == null) null else KeyValue(salutationKey)
+        return if (salutationKey == null) null else KeyValue(salutationKey, value)
     }
 
     private fun mapRoleToContactType(value: String): KeyValue {
         val entryId = codeListService.getCodeListEntryId("505", value, "iso")
-        return if (entryId == null) KeyValue(null, value) else KeyValue(entryId)
+        return if (entryId == null) KeyValue(null, value) else KeyValue(entryId, value)
     }
 
     fun getAdvProductGroups(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.alternateTitle
