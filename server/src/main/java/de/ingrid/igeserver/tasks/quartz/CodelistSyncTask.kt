@@ -29,9 +29,10 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 data class FieldToCodelist(
-    val field: String,
+    val field: String?,
     val codelist: String,
     val isArray: Boolean = false,
+    val arrayField: String? = null,
 )
 
 @Component
@@ -50,42 +51,42 @@ class CodelistSyncTask(
         message.message = "Starting codelist synchronization"
 
         val codelistFields = listOf(
-            FieldToCodelist("advProductGroups", "8010", true),
-            FieldToCodelist("spatial.spatialSystems", "100", true),
+            FieldToCodelist(null, "8010", true, "advProductGroups"),
+            FieldToCodelist(null, "100", true, "spatial.spatialSystems"),
 //            FieldToCodelist("gridSpatialRepresentation.type", ""),
-            FieldToCodelist("distribution.format.name", "1320"),
-            FieldToCodelist("references.urlDataType", "1320"),
+            FieldToCodelist("name", "1320", true, "distribution.format"),
             FieldToCodelist("fileReferences.format", "1320"),
-            FieldToCodelist("advProductGroups", "8010", true),
-            FieldToCodelist("themes", "6100", true),
+            FieldToCodelist(null, "6100", true, "themes"),
             FieldToCodelist("openDataCategories", "6400", true),
             FieldToCodelist("hvdCategories", "hvdCategories", true),
-            FieldToCodelist("priorityDatasets", "6350", true),
+            FieldToCodelist(null, "6350", true, "priorityDatasets"),
             FieldToCodelist("spatialScope", "6360"),
             FieldToCodelist("topicCategories", "527", true),
-            FieldToCodelist("spatial.spatialSystems", "100", true),
             FieldToCodelist("spatial.verticalExtent.unitOfMeasure", "102"),
             FieldToCodelist("spatial.verticalExtent.Datum", "101"),
-            FieldToCodelist("temporal.events.referenceDateType", "502"),
+            FieldToCodelist("referenceDateType", "502", true, "temporal.events"),
             FieldToCodelist("temporal.status", "523"),
             FieldToCodelist("maintenanceInformation.maintenanceAndUpdateFrequency", "518"),
-            FieldToCodelist("maintenanceInformation.userDefinedMaintenanceFrequency.duration.unitOfTime", "1230"),
+            FieldToCodelist("maintenanceInformation.userDefinedMaintenanceFrequency.unit", "1230"),
             FieldToCodelist("metadata.language", "99999999"),
             FieldToCodelist("dataset.languages", "99999999", true),
             FieldToCodelist("metadata.characterSet", "510"),
-            FieldToCodelist("conformanceResult.pass", "6000"),
+            FieldToCodelist("pass", "6000", true, "conformanceResult"),
+            FieldToCodelist("specification", "6005", true, "conformanceResult"),
 //            FieldToCodelist("explanation.supplementalInformation", "1350"),
-            FieldToCodelist("resource.accessConstraints", "6010", true),
-            FieldToCodelist("resource.useConstraints.title", "6500"),
-            FieldToCodelist("digitalTransferOptions.name", "520"),
+            FieldToCodelist(null, "6010", true, "resource.accessConstraints"),
+            FieldToCodelist("title", "6500", true, "resource.useConstraints"),
+            FieldToCodelist("name", "520", true, "digitalTransferOptions"),
             FieldToCodelist("generalResourceType", "3390"),
             FieldToCodelist("resourceType", "3386"),
-            FieldToCodelist("references.type", "2000"),
+            FieldToCodelist("type", "2000", true, "references"),
+            FieldToCodelist("urlDataType", "1320", true, "references"),
+            FieldToCodelist("type", "505", true, "pointOfContact"),
 
             FieldToCodelist("service.type", "5100"),
-            FieldToCodelist("service.version", "5152", true), // dynamic!!!
-            FieldToCodelist("service.operations", "5110", true), // dynamic!!!
-            FieldToCodelist("service.classification", "5200", true),
+            FieldToCodelist(null, "5200", true, "service.classification"),
+            FieldToCodelist(null, "5152", true, "service.version"), // dynamic!!!
+            FieldToCodelist("name", "5110", true, "service.operations"), // dynamic!!!
         )
         val catalogIdentifier = context.mergedJobDataMap!!.getString("catalogId")
 
@@ -113,24 +114,39 @@ class CodelistSyncTask(
 
     private fun getSQL(codelistField: FieldToCodelist, catalogIdentifier: String): String {
         val codelist = codelistHandler.getCodelists(listOf(codelistField.codelist)).firstOrNull() ?: codelistHandler.getCatalogCodelists(catalogIdentifier).find { it.id == codelistField.codelist }
+        val fieldPath = if (codelistField.field != null) "-> " + codelistField.field.split(".").joinToString(" -> ") { "'$it'" } else ""
         val generatedWhens = codelist?.entries?.map {
             // TODO: localize!!!
-            """WHEN elem ->> 'key' = '${it.id}' THEN jsonb_set(elem, '{value}', '"${it.fields["de"]}"', TRUE)"""
+            """WHEN elem $fieldPath ->> 'key' = '${it.id}' THEN '${it.fields["de"]}'"""
         }
         if (generatedWhens.isNullOrEmpty()) throw IllegalArgumentException("No codelist found for key ${codelistField.codelist}")
 
-        val jsonPath = codelistField.field.split(".").joinToString(" -> ") { "'$it'" }
+        val arrayField = codelistField.arrayField!! // ?: codelistField.field
+        val jsonPath = arrayField.split(".").joinToString(" -> ") { "'$it'" }
+        val jsonPath2 = arrayField.replace(".", ",")
+        val valueField = codelistField.field?.replace(".", ",")?.let { "$it,value" } ?: "value"
         return """
                 UPDATE document d
                 SET data = jsonb_set(
                         d.data,
-                        '{${codelistField.field.replace(".",",")}}',
+                        '{$jsonPath2}',
                         (
                             SELECT jsonb_agg(
                                            CASE
-                                               ${generatedWhens.joinToString("\n")}
+                                               WHEN elem $fieldPath ? 'key' THEN
+                                                   jsonb_set(
+                                                           elem,
+                                                           '{$valueField}',
+                                                           to_jsonb(
+                                                                   CASE
+                                                                       ${generatedWhens.joinToString("\n")}
+                                                                       ELSE NULL
+                                                                       END
+                                                           ),
+                                                           TRUE
+                                                   )
                                                ELSE elem
-                                               END
+                                           END
                                    )
                             FROM jsonb_array_elements(d.data -> $jsonPath) elem
                         ),
@@ -141,13 +157,13 @@ class CodelistSyncTask(
                   AND cat.identifier = '$catalogIdentifier'
                   AND dw.deleted = 0
                   AND d.state != 'ARCHIVED'
-                  AND jsonb_typeof(d.data -> $jsonPath) = 'array';
+                  AND jsonb_typeof(d.data -> $jsonPath) = 'array'
         """.trimIndent()
     }
 
     private fun getSQLForObject(codelistField: FieldToCodelist, catalogIdentifier: String): String {
         val codelist = codelistHandler.getCodelists(listOf(codelistField.codelist)).firstOrNull() ?: codelistHandler.getCatalogCodelists(catalogIdentifier).find { it.id == codelistField.codelist }
-        val jsonPath = codelistField.field.split(".").joinToString(" -> ") { "'$it'" }
+        val jsonPath = codelistField.field!!.split(".").joinToString(" -> ") { "'$it'" }
         val generatedWhens = codelist?.entries?.map {
             // TODO: localize!!!
             """WHEN d.data -> $jsonPath ->> 'key' = '${it.id}' THEN jsonb_set(d.data -> $jsonPath, '{value}', '"${it.fields["de"]}"', TRUE)"""
