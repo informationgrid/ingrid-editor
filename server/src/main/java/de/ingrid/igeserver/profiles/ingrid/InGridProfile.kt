@@ -45,6 +45,7 @@ import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.services.CatalogProfile
+import de.ingrid.igeserver.services.CodelistField
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.CodelistHandler.Companion.toCodelistEntry
 import de.ingrid.igeserver.services.DateService
@@ -84,6 +85,44 @@ class InGridProfile(
     override val description = null
     override val indexExportFormatID = "indexInGridIDF"
     override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
+    override val codelistFields = listOf(
+        CodelistField.ListField("advProductGroups", null, "8010"),
+        CodelistField.ListField("spatial.spatialSystems", null, "100"),
+//      CodelistField.SingleField("gridSpatialRepresentation.type", ""),
+        CodelistField.ListField("distribution.format", "name", "1320"),
+        CodelistField.SingleField("fileReferences.format", "1320"),
+        CodelistField.ListField("themes", null, "6100"),
+        CodelistField.ListField("openDataCategories", null, "6400"),
+        CodelistField.ListField("hvdCategories", null, "hvdCategories"),
+        CodelistField.ListField("priorityDatasets", null, "6350"),
+        CodelistField.SingleField("spatialScope", "6360"),
+        CodelistField.ListField("topicCategories", null, "527"),
+        CodelistField.SingleField("spatial.verticalExtent.unitOfMeasure", "102"),
+        CodelistField.SingleField("spatial.verticalExtent.Datum", "101"),
+        CodelistField.ListField("temporal.events", "referenceDateType", "502"),
+        CodelistField.SingleField("temporal.status", "523"),
+        CodelistField.SingleField("maintenanceInformation.maintenanceAndUpdateFrequency", "518"),
+        CodelistField.SingleField("maintenanceInformation.userDefinedMaintenanceFrequency.unit", "1230"),
+        CodelistField.SingleField("metadata.language", "99999999"),
+        CodelistField.ListField("dataset.languages", null, "99999999"),
+        CodelistField.SingleField("metadata.characterSet", "510"),
+        CodelistField.ListField("conformanceResult", "pass", "6000"),
+        CodelistField.ListField("conformanceResult", "specification", "6005"),
+        CodelistField.ListField("extraInfo.legalBasicsDescriptions", null, "1350"),
+        CodelistField.ListField("resource.accessConstraints", null, "6010"),
+        CodelistField.ListField("resource.useConstraints", "title", "6500"),
+        CodelistField.ListField("digitalTransferOptions", "name", "520"),
+        CodelistField.SingleField("generalResourceType", "3390"),
+        CodelistField.SingleField("resourceType", "3386"),
+        CodelistField.ListField("references", "type", "2000"),
+        CodelistField.ListField("references", "urlDataType", "1320"),
+        CodelistField.ListField("pointOfContact", "type", "505"),
+
+        CodelistField.SingleField("service.type", "5100"),
+        CodelistField.ListField("service.classification", null, "5200"),
+        CodelistField.ListField("service.version", null, "5152"), // dynamic!!!
+        CodelistField.ListField("service.operations", "name", "5110"), // dynamic!!!
+    )
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> = arrayOf(
         FacetGroup(
@@ -188,7 +227,7 @@ class InGridProfile(
         name = "Freie Konformitäten"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(CodelistHandler.toCodelistEntry("1", "Konformität - Freier Eintrag", "2018-02-22"))
+            add(toCodelistEntry("1", "Konformität - Freier Eintrag", "2018-02-22"))
         }
     }
 
@@ -199,23 +238,23 @@ class InGridProfile(
         description = ""
         defaultEntry = "0"
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(CodelistHandler.toCodelistEntry("0", "Bundesrepublik Deutschland", null, "Federal Republic of Germany"))
-            add(CodelistHandler.toCodelistEntry("1", "Baden-Württemberg", null, "Baden Wurttemberg"))
-            add(CodelistHandler.toCodelistEntry("2", "Bayern", null, "Bavaria"))
-            add(CodelistHandler.toCodelistEntry("3", "Berlin", null, "Berlin"))
-            add(CodelistHandler.toCodelistEntry("4", "Brandenburg", null, "Brandenburg"))
-            add(CodelistHandler.toCodelistEntry("5", "Bremen", null, "Bremen"))
-            add(CodelistHandler.toCodelistEntry("6", "Hamburg", null, "Hamburg"))
-            add(CodelistHandler.toCodelistEntry("7", "Hessen", null, "Hessen"))
-            add(CodelistHandler.toCodelistEntry("8", "Mecklenburg-Vorpommern", null, "Mecklenburg-West Pomerania"))
-            add(CodelistHandler.toCodelistEntry("9", "Niedersachsen", null, "Lower Saxony"))
-            add(CodelistHandler.toCodelistEntry("10", "Nordrhein-Westfalen", null, "North Rhine Westphalia"))
-            add(CodelistHandler.toCodelistEntry("11", "Rheinland-Pfalz", null, "Rhineland Palatinate"))
-            add(CodelistHandler.toCodelistEntry("12", "Saarland", null, "Saarland"))
-            add(CodelistHandler.toCodelistEntry("13", "Sachsen", null, "Saxony "))
-            add(CodelistHandler.toCodelistEntry("14", "Sachsen-Anhalt", null, "Saxony Anhalt"))
-            add(CodelistHandler.toCodelistEntry("15", "Schleswig-Holstein", null, "Schleswig-Holstein"))
-            add(CodelistHandler.toCodelistEntry("16", "Thüringen", null, "Thuringia"))
+            add(toCodelistEntry("0", "Bundesrepublik Deutschland", null, "Federal Republic of Germany"))
+            add(toCodelistEntry("1", "Baden-Württemberg", null, "Baden Wurttemberg"))
+            add(toCodelistEntry("2", "Bayern", null, "Bavaria"))
+            add(toCodelistEntry("3", "Berlin", null, "Berlin"))
+            add(toCodelistEntry("4", "Brandenburg", null, "Brandenburg"))
+            add(toCodelistEntry("5", "Bremen", null, "Bremen"))
+            add(toCodelistEntry("6", "Hamburg", null, "Hamburg"))
+            add(toCodelistEntry("7", "Hessen", null, "Hessen"))
+            add(toCodelistEntry("8", "Mecklenburg-Vorpommern", null, "Mecklenburg-West Pomerania"))
+            add(toCodelistEntry("9", "Niedersachsen", null, "Lower Saxony"))
+            add(toCodelistEntry("10", "Nordrhein-Westfalen", null, "North Rhine Westphalia"))
+            add(toCodelistEntry("11", "Rheinland-Pfalz", null, "Rhineland Palatinate"))
+            add(toCodelistEntry("12", "Saarland", null, "Saarland"))
+            add(toCodelistEntry("13", "Sachsen", null, "Saxony "))
+            add(toCodelistEntry("14", "Sachsen-Anhalt", null, "Saxony Anhalt"))
+            add(toCodelistEntry("15", "Schleswig-Holstein", null, "Schleswig-Holstein"))
+            add(toCodelistEntry("16", "Thüringen", null, "Thuringia"))
         }
     }
 
@@ -225,7 +264,7 @@ class InGridProfile(
         name = "Symbolkatalog"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(CodelistHandler.toCodelistEntry("1", "Ganzflächige Biotopkartierung 94"))
+            add(toCodelistEntry("1", "Ganzflächige Biotopkartierung 94"))
         }
     }
 
@@ -235,7 +274,7 @@ class InGridProfile(
         name = "Schlüsselkatalog"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(CodelistHandler.toCodelistEntry("1", "von Drachenfels 94"))
+            add(toCodelistEntry("1", "von Drachenfels 94"))
         }
     }
 
@@ -245,68 +284,68 @@ class InGridProfile(
         name = "Rechtliche Grundlagen"
         description = ""
         data = jacksonObjectMapper().createArrayNode().apply {
-            add(CodelistHandler.toCodelistEntry("1", "Atomgesetz (AtG)"))
-            add(CodelistHandler.toCodelistEntry("2", "Baugesetzbuch (BauGB)"))
-            add(CodelistHandler.toCodelistEntry("3", "Bürgerl. Gesetzbuch (BGB)"))
-            add(CodelistHandler.toCodelistEntry("4", "Bodenschutzgesetz (BodSchG)"))
-            add(CodelistHandler.toCodelistEntry("5", "Bundesberggesetz (BBergG)"))
-            add(CodelistHandler.toCodelistEntry("7", "Bundesnaturschutzgesetz (BNatSchG)"))
-            add(CodelistHandler.toCodelistEntry("8", "Bundeswaldgesetz (BundeswaldG)"))
-            add(CodelistHandler.toCodelistEntry("9", "Chemikaliengesetz (ChemG)"))
-            add(CodelistHandler.toCodelistEntry("10", "Flurbereinigungsgesetz (FlurbG)"))
-            add(CodelistHandler.toCodelistEntry("11", "Gentechnikgesetz (GenTG)"))
-            add(CodelistHandler.toCodelistEntry("13", "Kreislaufwirtschafts- u. Abfallgesetz (KrW-/AbfG)"))
-            add(CodelistHandler.toCodelistEntry("14", "Landesabfallgesetz (LAbfG)"))
-            add(CodelistHandler.toCodelistEntry("15", "Landesabfallwirtschaftsgesetz (LAbfWG)"))
-            add(CodelistHandler.toCodelistEntry("16", "Landschaftsgesetz (LG)"))
-            add(CodelistHandler.toCodelistEntry("17", "Pflanzenschutzgesetz (PflSchG)"))
-            add(CodelistHandler.toCodelistEntry("18", "Raumordnungsgesetz (ROG)"))
-            add(CodelistHandler.toCodelistEntry("19", "Strahlenschutzvorsorgegesetz (StrVG)"))
-            add(CodelistHandler.toCodelistEntry("20", "Tierschutzgesetz (TierSchG)"))
-            add(CodelistHandler.toCodelistEntry("21", "Umwelthaftungsgesetz (UmweltHG)"))
-            add(CodelistHandler.toCodelistEntry("22", "Umweltinformationsgesetz (UIG)"))
-            add(CodelistHandler.toCodelistEntry("23", "Verwaltungsverfahrensgesetz (VwVfG)"))
-            add(CodelistHandler.toCodelistEntry("24", "Bundeswasserstraßengesetz (WaStrG)"))
-            add(CodelistHandler.toCodelistEntry("25", "Wasserhaushaltsgesetz (WHG)"))
-            add(CodelistHandler.toCodelistEntry("26", "Umweltstatistikgesetz (Fass. 21.06.1994)"))
-            add(CodelistHandler.toCodelistEntry("27", "Umweltstatistikgesetz (Fass. 14.03.1980)"))
-            add(CodelistHandler.toCodelistEntry("29", "Trinkwasserverordnung (TrinkwV)"))
-            add(CodelistHandler.toCodelistEntry("30", "TA Siedlungsabfall"))
-            add(CodelistHandler.toCodelistEntry("31", "TA Abfall"))
-            add(CodelistHandler.toCodelistEntry("32", "Strahlenschutzverordnung (StrlSchVO)"))
-            add(CodelistHandler.toCodelistEntry("33", "Richtl. Em.- u. Im.-Überwachung. kerntech. Anl."))
-            add(CodelistHandler.toCodelistEntry("34", "RdErl. d. ML v. 16.1.1986, GültL 10/66"))
-            add(CodelistHandler.toCodelistEntry("35", "Nieders. Wassergesetz (NWG)"))
-            add(CodelistHandler.toCodelistEntry("36", "Nieders. Naturschutzgesetz (NNatG)"))
-            add(CodelistHandler.toCodelistEntry("38", "Nieders. Abfallgesetz (NAbfG)"))
-            add(CodelistHandler.toCodelistEntry("39", "Nieders. Deichgesetz (NDG)"))
-            add(CodelistHandler.toCodelistEntry("40", "Nieders. Abfallgesetz. 6. Teil \"Altlasten\""))
-            add(CodelistHandler.toCodelistEntry("41", "Nieders. Abfallabgabengesetz"))
-            add(CodelistHandler.toCodelistEntry("42", "Landesraumordnungsprogramm LROP"))
-            add(CodelistHandler.toCodelistEntry("43", "KTA 1508"))
-            add(CodelistHandler.toCodelistEntry("45", "Gesetz über eine Holzstatistik"))
-            add(CodelistHandler.toCodelistEntry("46", "Ges. Statistik im Produzierenden Gewerbe"))
-            add(CodelistHandler.toCodelistEntry("47", "Gesetz ü. d. Umweltverträglichkeitsprüfung (UVPG)"))
-            add(CodelistHandler.toCodelistEntry("48", "Erlaß Nds. Umweltministerium vom 16.10.1992"))
-            add(CodelistHandler.toCodelistEntry("49", "Bundesimmissionsschutzgesetz (BImSchG)"))
-            add(CodelistHandler.toCodelistEntry("50", "BImSchG §47a"))
-            add(CodelistHandler.toCodelistEntry("51", "Arbeitsschutzgesetz"))
-            add(CodelistHandler.toCodelistEntry("52", "Anleitung zur Berechnung von Fluglärm"))
-            add(CodelistHandler.toCodelistEntry("53", "Agrarstatistikgesetz (AgrStatG)"))
-            add(CodelistHandler.toCodelistEntry("54", "Abfallklärschlammverordnung (AbfKlärV)"))
-            add(CodelistHandler.toCodelistEntry("55", "Bundesimmissionsschutzverordnung, 23."))
-            add(CodelistHandler.toCodelistEntry("56", "Abwasserabgabengesetz (AbwAG)"))
-            add(CodelistHandler.toCodelistEntry("57", "Wasserhaushaltsgesetz (WHG) § 7a"))
-            add(CodelistHandler.toCodelistEntry("58", "§ 152 NWG (Abwasserbeseitigungspläne)"))
-            add(CodelistHandler.toCodelistEntry("59", "§ 52 Nieders. Wassergesetz (NWG)"))
-            add(CodelistHandler.toCodelistEntry("60", "§ 67 NWG"))
-            add(CodelistHandler.toCodelistEntry("61", "23. Bundesimmissionsschutzverordnung"))
-            add(CodelistHandler.toCodelistEntry("62", "Abfallgesetz (AbfG)"))
-            add(CodelistHandler.toCodelistEntry("63", "AdV-Plenumsbeschluß von 1994"))
-            add(CodelistHandler.toCodelistEntry("64", "AdV-Plenumsbeschluß von1994"))
-            add(CodelistHandler.toCodelistEntry("65", "Agrarstatistikgesetz AgrStatG"))
-            add(CodelistHandler.toCodelistEntry("67", "Betriebssatzung der LGN v. 7.7.1997"))
-            add(CodelistHandler.toCodelistEntry("68", "Bundesimmissionsschutzverordnung"))
+            add(toCodelistEntry("1", "Atomgesetz (AtG)"))
+            add(toCodelistEntry("2", "Baugesetzbuch (BauGB)"))
+            add(toCodelistEntry("3", "Bürgerl. Gesetzbuch (BGB)"))
+            add(toCodelistEntry("4", "Bodenschutzgesetz (BodSchG)"))
+            add(toCodelistEntry("5", "Bundesberggesetz (BBergG)"))
+            add(toCodelistEntry("7", "Bundesnaturschutzgesetz (BNatSchG)"))
+            add(toCodelistEntry("8", "Bundeswaldgesetz (BundeswaldG)"))
+            add(toCodelistEntry("9", "Chemikaliengesetz (ChemG)"))
+            add(toCodelistEntry("10", "Flurbereinigungsgesetz (FlurbG)"))
+            add(toCodelistEntry("11", "Gentechnikgesetz (GenTG)"))
+            add(toCodelistEntry("13", "Kreislaufwirtschafts- u. Abfallgesetz (KrW-/AbfG)"))
+            add(toCodelistEntry("14", "Landesabfallgesetz (LAbfG)"))
+            add(toCodelistEntry("15", "Landesabfallwirtschaftsgesetz (LAbfWG)"))
+            add(toCodelistEntry("16", "Landschaftsgesetz (LG)"))
+            add(toCodelistEntry("17", "Pflanzenschutzgesetz (PflSchG)"))
+            add(toCodelistEntry("18", "Raumordnungsgesetz (ROG)"))
+            add(toCodelistEntry("19", "Strahlenschutzvorsorgegesetz (StrVG)"))
+            add(toCodelistEntry("20", "Tierschutzgesetz (TierSchG)"))
+            add(toCodelistEntry("21", "Umwelthaftungsgesetz (UmweltHG)"))
+            add(toCodelistEntry("22", "Umweltinformationsgesetz (UIG)"))
+            add(toCodelistEntry("23", "Verwaltungsverfahrensgesetz (VwVfG)"))
+            add(toCodelistEntry("24", "Bundeswasserstraßengesetz (WaStrG)"))
+            add(toCodelistEntry("25", "Wasserhaushaltsgesetz (WHG)"))
+            add(toCodelistEntry("26", "Umweltstatistikgesetz (Fass. 21.06.1994)"))
+            add(toCodelistEntry("27", "Umweltstatistikgesetz (Fass. 14.03.1980)"))
+            add(toCodelistEntry("29", "Trinkwasserverordnung (TrinkwV)"))
+            add(toCodelistEntry("30", "TA Siedlungsabfall"))
+            add(toCodelistEntry("31", "TA Abfall"))
+            add(toCodelistEntry("32", "Strahlenschutzverordnung (StrlSchVO)"))
+            add(toCodelistEntry("33", "Richtl. Em.- u. Im.-Überwachung. kerntech. Anl."))
+            add(toCodelistEntry("34", "RdErl. d. ML v. 16.1.1986, GültL 10/66"))
+            add(toCodelistEntry("35", "Nieders. Wassergesetz (NWG)"))
+            add(toCodelistEntry("36", "Nieders. Naturschutzgesetz (NNatG)"))
+            add(toCodelistEntry("38", "Nieders. Abfallgesetz (NAbfG)"))
+            add(toCodelistEntry("39", "Nieders. Deichgesetz (NDG)"))
+            add(toCodelistEntry("40", "Nieders. Abfallgesetz. 6. Teil \"Altlasten\""))
+            add(toCodelistEntry("41", "Nieders. Abfallabgabengesetz"))
+            add(toCodelistEntry("42", "Landesraumordnungsprogramm LROP"))
+            add(toCodelistEntry("43", "KTA 1508"))
+            add(toCodelistEntry("45", "Gesetz über eine Holzstatistik"))
+            add(toCodelistEntry("46", "Ges. Statistik im Produzierenden Gewerbe"))
+            add(toCodelistEntry("47", "Gesetz ü. d. Umweltverträglichkeitsprüfung (UVPG)"))
+            add(toCodelistEntry("48", "Erlaß Nds. Umweltministerium vom 16.10.1992"))
+            add(toCodelistEntry("49", "Bundesimmissionsschutzgesetz (BImSchG)"))
+            add(toCodelistEntry("50", "BImSchG §47a"))
+            add(toCodelistEntry("51", "Arbeitsschutzgesetz"))
+            add(toCodelistEntry("52", "Anleitung zur Berechnung von Fluglärm"))
+            add(toCodelistEntry("53", "Agrarstatistikgesetz (AgrStatG)"))
+            add(toCodelistEntry("54", "Abfallklärschlammverordnung (AbfKlärV)"))
+            add(toCodelistEntry("55", "Bundesimmissionsschutzverordnung, 23."))
+            add(toCodelistEntry("56", "Abwasserabgabengesetz (AbwAG)"))
+            add(toCodelistEntry("57", "Wasserhaushaltsgesetz (WHG) § 7a"))
+            add(toCodelistEntry("58", "§ 152 NWG (Abwasserbeseitigungspläne)"))
+            add(toCodelistEntry("59", "§ 52 Nieders. Wassergesetz (NWG)"))
+            add(toCodelistEntry("60", "§ 67 NWG"))
+            add(toCodelistEntry("61", "23. Bundesimmissionsschutzverordnung"))
+            add(toCodelistEntry("62", "Abfallgesetz (AbfG)"))
+            add(toCodelistEntry("63", "AdV-Plenumsbeschluß von 1994"))
+            add(toCodelistEntry("64", "AdV-Plenumsbeschluß von1994"))
+            add(toCodelistEntry("65", "Agrarstatistikgesetz AgrStatG"))
+            add(toCodelistEntry("67", "Betriebssatzung der LGN v. 7.7.1997"))
+            add(toCodelistEntry("68", "Bundesimmissionsschutzverordnung"))
         }
     }
 
@@ -319,8 +358,8 @@ class InGridProfile(
         data = jacksonObjectMapper().createArrayNode().apply {
             codelistHandler.getCodelists(listOf("3385"))?.get(0)?.entries?.let { codelist3385 ->
                 codelist3385.forEach { entry ->
-                    val de = entry.localisations.get("de") ?: entry.localisations.get("en") ?: ""
-                    add(toCodelistEntry(entry.id, de, null, entry.localisations.get("en")))
+                    val de = entry.fields.get("de") ?: entry.fields.get("en") ?: ""
+                    add(toCodelistEntry(entry.id, de, null, entry.fields.get("en")))
                 }
             }
         }
@@ -397,7 +436,7 @@ class InGridProfile(
             entityManager
                 .createNativeQuery(
                     """
-                    CREATE INDEX IF NOT EXISTS parentIdentGin  ON document USING gin((data -> 'parentIdentifier'));
+                    CREATE INDEX IF NOT EXISTS parentIdentGin ON document USING gin((data -> 'parentIdentifier'));
                     CREATE INDEX IF NOT EXISTS coupledResourcesGin ON document USING gin((data->'service'->'coupledResources'));
                     CREATE INDEX IF NOT EXISTS referencesGin ON document USING gin((data->'references'));
                     """.trimIndent(),
@@ -422,7 +461,7 @@ class InGridProfile(
                 if (!referenceInImport) {
                     try {
                         documentService.getWrapperByCatalogAndDocumentUuid(catalogId, coupledUuid)
-                    } catch (ex: Exception) {
+                    } catch (_: Exception) {
                         message.infos.add("Coupled Resource with UUID $coupledUuid was not found. Removing reference.")
                         notExistingCoupledResources.add(coupledUuid)
                     }

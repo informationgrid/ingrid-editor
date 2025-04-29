@@ -21,6 +21,7 @@ package de.ingrid.igeserver.tasks.quartz
 
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.CodelistField
 import de.ingrid.igeserver.services.CodelistHandler
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
@@ -32,8 +33,6 @@ import java.util.*
 data class FieldToCodelist(
     val field: String?,
     val codelist: String,
-    val isArray: Boolean = false,
-    val arrayField: String? = null,
 )
 
 data class ArrayFieldToCodelist(
@@ -58,53 +57,16 @@ class CodelistSyncTask(
         val message = Message(Date(), 0)
         message.message = "Starting codelist synchronization"
         val catalogIdentifier = context.mergedJobDataMap!!.getString("catalogId")
-        val catalogLanguage = catalogService.getCatalogById(catalogIdentifier).settings.config.language ?: "de"
+        val catalog = catalogService.getCatalogById(catalogIdentifier)
+        val catalogLanguage = catalog.settings.config.language ?: "de"
+        val profile = catalogService.getCatalogProfile(catalog.type)
 
-        val codelistFields = listOf(
-            ArrayFieldToCodelist("advProductGroups", null, "8010"),
-            ArrayFieldToCodelist("spatial.spatialSystems", null, "100"),
-//            FieldToCodelist("gridSpatialRepresentation.type", ""),
-            ArrayFieldToCodelist("distribution.format", "name", "1320"),
-            FieldToCodelist("fileReferences.format", "1320"),
-            ArrayFieldToCodelist("themes", null, "6100"),
-            ArrayFieldToCodelist("openDataCategories", null, "6400"),
-            ArrayFieldToCodelist("hvdCategories", null, "hvdCategories"),
-            ArrayFieldToCodelist("priorityDatasets", null, "6350"),
-            FieldToCodelist("spatialScope", "6360"),
-            ArrayFieldToCodelist("topicCategories", null, "527"),
-            FieldToCodelist("spatial.verticalExtent.unitOfMeasure", "102"),
-            FieldToCodelist("spatial.verticalExtent.Datum", "101"),
-            ArrayFieldToCodelist("temporal.events", "referenceDateType", "502"),
-            FieldToCodelist("temporal.status", "523"),
-            FieldToCodelist("maintenanceInformation.maintenanceAndUpdateFrequency", "518"),
-            FieldToCodelist("maintenanceInformation.userDefinedMaintenanceFrequency.unit", "1230"),
-            FieldToCodelist("metadata.language", "99999999"),
-            ArrayFieldToCodelist("dataset.languages", null, "99999999"),
-            FieldToCodelist("metadata.characterSet", "510"),
-            ArrayFieldToCodelist("conformanceResult", "pass", "6000"),
-            ArrayFieldToCodelist("conformanceResult", "specification", "6005"),
-//            FieldToCodelist("explanation.supplementalInformation", "1350"),
-            ArrayFieldToCodelist("resource.accessConstraints", null, "6010"),
-            ArrayFieldToCodelist("resource.useConstraints", "title", "6500"),
-            ArrayFieldToCodelist("digitalTransferOptions", "name", "520"),
-            FieldToCodelist("generalResourceType", "3390"),
-            FieldToCodelist("resourceType", "3386"),
-            ArrayFieldToCodelist("references", "type", "2000"),
-            ArrayFieldToCodelist("references", "urlDataType", "1320"),
-            ArrayFieldToCodelist("pointOfContact", "type", "505"),
-
-            FieldToCodelist("service.type", "5100"),
-            ArrayFieldToCodelist("service.classification", null, "5200"),
-            ArrayFieldToCodelist("service.version", null, "5152"), // dynamic!!!
-            ArrayFieldToCodelist("service.operations", "name", "5110"), // dynamic!!!
-        )
-
-        codelistFields.forEach {
+        profile.codelistFields.forEach {
             try {
                 // Execute the SQL query to update codelist values
-                val sql = when (it is ArrayFieldToCodelist) {
-                    true -> getSQL(it, catalogIdentifier, catalogLanguage)
-                    false -> getSQLForObject(it as FieldToCodelist, catalogIdentifier, catalogLanguage)
+                val sql = when (it) {
+                    is CodelistField.ListField -> getSQL(it, catalogIdentifier, catalogLanguage)
+                    is CodelistField.SingleField -> getSQLForObject(it, catalogIdentifier, catalogLanguage)
                 }
                 log.info("Executing SQL: $sql")
                 val updatedRows = jdbcTemplate.update(sql)
@@ -121,7 +83,7 @@ class CodelistSyncTask(
         finishJob(context, message)
     }
 
-    private fun getSQL(codelistField: ArrayFieldToCodelist, catalogIdentifier: String, language: String): String {
+    private fun getSQL(codelistField: CodelistField.ListField, catalogIdentifier: String, language: String): String {
         val codelist = codelistHandler.getCodelists(listOf(codelistField.codelist)).firstOrNull()
             ?: codelistHandler.getCatalogCodelists(catalogIdentifier).find { it.id == codelistField.codelist }
         val fieldPath = if (codelistField.subField != null) {
@@ -175,7 +137,7 @@ class CodelistSyncTask(
         """.trimIndent()
     }
 
-    private fun getSQLForObject(codelistField: FieldToCodelist, catalogIdentifier: String, language: String): String {
+    private fun getSQLForObject(codelistField: CodelistField.SingleField, catalogIdentifier: String, language: String): String {
         val codelist = codelistHandler.getCodelists(listOf(codelistField.codelist)).firstOrNull()
             ?: codelistHandler.getCatalogCodelists(catalogIdentifier).find { it.id == codelistField.codelist }
         val jsonPath = codelistField.field!!.split(".").joinToString(" -> ") { "'$it'" }

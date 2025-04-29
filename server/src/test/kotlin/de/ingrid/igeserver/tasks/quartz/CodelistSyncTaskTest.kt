@@ -118,6 +118,7 @@ class CodelistSyncTaskTest : IntegrationTest() {
                 it.getString("maintenanceInformation.userDefinedMaintenanceFrequency.unit.value") shouldBe "Monate"
                 it.getPath("spatial.spatialSystems")!!.get(0).getString("value") shouldBe "CRS 84: CRS 84 / mathematisch"
                 it.getPath("resource.accessConstraints")!!.get(0).getString("value") shouldBe "aufgrund der Vertraulichkeit der Verfahren von Behörden"
+                it.getPath("extraInfo.legalBasicsDescriptions")!!.get(0).getString("value") shouldBe "§ 67 NWG"
             }
     }
 

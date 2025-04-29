@@ -152,7 +152,7 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
     }
   ],
   "extraInfo": {
-    "legalBasicsDescriptions": []
+    "legalBasicsDescriptions": [{"key": "60"}]
   },
   "resource": {
     "accessConstraints": [

@@ -64,6 +64,10 @@ interface CatalogProfile {
 
     @JsonIgnore
     fun additionalImportAnalysis(catalogId: String, report: OptimizedImportAnalysis, message: Message) {}
+
+    @get:JsonIgnore
+    val codelistFields: List<CodelistField>
+        get() = emptyList()
 }
 
 data class IndexIdFieldConfig(
