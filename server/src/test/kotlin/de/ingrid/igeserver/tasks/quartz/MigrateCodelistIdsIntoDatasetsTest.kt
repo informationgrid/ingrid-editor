@@ -29,8 +29,6 @@ import io.mockk.every
 import io.mockk.mockk
 import jakarta.persistence.EntityManager
 import mockCodelists
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,10 +36,10 @@ import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
 
 @Sql(scripts = ["/test_data-codelist.sql"], config = SqlConfig(encoding = "UTF-8"))
-class CodelistSyncTaskTest : IntegrationTest() {
+class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
 
     @Autowired
-    private lateinit var codelistSyncTask: CodelistSyncTask
+    private lateinit var codelistSyncTask: MigrateCodelistIdsIntoDatasets
 
     @Autowired
     private lateinit var entityManager: EntityManager

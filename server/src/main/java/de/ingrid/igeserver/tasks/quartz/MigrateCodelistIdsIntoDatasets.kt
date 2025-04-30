@@ -36,7 +36,7 @@ data class FieldToCodelist(
 
 @Component
 @PersistJobDataAfterExecution
-class CodelistSyncTask(
+class MigrateCodelistIdsIntoDatasets(
     private val jdbcTemplate: JdbcTemplate,
     private val catalogService: CatalogService,
 ) : IgeJob() {

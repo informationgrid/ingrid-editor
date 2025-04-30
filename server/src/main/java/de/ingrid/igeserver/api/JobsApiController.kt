@@ -223,7 +223,7 @@ class JobsApiController(
         val jobDataMap = JobDataMap().apply {
             put("catalogId", catalogId)
         }
-        scheduler.handleJobWithCommand(command, de.ingrid.igeserver.tasks.quartz.CodelistSyncTask::class.java, jobKey, jobDataMap)
+        scheduler.handleJobWithCommand(command, de.ingrid.igeserver.tasks.quartz.MigrateCodelistIdsIntoDatasets::class.java, jobKey, jobDataMap)
 
         return ResponseEntity.ok().build()
     }
