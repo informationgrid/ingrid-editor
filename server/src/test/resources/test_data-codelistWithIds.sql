@@ -22,22 +22,26 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
   "title": "full_geodatendienst",
   "themes": [
     {
-      "key": "317"
+      "key": "317",
+      "_codelistId": "6100"
     }
   ],
   "service": {
     "type": {
-      "key": "3"
+      "key": "3",
+      "_codelistId": "5100"
     },
     "version": [
       {
-        "key": "2"
+        "key": "2",
+        "_codelistId": "5152"
       }
     ],
     "operations": [
       {
         "name": {
-          "key": "2"
+          "key": "2",
+          "_codelistId": "5110"
         },
         "methodCall": "https://www.cypress.io/",
         "description": "test"
@@ -46,7 +50,8 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
     "resolution": [],
     "classification": [
       {
-        "key": "303"
+        "key": "303",
+        "_codelistId": "5200"
       }
     ],
     "isAtomDownload": true,
@@ -69,17 +74,20 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
     ],
     "spatialSystems": [
       {
-        "key": "84"
+        "key": "84",
+        "_codelistId": "100"
       }
     ],
     "verticalExtent": {
       "Datum": {
-        "key": "900002"
+        "key": "900002",
+        "_codelistId": "101"
       },
       "maximumValue": 11,
       "minimumValue": 1,
       "unitOfMeasure": {
-        "key": "9036"
+        "key": "9036",
+        "_codelistId": "102"
       }
     }
   },
@@ -90,20 +98,23 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
   },
   "metadata": {
     "language": {
-      "key": "150"
+      "key": "150",
+      "_codelistId": "99999999"
     }
   },
   "resource": {
     "useConstraints": [
       {
         "title": {
-          "key": "2"
+          "key": "2",
+          "_codelistId": "6500"
         }
       }
     ],
     "accessConstraints": [
       {
-        "key": "2"
+        "key": "2",
+        "_codelistId": "6010"
       }
     ]
   },
@@ -112,12 +123,14 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
       {
         "referenceDate": "2023-07-31T22:00:00.000Z",
         "referenceDateType": {
-          "key": "1"
+          "key": "1",
+          "_codelistId": "502"
         }
       }
     ],
     "status": {
-      "key": "6"
+      "key": "6",
+      "_codelistId": "523"
     },
     "resourceDateType": {
       "key": "at"
@@ -126,7 +139,8 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
   "extraInfo": {
     "legalBasicsDescriptions": [
       {
-        "key": "60"
+        "key": "60",
+        "_codelistId": "1350"
       }
     ]
   },
@@ -137,11 +151,13 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
     {
       "url": "https://test.com/my.zip",
       "type": {
-        "key": "9990"
+        "key": "9990",
+        "_codelistId": "2000"
       },
       "title": "Daten zum Download",
       "urlDataType": {
-        "key": "27"
+        "key": "27",
+        "_codelistId": "1320"
       },
       "referenceType": "url"
     }
@@ -151,47 +167,55 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
     "format": [
       {
         "name": {
-          "key": "2"
+          "key": "2",
+          "_codelistId": "1320"
         }
       }
     ]
   },
   "spatialScope": {
-    "key": "827891363"
+    "key": "827891363",
+    "_codelistId": "6360"
   },
   "pointOfContact": [
     {
       "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4",
       "type": {
-        "key": "12"
+        "key": "12",
+        "_codelistId": "505"
       }
     },
     {
       "ref": "83f92167-6606-4182-948c-5747ad608b80",
       "type": {
-        "key": "7"
+        "key": "7",
+        "_codelistId": "505"
       }
     }
   ],
   "advProductGroups": [
     {
-      "key": "0"
+      "key": "0",
+      "_codelistId": "8010"
     }
   ],
   "graphicOverviews": [],
   "priorityDatasets": [
     {
-      "key": "-1021374392"
+      "key": "-1021374392",
+      "_codelistId": "6350"
     }
   ],
   "conformanceResult": [
     {
       "pass": {
-        "key": "1"
+        "key": "1",
+        "_codelistId": "6000"
       },
       "isInspire": true,
       "specification": {
-        "key": "10"
+        "key": "10",
+        "_codelistId": "6005"
       },
       "publicationDate": "2009-10-20T00:00:00.000Z"
     }
@@ -199,7 +223,8 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
   "digitalTransferOptions": [
     {
       "name": {
-        "key": "4"
+        "key": "4",
+        "_codelistId": "520"
       },
       "transferSize": {
         "unit": {
@@ -210,11 +235,13 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
   ],
   "maintenanceInformation": {
     "maintenanceAndUpdateFrequency": {
-      "key": "11"
+      "key": "11",
+      "_codelistId": "518"
     },
     "userDefinedMaintenanceFrequency": {
       "unit": {
-        "key": "5"
+        "key": "5",
+        "_codelistId": "1230"
       },
       "number": 1
     }

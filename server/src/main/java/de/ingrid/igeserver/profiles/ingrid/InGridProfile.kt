@@ -45,7 +45,6 @@ import de.ingrid.igeserver.research.quickfilter.ExceptFolders
 import de.ingrid.igeserver.research.quickfilter.Published
 import de.ingrid.igeserver.research.quickfilter.TimeSpan
 import de.ingrid.igeserver.services.CatalogProfile
-import de.ingrid.igeserver.services.CodelistField
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.CodelistHandler.Companion.toCodelistEntry
 import de.ingrid.igeserver.services.DateService
@@ -85,44 +84,6 @@ class InGridProfile(
     override val description = null
     override val indexExportFormatID = "indexInGridIDF"
     override val indexIdField = IndexIdFieldConfig("t01_object.obj_id", "t02_address.adr_id")
-    override val codelistFields = listOf(
-        CodelistField.ListField("advProductGroups", null, "8010"),
-        CodelistField.ListField("spatial.spatialSystems", null, "100"),
-//      CodelistField.SingleField("gridSpatialRepresentation.type", ""),
-        CodelistField.ListField("distribution.format", "name", "1320"),
-        CodelistField.SingleField("fileReferences.format", "1320"),
-        CodelistField.ListField("themes", null, "6100"),
-        CodelistField.ListField("openDataCategories", null, "6400"),
-        CodelistField.ListField("hvdCategories", null, "hvdCategories"),
-        CodelistField.ListField("priorityDatasets", null, "6350"),
-        CodelistField.SingleField("spatialScope", "6360"),
-        CodelistField.ListField("topicCategories", null, "527"),
-        CodelistField.SingleField("spatial.verticalExtent.unitOfMeasure", "102"),
-        CodelistField.SingleField("spatial.verticalExtent.Datum", "101"),
-        CodelistField.ListField("temporal.events", "referenceDateType", "502"),
-        CodelistField.SingleField("temporal.status", "523"),
-        CodelistField.SingleField("maintenanceInformation.maintenanceAndUpdateFrequency", "518"),
-        CodelistField.SingleField("maintenanceInformation.userDefinedMaintenanceFrequency.unit", "1230"),
-        CodelistField.SingleField("metadata.language", "99999999"),
-        CodelistField.ListField("dataset.languages", null, "99999999"),
-        CodelistField.SingleField("metadata.characterSet", "510"),
-        CodelistField.ListField("conformanceResult", "pass", "6000"),
-        CodelistField.ListField("conformanceResult", "specification", "6005"),
-        CodelistField.ListField("extraInfo.legalBasicsDescriptions", null, "1350"),
-        CodelistField.ListField("resource.accessConstraints", null, "6010"),
-        CodelistField.ListField("resource.useConstraints", "title", "6500"),
-        CodelistField.ListField("digitalTransferOptions", "name", "520"),
-        CodelistField.SingleField("generalResourceType", "3390"),
-        CodelistField.SingleField("resourceType", "3386"),
-        CodelistField.ListField("references", "type", "2000"),
-        CodelistField.ListField("references", "urlDataType", "1320"),
-        CodelistField.ListField("pointOfContact", "type", "505"),
-
-        CodelistField.SingleField("service.type", "5100"),
-        CodelistField.ListField("service.classification", null, "5200"),
-        CodelistField.ListField("service.version", null, "5152"), // dynamic!!!
-        CodelistField.ListField("service.operations", "name", "5110"), // dynamic!!!
-    )
 
     override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> = arrayOf(
         FacetGroup(

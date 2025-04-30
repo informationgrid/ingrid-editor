@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.tasks.quartz
 
 import de.ingrid.igeserver.api.messaging.Message
+import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
@@ -43,57 +44,62 @@ class MigrateCodelistIdsIntoDatasets(
 
     override val log = logger()
 
+    val fieldsInGrid = listOf(
+        FieldToCodelist("advProductGroups", null, "8010"),
+        FieldToCodelist("spatial.spatialSystems", null, "100"),
+//          FieldToCodelistld("gridSpatialRepresentation.type", ""),
+        FieldToCodelist("distribution.format", "name", "1320"),
+        FieldToCodelist(null, "fileReferences.format", "1320"),
+        FieldToCodelist("themes", null, "6100"),
+        FieldToCodelist("openDataCategories", null, "6400"),
+        FieldToCodelist("hvdCategories", null, "hvdCategories"),
+        FieldToCodelist("priorityDatasets", null, "6350"),
+        FieldToCodelist(null, "spatialScope", "6360"),
+        FieldToCodelist("topicCategories", null, "527"),
+        FieldToCodelist(null, "spatial.verticalExtent.unitOfMeasure", "102"),
+        FieldToCodelist(null, "spatial.verticalExtent.Datum", "101"),
+        FieldToCodelist("temporal.events", "referenceDateType", "502"),
+        FieldToCodelist(null, "temporal.status", "523"),
+        FieldToCodelist(null, "maintenanceInformation.maintenanceAndUpdateFrequency", "518"),
+        FieldToCodelist(null, "maintenanceInformation.userDefinedMaintenanceFrequency.unit", "1230"),
+        FieldToCodelist(null, "metadata.language", "99999999"),
+        FieldToCodelist("dataset.languages", null, "99999999"),
+        FieldToCodelist(null, "metadata.characterSet", "510"),
+        FieldToCodelist("conformanceResult", "pass", "6000"),
+        FieldToCodelist("conformanceResult", "specification", "6005"),
+        FieldToCodelist("extraInfo.legalBasicsDescriptions", null, "1350"),
+        FieldToCodelist("resource.accessConstraints", null, "6010"),
+        FieldToCodelist("resource.useConstraints", "title", "6500"),
+        FieldToCodelist("digitalTransferOptions", "name", "520"),
+        FieldToCodelist(null, "generalResourceType", "3390"),
+        FieldToCodelist(null, "resourceType", "3386"),
+        FieldToCodelist("references", "type", "2000"),
+        FieldToCodelist("references", "urlDataType", "1320"),
+        FieldToCodelist("pointOfContact", "type", "505"),
+        FieldToCodelist(null, "service.type", "5100"),
+        FieldToCodelist("service.classification", null, "5200"),
+        FieldToCodelist("service.version", null, "5152"), // dynamic!!!
+        FieldToCodelist("service.operations", "name", "5110"), // dynamic!!!
+    )
+
+    val fieldsUvp = listOf<FieldToCodelist>()
+    val fieldsOpendata = listOf<FieldToCodelist>()
+    val fieldsTest = listOf<FieldToCodelist>()
+
     override fun run(context: JobExecutionContext) {
-        log.info("Starting Task: Codelist Synchronization")
+        log.info("Starting Task: MigrateCodelistIdsIntoDatasets")
 
         val message = Message(Date(), 0)
-        message.message = "Starting codelist synchronization"
+        message.message =
+            "Starting codelist id migration for catalog: ${context.mergedJobDataMap?.getString("catalogId")}..."
         val catalogIdentifier = context.mergedJobDataMap!!.getString("catalogId")
         val catalog = catalogService.getCatalogById(catalogIdentifier)
-        val catalogLanguage = catalog.settings.config.language ?: "de"
         val profile = catalogService.getCatalogProfile(catalog.type)
 
-        val fields = listOf(
-            FieldToCodelist("advProductGroups", null, "8010"),
-            FieldToCodelist("spatial.spatialSystems", null, "100"),
-//          FieldToCodelistld("gridSpatialRepresentation.type", ""),
-            FieldToCodelist("distribution.format", "name", "1320"),
-            FieldToCodelist(null, "fileReferences.format", "1320"),
-            FieldToCodelist("themes", null, "6100"),
-            FieldToCodelist("openDataCategories", null, "6400"),
-            FieldToCodelist("hvdCategories", null, "hvdCategories"),
-            FieldToCodelist("priorityDatasets", null, "6350"),
-            FieldToCodelist(null, "spatialScope", "6360"),
-            FieldToCodelist("topicCategories", null, "527"),
-            FieldToCodelist(null, "spatial.verticalExtent.unitOfMeasure", "102"),
-            FieldToCodelist(null, "spatial.verticalExtent.Datum", "101"),
-            FieldToCodelist("temporal.events", "referenceDateType", "502"),
-            FieldToCodelist(null, "temporal.status", "523"),
-            FieldToCodelist(null, "maintenanceInformation.maintenanceAndUpdateFrequency", "518"),
-            FieldToCodelist(null, "maintenanceInformation.userDefinedMaintenanceFrequency.unit", "1230"),
-            FieldToCodelist(null, "metadata.language", "99999999"),
-            FieldToCodelist("dataset.languages", null, "99999999"),
-            FieldToCodelist(null, "metadata.characterSet", "510"),
-            FieldToCodelist("conformanceResult", "pass", "6000"),
-            FieldToCodelist("conformanceResult", "specification", "6005"),
-            FieldToCodelist("extraInfo.legalBasicsDescriptions", null, "1350"),
-            FieldToCodelist("resource.accessConstraints", null, "6010"),
-            FieldToCodelist("resource.useConstraints", "title", "6500"),
-            FieldToCodelist("digitalTransferOptions", "name", "520"),
-            FieldToCodelist(null, "generalResourceType", "3390"),
-            FieldToCodelist(null, "resourceType", "3386"),
-            FieldToCodelist("references", "type", "2000"),
-            FieldToCodelist("references", "urlDataType", "1320"),
-            FieldToCodelist("pointOfContact", "type", "505"),
-            FieldToCodelist(null, "service.type", "5100"),
-            FieldToCodelist("service.classification", null, "5200"),
-            FieldToCodelist("service.version", null, "5152"), // dynamic!!!
-            FieldToCodelist("service.operations", "name", "5110"), // dynamic!!!
-        )
-        fields.forEach {
+        getFields(profile).forEach {
             try {
                 // Execute the SQL query to update codelist values
-                val sql = getSQL(it, catalogIdentifier, catalogLanguage)
+                val sql = getSQL(it, catalogIdentifier)
                 log.info("Executing SQL: $sql")
                 val updatedRows = jdbcTemplate.update(sql)
 
@@ -109,17 +115,30 @@ class MigrateCodelistIdsIntoDatasets(
         finishJob(context, message)
     }
 
-    private fun getSQL(codelistField: FieldToCodelist, catalogIdentifier: String, language: String): String {
+    private fun getFields(profile: CatalogProfile): List<FieldToCodelist> = when (profile.identifier) {
+        "ingrid" -> fieldsInGrid
+        "uvp" -> fieldsUvp
+        "opendata" -> fieldsOpendata
+        "test" -> fieldsTest
+        else -> when (profile.parentProfile) {
+            "ingrid" -> fieldsInGrid
+            "uvp" -> fieldsUvp
+            "opendata" -> fieldsOpendata
+            "test" -> fieldsTest
+            else -> emptyList()
+        }
+    }
+
+    private fun getSQL(codelistField: FieldToCodelist, catalogIdentifier: String): String {
         val rootField = codelistField.arrayField ?: codelistField.subField!!
         val jsonPath = rootField.split(".").joinToString(" -> ") { "'$it'" }
-        val jsonPath2 = rootField.replace(".", ",")
-        val nullFilter = rootField
+        val pathCommaSeparated = rootField.replace(".", ",")
         val subPathForArrays = codelistField.subField?.replace(".", ",")?.let { "$it," } ?: ""
         return """
                 UPDATE document d
                 SET data = jsonb_set(
                         d.data,
-                        '{$jsonPath2}',
+                        '{$pathCommaSeparated}',
                         CASE
                             WHEN jsonb_typeof(d.data -> $jsonPath) = 'array' THEN
                                 COALESCE(
@@ -150,9 +169,8 @@ class MigrateCodelistIdsIntoDatasets(
 
         return parts.mapIndexed { index, part ->
             when {
-                // Letztes Element mit ->>
+                // last element with ->>
                 index == parts.size - 1 -> " ->> '$part'"
-                // Mittlere Elemente mit ->
                 else -> " -> '$part'"
             }
         }.joinToString("")
