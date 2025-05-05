@@ -171,10 +171,10 @@ export class GeoServiceDoctype extends IngridShared {
                 ),
               ]),
               this.addRepeat("operations", "Operationen", {
-              expressions: {
-                "props.required": (field: FormlyFieldConfig) =>
-                  !field.options.formState.mainModel?.service?.isAtomDownload,
-              },
+                expressions: {
+                  "props.required": (field: FormlyFieldConfig) =>
+                    !field.options.formState.mainModel?.service?.isAtomDownload,
+                },
                 fields: [
                   this.addAutoCompleteInline("name", "Name", {
                     required: true,
@@ -278,20 +278,20 @@ export class GeoServiceDoctype extends IngridShared {
                     className: "optional",
                   })
                 : null,
-              this.showDoiFields
-                ? this.addGroupSimple("publication", [this.addDoiFields()])
-                : null,
             ].filter(Boolean),
           ),
-
-          this.addSpatialSection(),
-          this.addTimeReferenceSection(),
-          this.addAdditionalInformationSection({ conformity: true }),
-          this.addAvailabilitySection(),
-          this.addLinksSection(),
+          this.showDoiFields
+            ? this.addGroupSimple("publication", [this.addDoiFields()])
+            : null,
         ].filter(Boolean),
       ),
-    ];
+
+      this.addSpatialSection(),
+      this.addTimeReferenceSection(),
+      this.addAdditionalInformationSection({ conformity: true }),
+      this.addAvailabilitySection(),
+      this.addLinksSection(),
+    ].filter(Boolean);
 
     return this.manipulateDocumentFields(fields);
   };
