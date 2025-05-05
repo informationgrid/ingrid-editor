@@ -25,10 +25,9 @@ import org.springframework.stereotype.Component
 
 @Component
 class Spatial : QuickFilter() {
-    override val id = "mCloudSelectSpatial"
+    override val id = "selectSpatial"
     override val label = "<group label will be used>"
 
-    override val implicitFilter = listOf("selectDocMCloud")
     override val parameters: List<String> = emptyList()
 
     final val errorMargin = 0.001
