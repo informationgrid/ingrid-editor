@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class ISOImportLfUBayern(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig, val catalogService: CatalogService) : ISOImportProfile {
+class ISOImportLfUBayern(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig, @Lazy val catalogService: CatalogService) : ISOImportProfile {
     override fun handle(catalogId: String, data: Metadata, addressMaps: MutableMap<String, String>): ImportProfileData? {
         val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
         val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps, researchService, uploadConfig, catalogLanguage)

@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class ISOImportHMDK(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig, val catalogService: CatalogService) : ISOImportProfile {
+class ISOImportHMDK(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig, @Lazy val catalogService: CatalogService) : ISOImportProfile {
     override fun handle(
         catalogId: String,
         data: Metadata,
