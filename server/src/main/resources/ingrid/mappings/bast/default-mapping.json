@@ -3,6 +3,14 @@
     "enabled": true
   },
   "properties": {
+    "collection.id": {
+      "type": "keyword",
+      "store": true
+    },
+    "collection.name": {
+      "type": "keyword",
+      "store": true
+    },
     "iPlugId": {
       "type": "keyword",
       "store": true
