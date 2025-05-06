@@ -939,7 +939,7 @@ export class DocumentService {
     }
   }
 
-  private mapSearchResults(
+  mapSearchResults(
     result: ServerSearchResult | ResearchResponse,
   ): SearchResult {
     return {

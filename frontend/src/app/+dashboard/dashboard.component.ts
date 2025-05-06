@@ -46,6 +46,7 @@ import { DocumentListItemComponent } from "../shared/document-list-item/document
 import { AsyncPipe } from "@angular/common";
 import { GeneralStore } from "../store/general.store";
 import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
+import { DashboardService } from "./dashboard.service";
 
 @Component({
   templateUrl: "./dashboard.component.html",
@@ -67,11 +68,25 @@ export class DashboardComponent implements OnInit {
   canCreateAddress: boolean;
   canCreateDataset: boolean;
   canImport: boolean;
-  recentDocs: Signal<DocumentAbstract[]> = computed(() => {
-    return this.generalStore.latestDocuments().slice(0, 5);
+  onlyModifiedFromCurrentUser = signal<boolean>(false);
+  onlyPublishedFromCurrentUser = signal<boolean>(false);
+
+  modifiedDocsResource = this.dashboardService.fetchRecentDocs(
+    this.onlyModifiedFromCurrentUser,
+    false,
+  );
+  publishedDocsResource = this.dashboardService.fetchRecentDocs(
+    this.onlyPublishedFromCurrentUser,
+    true,
+  );
+
+  recentlyModifiedDocs: Signal<DocumentAbstract[]> = computed(() => {
+    const res = this.modifiedDocsResource.value();
+    return res ? this.docService.mapSearchResults(res).hits.slice(0, 5) : [];
   });
-  recentPublishedDocs: Signal<DocumentAbstract[]> = computed(() => {
-    return this.generalStore.latestPublishedDocuments().slice(0, 5);
+  latestPublishedDocs: Signal<DocumentAbstract[]> = computed(() => {
+    const res = this.publishedDocsResource.value();
+    return res ? this.docService.mapSearchResults(res).hits.slice(0, 5) : [];
   });
   oldestExpiredDocs: Signal<DocumentAbstract[]> = computed(() => {
     return this.generalStore.oldestExpiredDocuments().slice(0, 5);
@@ -85,6 +100,7 @@ export class DashboardComponent implements OnInit {
     private dialog: MatDialog,
     private docService: DocumentService,
     private messageService: MessageService,
+    private dashboardService: DashboardService,
   ) {
     this.messages$ = this.messageService.messages$;
     this.canCreateAddress = configService.hasPermission("can_create_address");
@@ -105,8 +121,6 @@ export class DashboardComponent implements OnInit {
   }
 
   fetchData() {
-    this.updateRecent();
-    this.updatePublished();
     this.updateExpired();
   }
 
@@ -166,14 +180,6 @@ export class DashboardComponent implements OnInit {
         isFolder: true,
       } as CreateOptions,
     });
-  }
-
-  updateRecent(fromCurrentUser: boolean = false) {
-    this.docService.findRecentDrafts(fromCurrentUser);
-  }
-
-  updatePublished(fromCurrentUser: boolean = false) {
-    this.docService.findRecentPublished(fromCurrentUser);
   }
 
   showExpiredFromCurrentUser = signal<boolean>(false);
