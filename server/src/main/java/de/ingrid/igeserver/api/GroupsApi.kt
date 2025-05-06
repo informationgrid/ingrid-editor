@@ -19,7 +19,6 @@
  */
 package de.ingrid.igeserver.api
 
-import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.model.UserResponse
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.FrontendGroup
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
@@ -137,23 +136,4 @@ interface GroupsApi {
         principal: Principal,
         @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int,
     ): ResponseEntity<List<UserResponse>>
-
-    @GetMapping(
-        value = ["/groups/{id}/manager"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-    )
-    fun getManagerOfGroup(
-        principal: Principal,
-        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int,
-    ): ResponseEntity<User>
-
-    @PostMapping(
-        value = ["/groups/{id}/manager"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-    )
-    fun updateManager(
-        principal: Principal,
-        @Parameter(description = "The unique id of the group.", required = true) @PathVariable("id") id: Int,
-        @Parameter(description = "The id of the manager", required = true) @RequestBody userId: String,
-    ): ResponseEntity<Group>
 }

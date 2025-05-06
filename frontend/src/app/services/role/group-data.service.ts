@@ -73,19 +73,6 @@ export class GroupDataService {
     );
   }
 
-  getGroupManager(id: number): Observable<User> {
-    return this.http.get<User>(
-      this.configuration.backendUrl + "groups/" + id + "/manager",
-    );
-  }
-
-  updateGroupManager(id: number, managerId: string): Observable<User> {
-    return this.http.post<User>(
-      this.configuration.backendUrl + "groups/" + id + "/manager",
-      managerId,
-    );
-  }
-
   getUserResponseOfGroup(id: number): Observable<UserResponse[]> {
     return this.http.get<UserResponse[]>(
       this.configuration.backendUrl + "groups/" + id + "/users",

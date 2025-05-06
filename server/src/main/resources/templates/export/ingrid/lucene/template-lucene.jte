@@ -135,6 +135,8 @@
         "t02_address.street": "${page.getContact().getStreet()}",
         "t02_address.title_key": "",
     @endif
+    "collection.name": "${catalog.getName()}",
+    "collection.id": "${catalog.getIdentifier()}",
     "t03_catalogue.cat_name": "${catalog.getName()}",
     "t03_catalogue.cat_namespace": "",
     "t03_catalogue.cat_uuid": "",

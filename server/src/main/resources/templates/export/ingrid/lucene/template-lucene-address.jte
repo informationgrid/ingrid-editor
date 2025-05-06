@@ -13,6 +13,8 @@
 {
     "iPlugId": "ige-ng_${catalog.getIdentifier()}",
     "dataSourceName": "iPlug IGE-NG (${catalog.getIdentifier()})",
+    "collection.name": "${catalog.getName()}",
+    "collection.id": "${catalog.getIdentifier()}",
     "title": "${page.getTitle()}",
     "partner": [
         "${partner}"

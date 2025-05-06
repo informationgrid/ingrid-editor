@@ -71,6 +71,12 @@ export function dataOrigin(
                 filter((e) => {
                   return e.type === "valueChanges" && e.field.key === "uuidRef";
                 }),
+                filter(
+                  (value) =>
+                    value.value !== null &&
+                    value.value !== undefined &&
+                    value.value?.length !== 0,
+                ),
                 tap((value) => {
                   const formValue = field.form.value;
                   if (formValue.date === null && formValue.dateType === null) {
@@ -175,13 +181,13 @@ function loadAndSetEvent(doc: DocumentWithMetadata, field: FormlyFieldConfig) {
 }
 
 function getSortedEvents(doc: DocumentWithMetadata) {
-  const events = doc.document.temporal.events;
+  const events = doc.document.temporal?.events ?? [];
   if (
     events.length <= 0 ||
     events[0].referenceDate == null ||
     events[0].referenceDateType == null
   )
-    return;
+    return [];
 
   return events.sort((a, b) => {
     return (

@@ -76,11 +76,11 @@ fun getMapLink(data: JsonNode?, uuid: String, codelists: CodelistTransformer): S
                 val mapsParameter = buildString {
                     append("&MAPS={")
                     if (center != null) {
-                        append("%22center%22: ${center.split(',')}")
+                        append("%22center%22:[$center]")
                     }
                     if (zoom != null) {
-                        if (center != null) append(", ") // Komma nur, wenn `center` vorhanden ist
-                        append("%22zoom%22: $zoom")
+                        if (center != null) append(",") // Komma nur, wenn `center` vorhanden ist
+                        append("%22zoom%22:$zoom")
                     }
                     append("}")
                 }.takeIf { it != "&MAPS={}" } // Nur hinzufügen, wenn mindestens ein Parameter existiert

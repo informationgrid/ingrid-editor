@@ -86,7 +86,7 @@ export class SavePlugin extends SaveBase {
     this.formSubscriptions.push(toolbarEventSubscription);
   }
 
-  saveWithData(formData: IgeDocument) {
+  saveWithData(formData: IgeDocument, overrideVersion?: number) {
     this.documentService.publishState$.next(false);
 
     // delay execution to reset error messages after publish state has been set to false
@@ -99,7 +99,7 @@ export class SavePlugin extends SaveBase {
         .save({
           data: formData,
           id: metadata.wrapperId,
-          version: metadata.version,
+          version: overrideVersion ?? metadata.version,
           isNewDoc: false,
           isAddress: this.forAddress(),
           type: metadata.docType,
