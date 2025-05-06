@@ -385,7 +385,9 @@ export abstract class IngridShared extends BaseDoctype {
       const accessConstraintsControl = field.form.get(
         "resource.accessConstraints",
       );
-      accessConstraintsControl?.setValue([noAccessConstraint.forBackend()]);
+      accessConstraintsControl?.setValue([
+        noAccessConstraint.forBackend("6010"),
+      ]);
     }
 
     if (this.cookieService.getCookie(cookieId) === "true") {
@@ -1899,7 +1901,7 @@ export abstract class IngridShared extends BaseDoctype {
           this.codelistService.getCodelistEntryAsSelectOption("6010", "1");
         field.form
           .get("resource.accessConstraints")
-          ?.setValue([noAccessConstraint.forBackend()]);
+          ?.setValue([noAccessConstraint.forBackend("6010")]);
       }
 
       this.addConformanceEntry(field, "10", "1");
@@ -1955,8 +1957,8 @@ export abstract class IngridShared extends BaseDoctype {
       passKey,
     );
     conformanceValues.push({
-      specification: specification.forBackend(),
-      pass: pass.forBackend(),
+      specification: specification.forBackend("6005"),
+      pass: pass.forBackend("6000"),
       publicationDate:
         publicationDate?.length > 0 ? new Date(publicationDate) : null,
       isInspire: true,

@@ -56,10 +56,11 @@ export class SelectOption {
     this.label = label;
   }
 
-  forBackend(): BackendOption {
+  forBackend(codelistId: string): BackendOption {
     return {
       key: this.value,
       value: this.label,
+      _codelistId: codelistId,
     };
   }
 }

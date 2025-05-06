@@ -347,7 +347,9 @@ export class RepeatListComponent
       return;
     }
 
-    const prepared = new SelectOption(option.value, option.label).forBackend();
+    const prepared = new SelectOption(option.value, option.label).forBackend(
+      this.props.codelistId,
+    );
     this.formControl.patchValue([...(this.formControl.value || []), prepared]);
     this.props.change?.(this.field, prepared);
 

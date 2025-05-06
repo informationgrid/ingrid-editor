@@ -89,8 +89,8 @@ export class UnitInputComponent
     this.$unit.set(item.label);
     this.field.fieldGroup[1].formControl.setValue(
       item.forBackend
-        ? item.forBackend()
-        : new SelectOption(item.value, item.label).forBackend(),
+        ? item.forBackend(null)
+        : new SelectOption(item.value, item.label).forBackend(null),
       {
         emitEvent: shouldEmitEvent,
       },

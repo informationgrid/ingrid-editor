@@ -143,10 +143,14 @@ export class SelectTypeComponent
       // if value is undefined, set formControl to null
       this.formControl.setValue(null, { emitEvent: false });
     } else if (!this.props.simple) {
-      // if not simple, value is an object. set as object
-      if (value?.key != null && value?.value != null) {
-        this.formControl.setValue(value);
-      } else if (value?.key === null && !value?.value) {
+      if (value && value?._codelistId === undefined) {
+        this.formControl.setValue({
+          key: value.key ?? null,
+          value: value.value,
+          _codelistId: this.props.codelistId,
+        });
+      }
+      if (value?.key === null && !value?.value) {
         this.formControl.setValue(null);
       }
     } else if (this.props.multiple) {

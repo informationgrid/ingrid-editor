@@ -293,7 +293,7 @@ export class GeoServiceDoctype extends IngridShared {
 
     const key = value.length > 0 ? "tight" : "loose";
     const option = this.couplingTypeOptions.find((item) => item.value === key);
-    couplingTypeCtrl.setValue(option.forBackend());
+    couplingTypeCtrl.setValue(option.forBackend(null));
   }
 
   private handleServiceTypeChange(field: FormlyFieldConfig) {

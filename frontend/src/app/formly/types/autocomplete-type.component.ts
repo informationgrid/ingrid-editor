@@ -90,11 +90,19 @@ export class AutocompleteTypeComponent
               if (key === null && !value) {
                 this.formControl.setValue(null);
               } else {
-                this.formControl.setValue({ key: key, value: value });
+                this.formControl.setValue({
+                  key: key,
+                  value: value,
+                  _codelistId: this.props.codelistId,
+                });
               }
               return null;
             } else if (value?.key != null && value?.value !== undefined) {
-              this.formControl.setValue({ key: value.key, value: value.value });
+              this.formControl.setValue({
+                key: value.key ?? null,
+                value: value.value,
+                _codelistId: this.props.codelistId,
+              });
               return;
             } else if (value?.key != null && value?.value === undefined) {
               // values should have been filtered already
@@ -129,6 +137,7 @@ export class AutocompleteTypeComponent
           <BackendOption>{
             key: option.value,
             value: option.label,
+            _codelistId: this.props.codelistId,
             disabled: option.disabled,
           },
       ),
