@@ -97,13 +97,6 @@ export class AutocompleteTypeComponent
                 });
               }
               return null;
-            } else if (value?.key != null && value?.value !== undefined) {
-              this.formControl.setValue({
-                key: value.key ?? null,
-                value: value.value,
-                _codelistId: this.props.codelistId,
-              });
-              return;
             } else if (value?.key != null && value?.value === undefined) {
               // values should have been filtered already
               return null;
