@@ -102,8 +102,8 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   selection = signal<DocumentAbstract>(null);
   selectedType: string;
   selectedNode = new BehaviorSubject<number>(null);
-  recentAddresses$: Observable<DocumentAbstract[]> = toObservable(
-    this.generalStore.recentAddresses,
+  recentlyUsedAddresses$: Observable<DocumentAbstract[]> = toObservable(
+    this.generalStore.recentlyUsedAddresses,
   ).pipe(map((allRecent) => allRecent[ConfigService.catalogId] ?? []));
   initialActiveAddressType = new BehaviorSubject<Partial<any>>(null);
   typeSelectionEnabled = signal<boolean>(false);
@@ -171,7 +171,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   }
 
   getResult(): void {
-    this.documentService.addToRecentAddresses(this.selection());
+    this.documentService.addToRecentlyUsedAddresses(this.selection());
 
     this.dlgRef.close({
       type: { key: this.selectedType },
@@ -204,7 +204,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   handleTreeError(error: HttpErrorResponse) {
     console.error(error);
     if (error.error.errorText === "No value present") {
-      this.documentService.removeFromRecentAddresses(
+      this.documentService.removeFromRecentlyUsedAddresses(
         this.recentAddressSelect.value.id,
       );
       this.recentAddressSelect.value = null;

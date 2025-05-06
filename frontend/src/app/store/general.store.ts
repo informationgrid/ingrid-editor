@@ -49,7 +49,7 @@ type GeneralState = {
   };
   needsDocumentReload: boolean;
   needsAddressReload: boolean;
-  recentAddresses: { [catalogId: string]: DocumentAbstract[] };
+  recentlyUsedAddresses: { [catalogId: string]: DocumentAbstract[] };
   serverValidationErrors: ValidationError[];
   latestDocuments: DocumentAbstract[];
   latestAddresses: DocumentAbstract[];
@@ -80,7 +80,7 @@ const initialState: GeneralState = {
   },
   needsDocumentReload: false,
   needsAddressReload: false,
-  recentAddresses: {},
+  recentlyUsedAddresses: {},
   serverValidationErrors: [],
   latestDocuments: [],
   latestAddresses: [],
@@ -174,10 +174,10 @@ export const GeneralStore = signalStore(
     setLatestAddresses(docs: DocumentAbstract[]): void {
       patchState(store, { latestAddresses: docs });
     },
-    setRecentAddresses(docs: {
+    setRecentlyUsedAddresses(docs: {
       [catalogId: string]: DocumentAbstract[];
     }): void {
-      patchState(store, { recentAddresses: docs });
+      patchState(store, { recentlyUsedAddresses: docs });
     },
     setSessionTimeout(value: number): void {
       patchState(store, { sessionTimeoutIn: value });

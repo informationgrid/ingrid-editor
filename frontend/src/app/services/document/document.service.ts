@@ -824,8 +824,8 @@ export class DocumentService {
     );
   }
 
-  public addToRecentAddresses(address: DocumentAbstract) {
-    const recentAddresses = this.generalStore.recentAddresses();
+  public addToRecentlyUsedAddresses(address: DocumentAbstract) {
+    const recentAddresses = this.generalStore.recentlyUsedAddresses();
 
     let addresses = recentAddresses[ConfigService.catalogId]?.slice() ?? [];
     addresses = addresses.filter((addr) => addr.id !== address.id);
@@ -836,19 +836,19 @@ export class DocumentService {
       addresses = addresses.slice(0, 5);
     }
 
-    this.generalStore.setRecentAddresses({
+    this.generalStore.setRecentlyUsedAddresses({
       ...recentAddresses,
       [ConfigService.catalogId]: addresses,
     });
   }
 
-  public removeFromRecentAddresses(id: number) {
-    const recentAddresses = this.generalStore.recentAddresses();
+  public removeFromRecentlyUsedAddresses(id: number) {
+    const recentAddresses = this.generalStore.recentlyUsedAddresses();
 
     let addresses = recentAddresses[ConfigService.catalogId]?.slice() ?? [];
     addresses = addresses.filter((address) => address.id !== id);
 
-    this.generalStore.setRecentAddresses({
+    this.generalStore.setRecentlyUsedAddresses({
       ...recentAddresses,
       [ConfigService.catalogId]: addresses,
     });
