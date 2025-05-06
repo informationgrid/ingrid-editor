@@ -22,4 +22,5 @@ package de.ingrid.igeserver.model
 data class KeyValue(
     val key: String? = null,
     val value: String? = null,
+    val _codelistId: String? = null,
 )
