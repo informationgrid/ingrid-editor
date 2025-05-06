@@ -66,7 +66,7 @@
                 (toggle)="onlyModifiedFromCurrentUser.set($event)"
             >
                 <ige-document-list-item
-                    [docs]="recentlyModifiedDocs()"
+                    [docs]="recentlyModifiedDocs.value()"
                     [hideDate]="false"
                     (select)="openDocument($event._uuid)"
                 ></ige-document-list-item>
@@ -79,7 +79,7 @@
                 (toggle)="onlyPublishedFromCurrentUser.set($event)"
             >
                 <ige-document-list-item
-                    [docs]="latestPublishedDocs()"
+                    [docs]="recentlyPublishedDocs.value()"
                     [hideDate]="false"
                     (select)="openDocument($event._uuid)"
                 ></ige-document-list-item>

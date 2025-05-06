@@ -71,23 +71,15 @@ export class DashboardComponent implements OnInit {
   onlyModifiedFromCurrentUser = signal<boolean>(false);
   onlyPublishedFromCurrentUser = signal<boolean>(false);
 
-  modifiedDocsResource = this.dashboardService.fetchRecentDocs(
+  recentlyModifiedDocs = this.dashboardService.fetchRecentDocs(
     this.onlyModifiedFromCurrentUser,
     false,
   );
-  publishedDocsResource = this.dashboardService.fetchRecentDocs(
+  recentlyPublishedDocs = this.dashboardService.fetchRecentDocs(
     this.onlyPublishedFromCurrentUser,
     true,
   );
 
-  recentlyModifiedDocs: Signal<DocumentAbstract[]> = computed(() => {
-    const res = this.modifiedDocsResource.value();
-    return res ? this.docService.mapSearchResults(res).hits.slice(0, 5) : [];
-  });
-  latestPublishedDocs: Signal<DocumentAbstract[]> = computed(() => {
-    const res = this.publishedDocsResource.value();
-    return res ? this.docService.mapSearchResults(res).hits.slice(0, 5) : [];
-  });
   oldestExpiredDocs: Signal<DocumentAbstract[]> = computed(() => {
     return this.generalStore.oldestExpiredDocuments().slice(0, 5);
   });

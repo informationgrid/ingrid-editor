@@ -1,4 +1,4 @@
-@if (address) {
+@if (address()) {
     <dashboard-address-header
         [canCreateAddress]="canCreateAddress"
         [canImport]="canImport"
@@ -10,15 +10,17 @@
     ></dashboard-docs-header>
 }
 
-@if (childDocs()?.length > 0) {
-    <div class="flex-row">
+@if (childDocs.value()?.length > 0 || childDocs.isLoading) {
+    <div *transloco="let t; read: 'dashboard'" class="flex-row">
         <ige-card-box
             class="flex-1"
-            label="Zuletzt bearbeitet"
+            label="{{ t('recentlyModifiedDocs') }}"
             data-cy="card-latest-docs"
+            nameOfToggle="Von mir"
+            (toggle)="onlyModifiedFromCurrentUser.set($event)"
         >
             <ige-document-list-item
-                [docs]="childDocs()"
+                [docs]="childDocs.value()"
                 [hideDate]="false"
                 [removeSelectionAfter]="true"
                 (select)="openDocument($event._uuid)"
@@ -27,19 +29,19 @@
     </div>
 }
 
-@if (childDocs()?.length === 0) {
+@if (childDocs.value()?.length === 0) {
     <div class="banner text-center">
         <div class="circle-wrapper">
             <mat-icon svgIcon="image-banner-dataset"></mat-icon>
         </div>
         <h2 *transloco="let t; read: 'dashboard'">
             Kein Ordner oder
-            {{ address ? "Adresse" : t("formSingular") }} vorhanden
+            {{ address() ? "Adresse" : t("formSingular") }} vorhanden
         </h2>
         <p *transloco="let t; read: 'dashboard'">
             Legen Sie einen neuen Ordner oder
-            {{ address ? "Adresse" : t("formSingular") }} an oder importieren
-            Sie {{ address ? "Adressen" : t("form") }}.
+            {{ address() ? "Adresse" : t("formSingular") }} an oder importieren
+            Sie {{ address() ? "Adressen" : t("form") }}.
         </p>
         <p>
             Nutzen Sie dafür die oben stehenden Funktionen. Sie finden diese

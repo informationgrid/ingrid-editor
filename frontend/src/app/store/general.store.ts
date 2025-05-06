@@ -51,9 +51,6 @@ type GeneralState = {
   needsAddressReload: boolean;
   recentlyUsedAddresses: { [catalogId: string]: DocumentAbstract[] };
   serverValidationErrors: ValidationError[];
-  latestDocuments: DocumentAbstract[];
-  latestAddresses: DocumentAbstract[];
-  latestPublishedDocuments: DocumentAbstract[];
   oldestExpiredDocuments: DocumentAbstract[];
   sessionTimeoutIn: number;
   catalogLanguage: string;
@@ -82,9 +79,6 @@ const initialState: GeneralState = {
   needsAddressReload: false,
   recentlyUsedAddresses: {},
   serverValidationErrors: [],
-  latestDocuments: [],
-  latestAddresses: [],
-  latestPublishedDocuments: [],
   oldestExpiredDocuments: [],
   sessionTimeoutIn: -1,
   catalogLanguage: "de",
@@ -162,17 +156,8 @@ export const GeneralStore = signalStore(
     setServerValidationErrors(errors: ValidationError[]): void {
       patchState(store, { serverValidationErrors: errors });
     },
-    setLatestDocuments(docs: DocumentAbstract[]): void {
-      patchState(store, { latestDocuments: docs });
-    },
-    setLatestPublishedDocuments(docs: DocumentAbstract[]): void {
-      patchState(store, { latestPublishedDocuments: docs });
-    },
     setOldestExpiredDocuments(docs: DocumentAbstract[]): void {
       patchState(store, { oldestExpiredDocuments: docs });
-    },
-    setLatestAddresses(docs: DocumentAbstract[]): void {
-      patchState(store, { latestAddresses: docs });
     },
     setRecentlyUsedAddresses(docs: {
       [catalogId: string]: DocumentAbstract[];

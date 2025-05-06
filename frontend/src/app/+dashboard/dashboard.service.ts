@@ -17,13 +17,20 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Injectable } from "@angular/core";
-import { httpResource, HttpResourceRef } from "@angular/common/http";
+import { Injectable, signal, Signal } from "@angular/core";
+import {
+  httpResource,
+  HttpResourceOptions,
+  HttpResourceRef,
+  HttpResourceRequest,
+} from "@angular/common/http";
 import { ResearchResponse } from "../+research/research.service";
 import {
   ConfigService,
   Configuration,
 } from "../services/config/config.service";
+import { DocumentAbstract } from "../store/document/document.model";
+import { DocumentService } from "../services/document/document.service";
 
 @Injectable({
   providedIn: "root",
@@ -31,26 +38,34 @@ import {
 export class DashboardService {
   private configuration: Configuration;
 
-  constructor(configService: ConfigService) {
+  constructor(
+    configService: ConfigService,
+    private documentService: DocumentService,
+  ) {
     this.configuration = configService.getConfiguration();
   }
 
   fetchRecentDocs(
     onlyFromUser: () => boolean = () => false,
     recentlyPublished: boolean = false,
-    forAddresses: boolean = false,
-  ): HttpResourceRef<ResearchResponse> {
-    return httpResource<ResearchResponse>(() => ({
-      url: `${this.configuration.backendUrl}statistic/recentDocuments`,
-      params: {
-        fromUser: onlyFromUser(),
-        recentlyPublished: recentlyPublished,
-        addresses: forAddresses,
-      },
-      // parse: (researchResponse: ResearchResponse) =>
-      //   this.documentService
-      //     .mapSearchResults(researchResponse)
-      //     .hits.slice(0, 5),
-    }));
+    forAddresses: Signal<boolean> = signal(false),
+  ): HttpResourceRef<DocumentAbstract[]> {
+    return httpResource<DocumentAbstract[]>(
+      () =>
+        ({
+          url: `${this.configuration.backendUrl}statistic/recentDocuments`,
+          params: {
+            fromUser: onlyFromUser(),
+            recentlyPublished: recentlyPublished,
+            addresses: forAddresses(),
+          },
+        }) as HttpResourceRequest,
+      {
+        parse: (researchResponse: ResearchResponse) =>
+          this.documentService
+            .mapSearchResults(researchResponse)
+            .hits.slice(0, 5),
+      } as HttpResourceOptions<DocumentAbstract[], ResearchResponse>,
+    );
   }
 }

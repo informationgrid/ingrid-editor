@@ -147,58 +147,6 @@ export class DocumentService {
       .pipe(map((result) => this.mapSearchResults(result)));
   }
 
-  findRecentDrafts(fromCurrentUser: boolean = false): void {
-    let currentUser = this.getCurrentUserQuery(fromCurrentUser);
-    this.researchService
-      .search(
-        "",
-        {
-          type: "selectDocuments",
-          ignoreFolders: "exceptFolders",
-          selectConditions: "document1.state IS NOT NULL " + currentUser,
-        },
-        "modified",
-        "DESC",
-        {
-          page: 1,
-          pageSize: 10,
-        },
-        ["selectConditions"],
-      )
-      .pipe(
-        map((result) => this.mapSearchResults(result)),
-        tap((docs) => this.generalStore.setLatestDocuments(docs.hits)),
-      )
-      .subscribe();
-  }
-
-  findRecentPublished(fromCurrentUser: boolean = false): void {
-    // only published
-    this.researchService
-      .search(
-        "",
-        {
-          type: "selectDocuments",
-          ignoreFolders: "exceptFolders",
-          selectConditions:
-            "document1.state = 'PUBLISHED' " +
-            this.getCurrentUserQuery(fromCurrentUser),
-        },
-        "modified",
-        "DESC",
-        {
-          page: 1,
-          pageSize: 10,
-        },
-        ["selectConditions"],
-      )
-      .pipe(
-        map((result) => this.mapSearchResults(result)),
-        tap((docs) => this.generalStore.setLatestPublishedDocuments(docs.hits)),
-      )
-      .subscribe();
-  }
-
   findExpired(fromCurrentUser: boolean = false): void {
     let currentUser = fromCurrentUser
       ? "and document1.modifiedbyuser = " +
@@ -256,25 +204,6 @@ export class DocumentService {
           return this.mapSearchResponseToDocumentAbstracts(combined);
         }),
         tap((docs) => this.generalStore.setOldestExpiredDocuments(docs)),
-      )
-      .subscribe();
-  }
-
-  findRecentAddresses(): void {
-    this.researchService
-      .search(
-        "",
-        { type: "selectAddresses", ignoreFolders: "exceptFolders" },
-        "modified",
-        "DESC",
-        {
-          page: 1,
-          pageSize: 10,
-        },
-      )
-      .pipe(
-        map((result) => this.mapSearchResults(result)),
-        tap((docs) => this.generalStore.setLatestAddresses(docs.hits)),
       )
       .subscribe();
   }
@@ -1098,13 +1027,6 @@ export class DocumentService {
       },
       !entity.hasWritePermission,
     );
-  }
-
-  private getCurrentUserQuery(fromCurrentUser: boolean) {
-    return fromCurrentUser
-      ? "and document1.modifiedbyuser = " +
-          this.configService.$userInfo.getValue().id
-      : "";
   }
 
   replaceAddress(source: string, target: string): Observable<any> {
