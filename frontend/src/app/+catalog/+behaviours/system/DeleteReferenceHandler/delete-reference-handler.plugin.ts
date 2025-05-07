@@ -44,6 +44,8 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
 
   private addressTreeStore = inject(AddressTreeStore);
 
+  private openedAddress = this.generalStore.openedAddress;
+
   constructor(
     private docEvents: DocEventsService,
     private dialog: MatDialog,
@@ -57,7 +59,8 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
     if (configService.hasCatAdminRights()) {
       inject(PluginService).registerPlugin(this);
       effect(() => {
-        this.handleDocumentLoad(this.generalStore.getOpenedDocument(true));
+        // TODO: convert isActive to signal so it can be used in effect
+        this.handleDocumentLoad(this.openedAddress());
       });
     } else {
       console.debug(
@@ -98,7 +101,15 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
     this.subscriptions.push(subscription, onEvent);
   }
 
+  unregister() {
+    super.unregister();
+
+    this.formMenuService.removeMenuItem("address", "replace-address");
+  }
+
   private handleDocumentLoad(doc: DocumentAbstract) {
+    if (!this.isActive) return;
+
     // refresh menu item
     this.formMenuService.removeMenuItem("address", "replace-address");
     if (doc && doc._type !== "FOLDER") {
