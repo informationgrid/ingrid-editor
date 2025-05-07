@@ -25,6 +25,7 @@ import {
   MetadataOptionItems,
 } from "../metadata-type.component";
 import { CodelistStore } from "../../../../store/codelist/codelist.store";
+import { GeneralStore } from "../../../../store/general.store";
 
 interface PropertyItem {
   id: string;
@@ -43,6 +44,7 @@ export class MetadataTypeShortComponent {
   value = input.required<any>();
 
   private codelistStore = inject(CodelistStore);
+  private generalStore = inject(GeneralStore);
 
   filteredOptions: Signal<PropertyItem[]> = computed(() => {
     const data = this.value();
@@ -54,20 +56,7 @@ export class MetadataTypeShortComponent {
       // Get the items from codelist or direct items
       let items: MetadataOptionItem[] = [];
       if (typeOption.codelistId) {
-        // For codelist items, get them from the store
-        try {
-          const codelist =
-            this.codelistStore.entityMap()[typeOption.codelistId];
-          if (codelist) {
-            // Map codelist entries to MetadataOptionItems
-            items = codelist.entries.map((entry) => ({
-              label: entry.fields?.de || entry.id,
-              value: { key: entry.id },
-            }));
-          }
-        } catch (e) {
-          console.error(`Error getting codelist ${typeOption.codelistId}:`, e);
-        }
+        items = this.getItemsFromCodelistStore(typeOption);
       } else if (typeOption.items) {
         items = typeOption.items;
       }
@@ -84,6 +73,25 @@ export class MetadataTypeShortComponent {
 
     return result;
   });
+
+  private getItemsFromCodelistStore(
+    typeOption: MetadataOptionItems,
+  ): MetadataOptionItem[] {
+    try {
+      const codelist = this.codelistStore.entityMap()[typeOption.codelistId];
+      if (codelist) {
+        // Map codelist entries to MetadataOptionItems
+        return codelist.entries.map((entry) => ({
+          label:
+            entry.fields?.[this.generalStore.catalogLanguage()] || entry.id,
+          value: { key: entry.id },
+        }));
+      }
+    } catch (e) {
+      console.error(`Error getting codelist ${typeOption.codelistId}:`, e);
+    }
+    return [];
+  }
 
   private filterSelected(
     data: any,
