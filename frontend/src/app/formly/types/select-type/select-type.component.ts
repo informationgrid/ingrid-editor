@@ -147,7 +147,7 @@ export class SelectTypeComponent
         this.formControl.setValue({
           key: value.key ?? null,
           value: value.value,
-          _codelistId: this.props.codelistId,
+          _codelistId: this.props.codelistId ?? null,
         });
       }
       if (value?.key === null && !value?.value) {

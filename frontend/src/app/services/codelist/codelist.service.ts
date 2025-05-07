@@ -60,7 +60,7 @@ export class SelectOption {
     return {
       key: this.value,
       value: this.label,
-      _codelistId: codelistId,
+      _codelistId: codelistId ?? null,
     };
   }
 }

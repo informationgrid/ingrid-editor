@@ -73,6 +73,7 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
 
         return jacksonObjectMapper().createObjectNode().apply {
             put("key", codelistEntry.id)
+            // TODO: use catalog language
             put("value", codelistEntry.fields["de"])
             put("_codelistId", codelistId)
         }

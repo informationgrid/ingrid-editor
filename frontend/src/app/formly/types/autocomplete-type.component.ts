@@ -93,7 +93,7 @@ export class AutocompleteTypeComponent
                 this.formControl.setValue({
                   key: key,
                   value: value,
-                  _codelistId: this.props.codelistId,
+                  _codelistId: this.props.codelistId ?? null,
                 });
               }
               return null;
@@ -130,7 +130,7 @@ export class AutocompleteTypeComponent
           <BackendOption>{
             key: option.value,
             value: option.label,
-            _codelistId: this.props.codelistId,
+            _codelistId: this.props.codelistId ?? null,
             disabled: option.disabled,
           },
       ),
