@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter
 
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
@@ -68,7 +69,6 @@ class IngridIdfExporterLfub(
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
 ) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService) {
-
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getLfuBayernTransformer(docType) ?: super.getModelTransformerClass(docType)
 }
 
@@ -84,6 +84,18 @@ class IngridLuceneExporterLfub(
     catalogService,
     documentService,
 ) {
+
+    override fun getTemplateForDoctype(doc: Document, catalog: Catalog, options: ExportOptions): Pair<String, Map<String, Any>> = when (doc.type) {
+        "InGridGeoDataset",
+        "InGridGeoService",
+        "InGridInformationSystem",
+        -> Pair(
+            "export/ingrid-lfubayern/lucene/template-lucene-lfubayern.jte",
+            getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
+        )
+
+        else -> super.getTemplateForDoctype(doc, catalog, options)
+    }
 
     override fun getTransformer(data: TransformerData): Any = when (data.type) {
         IngridDocType.DOCUMENT -> {

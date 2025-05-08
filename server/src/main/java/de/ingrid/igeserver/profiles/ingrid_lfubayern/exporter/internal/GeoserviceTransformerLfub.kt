@@ -23,10 +23,13 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransform
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubGetDescriptiveKeywords
+import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubGetTreePathNames
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.lfubUseConstraints
 import de.ingrid.igeserver.utils.getString
 
-class GeoserviceTransformerLfub(transformerConfig: TransformerConfig) : GeodataserviceModelTransformer(transformerConfig) {
+class GeoserviceTransformerLfub(transformerConfig: TransformerConfig) :
+    GeodataserviceModelTransformer(transformerConfig),
+    IngridModelTransformerLfub {
 
     private val docData = doc.data
 
@@ -39,4 +42,6 @@ class GeoserviceTransformerLfub(transformerConfig: TransformerConfig) : Geodatas
     override fun getDescriptiveKeywords(): List<Thesaurus> = lfubGetDescriptiveKeywords(super.getDescriptiveKeywords(), docData, codelists)
 
     override val useConstraints: List<UseConstraintTemplate> = lfubUseConstraints(super.useConstraints, docData)
+
+    override val treePathNames: List<String> = lfubGetTreePathNames(documentService, catalogIdentifier, doc)
 }
