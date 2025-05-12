@@ -232,6 +232,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         val user = try {
             keycloakService.getUser(userId)
         } catch (e: Exception) {
+            logger.debug { e }
             logger.error("Couldn't find keycloak user with login: $userId")
             return null
         }
@@ -332,6 +333,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         val permissions = try {
             catalogService.getPermissions(principal)
         } catch (ex: Exception) {
+            logger.debug { ex }
             emptyList()
         }
 
@@ -411,7 +413,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     override fun setCatalogAdmin(
         principal: Principal,
         info: CatalogAdmin,
-    ): ResponseEntity<de.ingrid.igeserver.model.UserInfo?> {
+    ): ResponseEntity<Void> {
         if (!authUtils.isAdmin(principal)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
