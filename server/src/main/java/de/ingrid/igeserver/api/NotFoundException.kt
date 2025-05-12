@@ -37,6 +37,9 @@ open class NotFoundException : ClientException {
         private const val ERROR_CODE_MISSING_USER_CATALOG = "CATALOG_NOT_FOUND"
         private const val ERROR_TEXT_MISSING_USER_CATALOG = "The user '\${user}' is not assigned to any catalog."
 
+        private const val ERROR_CODE_MISSING_USER = "USER_NOT_FOUND"
+        private const val ERROR_TEXT_MISSING_USER = "The user '\${user}' was not found."
+
         private const val ERROR_CODE_MISSING_PUBLISHED_VERSION = "PUBLISHED_VERSION_NOT_FOUND"
         private const val ERROR_TEXT_MISSING_PUBLISHED_VERSION = "Published version of document '\${resourceId}' is missing."
 
@@ -72,6 +75,17 @@ open class NotFoundException : ClientException {
             STATUS_CODE,
             ERROR_CODE_MISSING_USER_CATALOG,
             ERROR_TEXT_MISSING_USER_CATALOG,
+            mapOf("user" to user),
+            cause,
+        )
+
+        /**
+         * Factory method for missing user
+         */
+        fun withMissingUser(user: String, cause: Throwable? = null): NotFoundException = NotFoundException(
+            STATUS_CODE,
+            ERROR_CODE_MISSING_USER,
+            ERROR_TEXT_MISSING_USER,
             mapOf("user" to user),
             cause,
         )

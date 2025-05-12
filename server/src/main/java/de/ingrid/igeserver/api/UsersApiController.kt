@@ -170,7 +170,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     @Transactional(noRollbackFor = [MailException::class])
     override fun deleteUser(principal: Principal, userId: Int): ResponseEntity<Void> {
         val frontendUser =
-            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
+            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUser(userId.toString())
         val login = frontendUser.userId
 
         if (!catalogService.canEditUser(principal, login)) {
@@ -203,7 +203,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
     override fun getUser(principal: Principal, userId: Int): ResponseEntity<User> {
         val frontendUser =
-            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
+            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUser(userId.toString())
 
         if (!catalogService.canEditUser(principal, frontendUser.userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
@@ -221,7 +221,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
     override fun getFullName(principal: Principal, userId: Int): ResponseEntity<String> {
         val frontendUser =
-            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
+            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUser(userId.toString())
 
         val login = frontendUser.userId
         val user = keycloakService.getUser(login)
@@ -237,7 +237,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         }
 
         val frontendUser =
-            userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+            userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUser(userId)
 
         user.latestLogin = this.getMostRecentLoginForUser(userId)
 
@@ -266,7 +266,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
     override fun reassignResponsibilities(principal: Principal, oldUserId: Int, newUserId: Int): ResponseEntity<Void> {
         val newResponsibleUser =
-            userRepo.findByIdOrNull(newUserId) ?: throw NotFoundException.withMissingUserCatalog(newUserId.toString())
+            userRepo.findByIdOrNull(newUserId) ?: throw NotFoundException.withMissingUser(newUserId.toString())
 
         if (!catalogService.canEditUser(principal, newResponsibleUser.userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
@@ -436,7 +436,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
         val catalog = catalogService.getCatalogById(catalogId)
-        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUser(userId)
 
         user.catalogs.add(catalog)
         userRepo.save(user)
@@ -473,7 +473,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
         val user = userRepo.findByUserId(userId)?.apply {
             curCatalog = catalogService.getCatalogById(catalogId)
-        } ?: throw NotFoundException.withMissingUserCatalog(userId)
+        } ?: throw NotFoundException.withMissingUser(userId)
 
         userRepo.save(user)
         return ResponseEntity.ok(user.curCatalog)
