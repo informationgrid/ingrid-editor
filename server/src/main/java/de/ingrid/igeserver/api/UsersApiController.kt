@@ -475,8 +475,12 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             curCatalog = catalogService.getCatalogById(catalogId)
         } ?: throw NotFoundException.withMissingUser(userId)
 
-        userRepo.save(user)
-        return ResponseEntity.ok(user.curCatalog)
+        return if (user.getCatalogIds().contains(catalogId) || authUtils.isSuperAdmin(principal)) {
+            userRepo.save(user)
+            ResponseEntity.ok(user.curCatalog)
+        } else {
+            ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
     }
 
     override fun refreshSession(): ResponseEntity<Void> {
