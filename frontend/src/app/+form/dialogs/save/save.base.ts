@@ -33,11 +33,13 @@ import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.servi
 import { inject } from "@angular/core";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { GeneralStore, ValidationError } from "../../../store/general.store";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 export abstract class SaveBase extends Plugin {
   protected generalStore = inject(GeneralStore);
   protected messageService = inject(FormMessageService);
   protected formStateService = inject(FormStateService);
+  protected snackbar = inject(MatSnackBar);
 
   dialog: MatDialog;
   documentService: DocumentService;
@@ -153,7 +155,7 @@ export abstract class SaveBase extends Plugin {
         this.formToolbarService.setButtonState("toolBtnSave", true);
         break;
       case "force":
-        this.saveWithData(this.getForm()?.getRawValue(), latestVersion);
+        this.saveWithData(this.getCleanedFormValue(), latestVersion);
         break;
       case "reload":
         this.loadDocument(this.getIdFromFormData(), address);
@@ -165,8 +167,10 @@ export abstract class SaveBase extends Plugin {
     return this.getMetadata().wrapperId;
   }
 
-  protected getForm() {
-    return this.formStateService.getForm();
+  protected getCleanedFormValue() {
+    return this.trimObjectAndRemoveEvilTags(
+      this.formStateService.getForm()?.getRawValue(),
+    );
   }
 
   protected getMetadata() {
@@ -187,5 +191,40 @@ export abstract class SaveBase extends Plugin {
         ),
       )
       .subscribe();
+  }
+
+  protected trimObjectAndRemoveEvilTags(obj: IgeDocument): IgeDocument {
+    const trimmed = JSON.stringify(obj, (_key, value) => {
+      return typeof value === "string"
+        ? this.removeEvilTags(value.trim())
+        : value;
+    });
+    return JSON.parse(trimmed);
+  }
+
+  private removeEvilTags(val: String) {
+    // strip all tags except anchors and simple <b>, <i>, <u>, <p>, <br>, <strong>, <ul>, <ol>, <li> tags
+    let processed = val.replace(
+      /<(?!a>|a href|\/a>|b>|\/b>|i>|\/i>|u>|\/u>|p>|\/p>|br>|br\/>|br \/>|strong>|\/strong>|ul>|\/ul>|ol>|\/ol>|li>|\/li>)[^>]*>/gi,
+      "",
+    );
+    // strip anchors with javascript
+    processed = processed.replace(
+      /<a[^>]*?href="javascript[^>]*?>.*?<\/a>/gi,
+      "",
+    );
+    // remove all event handlers
+    processed = processed.replace(/ on\w+="[^"]*"/g, "");
+
+    if (processed !== val) {
+      this.snackbar.open(
+        "Bitte beachten Sie, dass bestimmte HTML-Tags nicht erlaubt sind und daher entfernt wurden.",
+        "OK",
+        {
+          duration: 5000,
+        },
+      );
+    }
+    return processed;
   }
 }
