@@ -36,6 +36,7 @@ import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
 import { DocumentAbstract } from "../../../../app/store/document/document.model";
 import { TreeStore } from "../../../../app/store/tree/tree.store";
+import { trimObjectAndRemoveEvilTags } from "../../../../app/shared/utils";
 
 @Injectable({
   providedIn: "root",
@@ -147,7 +148,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
     this.documentService
       .save(
         SaveOptions.createNewDocument(
-          model,
+          trimObjectAndRemoveEvilTags(model),
           "InGridGeoService",
           parentFolder,
           false,
