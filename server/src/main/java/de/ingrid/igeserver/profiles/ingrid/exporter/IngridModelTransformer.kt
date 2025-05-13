@@ -197,8 +197,11 @@ open class IngridModelTransformer(
         var note: String? = null,
     )
 
-    open val useConstraints = data.resource?.useConstraints?.map { constraint ->
-        if (constraint.title == null) throw ServerException.withReason("Use constraint title is null $constraint")
+    open val useConstraints = data.resource?.useConstraints?.mapNotNull { constraint ->
+        if (constraint.title == null) {
+            log.warn("Use constraint title is null $constraint")
+            return@mapNotNull null
+        }
 
         // special case for "Es gelten keine Bedingungen"
         val link =
