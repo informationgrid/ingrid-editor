@@ -473,11 +473,11 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     override fun switchCatalog(principal: Principal, catalogId: String): ResponseEntity<Catalog> {
         val userId = authUtils.getUsernameFromPrincipal(principal)
 
-        val user = userRepo.findByUserId(userId)?.apply {
-            curCatalog = catalogService.getCatalogById(catalogId)
-        } ?: throw NotFoundException.withMissingUser(userId)
+        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUser(userId)
+        val toCatalog = catalogService.getCatalogById(catalogId)
 
-        return if (user.getCatalogIds().contains(catalogId) || authUtils.isSuperAdmin(principal)) {
+        return if (user.catalogs.contains(toCatalog) || authUtils.isSuperAdmin(principal)) {
+            user.curCatalog = toCatalog
             userRepo.save(user)
             ResponseEntity.ok(user.curCatalog)
         } else {
