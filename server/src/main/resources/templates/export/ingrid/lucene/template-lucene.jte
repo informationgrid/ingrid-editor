@@ -176,8 +176,8 @@
     @endfor
     ],
     "t011_obj_serv_op_connpoint.connect_point": [
-    @for(var entry : ForSupport.of(page.getServiceUrls()))
-        "${entry.get().getUrl()}"@if (!entry.isLast()),@endif
+    @for(var entry : ForSupport.of(page.getOperations()))
+        "${entry.get().getMethodCall()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "additional_html_1": [
