@@ -87,7 +87,7 @@ export class ArchivePlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      if (!this.formRegistered) return;
+      if (!this.isActive() || !this.formRegistered()) return;
       const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.formToolbarService.setButtonState(
         "toolBtnArchive",

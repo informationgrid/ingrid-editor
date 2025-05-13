@@ -2043,7 +2043,7 @@ export abstract class IngridShared extends BaseDoctype {
     const behaviour = this.behaviourService.getBehaviour(
       "plugin.ingrid.invekos",
     );
-    this.showInVeKoSField = behaviour?.isActive ?? behaviour?.defaultActive;
+    this.showInVeKoSField = behaviour?.isActive() ?? behaviour?.defaultActive;
   }
 
   private handleHVDClick(field: FormlyFieldConfig) {

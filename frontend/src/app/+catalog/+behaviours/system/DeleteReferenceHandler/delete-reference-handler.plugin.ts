@@ -59,7 +59,8 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
     if (configService.hasCatAdminRights()) {
       inject(PluginService).registerPlugin(this);
       effect(() => {
-        // TODO: convert isActive to signal so it can be used in effect
+        if (!this.isActive()) return;
+
         this.handleDocumentLoad(this.openedAddress());
       });
     } else {
@@ -108,8 +109,6 @@ export class DeleteReferenceHandlerPlugin extends Plugin {
   }
 
   private handleDocumentLoad(doc: DocumentAbstract) {
-    if (!this.isActive) return;
-
     // refresh menu item
     this.formMenuService.removeMenuItem("address", "replace-address");
     if (doc && doc._type !== "FOLDER") {

@@ -69,12 +69,12 @@ export class BehaviourService {
         (plugin) => plugin.id === behaviour._id,
       );
 
-      if (behaviour.active !== found.isActive) {
+      if (behaviour.active !== found.isActive()) {
         behaviour.active ? activate.push(found) : deactivate.push(found);
       } else if (behaviour.active) {
         update.push(found);
       }
-      found.isActive = behaviour.active;
+      found.isActive.set(behaviour.active);
       found.data = behaviour.data;
     });
 
