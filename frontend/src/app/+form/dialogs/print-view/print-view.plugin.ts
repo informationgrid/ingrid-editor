@@ -56,7 +56,7 @@ export class PrintViewPlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      if (!this.formRegistered) return;
+      if (!this.isActive() || !this.formRegistered()) return;
       const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.toolbarService.setButtonState(
         "toolBtnPrint",
@@ -128,7 +128,7 @@ export class PrintViewPlugin extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       this.toolbarService.removeButton("toolBtnPrint");
     }
   }

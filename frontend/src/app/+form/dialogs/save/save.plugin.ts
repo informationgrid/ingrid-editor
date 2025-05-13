@@ -49,7 +49,7 @@ export class SavePlugin extends SaveBase {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      if (!this.formRegistered) return;
+      if (!this.isActive() || !this.formRegistered()) return;
       const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.formToolbarService.setButtonState(
         "toolBtnSave",
@@ -119,7 +119,7 @@ export class SavePlugin extends SaveBase {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       this.formToolbarService.removeButton("toolBtnSave");
     }
   }

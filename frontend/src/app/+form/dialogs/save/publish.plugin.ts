@@ -84,6 +84,8 @@ export class PublishPlugin extends SaveBase {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
+      if (!this.isActive()) return;
+
       const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.handleDocumentChange(doc);
     });
@@ -368,7 +370,7 @@ export class PublishPlugin extends SaveBase {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       this.formToolbarService.removeButton("toolBtnPublishSeparator");
       this.formToolbarService.removeButton("toolBtnPublish");
     }

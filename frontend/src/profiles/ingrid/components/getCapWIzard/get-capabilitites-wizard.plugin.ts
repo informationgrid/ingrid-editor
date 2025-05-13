@@ -67,7 +67,11 @@ export class GetCapabilititesWizardPlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(async () => {
-      if (!this.formRegistered() || this.configService.hasWriteRootPermission())
+      if (
+        !this.isActive() ||
+        !this.formRegistered() ||
+        this.configService.hasWriteRootPermission()
+      )
         return;
 
       const activeNodes = this.generalStore.activeTreeNodes();
@@ -168,7 +172,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       this.formToolbarService.removeButton(this.buttonId);
     }
   }
