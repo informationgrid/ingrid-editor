@@ -78,10 +78,16 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                 ?.map {
                     val identifier = it.liSource?.sourceCitation?.citation?.identifier?.getOrNull(0)?.mdIdentifier?.code?.value
 
+                    fun extractUUID(url: String?): String? {
+                        val regex = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
+                        return if (url is String) regex.find(url)?.value else null
+                    }
+
                     fun getGeoDatasetUuid(): String? {
+                        val uuidOfIdentifier = extractUUID(identifier)
                         val response = isoData.researchService.query(
                             catalogId,
-                            ResearchQuery(null, BoolFilter("AND", listOf("document_wrapper.type = 'InGridGeoDataset'", "deleted = 0", "state = 'PUBLISHED'", "data ->> 'identifier' = '$identifier'"), null, null, false)),
+                            ResearchQuery(null, BoolFilter("AND", listOf("document_wrapper.type = 'InGridGeoDataset'", "deleted = 0", "state = 'PUBLISHED'", "data ->> 'identifier' = '$uuidOfIdentifier'"), null, null, false)),
                         )
                         return if (response.totalHits == 1) response.hits[0].uuid else null
                     }
@@ -92,7 +98,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     }
                     LineageSourceDescription(
                         value = it.liSource?.description?.value,
-                        date = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.date?.date,
+                        date = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.date?.dateTime,
                         dateType = dateType,
                         title = if (internalGeoDatasetUuid == null) it.liSource?.sourceCitation?.citation?.title?.value else null,
                         identifier = if (internalGeoDatasetUuid == null) identifier else null,
