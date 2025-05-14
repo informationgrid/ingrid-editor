@@ -133,16 +133,21 @@
         "descriptions": {
           "type": "array",
           "items": {
-            "_type": "string",
-            "uuidRef": ["null", "string"],
-            "url": ["null", "string"],
-            "identifier": ["null", "string"],
-            "date": {
-              "type": ["null", "string"],
-              "format": "date-time"
-            },
-            "dateType": {
-              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            "type": "object",
+            "unevaluatedProperties": false,
+            "properties": {
+              "_type": "string",
+              "value": "string",
+              "uuidRef": ["null", "string"],
+              "url": ["null", "string"],
+              "identifier": ["null", "string"],
+              "date": {
+                "type": ["null", "string"],
+                "format": "date-time"
+              },
+              "dateType": {
+                "$ref": "../../general.schema.json#/definitions/KeyValue"
+              }
             }
           }
         }
