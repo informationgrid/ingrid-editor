@@ -33,6 +33,7 @@ import de.ingrid.igeserver.services.UserManagementService
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -49,7 +50,14 @@ class CatalogImportService(
     fun importCatalog(exportedCatalog: ExportedCatalog) {
         runPreChecks(exportedCatalog)
 
-        val catalogId = createCatalog(exportedCatalog.catalog)
+        val catalogIdentifier = exportedCatalog.catalog["identifier"] as String
+        val catalogId = try {
+            val existingCatalog = catalogService.getCatalogById(catalogIdentifier)
+            if (!exportedCatalog.allowUpdate) throw ServerException.withReason("""The catalog with identifier $catalogIdentifier already exists and import file does not allow updates. Add the field '"allowUpdate": true' to the import file in order to update an existing catalog.""")
+            existingCatalog.id!!
+        } catch (e: EmptyResultDataAccessException) {
+            createCatalog(exportedCatalog.catalog)
+        }
 
         importBehaviours(exportedCatalog.behaviour, catalogId)
         importCodelists(exportedCatalog.codelist, catalogId)
@@ -80,7 +88,7 @@ class CatalogImportService(
         }
 
         if (catalogService.catalogExists(exportedCatalog.catalog["identifier"] as String)) {
-            throw ServerException.withReason("The catalog with identifier ${exportedCatalog.catalog["identifier"]} already exists")
+//            throw ServerException.withReason("The catalog with identifier ${exportedCatalog.catalog["identifier"]} already exists")
         }
     }
 
@@ -270,6 +278,7 @@ class CatalogImportService(
             return emptyMap()
         }
 
+        log.info("Importing PermissionGroups ... $permissionGroups")
         val newIds = importToTableReturningId("permission_group", permissionGroups)
         return previousIds.zip(newIds).toMap()
     }
