@@ -58,6 +58,14 @@ class FileUploadHandler {
         if (tempDir == null) {
             tempDir = createTempDirectory("import-chunks-$flowIdentifier")
             tempDirectories[flowIdentifier] = tempDir
+        } else {
+            // remove file if it already has been uploaded before
+            if (tempDir.toFile().exists() && flowChunkNumber == 1) {
+                val deleted = tempDir.toFile().listFiles()?.all { it.delete() } ?: true
+                if (!deleted) {
+                    throw IllegalStateException("Could not delete all files in temporary directory")
+                }
+            }
         }
 
         // Save chunk
