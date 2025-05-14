@@ -347,16 +347,7 @@
       "featureTypes": {
         "type": "array",
         "items": {
-          "type": "object",
-          "unevaluatedProperties": false,
-          "properties": {
-            "key": {
-              "type": ["null", "string"]
-            },
-            "value": {
-              "type": "string"
-            }
-          }
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
         }
       }
     },
