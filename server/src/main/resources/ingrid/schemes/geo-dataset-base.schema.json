@@ -136,11 +136,36 @@
             "type": "object",
             "unevaluatedProperties": false,
             "properties": {
-              "_type": "string",
-              "value": "string",
-              "uuidRef": ["null", "string"],
-              "url": ["null", "string"],
-              "identifier": ["null", "string"],
+              "_type": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "uuidRef": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "url": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "identifier": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
+              "title": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              },
               "date": {
                 "type": ["null", "string"],
                 "format": "date-time"
