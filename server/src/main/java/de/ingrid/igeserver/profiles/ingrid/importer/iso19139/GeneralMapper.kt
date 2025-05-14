@@ -66,6 +66,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val title = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.title?.value
     val isInspireIdentified = containsKeyword("inspireidentifiziert")
     val isAdVCompatible = containsKeyword("AdVMIS")
+    val isHvd = getHvdCategories().isNotEmpty()
     val isOpenData = containsKeyword("opendata")
     val parentUuid = metadata.parentIdentifier?.value
 
@@ -351,6 +352,13 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.map { inVeKoSKeywordMapping.filter { item -> item.value == it }.keys.first() }
         ?.map { KeyValue(it) } ?: emptyList()
 
+    fun getHvdCategories(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "High-value dataset categories" }
+        ?.flatMap { it.keywords?.keyword?.map { item -> item.value } ?: emptyList() }
+        ?.map { it?.removePrefix("http://data.europa.eu/bna/") }
+        ?.map { codeListService.getCodeListEntryId("hvdCategories", it, "de") }
+        ?.map { KeyValue(it) } ?: emptyList()
+
     fun getOpenDataCategories(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
         ?.asSequence()
         ?.filter { it.keywords?.thesaurusName == null }
@@ -396,6 +404,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             "Spatial scope",
             "Further legal basis",
             "IACS data",
+            "High-value dataset categories",
         ) + ignoreAdditional
         val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS")
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords

@@ -84,6 +84,8 @@ export class PublishPlugin extends SaveBase {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
+      if (!this.isActive()) return;
+
       const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.handleDocumentChange(doc);
     });
@@ -168,6 +170,8 @@ export class PublishPlugin extends SaveBase {
   private validateBeforePublish(): Observable<boolean> {
     this.messageService.clearMessages$.next();
 
+    // update form before publish with cleaned up form data
+    this.formStateService.getForm().patchValue(this.getCleanedFormValue());
     this.documentService.publishState$.next(true);
 
     const validation: BeforePublishData = { errors: [] };
@@ -228,7 +232,7 @@ export class PublishPlugin extends SaveBase {
 
     const handlePublish = (decision) => {
       if (decision === "confirm") {
-        this.saveWithData(this.getForm().getRawValue());
+        this.saveWithData(this.getCleanedFormValue());
       } else if (decision === "plan") {
         this.showPlanPublishingDialog();
       }
@@ -297,7 +301,7 @@ export class PublishPlugin extends SaveBase {
       .afterClosed()
       .pipe(filter((date) => date))
       .subscribe((date) => {
-        this.saveWithData(this.getForm().getRawValue(), undefined, date);
+        this.saveWithData(this.getCleanedFormValue(), undefined, date);
       });
   }
 
@@ -368,7 +372,7 @@ export class PublishPlugin extends SaveBase {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       this.formToolbarService.removeButton("toolBtnPublishSeparator");
       this.formToolbarService.removeButton("toolBtnPublish");
     }

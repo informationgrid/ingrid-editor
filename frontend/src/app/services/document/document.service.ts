@@ -56,7 +56,6 @@ import {
 import { DocEventsService } from "../event/doc-events.service";
 import { TranslocoService } from "@jsverse/transloco";
 import { TagRequest } from "../../models/tag-request.model";
-import { MatSnackBar } from "@angular/material/snack-bar";
 import { CatalogService } from "../../+catalog/services/catalog.service";
 import { isExpired } from "../utils";
 import { GeneralStore } from "../../store/general.store";
@@ -115,7 +114,6 @@ export class DocumentService {
     private researchService: ResearchService,
     private translocoService: TranslocoService,
     private docEvents: DocEventsService,
-    private snackBar: MatSnackBar,
   ) {
     this.configuration = configService.getConfiguration();
   }
@@ -409,42 +407,7 @@ export class DocumentService {
     this.docEvents.sendBeforeSave();
     this.documentOperationFinished$.next(false);
 
-    return this.trimObjectAndRemoveEvilTags(data);
-  }
-
-  private trimObjectAndRemoveEvilTags(obj: IgeDocument): IgeDocument {
-    const trimmed = JSON.stringify(obj, (_key, value) => {
-      return typeof value === "string"
-        ? this.removeEvilTags(value.trim())
-        : value;
-    });
-    return JSON.parse(trimmed);
-  }
-
-  private removeEvilTags(val: String) {
-    // strip all tags except anchors and simple <b>, <i>, <u>, <p>, <br>, <strong>, <ul>, <ol>, <li> tags
-    let processed = val.replace(
-      /<(?!a>|a href|\/a>|b>|\/b>|i>|\/i>|u>|\/u>|p>|\/p>|br>|br\/>|br \/>|strong>|\/strong>|ul>|\/ul>|ol>|\/ol>|li>|\/li>)[^>]*>/gi,
-      "",
-    );
-    // strip anchors with javascript
-    processed = processed.replace(
-      /<a[^>]*?href="javascript[^>]*?>.*?<\/a>/gi,
-      "",
-    );
-    // remove all event handlers
-    processed = processed.replace(/ on\w+="[^"]*"/g, "");
-
-    if (processed !== val) {
-      this.snackBar.open(
-        "Ihre Eingabe wurde gespeichert. Bitte beachten Sie, dass bestimmte HTML-Tags nicht erlaubt sind und daher entfernt wurden.",
-        "OK",
-        {
-          duration: 5000,
-        },
-      );
-    }
-    return processed;
+    return data;
   }
 
   postSaveActions(saveOptions: PostSaveOptions) {

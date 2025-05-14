@@ -10,10 +10,12 @@
 {
     @template.imports.ingrid.base(model = model, additionalKeywords, additionalResource, @`
         ,
+        @if(model.isHvd())"isHvd": true,@endif
         @if(model.isInspireIdentified())"isInspireIdentified": "notConform",@endif
         "subType": @template.imports.ingrid.partial.key-value(item = model.getSubtype())${additionalProperties}
     `)
     "invekosKeywords": @template.imports.ingrid.partial.key-values(list = model.getInVeKoSKeywords()),
+    "hvdCategories": @template.imports.ingrid.partial.key-values(list = model.getHvdCategories()),
     "metadata": {
         "language": @template.imports.ingrid.partial.key-value(item = model.getLanguage()),
         "characterSet": @template.imports.ingrid.partial.key-value(item = model.getCharacterSet())

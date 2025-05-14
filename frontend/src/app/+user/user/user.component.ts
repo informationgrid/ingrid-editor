@@ -135,10 +135,12 @@ export class UserComponent implements OnInit {
       const user = this.userService.selectedUser$();
       // set user in case we come from another page
       // TODO: should be done with URL-parameter to load the user like it's done on document page
-      if (!user) return;
-
-      this.explicitUserLogin.set(user.login);
-      if (this.loadedUser()?.id !== user.id) this.loadUser(user.id);
+      this.explicitUserLogin.set(user?.login);
+      if (user) {
+        if (this.loadedUser()?.id !== user.id) this.loadUser(user.id);
+      } else {
+        this.loadedUser.set(null);
+      }
     });
   }
 

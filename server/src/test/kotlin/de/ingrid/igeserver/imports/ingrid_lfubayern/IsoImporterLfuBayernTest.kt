@@ -61,7 +61,7 @@ class IsoImporterLfuBayernTest : AnnotationSpec() {
     }
 
     @Test
-    fun importGeoservice() {
+    fun importGeodataset() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
         isoImporter.profileMapper["ingrid-lfubayern"] = ISOImportLfUBayern(codelistService, documentService, researchService, uploadConfig, catalogService)
         val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full_lfuBayern.xml"), mutableMapOf())

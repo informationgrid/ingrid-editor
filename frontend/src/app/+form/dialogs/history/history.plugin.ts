@@ -71,14 +71,14 @@ export class HistoryPlugin extends Plugin {
     super();
     inject(PluginService).registerPlugin(this);
     effect(() => {
-      if (!this.formRegistered) return;
+      if (!this.isActive() || !this.formRegistered()) return;
       const doc = this.generalStore.openedDocument();
       if (doc !== null) {
         this.addDocToStack(doc);
       }
     });
     effect(() => {
-      if (!this.formRegistered) return;
+      if (!this.isActive() || !this.formRegistered()) return;
       const info = this.generalStore.getDatasetsChanged(this.forAddress());
       if (info?.type === UpdateType.Delete) {
         this.removeDeletedDocsFromStack(info.data);
@@ -192,7 +192,7 @@ export class HistoryPlugin extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       this.formToolbarService.removeButton("toolBtnNewSeparator");
       this.formToolbarService.removeButton("toolBtnPreviousInHistory");
       this.formToolbarService.removeButton("toolBtnNextInHistory");

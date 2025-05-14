@@ -87,7 +87,7 @@ export class AutocompleteTypeComponent
                 this.parameterOptions().find((option) => option.value === value)
                   ?.key ?? null;
 
-              if (key === null && !value) {
+              if (key === null && (!value || value.trim().length === 0)) {
                 this.formControl.setValue(null);
               } else {
                 this.formControl.setValue({

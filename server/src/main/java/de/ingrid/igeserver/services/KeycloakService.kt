@@ -333,7 +333,7 @@ class KeycloakService : UserManagementService {
                 throw InvalidParameterException.withInvalidParameters(user.email)
             }
         } else {
-            throw NotFoundException.withMissingUserCatalog(id)
+            throw NotFoundException.withMissingUser(id)
         }
     }
 
@@ -364,7 +364,7 @@ class KeycloakService : UserManagementService {
             val rolesRepresentations = getRoleRepresentations(roles)
             users[user.id].roles().realmLevel().remove(rolesRepresentations)
         } else {
-            throw NotFoundException.withMissingUserCatalog(userId)
+            throw NotFoundException.withMissingUser(userId)
         }
     }
 

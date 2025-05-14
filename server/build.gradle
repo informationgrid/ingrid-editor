@@ -204,7 +204,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // Elasticsearch communication
-    implementation("com.jillesvangurp:search-client:2.3.13")
+    implementation("com.jillesvangurp:search-client:2.4.1")
 
     implementation('de.ingrid:ingrid-ibus-client:7.5.0') {
         exclude group: 'org.apache.logging.log4j'
