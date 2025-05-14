@@ -22,9 +22,11 @@ package de.ingrid.igeserver.imports.internal
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.DocumentService
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -34,27 +36,52 @@ import io.mockk.mockk
 class JsonMergePatchImporterTest : AnnotationSpec() {
 
     private val documentService = mockk<DocumentService>()
+    private val catalogId = "testCatalog"
+    private val importer = JsonMergePatchImporter(documentService)
 
-    @Test
-    fun successfulPatch() {
-        val catalogId = "testCatalog"
+    @BeforeEach
+    fun setup() {
         every { documentService.getWrapperByCatalogAndDocumentUuid(catalogId, "1") } returns DocumentWrapper().apply { id = 2 }
         every { documentService.getDocumentByWrapperId(catalogId, 2) } returns Document().apply {
             id = 2
             title = "Test Document"
             data = jacksonObjectMapper().readValue("""{"test": "abc"}""", ObjectNode::class.java)
         }
+    }
 
-        val importer = JsonMergePatchImporter(documentService)
+    @Test
+    fun successfulPatch() {
         // Use a simple JSON object as the patch
         val patchJson = """{"uuid": "1", "jsonPatch": [{"op": "replace", "path": "/test", "value": "xyz"}]}"""
-        val addressMaps = mutableMapOf<String, String>()
 
         // Just verify that the method doesn't throw an exception
-        val result = importer.run(catalogId, patchJson, addressMaps)
+        val result = importer.run(catalogId, patchJson, mutableMapOf())
 
         // Verify that the result is a JsonNode
         result.shouldBeInstanceOf<JsonNode>()
         result.toString() shouldBe """{"test":"xyz"}"""
+    }
+
+    @Test
+    fun successfulMergePatch() {
+        // Use a simple JSON object as the merge patch
+        val patchJson = """{"uuid": "1", "jsonMerge": {"test": "xyz"}}"""
+
+        // Just verify that the method doesn't throw an exception
+        val result = importer.run(catalogId, patchJson, mutableMapOf())
+
+        // Verify that the result is a JsonNode
+        result.shouldBeInstanceOf<JsonNode>()
+        result.toString() shouldBe """{"test":"xyz"}"""
+    }
+
+    @Test
+    fun exceptionWhenBothDefined() {
+        // Use a simple JSON object as the merge patch
+        val patchJson = """{"uuid": "1", "jsonMerge": {"test": "xyz"}, "jsonPatch": [{"op": "replace", "path": "/test", "value": "abc"}]}"""
+
+        shouldThrow<ServerException> {
+            importer.run(catalogId, patchJson, mutableMapOf())
+        }
     }
 }

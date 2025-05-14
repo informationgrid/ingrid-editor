@@ -19,11 +19,11 @@
  */
 package de.ingrid.igeserver.imports.internal
 
-import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.fge.jsonpatch.JsonPatch
-import com.github.fge.jsonpatch.JsonPatchException
+import com.gravity9.jsonpatch.mergepatch.JsonMergePatch
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.services.DocumentService
@@ -31,7 +31,8 @@ import org.springframework.http.MediaType
 
 data class IgeJsonPatch(
     val uuid: String,
-    val jsonPatch: JsonPatch,
+    val jsonPatch: JsonPatch?,
+    val jsonMerge: JsonMergePatch?,
 )
 
 class JsonMergePatchImporter(val documentService: DocumentService) : IgeImporter {
@@ -43,21 +44,18 @@ class JsonMergePatchImporter(val documentService: DocumentService) : IgeImporter
             emptyList(),
         )
 
-    override fun run(catalogId: String, patchJson: Any, addressMaps: MutableMap<String, String>): JsonNode {
-        try {
-            val input: IgeJsonPatch = jacksonObjectMapper().readValue(patchJson as String, IgeJsonPatch::class.java)
-            val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, input.uuid)
-            val doc = documentService.getDocumentByWrapperId(catalogId, wrapper.id!!)
-            val patchedNode: JsonNode = input.jsonPatch.apply(doc.data)
+    override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
+        val input: IgeJsonPatch = jacksonObjectMapper().readValue(data as String, IgeJsonPatch::class.java)
+        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, input.uuid)
+        val doc = documentService.getDocumentByWrapperId(catalogId, wrapper.id!!)
+        if (input.jsonPatch == null && input.jsonMerge == null) throw ServerException.withReason("No patch found")
+        if (input.jsonPatch != null && input.jsonMerge != null) throw ServerException.withReason("Both patch and merge patch found")
 
-            // TODO: handle title differently since it is not in data-field
+        val patchedNode: JsonNode? = input.jsonPatch?.apply(doc.data) ?: input.jsonMerge?.apply(doc.data)
 
-            return jacksonObjectMapper().treeToValue(patchedNode, JsonNode::class.java)
-        } catch (e: JsonProcessingException) {
-            throw RuntimeException(e)
-        } catch (e: JsonPatchException) {
-            throw RuntimeException(e)
-        }
+        // TODO: handle title differently since it is not in data-field
+
+        return jacksonObjectMapper().treeToValue(patchedNode, JsonNode::class.java)
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
