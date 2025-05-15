@@ -206,7 +206,7 @@ dependencies {
     // Elasticsearch communication
     implementation("com.jillesvangurp:search-client:2.4.1")
 
-    implementation('de.ingrid:ingrid-ibus-client:7.5.0') {
+    implementation('de.ingrid:ingrid-ibus-client:7.6.0-SNAPSHOT') {
         exclude group: 'org.apache.logging.log4j'
         exclude group: 'org.slf4j'
     }
