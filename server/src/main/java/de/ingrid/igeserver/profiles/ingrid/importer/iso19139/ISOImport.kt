@@ -40,10 +40,10 @@ import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
+import org.apache.commons.text.StringEscapeUtils.escapeJson
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
-import org.unbescape.json.JsonEscape
 
 data class IsoImportData(
     val data: Metadata,
@@ -159,7 +159,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
         override fun writeUserContent(value: String?) {
             if (value == null) return
             super.writeUserContent(
-                JsonEscape.escapeJson(value),
+                escapeJson(value),
             )
         }
     }
