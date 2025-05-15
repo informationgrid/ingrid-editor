@@ -280,7 +280,7 @@ open class IngridModelTransformer(
         it.value != null
     }.joinToString("\",\"", "[\"", "\"]") {
         // must be escaped first, because we don't want to escape the whole array-string
-        escapeJson(it.title)
+        escapeJson(it.title ?: "")
     }
 
     fun getSpatialReferenceArs(): List<String> = spatialReferences.mapNotNull { it.ars }
