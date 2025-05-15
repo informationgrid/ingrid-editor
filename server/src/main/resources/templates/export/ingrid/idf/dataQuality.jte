@@ -267,6 +267,11 @@
                                             <gmd:code>
                                                 <gco:CharacterString>${description.getIdentifier()}</gco:CharacterString>
                                             </gmd:code>
+                                            @if(description.getUuidRef() != null)
+                                                <idf:uuid>
+                                                    ${description.getUuidRef()}
+                                                </idf:uuid>
+                                            @endif
                                         </gmd:MD_Identifier>
                                     </gmd:identifier>
                                 </gmd:CI_Citation>
