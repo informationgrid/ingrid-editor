@@ -21,6 +21,7 @@ package de.ingrid.igeserver.imports.internal.migrations
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 
 class Migrate140 {
@@ -37,7 +38,7 @@ class Migrate140 {
         }
 
         private fun migrateReferences(doc: ObjectNode) {
-            val descriptions = doc.get("dataQualityInfo")?.get("lineage")?.get("source")?.get("descriptions")
+            val descriptions = doc.getPath("dataQualityInfo.lineage.source.descriptions")
             if (descriptions == null || descriptions.isNull) return
 
             descriptions.forEach {
