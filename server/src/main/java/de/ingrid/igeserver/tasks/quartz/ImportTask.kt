@@ -22,6 +22,7 @@ package de.ingrid.igeserver.tasks.quartz
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.api.ImportOptions
+import de.ingrid.igeserver.api.InvalidField
 import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.api.messaging.JobsNotifier
 import de.ingrid.igeserver.api.messaging.Message
@@ -138,11 +139,14 @@ class ImportTask(
             val error = ex.data?.get("error")
             if (error is String) {
                 message = error
-            } else {
-                val details = error as List<JsonErrorEntry>?
-                message += ": " + details
-                    ?.filter { it.error != "A subschema had errors" }
-                    ?.joinToString(", ") { "${it.instanceLocation}: ${it.error}" }
+            }
+            (ex.data?.get("error") as? List<JsonErrorEntry>)?.let { details ->
+                message + ": " + details
+                    .filter { it.error != "A subschema had errors" }
+                    .joinToString(", ") { "${it.instanceLocation}: ${it.error}" }
+            }
+            (ex.data?.get("fields") as? List<InvalidField>)?.let { invalidFields ->
+                message += " " + invalidFields.joinToString(", ") { "${it.name}: ${it.errorCode}" }
             }
         }
         return message
