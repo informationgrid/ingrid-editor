@@ -255,7 +255,11 @@
                                     <gmd:date>
                                         <gmd:CI_Date>
                                             <gmd:date>
-                                                <gco:DateTime>${description.getDate()}</gco:DateTime>
+                                                @if(description.getDate().contains("T"))
+                                                    <gco:DateTime>${description.getDate()}</gco:DateTime>
+                                                @else
+                                                    <gco:Date>${description.getDate()}</gco:Date>
+                                                @endif
                                             </gmd:date>
                                             <gmd:dateType>
                                                 <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="${description.getDateType()}">${description.getDateType()}</gmd:CI_DateTypeCode>

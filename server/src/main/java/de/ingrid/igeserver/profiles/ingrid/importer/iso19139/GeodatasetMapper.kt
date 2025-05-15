@@ -93,7 +93,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     }
                     LineageSourceDescription(
                         value = it.liSource?.description?.value,
-                        date = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.date?.dateTime,
+                        date = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.date?.getBestDate(),
                         dateType = dateType,
                         title = if (internalGeoDatasetUuid == null) it.liSource?.sourceCitation?.citation?.title?.value else null,
                         identifier = if (internalGeoDatasetUuid == null) identifier else null,
