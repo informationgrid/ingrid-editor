@@ -28,6 +28,7 @@ import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.model.meta.PermissionsData
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.UserManagementService
 import jakarta.persistence.EntityManager
@@ -44,6 +45,7 @@ class CatalogImportService(
     val groupService: GroupService,
     val catalogService: CatalogService,
     val keycloakService: UserManagementService,
+    private val documentService: DocumentService,
 ) : CatalogTransferService(entityManager, transactionManager) {
     private val log = logger()
 
@@ -271,7 +273,7 @@ class CatalogImportService(
             row["catalog_id"] = catalogId
             if (row["manager_id"] != null) row["manager_id"] = userMigrationMap[row["manager_id"] as Int]
 
-            row["permissions"] = adaptGroupPermissions(row["permissions"] as String, documentWrapperMigrationMap)
+            row["permissions"] = adaptGroupPermissions(row["permissions"] as String, documentWrapperMigrationMap, catalogId)
         }
         if (permissionGroups.isEmpty()) {
             log.warn("No PermissionGroups to import!")
@@ -310,21 +312,28 @@ class CatalogImportService(
         return allIds
     }
 
-    private fun adaptGroupPermissions(permissions: String, documentWrapperMigrationMap: Map<Int, Int>): String {
+    private fun adaptGroupPermissions(permissions: String, documentWrapperMigrationMap: Map<Int, Int>, catalogId: Int): String {
         val permissions = jacksonObjectMapper().readValue(permissions, PermissionsData::class.java)
         val idMigrationMap = documentWrapperMigrationMap
         return PermissionsData(
             permissions.rootPermission,
-            updatePermission(permissions.documents, idMigrationMap),
-            updatePermission(permissions.addresses, idMigrationMap),
+            updatePermission(permissions.documents, idMigrationMap, catalogId),
+            updatePermission(permissions.addresses, idMigrationMap, catalogId),
         )
             .let { jacksonObjectMapper().writeValueAsString(it) }
     }
 
-    private fun updatePermission(permissions: List<JsonNode>?, idMigrationMap: Map<Int, Int>) = permissions?.map { permission ->
+    private fun updatePermission(permissions: List<JsonNode>?, idMigrationMap: Map<Int, Int>, catalogId: Int) = permissions?.map { permission ->
         permission as ObjectNode
-        val oldId = permission.get("id").asInt()
-        permission.put("id", idMigrationMap[oldId])
+        if (permission.has("uuid")) {
+            val catalogIdentifier = catalogService.getCatalogs().find { it.id == catalogId }?.identifier!!
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, permission.get("uuid").asText()).let {
+                permission.put("id", it.id!!)
+            }
+        } else {
+            val oldId = permission.get("id").asInt()
+            permission.put("id", idMigrationMap[oldId])
+        }
     }
 
     private fun saveAllGroupsOfCatalog(catalogIdentifier: String) {
