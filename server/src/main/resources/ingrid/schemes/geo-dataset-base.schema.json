@@ -267,7 +267,7 @@
         "generalResourceType": {
           "anyOf": [
             {
-              "$ref": "refs/general.schema.json#/definitions/KeyValue"
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
             },
             {
               "type": "null"
@@ -277,7 +277,7 @@
         "resourceType": {
           "anyOf": [
             {
-              "$ref": "refs/general.schema.json#/definitions/KeyValue"
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
             },
             {
               "type": "null"
@@ -347,16 +347,7 @@
       "featureTypes": {
         "type": "array",
         "items": {
-          "type": "object",
-          "unevaluatedProperties": false,
-          "properties": {
-            "key": {
-              "type": ["null", "string"]
-            },
-            "value": {
-              "type": "string"
-            }
-          }
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
         }
       }
     },
