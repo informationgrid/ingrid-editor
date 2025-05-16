@@ -88,6 +88,7 @@ import { toObservable } from "@angular/core/rxjs-interop";
 import { ProfileService } from "../../../services/profile.service";
 import { UiStore } from "../../../store/ui.store";
 import { BehaviourService } from "../../../services/behavior/behaviour.service";
+import { AuthenticationFactory } from "../../../security/auth.factory";
 
 @UntilDestroy()
 @Component({
@@ -117,6 +118,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   private profileService = inject(ProfileService);
   private uiStore = inject(UiStore);
   private behaviourService = inject(BehaviourService);
+  private authService = inject(AuthenticationFactory);
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
   @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
@@ -312,8 +314,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @HostListener("window:beforeunload", ["$event"])
   beforeUnloadHandler(event: Event) {
-    if (this.form?.dirty) {
-      event.returnValue = false;
+    if (this.form?.dirty && this.authService.get().isLoggedIn()) {
+      event.preventDefault();
     }
   }
 
