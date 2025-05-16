@@ -1013,8 +1013,7 @@ open class IngridModelTransformer(
             ?: if (refTrans.data.getString("parentIdentifier") == this.doc.uuid) {
                 KeyValue(null, null)
             } else {
-                null
-                    ?: getRefTypeFromIncomingReference(refTrans.data)
+                getRefTypeFromIncomingReference(refTrans.data)
                     ?: throw ServerException.withReason("Could not find reference type for '${this.doc.uuid}' in '$uuid'.")
             }
 
@@ -1084,7 +1083,7 @@ open class IngridModelTransformer(
                     ?: throw ServerException.withReason("Preview image 'value'-property is NULL"),
                 json.getString("fileName.uri")
                     ?: throw ServerException.withReason("Preview image 'uri'-property is NULL"),
-                json.getDouble("fileName.sizeInBytes") ?: null,
+                json.getDouble("fileName.sizeInBytes"),
             ),
             json.getString("fieldDescription"),
         )
