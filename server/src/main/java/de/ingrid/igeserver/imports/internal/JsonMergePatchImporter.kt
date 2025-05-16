@@ -26,16 +26,23 @@ import com.gravity9.jsonpatch.mergepatch.JsonMergePatch
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.DocumentService
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.MediaType
+import org.springframework.stereotype.Service
 
 data class IgeJsonPatch(
     val uuid: String,
+    val type: String,
     val jsonPatch: JsonPatch?,
     val jsonMerge: JsonMergePatch?,
 )
 
+@Service
 class JsonMergePatchImporter(val documentService: DocumentService) : IgeImporter {
+    private val log = logger()
+
     override val typeInfo: ImportTypeInfo
         get() = ImportTypeInfo(
             "internalJsonMergePatch",
@@ -46,8 +53,22 @@ class JsonMergePatchImporter(val documentService: DocumentService) : IgeImporter
 
     override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
         val input: IgeJsonPatch = jacksonObjectMapper().readValue(data as String, IgeJsonPatch::class.java)
-        val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, input.uuid)
-        val doc = documentService.getDocumentByWrapperId(catalogId, wrapper.id!!)
+        val doc = try {
+            val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, input.uuid)
+            documentService.getDocumentByWrapperId(catalogId, wrapper.id!!)
+        } catch (e: Exception) {
+            // create new dataset
+            log.debug("Create new dataset for JsonMergePatch import")
+
+            Document().apply {
+                this.uuid = input.uuid
+                this.type = input.type
+                this.data = jacksonObjectMapper().createObjectNode().apply {
+                    put("_type", input.type)
+                    put("_uuid", input.uuid)
+                }
+            }
+        }
         if (input.jsonPatch == null && input.jsonMerge == null) throw ServerException.withReason("No patch found")
         if (input.jsonPatch != null && input.jsonMerge != null) throw ServerException.withReason("Both patch and merge patch found")
 
@@ -61,7 +82,7 @@ class JsonMergePatchImporter(val documentService: DocumentService) : IgeImporter
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean {
         val isJson = MediaType.APPLICATION_JSON_VALUE == contentType || MediaType.TEXT_PLAIN_VALUE == contentType
         val hasNecessaryFields =
-            fileContent.contains("\"uuid\"") && fileContent.contains("\"jsonPatch\"")
+            fileContent.contains("\"uuid\"") && (fileContent.contains("\"jsonPatch\"") || fileContent.contains("\"jsonMerge\""))
         return isJson && hasNecessaryFields
     }
 }
