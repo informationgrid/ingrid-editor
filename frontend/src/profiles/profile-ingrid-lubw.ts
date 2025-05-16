@@ -19,58 +19,58 @@
  */
 import { Component, inject, NgModule } from "@angular/core";
 import { InGridComponent } from "./profile-ingrid";
-import { FormlyFieldConfig } from "@ngx-formly/core";
-import { FieldConfigPosition } from "./form-field-helper";
-import { CommonFieldsLUBW } from "./ingrid-lubw/doctypes/common-fields";
+import { FormMenuService } from "../app/+form/form-menu.service";
+import { TranslocoService } from "@jsverse/transloco";
+import { ConfigService } from "../app/services/config/config.service";
+import { BehaviourService } from "../app/services/behavior/behaviour.service";
+import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw/doctypes/geo-dataset.doctype";
 
 @Component({
   template: "",
   standalone: true,
 })
 class InGridLUBWComponent extends InGridComponent {
-  common = inject(CommonFieldsLUBW);
+  geoDataset = inject(GeoDatasetDoctypeLubwSkdvOk);
+  behaviourService = inject(BehaviourService);
+  configService = inject(ConfigService);
+  formMenuService = inject(FormMenuService);
+  translocoService = inject(TranslocoService);
 
   constructor() {
     super();
     this.isoView.isoExportFormat = "ingridISOLUBW";
-    this.modifyFormFieldConfiguration();
+
+    const isAuthor = this.configService.$userInfo.value.role === "author";
+    if (isAuthor) {
+      this.disablePlugins([
+        "plugin.newDoc",
+        "plugin.folder",
+        "plugin.copy.cut.paste",
+        "plugin.deleteDocs",
+      ]);
+      this.formMenuService.addExcludedMenuItems("publish", [
+        "PUBLISH",
+        "VALIDATE",
+        "UNPUBLISH",
+        "REVERT",
+      ]);
+      this.translocoService.setTranslation(
+        {
+          publish: {
+            confirmMessage:
+              "Mit der Bestätigung dieser Meldung wird der Metadatensatz gespeichert und im Web-Auftritt der RIPS-Metadaten veröffentlicht. Eine automatische Benachrichtigung wird an RIPS-Metadaten@lubw.bwl.de gesendet.",
+          },
+        },
+        "de",
+        { merge: true },
+      );
+    }
   }
 
-  private modifyFormFieldConfiguration() {
-    this.geoDataset.manipulateDocumentFields = (
-      fieldConfig: FormlyFieldConfig[],
-    ) => {
-      this.addFields(fieldConfig);
-      return fieldConfig;
-    };
-  }
-
-  // dataQualityInfo
-  // lineage
-  // source
-  // descriptions", "Datengrundlage",
-  // processStep
-  // description", "Herstellungsprozess",
-
-  private addFields(fieldConfig: FormlyFieldConfig[]) {
-    const identifierPosition = this.common.findFieldElementWithId(
-      fieldConfig,
-      "identifier",
-    );
-    const processStepPosition = this.common.findFieldElementWithId(
-      fieldConfig,
-      "processStep",
-    );
-
-    this.addAfter(identifierPosition, this.common.getOACFieldConfig());
-    this.addAfter(
-      processStepPosition,
-      this.common.getEnvironmentDescriptionFieldConfig(),
-    );
-  }
-
-  private addAfter(info: FieldConfigPosition, field: FormlyFieldConfig) {
-    info.fieldConfig.splice(info.index + 1, 0, field);
+  private disablePlugins(pluginIds: string[]) {
+    pluginIds.forEach((id) => {
+      this.behaviourService.getBehaviour(id).isActive.set(false);
+    });
   }
 }
 

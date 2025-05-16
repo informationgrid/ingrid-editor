@@ -17,11 +17,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_lubw_skdv_ok
+package de.ingrid.igeserver.profiles.ingrid_lubw
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
-@ConfigurationProperties("profile.ingrid-lubw-skdv-ok")
+@ConfigurationProperties("profile.ingrid-lubw")
 data class LubwSkdvOkProperties(
     val publishEmailTo: String = "RIPS-Metadaten@lubw.bwl.de",
     val publishEmailContent: String = """<ul>

@@ -17,12 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_lubw_skdv_ok.pipes
+package de.ingrid.igeserver.profiles.ingrid_lubw.pipes
 
 import de.ingrid.igeserver.configuration.GeneralProperties
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid_lubw_skdv_ok.LubwSkdvOkProperties
+import de.ingrid.igeserver.profiles.ingrid_lubw.LubwSkdvOkProperties
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.DocumentState
 import org.springframework.context.annotation.Lazy

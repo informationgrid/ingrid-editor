@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid_lubw_skdv_ok
+package de.ingrid.igeserver.profiles.ingrid_lubw
 
 val codelist30000 = mapOf(
     "99" to "Landesamt für Denkmalpflege",

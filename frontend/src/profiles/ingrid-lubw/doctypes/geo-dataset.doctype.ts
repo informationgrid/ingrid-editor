@@ -66,6 +66,9 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
   }
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+    this.addOACFieldConfig(fieldConfig);
+    this.addEnvironmentDescriptionFieldConfig(fieldConfig);
+
     const position = this.findFieldElementWithId(fieldConfig, "pointOfContact");
 
     const isAuthor = this.configService.$userInfo.value.role === "author";
@@ -321,6 +324,30 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
     } else {
       allData.splice(index, 0, item);
     }
+  }
+
+  addOACFieldConfig(fieldConfig: FormlyFieldConfig[]) {
+    const identifierPosition = this.findFieldElementWithId(
+      fieldConfig,
+      "identifier",
+    );
+    this.addAfter(
+      identifierPosition,
+      this.addInput("oac", "OAC", {
+        wrappers: ["panel", "form-field"],
+      }),
+    );
+  }
+
+  addEnvironmentDescriptionFieldConfig(fieldConfig: FormlyFieldConfig[]) {
+    const processStepPosition = this.findFieldElementWithId(
+      fieldConfig,
+      "processStep",
+    );
+    this.addAfter(
+      processStepPosition,
+      this.addTextArea("environmentDescription", "Produktionsumgebung", "lfub"),
+    );
   }
 
   private handleNonPersonRelatedChoice(field: FormlyFieldConfig) {

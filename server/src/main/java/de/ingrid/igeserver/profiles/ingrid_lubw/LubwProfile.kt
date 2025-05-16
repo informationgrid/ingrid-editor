@@ -19,6 +19,9 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_lubw
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
@@ -26,12 +29,15 @@ import de.ingrid.igeserver.profiles.ingrid_lubw.importer.ISOImportLUBW
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.CodelistHandler
+import de.ingrid.igeserver.services.CodelistHandler.Companion.toCodelistEntry
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
+@EnableConfigurationProperties(LubwSkdvOkProperties::class)
 class LubwProfile(
     catalogRepo: CatalogRepository,
     codelistHandler: CodelistHandler,
@@ -57,5 +63,153 @@ class LubwProfile(
 
     init {
         isoImport.profileMapper[ID] = isoImportLUBW
+    }
+
+    override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
+        val catalogRef = catalogRepo.findByIdentifier(catalogId)
+
+        val codelist30000 = createCodelist30000(catalogRef)
+        val codelist30001 = createCodelist30001(catalogRef)
+        val codelist30002 = createCodelist30002(catalogRef)
+        val codelist30003 = createCodelist30003(catalogRef)
+        val codelist30004 = createCodelist30004(catalogRef)
+        val codelist30005 = createCodelist30005(catalogRef)
+        val codelist30006 = createCodelist30006(catalogRef)
+
+        when (codelistId) {
+            "30000" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30000)
+                return
+            }
+
+            "30001" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30001)
+                return
+            }
+
+            "30002" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30002)
+                return
+            }
+
+            "30003" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30003)
+                return
+            }
+
+            "30004" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30004)
+                return
+            }
+
+            "30005" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30005)
+                return
+            }
+
+            "30006" -> {
+                codelistHandler.removeAndAddCodelist(catalogId, codelist30005)
+                return
+            }
+
+            null -> {
+                codelistHandler.removeAndAddCodelists(
+                    catalogId,
+                    listOf(codelist30000, codelist30001, codelist30002, codelist30003, codelist30004, codelist30005, codelist30006),
+                )
+            }
+        }
+        super.initCatalogCodelists(catalogId, codelistId)
+    }
+
+    private fun createCodelist30000(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30000"
+        catalog = catalogRef
+        name = "Datenführende Stelle"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            codelist30000.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
+        }
+    }
+
+    private fun createCodelist30001(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30001"
+        catalog = catalogRef
+        name = "Produktionsumgebung"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            codelist30001.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
+        }
+    }
+
+    private fun createCodelist30002(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30002"
+        catalog = catalogRef
+        name = "Sachattribute - Gruppe"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            codelist30002.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
+        }
+    }
+
+    private fun createCodelist30003(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30003"
+        catalog = catalogRef
+        name = "Sachattribute - Kategorie"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            codelist30003.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
+        }
+    }
+
+    private fun createCodelist30004(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30004"
+        catalog = catalogRef
+        name = "Sachattribute - Übermittlungsstufe"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            codelist30004.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
+        }
+    }
+
+    private fun createCodelist30005(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30005"
+        catalog = catalogRef
+        name = "Geometrie - Typ"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            codelist30005.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
+        }
+    }
+
+    private fun createCodelist30006(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "30006"
+        catalog = catalogRef
+        name = "Geometrie - Maßstab"
+        description = ""
+        defaultEntry = ""
+        data = jacksonObjectMapper().createArrayNode().apply {
+            codelist30006.forEach { (key, value) ->
+                add(toCodelistEntry(key, value))
+            }
+        }
     }
 }
