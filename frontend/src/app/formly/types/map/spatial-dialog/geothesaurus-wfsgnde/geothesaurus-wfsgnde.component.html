@@ -54,13 +54,14 @@
     </div>
     @if (spatialSelection?.ars) {
         <div>
+            <div>Amtlicher Regionalschlüssel</div>
             <mat-checkbox
                 data-cy="ARS-checkbox"
                 checked="true"
                 [(ngModel)]="useArs"
                 (change)="updateArsUsage($event)"
             >
-                ARS übernehmen: {{ spatialSelection.ars }}
+                {{ spatialSelection.ars }}
             </mat-checkbox>
         </div>
     }

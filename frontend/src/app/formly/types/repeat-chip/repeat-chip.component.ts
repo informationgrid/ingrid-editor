@@ -224,7 +224,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
 
     if (this.type === "codelist") {
       const prepared = new SelectOption(value.value, value.label);
-      this.add(null, prepared.forBackend());
+      this.add(null, prepared.forBackend(this.props.codelistId));
     } else {
       this.add(null, value);
     }

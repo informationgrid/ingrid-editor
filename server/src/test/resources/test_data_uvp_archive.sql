@@ -112,8 +112,50 @@ VALUES (1001, 100, 'uuid-1', 'UvpApprovalProcedureDoc', 'Anonymized Title', '{
 }',
         0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'PUBLISHED')
 ;
+INSERT INTO document
+VALUES (1002, 100, 'uuid-2', 'UvpNegativePreliminaryAssessmentDoc', 'Anonymized Title negative', '{
+    "description": "test",
+  "pointOfContact": [
+    {
+      "ref": "c3bfe0ec-9bcb-4db2-b124-2d4cd088cb3a",
+      "type": {
+        "key": "7"
+      }
+    }
+  ],
+  "spatial": [
+    {
+      "value": {
+        "lat1": 50.07697258506332,
+        "lon1": 5.822753906250001,
+        "lat2": 53.158711667342324,
+        "lon2": 14.304199218750002
+      },
+      "type": "free"
+    }
+  ],
+  "eiaNumbers": [
+    {
+      "key": "2"
+    }
+  ],
+  "decisionDate": "2004-01-01T23:00:00.000Z",
+  "uvpNegativeDecisionDocs": [
+    {
+      "title": "PXL_20250105_131900903",
+      "downloadURL": {
+        "asLink": false,
+        "value": "PXL_20250105_131900903.jpg",
+        "uri": "PXL_20250105_131900903.jpg"
+      }
+    }
+  ]
+}',
+        0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'PUBLISHED')
+;
 
 INSERT INTO document_wrapper VALUES (1, 100, null, 'uuid-1', 'UvpApprovalProcedureDoc', 'data', 0);
+INSERT INTO document_wrapper VALUES (2, 100, null, 'uuid-2', 'UvpNegativePreliminaryAssessmentDoc', 'data', 0);
 
 -- behaviours
 INSERT INTO behaviour VALUES (200, 100, 'plugin.session.timeout', true, '{

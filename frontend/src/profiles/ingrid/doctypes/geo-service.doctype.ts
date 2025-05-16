@@ -17,7 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
+import {
+  SelectOption,
+  SelectOptionUi,
+} from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Injectable } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
@@ -48,7 +51,6 @@ export class GeoServiceDoctype extends IngridShared {
 
   geoServiceOptions = {
     required: {
-      operations: true,
       classification: true,
     },
   };
@@ -77,6 +79,12 @@ export class GeoServiceDoctype extends IngridShared {
 
   getServiceVersionOptions = new BehaviorSubject<SelectOptionUi[]>([]);
   getServiceOperationNameOptions = new BehaviorSubject<SelectOptionUi[]>([]);
+
+  private couplingTypeOptions: SelectOption[] = [
+    new SelectOption("loose", "loose"),
+    new SelectOption("mixed", "mixed"),
+    new SelectOption("tight", "tight"),
+  ];
 
   documentFields = () => {
     this.handleDoiBehaviour();
@@ -162,7 +170,10 @@ export class GeoServiceDoctype extends IngridShared {
               ),
             ]),
             this.addRepeat("operations", "Operationen", {
-              required: this.geoServiceOptions.required.operations,
+              expressions: {
+                "props.required": (field: FormlyFieldConfig) =>
+                  !field.options.formState.mainModel?.service?.isAtomDownload,
+              },
               fields: [
                 this.addAutoCompleteInline("name", "Name", {
                   required: true,
@@ -207,11 +218,7 @@ export class GeoServiceDoctype extends IngridShared {
                 this.addSelectInline("couplingType", "Kopplungstyp", {
                   showSearch: true,
                   defaultValue: { key: "loose" },
-                  options: <SelectOptionUi[]>[
-                    { label: "loose", value: "loose" },
-                    { label: "mixed", value: "mixed" },
-                    { label: "tight", value: "tight" },
-                  ],
+                  options: this.couplingTypeOptions,
                   hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
                   expressions: {
@@ -286,9 +293,9 @@ export class GeoServiceDoctype extends IngridShared {
     if (couplingTypeCtrl === null || couplingTypeCtrl.value?.key === "mixed")
       return;
 
-    couplingTypeCtrl.setValue({
-      key: value.length > 0 ? "tight" : "loose",
-    });
+    const key = value.length > 0 ? "tight" : "loose";
+    const option = this.couplingTypeOptions.find((item) => item.value === key);
+    couplingTypeCtrl.setValue(option.forBackend(null));
   }
 
   private handleServiceTypeChange(field: FormlyFieldConfig) {

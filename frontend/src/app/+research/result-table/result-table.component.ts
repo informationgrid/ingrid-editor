@@ -220,7 +220,9 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
 
   downloadTable() {
     const rows: string[][] = [];
-    const additionalHeader = Object.keys(this.dataSource.data[0].additional);
+    const additionalHeader = Object.keys(
+      this.dataSource.data?.[0]?.additional ?? [],
+    );
     rows.push([
       "ID",
       "Veröffentlichungsstatus",

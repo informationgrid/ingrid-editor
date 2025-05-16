@@ -59,7 +59,7 @@ export class UvpArchiveComponent implements OnInit {
 
   active = computed<boolean>(() => {
     const archivePlugin = this.behaviourService.getBehaviour("plugin.archive");
-    return archivePlugin.isActive && archivePlugin.data["showInPortal"];
+    return archivePlugin.isActive() && archivePlugin.data["showInPortal"];
   });
   dateControl = new FormControl<Date>(null, Validators.required);
   numOfDatasetsHint = signal<string>("");

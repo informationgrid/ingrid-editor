@@ -61,7 +61,7 @@ import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.suffixIfNot
 import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
-import org.unbescape.json.JsonEscape
+import org.apache.commons.text.StringEscapeUtils.escapeJson
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -197,8 +197,11 @@ open class IngridModelTransformer(
         var note: String? = null,
     )
 
-    open val useConstraints = data.resource?.useConstraints?.map { constraint ->
-        if (constraint.title == null) throw ServerException.withReason("Use constraint title is null $constraint")
+    open val useConstraints = data.resource?.useConstraints?.mapNotNull { constraint ->
+        if (constraint.title == null) {
+            log.warn("Use constraint title is null $constraint")
+            return@mapNotNull null
+        }
 
         // special case for "Es gelten keine Bedingungen"
         val link =
@@ -275,10 +278,10 @@ open class IngridModelTransformer(
 
     fun getSpatialReferenceLocationNames(): String = spatialReferences.filter {
         it.value != null
-    }.map {
+    }.joinToString("\",\"", "[\"", "\"]") {
         // must be escaped first, because we don't want to escape the whole array-string
-        JsonEscape.escapeJson(it.title)
-    }.joinToString("\",\"", "[\"", "\"]")
+        escapeJson(it.title ?: "")
+    }
 
     fun getSpatialReferenceArs(): List<String> = spatialReferences.mapNotNull { it.ars }
 

@@ -254,7 +254,7 @@ class ZabbixService(
         documentsToAdd: List<ZabbixModel.Upload>,
     ) {
         val hostId = createHost(uuid, name, url, catalogIdentifier)
-        if (addressMail != null) {
+        if (!addressMail.isNullOrEmpty()) {
             // only create notification job when mail is set
             createUser(addressMail)
             createAction(uuid, addressMail)

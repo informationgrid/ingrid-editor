@@ -64,7 +64,7 @@ export class DeleteDocsPlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      if (!this.formRegistered) return;
+      if (!this.isActive() || !this.formRegistered()) return;
       const docs = this.activeNodes().map(
         (item) => this.getStore().entityMap()[item],
       );
@@ -186,7 +186,7 @@ export class DeleteDocsPlugin extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       this.formToolbarService.removeButton("toolBtnRemove");
       this.formToolbarService.removeButton("toolBtnRemoveSeparator");
     }

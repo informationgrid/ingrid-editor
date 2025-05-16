@@ -46,7 +46,7 @@ export class UploadError {
 
     switch (message) {
       case "The file already exists.":
-        return "Die Datei existiert bereits.";
+        return "Die Datei existiert bereits. Ein Speichern des Dokuments ist evtl. hilfreich, um verwaiste Dateien endgültig zu löschen. Alternative stehen folgende Optionen zur Verfügung:";
       default:
         return message;
     }

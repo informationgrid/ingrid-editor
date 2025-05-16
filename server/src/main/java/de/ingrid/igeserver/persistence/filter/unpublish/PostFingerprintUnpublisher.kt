@@ -17,32 +17,30 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.persistence.filter.delete
+package de.ingrid.igeserver.persistence.filter.unpublish
 
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
-import de.ingrid.igeserver.persistence.filter.PostDeletePayload
-import de.ingrid.igeserver.zabbix.ZabbixService
-import org.springframework.context.annotation.Profile
+import de.ingrid.igeserver.persistence.filter.PostUnpublishPayload
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.services.DocumentService
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
 
 /**
- * Filter for processing steps after removing the document.
+ * Filter for processing steps after unpublishing.
  */
 @Component
-@Profile("zabbix")
-class PostDocumentRemoverZabbix(
-    val zabbixService: ZabbixService,
-) : Filter<PostDeletePayload> {
+class PostFingerprintUnpublisher(
+    @Lazy var documentService: DocumentService,
+    val documentWrapperRepository: DocumentWrapperRepository,
+) : Filter<PostUnpublishPayload> {
 
-    override val profiles = arrayOf("uvp")
+    override val profiles = arrayOf<String>()
 
-    override fun invoke(payload: PostDeletePayload, context: Context): PostDeletePayload {
-        // remove document from zabbix monitoring
-        if (zabbixService.activatedCatalogs.contains(context.catalogId)) {
-            zabbixService.deleteDocument(payload.document.uuid)
-        }
-
+    override fun invoke(payload: PostUnpublishPayload, context: Context): PostUnpublishPayload {
+        payload.wrapper.fingerprint = null
+        documentWrapperRepository.save(payload.wrapper)
         return payload
     }
 }

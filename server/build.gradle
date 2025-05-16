@@ -26,7 +26,7 @@ plugins {
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.4.5'
     id "com.gorylenko.gradle-git-properties" version "2.4.2"
-    id 'io.kotest' version '0.4.11'
+//    id 'io.kotest' version '0.4.11'
     id "com.github.ben-manes.versions" version "0.52.0"
     id "gg.jte.gradle" version "$jte_version"
     id "org.hibernate.orm" version "6.5.2.Final"
@@ -103,12 +103,10 @@ dependencies {
 
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'io.pebbletemplates:pebble-spring-boot-starter:3.1.6'
     implementation 'org.springframework.boot:spring-boot-starter-tomcat'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.security:spring-security-acl'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -204,9 +202,9 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // Elasticsearch communication
-    implementation("com.jillesvangurp:search-client:2.3.13")
+    implementation("com.jillesvangurp:search-client:2.4.1")
 
-    implementation('de.ingrid:ingrid-ibus-client:7.5.0') {
+    implementation('de.ingrid:ingrid-ibus-client:7.6.0-SNAPSHOT') {
         exclude group: 'org.apache.logging.log4j'
         exclude group: 'org.slf4j'
     }
@@ -286,9 +284,9 @@ jte {
     generate()
 }
 
-//tasks.named('generateJte') {
-//    mustRunAfter(tasks.runKtlintCheckOverMainSourceSet)
-//}
+tasks.named('generateJte') {
+    mustRunAfter(tasks.runKtlintCheckOverMainSourceSet)
+}
 
 tasks.named('compileKotlin') {
     dependsOn(tasks.updateGitHooks)

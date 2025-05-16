@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, input, output } from "@angular/core";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import {
@@ -44,15 +44,11 @@ import { MatIcon } from "@angular/material/icon";
     MatButton,
   ],
 })
-export class DialogTemplateComponent implements OnInit {
-  @Input() label: string;
-  @Input() submitLabel = "Übernehmen";
-  @Input() disabled = false;
-  @Input() contentColor = "#ffffff";
-  @Output() submit = new EventEmitter<void>();
-  @Output() cancel = new EventEmitter<void>();
-
-  constructor() {}
-
-  ngOnInit(): void {}
+export class DialogTemplateComponent {
+  label = input<string>("");
+  submitLabel = input<string>("Übernehmen");
+  disabled = input<boolean>(false);
+  contentColor = input<string>("#ffffff");
+  submit = output<void>();
+  cancel = output<void>();
 }

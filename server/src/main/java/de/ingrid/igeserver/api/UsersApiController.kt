@@ -108,7 +108,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         }
 
         // check if user has permission to all groups of the new user
-        if (user.groups.all { catalogService.hasRightsForGroup(principal, groupService.get(catalogId, it) ?: return@all false) } != true) {
+        if (checkGroupPermissionsForPrincipal(user.groups, principal, catalogId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
@@ -148,6 +148,17 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok(getSingleUser(principal, createdUser.userId))
     }
 
+    private fun checkGroupPermissionsForPrincipal(
+        groupIds: List<Int>,
+        principal: Principal,
+        catalogId: String,
+    ) = !groupIds.all {
+        catalogService.hasRightsForGroup(
+            principal,
+            groupService.get(catalogId, it) ?: return@all false,
+        )
+    }
+
     private fun validateLoginName(user: User) {
         if (user.login != user.login.lowercase()) {
             throw ClientException.withReason("user.login must be lowercase")
@@ -159,7 +170,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     @Transactional(noRollbackFor = [MailException::class])
     override fun deleteUser(principal: Principal, userId: Int): ResponseEntity<Void> {
         val frontendUser =
-            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
+            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUser(userId.toString())
         val login = frontendUser.userId
 
         if (!catalogService.canEditUser(principal, login)) {
@@ -192,7 +203,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
     override fun getUser(principal: Principal, userId: Int): ResponseEntity<User> {
         val frontendUser =
-            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
+            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUser(userId.toString())
 
         if (!catalogService.canEditUser(principal, frontendUser.userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
@@ -210,7 +221,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
     override fun getFullName(principal: Principal, userId: Int): ResponseEntity<String> {
         val frontendUser =
-            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUserCatalog(userId.toString())
+            userRepo.findByIdOrNull(userId) ?: throw NotFoundException.withMissingUser(userId.toString())
 
         val login = frontendUser.userId
         val user = keycloakService.getUser(login)
@@ -221,12 +232,13 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         val user = try {
             keycloakService.getUser(userId)
         } catch (e: Exception) {
+            logger.debug { e }
             logger.error("Couldn't find keycloak user with login: $userId")
             return null
         }
 
         val frontendUser =
-            userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+            userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUser(userId)
 
         user.latestLogin = this.getMostRecentLoginForUser(userId)
 
@@ -255,7 +267,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
 
     override fun reassignResponsibilities(principal: Principal, oldUserId: Int, newUserId: Int): ResponseEntity<Void> {
         val newResponsibleUser =
-            userRepo.findByIdOrNull(newUserId) ?: throw NotFoundException.withMissingUserCatalog(newUserId.toString())
+            userRepo.findByIdOrNull(newUserId) ?: throw NotFoundException.withMissingUser(newUserId.toString())
 
         if (!catalogService.canEditUser(principal, newResponsibleUser.userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
@@ -321,6 +333,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         val permissions = try {
             catalogService.getPermissions(principal)
         } catch (ex: Exception) {
+            logger.debug { ex }
             emptyList()
         }
 
@@ -400,7 +413,11 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     override fun setCatalogAdmin(
         principal: Principal,
         info: CatalogAdmin,
-    ): ResponseEntity<de.ingrid.igeserver.model.UserInfo?> {
+    ): ResponseEntity<Void> {
+        if (!authUtils.isAdmin(principal)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
         val userIds = info.userIds
         if (userIds.isEmpty()) {
             throw InvalidParameterException.withInvalidParameters("info.userIds")
@@ -417,15 +434,18 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         userId: String,
         catalogId: String,
     ): ResponseEntity<Void> {
+        if (!authUtils.isSuperAdmin(principal)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val catalog = catalogService.getCatalogById(catalogId)
-        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUser(userId)
 
         user.catalogs.add(catalog)
         userRepo.save(user)
         return ResponseEntity.ok().build()
     }
 
-    fun addOrUpdateCatalogAdmin(catalogName: String, userIdent: String) {
+    private fun addOrUpdateCatalogAdmin(catalogName: String, userIdent: String) {
         var user = userRepo.findByUserId(userIdent)
         val catalog = catalogService.getCatalogById(catalogName)
 
@@ -453,12 +473,16 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     override fun switchCatalog(principal: Principal, catalogId: String): ResponseEntity<Catalog> {
         val userId = authUtils.getUsernameFromPrincipal(principal)
 
-        val user = userRepo.findByUserId(userId)?.apply {
-            curCatalog = catalogService.getCatalogById(catalogId)
-        } ?: throw NotFoundException.withMissingUserCatalog(userId)
+        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUser(userId)
+        val toCatalog = catalogService.getCatalogById(catalogId)
 
-        userRepo.save(user)
-        return ResponseEntity.ok(user.curCatalog)
+        return if (user.catalogs.contains(toCatalog) || authUtils.isSuperAdmin(principal)) {
+            user.curCatalog = toCatalog
+            userRepo.save(user)
+            ResponseEntity.ok(user.curCatalog)
+        } else {
+            ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
     }
 
     override fun refreshSession(): ResponseEntity<Void> {

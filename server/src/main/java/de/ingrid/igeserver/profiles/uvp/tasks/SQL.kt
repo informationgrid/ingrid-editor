@@ -99,11 +99,11 @@ fun getUrlsFromJsonFieldTable(json: JsonNode, tableField: String): List<UploadIn
     ?: emptyList()
 
 fun sqlDecisionDateBefore(catalogId: String, date: OffsetDateTime): String = """
-    SELECT dw.id, doc.id, doc.type
-    FROM catalog,
-         document_wrapper dw,
-         document doc,
-         jsonb_array_elements(doc.data -> 'processingSteps') elems
+    SELECT DISTINCT dw.id, doc.id, doc.type
+    FROM document doc
+             JOIN document_wrapper dw ON doc.uuid = dw.uuid
+             JOIN catalog ON dw.catalog_id = catalog.id
+             LEFT JOIN LATERAL jsonb_array_elements(doc.data -> 'processingSteps') AS elems ON jsonb_typeof(doc.data -> 'processingSteps') = 'array'
     WHERE catalog.identifier = '$catalogId'
       AND doc.catalog_id = dw.catalog_id
       AND catalog.id = dw.catalog_id
@@ -112,7 +112,7 @@ fun sqlDecisionDateBefore(catalogId: String, date: OffsetDateTime): String = """
       AND dw.category = 'data'
       AND dw.uuid = doc.uuid
       AND doc.state = 'PUBLISHED'
-      AND elems->>'type' = 'decisionOfAdmission' AND (elems->>'decisionDate')::timestamptz <= '$date'
+      AND ((doc.data->>'decisionDate')::timestamptz <= '$date' AND doc.type='UvpNegativePreliminaryAssessmentDoc' OR elems->>'type' = 'decisionOfAdmission' AND (elems->>'decisionDate')::timestamptz <= '$date')
 """.trimIndent()
 
 fun sqlUpdateValidDate(docId: Int, tableField: String): String = """
@@ -120,35 +120,41 @@ fun sqlUpdateValidDate(docId: Int, tableField: String): String = """
         SET data = jsonb_set(
         data,
         '{processingSteps}',
+        COALESCE(
         (SELECT jsonb_agg(
                         CASE
                             WHEN jsonb_typeof(step -> '$tableField') = 'array' THEN
                                         jsonb_set(
                                                 step,
                                                 '{$tableField}',
-                                                (SELECT jsonb_agg(
-                                                                CASE
-                                                                    WHEN doc ->> 'validUntil' IS NULL OR
-                                                                         (doc ->> 'validUntil')::timestamp >=
-                                                                         (CURRENT_DATE::timestamp AT TIME ZONE 'Europe/Berlin') AT TIME ZONE 'UTC' THEN
-                                                                        jsonb_set(
-                                                                                doc,
-                                                                                '{validUntil}',
-                                                                                to_jsonb(to_char(
-                                                                                    ((CURRENT_DATE::timestamp - INTERVAL '1 day') AT TIME ZONE 'Europe/Berlin') AT TIME ZONE 'UTC'
-                                                                                , 'YYYY-MM-DD"T"HH24:MI:SS.MSZ')),
-                                                                                TRUE
-                                                                        )
-                                                                    ELSE doc
-                                                                    END
-                                                        )
-                                                 FROM jsonb_array_elements(step -> '$tableField') doc),
+                                                COALESCE(
+                                                    (SELECT jsonb_agg(
+                                                                    CASE
+                                                                        WHEN doc ->> 'validUntil' IS NULL OR
+                                                                             (doc ->> 'validUntil')::timestamp >=
+                                                                             (CURRENT_DATE::timestamp AT TIME ZONE 'Europe/Berlin') AT TIME ZONE 'UTC' THEN
+                                                                            jsonb_set(
+                                                                                    doc,
+                                                                                    '{validUntil}',
+                                                                                    to_jsonb(to_char(
+                                                                                        ((CURRENT_DATE::timestamp - INTERVAL '1 day') AT TIME ZONE 'Europe/Berlin') AT TIME ZONE 'UTC'
+                                                                                    , 'YYYY-MM-DD"T"HH24:MI:SS.MSZ')),
+                                                                                    TRUE
+                                                                            )
+                                                                        ELSE doc
+                                                                        END
+                                                            )
+                                                     FROM jsonb_array_elements(step -> '$tableField') doc),
+                                                     '[]'::jsonb
+                                                ),
                                                 TRUE
                                         )
                                     ELSE step
                                     END
                         )
                  FROM jsonb_array_elements(data -> 'processingSteps') step),
+                 COALESCE(data -> 'processingSteps', '[]'::jsonb)
+                 ),
                 TRUE
                    )
         WHERE id = $docId
@@ -163,7 +169,8 @@ fun sqlUpdateValidDateNegativeDoc(docId: Int): String = """
                jsonb_set(
                        data,
                        '{uvpNegativeDecisionDocs}',
-                       (SELECT jsonb_agg(
+                       COALESCE(
+                           (SELECT jsonb_agg(
                                        CASE
                                            WHEN doc ->> 'validUntil' IS NULL OR
                                                 (doc ->> 'validUntil')::timestamp >=
@@ -180,8 +187,10 @@ fun sqlUpdateValidDateNegativeDoc(docId: Int): String = """
                                                )
                                            ELSE doc
                                            END
-                               )
-                        FROM jsonb_array_elements(data -> 'uvpNegativeDecisionDocs') doc),
+                                   )
+                            FROM jsonb_array_elements(data -> 'uvpNegativeDecisionDocs') doc),
+                            '[]'::jsonb
+                       ),
                        TRUE
                )
            ELSE data

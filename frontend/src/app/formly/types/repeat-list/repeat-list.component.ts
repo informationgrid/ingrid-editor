@@ -347,7 +347,9 @@ export class RepeatListComponent
       return;
     }
 
-    const prepared = new SelectOption(option.value, option.label).forBackend();
+    const prepared = new SelectOption(option.value, option.label).forBackend(
+      this.props.codelistId,
+    );
     this.formControl.patchValue([...(this.formControl.value || []), prepared]);
     this.props.change?.(this.field, prepared);
 
@@ -506,13 +508,6 @@ export class RepeatListComponent
       // do nothing
       return;
     }
-
-    /*this.addToList(option);
-    if (this.props.multiSelect || $event.ctrlKey) {
-      // don't close the selection panel for multi select or ctrl key selection
-    } else {
-      this.selector.close();
-    }*/
   }
 
   async addFreeEntry(value: string) {

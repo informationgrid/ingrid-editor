@@ -15,7 +15,7 @@
 
 {
     "iPlugId": "ige-ng_${catalog.getIdentifier()}",
-    "dataSourceName": "iPlug IGE-NG (${catalog.getIdentifier()})",
+    "dataSourceName": "${catalog.getName()}",
     "title": "${page.getModel().getTitle()}",
     "summary": "${page.getData().getDescription()}",
     "x1": ${page.getSpatialReferenceComponents(CoordinateType.Lon1)},
@@ -135,6 +135,8 @@
         "t02_address.street": "${page.getContact().getStreet()}",
         "t02_address.title_key": "",
     @endif
+    "collection.name": "${catalog.getName()}",
+    "collection.id": "${catalog.getIdentifier()}",
     "t03_catalogue.cat_name": "${catalog.getName()}",
     "t03_catalogue.cat_namespace": "",
     "t03_catalogue.cat_uuid": "",
@@ -174,8 +176,8 @@
     @endfor
     ],
     "t011_obj_serv_op_connpoint.connect_point": [
-    @for(var entry : ForSupport.of(page.getServiceUrls()))
-        "${entry.get().getUrl()}"@if (!entry.isLast()),@endif
+    @for(var entry : ForSupport.of(page.getOperations()))
+        "${entry.get().getMethodCall()}"@if (!entry.isLast()),@endif
     @endfor
     ],
     "additional_html_1": [

@@ -57,7 +57,7 @@ export class PluginService {
     this.applyActiveStates([plugin]);
     this.plugins.push(plugin);
 
-    if (plugin.isActive) {
+    if (plugin.isActive()) {
       plugin.register();
 
       // register late plugins, which were not ready during initialization
@@ -75,7 +75,7 @@ export class PluginService {
     this.plugins.forEach((p) => p.setForAddress(forAddress));
 
     this.plugins
-      .filter((p) => p.isActive)
+      .filter((p) => p.isActive())
       .filter((p) => !forAddress || !p.hideInAddress)
       .forEach((p) => p.registerForm());
 
@@ -93,8 +93,9 @@ export class PluginService {
             (sb: any) => sb._id === behaviour.id,
           )
         : [];
-      behaviour.isActive =
-        stored.length > 0 ? stored[0].active : behaviour.defaultActive;
+      behaviour.isActive.set(
+        stored.length > 0 ? stored[0].active : behaviour.defaultActive,
+      );
       behaviour.data = stored.length > 0 ? stored[0].data : null;
     });
   }

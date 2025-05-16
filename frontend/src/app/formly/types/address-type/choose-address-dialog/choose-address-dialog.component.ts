@@ -19,7 +19,6 @@
  */
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   inject,
   Inject,
@@ -121,7 +120,6 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     private codelistService: CodelistService,
     private documentService: DocumentService,
     private dlgRef: MatDialogRef<ChooseAddressDialogComponent>,
-    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -150,7 +148,6 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     );
     this.preselectIfOnlyOneType(this.allowedReferenceTypes);
     this.typeSelectionEnabled.set(this.allowedReferenceTypes.length > 1);
-    this.cdr.markForCheck();
   }
 
   private prepareReferenceTypes(result: SelectOptionUi[]): DocumentAbstract[] {
@@ -173,8 +170,11 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   getResult(): void {
     this.documentService.addToRecentAddresses(this.selection());
 
+    const value = this.availableReferenceTypes.find(
+      (item) => item.id === this.selectedType,
+    ).title;
     this.dlgRef.close({
-      type: { key: this.selectedType },
+      type: { key: this.selectedType, value: value },
       address: this.selection(),
     });
   }
