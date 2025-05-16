@@ -142,6 +142,7 @@ export class UserComponent implements OnInit, OnDestroy {
         if (this.loadedUser()?.id !== user.id) this.loadUser(user.id);
       } else {
         this.loadedUser.set(null);
+        this.form.reset(null);
       }
     });
   }
