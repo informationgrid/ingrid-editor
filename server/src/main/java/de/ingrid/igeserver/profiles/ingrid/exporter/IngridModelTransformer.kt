@@ -727,12 +727,12 @@ open class IngridModelTransformer(
                 KeyValue(codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de"), null)
             it
         } +
-            getCoupledServicesForGeodataset.map {
+            getCoupledServiceCapabilitiesUrls().map {
                 Reference(
-                    it.objectName,
-                    it.refType,
+                    it.name,
+                    KeyValue(null, null),
                     it.description,
-                    it.serviceUrl,
+                    it.url,
                     null,
                     null,
                 )
@@ -908,18 +908,18 @@ open class IngridModelTransformer(
 
     open fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy(true)
 
-    private fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
+    private fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceCapabilitiesUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
 
     fun getSubordinateReferences() = getIncomingReferencesProxy().filter { it.isSubordinate }
 
-    private fun getCoupledServiceUrls(): List<ServiceUrl> {
+    private fun getCoupledServiceCapabilitiesUrls(): List<ServiceUrl> {
         if (model.type != "InGridGeoDataset") return emptyList()
 
         return getIncomingReferencesProxy(true)
             .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities" }
             .map {
                 ServiceUrl(
-                    it.objectName,
+                    "Dienst \"${it.objectName}\" (GetCapabilities)",
                     it.serviceUrl ?: throw ServerException.withReason("Service URL is NULL"),
                     null,
                     serviceType = it.serviceType,
