@@ -226,6 +226,7 @@ export class GeoDatasetDoctype extends IngridShared {
                 defaultValue: { key: "basis" },
                 showSearch: true,
                 allowNoValue: false,
+                codelistId: null,
                 options: <SelectOptionUi[]>[
                   {
                     value: "basis",

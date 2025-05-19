@@ -39,6 +39,8 @@ import { TranslocoModule } from "@jsverse/transloco";
 import { firstValueFrom } from "rxjs";
 import { map } from "rxjs/operators";
 import { BreadcrumbComponent } from "../../../+form/form-info/breadcrumb/breadcrumb.component";
+import { ConfigService } from "../../../services/config/config.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "permission-table",
@@ -81,6 +83,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
     private dialog: MatDialog,
     private documentService: DocumentService,
     private profileService: ProfileService,
+    private router: Router,
   ) {}
 
   callAddPermissionDialog() {
@@ -142,6 +145,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
     }
 
     this.getDocument(doc.id).then((igeDoc) => {
+      doc.uuid = igeDoc._uuid;
       doc.hasWritePermission = igeDoc.hasWritePermission;
       doc.hasOnlySubtreeWritePermission = igeDoc.hasOnlySubtreeWritePermission;
       // Organisations act like folders in this context and also have the hasOnlySubtreeWritePermission option
@@ -186,5 +190,10 @@ export class PermissionTableComponent implements ControlValueAccessor {
     if (!doc.hasWritePermission && !doc.hasOnlySubtreeWritePermission) {
       doc.permission = PermissionLevel.READ;
     }
+  }
+
+  openDataset(item: TreePermission) {
+    const basePath = `${ConfigService.catalogId}/${this.forAddress ? "address" : "form"}`;
+    this.router.navigate([basePath, { id: item.uuid }]);
   }
 }

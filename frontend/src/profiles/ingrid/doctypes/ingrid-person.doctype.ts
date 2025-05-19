@@ -29,7 +29,7 @@ export class IngridPersonDoctype extends PersonDoctype {
   constructor() {
     super();
     this.options = {
-      defaultCountry: { key: "276" },
+      defaultCountry: { key: "276", value: "Deutschland", _codelistId: "6200" },
       requiredField: { administrativeArea: true },
       positionNameAndHoursOfService: true,
     };

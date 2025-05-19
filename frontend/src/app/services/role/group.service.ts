@@ -66,14 +66,6 @@ export class GroupService {
     };
   }
 
-  getGroupManager(id: number): Observable<User> {
-    return this.dataService.getGroupManager(id);
-  }
-
-  updateGroupManager(id: number, managerId: string): Observable<User> {
-    return this.dataService.updateGroupManager(id, managerId);
-  }
-
   updateGroup(group: Group): Observable<any> {
     return this.dataService
       .saveGroup(group)

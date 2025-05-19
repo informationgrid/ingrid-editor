@@ -6,19 +6,19 @@
         <button
             mat-icon-button
             mat-dialog-close
-            (click)="cancel.next()"
+            (click)="cancel.emit()"
             aria-hidden="true"
             aria-label="Dialog schließen"
         >
             <mat-icon>close</mat-icon>
         </button>
         <h1 mat-dialog-title>
-            {{ label }}
+            {{ label() }}
         </h1>
         <ng-content select="[header]"></ng-content>
     </div>
 
-    <mat-dialog-content [style.background-color]="contentColor">
+    <mat-dialog-content [style.background-color]="contentColor()">
         <ng-content select="[content]"></ng-content>
     </mat-dialog-content>
 
@@ -28,7 +28,7 @@
             mat-button
             color="primary"
             mat-dialog-close
-            (click)="cancel.next()"
+            (click)="cancel.emit()"
         >
             Abbrechen
         </button>
@@ -38,10 +38,10 @@
             data-cy="form-dialog-confirm"
             mat-flat-button
             color="primary"
-            [disabled]="disabled"
-            (click)="submit.next()"
+            [disabled]="disabled()"
+            (click)="submit.emit()"
         >
-            {{ submitLabel }}
+            {{ submitLabel() }}
         </button>
     </mat-dialog-actions>
 </div>

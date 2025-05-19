@@ -65,7 +65,7 @@ class KrznFields : GeodatasetBase() {
 
             val result = exportJsonToXML(exporter, docSample, context)
             result shouldContain """
-                <idf:mapUrl>https://www.my-map-link.com/maps?mid=7abc5862-a893-4a70-8d83-23cf5a2dd264&amp;MAPS={%22zoom%22: 9}</idf:mapUrl>
+                <idf:mapUrl>https://www.my-map-link.com/maps?mid=7abc5862-a893-4a70-8d83-23cf5a2dd264&amp;MAPS={%22zoom%22:9}</idf:mapUrl>
             """.trimIndent()
         }
 
@@ -75,7 +75,7 @@ class KrznFields : GeodatasetBase() {
 
             val result = exportJsonToXML(exporter, docSample, context)
             result shouldContain """
-                <idf:mapUrl>https://www.my-map-link.com/maps?mid=7abc5862-a893-4a70-8d83-23cf5a2dd264&amp;MAPS={%22center%22: [11111, 22222]}</idf:mapUrl>
+                <idf:mapUrl>https://www.my-map-link.com/maps?mid=7abc5862-a893-4a70-8d83-23cf5a2dd264&amp;MAPS={%22center%22:[11111,22222]}</idf:mapUrl>
             """.trimIndent()
         }
 
@@ -85,7 +85,7 @@ class KrznFields : GeodatasetBase() {
 
             val result = exportJsonToXML(exporter, docSample, context)
             result shouldContain """
-                <idf:mapUrl>https://www.my-map-link.com/maps?mid=7abc5862-a893-4a70-8d83-23cf5a2dd264&amp;MAPS={%22center%22: [11111, 22222], %22zoom%22: 9}</idf:mapUrl>
+                <idf:mapUrl>https://www.my-map-link.com/maps?mid=7abc5862-a893-4a70-8d83-23cf5a2dd264&amp;MAPS={%22center%22:[11111,22222],%22zoom%22:9}</idf:mapUrl>
             """.trimIndent()
         }
     }

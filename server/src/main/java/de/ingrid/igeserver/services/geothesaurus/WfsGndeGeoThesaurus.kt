@@ -35,7 +35,8 @@ class WfsGndeGeoThesaurus : GeoThesaurusService() {
 
     override val id = "wfsgnde"
 
-    val searchUrlTemplate = "http://sg.geodatenzentrum.de/wfs_gnde"
+    @Value("\${geothesaurus.url.wfsgnde:https://sg.geodatenzentrum.de/wfs_gnde}")
+    private val searchUrlTemplate = "https://sg.geodatenzentrum.de/wfs_gnde"
 
     val filterTypes = listOf(
         "AX_Gemeinde",

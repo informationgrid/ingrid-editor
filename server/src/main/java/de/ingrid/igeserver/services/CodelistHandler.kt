@@ -159,9 +159,9 @@ class CodelistHandler(
         return if (defaultEntryId == "-1") null else defaultEntryId
     }
 
-    fun getDefaultCatalogCodelistEntryId(catalogId: String, listId: String): String? {
-        val defaultEntryId = getCatalogCodelists(catalogId).find { it.id == listId }?.defaultEntry
-        return if (defaultEntryId == "-1") null else defaultEntryId
+    fun getDefaultCatalogCodelistEntry(catalogId: String, listId: String): CodeListEntry? {
+        val codelist = getCatalogCodelists(catalogId).find { it.id == listId }
+        return codelist?.defaultEntry?.let { defaultKey -> codelist.entries?.find { it.id == defaultKey } }
     }
 
     val allCodelists: List<CodeList> = codeListService.codeLists

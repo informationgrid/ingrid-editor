@@ -30,7 +30,7 @@ export class UvpOrganisationDoctype extends OrganisationDoctype {
     super();
     this.options = {
       hideAdministrativeArea: true,
-      defaultCountry: { key: "276" },
+      defaultCountry: { key: "276", value: "Deutschland", _codelistId: "6200" },
     };
   }
 }

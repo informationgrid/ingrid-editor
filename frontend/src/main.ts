@@ -155,25 +155,6 @@ if (environment.production) {
   enableProdMode();
 }
 
-/*
-persistState({
-  include: ["session"],
-  preStorageUpdate: (storeName: string, state: any) => {
-    const { currentTab, toggleFieldsButtonShowAll, ...otherUiState } = state.ui;
-    return {
-      ui: otherUiState,
-      recentAddresses: state.recentAddresses,
-    };
-  },
-  preStoreUpdate(storeName: string, state: any, initialState: any): any {
-    // add initial values for fields that are not persisted
-    if (!state.ui) state.ui = { ...initialState.ui };
-    state.ui.currentTab = initialState.ui.currentTab;
-    return state;
-  },
-});
-*/
-
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(

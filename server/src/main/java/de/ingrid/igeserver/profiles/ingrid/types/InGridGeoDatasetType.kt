@@ -51,6 +51,6 @@ class InGridGeoDatasetType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemp
             ?.map { documentService.docRepo.getByCatalogAndUuidAndIsLatestIsTrue(doc.catalog!!, it.getString("uuidRef")!!) }
             ?.all { it.state == DocumentState.PUBLISHED } ?: true
 
-        if (!allCoupledResourcesPublished) throw ValidationException.withInvalidFields(InvalidField("dataQualityInfo.lineage.source.descriptions", "INTERNAL_REFERENCES_MUST_BE_PUBLISHED"))
+        if (!allCoupledResourcesPublished) throw ValidationException.withInvalidFields(listOf(InvalidField("dataQualityInfo.lineage.source.descriptions", "INTERNAL_REFERENCES_MUST_BE_PUBLISHED")))
     }
 }

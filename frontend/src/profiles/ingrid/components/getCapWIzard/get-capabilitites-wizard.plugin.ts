@@ -36,6 +36,7 @@ import { Plugin } from "../../../../app/+catalog/+behaviours/plugin";
 import { PluginService } from "../../../../app/services/plugin/plugin.service";
 import { DocumentAbstract } from "../../../../app/store/document/document.model";
 import { TreeStore } from "../../../../app/store/tree/tree.store";
+import { trimObjectAndRemoveEvilTags } from "../../../../app/shared/utils";
 
 @Injectable({
   providedIn: "root",
@@ -67,7 +68,11 @@ export class GetCapabilititesWizardPlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(async () => {
-      if (!this.formRegistered() || this.configService.hasWriteRootPermission())
+      if (
+        !this.isActive() ||
+        !this.formRegistered() ||
+        this.configService.hasWriteRootPermission()
+      )
         return;
 
       const activeNodes = this.generalStore.activeTreeNodes();
@@ -143,7 +148,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
     this.documentService
       .save(
         SaveOptions.createNewDocument(
-          model,
+          trimObjectAndRemoveEvilTags(model),
           "InGridGeoService",
           parentFolder,
           false,
@@ -168,7 +173,7 @@ export class GetCapabilititesWizardPlugin extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       this.formToolbarService.removeButton(this.buttonId);
     }
   }

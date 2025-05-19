@@ -64,6 +64,15 @@ export class ArchivePlugin extends Plugin {
           },
         },
         {
+          key: "hideForMdAdmins",
+          type: "checkbox",
+          wrappers: [],
+          defaultValue: false,
+          props: {
+            label: "Für Metadaten-Administratoren nicht anzeigen",
+          },
+        },
+        {
           key: "showInPortal",
           type: "checkbox",
           wrappers: [],
@@ -78,7 +87,7 @@ export class ArchivePlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      if (!this.formRegistered) return;
+      if (!this.isActive() || !this.formRegistered()) return;
       const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.formToolbarService.setButtonState(
         "toolBtnArchive",
@@ -99,6 +108,7 @@ export class ArchivePlugin extends Plugin {
     super.registerForm();
 
     if (this.data.hideForAuthors && this.configService.isAuthor()) return;
+    if (this.data.hideForMdAdmins && this.configService.isMdAdmin()) return;
 
     this.formToolbarService.addButton({
       id: "toolBtnArchive",

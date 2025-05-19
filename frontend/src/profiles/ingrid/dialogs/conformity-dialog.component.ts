@@ -177,11 +177,13 @@ export class ConformityDialogComponent implements OnInit {
     const isObject = value.specification instanceof Object;
     this.dlgRef.close({
       specification: new SelectOption(
-        value.specification.value,
+        value.specification.value ?? null,
         // @ts-ignore
         isObject ? value.specification.label : value.specification,
-      ).forBackend(),
-      pass: new SelectOption(value.pass.value, value.pass.value).forBackend(),
+      ).forBackend(value.isInspire ? "6005" : "6006"),
+      pass: new SelectOption(value.pass.value, value.pass.label).forBackend(
+        "6000",
+      ),
       publicationDate: value.date,
       explanation: value.verifiedBy,
       isInspire: value.isInspire,

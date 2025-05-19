@@ -40,7 +40,7 @@
               "type": "null"
             },
             {
-              "$ref": "#/definitions/KeyValue"
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
             }
           ]
         },
@@ -63,7 +63,7 @@
         "DCATThemes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/KeyValue"
+            "$ref": "../../general.schema.json#/definitions/KeyValue"
           },
           "minItems": 1
         },
@@ -77,7 +77,7 @@
               "type": "null"
             },
             {
-              "$ref": "#/definitions/KeyValue"
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
             }
           ]
         },
@@ -111,7 +111,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/KeyValue"
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
         }
       },
       "required": ["ref", "type"],
@@ -136,12 +136,12 @@
               "type": "null"
             },
             {
-              "$ref": "#/definitions/KeyValue"
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
             }
           ]
         },
         "license": {
-          "$ref": "#/definitions/KeyValue"
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
         },
         "byClause": {
           "type": ["string", "null"]
@@ -155,14 +155,14 @@
               "type": "null"
             },
             {
-              "$ref": "#/definitions/KeyValue"
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
             }
           ]
         },
         "languages": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/KeyValue"
+            "$ref": "../../general.schema.json#/definitions/KeyValue"
           }
         }
       },
@@ -198,7 +198,7 @@
           "format": "date-time"
         },
         "text": {
-          "$ref": "#/definitions/KeyValue"
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
         }
       },
       "required": ["date", "text"],
@@ -267,7 +267,7 @@
                   "type": "null"
                 },
                 {
-                  "$ref": "#/definitions/KeyValue"
+                  "$ref": "../../general.schema.json#/definitions/KeyValue"
                 }
               ]
             },
@@ -287,7 +287,7 @@
                   "type": "null"
                 },
                 {
-                  "$ref": "#/definitions/KeyValue"
+                  "$ref": "../../general.schema.json#/definitions/KeyValue"
                 }
               ]
             },
@@ -314,19 +314,6 @@
       ],
       "required": ["rangeType"],
       "title": "Temporal"
-    },
-    "KeyValue": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "key": {
-          "type": ["string", "null"]
-        },
-        "value": {
-          "type": ["string", "null"]
-        }
-      },
-      "title": "KeyValue"
     },
     "Range": {
       "type": "object",
