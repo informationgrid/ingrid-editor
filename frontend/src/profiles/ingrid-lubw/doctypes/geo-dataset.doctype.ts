@@ -67,7 +67,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.addOACFieldConfig(fieldConfig);
-    this.addEnvironmentDescriptionFieldConfig(fieldConfig);
+    // this.addEnvironmentDescriptionFieldConfig(fieldConfig);
 
     const position = this.findFieldElementWithId(fieldConfig, "pointOfContact");
 
