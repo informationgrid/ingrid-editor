@@ -306,10 +306,10 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
   ) {
     if (!isNew) {
       if (
-        (item[field].key !== null &&
-          item[field].key === allData[currentIndex][field]?.key) ||
-        (item[field].value !== null &&
-          item[field].value === allData[currentIndex][field]?.value)
+        (item[field]?.key !== null &&
+          item[field]?.key === allData[currentIndex][field]?.key) ||
+        (item[field]?.value !== null &&
+          item[field]?.value === allData[currentIndex][field]?.value)
       ) {
         allData.splice(currentIndex, 1, item);
         return;
