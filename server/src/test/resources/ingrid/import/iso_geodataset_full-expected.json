@@ -385,6 +385,13 @@
               "dateType": { "key": "1" },
               "uuidRef": "00000000-0000-0000-0000-000000000000",
               "_type": "internalDataOrigin"
+            },
+            {
+              "value": "Beschreibung der Datengrundlage eines Geodatensatzes",
+              "date": "2024-11-18",
+              "dateType": { "key": "1" },
+              "uuidRef": "00000000-0000-0000-0000-000000000000",
+              "_type": "internalDataOrigin"
             }
           ],
           "processStep": {

@@ -241,6 +241,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
         data.dataQualityInfo?.lineage?.source?.processStep?.description?.map { codelists.getValue("", it) }
             ?: emptyList()
 
+    // TODO: class LineageSourceDescription is defined 3 times! Refactor to use model from Importer?
     data class LineageSourceDescription(
         val value: String,
         val title: String?,
