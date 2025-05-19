@@ -153,10 +153,10 @@ export class GeoServiceDoctype extends IngridShared {
             ),
           ]),
           this.addRepeat("operations", "Operationen", {
-              expressions: {
-                "props.required": (field: FormlyFieldConfig) =>
-                  !field.options.formState.mainModel?.service?.isAtomDownload,
-              },
+            expressions: {
+              "props.required": (field: FormlyFieldConfig) =>
+                !field.options.formState.mainModel?.service?.isAtomDownload,
+            },
             fields: [
               this.addAutoCompleteInline("name", "Name", {
                 required: true,
