@@ -79,9 +79,10 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     val identifier = it.liSource?.sourceCitation?.citation?.identifier?.getOrNull(0)?.mdIdentifier?.code?.value
 
                     fun getGeoDatasetUuid(): String? {
+                        val idOfIdentifier = identifier?.substringAfterLast("/")
                         val response = isoData.researchService.query(
                             catalogId,
-                            ResearchQuery(null, BoolFilter("AND", listOf("document_wrapper.type = 'InGridGeoDataset'", "deleted = 0", "state = 'PUBLISHED'", "data ->> 'identifier' = '$identifier'"), null, null, false)),
+                            ResearchQuery(null, BoolFilter("AND", listOf("document_wrapper.type = 'InGridGeoDataset'", "deleted = 0", "state = 'PUBLISHED'", "data ->> 'identifier' IN ('$identifier', '$idOfIdentifier')"), null, null, false)),
                         )
                         return if (response.totalHits == 1) response.hits[0].uuid else null
                     }
@@ -92,7 +93,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     }
                     LineageSourceDescription(
                         value = it.liSource?.description?.value,
-                        date = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.date?.date,
+                        date = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.date?.getBestDate(),
                         dateType = dateType,
                         title = if (internalGeoDatasetUuid == null) it.liSource?.sourceCitation?.citation?.title?.value else null,
                         identifier = if (internalGeoDatasetUuid == null) identifier else null,
