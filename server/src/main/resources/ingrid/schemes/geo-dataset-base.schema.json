@@ -143,35 +143,30 @@
                 "type": "string"
               },
               "uuidRef": {
-                "type": [
-                  "null",
-                  "string"
-                ]
+                "type": ["null", "string"]
               },
               "url": {
-                "type": [
-                  "null",
-                  "string"
-                ]
+                "type": ["null", "string"]
               },
               "identifier": {
-                "type": [
-                  "null",
-                  "string"
-                ]
+                "type": ["null", "string"]
               },
               "title": {
-                "type": [
-                  "null",
-                  "string"
-                ]
+                "type": ["null", "string"]
               },
               "date": {
                 "type": ["null", "string"],
                 "format": "date-time"
               },
               "dateType": {
-                "$ref": "../../general.schema.json#/definitions/KeyValue"
+                "anyOf": [
+                  {
+                    "$ref": "../../general.schema.json#/definitions/KeyValue"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             }
           }
