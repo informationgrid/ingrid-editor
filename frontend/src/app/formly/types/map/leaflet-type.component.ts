@@ -99,7 +99,7 @@ export class LeafletTypeComponent
         distinctUntilChanged(),
         tap((value: SpatialLocation[]) => (this.locations = value || [])),
       )
-      .subscribe(() => this.updateBoundingBox());
+      .subscribe(() => this.updateBoundingBoxCatchingErrors());
 
     try {
       const options: MapOptions = this.props.mapOptions;
@@ -116,21 +116,20 @@ export class LeafletTypeComponent
 
       this.locations = this.formControl.value || [];
       // delay update to prevent template error because of 'hasAnyLocations' update
-      setTimeout(() => {
-        try {
-          this.updateBoundingBox();
-        } catch (e) {
-          console.warn(
-            "Failed to update bounding box. map already unloaded?",
-            e,
-          );
-        }
-      });
+      setTimeout(() => this.updateBoundingBoxCatchingErrors());
     } catch (e) {
       console.error("Problem initializing the map component.", e);
       this.updateLocations([]);
       this.formControl.setValue([]);
       throw Error("Problem initializing the map component: " + e.message);
+    }
+  }
+
+  private updateBoundingBoxCatchingErrors() {
+    try {
+      this.updateBoundingBox();
+    } catch (e) {
+      console.warn("Failed to update bounding box. map already unloaded?", e);
     }
   }
 
