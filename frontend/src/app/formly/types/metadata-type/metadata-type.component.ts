@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import {
   FieldTypeConfig,
@@ -104,7 +111,7 @@ export interface MetadataOptionItem {
 })
 export class MetadataTypeComponent
   extends FieldType<FieldTypeConfig<MetadataProps>>
-  implements OnInit
+  implements OnInit, OnDestroy
 {
   private contextHelpService = inject(ContextHelpService);
   private formStateService = inject(FormStateService);
@@ -161,6 +168,11 @@ export class MetadataTypeComponent
         return null;
       },
     );
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+    this.formControl?.clearValidators();
   }
 
   private hasValue(data: any) {
