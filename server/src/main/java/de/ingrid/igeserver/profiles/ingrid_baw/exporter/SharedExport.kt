@@ -22,11 +22,27 @@ package de.ingrid.igeserver.profiles.ingrid_baw.exporter
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTransformerBaw
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.PublicationModelTransformerBaw
 import kotlin.reflect.KClass
 
 fun getBawModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
     "InGridGeoDataset" -> GeodatasetTransformerBaw::class
+    "BawMeasurement" -> GeodatasetTransformerBaw::class
+    "BawSimulation" -> GeodatasetTransformerBaw::class
     "InGridGeoService" -> GeoserviceTransformerBaw::class
+    "BawPublication" -> PublicationModelTransformerBaw::class
     "PublicationAddressDoc" -> AddressModelTransformer::class
+    else -> null
+}
+
+fun getBawTemplateForDocType(docType: String): String? = when (docType) {
+    "InGridGeoDataset" -> "export/ingrid-baw/idf-geodataset-baw.jte"
+    "BawMeasurement" -> "export/ingrid-baw/idf-geodataset-baw.jte"
+    "BawSimulation" -> "export/ingrid-baw/idf-geodataset-baw.jte"
+//    "BawPublication" -> "export/ingrid/idf/idf-publication.jte"
+    "BawPublication" -> "export/ingrid/idf/idf-publication.jte"
+    "PublicationAddressDoc" -> "export/ingrid/idf/idf-address.jte"
+//    "InGridGeoService" -> "export/ingrid-baw/idf-geodataservice-baw.jte"
+//    "InGridSoftware" -> "export/ingrid-baw/idf-software-baw.jte"
     else -> null
 }

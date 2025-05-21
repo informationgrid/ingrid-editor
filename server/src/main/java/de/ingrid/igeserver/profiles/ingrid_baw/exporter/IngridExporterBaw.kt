@@ -91,10 +91,7 @@ class IngridIdfExporterBaw(
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getBawModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
 
-    override fun getTemplateForDoctype(type: String): String {
-        if (type == "PublicationAddressDoc") return "export/ingrid/idf/idf-address.jte"
-        return super.getTemplateForDoctype(type)
-    }
+    override fun getTemplateForDoctype(type: String): String = getBawTemplateForDocType(type) ?: super.getTemplateForDoctype(type)
 
     override fun isAddress(json: Document): Boolean = json.type == "PublicationAddressDoc" || super.isAddress(json)
 }
@@ -139,14 +136,19 @@ class IngridLuceneExporterBaw(
         doc: Document,
         catalog: Catalog,
         options: ExportOptions,
-    ): Pair<String, Map<String, Any>> {
-        if (doc.type == "PublicationAddressDoc") {
-            return Pair(
-                "export/ingrid/lucene/template-lucene-address.jte",
-                getMapper(IngridDocType.ADDRESS, doc, catalog, options),
-            )
-        }
-        return super.getTemplateForDoctype(doc, catalog, options)
+    ): Pair<String, Map<String, Any>> = when (doc.type) {
+        "PublicationAddressDoc" -> Pair(
+            "export/ingrid/lucene/template-lucene-address.jte",
+            getMapper(IngridDocType.ADDRESS, doc, catalog, options),
+        )
+        "BawMeasurement",
+        "BawSimulation",
+        "BawPublication",
+        -> Pair(
+            "export/ingrid/lucene/template-lucene.jte",
+            getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
+        )
+        else -> super.getTemplateForDoctype(doc, catalog, options)
     }
 }
 

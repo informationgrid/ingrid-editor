@@ -30,7 +30,7 @@ export class GeoDatasetDoctypeBaw extends GeoDatasetDoctype {
 
   showAdVCompatible = false;
   showAdVProductGroup = false;
-  showDataQualitySection = false;
+  showHVD = false;
 
   constructor() {
     super();

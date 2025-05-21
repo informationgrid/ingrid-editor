@@ -116,6 +116,7 @@ data class VectorSpatialRepresentation(
     val geometricObjectCount: Int?,
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class Publication(
     val isbn: String?,
     val pages: String?,

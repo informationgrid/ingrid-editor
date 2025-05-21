@@ -321,31 +321,26 @@ open class IngridModelTransformer(
 
     open fun getGeometryContexts(): List<GeometryContext> = emptyList()
 
-    val spatialSystems = data.spatial.spatialSystems?.map {
-        val referenceSystem =
-            codelists.getValue("100", it) ?: throw ServerException.withReason("Unknown reference system")
+    open val spatialSystems = data.spatial.spatialSystems?.map { mapToCharacterStringModel("100", it) } ?: emptyList()
+
+    protected fun mapToCharacterStringModel(codelistKey: String, referenceSystemEntry: KeyValue?): CharacterStringModel {
+        val referenceSystem = codelists.getValue(codelistKey, referenceSystemEntry)
+            ?: throw ServerException.withReason("Unknown reference system: $referenceSystemEntry for codelist $codelistKey")
         val epsgLink = when {
-            // string like "EPSG:25832"
             referenceSystem.startsWith("EPSG:") -> "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5)}"
-            // string like "EPSG 3857: WGS 84 / Pseudo-Mercator"
             referenceSystem.startsWith("EPSG") -> {
                 val endIndex = referenceSystem.indexOf(":")
                 if (endIndex > 0) {
-                    "http://www.opengis.net/def/crs/EPSG/0/${
-                        referenceSystem.substring(
-                            5,
-                            endIndex,
-                        )
-                    }"
+                    "http://www.opengis.net/def/crs/EPSG/0/${referenceSystem.substring(5, endIndex)}"
                 } else {
                     null
                 }
             }
-            // could not match string
             else -> null
         }
-        CharacterStringModel(referenceSystem, epsgLink)
-    } ?: emptyList()
+        return CharacterStringModel(referenceSystem, epsgLink)
+    }
+
     open val description = data.description
     val advProductGroups = data.advProductGroups?.mapNotNull { codelists.getValue("8010", it) } ?: emptyList()
     val alternateTitle = data.alternateTitle
@@ -547,7 +542,7 @@ open class IngridModelTransformer(
 
     val contentField: MutableList<String> = mutableListOf()
 
-    private fun mapDocumentType(type: String): String = when (type) {
+    protected open fun mapDocumentType(type: String): String = when (type) {
         "InGridSpecialisedTask" -> "0"
         "InGridGeoDataset" -> "1"
         "InGridPublication" -> "2"

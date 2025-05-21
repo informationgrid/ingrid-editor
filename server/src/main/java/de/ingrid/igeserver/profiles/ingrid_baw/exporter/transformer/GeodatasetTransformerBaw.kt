@@ -21,5 +21,24 @@ package de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer
 
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.utils.getPath
+import de.ingrid.igeserver.utils.mapToKeyValue
 
-class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig)
+class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
+
+    override fun mapDocumentType(type: String): String = when (type) {
+        "BawMeasurement",
+        "BawSimulation",
+        -> "1" // InGridGeoDataset
+        else -> super.mapDocumentType(type)
+    }
+
+    override val spatialSystems = super.spatialSystems + (
+        (doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }?.map {
+            mapToCharacterStringModel(
+                "verticalCoordinateReferenceSystem",
+                it,
+            )
+        } ?: emptyList()
+        )
+}

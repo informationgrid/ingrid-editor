@@ -33,6 +33,8 @@ export class ProjectDoctype extends IngridShared {
 
   hasOptionalFields = true;
 
+  showManager = true;
+
   constructor() {
     super();
     this.options.hide.openData = true;
@@ -51,9 +53,11 @@ export class ProjectDoctype extends IngridShared {
           this.addTextArea("participants", "Beteiligte", this.id, {
             className: "optional flex-1",
           }),
-          this.addTextArea("manager", "Projektleiter", this.id, {
-            className: "optional flex-1",
-          }),
+          this.showManager
+            ? this.addTextArea("manager", "Projektleiter", this.id, {
+                className: "optional flex-1",
+              })
+            : null,
           this.addTextArea("explanation", "Erläuterungen", this.id, {
             className: "optional flex-1",
           }),

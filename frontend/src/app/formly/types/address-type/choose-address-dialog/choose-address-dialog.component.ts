@@ -153,7 +153,6 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     );
     this.preselectIfOnlyOneType(this.allowedReferenceTypes);
     this.typeSelectionEnabled.set(this.allowedReferenceTypes.length > 1);
-    this.cdr.markForCheck();
   }
 
   private prepareReferenceTypes(result: SelectOptionUi[]): DocumentAbstract[] {

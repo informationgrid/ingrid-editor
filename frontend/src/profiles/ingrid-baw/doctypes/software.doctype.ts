@@ -241,7 +241,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
     );
   }
   getBibliothekenFieldConfig(): FormlyFieldConfig {
-    return this.addTextArea("libraries", "Bibliothek", this.id);
+    return this.addRepeatList("libraries", "Bibliothek(en)");
   }
 
   hasServerInstallation = (field: FormlyFieldConfig) =>

@@ -28,6 +28,8 @@ import { ProjectDoctype } from "../../ingrid/doctypes/project.doctype";
 export class ProjectDoctypeBaw extends ProjectDoctype {
   common = inject(CommonFieldsBaw);
 
+  showManager = false;
+
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedFields(this, fieldConfig);
     const parentIdentifierPosition = this.findFieldElementWithId(

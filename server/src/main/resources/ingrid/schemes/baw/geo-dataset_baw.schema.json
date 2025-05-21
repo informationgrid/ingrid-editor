@@ -25,5 +25,5 @@
       "type": ["null", "string"]
     }
   },
-  "unevaluatedProperties": false
+  "unevaluatedProperties": true
 }

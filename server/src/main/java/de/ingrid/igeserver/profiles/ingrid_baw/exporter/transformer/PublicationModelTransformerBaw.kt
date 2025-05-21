@@ -19,12 +19,20 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer
 
-import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.PublicationModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.mapToKeyValue
 
-class GeoserviceTransformerBaw(transformerConfig: TransformerConfig) : GeodataserviceModelTransformer(transformerConfig) {
+open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) : PublicationModelTransformer(transformerConfig) {
+
+    override val hierarchyLevelName = "document"
+
+    override fun mapDocumentType(type: String): String = when (type) {
+        "BawPublication" -> "2" // InGridPublication
+        else -> super.mapDocumentType(type)
+    }
+
     override val spatialSystems = super.spatialSystems + (
         (doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }?.map {
             mapToCharacterStringModel(

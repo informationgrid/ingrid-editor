@@ -3,7 +3,9 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.Citation
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 @import java.util.Map
+@import gg.jte.Content
 
+@param Content extraContent = null
 @param Map<String, Object> map
 
 !{var page = ((GeodatasetModelTransformer)map.get("model"));}
@@ -91,5 +93,6 @@
     @for (Reference ref : page.getReferencesWithUuidRefs())
         <gmd:portrayalCatalogueInfo uuidref="${ref.getUuidRef()}"></gmd:portrayalCatalogueInfo>
     @endfor
+    ${extraContent}
 
 `, abstract_text = page.getDescription())
