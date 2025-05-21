@@ -62,6 +62,7 @@ export class PublicationDoctypeBaw extends IngridShared {
       this.addKeywordsSection(),
       this.addSection("Fachbezug", [
         this.addGroupSimple("publication", [
+          this.showDoiFields ? this.addDoiFields() : null,
           // this.addInput("isbn", "ISBN-Nr.", {
           //   wrappers: ["panel", "form-field"],
           //   className: "optional",
