@@ -130,6 +130,43 @@
           },
           "required": [],
           "title": "Spatial"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "bwastr"
+            },
+            "title": {
+              "type": ["null", "string"]
+            },
+            "bwastr": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "bwastrid": {
+                  "type": ["null", "string"]
+                },
+                "start": {
+                  "type":["null", "number"]
+                },
+                "end": {
+                  "type": ["null", "number"]
+                }
+              },
+              "required": [],
+              "title": "Spatial"
+            },
+            "value": {
+              "type": "null"
+            },
+            "ars": {
+              "type": ["null", "string"]
+            }
+          },
+          "required": [],
+          "title": "Spatial"
         }
       ]
     },
