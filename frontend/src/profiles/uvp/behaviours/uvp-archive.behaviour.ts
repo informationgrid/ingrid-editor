@@ -88,7 +88,7 @@ export class UvpArchiveBehaviour extends Plugin {
     this.setPluginConfig();
 
     effect(() => {
-      if (!this.formRegistered()) return;
+      if (!this.isActive() || !this.formRegistered()) return;
       this.toggleUpdateArchiveButton();
     });
   }
