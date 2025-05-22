@@ -314,7 +314,7 @@
                     </gmd:MD_Identifier>
                 </gmd:identifier>
             @endif
-            @if( page.getDoi() != null )
+            @if( TransformationTools.hasValue(page.getDoi()) )
                 <gmd:identifier>
                     <gmd:MD_Identifier>
                         <gmd:authority>
