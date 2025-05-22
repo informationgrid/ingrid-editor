@@ -284,6 +284,11 @@ jte {
     generate()
 }
 
+gitProperties {
+    // define that .git directory is on the same level as the root project
+    dotGitDirectory = project.rootProject.layout.projectDirectory.dir(".git")
+}
+
 tasks.named('generateJte') {
     mustRunAfter(tasks.runKtlintCheckOverMainSourceSet)
 }
