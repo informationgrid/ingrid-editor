@@ -6,9 +6,9 @@ import java.nio.file.Paths
 
 buildscript {
     ext.kotlin_version = '2.1.0'
-    ext.spring_boot_version = '3.4.5'
+    ext.spring_boot_version = '3.4.6'
     ext.kotest_version = '5.9.1'
-    ext.jte_version = '3.1.16'
+    ext.jte_version = '3.2.1'
     ext.geotools_version = '32.2'
     ext['log4j2.version'] = '2.23.1'
 }
@@ -25,7 +25,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.4.5'
-    id "com.gorylenko.gradle-git-properties" version "2.4.2"
+    id "com.gorylenko.gradle-git-properties" version "2.5.0"
 //    id 'io.kotest' version '0.4.11'
     id "com.github.ben-manes.versions" version "0.52.0"
     id "gg.jte.gradle" version "$jte_version"
@@ -427,6 +427,6 @@ tasks.register('checkForSnapshots', {
 })
 
 ktlint {
-    version.set("1.5.0")
+    version.set("1.6.0")
 }
 
