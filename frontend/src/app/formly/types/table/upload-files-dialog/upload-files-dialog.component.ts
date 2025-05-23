@@ -69,6 +69,8 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
   docUuid = null;
   uploadComplete = false;
   allowedUploadTypes: string[];
+  options = signal<any[]>([]);
+  optionsSelection: any = {};
 
   // zip extraction
   hasExtractZipOption: boolean;
@@ -105,6 +107,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
       multiple?: boolean;
       autoSubmit?: boolean;
       targetUrl?: string;
+      options?: any[];
     },
   ) {
     this.docUuid = formStateService.metadata()?.uuid;
@@ -121,6 +124,7 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
     this.enableFileUploadOverride.set(data.enableFileUploadOverride ?? true);
     this.enableFileUploadReuse.set(data.enableFileUploadReuse ?? true);
     this.enableFileUploadRename.set(data.enableFileUploadRename ?? true);
+    this.options.set(data.options ?? []);
   }
 
   ngOnInit(): void {
@@ -208,14 +212,6 @@ export class UploadFilesDialogComponent implements OnInit, OnDestroy {
 
   private static flatten<T>(arr: T[][]): T[] {
     return ([] as T[]).concat(...arr);
-  }
-
-  private fileExistsInTable(fileId: string): boolean {
-    return (
-      this.data.currentItems.find(
-        (item) => item[this.data.uploadFieldKey].value === fileId,
-      ) !== undefined
-    );
   }
 
   private handleExtractError(error: any): Observable<any> {

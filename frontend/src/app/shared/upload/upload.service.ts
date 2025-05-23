@@ -44,11 +44,12 @@ export class UploadError {
         return "Sie haben keine Berechtigung, die Datei hochzuladen.";
     }
 
-    switch (message) {
-      case "The file already exists.":
-        return "Die Datei existiert bereits. Ein Speichern des Dokuments ist evtl. hilfreich, um verwaiste Dateien endgültig zu löschen. Alternative stehen folgende Optionen zur Verfügung:";
-      default:
-        return message;
+    if (message === "The file already exists.") {
+      return "Die Datei existiert bereits. Ein Speichern des Dokuments ist evtl. hilfreich, um verwaiste Dateien endgültig zu löschen. Alternative stehen folgende Optionen zur Verfügung:";
+    } else if (message.includes("In order to update the catalog")) {
+      return "Der Katalog existiert bereits. Wenn Sie ihn aktualisieren möchten, so müssen Sie die Option 'bestehenden Katalog aktualisieren' aktivieren.";
+    } else {
+      return message;
     }
   }
 }

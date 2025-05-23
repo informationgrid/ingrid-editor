@@ -104,12 +104,13 @@ interface CatalogApi {
     fun catalogImport(
         principal: Principal,
         @Parameter(description = "The catalog to be imported.", required = true) @RequestBody file: @Valid MultipartFile,
-        @Parameter(description = "") @RequestParam("flowChunkNumber") flowChunkNumber: Int,
-        @Parameter(description = "") @RequestParam("flowTotalChunks") flowTotalChunks: Int,
-        @Parameter(description = "") @RequestParam("flowCurrentChunkSize") flowCurrentChunkSize: Long,
-        @Parameter(description = "") @RequestParam(value = "flowTotalSize") flowTotalSize: Long,
-        @Parameter(description = "") @RequestParam("flowIdentifier") flowIdentifier: String,
-        @Parameter(description = "") @RequestParam("flowFilename") flowFilename: String,
+        @Parameter @RequestParam("flowChunkNumber") flowChunkNumber: Int,
+        @Parameter @RequestParam("flowTotalChunks") flowTotalChunks: Int,
+        @Parameter @RequestParam("flowCurrentChunkSize") flowCurrentChunkSize: Long,
+        @Parameter @RequestParam("flowTotalSize") flowTotalSize: Long,
+        @Parameter @RequestParam("flowIdentifier") flowIdentifier: String,
+        @Parameter @RequestParam("flowFilename") flowFilename: String,
+        @Parameter @RequestParam("allowUpdate") allowUpdate: Boolean = false,
     ): ResponseEntity<Unit>
 
     @PostMapping(value = ["/catalogs/export/{identifier}"], produces = ["application/zip"])
