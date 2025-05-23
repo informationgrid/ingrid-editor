@@ -1,5 +1,20 @@
 # Changelog
 
+## 7.5.2 (23.05.2025)
+
+
+### Bugfixes
+
+* Abschnitt Datengrundlage/Herkunft in Geodatensatz - Beim ISO-Import werden interne Referenzierungen nicht aufgelöst (#7740)
+* Importer liest keine HVD Kategorie (#7727)
+* Deaktivierte Verhalten werden nicht vollständig entfernt (#7695)
+* Thesaurus WFS_GNDE liefert keine Ergebnisse (#7656)
+* Versionskonflikt: "Trotzdem Speichern..."-Option feuert immer wieder den Versionskonflikt-Dialog (#7653)
+* Fehler bei Verknüpfung eines Geodatensatzes in Datengrundlage (#7560)
+* Archivierung kann zu fehlerhaften Verfahren führen (#7541)
+* Abbrechen des Dialogs für InVeKoS setzt alle Merkmale zurück (#7536)
+* IGE: Verhalten für Feld "Art des Dienstes" für AtomFeeds anpassen (#7510)
+    
 ## 7.5.1 (31.03.2025)
 
 ### Features
