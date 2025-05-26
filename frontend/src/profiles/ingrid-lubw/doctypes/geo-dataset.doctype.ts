@@ -206,7 +206,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
               required: true,
               formatter: (item: any) =>
                 // this.formatCodelistValue("30004", item),
-                item.key,
+                item.key ?? "???",
             },
           },
         ],
@@ -273,7 +273,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
               required: true,
               formatter: (item: any) =>
                 // this.formatCodelistValue("30004", item),
-                item.key,
+                item.key ?? "???",
             },
           },
         ],
