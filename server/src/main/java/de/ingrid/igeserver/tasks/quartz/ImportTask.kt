@@ -33,13 +33,12 @@ import de.ingrid.igeserver.persistence.filter.publish.JsonErrorEntry
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.FileUploadHandler
 import de.ingrid.igeserver.utils.setAdminAuthentication
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
 import org.quartz.PersistJobDataAfterExecution
 import org.springframework.stereotype.Component
-import java.nio.file.Files
-import java.nio.file.Path
 import java.util.*
 
 @Component
@@ -49,6 +48,7 @@ class ImportTask(
     val importService: ImportService,
     val documentService: DocumentService,
     val catalogService: CatalogService,
+    val fileUploadHandler: FileUploadHandler,
 ) : IgeJob() {
 
     override val log = logger()
@@ -86,7 +86,7 @@ class ImportTask(
                         }
                         .also {
                             System.gc()
-                            Files.delete(Path.of(info.importFile))
+                            fileUploadHandler.cleanup(info.flowIdentifier!!)
                         }
                 }
 
@@ -174,12 +174,13 @@ class ImportTask(
             val profile = getString("profile")
             val catalogId: String = getString("catalogId")
             val importFile: String? = getString("importFile")
+            val flowIdentifier: String? = getString("flowIdentifier")
             val infos: MutableList<String> =
                 getString("infos")?.let { jacksonObjectMapper().readValue(it) } ?: mutableListOf()
             val report: OptimizedImportAnalysis? = getString("report")?.let { jacksonObjectMapper().readValue(it) }
             val options: ImportOptions? = getString("options")?.let { jacksonObjectMapper().readValue(it) }
 
-            return JobInfo(startTime, profile, catalogId, importFile, report, options, infos)
+            return JobInfo(startTime, profile, catalogId, importFile, report, options, infos, flowIdentifier)
         }
     }
 
@@ -191,5 +192,6 @@ class ImportTask(
         val analysis: OptimizedImportAnalysis?,
         val options: ImportOptions?,
         val infos: MutableList<String>,
+        val flowIdentifier: String?,
     )
 }
