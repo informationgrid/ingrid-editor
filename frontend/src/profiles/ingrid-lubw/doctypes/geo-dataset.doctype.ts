@@ -84,6 +84,11 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
         codelistId: "30000",
         options: this.getCodelistForSelect("30000", "dataManagement"),
       }),
+      this.addTextArea(
+        "dataManagementAndCopyrightNotes",
+        "Hinweise zu Datenführung und Urheberschaft",
+        this.id,
+      ),
     ]);
 
     const positionAccessConstraints = this.findFieldElementWithId(
