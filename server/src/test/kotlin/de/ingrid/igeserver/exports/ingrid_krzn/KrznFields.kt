@@ -88,5 +88,47 @@ class KrznFields : GeodatasetBase() {
                 <idf:mapUrl>https://www.my-map-link.com/maps?mid=7abc5862-a893-4a70-8d83-23cf5a2dd264&amp;MAPS={%22center%22:[11111,22222],%22zoom%22:9}</idf:mapUrl>
             """.trimIndent()
         }
+
+        should("export interal reference into ISO (#7026)") {
+            val context = jacksonObjectMapper()
+                .readTree(
+                    """{
+                    "references": [
+                        {
+                          "type": {
+                            "key": "5302",
+                            "value": "Information",
+                            "_codelistId": "2000"
+                          },
+                          "title": "Mein interner Verweis",
+                          "referenceType": "uuidRef",
+                          "uuidRef": "c8f58c26-660c-4023-a023-7331ecccc1cd"
+                        }
+                      ]
+                    }
+                    """.trimIndent(),
+                ) as ObjectNode
+
+            val result = exportJsonToXML(exporter, docSample, context)
+            result shouldContain """
+                    <gmd:transferOptions>
+                        <gmd:MD_DigitalTransferOptions>
+                            <gmd:onLine>
+                                <idf:idfOnlineResource>
+                                    <gmd:linkage>
+                                        <gmd:URL>https://my.external.url/trefferanzeige?docuuid=c8f58c26-660c-4023-a023-7331ecccc1cd</gmd:URL>
+                                    </gmd:linkage>
+                                    <gmd:name>
+                                        <gco:CharacterString>Mein interner Verweis</gco:CharacterString>
+                                    </gmd:name>
+                                    <gmd:function>
+                                        <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
+                                    </gmd:function>
+                                </idf:idfOnlineResource>
+                            </gmd:onLine>
+                        </gmd:MD_DigitalTransferOptions>
+                    </gmd:transferOptions>
+            """
+        }
     }
 }
