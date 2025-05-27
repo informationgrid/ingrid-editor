@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service
 
 data class IgeJsonPatch(
     val uuid: String,
+    // type is needed in case a new dataset needs to be created
     val type: String,
     val jsonPatch: JsonPatch?,
     val jsonMerge: JsonMergePatch?,
