@@ -1,5 +1,12 @@
 # Changelog
 
+## 7.5.3 (31.05.2025)
+
+
+### Bugfixes
+
+* Fehler beim Zabbix-Job (#7513)
+    
 ## 7.5.2 (23.05.2025)
 
 
