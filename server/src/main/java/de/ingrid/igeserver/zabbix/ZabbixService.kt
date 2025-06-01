@@ -57,7 +57,7 @@ class ZabbixService(
         val remoteUploads = result.map { getUpload(it) }.toMutableList()
 
         val documentsToAdd = mutableListOf<ZabbixModel.Upload>()
-        val documentsToDelete = remoteUploads
+        val documentsToDelete = remoteUploads.toMutableList()
 
         data.uploads.forEach { upload ->
             remoteUploads
