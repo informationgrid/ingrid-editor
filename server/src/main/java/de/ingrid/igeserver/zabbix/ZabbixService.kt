@@ -62,7 +62,10 @@ class ZabbixService(
         data.uploads.forEach { upload ->
             remoteUploads
                 .find { upload.url == it.url }
-                ?.let { documentsToDelete.remove(it) } ?: documentsToAdd.add(upload)
+                ?.let { documentsToDelete.remove(it) }
+                ?: documentsToAdd.add(upload).also {
+                    log.debug("Remote document not found: ${upload.url} in $remoteUploads")
+                }
         }
 
         log.debug("Delete documents: $documentsToDelete")
