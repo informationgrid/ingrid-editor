@@ -59,6 +59,7 @@ class SchedulerService(factory: SchedulerFactoryBean) {
             .usingJobData(jobDataMap)
             .withPriority(jobPriority)
             .withIdentity(triggerKey)
+            .startNow()
             .build()
 
         log.debug("Scheduling job $jobKey")
