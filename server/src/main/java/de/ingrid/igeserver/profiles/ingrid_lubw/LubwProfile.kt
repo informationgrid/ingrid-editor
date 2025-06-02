@@ -32,8 +32,11 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.CodelistHandler.Companion.toCodelistEntry
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.Permissions
+import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Lazy
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
 @Service
@@ -47,6 +50,7 @@ class LubwProfile(
     isoImport: ISOImport,
     isoImportLUBW: ISOImportLUBW,
     openDataCategory: OpenDataCategory,
+    private val authUtils: AuthUtils,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -120,6 +124,12 @@ class LubwProfile(
             }
         }
         super.initCatalogCodelists(catalogId, codelistId)
+    }
+
+    override fun profileSpecificPermissions(permissions: List<String>, principal: Authentication): List<String> = if (authUtils.isAuthor(principal)) {
+        permissions.filter { it != Permissions.can_create_dataset.name && it != Permissions.can_import.name && it != Permissions.can_create_address.name }
+    } else {
+        permissions
     }
 
     private fun createCodelist30000(catalogRef: Catalog): Codelist = Codelist().apply {
