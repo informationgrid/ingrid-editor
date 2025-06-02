@@ -216,7 +216,7 @@
                                     [class]="column.class"
                                 >
                                     {{ column.label }}
-                                    @if (column.props.required) {
+                                    @if (column.props?.required) {
                                         <span>*</span>
                                     }
                                 </th>
