@@ -449,6 +449,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
       "format",
       "digitalTransferOptions",
       "orderInfo",
+      "oac",
     ].forEach((field) => {
       if (field instanceof Array) {
         this.hideField(
