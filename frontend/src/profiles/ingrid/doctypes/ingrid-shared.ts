@@ -1234,6 +1234,7 @@ export abstract class IngridShared extends BaseDoctype {
                   key: "specification",
                   type: "ige-select",
                   label: "Spezifikation",
+                  class: "", // prevent compact column to use max available space
                   props: {
                     required: true,
                     label: "Spezifikation",
