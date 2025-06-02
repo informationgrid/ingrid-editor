@@ -23,7 +23,12 @@ import { ConfigService } from "./config/config.service";
 import { UiStore } from "../store/ui.store";
 
 // the values must match with the actual route!
-export type TabPage = "research" | "manage" | "importExport" | "catalogs";
+export type TabPage =
+  | "research"
+  | "manage"
+  | "importExport"
+  | "catalogs"
+  | "reports";
 
 export interface Tab {
   label: string;
