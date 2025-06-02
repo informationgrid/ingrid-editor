@@ -248,7 +248,12 @@
     ],
     "t017_url_ref.special_ref": [
     @for(var entry : ForSupport.of(page.getReferencesWithCoupledServicesAndFileReferences()))
-        "${entry.get().getType().getKey()}"@if (!entry.isLast()),@endif
+        @if(entry.get().getType().getKey() != null)
+            "${entry.get().getType().getKey()}"
+        @else
+            ""
+        @endif
+        @if (!entry.isLast()),@endif
     @endfor
     ],
     "t017_url_ref.datatype": [

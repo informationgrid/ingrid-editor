@@ -727,12 +727,12 @@ open class IngridModelTransformer(
                 KeyValue(codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de"), null)
             it
         } +
-            getCoupledServicesForGeodataset.map {
+            getCoupledServiceCapabilitiesUrls().map {
                 Reference(
-                    it.objectName,
-                    it.refType,
+                    it.name,
+                    KeyValue(null, null),
                     it.description,
-                    it.serviceUrl,
+                    it.url,
                     null,
                     null,
                 )
@@ -908,18 +908,18 @@ open class IngridModelTransformer(
 
     open fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy(true)
 
-    private fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
+    private fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceCapabilitiesUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
 
     fun getSubordinateReferences() = getIncomingReferencesProxy().filter { it.isSubordinate }
 
-    private fun getCoupledServiceUrls(): List<ServiceUrl> {
+    private fun getCoupledServiceCapabilitiesUrls(): List<ServiceUrl> {
         if (model.type != "InGridGeoDataset") return emptyList()
 
         return getIncomingReferencesProxy(true)
             .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities" }
             .map {
                 ServiceUrl(
-                    it.objectName,
+                    "Dienst \"${it.objectName}\" (GetCapabilities)",
                     it.serviceUrl ?: throw ServerException.withReason("Service URL is NULL"),
                     null,
                     serviceType = it.serviceType,
@@ -1013,8 +1013,7 @@ open class IngridModelTransformer(
             ?: if (refTrans.data.getString("parentIdentifier") == this.doc.uuid) {
                 KeyValue(null, null)
             } else {
-                null
-                    ?: getRefTypeFromIncomingReference(refTrans.data)
+                getRefTypeFromIncomingReference(refTrans.data)
                     ?: throw ServerException.withReason("Could not find reference type for '${this.doc.uuid}' in '$uuid'.")
             }
 
@@ -1084,7 +1083,7 @@ open class IngridModelTransformer(
                     ?: throw ServerException.withReason("Preview image 'value'-property is NULL"),
                 json.getString("fileName.uri")
                     ?: throw ServerException.withReason("Preview image 'uri'-property is NULL"),
-                json.getDouble("fileName.sizeInBytes") ?: null,
+                json.getDouble("fileName.sizeInBytes"),
             ),
             json.getString("fieldDescription"),
         )

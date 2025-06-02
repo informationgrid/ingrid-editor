@@ -39,6 +39,7 @@ import de.ingrid.igeserver.tasks.quartz.ImportTask
 import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.tasks.quartz.UrlRequestService
 import de.ingrid.igeserver.utils.AuthUtils
+import de.ingrid.igeserver.utils.FileUploadHandler
 import de.ingrid.igeserver.utils.ReferenceHandlerFactory
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
@@ -49,6 +50,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import java.nio.file.Path
 import java.security.Principal
 import kotlin.io.path.absolutePathString
 
@@ -119,6 +121,9 @@ class JobsApiController(
         return ResponseEntity.ok().build()
     }
 
+    @Autowired
+    private lateinit var fileUploadHandler: FileUploadHandler
+
     override fun importAnalyzeTask(
         principal: Principal,
         file: MultipartFile,
@@ -128,19 +133,66 @@ class JobsApiController(
         val profile = catalogService.getProfileFromCatalog(catalogId).identifier
         val jobKey = JobKey.jobKey(ImportService.JOB_KEY, catalogId)
 
-        val tempFile = kotlin.io.path.createTempFile("import-", "-${file.originalFilename}")
-        log.info("Save uploaded file to '${tempFile.absolutePathString()}'")
-        file.transferTo(tempFile)
+        // Check if this is a chunked upload from flowjs
+        val request =
+            org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes() as org.springframework.web.context.request.ServletRequestAttributes
+        val flowChunkNumber = request.request.getParameter("flowChunkNumber")?.toIntOrNull() ?: 1
+        val flowTotalChunks = request.request.getParameter("flowTotalChunks")?.toIntOrNull() ?: 1
+        val flowIdentifier = request.request.getParameter("flowIdentifier") ?: file.originalFilename ?: "unknown"
+        val flowFilename = request.request.getParameter("flowFilename") ?: file.originalFilename ?: "unknown"
 
+        if (flowTotalChunks > 1) {
+            // This is a chunked upload, handle it with FileUploadHandler
+            log.info("Handling chunked upload: chunk $flowChunkNumber of $flowTotalChunks for file '$flowFilename'")
+
+            // Handle the chunk and get the combined file if all chunks are received
+            val combinedFile = fileUploadHandler.handleChunk(
+                file,
+                flowChunkNumber,
+                flowTotalChunks,
+                flowIdentifier,
+                flowFilename,
+            )
+
+            // Only run the scheduler when all parts of the file have been received
+            if (combinedFile != null) {
+                log.info("All chunks received. Processing file: '${combinedFile.absolutePathString()}'")
+
+                startImportAnalysisTask(profile, catalogId, combinedFile, flowIdentifier, command, jobKey)
+
+                // Clean up temporary files after scheduling the job
+//                fileUploadHandler.cleanup(flowIdentifier)
+            } else {
+                log.info("Waiting for more chunks...")
+            }
+        } else {
+            // This is a single file upload, handle it directly
+            val tempFile = kotlin.io.path.createTempFile("import-", "-${file.originalFilename}")
+            log.info("Save uploaded file to '${tempFile.absolutePathString()}'")
+            file.transferTo(tempFile)
+
+            startImportAnalysisTask(profile, catalogId, tempFile, flowIdentifier, command, jobKey)
+        }
+
+        return ResponseEntity.ok().build()
+    }
+
+    private fun startImportAnalysisTask(
+        profile: String,
+        catalogId: String,
+        combinedFile: Path,
+        flowIdentifier: String,
+        command: JobCommand,
+        jobKey: JobKey,
+    ) {
         val jobDataMap = JobDataMap().apply {
             put("profile", profile)
             put("catalogId", catalogId)
-            put("importFile", tempFile.absolutePathString())
+            put("importFile", combinedFile.absolutePathString())
+            put("flowIdentifier", flowIdentifier)
             put("report", null)
         }
         scheduler.handleJobWithCommand(command, ImportTask::class.java, jobKey, jobDataMap)
-
-        return ResponseEntity.ok().build()
     }
 
     override fun importTask(principal: Principal, command: JobCommand, options: ImportOptions): ResponseEntity<Unit> {

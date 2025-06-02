@@ -105,8 +105,8 @@
         }
 
         @if (dataSource?.data?.length > 0) {
-            <mat-table
-                class="flex-col"
+            <table
+                mat-table
                 [dataSource]="dataSource"
                 [class.edit-mode]="batchMode()"
                 [attr.data-cy]="key + '-table'"
@@ -124,46 +124,49 @@
                         @switch (column) {
                             <!-- Select Column -->
                             @case ("_select_") {
-                                <mat-header-cell
-                                    *matHeaderCellDef
-                                ></mat-header-cell>
-                                <mat-cell
+                                <th mat-header-cell *matHeaderCellDef></th>
+                                <td
+                                    mat-cell
                                     *matCellDef="let element"
-                                    class="select-controls flex align-items-center"
+                                    class="select-controls compact-column"
                                 >
-                                    <mat-icon
-                                        cdkDragHandle
-                                        (touchstart)="dragDisabled = false"
-                                        (touchend)="dragDisabled = true"
-                                        (mousedown)="dragDisabled = false"
-                                        (mouseup)="dragDisabled = true"
-                                    >
-                                        drag_indicator
-                                    </mat-icon>
-                                    <mat-checkbox
-                                        (click)="$event.stopPropagation()"
-                                        (change)="
-                                            $event
-                                                ? selection.toggle(element)
-                                                : null
-                                        "
-                                        [checked]="
-                                            selection.isSelected(element)
-                                        "
-                                    >
-                                    </mat-checkbox>
-                                </mat-cell>
+                                    <div class="drag-select-wrapper">
+                                        <mat-icon
+                                            cdkDragHandle
+                                            (touchstart)="dragDisabled = false"
+                                            (touchend)="dragDisabled = true"
+                                            (mousedown)="dragDisabled = false"
+                                            (mouseup)="dragDisabled = true"
+                                        >
+                                            drag_indicator
+                                        </mat-icon>
+                                        <mat-checkbox
+                                            (click)="$event.stopPropagation()"
+                                            (change)="
+                                                $event
+                                                    ? selection.toggle(element)
+                                                    : null
+                                            "
+                                            [checked]="
+                                                selection.isSelected(element)
+                                            "
+                                        >
+                                        </mat-checkbox>
+                                    </div>
+                                </td>
                             }
                             <!-- Action Column -->
                             @case ("_actions_") {
-                                <mat-header-cell *matHeaderCellDef
-                                    >Aktion
-                                </mat-header-cell>
-                                <mat-cell
+                                <th mat-header-cell *matHeaderCellDef>
+                                    Aktion
+                                </th>
+                                <td
+                                    mat-cell
                                     *matCellDef="
                                         let element;
                                         let rowIndex = index
                                     "
+                                    class="compact-column"
                                 >
                                     <button
                                         type="button"
@@ -203,31 +206,32 @@
                                             Löschen
                                         </button>
                                     </mat-menu>
-                                </mat-cell>
+                                </td>
                             }
                             <!-- Normal column-->
                             @default {
-                                <mat-header-cell
+                                <th
+                                    mat-header-cell
                                     *matHeaderCellDef
                                     [class]="column.class"
-                                    [style.flex-basis]="column.width"
-                                    [style.max-width]="column.width"
                                 >
-                                    {{ column.label
-                                    }}<span *ngIf="column.props?.required"
-                                        >*</span
-                                    >
-                                </mat-header-cell>
-                                <mat-cell
+                                    {{ column.label }}
+                                    @if (column.props.required) {
+                                        <span>*</span>
+                                    }
+                                </th>
+                                <td
+                                    mat-cell
                                     *matCellDef="
                                         let element;
                                         let rowIndex = index
                                     "
-                                    [class]="column.class"
+                                    [class]="column.class ?? 'compact-column'"
                                     [style.flex-basis]="column.width"
                                     [style.max-width]="column.width"
                                 >
                                     <span
+                                        class="vertical_align_center"
                                         [innerHTML]="
                                             formattedCell[rowIndex]
                                                 ? (formattedCell[rowIndex][
@@ -239,7 +243,7 @@
                                             handleCellClick(i, element, $event)
                                         "
                                     ></span>
-                                </mat-cell>
+                                </td>
                             }
                         }
                     </ng-container>
@@ -248,19 +252,17 @@
                     formControl.enabled
                         ? displayedColumns()
                         : displayedColumnsReadOnly();
-                <mat-header-row
-                    *matHeaderRowDef="shownColumns"
-                ></mat-header-row>
-                <mat-row
+                <tr mat-header-row *matHeaderRowDef="shownColumns"></tr>
+                <tr
+                    mat-row
                     *matRowDef="let row; columns: shownColumns"
                     (click)="batchMode() ? selection.toggle(row) : null"
                     [class.disabled]="formControl.disabled"
                     cdkDrag
                     [cdkDragData]="row"
                     [cdkDragDisabled]="dragDisabled"
-                >
-                </mat-row>
-            </mat-table>
+                ></tr>
+            </table>
         }
     </div>
 

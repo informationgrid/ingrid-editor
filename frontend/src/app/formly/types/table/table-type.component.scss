@@ -1,24 +1,11 @@
 @use "src/variables" as vars;
 
-mat-table {
+table {
   background-color: vars.$ige-background;
 }
 
 .padding-bottom {
   padding-bottom: 12px;
-}
-
-.mat-column-_actions_ {
-  width: 52px;
-  min-width: 40px;
-  flex: unset;
-  display: flex;
-  justify-content: center;
-}
-
-.mat-column-_select_ {
-  width: 80px;
-  //flex: unset;
 }
 
 .container {
@@ -44,43 +31,56 @@ ige-form-label {
 }
 
 :host {
-  /* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
-  ::ng-deep .mat-mdc-checkbox .mat-checkbox-ripple {
-    height: 32px;
-    width: 32px;
-    left: calc(50% - 16px);
-    top: calc(50% - 16px);
-  }
-
   ::ng-deep a {
     font-weight: 400;
-    line-height: 21px;
   }
 
-  .edit-mode ::ng-deep mat-header-cell:first-of-type,
-  .edit-mode ::ng-deep mat-cell:first-of-type {
+  .edit-mode th:first-of-type,
+  .edit-mode td:first-of-type {
     padding-left: 12px;
-  }
-
-  mat-cell {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    word-break: break-all;
-    //align-items: baseline;
-  }
-
-  ::ng-deep .disabled mat-cell {
-    a,
-    span {
-      color: rgba(0, 0, 0, 0.38);
-    }
   }
 }
 
-mat-row,
-mat-header-row {
+th {
+  white-space: nowrap;
+}
+
+.disabled td {
+  a,
+  span {
+    color: rgba(0, 0, 0, 0.38);
+  }
+}
+
+tr {
   background-color: vars.$ige-background;
   border-bottom-color: vars.$ige-background-bar;
+  height: unset;
+}
+
+mat-icon.cdk-drag-handle {
+  vertical-align: middle;
+}
+
+.drag-select-wrapper {
+  white-space: nowrap;
+}
+
+td {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  vertical-align: top;
+}
+
+td.single-line-column {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0;
+}
+
+td.compact-column {
+  width: 1%;
 }
 
 .select-controls {
