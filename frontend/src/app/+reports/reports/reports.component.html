@@ -12,6 +12,7 @@
             routerLinkActive="active-link"
             [routerLink]="tab.path"
             [active]="rla.isActive"
+            (click)="updateTab(tab.path)"
         >
             {{ tab.label }}
         </a>

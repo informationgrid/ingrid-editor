@@ -88,9 +88,16 @@ mat-checkbox .mdc-label {
   min-height: 32px;
 }
 
-mat-table mat-header-cell.mat-mdc-header-cell {
-  color: #616161;
-  font-size: 14px;
+mat-table mat-header-cell.mat-mdc-header-cell,
+table {
+  tr[mat-header-row] {
+    height: 40px;
+
+    th {
+      color: #616161;
+      font-size: 14px;
+    }
+  }
 }
 
 mat-hint {
