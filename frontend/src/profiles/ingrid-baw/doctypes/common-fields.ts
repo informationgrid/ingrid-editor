@@ -32,7 +32,7 @@ import { FormStateService } from "../../../app/+form/form-state.service";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
-  formStateService = inject(FormStateService);
+  private formStateService = inject(FormStateService);
 
   getOrderTitleFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
     return this.addInput("orderTitle", "Auftragstitel", {
@@ -335,10 +335,10 @@ export class CommonFieldsBaw extends FormFieldHelper {
       "Es muss mindestens ein Datum vom Typ 'Publikation' vorhanden sein",
   };
 
-  parentIsObject(): boolean {
+  parentIsObject = () => {
     const metadata = this.formStateService.metadata();
     return (
       metadata.parentDocType != null && metadata.parentDocType !== "FOLDER"
     );
-  }
+  };
 }
