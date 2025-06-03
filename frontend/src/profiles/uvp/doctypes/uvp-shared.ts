@@ -71,6 +71,7 @@ export class UvpShared extends BaseDoctype {
       type: "upload",
       label: "Link",
       wrappers: ["form-field", "inline-help"],
+      class: "single-line-column",
       props: {
         label: "Link",
         appearance: "outline",
@@ -80,10 +81,10 @@ export class UvpShared extends BaseDoctype {
         },
         formatter: (link: any) => {
           if (link.asLink) {
-            return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table longtext-no-wrap">
-                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"> ${link.uri}  </a> `;
+            return `<a  href="${link.uri}" target="_blank" class="no-text-transform icon-in-table">
+                         <img  width="20"  height="20" src="assets/icons/external_link.svg"  alt="link"><span> ${link.uri} </span> </a> `;
           } else {
-            return `<span class="clickable-text icon-in-table longtext-no-wrap">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"> ${link.uri}</span>`;
+            return `<span class="clickable-text icon-in-table">  <img  width="20"  height="20" src="assets/icons/download.svg"  alt="link"><span>${link.uri}</span></span>`;
           }
         },
       },

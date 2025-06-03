@@ -38,7 +38,7 @@ class InGridGeoServiceType(jdbcTemplate: JdbcTemplate) : InGridBaseType(jdbcTemp
             ?.map { documentService.docRepo.getByCatalogAndUuidAndIsLatestIsTrue(doc.catalog!!, it.get("uuid").asText()) }
             ?.all { it.state == DocumentState.PUBLISHED } ?: true
 
-        if (!allCoupledResourcesPublished) throw ValidationException.withInvalidFields(InvalidField("service.coupledResources", "COUPLED_RESOURCES_MUST_BE_PUBLISHED"))
+        if (!allCoupledResourcesPublished) throw ValidationException.withInvalidFields(listOf(InvalidField("service.coupledResources", "COUPLED_RESOURCES_MUST_BE_PUBLISHED")))
     }
 
     override val jsonSchema = "/ingrid/schemes/geo-service.schema.json"

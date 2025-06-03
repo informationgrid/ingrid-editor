@@ -67,7 +67,7 @@ class CatalogService(
         if (authUtils.isSuperAdmin(principal)) return this.getCatalogs()
 
         val userId = authUtils.getUsernameFromPrincipal(principal)
-        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUser(userId)
         return user.catalogs.toList()
     }
 
@@ -78,7 +78,7 @@ class CatalogService(
     }
 
     private fun getCurrentCatalogForUser(userId: String): String {
-        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUserCatalog(userId)
+        val user = userRepo.findByUserId(userId) ?: throw NotFoundException.withMissingUser(userId)
 
         val currentCatalogId = user.curCatalog?.identifier
 

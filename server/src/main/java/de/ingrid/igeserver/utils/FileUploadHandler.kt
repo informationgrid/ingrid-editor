@@ -19,18 +19,23 @@
  */
 package de.ingrid.igeserver.utils
 
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import java.io.FileFilter
 import java.io.SequenceInputStream
 import java.nio.file.Path
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.io.path.createTempDirectory
+import kotlin.io.path.exists
 
 @Service
 class FileUploadHandler {
 
     private val tempDirectories: ConcurrentHashMap<String, Path> = ConcurrentHashMap()
+
+    private val log = logger()
 
     /**
      * Handles file upload by processing individual file chunks.
@@ -55,17 +60,20 @@ class FileUploadHandler {
         flowFilename: String,
     ): Path? {
         var tempDir: Path? = tempDirectories[flowIdentifier]
-        if (tempDir == null) {
+        if (tempDir == null || !tempDir.exists()) {
             tempDir = createTempDirectory("import-chunks-$flowIdentifier")
             tempDirectories[flowIdentifier] = tempDir
         }
+        // FIXME: when an uploaded chunk already exists from a previous upload then it might not get cleaned up
+        //        it should not disturb the process but might leave temp files on system
 
         // Save chunk
         val chunkFile = tempDir.resolve("$flowChunkNumber")
         file.transferTo(chunkFile)
 
         // Check if all chunks are uploaded
-        if (tempDir.toFile().listFiles()?.size == flowTotalChunks) {
+        val numberOfFiles = tempDir.toFile().listFiles(FileFilter { !it.isHidden })?.size ?: 0
+        if (numberOfFiles == flowTotalChunks) {
             val combinedFile = tempDir.resolve(flowFilename)
             val chunkFiles = tempDir.toFile().listFiles()
                 ?.sortedBy { it.name.toInt() }
@@ -79,7 +87,15 @@ class FileUploadHandler {
                 }
             }
 
+            // Delete individual chunk files after successful combination
+            chunkFiles.forEach { it.delete() }
+
             return combinedFile
+        } else if (numberOfFiles > flowTotalChunks) {
+            // there seem to be files present which do not belong here
+            // better to clean up and user should re-upload
+            log.warn("There seem to be files present which do not belong here. I'll clean up and user must re-upload.")
+            cleanup(flowIdentifier)
         }
 
         // Return null if not all chunks are uploaded yet

@@ -50,7 +50,9 @@ open class GeodatasetBase : ShouldSpec() {
 
     protected val codelistHandler = mockk<CodelistHandler>()
     private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
-    protected val uploadConfig = mockk<UploadConfig>()
+    protected val uploadConfig = UploadConfig().apply {
+        uploadExternalUrl = "https://my.external.url/"
+    }
 
     protected lateinit var exporter: IngridIDFExporter
     protected lateinit var indexExporter: IngridIndexExporter

@@ -61,7 +61,7 @@ import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.suffixIfNot
 import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
-import org.unbescape.json.JsonEscape
+import org.apache.commons.text.StringEscapeUtils.escapeJson
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -197,8 +197,11 @@ open class IngridModelTransformer(
         var note: String? = null,
     )
 
-    open val useConstraints = data.resource?.useConstraints?.map { constraint ->
-        if (constraint.title == null) throw ServerException.withReason("Use constraint title is null $constraint")
+    open val useConstraints = data.resource?.useConstraints?.mapNotNull { constraint ->
+        if (constraint.title == null) {
+            log.warn("Use constraint title is null $constraint")
+            return@mapNotNull null
+        }
 
         // special case for "Es gelten keine Bedingungen"
         val link =
@@ -275,10 +278,10 @@ open class IngridModelTransformer(
 
     fun getSpatialReferenceLocationNames(): String = spatialReferences.filter {
         it.value != null
-    }.map {
+    }.joinToString("\",\"", "[\"", "\"]") {
         // must be escaped first, because we don't want to escape the whole array-string
-        JsonEscape.escapeJson(it.title)
-    }.joinToString("\",\"", "[\"", "\"]")
+        escapeJson(it.title ?: "")
+    }
 
     fun getSpatialReferenceArs(): List<String> = spatialReferences.mapNotNull { it.ars }
 
@@ -724,12 +727,12 @@ open class IngridModelTransformer(
                 KeyValue(codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de"), null)
             it
         } +
-            getCoupledServicesForGeodataset.map {
+            getCoupledServiceCapabilitiesUrls().map {
                 Reference(
-                    it.objectName,
-                    it.refType,
+                    it.name,
+                    KeyValue(null, null),
                     it.description,
-                    it.serviceUrl,
+                    it.url,
                     null,
                     null,
                 )
@@ -905,18 +908,18 @@ open class IngridModelTransformer(
 
     open fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy(true)
 
-    private fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
+    private fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceCapabilitiesUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
 
     fun getSubordinateReferences() = getIncomingReferencesProxy().filter { it.isSubordinate }
 
-    private fun getCoupledServiceUrls(): List<ServiceUrl> {
+    private fun getCoupledServiceCapabilitiesUrls(): List<ServiceUrl> {
         if (model.type != "InGridGeoDataset") return emptyList()
 
         return getIncomingReferencesProxy(true)
             .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities" }
             .map {
                 ServiceUrl(
-                    it.objectName,
+                    "Dienst \"${it.objectName}\" (GetCapabilities)",
                     it.serviceUrl ?: throw ServerException.withReason("Service URL is NULL"),
                     null,
                     serviceType = it.serviceType,
@@ -1010,8 +1013,7 @@ open class IngridModelTransformer(
             ?: if (refTrans.data.getString("parentIdentifier") == this.doc.uuid) {
                 KeyValue(null, null)
             } else {
-                null
-                    ?: getRefTypeFromIncomingReference(refTrans.data)
+                getRefTypeFromIncomingReference(refTrans.data)
                     ?: throw ServerException.withReason("Could not find reference type for '${this.doc.uuid}' in '$uuid'.")
             }
 
@@ -1081,7 +1083,7 @@ open class IngridModelTransformer(
                     ?: throw ServerException.withReason("Preview image 'value'-property is NULL"),
                 json.getString("fileName.uri")
                     ?: throw ServerException.withReason("Preview image 'uri'-property is NULL"),
-                json.getDouble("fileName.sizeInBytes") ?: null,
+                json.getDouble("fileName.sizeInBytes"),
             ),
             json.getString("fieldDescription"),
         )

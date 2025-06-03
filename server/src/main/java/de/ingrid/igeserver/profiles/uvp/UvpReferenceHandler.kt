@@ -66,14 +66,14 @@ class UvpReferenceHandler(entityManager: EntityManager) : ReferenceHandler(entit
           AND doc.data -> 'uvpNegativeDecisionDocs' IS NOT NULL
     """.trimIndent()
 
-    fun getPublishedDocumentsByCatalog(docId: Int? = null): List<DocumentLinks> {
-        val result = queryDocs(sqlStepsPublished, "step", docId)
+    fun getPublishedDocumentsByCatalog(docId: Int? = null, catalogId: String? = null): List<DocumentLinks> {
+        val result = queryDocs(sqlStepsPublished, "step", docId, catalogId)
         val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsPublished, "negativeDocs", docId)
         return mapQueryResults(result, resultNegativeDocs)
     }
 
-    fun getDraftAndPendingDocumentsByCatalog(docId: Int? = null): List<DocumentLinks> {
-        val result = queryDocs(sqlStepsDraftAndPending, "step", docId)
+    fun getDraftAndPendingDocumentsByCatalog(docId: Int? = null, catalogId: String): List<DocumentLinks> {
+        val result = queryDocs(sqlStepsDraftAndPending, "step", docId, catalogId)
         val resultNegativeDocs = queryDocs(sqlNegativeDecisionDocsDraftAndPending, "negativeDocs", docId)
         return mapQueryResults(result, resultNegativeDocs)
     }

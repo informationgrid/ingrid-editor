@@ -515,8 +515,8 @@ data class UserDefinedMaintenanceFrequency(
 
 data class DateEvent(
     @JsonDeserialize(using = DateDeserializer::class)
-    val referenceDate: OffsetDateTime,
-    val referenceDateType: KeyValue,
+    val referenceDate: OffsetDateTime?,
+    val referenceDateType: KeyValue?,
 )
 
 data class TimeRange(

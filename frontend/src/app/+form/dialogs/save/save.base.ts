@@ -33,11 +33,14 @@ import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.servi
 import { inject } from "@angular/core";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { GeneralStore, ValidationError } from "../../../store/general.store";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { trimObjectAndRemoveEvilTags } from "../../../shared/utils";
 
 export abstract class SaveBase extends Plugin {
   protected generalStore = inject(GeneralStore);
   protected messageService = inject(FormMessageService);
   protected formStateService = inject(FormStateService);
+  protected snackbar = inject(MatSnackBar);
 
   dialog: MatDialog;
   documentService: DocumentService;
@@ -153,7 +156,7 @@ export abstract class SaveBase extends Plugin {
         this.formToolbarService.setButtonState("toolBtnSave", true);
         break;
       case "force":
-        this.saveWithData(this.getForm()?.getRawValue(), latestVersion);
+        this.saveWithData(this.getCleanedFormValue(), latestVersion);
         break;
       case "reload":
         this.loadDocument(this.getIdFromFormData(), address);
@@ -165,8 +168,11 @@ export abstract class SaveBase extends Plugin {
     return this.getMetadata().wrapperId;
   }
 
-  protected getForm() {
-    return this.formStateService.getForm();
+  protected getCleanedFormValue() {
+    return trimObjectAndRemoveEvilTags(
+      this.formStateService.getForm()?.getRawValue(),
+      this.snackbar,
+    );
   }
 
   protected getMetadata() {

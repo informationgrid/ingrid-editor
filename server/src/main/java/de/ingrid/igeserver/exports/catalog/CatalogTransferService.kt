@@ -25,6 +25,7 @@ import jakarta.persistence.EntityManager
 import jakarta.persistence.Query
 import jakarta.persistence.Tuple
 import org.apache.logging.log4j.kotlin.logger
+import org.hibernate.exception.ConstraintViolationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -79,14 +80,22 @@ class CatalogTransferService(
             data.chunked(chunkSize).forEachIndexed { index, chunk ->
                 log.debug("Processing chunk $index with ${chunk.size} entries for table $tableName ...")
 
-                ClosableTransaction(transactionManager).use {
-                    val query = entityManager.createNativeQuery(
-                        """
-                    INSERT INTO $tableName (${chunk.first().keys.joinToString()}) VALUES ${generatePlaceholder(chunk)};
-                        """.trimIndent(),
-                    )
-                    populateParameters(query, chunk)
-                    query.executeUpdate()
+                try {
+                    ClosableTransaction(transactionManager).use {
+                        val query = entityManager.createNativeQuery(
+                            """
+                        INSERT INTO $tableName (${chunk.first().keys.joinToString()}) VALUES ${generatePlaceholder(chunk)};
+                            """.trimIndent(),
+                        )
+                        populateParameters(query, chunk)
+                        query.executeUpdate()
+                    }
+                } catch (e: ConstraintViolationException) {
+                    if (e.message?.contains("already exists") == true) {
+                        log.warn("Table $tableName already contains data $chunk, skipping import.")
+                    } else {
+                        throw e
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -129,6 +138,7 @@ class CatalogTransferService(
 
     data class ExportedCatalog(
         var version: String,
+        val allowUpdate: Boolean = false,
         var catalog: MutableMap<String?, Any?>,
         var behaviour: List<MutableMap<String?, Any?>>,
         var codelist: List<MutableMap<String?, Any?>>,

@@ -51,5 +51,6 @@ export interface CodelistEntryBackend {
 
 export interface BackendOption {
   key: string;
-  value?: string;
+  value: string;
+  _codelistId: string;
 }

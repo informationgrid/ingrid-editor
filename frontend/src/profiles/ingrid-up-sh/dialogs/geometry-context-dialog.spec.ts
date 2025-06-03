@@ -93,7 +93,7 @@ describe("GeometryContextDialogComponent", () => {
     await enterCommonData();
     await expectNumInputsForType(select, "nominal", 4);
     expect(spectator.component.form.value).toEqual(
-      expectedFormValue("nominal"),
+      expectedFormValue("nominal", "nominal"),
     );
   });
 
@@ -105,7 +105,7 @@ describe("GeometryContextDialogComponent", () => {
     await setInputValue(5, "5");
 
     expect(spectator.component.form.value).toEqual({
-      ...expectedFormValue("ordinal"),
+      ...expectedFormValue("ordinal", "ordinal"),
       min: 3,
       max: 5,
     });
@@ -120,7 +120,7 @@ describe("GeometryContextDialogComponent", () => {
     await setInputValue(6, "test-unit");
 
     expect(spectator.component.form.value).toEqual({
-      ...expectedFormValue("scalar"),
+      ...expectedFormValue("scalar", "skalar"),
       min: 3,
       max: 5,
       unit: "test-unit",
@@ -133,7 +133,7 @@ describe("GeometryContextDialogComponent", () => {
     await expectNumInputsForType(select, "sonstiges", 4);
 
     expect(spectator.component.form.value).toEqual({
-      ...expectedFormValue("other"),
+      ...expectedFormValue("other", "sonstiges"),
     });
   });
 
@@ -161,14 +161,14 @@ describe("GeometryContextDialogComponent", () => {
     await inputs[index].blur();
   }
 
-  function expectedFormValue(type: string) {
+  function expectedFormValue(type: string, typeValue: string) {
     return {
       geometryType: "geo-type",
       name: "name",
       dataType: "data-type",
       description: "description",
       attributes: [],
-      featureType: { key: type },
+      featureType: { key: type, value: typeValue, _codelistId: null },
     };
   }
 });

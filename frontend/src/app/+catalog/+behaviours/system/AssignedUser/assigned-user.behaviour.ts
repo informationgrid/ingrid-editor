@@ -70,6 +70,8 @@ export class AssignedUserBehaviour extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
+      if (!this.isActive()) return;
+
       // only add menu item in form if user is privileged
       if (this.formRegistered() && this.configService.hasMdAdminRights()) {
         const onDocLoad = this.generalStore.getOpenedDocument(
@@ -129,7 +131,7 @@ export class AssignedUserBehaviour extends Plugin {
 
   unregisterForm() {
     super.unregisterForm();
-    if (this.isActive) {
+    if (this.isActive()) {
       this.formMenuService.removeMenuItem("address", "assign-user");
       this.formMenuService.removeMenuItem("dataset", "assign-user");
     }

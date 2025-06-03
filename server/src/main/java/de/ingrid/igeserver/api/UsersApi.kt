@@ -224,7 +224,7 @@ interface UsersApi {
             description = "Save the user data into the database.",
             required = true,
         ) @RequestBody info: @Valid CatalogAdmin,
-    ): ResponseEntity<UserInfo?>
+    ): ResponseEntity<Void>
 
     @GetMapping(
         value = ["/info/assignedUsers/{id}"],

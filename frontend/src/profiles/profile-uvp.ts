@@ -110,7 +110,7 @@ class UVPComponent {
     this.pluginService.registerPlugin(this.activityReportBehaviour);
     this.pluginService.registerPlugin(this.uvpArchiveBehaviour);
 
-    if (this.publishNegativeAssessmentBehaviour.isActive) {
+    if (this.publishNegativeAssessmentBehaviour.isActive()) {
       negativeAssessmentDoctype.forPublish = true;
     }
   }
@@ -176,7 +176,7 @@ class UVPComponent {
   }
 
   private getStyle(behaviour: PublishNegativeAssessmentBehaviour) {
-    if (!behaviour.isActive || !behaviour.data.controlledByDataset) {
+    if (!behaviour.isActive() || !behaviour.data.controlledByDataset) {
       // set tag-translation to an empty string to suppress the tooltip, which contains the information of the tag
       // this only can happen if tagging was switch on and off again
       this.translocoService.setTranslationKey(
