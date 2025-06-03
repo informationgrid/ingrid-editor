@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import {
   FieldTypeConfig,
@@ -37,7 +44,7 @@ import {
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { debounceTime, distinctUntilChanged, startWith } from "rxjs/operators";
 import { FormErrorComponent } from "../../../+form/form-shared/ige-form-error/form-error.component";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MetadataTypeShortComponent } from "./metadata-type-short/metadata-type-short.component";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
@@ -75,6 +82,7 @@ export interface MetadataOptionItems {
 export interface MetadataOptionItem {
   key?: string;
   label: string;
+  completeLabel?: string;
   value: any;
   contextHelpKey?: string;
   hide?: boolean;
@@ -103,7 +111,7 @@ export interface MetadataOptionItem {
 })
 export class MetadataTypeComponent
   extends FieldType<FieldTypeConfig<MetadataProps>>
-  implements OnInit
+  implements OnInit, OnDestroy
 {
   private contextHelpService = inject(ContextHelpService);
   private formStateService = inject(FormStateService);
@@ -160,6 +168,11 @@ export class MetadataTypeComponent
         return null;
       },
     );
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+    this.formControl?.clearValidators();
   }
 
   private hasValue(data: any) {

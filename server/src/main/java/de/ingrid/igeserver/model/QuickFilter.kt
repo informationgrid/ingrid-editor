@@ -41,6 +41,4 @@ abstract class QuickFilter {
     open fun filter(parameter: List<*>? = null): String = this.filter
 
     open val parameters: List<String> = emptyList()
-
-    open val implicitFilter: List<String> = emptyList()
 }

@@ -49,11 +49,11 @@ export class SavePlugin extends SaveBase {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      if (!this.formRegistered) return;
+      if (!this.isActive() || !this.formRegistered()) return;
       const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.formToolbarService.setButtonState(
         "toolBtnSave",
-        doc !== null && doc._pendingDate == null && doc.hasWritePermission,
+        DocumentService.canWriteDocument(doc),
       );
     });
   }
@@ -76,7 +76,7 @@ export class SavePlugin extends SaveBase {
     const toolbarEventSubscription = this.docEvents
       .onEvent("SAVE")
       .subscribe(() => {
-        const form: IgeDocument = this.getForm()?.getRawValue();
+        const form: IgeDocument = this.getCleanedFormValue();
         if (form) {
           this.formToolbarService.setButtonState("toolBtnSave", false);
           this.saveWithData(form);
@@ -86,7 +86,7 @@ export class SavePlugin extends SaveBase {
     this.formSubscriptions.push(toolbarEventSubscription);
   }
 
-  saveWithData(formData: IgeDocument) {
+  saveWithData(formData: IgeDocument, overrideVersion?: number) {
     this.documentService.publishState$.next(false);
 
     // delay execution to reset error messages after publish state has been set to false
@@ -99,7 +99,7 @@ export class SavePlugin extends SaveBase {
         .save({
           data: formData,
           id: metadata.wrapperId,
-          version: metadata.version,
+          version: overrideVersion ?? metadata.version,
           isNewDoc: false,
           isAddress: this.forAddress(),
           type: metadata.docType,
@@ -119,7 +119,7 @@ export class SavePlugin extends SaveBase {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       this.formToolbarService.removeButton("toolBtnSave");
     }
   }

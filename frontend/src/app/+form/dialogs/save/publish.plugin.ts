@@ -32,11 +32,12 @@ import { SaveBase } from "./save.base";
 import { DelayedPublishDialogComponent } from "./delayed-publish-dialog/delayed-publish-dialog.component";
 import {
   BeforePublishData,
+  DocEvent,
   DocEventsService,
 } from "../../../services/event/doc-events.service";
 import { IgeError } from "../../../models/ige-error";
 import { PluginService } from "../../../services/plugin/plugin.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { ProfileService } from "../../../services/profile.service";
 import { DocumentAbstract } from "../../../store/document/document.model";
 import { TreeStore } from "../../../store/tree/tree.store";
@@ -83,6 +84,8 @@ export class PublishPlugin extends SaveBase {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
+      if (!this.isActive()) return;
+
       const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.handleDocumentChange(doc);
     });
@@ -98,7 +101,7 @@ export class PublishPlugin extends SaveBase {
       this.docEvents.onEvent(this.eventRevertId).subscribe(() => this.revert()),
       this.docEvents
         .onEvent(this.eventPublishId)
-        .subscribe(() => this.validateAndPublish()),
+        .subscribe((event) => this.validateAndPublish(false, event)),
       this.docEvents
         .onEvent(this.eventPlanPublishId)
         .subscribe(() => this.validateAndPublish(true)),
@@ -167,6 +170,8 @@ export class PublishPlugin extends SaveBase {
   private validateBeforePublish(): Observable<boolean> {
     this.messageService.clearMessages$.next();
 
+    // update form before publish with cleaned up form data
+    this.formStateService.getForm().patchValue(this.getCleanedFormValue());
     this.documentService.publishState$.next(true);
 
     const validation: BeforePublishData = { errors: [] };
@@ -221,9 +226,23 @@ export class PublishPlugin extends SaveBase {
     this.modalService.showIgeError(error);
   }
 
-  publish() {
+  publish(withoutConfirmation: boolean = false) {
     // show confirm dialog
     const message = this.transloco.translate("publish.confirmMessage");
+
+    const handlePublish = (decision) => {
+      if (decision === "confirm") {
+        this.saveWithData(this.getCleanedFormValue());
+      } else if (decision === "plan") {
+        this.showPlanPublishingDialog();
+      }
+    };
+
+    if (withoutConfirmation) {
+      handlePublish("confirm");
+      return;
+    }
+
     this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
@@ -244,13 +263,7 @@ export class PublishPlugin extends SaveBase {
         delayFocusTrap: true,
       })
       .afterClosed()
-      .subscribe((decision) => {
-        if (decision === "confirm") {
-          this.saveWithData(this.getForm().getRawValue());
-        } else if (decision === "plan") {
-          this.showPlanPublishingDialog();
-        }
-      });
+      .subscribe((decision) => handlePublish(decision));
   }
 
   private showUnpublishDialog() {
@@ -288,16 +301,16 @@ export class PublishPlugin extends SaveBase {
       .afterClosed()
       .pipe(filter((date) => date))
       .subscribe((date) => {
-        this.saveWithData(this.getForm().getRawValue(), date);
+        this.saveWithData(this.getCleanedFormValue(), undefined, date);
       });
   }
 
-  saveWithData(data, delay: Date = null) {
+  saveWithData(data, overrideVersion?: number, delay: Date = null) {
     const metadata = this.getMetadata();
     this.documentService
       .publish(
         metadata.wrapperId,
-        metadata.version,
+        overrideVersion ?? metadata.version,
         metadata.docType,
         data,
         this.forAddress(),
@@ -359,7 +372,7 @@ export class PublishPlugin extends SaveBase {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       this.formToolbarService.removeButton("toolBtnPublishSeparator");
       this.formToolbarService.removeButton("toolBtnPublish");
     }
@@ -371,10 +384,8 @@ export class PublishPlugin extends SaveBase {
   private handleDocumentChange(loadedDocument: DocumentAbstract): void {
     this.formToolbarService.setButtonState(
       "toolBtnPublish",
-      loadedDocument !== null &&
-        loadedDocument._pendingDate == null &&
-        loadedDocument._type !== "FOLDER" &&
-        loadedDocument.hasWritePermission,
+      DocumentService.canWriteDocument(loadedDocument) &&
+        loadedDocument._type !== "FOLDER",
     );
     this.formToolbarService.setMenuItemStateOfButton(
       "toolBtnPublish",
@@ -439,7 +450,9 @@ export class PublishPlugin extends SaveBase {
         control.errors != null &&
         Object.keys(control.errors).length > 0
       ) {
-        const controlLabel = control._fields[0].props.externalLabel;
+        const controlLabel =
+          control._fields[0].props.externalLabel ??
+          control._fields[0].parent?.props?.label;
         const errorKey = Object.keys(control.errors)[0];
         const error = control.errors[errorKey];
         if (error.message) {
@@ -459,7 +472,7 @@ export class PublishPlugin extends SaveBase {
     return errors;
   }
 
-  private async validateAndPublish(planned: boolean = false) {
+  private async validateAndPublish(planned: boolean = false, event?: DocEvent) {
     this.validateBeforePublish().subscribe(async (isValid) => {
       if (!isValid) return;
 
@@ -471,7 +484,7 @@ export class PublishPlugin extends SaveBase {
       if (!profileCheck) return;
 
       if (planned) this.showPlanPublishingDialog();
-      else this.publish();
+      else this.publish(event?.data?.withoutConfirmation);
     });
   }
 }

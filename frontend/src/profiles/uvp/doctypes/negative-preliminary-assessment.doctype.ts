@@ -38,7 +38,9 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
     !this.forPublish
       ? <FormlyFieldConfig[]>[
           this.addSection("Allgemeines", [
-            this.addPointOfContact(),
+            this.addPointOfContact({
+              "props.disabled": this.disabledWhenNotArchived,
+            }),
             this.addDatepicker("decisionDate", "Datum der Entscheidung", {
               required: true,
               datepickerOptions: {
@@ -56,9 +58,14 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
               this.id,
               {
                 required: true,
+                expressions: {
+                  "props.disabled": this.disabledWhenNotArchived,
+                },
               },
             ),
-            this.addPointOfContact(),
+            this.addPointOfContact({
+              "props.disabled": this.disabledWhenNotArchived,
+            }),
           ]),
           this.addSection("Raumbezug", [
             this.addSpatial("spatial", null, {
@@ -90,6 +97,9 @@ export class NegativePreliminaryAssessmentDoctype extends UvpShared {
                 required: true,
                 columns: this.columnsForDocumentTable,
                 batchValidUntil: "validUntil",
+                expressions: {
+                  "props.disabled": this.disabledWhenNotArchived,
+                },
               },
             ),
           ]),

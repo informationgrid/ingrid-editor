@@ -40,7 +40,7 @@ import { debounceTime, distinctUntilChanged, tap } from "rxjs/operators";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { ContextHelpService } from "../../../services/context-help/context-help.service";
 import { FieldTypeConfig } from "@ngx-formly/core";
-import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import { MatButton, MatFabButton } from "@angular/material/button";
 import { MatTooltip } from "@angular/material/tooltip";
 import { NgClass } from "@angular/common";
@@ -99,7 +99,7 @@ export class LeafletTypeComponent
         distinctUntilChanged(),
         tap((value: SpatialLocation[]) => (this.locations = value || [])),
       )
-      .subscribe(() => this.updateBoundingBox());
+      .subscribe(() => this.updateBoundingBoxCatchingErrors());
 
     try {
       const options: MapOptions = this.props.mapOptions;
@@ -116,21 +116,20 @@ export class LeafletTypeComponent
 
       this.locations = this.formControl.value || [];
       // delay update to prevent template error because of 'hasAnyLocations' update
-      setTimeout(() => {
-        try {
-          this.updateBoundingBox();
-        } catch (e) {
-          console.warn(
-            "Failed to update bounding box. map already unloaded?",
-            e,
-          );
-        }
-      });
+      setTimeout(() => this.updateBoundingBoxCatchingErrors());
     } catch (e) {
       console.error("Problem initializing the map component.", e);
       this.updateLocations([]);
       this.formControl.setValue([]);
       throw Error("Problem initializing the map component: " + e.message);
+    }
+  }
+
+  private updateBoundingBoxCatchingErrors() {
+    try {
+      this.updateBoundingBox();
+    } catch (e) {
+      console.warn("Failed to update bounding box. map already unloaded?", e);
     }
   }
 
@@ -152,8 +151,9 @@ export class LeafletTypeComponent
       (location) => location.value || location.wkt,
     );
 
+    // we need to call fitBounds in order to fully initialize map (see #7508)
+    this.leafletService.zoomToInitialBox(this.leafletReference);
     if (this.locations.length === 0 || !hasCoordinates) {
-      this.leafletService.zoomToInitialBox(this.leafletReference);
       this.leafletReference.dragging.disable();
       this.leafletReference.doubleClickZoom.disable();
     }

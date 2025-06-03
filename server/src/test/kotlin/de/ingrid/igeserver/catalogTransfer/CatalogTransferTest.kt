@@ -26,6 +26,7 @@ import de.ingrid.igeserver.api.CatalogApiController
 import de.ingrid.igeserver.exports.catalog.CatalogExportService
 import de.ingrid.igeserver.exports.catalog.CatalogTransferService.ExportedCatalog
 import de.ingrid.igeserver.imports.CatalogImportService
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.utils.AuthUtils
@@ -34,11 +35,13 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.core.test.TestCase
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import jakarta.persistence.EntityManager
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.transaction.PlatformTransactionManager
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -49,7 +52,7 @@ class CatalogTransferTest : ShouldSpec() {
     private val transactionManager = mockk<PlatformTransactionManager>(relaxed = true)
     private val groupService = mockk<GroupService>(relaxed = true)
     private val catalogService = mockk<CatalogService>(relaxed = true)
-    private val catalogImportService = CatalogImportService(entityManager, transactionManager, groupService, catalogService, mockk())
+    private val catalogImportService = CatalogImportService(entityManager, transactionManager, groupService, catalogService, mockk(), mockk())
     private val catalogExportService = CatalogExportService(entityManager, transactionManager, catalogService)
     private val authUtils = mockk<AuthUtils>(relaxed = true)
     private val fileUploadHandler = mockk<FileUploadHandler>(relaxed = true)
@@ -79,11 +82,12 @@ class CatalogTransferTest : ShouldSpec() {
         }
 
         should("import catalog correctly") {
+            every { catalogService.getCatalogById(any()) } throws EmptyResultDataAccessException(1)
             val file = getFile("export/catalog/testexport.json")
             val data = jacksonObjectMapper().readValue<ExportedCatalog>(file)
 
             catalogImportService.importCatalog(data)
-            verify(exactly = 6) { entityManager.createNativeQuery(any<String>()).executeUpdate() }
+            verify(exactly = 7) { entityManager.createNativeQuery(any<String>()).executeUpdate() }
         }
 
         should("not import catalog with wrong version") {
@@ -97,6 +101,7 @@ class CatalogTransferTest : ShouldSpec() {
         }
 
         should("not import catalog with existing catalog id") {
+            every { catalogService.getCatalogById(any()) } returns Catalog()
             every { catalogService.catalogExists(any()) } answers { firstArg<String>() == "existing_identifier" }
 
             val file = getFile("export/catalog/with_existing_catalog_identifier.json")
@@ -105,7 +110,7 @@ class CatalogTransferTest : ShouldSpec() {
             val exception = shouldThrow<ServerException> {
                 catalogImportService.importCatalog(data)
             }
-            exception.message shouldBe "The catalog with identifier existing_identifier already exists"
+            exception.message shouldContain "The catalog with identifier existing_identifier already exists"
         }
     }
 

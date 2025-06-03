@@ -101,7 +101,31 @@
             }
           ]
         },
-        "descriptions": [{ "key": null, "value": "data-basis" }]
+        "descriptions": [
+          {
+            "_type": "freeDescription",
+            "value": "Ein freier Beschreibungstext"
+          },
+          {
+            "_type": "freeDescription",
+            "value": "Beschreibungstext",
+            "identifier": "https://registry.gdi-de.org/id/ogctestcatalog/e8f0fcbb-3583-4848-9782-d2e89dcba887",
+            "title": "Titel von Referenz",
+            "date": "2024-09-02T22:00:00.000Z",
+            "dateType": {
+              "key": "2"
+            }
+          },
+          {
+            "_type": "internalDataOrigin",
+            "value": "Lokale interne Referenz",
+            "uuidRef": "4915275a-733a-47cd-b1a6-1a3f1e976948",
+            "date": "2025-02-26T23:00:00.000Z",
+            "dateType": {
+              "key": "3"
+            }
+          }
+        ]
       }
     }
   },
@@ -167,5 +191,10 @@
       "geometricObjectCount": 2
     }
   ],
-  "absoluteExternalPositionalAccuracy": { "vertical": 5, "horizontal": 3 }
+  "absoluteExternalPositionalAccuracy": { "vertical": 5, "horizontal": 3 },
+  "publication": {
+    "doi": "10.1000/1234",
+    "generalResourceType": { "key": "5" },
+    "resourceType": { "key": "2" }
+  }
 }

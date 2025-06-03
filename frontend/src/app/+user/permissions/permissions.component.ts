@@ -29,7 +29,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatIconModule } from "@angular/material/icon";
 import { PermissionTableComponent } from "./permission-table/permission-table.component";
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 
 @UntilDestroy()
 @Component({

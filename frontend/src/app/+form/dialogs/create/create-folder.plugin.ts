@@ -29,7 +29,7 @@ import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { TreeStore } from "../../../store/tree/tree.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 
@@ -143,7 +143,7 @@ export class CreateFolderPlugin extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       this.formToolbarService.removeButton("toolBtnFolder");
     }
   }

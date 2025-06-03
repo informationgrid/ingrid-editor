@@ -9,7 +9,7 @@
         <gmd:scope>
             <gmd:DQ_Scope>
                 <gmd:level>
-                    <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+                    <gmd:MD_ScopeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_ScopeCode" codeListValue="${page.getHierarchyLevel()}"/>
                 </gmd:level>
             </gmd:DQ_Scope>
         </gmd:scope>
@@ -267,6 +267,9 @@
                                             <gmd:code>
                                                 <gco:CharacterString>${description.getIdentifier()}</gco:CharacterString>
                                             </gmd:code>
+                                            @if(description.getUuidRef() != null)
+                                                <idf:uuid>${description.getUuidRef()}</idf:uuid>
+                                            @endif
                                         </gmd:MD_Identifier>
                                     </gmd:identifier>
                                 </gmd:CI_Citation>

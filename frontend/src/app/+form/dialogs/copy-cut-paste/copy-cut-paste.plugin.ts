@@ -82,7 +82,7 @@ export class CopyCutPastePlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      if (!this.formRegistered) return;
+      if (!this.isActive() || !this.formRegistered()) return;
       this.handleDocumentChange(this.activeNodes());
     });
   }
@@ -133,7 +133,14 @@ export class CopyCutPastePlugin extends Plugin {
 
       // set state of menu items
       const docs = ids.map((item) => this.getStore().entityMap()[item]);
-      this.toolbarService.setMenuItemStateOfButton("toolBtnCopy", "COPY", true);
+      // if store has not received all updates (e.g. node is nested structure is loaded but children not yet)
+      if (docs.some((item) => item === undefined)) return;
+
+      this.toolbarService.setMenuItemStateOfButton(
+        "toolBtnCopy",
+        "COPY",
+        this.toolbarService.isToolbarButtonEnabled("toolBtnCopy.copy", docs),
+      );
       this.toolbarService.setMenuItemStateOfButton(
         "toolBtnCopy",
         "CUT",
@@ -276,7 +283,7 @@ export class CopyCutPastePlugin extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       // remove from same index since buttons take the neighbor place after deletion
       this.toolbarService.removeButton("toolBtnCopy");
       this.toolbarService.removeButton("toolBtnCopyCutSeparator");

@@ -23,7 +23,7 @@ import {
   Translation,
   TranslocoLoader,
   TranslocoModule,
-} from "@ngneat/transloco";
+} from "@jsverse/transloco";
 import { Injectable, isDevMode, NgModule } from "@angular/core";
 import { ConfigService } from "./services/config/config.service";
 import { catchError, map, switchMap } from "rxjs/operators";

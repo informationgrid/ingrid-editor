@@ -31,6 +31,7 @@ import de.ingrid.igeserver.imports.expectedPersonUnderOrganisation
 import de.ingrid.igeserver.imports.expectedPersonUnderOrganisation2
 import de.ingrid.igeserver.imports.minimalMetadata
 import de.ingrid.igeserver.model.ResearchResponse
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.repository.DocumentRepository
@@ -63,6 +64,8 @@ class IsoImporterTest : AnnotationSpec() {
     fun beforeAll() {
         mockCodelists(codelistService)
         every { codelistService.getCatalogCodelistKey("test", "1350", "Nieders. Abfallgesetz (NAbfG)") } returns "38"
+        every { codelistService.getCatalogCodelistKey("test", "3386", "Brochure/Bulletin", "en") } returns "2"
+        every { codelistService.getCatalogCodelistKey("test", "3390", "ComputationalNotebook", "en") } returns "5"
         every { codelistService.getCatalogCodelistKey("test", "3535", "von Drachenfels 94") } returns "1"
         every { codelistService.getCatalogCodelistKey("test", "3555", "Ganzflächige Biotopkartierung 94") } returns "1"
         every { codelistService.getCatalogCodelistKey("test", "6250", "Hessen") } returns "7"
@@ -82,7 +85,7 @@ class IsoImporterTest : AnnotationSpec() {
                         category = null,
                         hasWritePermission = null,
                         hasOnlySubtreeWritePermission = null,
-                        tags = null,
+                        tags = emptyList(),
                         responsibleUser = null,
                         additional = null,
                     ),
@@ -90,6 +93,7 @@ class IsoImporterTest : AnnotationSpec() {
             ),
         )
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog()
+        every { catalogService.getCatalogById(any()) } returns Catalog()
         every { documentService.docRepo } returns documentRepository
         every { documentRepository.findAddressByOrganisationName(any(), any()) } returns emptyList()
         // needed for checking if imported address-reference already exists (default yes)

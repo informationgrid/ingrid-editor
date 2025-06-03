@@ -133,16 +133,41 @@
         "descriptions": {
           "type": "array",
           "items": {
-            "_type": "string",
-            "uuidRef": ["null", "string"],
-            "url": ["null", "string"],
-            "identifier": ["null", "string"],
-            "date": {
-              "type": ["null", "string"],
-              "format": "date-time"
-            },
-            "dateType": {
-              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            "type": "object",
+            "unevaluatedProperties": false,
+            "properties": {
+              "_type": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "uuidRef": {
+                "type": ["null", "string"]
+              },
+              "url": {
+                "type": ["null", "string"]
+              },
+              "identifier": {
+                "type": ["null", "string"]
+              },
+              "title": {
+                "type": ["null", "string"]
+              },
+              "date": {
+                "type": ["null", "string"],
+                "format": "date-time"
+              },
+              "dateType": {
+                "anyOf": [
+                  {
+                    "$ref": "../../general.schema.json#/definitions/KeyValue"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
             }
           }
         }
@@ -257,6 +282,35 @@
       },
       "minItems": 1
     },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "doi": {
+          "type": ["null", "string"]
+        },
+        "generalResourceType": {
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resourceType": {
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
     "advProductGroups": {
       "$ref": "refs/general.schema.json#/definitions/advProductGroups"
     },
@@ -318,16 +372,7 @@
       "featureTypes": {
         "type": "array",
         "items": {
-          "type": "object",
-          "unevaluatedProperties": false,
-          "properties": {
-            "key": {
-              "type": ["null", "string"]
-            },
-            "value": {
-              "type": "string"
-            }
-          }
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
         }
       }
     },

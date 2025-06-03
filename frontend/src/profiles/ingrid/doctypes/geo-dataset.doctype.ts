@@ -67,7 +67,6 @@ export class GeoDatasetDoctype extends IngridShared {
   showAdVProductGroup = true;
   showIdentifierCreateButton = true;
   isGeoDataset = true;
-  defaultKeySpatialScope = "885989663";
 
   constructor() {
     super();
@@ -112,6 +111,7 @@ export class GeoDatasetDoctype extends IngridShared {
 
   documentFields = () => {
     this.handleInVeKoSBehaviour();
+    this.handleDoiBehaviour();
 
     const fields = <FormlyFieldConfig[]>[
       this.addGeneralSection({
@@ -124,346 +124,359 @@ export class GeoDatasetDoctype extends IngridShared {
         inspireTopics: true,
       }),
 
-      this.addSection("Fachbezug", [
-        this.addGroupSimple("lineage", [
-          this.addTextArea("statement", "Fachliche Grundlage", this.id, {
-            required: this.geodatasetOptions.required.statement,
-            expressions: {
-              "props.required":
-                this.geodatasetOptions.dynamicRequired.statement,
-            },
-          }),
-        ]),
-        this.addInput("identifier", "Identifikator der Datenquelle", {
-          required: this.geodatasetOptions.required.identifier,
-          validators: this.geodatasetOptions.validators.identifier,
-          wrappers: this.showIdentifierCreateButton
-            ? ["panel", "button", "form-field"]
-            : ["panel", "form-field"],
-          updateOn: "change",
-          className: "flex-3 ",
-          expressions: {
-            "props.hintStart": (field: FormlyFieldConfig) => {
-              const value = field.formControl.value;
-              if (!value) return "";
-              return `ISO-Abbildung: ${this.getFormattedIdentifier(value)}`;
-            },
-            "props.required": this.geodatasetOptions.dynamicRequired.identifier,
-          },
-          buttonConfig: {
-            text: "Erzeuge Id",
-            onClick: (_, field: FormlyFieldConfig) => {
-              field.formControl.setValue(generateUUID());
-              field.formControl.markAsDirty();
-            },
-          },
-        }),
-        this.addRepeatList(
-          "spatialRepresentationType",
-          "Digitale Repräsentation",
-          {
-            asSelect: true,
-            showSearch: true,
-            options: this.getCodelistForSelect(
-              "526",
-              "spatialRepresentationType",
-            ),
-            codelistId: "526",
-            expressions: {
-              "props.required": (field: FormlyFieldConfig) =>
-                field.options.formState.mainModel?.properties
-                  ?.isInspireIdentified === "conform",
-              className: (field: FormlyFieldConfig) =>
-                field.props.required ? "" : "optional",
-            },
-          },
-        ),
-        this.addRepeat("vectorSpatialRepresentation", "Vektorformat", {
-          fields: [
-            this.addSelectInline("topologyLevel", "Topologieinformation", {
-              options: this.getCodelistForSelect(
-                "528",
-                "vectorSpatialRepresentation.topologyLevel",
-              ),
-              codelistId: "528",
-              showSearch: true,
-            }),
-            this.addSelectInline("geometricObjectType", "Geometrietyp", {
-              options: this.getCodelistForSelect(
-                "515",
-                "vectorSpatialRepresentation.geometricObjectType",
-              ),
-              codelistId: "515",
-              showSearch: true,
+      this.addSection(
+        "Fachbezug",
+        [
+          this.addGroupSimple("lineage", [
+            this.addTextArea("statement", "Fachliche Grundlage", this.id, {
+              required: this.geodatasetOptions.required.statement,
               expressions: {
-                "props.required": (field: FormlyFieldConfig) =>
-                  field.model?.geometricObjectCount != null,
+                "props.required":
+                  this.geodatasetOptions.dynamicRequired.statement,
               },
             }),
-            this.addInputInline("geometricObjectCount", "Elementanzahl", {
-              type: "number",
-            }),
-          ],
-          expressions: {
-            hide: (field: FormlyFieldConfig) =>
-              !field.options.formState.mainModel?.spatialRepresentationType?.find(
-                (x) => x.key === "1",
-              ),
-          },
-        }),
-        this.addGroup(
-          "gridSpatialRepresentation",
-          "Raster-/Gridformat",
-          [
-            this.addSelectInline("type", "Typ", {
-              defaultValue: { key: "basis" },
+          ]),
+          this.addInput("identifier", "Identifikator der Datenquelle", {
+            required: this.geodatasetOptions.required.identifier,
+            validators: this.geodatasetOptions.validators.identifier,
+            wrappers: this.showIdentifierCreateButton
+              ? ["panel", "button", "form-field"]
+              : ["panel", "form-field"],
+            updateOn: "change",
+            className: "flex-3 ",
+            expressions: {
+              "props.hintStart": (field: FormlyFieldConfig) => {
+                const value = field.formControl.value;
+                if (!value) return "";
+                return `ISO-Abbildung: ${this.getFormattedIdentifier(value)}`;
+              },
+              "props.required":
+                this.geodatasetOptions.dynamicRequired.identifier,
+            },
+            buttonConfig: {
+              text: "Erzeuge Id",
+              onClick: (_, field: FormlyFieldConfig) => {
+                field.formControl.setValue(generateUUID());
+                field.formControl.markAsDirty();
+              },
+            },
+          }),
+          this.showDoiFields
+            ? this.addGroupSimple("publication", [this.addDoiFields()])
+            : null,
+          this.addRepeatList(
+            "spatialRepresentationType",
+            "Digitale Repräsentation",
+            {
+              asSelect: true,
               showSearch: true,
-              allowNoValue: false,
-              options: <SelectOptionUi[]>[
-                {
-                  value: "basis",
-                  label: "Geobasisraster",
-                },
-                {
-                  value: "rectified",
-                  label: "Georektifiziertes Raster",
-                },
-                {
-                  value: "referenced",
-                  label: "Georeferenzierbares Raster",
-                },
-              ],
-            }),
-            this.addRepeat("axesDimensionProperties", null, {
-              fields: [
-                this.addSelectInline("name", "Achsenbezeichnung", {
-                  options: this.getCodelistForSelect(
-                    "514",
-                    "gridSpatialRepresentation.axesDimensionProperties.name",
-                  ),
-                  codelistId: "514",
-                  required: true,
-                  showSearch: true,
-                }),
-                this.addInputInline("size", "Elementanzahl", {
-                  type: "number",
-                  required: true,
-                }),
-                this.addInputInline("resolution", "Auflösung in Meter", {
-                  type: "number",
-                }),
-              ],
-              wrappers: [],
-              addButtonTitle: "Dimensionseigenschaften hinzufügen",
-            }),
-            this.addGroup(
-              null,
-              null,
-              [
-                this.addCheckboxInline(
-                  "transformationParameterAvailability",
-                  "Verfügbarkeit von Transformationsparametern",
-                  { className: "flex-2" },
+              options: this.getCodelistForSelect(
+                "526",
+                "spatialRepresentationType",
+              ),
+              codelistId: "526",
+              expressions: {
+                "props.required": (field: FormlyFieldConfig) =>
+                  field.options.formState.mainModel?.properties
+                    ?.isInspireIdentified === "conform",
+                className: (field: FormlyFieldConfig) =>
+                  field.props.required ? "" : "optional",
+              },
+            },
+          ),
+          this.addRepeat("vectorSpatialRepresentation", "Vektorformat", {
+            fields: [
+              this.addSelectInline("topologyLevel", "Topologieinformation", {
+                options: this.getCodelistForSelect(
+                  "528",
+                  "vectorSpatialRepresentation.topologyLevel",
                 ),
-                this.addInputInline(
-                  "numberOfDimensions",
-                  "Anzahl der Dimensionen",
+                codelistId: "528",
+                showSearch: true,
+              }),
+              this.addSelectInline("geometricObjectType", "Geometrietyp", {
+                options: this.getCodelistForSelect(
+                  "515",
+                  "vectorSpatialRepresentation.geometricObjectType",
+                ),
+                codelistId: "515",
+                showSearch: true,
+                expressions: {
+                  "props.required": (field: FormlyFieldConfig) =>
+                    field.model?.geometricObjectCount != null,
+                },
+              }),
+              this.addInputInline("geometricObjectCount", "Elementanzahl", {
+                type: "number",
+              }),
+            ],
+            expressions: {
+              hide: (field: FormlyFieldConfig) =>
+                !field.options.formState.mainModel?.spatialRepresentationType?.find(
+                  (x) => x.key === "1",
+                ),
+            },
+          }),
+          this.addGroup(
+            "gridSpatialRepresentation",
+            "Raster-/Gridformat",
+            [
+              this.addSelectInline("type", "Typ", {
+                defaultValue: { key: "basis" },
+                showSearch: true,
+                allowNoValue: false,
+                codelistId: null,
+                options: <SelectOptionUi[]>[
                   {
+                    value: "basis",
+                    label: "Geobasisraster",
+                  },
+                  {
+                    value: "rectified",
+                    label: "Georektifiziertes Raster",
+                  },
+                  {
+                    value: "referenced",
+                    label: "Georeferenzierbares Raster",
+                  },
+                ],
+              }),
+              this.addRepeat("axesDimensionProperties", null, {
+                fields: [
+                  this.addSelectInline("name", "Achsenbezeichnung", {
+                    options: this.getCodelistForSelect(
+                      "514",
+                      "gridSpatialRepresentation.axesDimensionProperties.name",
+                    ),
+                    codelistId: "514",
+                    required: true,
+                    showSearch: true,
+                  }),
+                  this.addInputInline("size", "Elementanzahl", {
                     type: "number",
+                    required: true,
+                  }),
+                  this.addInputInline("resolution", "Auflösung in Meter", {
+                    type: "number",
+                  }),
+                ],
+                wrappers: [],
+                addButtonTitle: "Dimensionseigenschaften hinzufügen",
+              }),
+              this.addGroup(
+                null,
+                null,
+                [
+                  this.addCheckboxInline(
+                    "transformationParameterAvailability",
+                    "Verfügbarkeit von Transformationsparametern",
+                    { className: "flex-2" },
+                  ),
+                  this.addInputInline(
+                    "numberOfDimensions",
+                    "Anzahl der Dimensionen",
+                    {
+                      type: "number",
+                      expressions: {
+                        "props.required": (field: FormlyFieldConfig) =>
+                          isNotEmptyObject(field.form.value, ["type"]),
+                      },
+                      hasInlineContextHelp: true,
+                      wrappers: ["inline-help", "form-field"],
+                    },
+                  ),
+                  this.addSelectInline("cellGeometry", "Zellengeometrie", {
+                    options: this.getCodelistForSelect(
+                      "509",
+                      "gridSpatialRepresentation.cellGeometry",
+                    ),
+                    codelistId: "509",
+                    showSearch: true,
+                    allowNoValue: true,
                     expressions: {
                       "props.required": (field: FormlyFieldConfig) =>
                         isNotEmptyObject(field.form.value, ["type"]),
                     },
                     hasInlineContextHelp: true,
                     wrappers: ["inline-help", "form-field"],
-                  },
-                ),
-                this.addSelectInline("cellGeometry", "Zellengeometrie", {
-                  options: this.getCodelistForSelect(
-                    "509",
-                    "gridSpatialRepresentation.cellGeometry",
-                  ),
-                  codelistId: "509",
-                  showSearch: true,
-                  allowNoValue: true,
-                  expressions: {
-                    "props.required": (field: FormlyFieldConfig) =>
-                      isNotEmptyObject(field.form.value, ["type"]),
-                  },
-                  hasInlineContextHelp: true,
-                  wrappers: ["inline-help", "form-field"],
-                }),
-              ],
-              { wrappers: [] },
-            ),
-            this.addGroup(
-              "georectified",
-              null,
-              [
-                this.addGroup(
-                  null,
-                  null,
-                  [
-                    this.addCheckboxInline(
-                      "checkPointAvailability",
-                      "Kontrollpunktverfügbarkeit",
-                      {
-                        className: "flex-1",
-                        hasInlineContextHelp: true,
-                      },
-                    ),
-                    this.addInputInline(
-                      "checkPointDescription",
-                      "Kontrollpunktbeschreibung",
-                      {
-                        className: "flex-1",
-                        hasInlineContextHelp: true,
-                        wrappers: ["inline-help", "form-field"],
-                      },
-                    ),
-                  ],
-                  { wrappers: [] },
-                ),
-                this.addGroup(
-                  null,
-                  null,
-                  [
-                    this.addInputInline("cornerPoints", "Eckpunkte", {
-                      className: "flex-3",
-                      hasInlineContextHelp: true,
-                      wrappers: ["inline-help", "form-field"],
-                    }),
-                    this.addSelectInline("pointInPixel", "Punkt im Pixel", {
-                      options: this.getCodelistForSelect(
-                        "2100",
-                        "gridSpatialRepresentation.georectified.pointInPixel",
+                  }),
+                ],
+                { wrappers: [] },
+              ),
+              this.addGroup(
+                "georectified",
+                null,
+                [
+                  this.addGroup(
+                    null,
+                    null,
+                    [
+                      this.addCheckboxInline(
+                        "checkPointAvailability",
+                        "Kontrollpunktverfügbarkeit",
+                        {
+                          className: "flex-1",
+                          hasInlineContextHelp: true,
+                        },
                       ),
-                      codelistId: "2100",
-                      showSearch: true,
-                      className: "flex-3",
-                      allowNoValue: true,
-                      hasInlineContextHelp: true,
-                      wrappers: ["inline-help", "form-field"],
-                    }),
-                  ],
-                  { wrappers: [] },
-                ),
-              ],
-              {
-                wrappers: [],
-                fieldGroupClassName: "",
-                hideExpression: (field: FormlyFieldConfig) =>
-                  field.options.formState.mainModel?.gridSpatialRepresentation
-                    ?.type?.key !== "rectified",
-              },
-            ),
-            this.addGroup(
-              "georeferenceable",
-              null,
-              [
-                this.addGroup(
-                  null,
-                  null,
-                  [
-                    this.addCheckboxInline(
-                      "orientationParameterAvailability",
-                      "Verfügbarkeit der Orientierungsparameter",
-                      { className: "flex-3" },
-                    ),
-                    this.addCheckboxInline(
-                      "controlPointAvaliability",
-                      "Passpunktverfügbarkeit",
-                      {
+                      this.addInputInline(
+                        "checkPointDescription",
+                        "Kontrollpunktbeschreibung",
+                        {
+                          className: "flex-1",
+                          hasInlineContextHelp: true,
+                          wrappers: ["inline-help", "form-field"],
+                        },
+                      ),
+                    ],
+                    { wrappers: [] },
+                  ),
+                  this.addGroup(
+                    null,
+                    null,
+                    [
+                      this.addInputInline("cornerPoints", "Eckpunkte", {
                         className: "flex-3",
                         hasInlineContextHelp: true,
-                      },
-                    ),
-                  ],
-                  { wrappers: [] },
-                ),
-                this.addInputInline(
-                  "parameters",
-                  "Georeferenzierungsparameter",
-                  {
-                    className: "",
-                    hasInlineContextHelp: true,
-                    wrappers: ["inline-help", "form-field"],
-                  },
-                ),
-              ],
-              {
-                wrappers: [],
-                fieldGroupClassName: "",
-                hideExpression: (field: FormlyFieldConfig) =>
-                  field.options.formState.mainModel?.gridSpatialRepresentation
-                    ?.type?.key !== "referenced",
-              },
-            ),
-          ],
-          {
-            fieldGroupClassName: "",
-            hideExpression: (field: FormlyFieldConfig) =>
-              !field.options.formState.mainModel?.spatialRepresentationType?.find(
-                (x) => x.key === "2",
+                        wrappers: ["inline-help", "form-field"],
+                      }),
+                      this.addSelectInline("pointInPixel", "Punkt im Pixel", {
+                        options: this.getCodelistForSelect(
+                          "2100",
+                          "gridSpatialRepresentation.georectified.pointInPixel",
+                        ),
+                        codelistId: "2100",
+                        showSearch: true,
+                        className: "flex-3",
+                        allowNoValue: true,
+                        hasInlineContextHelp: true,
+                        wrappers: ["inline-help", "form-field"],
+                      }),
+                    ],
+                    { wrappers: [] },
+                  ),
+                ],
+                {
+                  wrappers: [],
+                  fieldGroupClassName: "",
+                  hideExpression: (field: FormlyFieldConfig) =>
+                    field.options.formState.mainModel?.gridSpatialRepresentation
+                      ?.type?.key !== "rectified",
+                },
               ),
-          },
-        ),
-        this.addResolutionFields(),
-        this.addReferencesForAddress(
-          "service.coupledResources",
-          "uuid",
-          "Darstellender Dienst",
-          true,
-          false,
-          "Dieser Datensatz wird von keinem Geodatendienst referenziert.",
-          "Die Referenz kann nur vom darstellenden Dienst entfernt werden.",
-          {
-            className: "optional",
-            contextHelpId: "coupledResources",
-          },
-        ),
-        this.addGroupSimple("dataQualityInfo", [
-          this.addGroupSimple("lineage", [
-            this.addGroupSimple("source", [
-              dataOrigin(this),
-              this.addGroupSimple("processStep", [
-                this.addRepeatList("description", "Herstellungsprozess", {
-                  className: "optional flex-1",
-                  asAutocomplete: true,
-                  contextHelpId: "processStep",
-                }),
+              this.addGroup(
+                "georeferenceable",
+                null,
+                [
+                  this.addGroup(
+                    null,
+                    null,
+                    [
+                      this.addCheckboxInline(
+                        "orientationParameterAvailability",
+                        "Verfügbarkeit der Orientierungsparameter",
+                        { className: "flex-3" },
+                      ),
+                      this.addCheckboxInline(
+                        "controlPointAvaliability",
+                        "Passpunktverfügbarkeit",
+                        {
+                          className: "flex-3",
+                          hasInlineContextHelp: true,
+                        },
+                      ),
+                    ],
+                    { wrappers: [] },
+                  ),
+                  this.addInputInline(
+                    "parameters",
+                    "Georeferenzierungsparameter",
+                    {
+                      className: "",
+                      hasInlineContextHelp: true,
+                      wrappers: ["inline-help", "form-field"],
+                    },
+                  ),
+                ],
+                {
+                  wrappers: [],
+                  fieldGroupClassName: "",
+                  hideExpression: (field: FormlyFieldConfig) =>
+                    field.options.formState.mainModel?.gridSpatialRepresentation
+                      ?.type?.key !== "referenced",
+                },
+              ),
+            ],
+            {
+              fieldGroupClassName: "",
+              hideExpression: (field: FormlyFieldConfig) =>
+                !field.options.formState.mainModel?.spatialRepresentationType?.find(
+                  (x) => x.key === "2",
+                ),
+            },
+          ),
+          this.addResolutionFields(),
+          this.addReferencesForAddress(
+            "service.coupledResources",
+            "uuid",
+            "Darstellender Dienst",
+            true,
+            false,
+            "Dieser Datensatz wird von keinem Geodatendienst referenziert.",
+            "Die Referenz kann nur vom darstellenden Dienst entfernt werden.",
+            {
+              className: "optional",
+              contextHelpId: "coupledResources",
+            },
+          ),
+          this.addGroupSimple("dataQualityInfo", [
+            this.addGroupSimple("lineage", [
+              this.addGroupSimple("source", [
+                dataOrigin(this, this.documentService),
+                this.addGroupSimple("processStep", [
+                  this.addRepeatList("description", "Herstellungsprozess", {
+                    className: "optional flex-1",
+                    asAutocomplete: true,
+                    contextHelpId: "processStep",
+                  }),
+                ]),
               ]),
             ]),
           ]),
-        ]),
-        this.addGroupSimple("portrayalCatalogueInfo", [
-          this.addRepeat("citation", "Symbolkatalog", {
-            className: "optional",
-            fields: this.titleDateEditionFields(
-              "3555",
-              "portrayalCatalogueInfo.",
+          this.addGroupSimple("portrayalCatalogueInfo", [
+            this.addRepeat("citation", "Symbolkatalog", {
+              className: "optional",
+              fields: this.titleDateEditionFields(
+                "3555",
+                "portrayalCatalogueInfo.",
+              ),
+            }),
+          ]),
+          this.addGroupSimple("featureCatalogueDescription", [
+            this.addRepeat("citation", "Schlüsselkatalog", {
+              fields: this.titleDateEditionFields(
+                "3535",
+                "featureCatalogueDescription.",
+              ),
+              expressions: {
+                "props.required":
+                  this.geodatasetOptions.dynamicRequired.citation,
+                className: (field: FormlyFieldConfig) =>
+                  field.props.required ? "" : "optional",
+              },
+              contextHelpId: "keyCatalog",
+            }),
+            this.addRepeatList(
+              "featureTypes",
+              "Sachdaten/Attributinformation",
+              {
+                className: "optional",
+                asAutocomplete: true,
+              },
             ),
-          }),
-        ]),
-        this.addGroupSimple("featureCatalogueDescription", [
-          this.addRepeat("citation", "Schlüsselkatalog", {
-            fields: this.titleDateEditionFields(
-              "3535",
-              "featureCatalogueDescription.",
-            ),
-            expressions: {
-              "props.required": this.geodatasetOptions.dynamicRequired.citation,
-              className: (field: FormlyFieldConfig) =>
-                field.props.required ? "" : "optional",
-            },
-            contextHelpId: "keyCatalog",
-          }),
-          this.addRepeatList("featureTypes", "Sachdaten/Attributinformation", {
-            className: "optional",
-            asAutocomplete: true,
-          }),
-        ]),
-      ]),
+          ]),
+        ].filter(Boolean),
+      ),
       this.addSection("Datenqualität", [
         this.addGroupSimple("dataQuality", [
           this.addGroupSimple("completenessOmission", [

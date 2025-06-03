@@ -27,7 +27,7 @@ import {
 import { MainMenuService } from "../menu/main-menu.service";
 import { NavigationEnd, Route, Router } from "@angular/router";
 import { animate, style, transition, trigger } from "@angular/animations";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import {
   MatListItem,
   MatListItemIcon,
@@ -116,9 +116,11 @@ export class SideMenuComponent implements OnInit {
   }
 
   gotoPage(path: string) {
-    const tab = this.uiStore.currentTab()[path];
+    const tab = this.uiStore.currentSubpage()[path];
+
     if (tab) {
-      const tabWithParameter = tab.split(";");
+      // tab is a either a string with the format "tab;parameter" or an object with parameters like { parameter: "parameter" }
+      const tabWithParameter = typeof tab === "string" ? tab.split(";") : [tab];
       const newPath = [
         ConfigService.catalogId + "/" + path,
         tabWithParameter[0],

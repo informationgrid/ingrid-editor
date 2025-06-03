@@ -54,6 +54,8 @@ import { IgeError } from "../../../app/models/ige-error";
 import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 import { ReferenceViewComponent } from "../components/reference-view/reference-view.component";
 import { DocumentService } from "../../../app/services/document/document.service";
+import { CatalogService } from "../../../app/+catalog/services/catalog.service";
+import { GeneralStore } from "../../../app/store/general.store";
 
 interface GeneralSectionOptions {
   thesaurusTopics?: boolean;
@@ -80,6 +82,7 @@ export abstract class IngridShared extends BaseDoctype {
   private uploadService = inject(UploadService);
 
   protected codelistStore = inject(CodelistStore);
+  protected generalStore = inject(GeneralStore);
   protected codelistService = inject(CodelistService);
 
   options = {
@@ -121,13 +124,12 @@ export abstract class IngridShared extends BaseDoctype {
   showHVD: boolean = false;
   showAdVCompatible: boolean = false;
   showAdVProductGroup: boolean = false;
+  showDoiFields: boolean = false;
   /** @deprecated: should be defined in geoservice-doctype */
   isGeoService: boolean = false;
   /** @deprecated: should be defined in geodataset-doctype */
   isGeoDataset: boolean = false;
   private thesaurusTopics: boolean = false;
-
-  defaultKeySpatialScope = null; // Regional
 
   codelistIds = {
     distributionFormat: "1320",
@@ -199,14 +201,14 @@ export abstract class IngridShared extends BaseDoctype {
                     items: [
                       {
                         label: "InVeKoS/IACS (GSAA)",
-                        value: { key: "gsaa" },
+                        value: { key: "gsaa", value: "InVeKoS/IACS (GSAA)" },
                         contextHelpKey: "invekos",
                         onClick: (field) =>
                           this.handleInVeKosChange(field, this.thesaurusTopics),
                       },
                       {
                         label: "InVeKoS/IACS (LPIS)",
-                        value: { key: "lpis" },
+                        value: { key: "lpis", value: "InVeKoS/IACS (LPIS)" },
                         contextHelpKey: "invekos",
                         onClick: (field) =>
                           this.handleInVeKosChange(field, this.thesaurusTopics),
@@ -256,6 +258,7 @@ export abstract class IngridShared extends BaseDoctype {
                 items: [
                   {
                     label: "kompatibel",
+                    completeLabel: "AdV kompatibel",
                     key: "isAdVCompatible",
                     value: true,
                     contextHelpKey: "isAdVCompatible",
@@ -375,11 +378,16 @@ export abstract class IngridShared extends BaseDoctype {
   handleActivateOpenData(field: FormlyFieldConfig): Observable<boolean> {
     const cookieId = "HIDE_OPEN_DATA_INFO";
 
+    const noAccessConstraint =
+      this.codelistService.getCodelistEntryAsSelectOption("6010", "1");
+
     function executeAction() {
       const accessConstraintsControl = field.form.get(
         "resource.accessConstraints",
       );
-      accessConstraintsControl?.setValue([{ key: "1" }]);
+      accessConstraintsControl?.setValue([
+        noAccessConstraint.forBackend("6010"),
+      ]);
     }
 
     if (this.cookieService.getCookie(cookieId) === "true") {
@@ -512,7 +520,7 @@ export abstract class IngridShared extends BaseDoctype {
                     const invekosValue =
                       field.options.formState.mainModel?.properties?.invekos
                         ?.key;
-                    if (!invekosValue || invekosValue === "none") return true;
+                    if (!invekosValue) return true;
 
                     const hasKeyword = (keyword: string) =>
                       ctrl.value?.some(
@@ -1226,6 +1234,7 @@ export abstract class IngridShared extends BaseDoctype {
                   key: "specification",
                   type: "ige-select",
                   label: "Spezifikation",
+                  class: "", // prevent compact column to use max available space
                   props: {
                     required: true,
                     label: "Spezifikation",
@@ -1546,7 +1555,7 @@ export abstract class IngridShared extends BaseDoctype {
         infoText:
           "Nutzen Sie soweit möglich maschinenlesbare Dateiformate für Ihre Daten.",
         jsonTemplate: {
-          format: { key: null },
+          format: null,
           title: "",
           description: "",
         },
@@ -1608,7 +1617,7 @@ export abstract class IngridShared extends BaseDoctype {
                 return true;
               }
               return ctrl.value?.every(
-                (entry: any) => entry?.format?.key || entry?.format.value,
+                (entry: any) => entry?.format?.key || entry?.format?.value,
               );
             },
             message:
@@ -1647,6 +1656,37 @@ export abstract class IngridShared extends BaseDoctype {
         }),
       ],
     });
+  }
+
+  addDoiFields(): FormlyFieldConfig {
+    let doiPrefix =
+      this.behaviourService.getBehaviour("plugin.ingrid.doi")?.data?.doiPrefix;
+    return this.addGroup(null, "DOI", [
+      this.addInputInline("doi", "DOI", {
+        defaultValue: doiPrefix ? doiPrefix + "/" : "",
+        validators: {
+          validation: ["doi"],
+        },
+        hasInlineContextHelp: true,
+        wrappers: ["inline-help", "form-field"],
+      }),
+      this.addAutoCompleteInline(
+        "generalResourceType",
+        "Ressourcen Typ (generell)",
+        {
+          options: this.getCodelistForSelect("3390", "generalResourceType"),
+          codelistId: "3390",
+          hasInlineContextHelp: true,
+          wrappers: ["inline-help", "form-field"],
+        },
+      ),
+      this.addAutoCompleteInline("resourceType", "Ressourcen Typ", {
+        options: this.getCodelistForSelect("3386", "resourceType"),
+        codelistId: "3386",
+        hasInlineContextHelp: true,
+        wrappers: ["inline-help", "form-field"],
+      }),
+    ]);
   }
 
   protected urlRefFields() {
@@ -1856,15 +1896,13 @@ export abstract class IngridShared extends BaseDoctype {
   handleActivateInspireIdentified(field: FormlyFieldConfig) {
     const isOpenData = field.formControl.value.isOpenData === true;
 
-    if (this.defaultKeySpatialScope) {
-      field.form.get("spatialScope")?.setValue({
-        key: this.defaultKeySpatialScope,
-      });
-    }
-
     if (this.isGeoService) {
       if (isOpenData) {
-        field.form.get("resource.accessConstraints")?.setValue([{ key: "1" }]);
+        const noAccessConstraint =
+          this.codelistService.getCodelistEntryAsSelectOption("6010", "1");
+        field.form
+          .get("resource.accessConstraints")
+          ?.setValue([noAccessConstraint.forBackend("6010")]);
       }
 
       this.addConformanceEntry(field, "10", "1");
@@ -1911,13 +1949,17 @@ export abstract class IngridShared extends BaseDoctype {
     const conformanceValues = (conformanceResultCtrl.value ?? []).filter(
       (item: any) => item.specification?.key !== specificationKey,
     );
+    const specification = this.codelistService.getCodelistEntryAsSelectOption(
+      "6005",
+      specificationKey,
+    );
+    const pass = this.codelistService.getCodelistEntryAsSelectOption(
+      "6000",
+      passKey,
+    );
     conformanceValues.push({
-      specification: {
-        key: specificationKey,
-      },
-      pass: {
-        key: passKey,
-      },
+      specification: specification.forBackend("6005"),
+      pass: pass.forBackend("6000"),
       publicationDate:
         publicationDate?.length > 0 ? new Date(publicationDate) : null,
       isInspire: true,
@@ -2050,7 +2092,12 @@ export abstract class IngridShared extends BaseDoctype {
     const behaviour = this.behaviourService.getBehaviour(
       "plugin.ingrid.invekos",
     );
-    this.showInVeKoSField = behaviour?.isActive ?? behaviour?.defaultActive;
+    this.showInVeKoSField = behaviour?.isActive() ?? behaviour?.defaultActive;
+  }
+
+  protected handleDoiBehaviour() {
+    const behaviour = this.behaviourService.getBehaviour("plugin.ingrid.doi");
+    this.showDoiFields = behaviour?.isActive() ?? behaviour?.defaultActive;
   }
 
   private handleHVDClick(field: FormlyFieldConfig) {
@@ -2080,8 +2127,8 @@ export abstract class IngridShared extends BaseDoctype {
     field: FormlyFieldConfig,
     hasThesaurusTopics: boolean,
   ) {
-    const value = field.formControl.value.invekos?.key ?? "none";
-    if (value === "none") return;
+    const value = field.formControl.value.invekos?.key;
+    if (!value) return;
 
     this.addInVeKoSKeyword(field, "iacs");
 
@@ -2130,7 +2177,11 @@ export abstract class IngridShared extends BaseDoctype {
       cookieId,
     ).subscribe((decision) => {
       if (decision === "ok") executeAction(value);
-      else field.formControl.setValue({ key: "none" });
+      else
+        field.formControl.setValue({
+          ...field.formControl.value,
+          invekos: undefined,
+        });
     });
   }
 

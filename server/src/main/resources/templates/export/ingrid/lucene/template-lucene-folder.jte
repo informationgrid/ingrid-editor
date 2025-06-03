@@ -11,7 +11,9 @@
 
 {
     "iPlugId": "ige-ng_${catalog.getIdentifier()}",
-    "dataSourceName": "iPlug IGE-NG (${catalog.getIdentifier()})",
+    "dataSourceName": "${catalog.getName()}",
+    "collection.name": "${catalog.getName()}",
+    "collection.id": "${catalog.getIdentifier()}",
     "partner": [
         "${partner}"
     ],

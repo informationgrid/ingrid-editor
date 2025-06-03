@@ -33,6 +33,7 @@ import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.AttachedField
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.CoupledResource
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileName
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.FileReferenceTransferOption
@@ -48,17 +49,19 @@ import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.DigitalTransferOpti
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.UnitField
 import de.ingrid.igeserver.profiles.ingrid.inVeKoSKeywordMapping
 import de.ingrid.igeserver.profiles.ingrid.utils.FieldToCodelist
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.utils.SpringContext
 import de.ingrid.igeserver.utils.checkPublicationTags
 import de.ingrid.igeserver.utils.convertWktToGeoJson
 import de.ingrid.igeserver.utils.getBoolean
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.suffixIfNot
 import de.ingrid.mdek.upload.UploadConfig
 import org.apache.commons.codec.digest.DigestUtils
-import org.jetbrains.kotlin.util.suffixIfNot
-import org.unbescape.json.JsonEscape
+import org.apache.commons.text.StringEscapeUtils.escapeJson
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -194,8 +197,11 @@ open class IngridModelTransformer(
         var note: String? = null,
     )
 
-    open val useConstraints = data.resource?.useConstraints?.map { constraint ->
-        if (constraint.title == null) throw ServerException.withReason("Use constraint title is null $constraint")
+    open val useConstraints = data.resource?.useConstraints?.mapNotNull { constraint ->
+        if (constraint.title == null) {
+            log.warn("Use constraint title is null $constraint")
+            return@mapNotNull null
+        }
 
         // special case for "Es gelten keine Bedingungen"
         val link =
@@ -272,10 +278,10 @@ open class IngridModelTransformer(
 
     fun getSpatialReferenceLocationNames(): String = spatialReferences.filter {
         it.value != null
-    }.map {
+    }.joinToString("\",\"", "[\"", "\"]") {
         // must be escaped first, because we don't want to escape the whole array-string
-        JsonEscape.escapeJson(it.title)
-    }.joinToString("\",\"", "[\"", "\"]")
+        escapeJson(it.title ?: "")
+    }
 
     fun getSpatialReferenceArs(): List<String> = spatialReferences.mapNotNull { it.ars }
 
@@ -650,7 +656,16 @@ open class IngridModelTransformer(
 
     // TODO: move to specific doc type
     // literature
-    val resourceFormat = data.publication?.documentType?.let { codelists.getValue("3385", it, "en") }
+    val resourceFormat = if (!isDoiActive()) data.publication?.documentType?.let { codelists.getValue("3385", it, "en") } else null
+
+    private fun isDoiActive(): Boolean {
+        val doiBehaviour = SpringContext.getBean(BehaviourService::class.java)?.get(catalogIdentifier, "plugin.ingrid.doi")
+        return doiBehaviour?.active == true
+    }
+
+    val doi = if (isDoiActive()) data.publication?.doi else null
+    val generalResourceType = if (isDoiActive()) data.publication?.generalResourceType?.let { codelists.getValue("3390", it, "en") } else null
+    val resourceType = if (isDoiActive()) data.publication?.resourceType?.let { codelists.getValue("3386", it, "en") } else null
 
     val references = data.references ?: emptyList()
     private val externalReferences: List<ServiceUrl> by lazy {
@@ -712,12 +727,12 @@ open class IngridModelTransformer(
                 KeyValue(codelists.getValue(fieldToCodelist.referenceFileFormat, it.urlDataType, "de"), null)
             it
         } +
-            getCoupledServicesForGeodataset.map {
+            getCoupledServiceCapabilitiesUrls().map {
                 Reference(
-                    it.objectName,
-                    it.refType,
+                    it.name,
+                    KeyValue(null, null),
                     it.description,
-                    it.serviceUrl,
+                    it.url,
                     null,
                     null,
                 )
@@ -893,18 +908,18 @@ open class IngridModelTransformer(
 
     open fun getCrossReferences() = getCoupledCrossReferences() + getReferencedCrossReferences() + getIncomingReferencesProxy(true)
 
-    private fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
+    private fun getCoupledServiceUrlsOrGetCapabilitiesUrl() = getCoupledServiceCapabilitiesUrls() + getGetCapabilitiesUrl() + getExternalCoupledResources()
 
     fun getSubordinateReferences() = getIncomingReferencesProxy().filter { it.isSubordinate }
 
-    private fun getCoupledServiceUrls(): List<ServiceUrl> {
+    private fun getCoupledServiceCapabilitiesUrls(): List<ServiceUrl> {
         if (model.type != "InGridGeoDataset") return emptyList()
 
         return getIncomingReferencesProxy(true)
             .filter { it.objectType == "3" && it.serviceOperation == "GetCapabilities" }
             .map {
                 ServiceUrl(
-                    it.objectName,
+                    "Dienst \"${it.objectName}\" (GetCapabilities)",
                     it.serviceUrl ?: throw ServerException.withReason("Service URL is NULL"),
                     null,
                     serviceType = it.serviceType,
@@ -998,8 +1013,7 @@ open class IngridModelTransformer(
             ?: if (refTrans.data.getString("parentIdentifier") == this.doc.uuid) {
                 KeyValue(null, null)
             } else {
-                null
-                    ?: getRefTypeFromIncomingReference(refTrans.data)
+                getRefTypeFromIncomingReference(refTrans.data)
                     ?: throw ServerException.withReason("Could not find reference type for '${this.doc.uuid}' in '$uuid'.")
             }
 
@@ -1069,7 +1083,7 @@ open class IngridModelTransformer(
                     ?: throw ServerException.withReason("Preview image 'value'-property is NULL"),
                 json.getString("fileName.uri")
                     ?: throw ServerException.withReason("Preview image 'uri'-property is NULL"),
-                json.getDouble("fileName.sizeInBytes") ?: null,
+                json.getDouble("fileName.sizeInBytes"),
             ),
             json.getString("fieldDescription"),
         )
@@ -1135,7 +1149,19 @@ open class IngridModelTransformer(
 
     // if the document is a service with "Zugang geschützt" or it has access constraints other than "1" ("Es gelten keine Zugriffsbeschränkungen") #4377 #7280
     fun hasAccessConstraints(): Boolean = data.service.hasAccessConstraintsOrFalse() || (data.resource?.accessConstraints?.any { it.key != "1" } == true)
+
+    fun mapConformanceResultTitle(result: ConformanceResult): String? = when (result.isInspire) {
+        true -> if (codelists.catalogLanguage == "en") {
+            codelists.getValue("6005", result.specification, "en")
+        } else {
+            codelists.getValue("6005", result.specification, "iso") ?: codelists.getValue("6005", result.specification, "de")
+        }
+
+        else -> codelists.getCatalogCodelistValue("6006", result.specification)
+    }
 }
+
+data class AccessConstraint(val codelistValues: List<String>, val otherConstraints: List<CharacterStringModel>)
 
 enum class CoordinateType { Lat1, Lat2, Lon1, Lon2 }
 

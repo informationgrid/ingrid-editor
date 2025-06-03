@@ -33,6 +33,7 @@ import { GetCapabilititesWizardPlugin } from "./ingrid/components/getCapWIzard/g
 import { IsoViewPlugin } from "./ingrid/components/iso-view/iso-view.plugin";
 
 import { InvekosPlugin } from "./ingrid/behaviours/invekos.plugin";
+import { DoiPlugin } from "./ingrid/behaviours/doi.plugin";
 import { GeoDatasetDoctype } from "./ingrid/doctypes/geo-dataset.doctype";
 import { firstValueFrom, of, switchMap } from "rxjs";
 import { PublicationCheckDialogComponent } from "./ingrid/dialogs/publication-check/publication-check-dialog.component";
@@ -72,6 +73,7 @@ export class InGridComponent implements OnInit {
   getCapWizard = inject(GetCapabilititesWizardPlugin);
   isoView = inject(IsoViewPlugin);
   invekos = inject(InvekosPlugin);
+  doi = inject(DoiPlugin);
   dialog = inject(MatDialog);
   researchService = inject(ResearchService);
   pluginService = inject(PluginService);
@@ -99,7 +101,7 @@ export class InGridComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.profileService.registerProfiles(this.getDocTypes());
+    this.profileService.registerDoctypes(this.getDocTypes());
 
     this.profileService.setDefaultDataDoctype(this.geoDataset);
 

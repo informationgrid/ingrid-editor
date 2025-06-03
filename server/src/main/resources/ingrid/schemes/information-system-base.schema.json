@@ -40,13 +40,7 @@
     "serviceType": {
       "anyOf": [
         {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "key": {
-              "type": "string"
-            }
-          }
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
         },
         {
           "type": "null"
@@ -86,6 +80,35 @@
         "$ref": "../../general.schema.json#/definitions/PointOfContact"
       },
       "minItems": 1
+    },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "doi": {
+          "type": ["null", "string"]
+        },
+        "generalResourceType": {
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resourceType": {
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
     },
     "advProductGroups": {
       "$ref": "refs/general.schema.json#/definitions/advProductGroups"

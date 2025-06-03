@@ -17,13 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { map } from "rxjs/operators";
-import { of } from "rxjs";
+import { filter, tap } from "rxjs/operators";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { GeoDatasetDoctype } from "./geo-dataset.doctype";
 import { DataOriginViewComponent } from "../components/data-origin-view/data-origin-view.component";
+import { DocumentService } from "../../../app/services/document/document.service";
+import { DocumentWithMetadata } from "../../../app/models/ige-document";
 
-export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
+export function dataOrigin(
+  geoDatasetDoctype: GeoDatasetDoctype,
+  documentService: DocumentService,
+) {
   return geoDatasetDoctype.addRepeatDetailList(
     "descriptions",
     "Datengrundlage/Herkunft",
@@ -48,6 +52,42 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
           wrappers: ["inline-help", "form-field"],
           hasInlineContextHelp: false,
           updateOn: "change",
+        }),
+        geoDatasetDoctype.addDocumentCard("uuidRef", {
+          required: true,
+          docTypeFilter: ["InGridGeoDataset"],
+          label: "Geodatensatz auswählen",
+          allowRedirectToDocument: false,
+          allowMultiSelect: false,
+          titleOfDocumentSelectorDialog: "Geodatensatz auswählen",
+          expressions: {
+            hide: (field: FormlyFieldConfig) => {
+              return field.form.value._type != "internalDataOrigin";
+            },
+          },
+          hooks: {
+            onInit: (field: FormlyFieldConfig) => {
+              return field.options.fieldChanges.pipe(
+                filter((e) => {
+                  return e.type === "valueChanges" && e.field.key === "uuidRef";
+                }),
+                filter(
+                  (value) =>
+                    value.value !== null &&
+                    value.value !== undefined &&
+                    value.value?.length !== 0,
+                ),
+                tap((value) => {
+                  const formValue = field.form.value;
+                  if (formValue.date === null && formValue.dateType === null) {
+                    documentService
+                      .load(value.value, false, false, true)
+                      .subscribe((doc) => loadAndSetEvent(doc, field));
+                  }
+                }),
+              );
+            },
+          },
         }),
         geoDatasetDoctype.addGroupSimple(
           null,
@@ -83,19 +123,6 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
             fieldGroupClassName: "flex-row gap-12",
           },
         ),
-        geoDatasetDoctype.addDocumentCard("uuidRef", {
-          required: true,
-          docTypeFilter: ["InGridGeoDataset"],
-          label: "Geodatensatz auswählen",
-          allowRedirectToDocument: false,
-          allowMultiSelect: false,
-          titleOfDocumentSelectorDialog: "Geodatensatz auswählen",
-          expressions: {
-            hide: (field: FormlyFieldConfig) => {
-              return field.form.value._type != "internalDataOrigin";
-            },
-          },
-        }),
         geoDatasetDoctype.addInputInline("title", "Titel", {
           wrappers: ["inline-help", "form-field"],
           hasInlineContextHelp: true,
@@ -130,4 +157,41 @@ export function dataOrigin(geoDatasetDoctype: GeoDatasetDoctype) {
       ],
     },
   );
+}
+
+function loadAndSetEvent(doc: DocumentWithMetadata, field: FormlyFieldConfig) {
+  const sortedTemporalEvents = getSortedEvents(doc);
+
+  if (sortedTemporalEvents.length === 0) {
+    console.warn("No temporal events found!");
+    return;
+  }
+  const allRevisionEvents = sortedTemporalEvents.filter(
+    (event) => event.referenceDateType.key === "3",
+  );
+  const revisionFound = allRevisionEvents.length > 0;
+  field.formControl.root.patchValue({
+    date: revisionFound
+      ? allRevisionEvents[0].referenceDate
+      : sortedTemporalEvents[0].referenceDate,
+    dateType: revisionFound
+      ? allRevisionEvents[0].referenceDateType
+      : sortedTemporalEvents[0].referenceDateType,
+  });
+}
+
+function getSortedEvents(doc: DocumentWithMetadata) {
+  const events = doc.document.temporal?.events ?? [];
+  if (
+    events.length <= 0 ||
+    events[0].referenceDate == null ||
+    events[0].referenceDateType == null
+  )
+    return [];
+
+  return events.sort((a, b) => {
+    return (
+      new Date(b.referenceDate).getTime() - new Date(a.referenceDate).getTime()
+    );
+  });
 }

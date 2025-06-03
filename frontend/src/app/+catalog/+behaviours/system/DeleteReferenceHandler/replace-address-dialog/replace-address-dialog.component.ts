@@ -34,7 +34,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../../../dialogs/confirm/confirm-dialog.component";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { CdkDrag, CdkDragHandle } from "@angular/cdk/drag-drop";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";

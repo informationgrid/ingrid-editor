@@ -28,7 +28,6 @@ import { CommonFieldsBast } from "./common-fields";
 export class GeoServiceDoctypeBast extends GeoServiceDoctype {
   common = inject(CommonFieldsBast);
 
-  defaultKeySpatialScope = "-673152846";
   showAdVCompatible = false;
   showAdVProductGroup = false;
 

@@ -57,7 +57,7 @@ import { DocumentService } from "../../services/document/document.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../services/config/config.service";
 import { ExportService } from "../../services/export.service";
-import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import {
   DatePipe,
   NgFor,
@@ -220,7 +220,9 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
 
   downloadTable() {
     const rows: string[][] = [];
-    const additionalHeader = Object.keys(this.dataSource.data[0].additional);
+    const additionalHeader = Object.keys(
+      this.dataSource.data?.[0]?.additional ?? [],
+    );
     rows.push([
       "ID",
       "Veröffentlichungsstatus",

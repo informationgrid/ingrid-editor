@@ -23,7 +23,12 @@ import { ConfigService } from "./config/config.service";
 import { UiStore } from "../store/ui.store";
 
 // the values must match with the actual route!
-export type TabPage = "research" | "manage" | "importExport" | "catalogs";
+export type TabPage =
+  | "research"
+  | "manage"
+  | "importExport"
+  | "catalogs"
+  | "reports";
 
 export interface Tab {
   label: string;
@@ -50,19 +55,11 @@ export class SessionService {
     });
   }
 
-  updateCurrentTab(page: TabPage, tabIndex: string) {
+  updateCurrentSubpage(page: TabPage, subPage: string | { id: string }) {
     const newTabState = {};
-    newTabState[page] = tabIndex;
-    this.uiStore.updateCurrentTab(newTabState);
+    newTabState[page] = subPage;
+    this.uiStore.updateCurrentSubpage(newTabState);
   }
-
-  /*observeTabChange(page: TabPage): Observable<string> {
-    return this.uiStore.select((state) => state.ui.currentTab[page]);
-  }*/
-
-  /*getCurrentTab(page: TabPage): number {
-    return this.sessionQuery.getValue().ui.currentTab[page];
-  }*/
 
   getTabsFromRoute(activeRoute: ActivatedRouteSnapshot): Tab[] {
     return activeRoute.routeConfig.children

@@ -115,11 +115,11 @@ class IBusIndexer(override val name: String, private val iBus: IBus) : IIndexMan
         return (response?.get("result") as Array<String>? ?: emptyArray<String>()).toList()
     }
 
-    override fun delete(indexinfo: IndexInfo, id: String, updateOldIndex: Boolean) {
+    override fun delete(indexinfo: IndexInfo, uuid: String, updateOldIndex: Boolean) {
         val call = prepareCall("deleteDocById")
         call.parameter = mapOf(
             "indexinfo" to indexinfo,
-            "id" to id,
+            "id" to uuid,
             "updateOldIndex" to updateOldIndex,
         )
 

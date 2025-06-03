@@ -33,6 +33,7 @@ export function geometryContextFields() {
     fieldHelper.addSelectInline("featureType", "Feature-Typ", {
       required: true,
       options: GeometryContextDialogComponent.featureTypeOptions,
+      codelistId: null,
     }),
     fieldHelper.addInputInline("dataType", "Daten-Typ/-Klasse", {
       required: true,

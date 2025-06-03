@@ -144,5 +144,10 @@
     "description": "erlauterungen",
     "maintenanceAndUpdateFrequency": { "key": "8" },
     "userDefinedMaintenanceFrequency": { "unit": { "key": "5" }, "number": 5 }
+  },
+  "publication": {
+    "doi": "10.1000/1234",
+    "generalResourceType": { "key": "5" },
+    "resourceType": { "key": "2" }
   }
 }

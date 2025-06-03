@@ -126,6 +126,9 @@ data class Publication(
     val explanation: String?,
     val publishedIn: String?,
     val baseDataText: String?,
+    val doi: String?,
+    val generalResourceType: KeyValue?,
+    val resourceType: KeyValue?,
     val documentType: KeyValue?,
     val publicationDate: String?,
     val publishingHouse: String?,
@@ -235,6 +238,15 @@ data class ServiceUrl(
 //        "other" to Protocol("", ""),
     )
     fun getProtocol(): Protocol? {
+        if (serviceversion?.contains("wcs", true) == true) {
+            return Protocol("wcs", "OGC Web Coverage Service")
+        } else if (serviceversion?.contains("wfs", true) == true) {
+            return Protocol("wfs", "OGC Web Feature Service")
+        } else if (serviceversion?.contains("wms", true) == true) {
+            return Protocol("wms", "OGC Web Map Service")
+        } else if (serviceversion?.contains("wmts", true) == true) {
+            return Protocol("wmts", "OGC Web Map Tile Service")
+        }
         if (serviceType == null) return null
         return protocolMap[serviceType]
     }
@@ -503,8 +515,8 @@ data class UserDefinedMaintenanceFrequency(
 
 data class DateEvent(
     @JsonDeserialize(using = DateDeserializer::class)
-    val referenceDate: OffsetDateTime,
-    val referenceDateType: KeyValue,
+    val referenceDate: OffsetDateTime?,
+    val referenceDateType: KeyValue?,
 )
 
 data class TimeRange(

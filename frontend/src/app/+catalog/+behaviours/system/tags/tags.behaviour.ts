@@ -78,7 +78,7 @@ export class TagsBehaviour extends Plugin {
 
   unregisterForm() {
     super.unregisterForm();
-    if (this.isActive) {
+    if (this.isActive()) {
       this.formMenuService.removeMenuItem(this.menuId, this.menuItemId);
     }
   }
@@ -116,11 +116,14 @@ export class TagsBehaviour extends Plugin {
       .afterClosed()
       .pipe(filter((item) => item))
       .subscribe((newTag) =>
-        this.tagsService.updateTagForDocument(
-          currentDocument,
-          newTag,
-          this.forAddress(),
-        ),
+        this.tagsService
+          .addTags(currentDocument.id as number, [newTag], this.forAddress())
+          .subscribe(() => {
+            this.documentService.reload$.next({
+              uuid: currentDocument._uuid,
+              forAddress: this.forAddress(),
+            });
+          }),
       );
   }
 }

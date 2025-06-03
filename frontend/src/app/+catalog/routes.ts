@@ -32,7 +32,7 @@ export default [
     canActivate: [AuthGuard],
     // canDeactivate: [BehavioursChangedGuard],
     data: { roles: ["admin"] },
-    children: [
+    children: <Route[]>[
       {
         path: "",
         redirectTo: "codelists",
@@ -42,21 +42,21 @@ export default [
         path: "codelists",
         component: CatalogCodelistsComponent,
         data: {
-          title: "codelists",
+          title: "Codelisten",
         },
       },
       {
         path: "form-behaviours",
         component: BehavioursComponent,
         data: {
-          title: "form-behaviour",
+          title: "Verhalten",
         },
       },
       {
         path: "indexing",
         component: IndexingComponent,
         data: {
-          title: "indexing",
+          title: "Indizierung",
         },
       },
       {

@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.api.messaging
 
 import org.apache.logging.log4j.kotlin.logger
-import org.jetbrains.kotlin.backend.common.push
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 
@@ -34,7 +33,7 @@ data class IndexMessage(
 
     fun getTargetByName(name: String): TargetMessage {
         val result = targets.find { it.name == name }
-        return result ?: TargetMessage(name).also { targets.push(it) }
+        return result ?: TargetMessage(name).also { targets.add(it) }
     }
 
     fun increaseProgress() {
@@ -58,7 +57,7 @@ class IndexingNotifier(val msgTemplate: SimpMessagingTemplate) {
     val log = logger()
 
     fun sendMessage(message: IndexMessage) {
-        msgTemplate.convertAndSend("${Companion.WS_MESSAGE_TRANSFER_DESTINATION}/${message.catalogId}", message)
+        msgTemplate.convertAndSend("${WS_MESSAGE_TRANSFER_DESTINATION}/${message.catalogId}", message)
     }
 
     fun addAndSendMessageError(message: IndexMessage, ex: Exception?, errorPrefix: String = "") {

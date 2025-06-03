@@ -19,7 +19,6 @@
  */
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   inject,
   Inject,
@@ -33,7 +32,6 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import {
   CodelistService,
-  SelectOption,
   SelectOptionUi,
 } from "../../../../services/codelist/codelist.service";
 import { map, tap } from "rxjs/operators";
@@ -66,6 +64,7 @@ import { GeneralStore } from "../../../../store/general.store";
 export interface ChooseAddressDialogData {
   address: ResolvedAddressWithType;
   allowedTypes: string[];
+  allowedTypesByDoctype: { [key: string]: string[] } | null;
   skipToType: boolean;
 }
 
@@ -108,7 +107,8 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   initialActiveAddressType = new BehaviorSubject<Partial<any>>(null);
   typeSelectionEnabled = signal<boolean>(false);
   activeStep = 1;
-  referenceTypes: DocumentAbstract[];
+  availableReferenceTypes: DocumentAbstract[];
+  allowedReferenceTypes: DocumentAbstract[];
   private codelists$ = toObservable(this.codelistStore.entityMap);
 
   disabledCondition: (node: TreeNode) => boolean = (node: TreeNode) => {
@@ -120,7 +120,6 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     private codelistService: CodelistService,
     private documentService: DocumentService,
     private dlgRef: MatDialogRef<ChooseAddressDialogComponent>,
-    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -130,14 +129,9 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
         untilDestroyed(this),
         map((item) => item["505"]),
         map((codelist) => CodelistService.mapToSelect(codelist)),
-        map((items) => this.filterByAllowedTypes(items)),
-        tap((items) => this.preselectIfOnlyOneType(items)),
-        tap(
-          (items) => (this.referenceTypes = this.prepareReferenceTypes(items)),
-        ),
         tap((items) => {
-          this.typeSelectionEnabled.set(items.length > 1);
-          this.cdr.markForCheck();
+          this.availableReferenceTypes = this.prepareReferenceTypes(items);
+          this.updateTypes();
         }),
       )
       .subscribe();
@@ -146,6 +140,14 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     if (this.data.skipToType && this.typeSelectionEnabled()) {
       this.activeStep = 2;
     }
+  }
+
+  private updateTypes(): void {
+    this.allowedReferenceTypes = this.filterByAllowedTypes(
+      this.availableReferenceTypes,
+    );
+    this.preselectIfOnlyOneType(this.allowedReferenceTypes);
+    this.typeSelectionEnabled.set(this.allowedReferenceTypes.length > 1);
   }
 
   private prepareReferenceTypes(result: SelectOptionUi[]): DocumentAbstract[] {
@@ -162,19 +164,23 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
 
   updateAddressTree(addressId: number) {
     this.selection.set(this.addressTreeStore.entityMap()[addressId]);
+    this.updateTypes();
   }
 
   getResult(): void {
     this.documentService.addToRecentAddresses(this.selection());
 
+    const value = this.availableReferenceTypes.find(
+      (item) => item.id === this.selectedType,
+    ).title;
     this.dlgRef.close({
-      type: { key: this.selectedType },
+      type: { key: this.selectedType, value: value },
       address: this.selection(),
     });
   }
 
-  private preselectIfOnlyOneType(items: SelectOptionUi[]) {
-    if (items.length === 1) this.selectedType = items[0].value;
+  private preselectIfOnlyOneType(items: DocumentAbstract[]) {
+    if (items.length === 1) this.selectedType = items[0].id as string;
   }
 
   private updateModel(address: ResolvedAddressWithType) {
@@ -183,7 +189,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     }
 
     // in case the previous type is not allowed anymore, we use the new allowed type
-    const isAllowed = this.isTypeAllowed(address);
+    const isAllowed = this.isTypeAllowed(address.type?.key);
     if (isAllowed) {
       this.selectedType = address.type.key;
       this.initialActiveAddressType.next({
@@ -209,11 +215,16 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     throw error;
   }
 
-  private filterByAllowedTypes(items: SelectOptionUi[]) {
-    if (!this.data.allowedTypes) return items;
+  private filterByAllowedTypes(items: DocumentAbstract[]) {
+    const filterTypes =
+      this.data.allowedTypesByDoctype?.[this.selection()?._type] ??
+      this.data.allowedTypes;
+
+    // if no allowed types are set, we return all
+    if (!filterTypes) return items;
 
     return items.filter(
-      (item) => this.data.allowedTypes.indexOf(item.value) !== -1,
+      (item) => filterTypes.indexOf(item.id as string) !== -1,
     );
   }
 
@@ -221,10 +232,13 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     this.selectedType = $event.id.toString();
   }
 
-  private isTypeAllowed(address: ResolvedAddressWithType) {
+  private isTypeAllowed(typeId: string) {
     return (
-      this.filterByAllowedTypes([new SelectOption(address.type?.key, "")])
-        .length > 0
+      this.filterByAllowedTypes([
+        {
+          id: typeId,
+        } as DocumentAbstract,
+      ]).length > 0
     );
   }
 }

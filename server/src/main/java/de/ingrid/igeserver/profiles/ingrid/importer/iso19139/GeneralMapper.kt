@@ -52,6 +52,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val fieldToCodelist = FieldToCodelist()
 
     val metadata = isoData.data
+    val catalogLanguage = isoData.catalogLanguage
     val codeListService: CodelistHandler = isoData.codelistService
     val catalogId: String = isoData.catalogId
     val documentService: DocumentService = isoData.documentService
@@ -65,6 +66,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val title = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.title?.value
     val isInspireIdentified = containsKeyword("inspireidentifiziert")
     val isAdVCompatible = containsKeyword("AdVMIS")
+    val isHvd = getHvdCategories().isNotEmpty()
     val isOpenData = containsKeyword("opendata")
     val parentUuid = metadata.parentIdentifier?.value
 
@@ -129,7 +131,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             // then it gets special role: pointOfContactMd (key=12)
             val roleIso = contact.responsibleParty?.role?.codelist?.codeListValue!!
             val role: KeyValue = if (roleIso == "pointOfContact" && index < mainContact.size) {
-                KeyValue("12")
+                KeyValue("12", codeListService.getCodelistValue("505", "12", catalogLanguage))
             } else {
                 mapRoleToContactType(roleIso)
             }
@@ -310,12 +312,12 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     private fun getSalutationKeyValue(value: String): KeyValue? {
         val salutationKey = value.trim().let { codeListService.getCodeListEntryId("4300", it, "de") }
-        return if (salutationKey == null) null else KeyValue(salutationKey)
+        return if (salutationKey == null) null else KeyValue(salutationKey, value)
     }
 
     private fun mapRoleToContactType(value: String): KeyValue {
         val entryId = codeListService.getCodeListEntryId("505", value, "iso")
-        return if (entryId == null) KeyValue(null, value) else KeyValue(entryId)
+        return if (entryId == null) KeyValue(null, value) else KeyValue(entryId, value)
     }
 
     fun getAdvProductGroups(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.alternateTitle
@@ -348,6 +350,13 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "IACS data" }
         ?.flatMap { it.keywords?.keyword?.map { item -> item.value } ?: emptyList() }
         ?.map { inVeKoSKeywordMapping.filter { item -> item.value == it }.keys.first() }
+        ?.map { KeyValue(it) } ?: emptyList()
+
+    fun getHvdCategories(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "High-value dataset categories" }
+        ?.flatMap { it.keywords?.keyword?.map { item -> item.value } ?: emptyList() }
+        ?.map { it?.removePrefix("http://data.europa.eu/bna/") }
+        ?.map { codeListService.getCodeListEntryId("hvdCategories", it, "de") }
         ?.map { KeyValue(it) } ?: emptyList()
 
     fun getOpenDataCategories(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
@@ -395,6 +404,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             "Spatial scope",
             "Further legal basis",
             "IACS data",
+            "High-value dataset categories",
         ) + ignoreAdditional
         val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS")
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
@@ -845,6 +855,26 @@ open class GeneralMapper(val isoData: IsoImportData) {
         return result
     }
 
+    fun getPublication(): Publication? {
+        metadata.identificationInfo[0].identificationInfo?.citation?.citation?.identifier?.forEach loop@{ identifier ->
+            val code = identifier.mdIdentifier?.code?.value
+            if (code?.startsWith("https://doi.org/") == true) {
+                val doi = code.replace("https://doi.org/", "")
+                val authorityCode = identifier.mdIdentifier.authority?.citation?.identifier?.get(0)?.mdIdentifier?.code?.value
+                val generalResourceType = convertToCatalogKeyValue("3390", authorityCode?.substringBefore("/"))
+                val resourceType = convertToCatalogKeyValue("3386", authorityCode?.substringAfter("/"), "en")
+                return Publication(doi, generalResourceType, resourceType)
+            }
+        }
+        // is only being used in "literature", which cannot be imported currently - ignore for now
+        val documentType = convertToCatalogKeyValue(
+            "3385",
+            metadata.identificationInfo[0].identificationInfo?.resourceFormat?.mdFormat?.name?.value,
+            "en",
+        )
+        return null
+    }
+
     private fun getUseConstraintNoteWhenJsonExists(
         otherConstraints: List<String>,
         index: Int,
@@ -869,6 +899,12 @@ open class GeneralMapper(val isoData: IsoImportData) {
         if (text == null) return null
         val id = codeListService.getCodeListEntryId("6500", text, "de")
         return if (id == null) KeyValue(null, text) else KeyValue(id)
+    }
+
+    private fun convertToCatalogKeyValue(codelistId: String, value: String?, language: String = "de"): KeyValue? {
+        if (value == null) return null
+        val id = codeListService.getCatalogCodelistKey(catalogId, codelistId, value, language)
+        return if (id == null) KeyValue(null, value) else KeyValue(id)
     }
 
     private fun isJsonString(useConstraint: String?): Boolean {
@@ -983,10 +1019,10 @@ data class SpatialReference(
 )
 
 data class BoundingBox(
-    val lat1: Float,
-    val lon1: Float,
-    val lat2: Float,
-    val lon2: Float,
+    val lat1: Double,
+    val lon1: Double,
+    val lat2: Double,
+    val lon2: Double,
 )
 
 data class CoupledResourceModel(
@@ -1041,4 +1077,10 @@ data class AddressInfo(
     val zipCode: String?,
     val zipPOBox: String?,
     val administrativeArea: KeyValue?,
+)
+
+data class Publication(
+    val doi: String?,
+    val generalResourceType: KeyValue?,
+    val resourceType: KeyValue?,
 )

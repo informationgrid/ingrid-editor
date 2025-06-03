@@ -33,6 +33,10 @@ export const CHECKBOX_CONTROL_VALUE_ACCESSOR = {
   multi: true,
 };
 
+/**
+ * @deprecated
+ * TODO: can be removed?
+ */
 @Component({
   selector: "ige-checkbox",
   templateUrl: "./checkbox.component.html",

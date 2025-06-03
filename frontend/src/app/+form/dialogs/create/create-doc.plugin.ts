@@ -27,7 +27,7 @@ import { FormUtils } from "../../form.utils";
 import { FormStateService } from "../../form-state.service";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocEventsService } from "../../../services/event/doc-events.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { Plugin } from "../../../+catalog/+behaviours/plugin";
 import { PluginService } from "../../../services/plugin/plugin.service";
 import { take } from "rxjs/operators";
@@ -67,7 +67,7 @@ export class CreateDocumentPlugin extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      if (!this.formRegistered) return;
+      if (!this.isActive() || !this.formRegistered()) return;
       const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.toolbarService.setButtonState(
         "toolBtnPrint",
@@ -140,7 +140,7 @@ export class CreateDocumentPlugin extends Plugin {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       this.toolbarService.removeButton("toolBtnNew");
     }
   }

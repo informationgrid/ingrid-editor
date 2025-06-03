@@ -28,14 +28,14 @@ import {
 import { BehaviorSubject } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
-import { ProfileAbstract } from "../../../../store/profile/profile.model";
+import { DoctypeAbstract } from "../../../../store/doctype/doctype.model";
 import { ProfileService } from "../../../../services/profile.service";
-import { TranslocoDirective, TranslocoService } from "@ngneat/transloco";
+import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
 import { MatError, MatFormField } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { FocusDirective } from "../../../../directives/focus.directive";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
-import { ProfileStore } from "../../../../store/profile/profile.store";
+import { DoctypeStore } from "../../../../store/doctype/doctype.store";
 
 @Component({
   selector: "ige-document-template",
@@ -59,7 +59,7 @@ export class DocumentTemplateComponent implements OnInit {
   create = output<void>();
 
   private translocoService = inject(TranslocoService);
-  private profileStore = inject(ProfileStore);
+  private doctypeStore = inject(DoctypeStore);
   private profileService = inject(ProfileService);
 
   documentTypes: DocumentAbstract[];
@@ -71,12 +71,12 @@ export class DocumentTemplateComponent implements OnInit {
     if (this.isFolder()) {
       this.setDocType({ id: "FOLDER" } as DocumentAbstract);
     } else {
-      this.initializeDocumentTypes(this.profileStore.documentProfiles());
+      this.initializeDocumentTypes(this.doctypeStore.dataDoctypes());
     }
   }
 
-  private initializeDocumentTypes(profiles: ProfileAbstract[]) {
-    const types = this.prepareDocumentTypes(profiles);
+  private initializeDocumentTypes(doctypes: DoctypeAbstract[]) {
+    const types = this.prepareDocumentTypes(doctypes);
     const defaultDocId = this.profileService.getDefaultDataDoctype()?.id;
     const initialType = types.find((t) => t.id == defaultDocId) || types[0];
     this.setDocType(initialType);
@@ -84,14 +84,14 @@ export class DocumentTemplateComponent implements OnInit {
     this.documentTypes = types;
   }
 
-  private prepareDocumentTypes(result: ProfileAbstract[]): DocumentAbstract[] {
+  private prepareDocumentTypes(result: DoctypeAbstract[]): DocumentAbstract[] {
     return result
-      .map((profile) => {
+      .map((doctype) => {
         return {
-          id: profile.id,
-          title: this.translocoService.translate(`docType.${profile.id}`),
-          icon: profile.iconClass,
-          _type: profile.id,
+          id: doctype.id,
+          title: this.translocoService.translate(`docType.${doctype.id}`),
+          icon: doctype.iconClass,
+          _type: doctype.id,
           _state: "P",
         } as DocumentAbstract;
       })

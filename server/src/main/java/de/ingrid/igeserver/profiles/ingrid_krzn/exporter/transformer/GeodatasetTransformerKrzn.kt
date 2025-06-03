@@ -19,10 +19,10 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_krzn.exporter.transformer
 
-import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.getInternalReferences
+import de.ingrid.igeserver.profiles.ingrid_krzn.exporter.getMapLink
 import de.ingrid.igeserver.utils.getString
 
 class GeodatasetTransformerKrzn(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
@@ -36,12 +36,7 @@ class GeodatasetTransformerKrzn(transformerConfig: TransformerConfig) : Geodatas
             docData.getString("environmentDescription")
         }
 
-    override val mapLinkUrl = docData.getString("mapLink.key")?.let {
-        // do not map specific entry where we do not want to show mapUrl
-        if (it == "0") return@let null
-        codelists.getCatalogCodelistValue("10500", KeyValue(it, null))
-            ?.replace("{ID}", model.uuid)
-    }
+    override val mapLinkUrl = getMapLink(docData, model.uuid, codelists)
 
     override val datasetUri = docData.getString("dataSetURI")
 

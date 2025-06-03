@@ -54,14 +54,14 @@ import {
   ResearchService,
 } from "../../+research/research.service";
 import { DocEventsService } from "../event/doc-events.service";
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from "@jsverse/transloco";
 import { TagRequest } from "../../models/tag-request.model";
-import { MatSnackBar } from "@angular/material/snack-bar";
 import { CatalogService } from "../../+catalog/services/catalog.service";
 import { isExpired } from "../utils";
 import { GeneralStore } from "../../store/general.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { EntityMap } from "@ngrx/signals/entities";
+import { UiStore } from "../../store/ui.store";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -74,7 +74,10 @@ export interface ReloadData {
   providedIn: "root",
 })
 export class DocumentService {
+  static archivePluginActive = false;
+
   private generalStore = inject(GeneralStore);
+  private uiStore = inject(UiStore);
   private addressTreeStore = inject(AddressTreeStore);
   private documentTreeStore = inject(TreeStore);
   // TODO: check usefulness
@@ -84,6 +87,21 @@ export class DocumentService {
 
   private configuration: Configuration;
   private alternateAddressTitle: (doc: IgeDocument) => string = null;
+
+  static canWriteDocument(doc: DocumentAbstract): boolean {
+    return (
+      doc !== null &&
+      doc._pendingDate == null &&
+      doc.hasWritePermission &&
+      !DocumentService.isDocumentArchived(doc._tags)
+    );
+  }
+
+  static isDocumentArchived(docTags: string[]): boolean {
+    return (
+      DocumentService.archivePluginActive && docTags.indexOf("archived") !== -1
+    );
+  }
 
   constructor(
     private http: HttpClient,
@@ -96,7 +114,6 @@ export class DocumentService {
     private researchService: ResearchService,
     private translocoService: TranslocoService,
     private docEvents: DocEventsService,
-    private snackBar: MatSnackBar,
   ) {
     this.configuration = configService.getConfiguration();
   }
@@ -113,13 +130,15 @@ export class DocumentService {
     const excludeFoldersSQL = excludeFolders
       ? " AND document1.type != 'FOLDER'"
       : "";
+    const archivedTagSQL = " AND 'archived' NOT IN (SELECT UNNEST(tags))";
     return this.researchService
       .searchBySQL(
         `SELECT DISTINCT document1.*, document_wrapper.category
          FROM document_wrapper
+
                 JOIN document document1 ON document_wrapper.uuid = document1.uuid
          WHERE (title ILIKE '%${query}%' OR document1.uuid = '${query}')
-           ${categorySQL} ${excludeFoldersSQL}`,
+           ${categorySQL} ${excludeFoldersSQL} ${archivedTagSQL}`,
         1,
         size,
       )
@@ -201,7 +220,7 @@ export class DocumentService {
           page: 1,
           pageSize: 5,
         },
-        ["selectOnlyPublished"],
+        ["selectConditions"],
       ),
       this.researchService.search(
         "",
@@ -319,8 +338,14 @@ export class DocumentService {
     if (!keepOpenedDocument) {
       if (address) {
         this.generalStore.setOpenedAddress(doc);
+        this.uiStore.updateCurrentSubpage({
+          address: doc?._uuid ? { id: doc._uuid } : null,
+        });
       } else {
         this.generalStore.setOpenedDocument(doc);
+        this.uiStore.updateCurrentSubpage({
+          form: doc?._uuid ? { id: doc._uuid } : null,
+        });
       }
     }
   }
@@ -354,8 +379,8 @@ export class DocumentService {
 
     return this.dataService.updateTags(id, data).pipe(
       tap((newTags: string[]) => {
-        store.update(id, {
-          _tags: newTags?.join(","),
+        store.update(id, <DocumentAbstract>{
+          _tags: newTags,
         });
         const info = store.entityMap()[id];
         this.generalStore.setDatasetsChanged(
@@ -382,42 +407,7 @@ export class DocumentService {
     this.docEvents.sendBeforeSave();
     this.documentOperationFinished$.next(false);
 
-    return this.trimObjectAndRemoveEvilTags(data);
-  }
-
-  private trimObjectAndRemoveEvilTags(obj: IgeDocument): IgeDocument {
-    const trimmed = JSON.stringify(obj, (_key, value) => {
-      return typeof value === "string"
-        ? this.removeEvilTags(value.trim())
-        : value;
-    });
-    return JSON.parse(trimmed);
-  }
-
-  private removeEvilTags(val: String) {
-    // strip all tags except anchors and simple <b>, <i>, <u>, <p>, <br>, <strong>, <ul>, <ol>, <li> tags
-    let processed = val.replace(
-      /<(?!a>|a href|\/a>|b>|\/b>|i>|\/i>|u>|\/u>|p>|\/p>|br>|br\/>|br \/>|strong>|\/strong>|ul>|\/ul>|ol>|\/ol>|li>|\/li>)[^>]*>/gi,
-      "",
-    );
-    // strip anchors with javascript
-    processed = processed.replace(
-      /<a[^>]*?href="javascript[^>]*?>.*?<\/a>/gi,
-      "",
-    );
-    // remove all event handlers
-    processed = processed.replace(/ on\w+="[^"]*"/g, "");
-
-    if (processed !== val) {
-      this.snackBar.open(
-        "Ihre Eingabe wurde gespeichert. Bitte beachten Sie, dass bestimmte HTML-Tags nicht erlaubt sind und daher entfernt wurden.",
-        "OK",
-        {
-          duration: 5000,
-        },
-      );
-    }
-    return processed;
+    return data;
   }
 
   postSaveActions(saveOptions: PostSaveOptions) {
@@ -865,7 +855,7 @@ export class DocumentService {
         _modified: doc.metadata.modified,
         _contentModified: doc.metadata.contentModified,
         _pendingDate: doc.metadata.pendingDate,
-        _tags: doc.metadata.tags,
+        _tags: doc.metadata.tags, //.filter(),
         hasWritePermission: doc.metadata.hasWritePermission ?? false,
         hasOnlySubtreeWritePermission:
           doc.metadata.hasOnlySubtreeWritePermission ?? false,
@@ -1105,6 +1095,42 @@ export class DocumentService {
     return this.http.post(
       `${this.configuration.backendUrl}datasets/${id}/validate`,
       null,
+    );
+  }
+
+  archive(wrapperId: number) {
+    return this.dataService.archive(wrapperId).pipe(
+      tap((doc) => {
+        this.updateTreeStore(doc, false);
+        const docAbstract = this.mapToDocumentAbstracts([doc]);
+        this.documentTreeStore.update(wrapperId, docAbstract[0]);
+        this.generalStore.setDatasetsChanged(
+          {
+            type: UpdateType.Update,
+            data: docAbstract,
+            doNotSelect: true,
+          },
+          false,
+        );
+      }),
+    );
+  }
+
+  unarchive(wrapperId: number) {
+    return this.dataService.unarchive(wrapperId).pipe(
+      tap((doc) => {
+        this.updateTreeStore(doc, false);
+        const docAbstract = this.mapToDocumentAbstracts([doc]);
+        this.documentTreeStore.update(wrapperId, docAbstract[0]);
+        this.generalStore.setDatasetsChanged(
+          {
+            type: UpdateType.Update,
+            data: docAbstract,
+            doNotSelect: true,
+          },
+          false,
+        );
+      }),
     );
   }
 }

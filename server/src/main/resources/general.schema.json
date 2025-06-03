@@ -10,6 +10,9 @@
         },
         "value": {
           "type": ["string", "null"]
+        },
+        "_codelistId": {
+          "type": ["string", "null"]
         }
       },
       "title": "KeyValue"

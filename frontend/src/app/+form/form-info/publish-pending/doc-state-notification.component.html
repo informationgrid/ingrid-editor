@@ -1,0 +1,15 @@
+<div class="doc-state-notification">
+    {{ message() }}
+    @if (allowCancel()) {
+        <div>
+            <button
+                mat-button
+                color="primary"
+                class="mat-stroked-button"
+                (click)="cancel.emit()"
+            >
+                {{ buttonLabel() }}
+            </button>
+        </div>
+    }
+</div>

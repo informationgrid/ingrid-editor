@@ -28,11 +28,13 @@ import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.persistence.postgresql.jpa.ClosableTransaction
 import de.ingrid.igeserver.persistence.postgresql.model.meta.PermissionsData
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.UserManagementService
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -43,13 +45,21 @@ class CatalogImportService(
     val groupService: GroupService,
     val catalogService: CatalogService,
     val keycloakService: UserManagementService,
+    private val documentService: DocumentService,
 ) : CatalogTransferService(entityManager, transactionManager) {
     private val log = logger()
 
     fun importCatalog(exportedCatalog: ExportedCatalog) {
         runPreChecks(exportedCatalog)
 
-        val catalogId = createCatalog(exportedCatalog.catalog)
+        val catalogIdentifier = exportedCatalog.catalog["identifier"] as String
+        val catalogId = try {
+            val existingCatalog = catalogService.getCatalogById(catalogIdentifier)
+            if (!exportedCatalog.allowUpdate) throw ServerException.withReason("""The catalog with identifier $catalogIdentifier already exists and import file does not allow updates. Add the field '"allowUpdate": true' to the import file in order to update an existing catalog.""")
+            existingCatalog.id!!
+        } catch (e: EmptyResultDataAccessException) {
+            createCatalog(exportedCatalog.catalog)
+        }
 
         importBehaviours(exportedCatalog.behaviour, catalogId)
         importCodelists(exportedCatalog.codelist, catalogId)
@@ -60,7 +70,7 @@ class CatalogImportService(
         importQueries(exportedCatalog.query, catalogId, userMigrationMap)
 
         val documentWrapperMigrationMap = importDocumentWrapper(exportedCatalog.documentWrapper, catalogId, userMigrationMap)
-        createObjectIdentities(documentWrapperMigrationMap.values.toList())
+        createObjectIdentities(documentWrapperMigrationMap.values.toList(), catalogId)
         log.info("Imported ${documentWrapperMigrationMap.size} DocumentWrappers")
 
         importDocuments(exportedCatalog.document, catalogId, userMigrationMap)
@@ -80,7 +90,7 @@ class CatalogImportService(
         }
 
         if (catalogService.catalogExists(exportedCatalog.catalog["identifier"] as String)) {
-            throw ServerException.withReason("The catalog with identifier ${exportedCatalog.catalog["identifier"]} already exists")
+//            throw ServerException.withReason("The catalog with identifier ${exportedCatalog.catalog["identifier"]} already exists")
         }
     }
 
@@ -167,7 +177,7 @@ class CatalogImportService(
         return wrapperIdMigrationMap
     }
 
-    private fun createObjectIdentities(wrapperIds: List<Int>) {
+    private fun createObjectIdentities(wrapperIds: List<Int>, catalogId: Int) {
         @Suppress("UNCHECKED_CAST")
         val objectIdentityData = wrapperIds.map { wrapperId ->
             mapOf(
@@ -179,6 +189,31 @@ class CatalogImportService(
             )
         } as List<Map<String?, Any?>>
         importToTable("acl_object_identity", objectIdentityData)
+        // set acl_object_identity.parent_object according to the parent_id of the DocumentWrapper
+        updateACLParents(catalogId)
+    }
+
+    private fun updateACLParents(catalogId: Int) {
+        ClosableTransaction(transactionManager).use {
+            entityManager.createNativeQuery(
+                """
+            UPDATE acl_object_identity aoi
+            SET parent_object = (
+                SELECT parent_aoi.id
+                FROM document_wrapper dw
+                         JOIN acl_object_identity parent_aoi ON dw.parent_id = CAST(parent_aoi.object_id_identity AS INTEGER)
+                WHERE dw.id = CAST(aoi.object_id_identity AS INTEGER)
+                  AND dw.catalog_id = $catalogId
+            )
+            WHERE EXISTS (
+                SELECT 1
+                FROM document_wrapper dw
+                WHERE dw.id = CAST(aoi.object_id_identity AS INTEGER)
+                  AND dw.catalog_id = $catalogId
+                );
+                """.trimIndent(),
+            ).executeUpdate()
+        }
     }
 
     private fun importDocuments(document: List<MutableMap<String?, Any?>>, catalogId: Int, userMigrationMap: Map<Int, Int>) {
@@ -238,13 +273,14 @@ class CatalogImportService(
             row["catalog_id"] = catalogId
             if (row["manager_id"] != null) row["manager_id"] = userMigrationMap[row["manager_id"] as Int]
 
-            row["permissions"] = adaptGroupPermissions(row["permissions"] as String, documentWrapperMigrationMap)
+            row["permissions"] = adaptGroupPermissions(row["permissions"] as String, documentWrapperMigrationMap, catalogId)
         }
         if (permissionGroups.isEmpty()) {
             log.warn("No PermissionGroups to import!")
             return emptyMap()
         }
 
+        log.info("Importing PermissionGroups ... $permissionGroups")
         val newIds = importToTableReturningId("permission_group", permissionGroups)
         return previousIds.zip(newIds).toMap()
     }
@@ -276,21 +312,28 @@ class CatalogImportService(
         return allIds
     }
 
-    private fun adaptGroupPermissions(permissions: String, documentWrapperMigrationMap: Map<Int, Int>): String {
+    private fun adaptGroupPermissions(permissions: String, documentWrapperMigrationMap: Map<Int, Int>, catalogId: Int): String {
         val permissions = jacksonObjectMapper().readValue(permissions, PermissionsData::class.java)
         val idMigrationMap = documentWrapperMigrationMap
         return PermissionsData(
             permissions.rootPermission,
-            updatePermission(permissions.documents, idMigrationMap),
-            updatePermission(permissions.addresses, idMigrationMap),
+            updatePermission(permissions.documents, idMigrationMap, catalogId),
+            updatePermission(permissions.addresses, idMigrationMap, catalogId),
         )
             .let { jacksonObjectMapper().writeValueAsString(it) }
     }
 
-    private fun updatePermission(permissions: List<JsonNode>?, idMigrationMap: Map<Int, Int>) = permissions?.map { permission ->
+    private fun updatePermission(permissions: List<JsonNode>?, idMigrationMap: Map<Int, Int>, catalogId: Int) = permissions?.map { permission ->
         permission as ObjectNode
-        val oldId = permission.get("id").asInt()
-        permission.put("id", idMigrationMap[oldId])
+        if (permission.has("uuid")) {
+            val catalogIdentifier = catalogService.getCatalogs().find { it.id == catalogId }?.identifier!!
+            documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, permission.get("uuid").asText()).let {
+                permission.put("id", it.id!!)
+            }
+        } else {
+            val oldId = permission.get("id").asInt()
+            permission.put("id", idMigrationMap[oldId])
+        }
     }
 
     private fun saveAllGroupsOfCatalog(catalogIdentifier: String) {

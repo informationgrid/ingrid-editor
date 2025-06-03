@@ -23,7 +23,6 @@ import de.ingrid.igeserver.model.User
 import de.ingrid.igeserver.services.UserManagementService
 import org.apache.logging.log4j.kotlin.logger
 import org.keycloak.representations.idm.UserRepresentation
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.security.acls.model.NotFoundException
 import org.springframework.security.core.Authentication
@@ -33,11 +32,8 @@ import java.util.*
 
 @Service
 @Profile("dev")
-class KeycloakMockService : UserManagementService {
+class KeycloakMockService(val config: DevelopmentProperties) : UserManagementService {
     private val log = logger()
-
-    @Autowired
-    lateinit var config: DevelopmentProperties
 
     override fun getUsersWithIgeRoles(): Set<User> = config.logins?.mapIndexed { index, _ -> mapUser(index) }?.toSet() ?: emptySet()
 
@@ -60,10 +56,10 @@ class KeycloakMockService : UserManagementService {
     }
 
     private fun mapUser(index: Int) = User(
-        config.logins?.get(index) ?: "",
-        config.firstName?.get(index) ?: "",
-        config.lastName?.get(index) ?: "",
-        "${config.firstName?.get(index)}.${config.lastName?.get(index)}@test.com",
+        config.logins?.getOrNull(index) ?: "",
+        config.firstName?.getOrNull(index) ?: "",
+        config.lastName?.getOrNull(index) ?: "",
+        "${config.firstName?.getOrNull(index)}.${config.lastName?.getOrNull(index)}@test.com",
         "",
         "",
         "",
@@ -83,13 +79,9 @@ class KeycloakMockService : UserManagementService {
 
     override fun getCurrentPrincipal(): Principal? = Principal { config.logins?.get(config.currentUser) ?: "unknown" }
 
-    override fun userExists(userId: String): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun userExists(userId: String): Boolean = false
 
-    override fun createUser(user: User): String {
-        TODO("Not yet implemented")
-    }
+    override fun createUser(user: User): String = "Mocked user not really created"
 
     override fun requestPasswordChange(id: String) {
         TODO("Not yet implemented")

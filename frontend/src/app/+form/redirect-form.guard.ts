@@ -26,87 +26,50 @@ import {
 import { DocumentService } from "../services/document/document.service";
 import { ConfigService } from "../services/config/config.service";
 import { PluginService } from "../services/plugin/plugin.service";
-import { GeneralStore } from "../store/general.store";
 
 @Injectable({
   providedIn: "root",
 })
 export class RedirectFormGuard {
-  private generalStore = inject(GeneralStore);
-
-  constructor(
-    private router: Router,
-    private documentService: DocumentService,
-    private pluginService: PluginService,
-  ) {}
+  private router: Router = inject(Router);
+  private documentService: DocumentService = inject(DocumentService);
+  private pluginService: PluginService = inject(PluginService);
 
   async canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): Promise<boolean> {
-    if (state.url.indexOf(`/${ConfigService.catalogId}/form`) === 0) {
-      // in case we come from a different page
-      if (this.router.url.indexOf(`/${ConfigService.catalogId}/form`) !== 0) {
-        if (route.params.id) {
-          this.registerPluginsForDatasets();
-          this.reloadDataset(route.params.id, false);
-        } else {
-          const previousOpenedDocId = this.getOpenedDocumentId(false);
-          if (!previousOpenedDocId) this.registerPluginsForDatasets();
-          return await this.handleNavigation(route, previousOpenedDocId, false);
-        }
-      }
-    } else if (state.url.indexOf(`/${ConfigService.catalogId}/address`) === 0) {
-      // in case we come from a different page
-      if (
-        this.router.url.indexOf(`/${ConfigService.catalogId}/address`) !== 0
-      ) {
-        if (route.params.id) {
-          this.registerPluginsForAddress();
-          this.reloadDataset(route.params.id, true);
-        } else {
-          const previousOpenedDocId = this.getOpenedDocumentId(true);
-          if (!previousOpenedDocId) this.registerPluginsForAddress();
-          return await this.handleNavigation(route, previousOpenedDocId, true);
-        }
-      }
+    const basePath = `/${ConfigService.catalogId}`;
+    const formPath = `${basePath}/form`;
+    const addressPath = `${basePath}/address`;
+
+    const isFormUrl = state.url.startsWith(formPath);
+    const isAddressUrl = state.url.startsWith(addressPath);
+
+    // in case we come from a different page to the data/address-page
+    if (isFormUrl && !this.router.url.startsWith(formPath)) {
+      this.handleVisitDocPageFromExtern(route.params.id);
+    } else if (isAddressUrl && !this.router.url.startsWith(addressPath)) {
+      this.handleVisitAddressPageFromExtern(route.params.id);
     }
 
     return true;
   }
 
-  private registerPluginsForAddress() {
+  private handleVisitAddressPageFromExtern(uuid: string) {
     this.pluginService.pluginState$.next({
       register: true,
       address: true,
     });
+    if (uuid) this.reloadDataset(uuid, true);
   }
 
-  private registerPluginsForDatasets() {
+  private handleVisitDocPageFromExtern(uuid: string) {
     this.pluginService.pluginState$.next({
       register: true,
       address: false,
     });
-  }
-
-  private getOpenedDocumentId(forAddress: boolean): string {
-    return this.generalStore.getOpenedDocument(forAddress)?._uuid;
-  }
-
-  private async handleNavigation(
-    route: ActivatedRouteSnapshot,
-    uuid: string,
-    forAddress: boolean,
-  ): Promise<boolean> {
-    if (uuid && route.params.id !== uuid) {
-      await this.router.navigate([
-        forAddress
-          ? `/${ConfigService.catalogId}/address`
-          : `/${ConfigService.catalogId}/form`,
-        { id: uuid },
-      ]);
-      return false;
-    }
+    if (uuid) this.reloadDataset(uuid, false);
   }
 
   private reloadDataset(uuid: string, forAddress: boolean) {

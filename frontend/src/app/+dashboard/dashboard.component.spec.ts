@@ -34,7 +34,7 @@ import { CardBoxComponent } from "../shared/card-box/card-box.component";
 import { MatCardModule } from "@angular/material/card";
 import { MatListModule } from "@angular/material/list";
 import { DateAgoPipe } from "../directives/date-ago.pipe";
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { MessageService } from "../services/messages/message.service";
 import { provideHttpClientTesting } from "@angular/common/http/testing";

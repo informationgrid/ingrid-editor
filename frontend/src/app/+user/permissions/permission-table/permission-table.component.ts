@@ -34,11 +34,13 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatButtonModule } from "@angular/material/button";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { TranslocoModule } from "@ngneat/transloco";
+import { TranslocoModule } from "@jsverse/transloco";
 
 import { firstValueFrom } from "rxjs";
 import { map } from "rxjs/operators";
 import { BreadcrumbComponent } from "../../../+form/form-info/breadcrumb/breadcrumb.component";
+import { ConfigService } from "../../../services/config/config.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "permission-table",
@@ -81,6 +83,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
     private dialog: MatDialog,
     private documentService: DocumentService,
     private profileService: ProfileService,
+    private router: Router,
   ) {}
 
   callAddPermissionDialog() {
@@ -142,13 +145,14 @@ export class PermissionTableComponent implements ControlValueAccessor {
     }
 
     this.getDocument(doc.id).then((igeDoc) => {
+      doc.uuid = igeDoc._uuid;
       doc.hasWritePermission = igeDoc.hasWritePermission;
       doc.hasOnlySubtreeWritePermission = igeDoc.hasOnlySubtreeWritePermission;
       // Organisations act like folders in this context and also have the hasOnlySubtreeWritePermission option
       doc.isFolder =
         igeDoc._type === "FOLDER" || igeDoc._type.endsWith("OrganisationDoc");
       doc.title = igeDoc.title;
-      doc.iconClass = this.profileService.getProfile(igeDoc._type).iconClass;
+      doc.iconClass = this.profileService.getDoctype(igeDoc._type).iconClass;
 
       // downgrade permission if rights are not sufficient
       this.adjustPermission(doc);
@@ -169,7 +173,7 @@ export class PermissionTableComponent implements ControlValueAccessor {
     this.onChange(this.val);
   }
 
-  private adjustPermission(doc: any) {
+  private adjustPermission(doc: TreePermission) {
     // all permissions are allowed
     if (doc.hasWritePermission) return;
 
@@ -186,5 +190,10 @@ export class PermissionTableComponent implements ControlValueAccessor {
     if (!doc.hasWritePermission && !doc.hasOnlySubtreeWritePermission) {
       doc.permission = PermissionLevel.READ;
     }
+  }
+
+  openDataset(item: TreePermission) {
+    const basePath = `${ConfigService.catalogId}/${this.forAddress ? "address" : "form"}`;
+    this.router.navigate([basePath, { id: item.uuid }]);
   }
 }

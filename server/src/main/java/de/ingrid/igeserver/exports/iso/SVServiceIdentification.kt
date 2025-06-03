@@ -29,6 +29,7 @@ open class SVServiceIdentification(
     open val status: Status?,
     open val pointOfContact: List<Contact>?,
     open val resourceMaintenance: ResourceMaintenance?,
+    open val resourceFormat: ResourceFormat?,
     open val descriptiveKeywords: List<DescriptiveKeyword>?,
     open val resourceSpecificUsage: List<SpecificUsage>?,
     open val resourceConstraints: List<ResourceConstraint>?,

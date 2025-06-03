@@ -31,7 +31,7 @@ export interface ValidationError {
 type GeneralState = {
   favorites: { [x: string]: string[] };
   codelistsLoaded: boolean;
-  profilesLoaded: boolean;
+  doctypesLoaded: boolean;
   activeGroup: number;
   activeQuery: Query;
   openedAddress: DocumentAbstract;
@@ -62,7 +62,7 @@ type GeneralState = {
 const initialState: GeneralState = {
   favorites: {},
   codelistsLoaded: false,
-  profilesLoaded: false,
+  doctypesLoaded: false,
   activeGroup: null,
   activeQuery: null,
   openedAddress: null,
@@ -97,8 +97,8 @@ export const GeneralStore = signalStore(
     setCodelistsLoaded(): void {
       patchState(store, { codelistsLoaded: true });
     },
-    setProfilesLoaded(): void {
-      patchState(store, { profilesLoaded: true });
+    setDoctypesLoaded(): void {
+      patchState(store, { doctypesLoaded: true });
     },
     updateFavorites(favorites): void {
       patchState(store, { favorites: favorites });

@@ -62,7 +62,7 @@ import {
   MatHint,
   MatSuffix,
 } from "@angular/material/form-field";
-import { TranslocoDirective } from "@ngneat/transloco";
+import { TranslocoDirective } from "@jsverse/transloco";
 import { MatInput } from "@angular/material/input";
 import { MatIconButton } from "@angular/material/button";
 import { MatSelect } from "@angular/material/select";
@@ -224,7 +224,7 @@ export class RepeatChipComponent extends FieldArrayType implements OnInit {
 
     if (this.type === "codelist") {
       const prepared = new SelectOption(value.value, value.label);
-      this.add(null, prepared.forBackend());
+      this.add(null, prepared.forBackend(this.props.codelistId));
     } else {
       this.add(null, value);
     }
