@@ -80,6 +80,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
 
     this.addMultipleAfter(position, [
       this.addRepeatList("dataManagement", "Datenführende Stelle", {
+        required: true,
         asSelect: true,
         codelistId: "30000",
         options: this.getCodelistForSelect("30000", "dataManagement"),
