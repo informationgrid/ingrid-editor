@@ -12,6 +12,7 @@
     "description": "Kurzfassung/Beschreibung",
     "spatial": {
       "spatialSystems": "Raumbezugssystem (Lage)"
-    }
+    },
+    "statement": "Erläuterung zur Herkunft"
   }
 }

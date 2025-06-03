@@ -53,6 +53,7 @@ export interface Options {
     "props.maxLength"?;
     "props.hintStart"?;
     "props.description"?;
+    "props.placeholder"?;
   };
   hooks?: { onInit: (field) => void };
   buttonConfig?: { text: string; onClick: (buttonConfig, field) => void };

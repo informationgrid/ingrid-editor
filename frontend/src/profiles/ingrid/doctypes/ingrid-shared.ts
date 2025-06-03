@@ -54,7 +54,6 @@ import { IgeError } from "../../../app/models/ige-error";
 import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 import { ReferenceViewComponent } from "../components/reference-view/reference-view.component";
 import { DocumentService } from "../../../app/services/document/document.service";
-import { CatalogService } from "../../../app/+catalog/services/catalog.service";
 import { GeneralStore } from "../../../app/store/general.store";
 
 interface GeneralSectionOptions {
@@ -90,16 +89,19 @@ export abstract class IngridShared extends BaseDoctype {
       accessConstraints: (field: FormlyFieldConfig) =>
         field.options.formState.mainModel?.properties?.isInspireIdentified !==
         undefined,
-      openDataCategories: (field: FormlyFieldConfig) => true,
-      spatialReferences: (field: FormlyFieldConfig) => true,
-      spatialSystems: (field: FormlyFieldConfig) => false,
-      dataFormat: (field: FormlyFieldConfig) => false,
-      spatialScope: (field: FormlyFieldConfig) => false,
-      events: (field: FormlyFieldConfig) => true,
+      openDataCategories: (_: FormlyFieldConfig) => true,
+      spatialReferences: (_: FormlyFieldConfig) => true,
+      spatialSystems: (_: FormlyFieldConfig) => false,
+      dataFormat: (_: FormlyFieldConfig) => false,
+      spatialScope: (_: FormlyFieldConfig) => false,
+      events: (_: FormlyFieldConfig) => true,
     },
     dynamicHide: {
       openDataCategories: (field: FormlyFieldConfig) =>
         !field.options.formState.mainModel?.properties?.isOpenData,
+    },
+    dynamicDisabled: {
+      parentIdentifier: (_: FormlyFieldConfig) => false,
     },
     required: {
       freeKeywords: false,
@@ -330,6 +332,14 @@ export abstract class IngridShared extends BaseDoctype {
             {
               wrappers: ["panel", "form-field"],
               className: "optional",
+              expressions: {
+                "props.disabled": (field: FormlyFieldConfig) =>
+                  this.options.dynamicDisabled.parentIdentifier(field),
+                "props.placeholder": (field: FormlyFieldConfig) =>
+                  field.props.disabled
+                    ? "wird aus übergeordnetem Metadatensatz übernommen"
+                    : "",
+              },
             },
           ),
           this.addInput(

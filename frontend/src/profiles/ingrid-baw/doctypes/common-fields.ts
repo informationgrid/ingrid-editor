@@ -23,14 +23,17 @@ import {
   InputOptions,
   SelectOptions,
 } from "../../form-field-helper";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 import { FormControl } from "@angular/forms";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
 import { isNotEmptyObject } from "../../../app/shared/utils";
+import { FormStateService } from "../../../app/+form/form-state.service";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
+  formStateService = inject(FormStateService);
+
   getOrderTitleFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
     return this.addInput("orderTitle", "Auftragstitel", {
       required: true,
@@ -331,4 +334,11 @@ export class CommonFieldsBaw extends FormFieldHelper {
     message:
       "Es muss mindestens ein Datum vom Typ 'Publikation' vorhanden sein",
   };
+
+  parentIsObject(): boolean {
+    const metadata = this.formStateService.metadata();
+    return (
+      metadata.parentDocType != null && metadata.parentDocType !== "FOLDER"
+    );
+  }
 }

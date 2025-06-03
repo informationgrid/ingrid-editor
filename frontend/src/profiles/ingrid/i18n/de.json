@@ -16,6 +16,7 @@
     "references": {
       "fileFormat": "Dateiformat"
     },
+    "statement": "Fachliche Grundlage",
     "spatial": {
       "spatialSystems": "Koordinatenreferenzsysteme"
     },

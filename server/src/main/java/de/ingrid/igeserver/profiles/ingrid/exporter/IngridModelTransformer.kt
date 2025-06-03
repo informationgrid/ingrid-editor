@@ -770,11 +770,13 @@ open class IngridModelTransformer(
         emptyList()
     }
 
-    val parentIdentifier: String? = data.parentIdentifier
+    open fun getParentIdentifier(): String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
     val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
     var pointOfContact: List<AddressModelTransformer> = emptyList()
     var orderInfoContact: List<AddressModelTransformer>
+    fun getPointOfContactWithEmail() = pointOfContact.filter { addressHasEmail(it) }
+    fun getPointOfContactWithoutEmail() = pointOfContact.filter { addressHasEmail(it).not() }
     fun getAddressesToUuids() = pointOfContact.flatMap { model ->
         model.getSubordinatedParties().map { it.uuid }
     }
@@ -827,7 +829,7 @@ open class IngridModelTransformer(
         } ?: emptyList()
     }
 
-    private fun toAddressModelTransformer(it: AddressRefModel): AddressModelTransformer? {
+    fun toAddressModelTransformer(it: AddressRefModel): AddressModelTransformer? {
         val lastPublishedDoc =
             getLastPublishedDocument(it.ref ?: throw ServerException.withReason("Address-Reference UUID is NULL"))
 
@@ -1103,6 +1105,7 @@ open class IngridModelTransformer(
     }
 
     private fun addressIsPointContactMD(it: AddressRefModel) = codelists.getValue("505", it.type, "iso").equals("pointOfContactMd")
+    private fun addressHasEmail(it: AddressModelTransformer) = it.email?.isNotEmpty() ?: false
 
     private fun addressIsDistributor(it: AddressRefModel) = codelists.getValue("505", it.type, "iso").equals("distributor")
 
@@ -1128,8 +1131,9 @@ open class IngridModelTransformer(
 
     fun hasDistributorInfo(): Boolean = data.orderInfo?.isNotEmpty() == true || data.fees?.isNotEmpty() == true
 
+    open fun linkToVerticalCRS() = false
     fun hasCompleteVerticalExtent(): Boolean = data.spatial.verticalExtent?.let {
-        it.Datum != null && it.minimumValue != null && it.maximumValue != null && it.unitOfMeasure != null
+        it.Datum != null && it.minimumValue != null && it.maximumValue != null && (it.unitOfMeasure != null || linkToVerticalCRS())
     } ?: false
 
     private fun isCapabilitiesEntry(entry: JsonNode): Boolean = entry.getString("name.key") == "1" || entry.getString("name.value") == "GetCapabilities"

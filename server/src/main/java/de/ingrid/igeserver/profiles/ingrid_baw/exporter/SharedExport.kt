@@ -20,9 +20,12 @@
 package de.ingrid.igeserver.profiles.ingrid_baw.exporter
 
 import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.PublicationModelTransformerBaw
+import de.ingrid.igeserver.utils.getString
+import org.springframework.dao.EmptyResultDataAccessException
 import kotlin.reflect.KClass
 
 fun getBawModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
@@ -45,4 +48,17 @@ fun getBawTemplateForDocType(docType: String): String? = when (docType) {
 //    "InGridGeoService" -> "export/ingrid-baw/idf-geodataservice-baw.jte"
 //    "InGridSoftware" -> "export/ingrid-baw/idf-software-baw.jte"
     else -> null
+}
+
+fun getIdentifierFromParent(transformer: IngridModelTransformer): String? {
+    val wrapper = transformer.documentService.getWrapperById(transformer.doc.wrapperId!!)
+    if (wrapper.type == "FOLDER" || wrapper.parent == null) return null
+
+    val parentDoc = try {
+        transformer.documentService.getLastPublishedDocument(transformer.catalogIdentifier, wrapper.getParentUuid()!!)
+    } catch (_: EmptyResultDataAccessException) {
+        // no published document found
+        null
+    }
+    return parentDoc?.data?.getString("identifier")?.let { id -> transformer.addNamespaceIfNeeded(id) }
 }

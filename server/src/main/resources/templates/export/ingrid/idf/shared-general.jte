@@ -337,6 +337,8 @@
                 </gmd:identifier>
             @endif
 
+            @template.export.ingrid.idf.addresses(addresses = page.getPointOfContactWithoutEmail(), wrapperElement = "gmd:citedResponsibleParty")
+
             ${additionalCitation}
 
         </gmd:CI_Citation>
@@ -356,7 +358,7 @@
                     codeListValue="${page.getStatus()}" />
         </gmd:status>
     @endif
-    @template.export.ingrid.idf.addresses(addresses = page.getPointOfContact(), wrapperElement = "gmd:pointOfContact")
+    @template.export.ingrid.idf.addresses(addresses = page.getPointOfContactWithEmail(), wrapperElement = "gmd:pointOfContact")
     @if(  TransformationTools.hasValue(page.getMaintenanceAndUpdateFrequency()) || TransformationTools.hasValue(page.getMaintenanceNote()) )
         <gmd:resourceMaintenance>
             <gmd:MD_MaintenanceInformation>
@@ -650,6 +652,9 @@
                     <gmd:maximumValue>
                         <gco:Real>${verticalExtent.getMaximumValue()}</gco:Real>
                     </gmd:maximumValue>
+                    @if(page.linkToVerticalCRS())
+                        <gmd:verticalCRS xlink:title="EPSG:${verticalExtent.getDatum().getKey()}" xlink:href="https://epsg.org/crs/gml/id/${verticalExtent.getDatum().getKey()}/export?format=gml" />
+                    @else
                     <gmd:verticalCRS>
                         <gml:VerticalCRS gml:id="verticalCRSN_ID_${TransformationTools.getRandomUUID()}">
                             <gml:identifier codeSpace="" />
@@ -677,6 +682,8 @@
                             </gml:verticalDatum>
                         </gml:VerticalCRS>
                     </gmd:verticalCRS>
+                    @endif
+
                 </gmd:EX_VerticalExtent>
             </gmd:verticalElement>
         @endif

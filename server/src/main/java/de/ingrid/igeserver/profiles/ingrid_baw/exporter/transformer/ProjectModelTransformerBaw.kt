@@ -19,31 +19,22 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer
 
-import de.ingrid.igeserver.profiles.ingrid.exporter.PublicationModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getIdentifierFromParent
-import de.ingrid.igeserver.utils.getPath
-import de.ingrid.igeserver.utils.mapToKeyValue
 
-open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) : PublicationModelTransformer(transformerConfig) {
-
-    override val hierarchyLevelName = "document"
+open class ProjectModelTransformerBaw(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
     override fun linkToVerticalCRS() = true
 
     override fun getParentIdentifier(): String? = data.parentIdentifier ?: getIdentifierFromParent(this)
 
-    override fun mapDocumentType(type: String): String = when (type) {
-        "BawPublication" -> "2" // InGridPublication
-        else -> super.mapDocumentType(type)
-    }
+    override val hierarchyLevelName = "project"
 
-    override val spatialSystems = super.spatialSystems + (
-        (doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }?.map {
-            mapToCharacterStringModel(
-                "verticalCoordinateReferenceSystem",
-                it,
-            )
-        } ?: emptyList()
-        )
+    // address type: Projektleitung
+//    val managers = data.pointOfContact?.filter { it.type?.key == "8" }?.mapNotNull { toAddressModelTransformer(it) }?.map { it.title }
+//    val managerAdd = data.pointOfContact?.filter { it.type?.key == "8" }?.mapNotNull { toAddressModelTransformer(it) }
+//
+//    // address type: "Bearbeiter" TODO: change to "Projektbeteiligte" when in codelist
+//    val participants = data.pointOfContact?.filter { it.type?.key == "9" }?.mapNotNull { toAddressModelTransformer(it) }?.map { it.title }
 }

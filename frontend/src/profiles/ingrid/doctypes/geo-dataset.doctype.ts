@@ -129,13 +129,18 @@ export class GeoDatasetDoctype extends IngridShared {
         "Fachbezug",
         [
           this.addGroupSimple("lineage", [
-            this.addTextArea("statement", "Fachliche Grundlage", this.id, {
-              required: this.geodatasetOptions.required.statement,
-              expressions: {
-                "props.required":
-                  this.geodatasetOptions.dynamicRequired.statement,
+            this.addTextArea(
+              "statement",
+              this.transloco.translate("form.statement"),
+              this.id,
+              {
+                required: this.geodatasetOptions.required.statement,
+                expressions: {
+                  "props.required":
+                    this.geodatasetOptions.dynamicRequired.statement,
+                },
               },
-            }),
+            ),
           ]),
           this.addInput("identifier", "Identifikator der Datenquelle", {
             required: this.geodatasetOptions.required.identifier,

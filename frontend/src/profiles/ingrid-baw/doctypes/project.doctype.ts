@@ -29,6 +29,7 @@ export class ProjectDoctypeBaw extends ProjectDoctype {
   common = inject(CommonFieldsBaw);
 
   showManager = false;
+  showParticipants = false;
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedFields(this, fieldConfig);

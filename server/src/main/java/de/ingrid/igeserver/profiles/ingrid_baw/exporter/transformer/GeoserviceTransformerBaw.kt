@@ -21,10 +21,16 @@ package de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer
 
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodataserviceModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getIdentifierFromParent
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.mapToKeyValue
 
 class GeoserviceTransformerBaw(transformerConfig: TransformerConfig) : GeodataserviceModelTransformer(transformerConfig) {
+
+    override fun linkToVerticalCRS() = true
+
+    override fun getParentIdentifier(): String? = data.parentIdentifier ?: getIdentifierFromParent(this)
+
     override val spatialSystems = super.spatialSystems + (
         (doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }?.map {
             mapToCharacterStringModel(

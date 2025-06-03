@@ -21,10 +21,15 @@ package de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer
 
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getIdentifierFromParent
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.mapToKeyValue
 
 class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
+
+    override fun linkToVerticalCRS() = true
+
+    override fun getParentIdentifier(): String? = data.parentIdentifier ?: getIdentifierFromParent(this)
 
     override fun mapDocumentType(type: String): String = when (type) {
         "BawMeasurement",
