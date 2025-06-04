@@ -72,7 +72,7 @@ class MigrateCodelistIdsIntoDatasets(
         FieldToCodelist(null, "maintenanceInformation.maintenanceAndUpdateFrequency", "518"),
         FieldToCodelist(null, "maintenanceInformation.userDefinedMaintenanceFrequency.unit", "1230"),
         FieldToCodelist(null, "metadata.language", "99999999"),
-        FieldToCodelist("dataset.languages", null, "99999999"),
+//        FieldToCodelist("dataset.languages", null, "99999999"), // only stored as simple values
         FieldToCodelist(null, "metadata.characterSet", "510"),
         FieldToCodelist("conformanceResult", "pass", "6000"),
         FieldToCodelist("conformanceResult", "specification", "6005"),
@@ -88,7 +88,7 @@ class MigrateCodelistIdsIntoDatasets(
         FieldToCodelist(null, "service.type", "5100"),
         FieldToCodelist("service.classification", null, "5200"),
         FieldToCodelist("service.version", null, "5152"), // dynamic!!!
-        FieldToCodelist("service.operations", "name", "5110"), // dynamic!!!
+//        FieldToCodelist("service.operations", "name", "5110"), // dynamic -> special handling
 
         FieldToCodelist("featureCatalogueDescription.citation", "title", "3535"),
         FieldToCodelist("portrayalCatalogueInfo.citation", "title", "3555"),
@@ -148,6 +148,11 @@ class MigrateCodelistIdsIntoDatasets(
                 val sql = getSQL(it, catalogIdentifier)
                 log.info("Executing SQL: $sql")
                 val updatedRows = jdbcTemplate.update(sql)
+
+                getSQLForDynamicOperationsCodelistId(catalogIdentifier).let { operationSql ->
+                    log.info("Executing SQL for dynamic operations")
+                    jdbcTemplate.update(operationSql)
+                }
 
                 message.message = "Codelist synchronization completed successfully. Updated $updatedRows rows."
                 log.info("Codelist synchronization completed successfully. Updated $updatedRows rows for $it.")
@@ -211,6 +216,35 @@ class MigrateCodelistIdsIntoDatasets(
                   AND d.data ${convertToJsonPathForNullCheck(rootField)} IS NOT NULL
         """.trimIndent()
     }
+
+    private fun getSQLForDynamicOperationsCodelistId(catalogIdentifier: String): String = """
+            UPDATE document d
+            SET data = jsonb_set(
+                d.data,
+                '{service,operations}',
+                COALESCE(
+                    (
+                        SELECT jsonb_agg(
+                                    CASE
+                                        WHEN d.data -> 'service' -> 'type' ->> 'key' = '1' THEN jsonb_set(elem, '{name,_codelistId}', '"5105"', TRUE)
+                                        WHEN d.data -> 'service' -> 'type' ->> 'key' = '2' THEN jsonb_set(elem, '{name,_codelistId}', '"5110"', TRUE)
+                                        WHEN d.data -> 'service' -> 'type' ->> 'key' = '3' THEN jsonb_set(elem, '{name,_codelistId}', '"5120"', TRUE)
+                                        WHEN d.data -> 'service' -> 'type' ->> 'key' = '4' THEN jsonb_set(elem, '{name,_codelistId}', '"5130"', TRUE)
+                                    ELSE jsonb_set(elem, '{name,_codelistId}', '"5110"', TRUE)
+                                    END
+                                )
+                        FROM jsonb_array_elements(d.data -> 'service' -> 'operations') elem
+                    ),
+                    '[]'::jsonb
+                )
+            )
+            FROM document_wrapper dw JOIN catalog cat ON dw.catalog_id = cat.id
+            WHERE d.uuid = dw.uuid
+              AND cat.identifier = '$catalogIdentifier'
+              AND dw.deleted = 0
+              AND d.state != 'ARCHIVED'
+              AND d.data -> 'service' ->> 'operations' IS NOT NULL
+    """.trimIndent()
 
     private fun convertToJsonPathForNullCheck(dotPath: String): String {
         val parts = dotPath.split(".")

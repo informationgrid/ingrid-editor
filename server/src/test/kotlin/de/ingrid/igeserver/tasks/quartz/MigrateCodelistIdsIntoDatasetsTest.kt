@@ -76,7 +76,7 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 it.get("themes").get(0).getString("_codelistId") shouldBe "6100"
                 it.get("advProductGroups").get(0).getString("_codelistId") shouldBe "8010"
                 it.getPath("service.version")!!.get(0).getString("_codelistId") shouldBe "5152"
-                it.getPath("service.operations")!!.get(0).getString("name._codelistId") shouldBe "5110"
+                it.getPath("service.operations")!!.get(0).getString("name._codelistId") shouldBe "5120"
                 it.getPath("service.classification")!!.get(0).getString("_codelistId") shouldBe "5200"
                 it.getPath("spatial.spatialSystems")!!.get(0).getString("_codelistId") shouldBe "100"
                 it.getString("service.type._codelistId") shouldBe "5100"
@@ -145,10 +145,10 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 it.getPath("contact")!!.get(1).getString("type._codelistId") shouldBe "4430"
                 it.getPath("contact")!!.get(2).getString("type._codelistId") shouldBe "4430"
                 it.getPath("contact")!!.get(3).getString("type._codelistId") shouldBe "4430"
-                it.getString("address.administrativeArea._codelist") shouldBe "6250"
-                it.getString("address.country._codelist") shouldBe "6200"
-                it.getString("salutation._codelist") shouldBe "4300"
-                it.getString("academic-title._codelist") shouldBe "4305"
+                it.getString("address.administrativeArea._codelistId") shouldBe "6250"
+                it.getString("address.country._codelistId") shouldBe "6200"
+                it.getString("salutation._codelistId") shouldBe "4300"
+                it.getString("academic-title._codelistId") shouldBe "4305"
             }
     }
 }
