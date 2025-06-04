@@ -44,10 +44,18 @@ class MigrateCodelistIdsIntoDatasets(
 
     override val log = logger()
 
-    val fieldsInGrid = listOf(
+    private final val fieldsAddress = listOf(
+        FieldToCodelist(null, "salutation", "4300"),
+        FieldToCodelist(null, "academic-title", "4305"),
+        FieldToCodelist("contact", "type", "4430"),
+        FieldToCodelist(null, "address.country", "6200"),
+        FieldToCodelist(null, "address.administrativeArea", "6250"),
+    )
+
+    private final val fieldsInGrid = fieldsAddress + listOf(
         FieldToCodelist("advProductGroups", null, "8010"),
         FieldToCodelist("spatial.spatialSystems", null, "100"),
-//          FieldToCodelistld("gridSpatialRepresentation.type", ""),
+//          FieldToCodelistld("gridSpatialRepresentation.type", ""), -> IS NULL
         FieldToCodelist("distribution.format", "name", "1320"),
         FieldToCodelist(null, "fileReferences.format", "1320"),
         FieldToCodelist("themes", null, "6100"),
@@ -59,6 +67,7 @@ class MigrateCodelistIdsIntoDatasets(
         FieldToCodelist(null, "spatial.verticalExtent.unitOfMeasure", "102"),
         FieldToCodelist(null, "spatial.verticalExtent.Datum", "101"),
         FieldToCodelist("temporal.events", "referenceDateType", "502"),
+        FieldToCodelist("dataQualityInfo.lineage.source.descriptions", "dateType", "502"),
         FieldToCodelist(null, "temporal.status", "523"),
         FieldToCodelist(null, "maintenanceInformation.maintenanceAndUpdateFrequency", "518"),
         FieldToCodelist(null, "maintenanceInformation.userDefinedMaintenanceFrequency.unit", "1230"),
@@ -71,8 +80,8 @@ class MigrateCodelistIdsIntoDatasets(
         FieldToCodelist("resource.accessConstraints", null, "6010"),
         FieldToCodelist("resource.useConstraints", "title", "6500"),
         FieldToCodelist("digitalTransferOptions", "name", "520"),
-        FieldToCodelist(null, "generalResourceType", "3390"),
-        FieldToCodelist(null, "resourceType", "3386"),
+        FieldToCodelist(null, "publication.generalResourceType", "3390"),
+        FieldToCodelist(null, "publication.resourceType", "3386"),
         FieldToCodelist("references", "type", "2000"),
         FieldToCodelist("references", "urlDataType", "1320"),
         FieldToCodelist("pointOfContact", "type", "505"),
@@ -80,11 +89,48 @@ class MigrateCodelistIdsIntoDatasets(
         FieldToCodelist("service.classification", null, "5200"),
         FieldToCodelist("service.version", null, "5152"), // dynamic!!!
         FieldToCodelist("service.operations", "name", "5110"), // dynamic!!!
+
+        FieldToCodelist("featureCatalogueDescription.citation", "title", "3535"),
+        FieldToCodelist("portrayalCatalogueInfo.citation", "title", "3555"),
+        FieldToCodelist(null, "properties.subType", "525"),
+        FieldToCodelist("spatialRepresentationType", null, "526"),
+        FieldToCodelist(null, "vectorSpatialRepresentation.topologyLevel", "528"),
+        FieldToCodelist(null, "vectorSpatialRepresentation.geometricObjectType", "515"),
+        FieldToCodelist("gridSpatialRepresentation.axesDimensionProperties", "name", "514"),
+        FieldToCodelist(null, "gridSpatialRepresentation.cellGeometry", "509"),
+        FieldToCodelist(null, "gridSpatialRepresentation.georectified.pointInPixel", "2100"),
+        FieldToCodelist("qualities", "measureType", "7127"), // dynamic!!!
+        FieldToCodelist(null, "serviceType", "5300"),
+        FieldToCodelist(null, "publication.documentType", "3385"),
     )
 
-    val fieldsUvp = listOf<FieldToCodelist>()
-    val fieldsOpendata = listOf<FieldToCodelist>()
-    val fieldsTest = listOf<FieldToCodelist>()
+    val fieldsUvp = fieldsAddress + listOf(
+        FieldToCodelist("eiaNumbers", null, "9000"), // dynamic!!!
+    )
+    val fieldsOpendata = fieldsAddress + listOf(
+        FieldToCodelist(null, "country", "6200"),
+        FieldToCodelist("contact", "type", "4430"),
+        FieldToCodelist(null, "openDataCategories", "6400"),
+        FieldToCodelist("hvdCategories", null, "hvdCategories"),
+        FieldToCodelist("distributions", "type", "20003"),
+        FieldToCodelist("distributions", "languages", "20007"),
+        FieldToCodelist("distributions", "license", "20004"),
+        FieldToCodelist("distributions", "availability", "20005"),
+        FieldToCodelist(null, "politicalGeocodingLevel", "20006"),
+    )
+    val fieldsTest = fieldsAddress + listOf(
+        FieldToCodelist(null, "select", "8000"),
+        FieldToCodelist(null, "autocomplete", "6500"),
+        FieldToCodelist(null, "multiChips", "100"),
+        FieldToCodelist("table", "type", "20002"),
+        FieldToCodelist("repeatListCodelist", null, "100"),
+    )
+    val fieldsHmdk = fieldsAddress + fieldsInGrid + listOf(
+        FieldToCodelist(null, "informationHmbTG", "informationsgegenstand"),
+    )
+    val fieldsKrzn = fieldsAddress + fieldsInGrid + listOf(
+        FieldToCodelist(null, "mapLink", "10500"),
+    )
 
     override fun run(context: JobExecutionContext) {
         log.info("Starting Task: MigrateCodelistIdsIntoDatasets")
@@ -117,6 +163,8 @@ class MigrateCodelistIdsIntoDatasets(
 
     private fun getFields(profile: CatalogProfile): List<FieldToCodelist> = when (profile.identifier) {
         "ingrid" -> fieldsInGrid
+        "ingrid-krzn" -> fieldsKrzn
+        "ingrid-hmdk" -> fieldsHmdk
         "uvp" -> fieldsUvp
         "opendata" -> fieldsOpendata
         "test" -> fieldsTest

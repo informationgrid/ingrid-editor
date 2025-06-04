@@ -45,6 +45,23 @@ class CodelistSyncTask(
 
     override val log = logger()
 
+    // TODO: use paging
+    private val sqlNonArchivedDocuments = """
+        SELECT d.uuid, d.data 
+        FROM document d
+        JOIN document_wrapper dw ON d.uuid = dw.uuid
+        JOIN catalog c ON dw.catalog_id = c.id
+        WHERE c.identifier = ?
+        AND dw.deleted = 0
+        AND d.state != 'ARCHIVED'
+    """.trimIndent()
+
+    private val updateSql = """
+        UPDATE document
+        SET data = ?::jsonb
+        WHERE uuid = ?
+    """.trimIndent()
+
     override fun run(context: JobExecutionContext) {
         log.info("Starting Task: Codelist Synchronization")
 
@@ -55,52 +72,16 @@ class CodelistSyncTask(
         val catalogLanguage = catalog.settings.config.language ?: "de"
 
         try {
-            // TODO: use paging
-            // SQL query to get all documents for the specified catalog
-            val sql = """
-                SELECT d.uuid, d.data 
-                FROM document d
-                JOIN document_wrapper dw ON d.uuid = dw.uuid
-                JOIN catalog c ON dw.catalog_id = c.id
-                WHERE c.identifier = ?
-                AND dw.deleted = 0
-                AND d.state != 'ARCHIVED'
-            """.trimIndent()
-
-            // Execute the query and process each document
-            val documentCount = jdbcTemplate.query(sql, { rs, _ ->
-                // Extract the document UUID and data field
+            val documentCount = jdbcTemplate.query(sqlNonArchivedDocuments, { rs, _ ->
                 val uuid = rs.getString("uuid")
                 val dataJson = rs.getString("data")
                 val dataNode = objectMapper.readTree(dataJson)
                 var modified = false
 
-                // Call findJsonPathsWithKeyField on the data field
-
-                // Example 1: Using the original behavior (collecting paths in a list)
-
-                // Example 2: Using the new callback parameter for custom actions
                 val jsonPaths = findJsonPathsWithCodelistIdField(dataNode, "$") { path, node, fieldName ->
-                    val codelistId = node.getString("_codelistId")
-                        ?: throw ServerException.withReason("Key field is null at path: $path for uuid: $uuid")
-                    val entryKey = node.getString("key")
-                    val codelist = codelistHandler.getCodelists(listOf(codelistId)).firstOrNull()
-                        ?: codelistHandler.getCatalogCodelists(catalogIdentifier).find { it.id == codelistId }
-                        ?: throw ServerException.withReason("Codelist not found for id: $codelistId at path: $path for uuid: $uuid")
-
-                    if (entryKey == null) {
-                        // TODO: check if value is now a codelist-entry
-                    } else {
-                        val codelistEntryValue = codelist.entries?.find { it.id == entryKey }?.getField(catalogLanguage)
-                        if (codelistEntryValue == null) {
-                            log.warn("Codelist entry not found for id: $entryKey at path: $path for uuid: $uuid")
-                            // TODO: convert to free entry
-                            (node as ObjectNode).put("key", null as String?)
-                        } else {
-                            (node as ObjectNode).put("value", codelistEntryValue)
-                        }
+                    updateCodelistEntry(node, path, uuid, catalogIdentifier, catalogLanguage).let {
+                        if (it) modified = true
                     }
-                    modified = true
                 }
 
                 // If the node was modified, update it in the database
@@ -108,12 +89,6 @@ class CodelistSyncTask(
                     val updatedJson = objectMapper.writeValueAsString(dataNode)
                     log.info("Updating document with UUID: $uuid")
                     log.debug("Modified JSON: $updatedJson")
-
-                    val updateSql = """
-                        UPDATE document
-                        SET data = ?::jsonb
-                        WHERE uuid = ?
-                    """.trimIndent()
 
                     jdbcTemplate.update(updateSql, updatedJson, uuid)
                 }
@@ -136,6 +111,35 @@ class CodelistSyncTask(
 
         message.endTime = Date()
         finishJob(context, message)
+    }
+
+    private fun updateCodelistEntry(
+        node: JsonNode,
+        path: String,
+        uuid: String?,
+        catalogIdentifier: String,
+        catalogLanguage: String,
+    ): Boolean {
+        val codelistId = node.getString("_codelistId")
+            ?: throw ServerException.withReason("Key field is null at path: $path for uuid: $uuid")
+        val entryKey = node.getString("key")
+        val codelist = codelistHandler.getCodelists(listOf(codelistId)).firstOrNull()
+            ?: codelistHandler.getCatalogCodelists(catalogIdentifier).find { it.id == codelistId }
+            ?: throw ServerException.withReason("Codelist not found for id: $codelistId at path: $path for uuid: $uuid")
+
+        if (entryKey == null) {
+            // TODO: check if value is now a codelist-entry
+        } else {
+            val codelistEntryValue = codelist.entries?.find { it.id == entryKey }?.getField(catalogLanguage)
+            if (codelistEntryValue == null) {
+                log.warn("Codelist entry not found for id: $entryKey at path: $path for uuid: $uuid")
+                // TODO: convert to free entry
+                (node as ObjectNode).put("key", null as String?)
+            } else {
+                (node as ObjectNode).put("value", codelistEntryValue)
+            }
+        }
+        return true
     }
 
     fun findJsonPathsWithCodelistIdField(

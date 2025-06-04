@@ -83,11 +83,12 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 it.getString("spatial.verticalExtent.Datum._codelistId") shouldBe "101"
                 it.getString("spatial.verticalExtent.unitOfMeasure._codelistId") shouldBe "102"
                 it.getString("metadata.language._codelistId") shouldBe "99999999"
+                // it.getString("dataset.languages") shouldBe "99999999" -> only stored in simple key-form!
                 it.getPath("resource.useConstraints")!!.get(0).getString("title._codelistId") shouldBe "6500"
                 it.getPath("resource.accessConstraints")!!.get(0).getString("_codelistId") shouldBe "6010"
                 it.getPath("temporal.events")!!.get(0).getString("referenceDateType._codelistId") shouldBe "502"
                 it.getString("temporal.status._codelistId") shouldBe "523"
-//                it.getString("temporal.resourceDateType._codelistId") shouldBe "???"
+                it.getString("temporal.resourceDateType._codelistId") shouldBe null
                 it.getPath("references")!!.get(0).getString("type._codelistId") shouldBe "2000"
                 it.getPath("references")!!.get(0).getString("urlDataType._codelistId") shouldBe "1320"
                 it.getPath("distribution.format")!!.get(0).getString("name._codelistId") shouldBe "1320"
@@ -98,10 +99,56 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 it.getPath("conformanceResult")!!.get(0).getString("pass._codelistId") shouldBe "6000"
                 it.getPath("conformanceResult")!!.get(0).getString("specification._codelistId") shouldBe "6005"
                 it.getPath("digitalTransferOptions")!!.get(0).getString("name._codelistId") shouldBe "520"
-//                it.getPath("digitalTransferOptions")!!.get(0).getString("transferSize.unit._codelistId") shouldBe "???"
+                it.getPath("digitalTransferOptions")!!.get(0).getString("transferSize.unit._codelistId") shouldBe null
                 it.getString("maintenanceInformation.maintenanceAndUpdateFrequency._codelistId") shouldBe "518"
                 it.getString("maintenanceInformation.userDefinedMaintenanceFrequency.unit._codelistId") shouldBe "1230"
                 it.getPath("extraInfo.legalBasicsDescriptions")!!.get(0).getString("_codelistId") shouldBe "1350"
+            }
+
+        entityManager.createNativeQuery(
+            "SELECT data FROM document WHERE id = 1002",
+            JsonNode::class.java,
+        ).resultList.first()
+            .let {
+                it as JsonNode
+                println(it)
+                it.getString("properties.subType._codelistId") shouldBe "525"
+                it.getPath("pointOfContact")!!.get(0).getString("type._codelistId") shouldBe "505"
+                it.getString("publication.generalResourceType._codelistId") shouldBe "3390"
+                it.getString("publication.resourceType._codelistId") shouldBe "3386"
+                it.getPath("spatialRepresentationType")!!.get(0).getString("_codelistId") shouldBe "526"
+                it.getPath("spatialRepresentationType")!!.get(1).getString("_codelistId") shouldBe "526"
+                it.getPath("dataQualityInfo.lineage.source.descriptions")!!.get(0).getString("dateType._codelistId") shouldBe "502"
+                it.getPath("portrayalCatalogueInfo.citation")!!.get(0).getString("title._codelistId") shouldBe "3555"
+                it.getPath("featureCatalogueDescription.citation")!!.get(0).getString("title._codelistId") shouldBe "3535"
+                it.getPath("featureCatalogueDescription.featureTypes")!!.get(0).getString("_codelistId") shouldBe null
+            }
+
+        entityManager.createNativeQuery(
+            "SELECT data FROM document WHERE id = 1003",
+            JsonNode::class.java,
+        ).resultList.first()
+            .let {
+                it as JsonNode
+                println(it)
+                it.getString("publication.documentType._codelistId") shouldBe "3385"
+            }
+
+        entityManager.createNativeQuery(
+            "SELECT data FROM document WHERE id = 1004",
+            JsonNode::class.java,
+        ).resultList.first()
+            .let {
+                it as JsonNode
+                println(it)
+                it.getPath("contact")!!.get(0).getString("type._codelistId") shouldBe "4430"
+                it.getPath("contact")!!.get(1).getString("type._codelistId") shouldBe "4430"
+                it.getPath("contact")!!.get(2).getString("type._codelistId") shouldBe "4430"
+                it.getPath("contact")!!.get(3).getString("type._codelistId") shouldBe "4430"
+                it.getString("address.administrativeArea._codelist") shouldBe "6250"
+                it.getString("address.country._codelist") shouldBe "6200"
+                it.getString("salutation._codelist") shouldBe "4300"
+                it.getString("academic-title._codelist") shouldBe "4305"
             }
     }
 }
