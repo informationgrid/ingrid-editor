@@ -110,7 +110,7 @@ export class AutocompleteTypeComponent
   ngOnInit() {
     this.currentCodelistId = this.props.codelistId
       ? this.props.codelistId
-      : this.props.dynamicCodelistId();
+      : this.props.dynamicCodelistId?.();
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),

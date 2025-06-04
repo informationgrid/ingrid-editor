@@ -64,17 +64,17 @@ export class GeoServiceDoctype extends IngridShared {
   }
 
   private mapServiceTypeToVersionCodelist = {
-    "1": 5151,
-    "2": 5152,
-    "3": 5153,
-    "4": 5154,
+    "1": "5151",
+    "2": "5152",
+    "3": "5153",
+    "4": "5154",
   };
 
   private mapServiceTypeToOperationNameCodelist = {
-    "1": 5105,
-    "2": 5110,
-    "3": 5120,
-    "4": 5130,
+    "1": "5105",
+    "2": "5110",
+    "3": "5120",
+    "4": "5130",
   };
 
   getServiceVersionOptions = new BehaviorSubject<SelectOptionUi[]>([]);
