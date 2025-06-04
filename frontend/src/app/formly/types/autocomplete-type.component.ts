@@ -101,7 +101,7 @@ export class AutocompleteTypeComponent
       if (this.props.dynamicCodelistId) {
         this.currentCodelistId = this.props.dynamicCodelistId();
         this.formControl.setValue(
-          this.formControl.value.value ?? this.formControl.value,
+          this.formControl.value?.value ?? this.formControl.value,
         );
       }
     });
