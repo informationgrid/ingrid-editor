@@ -22,7 +22,7 @@ import {
   SelectOptionUi,
 } from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Injectable } from "@angular/core";
+import { Injectable, signal } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { distinctUntilKeyChanged, filter, tap } from "rxjs/operators";
 import { BehaviorSubject } from "rxjs";
@@ -79,6 +79,7 @@ export class GeoServiceDoctype extends IngridShared {
 
   getServiceVersionOptions = new BehaviorSubject<SelectOptionUi[]>([]);
   getServiceOperationNameOptions = new BehaviorSubject<SelectOptionUi[]>([]);
+  currentServiceOperationNameCodelist = signal<string>("5110");
 
   private couplingTypeOptions: SelectOption[] = [
     new SelectOption("loose", "loose"),
@@ -178,6 +179,7 @@ export class GeoServiceDoctype extends IngridShared {
                 this.addAutoCompleteInline("name", "Name", {
                   required: true,
                   options: this.getServiceOperationNameOptions,
+                  dynamicCodelistId: this.currentServiceOperationNameCodelist,
                 }),
                 this.addInputInline("description", "Beschreibung"),
                 this.addInputInline("methodCall", "Zugriffs-URL", {
@@ -323,6 +325,7 @@ export class GeoServiceDoctype extends IngridShared {
   private updateOperationNameField(value) {
     const codelistId =
       this.mapServiceTypeToOperationNameCodelist[value.key] ?? "5110";
+    this.currentServiceOperationNameCodelist.set(codelistId);
     this.getCodelistForSelect(codelistId, "version").subscribe((value) => {
       this.getServiceOperationNameOptions.next(value);
       this.updateOperationNameInPrintField(value);
