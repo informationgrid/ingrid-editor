@@ -772,7 +772,11 @@ open class IngridModelTransformer(
 
     open fun getParentIdentifier(): String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
-    val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
+    open val metadataDateAsDateTime = false
+    fun getModifiedMetadataDate() = formatDate(
+        if (metadataDateAsDateTime) formatterISO else formatterOnlyDate,
+        data.modifiedMetadata ?: model._contentModified,
+    )
     var pointOfContact: List<AddressModelTransformer> = emptyList()
     var orderInfoContact: List<AddressModelTransformer>
     fun getPointOfContactWithEmail() = pointOfContact.filter { addressHasEmail(it) }
@@ -1131,10 +1135,12 @@ open class IngridModelTransformer(
 
     fun hasDistributorInfo(): Boolean = data.orderInfo?.isNotEmpty() == true || data.fees?.isNotEmpty() == true
 
-    open fun linkToVerticalCRS() = false
-    fun hasCompleteVerticalExtent(): Boolean = data.spatial.verticalExtent?.let {
-        it.Datum != null && it.minimumValue != null && it.maximumValue != null && (it.unitOfMeasure != null || linkToVerticalCRS())
-    } ?: false
+    open val linkToVerticalCRS = false
+    fun hasCompleteVerticalExtent(): Boolean {
+        return data.spatial.verticalExtent?.let {
+            it.Datum != null && it.minimumValue != null && it.maximumValue != null && (it.unitOfMeasure != null || linkToVerticalCRS)
+        } ?: false
+    }
 
     private fun isCapabilitiesEntry(entry: JsonNode): Boolean = entry.getString("name.key") == "1" || entry.getString("name.value") == "GetCapabilities"
 

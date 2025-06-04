@@ -7,6 +7,16 @@
 !{var page = ((ProjectModelTransformerBaw)map.get("model"));}
 @template.export.template-idf(content = @`
     @template.export.ingrid.idf.shared-general(page = page, additionalCitation = @`
+        @if( TransformationTools.hasValue(page.getOrderNumber()))
+            <gmd:identifier>
+                <gmd:MD_Identifier>
+                    <gmd:code>
+                        <gco:CharacterString>${page.getOrderNumber()}</gco:CharacterString>
+                    </gmd:code>
+                </gmd:MD_Identifier>
+            </gmd:identifier>
+        @endif
+<%--        //TODO remove or implement. as of now mapping through address section --%>
 <%--        @template.export.ingrid.idf.addresses(addresses = page.getManagerAdd(), wrapperElement = "gmd:citedResponsibleParty")--%>
 <%--        @for ( String manager : page.getManagers())--%>
 <%--        <gmd:citedResponsibleParty>--%>

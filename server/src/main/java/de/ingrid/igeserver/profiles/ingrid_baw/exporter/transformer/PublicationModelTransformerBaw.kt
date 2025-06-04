@@ -21,29 +21,44 @@ package de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer
 
 import de.ingrid.igeserver.profiles.ingrid.exporter.PublicationModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
-import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getIdentifierFromParent
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
 import de.ingrid.igeserver.utils.getPath
+import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
 
-open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) : PublicationModelTransformer(transformerConfig) {
+open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) :
+    PublicationModelTransformer(transformerConfig) {
+
+    override val metadataDateAsDateTime = true
+    override val linkToVerticalCRS = true
+    override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)
+    override fun getKeywordsAsList(): List<String> =
+        super.getKeywordsAsList() + getBawKeywords(this).keywords.mapNotNull { it.name }
+
+    override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBawKeywords(this)
 
     override val hierarchyLevelName = "document"
-
-    override fun linkToVerticalCRS() = true
-
-    override fun getParentIdentifier(): String? = data.parentIdentifier ?: getIdentifierFromParent(this)
 
     override fun mapDocumentType(type: String): String = when (type) {
         "BawPublication" -> "2" // InGridPublication
         else -> super.mapDocumentType(type)
     }
 
-    override val spatialSystems = super.spatialSystems + (
-        (doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }?.map {
-            mapToCharacterStringModel(
-                "verticalCoordinateReferenceSystem",
-                it,
-            )
-        } ?: emptyList()
-        )
+    fun getHandles(): List<String> = (doc.data.getPath("publication.additionalIdentifiers"))
+        ?.filter { it.getString("type.key") == "1" } // "Handle" type
+        ?.mapNotNull {
+            it.getString("value")
+        }
+        ?: emptyList()
+
+    override val spatialSystems =
+        super.spatialSystems + ((doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }
+            ?.map {
+                mapToCharacterStringModel(
+                    "verticalCoordinateReferenceSystem",
+                    it,
+                )
+            } ?: emptyList())
 }

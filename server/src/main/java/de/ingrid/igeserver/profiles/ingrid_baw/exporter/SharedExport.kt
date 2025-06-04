@@ -21,10 +21,14 @@ package de.ingrid.igeserver.profiles.ingrid_baw.exporter
 
 import de.ingrid.igeserver.exporter.AddressModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
+import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.PublicationModelTransformerBaw
+import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.mapToKeyValue
 import org.springframework.dao.EmptyResultDataAccessException
 import kotlin.reflect.KClass
 
@@ -42,15 +46,18 @@ fun getBawTemplateForDocType(docType: String): String? = when (docType) {
     "InGridGeoDataset" -> "export/ingrid-baw/idf-geodataset-baw.jte"
     "BawMeasurement" -> "export/ingrid-baw/idf-geodataset-baw.jte"
     "BawSimulation" -> "export/ingrid-baw/idf-geodataset-baw.jte"
-//    "BawPublication" -> "export/ingrid/idf/idf-publication.jte"
-    "BawPublication" -> "export/ingrid/idf/idf-publication.jte"
+    "BawPublication" -> "export/ingrid-baw/idf-publication-baw.jte"
     "PublicationAddressDoc" -> "export/ingrid/idf/idf-address.jte"
 //    "InGridGeoService" -> "export/ingrid-baw/idf-geodataservice-baw.jte"
 //    "InGridSoftware" -> "export/ingrid-baw/idf-software-baw.jte"
     else -> null
 }
 
-fun getIdentifierFromParent(transformer: IngridModelTransformer): String? {
+fun getParentIdentifierBaw(transformer: IngridModelTransformer): String? =
+    transformer.data.parentIdentifier ?: getIdentifierFromParent(transformer)
+
+
+private fun getIdentifierFromParent(transformer: IngridModelTransformer): String? {
     val wrapper = transformer.documentService.getWrapperById(transformer.doc.wrapperId!!)
     if (wrapper.type == "FOLDER" || wrapper.parent == null) return null
 
@@ -62,3 +69,19 @@ fun getIdentifierFromParent(transformer: IngridModelTransformer): String? {
     }
     return parentDoc?.data?.getString("identifier")?.let { id -> transformer.addNamespaceIfNeeded(id) }
 }
+
+fun getBawKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaurus(
+    "BAW-Schlagwortkatalog",
+    "2012-01-01",
+    showType = true,
+    type = "discipline",
+    keywords = transformer.doc.data.getPath("keywords.bawKeywords")
+        ?.mapNotNull { it.mapToKeyValue() }
+        ?.map {
+            KeywordIso(
+                name = transformer.codelists.getValue("3950005", it),
+                link = null,
+            )
+        }
+        ?: emptyList(),
+)

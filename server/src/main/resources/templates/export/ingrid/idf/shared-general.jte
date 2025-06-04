@@ -56,7 +56,11 @@
 @template.export.ingrid.idf.addresses(addresses = page.getContacts(), wrapperElement = "gmd:contact")
 @if( page.getContacts().isEmpty() ) <gmd:contact/> @endif
 <gmd:dateStamp>
-    <gco:Date>${page.getModifiedMetadataDate()}</gco:Date>
+    @if(page.getMetadataDateAsDateTime())
+        <gco:DateTime>${page.getModifiedMetadataDate()}</gco:DateTime>
+    @else
+        <gco:Date>${page.getModifiedMetadataDate()}</gco:Date>
+    @endif
 </gmd:dateStamp>
 <gmd:metadataStandardName>
     <gco:CharacterString>${page.getMdStandardName()}</gco:CharacterString>
@@ -652,7 +656,7 @@
                     <gmd:maximumValue>
                         <gco:Real>${verticalExtent.getMaximumValue()}</gco:Real>
                     </gmd:maximumValue>
-                    @if(page.linkToVerticalCRS())
+                    @if(page.getLinkToVerticalCRS())
                         <gmd:verticalCRS xlink:title="EPSG:${verticalExtent.getDatum().getKey()}" xlink:href="https://epsg.org/crs/gml/id/${verticalExtent.getDatum().getKey()}/export?format=gml" />
                     @else
                     <gmd:verticalCRS>

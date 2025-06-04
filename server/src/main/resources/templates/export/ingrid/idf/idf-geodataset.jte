@@ -6,6 +6,7 @@
 @import gg.jte.Content
 
 @param Content extraContent = null
+@param Content additionalCitation = null
 @param Map<String, Object> map
 
 !{var page = ((GeodatasetModelTransformer)map.get("model"));}
@@ -59,7 +60,8 @@
         @for (Reference ref : page.getReferencesWithUuidRefs())
             <gmd:contentInfo uuidref="${ref.getUuidRef()}"></gmd:contentInfo>
         @endfor
-    `
+        `,
+    additionalCitation = additionalCitation
     )
     @template.export.ingrid.idf.dataQuality(page = page)
     @for(Citation citation : page.getPortrayalCatalogueCitations())
