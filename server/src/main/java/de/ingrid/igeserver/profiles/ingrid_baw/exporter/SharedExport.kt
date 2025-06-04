@@ -53,9 +53,7 @@ fun getBawTemplateForDocType(docType: String): String? = when (docType) {
     else -> null
 }
 
-fun getParentIdentifierBaw(transformer: IngridModelTransformer): String? =
-    transformer.data.parentIdentifier ?: getIdentifierFromParent(transformer)
-
+fun getParentIdentifierBaw(transformer: IngridModelTransformer): String? = transformer.data.parentIdentifier ?: getIdentifierFromParent(transformer)
 
 private fun getIdentifierFromParent(transformer: IngridModelTransformer): String? {
     val wrapper = transformer.documentService.getWrapperById(transformer.doc.wrapperId!!)

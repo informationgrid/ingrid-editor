@@ -1136,11 +1136,9 @@ open class IngridModelTransformer(
     fun hasDistributorInfo(): Boolean = data.orderInfo?.isNotEmpty() == true || data.fees?.isNotEmpty() == true
 
     open val linkToVerticalCRS = false
-    fun hasCompleteVerticalExtent(): Boolean {
-        return data.spatial.verticalExtent?.let {
-            it.Datum != null && it.minimumValue != null && it.maximumValue != null && (it.unitOfMeasure != null || linkToVerticalCRS)
-        } ?: false
-    }
+    fun hasCompleteVerticalExtent(): Boolean = data.spatial.verticalExtent?.let {
+        it.Datum != null && it.minimumValue != null && it.maximumValue != null && (it.unitOfMeasure != null || linkToVerticalCRS)
+    } ?: false
 
     private fun isCapabilitiesEntry(entry: JsonNode): Boolean = entry.getString("name.key") == "1" || entry.getString("name.value") == "GetCapabilities"
 

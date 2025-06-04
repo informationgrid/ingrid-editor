@@ -26,14 +26,12 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
 import de.ingrid.igeserver.utils.getString
 
-open class ProjectModelTransformerBaw(transformerConfig: TransformerConfig) :
-    IngridModelTransformer(transformerConfig) {
+open class ProjectModelTransformerBaw(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
 
     override val metadataDateAsDateTime = true
     override val linkToVerticalCRS = true
     override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)
-    override fun getKeywordsAsList(): List<String> =
-        super.getKeywordsAsList() + getBawKeywords(this).keywords.mapNotNull { it.name }
+    override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() + getBawKeywords(this).keywords.mapNotNull { it.name }
 
     override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBawKeywords(this)
 

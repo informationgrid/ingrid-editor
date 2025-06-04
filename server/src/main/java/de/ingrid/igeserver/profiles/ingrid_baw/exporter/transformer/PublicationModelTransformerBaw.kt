@@ -28,14 +28,12 @@ import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
 
-open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) :
-    PublicationModelTransformer(transformerConfig) {
+open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) : PublicationModelTransformer(transformerConfig) {
 
     override val metadataDateAsDateTime = true
     override val linkToVerticalCRS = true
     override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)
-    override fun getKeywordsAsList(): List<String> =
-        super.getKeywordsAsList() + getBawKeywords(this).keywords.mapNotNull { it.name }
+    override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() + getBawKeywords(this).keywords.mapNotNull { it.name }
 
     override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBawKeywords(this)
 
@@ -54,11 +52,13 @@ open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) 
         ?: emptyList()
 
     override val spatialSystems =
-        super.spatialSystems + ((doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }
-            ?.map {
-                mapToCharacterStringModel(
-                    "verticalCoordinateReferenceSystem",
-                    it,
-                )
-            } ?: emptyList())
+        super.spatialSystems + (
+            (doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }
+                ?.map {
+                    mapToCharacterStringModel(
+                        "verticalCoordinateReferenceSystem",
+                        it,
+                    )
+                } ?: emptyList()
+            )
 }

@@ -35,15 +35,13 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     override val metadataDateAsDateTime = true
     override val linkToVerticalCRS = true
     override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)
-    override fun getKeywordsAsList(): List<String> =
-        super.getKeywordsAsList() +
-                getBawKeywords(this).keywords.mapNotNull { it.name } +
-                getSimulationKeywordThesauri().flatMap { t -> t.keywords.mapNotNull { it.name } }
+    override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() +
+        getBawKeywords(this).keywords.mapNotNull { it.name } +
+        getSimulationKeywordThesauri().flatMap { t -> t.keywords.mapNotNull { it.name } }
 
     override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() +
-            getBawKeywords(this) +
-            getSimulationKeywordThesauri()
-
+        getBawKeywords(this) +
+        getSimulationKeywordThesauri()
 
     override val hierarchyLevelName = when (doc.type) {
         "BawMeasurement" -> "measurement"
@@ -54,14 +52,14 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     override fun mapDocumentType(type: String): String = when (type) {
         "BawMeasurement",
         "BawSimulation",
-            -> "1" // InGridGeoDataset
+        -> "1" // InGridGeoDataset
         else -> super.mapDocumentType(type)
     }
 
     val orderTitle = doc.data.getString("orderTitle")
     val orderNumber = doc.data.getString("orderNumber")
     val timestep = doc.data.getDouble("timestep")
-    val simulationParameters =  doc.data.getPath("simulationParameters")
+    val simulationParameters = doc.data.getPath("simulationParameters")
         ?.map {
             SimParameter(
                 name = it.getString("name") ?: "",
@@ -70,26 +68,24 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
                 values = listOf(it.getString("value") ?: ""),
                 // TODO Determine value type based on the content of the value field
                 valueType = determineSimValueType(it.getString("value")),
-                unit = it.getString("unit") ?: ""
+                unit = it.getString("unit") ?: "",
             )
         } ?: emptyList()
 
     override val spatialSystems = super.spatialSystems + (
-            (doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }?.map {
-                mapToCharacterStringModel(
-                    "verticalCoordinateReferenceSystem",
-                    it,
-                )
-            } ?: emptyList()
+        (doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }?.map {
+            mapToCharacterStringModel(
+                "verticalCoordinateReferenceSystem",
+                it,
             )
+        } ?: emptyList()
+        )
 
-    fun getSimulationKeywordThesauri(): List<Thesaurus> =
-        listOf(
-            dimensionalityThesaurus,
-            modelTypeThesaurus,
-            methodThesaurus
-        ).filter { it.keywords.isNotEmpty() }
-
+    fun getSimulationKeywordThesauri(): List<Thesaurus> = listOf(
+        dimensionalityThesaurus,
+        modelTypeThesaurus,
+        methodThesaurus,
+    ).filter { it.keywords.isNotEmpty() }
 
     val dimensionalityThesaurus = Thesaurus(
         "de.baw.codelist.model.dimensionality",
@@ -103,9 +99,9 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
                     KeywordIso(
                         name = codelists.getValue("3950000", it),
                         link = null,
-                    )
+                    ),
                 )
-            } ?: emptyList()
+            } ?: emptyList(),
     )
 
     val methodThesaurus = Thesaurus(
@@ -120,9 +116,9 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
                     KeywordIso(
                         name = codelists.getValue("3950001", it),
                         link = null,
-                    )
+                    ),
                 )
-            } ?: emptyList()
+            } ?: emptyList(),
     )
 
     val modelTypeThesaurus = Thesaurus(
@@ -137,24 +133,21 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
                     name = codelists.getValue("3950003", it),
                     link = null,
                 )
-            } ?: emptyList()
+            } ?: emptyList(),
     )
 
-    private fun determineSimValueType(value: String?): String {
-        return when {
-            value.isNullOrEmpty() -> "string"
-            value.toDoubleOrNull() != null -> "double"
-            value.toIntOrNull() != null -> "integer"
-            else -> "string" // default case
-        }
+    private fun determineSimValueType(value: String?): String = when {
+        value.isNullOrEmpty() -> "string"
+        value.toDoubleOrNull() != null -> "double"
+        value.toIntOrNull() != null -> "integer"
+        else -> "string" // default case
     }
 }
-
 
 data class SimParameter(
     val name: String,
     val role: String,
     val values: List<String>,
     val valueType: String,
-    val unit: String
+    val unit: String,
 )

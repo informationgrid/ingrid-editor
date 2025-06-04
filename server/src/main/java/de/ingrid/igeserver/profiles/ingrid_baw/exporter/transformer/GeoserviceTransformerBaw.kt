@@ -27,23 +27,21 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.mapToKeyValue
 
-class GeoserviceTransformerBaw(transformerConfig: TransformerConfig) :
-    GeodataserviceModelTransformer(transformerConfig) {
+class GeoserviceTransformerBaw(transformerConfig: TransformerConfig) : GeodataserviceModelTransformer(transformerConfig) {
 
     override val metadataDateAsDateTime = true
     override val linkToVerticalCRS = true
     override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)
-    override fun getKeywordsAsList(): List<String> =
-        super.getKeywordsAsList() + getBawKeywords(this).keywords.mapNotNull { it.name }
+    override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() + getBawKeywords(this).keywords.mapNotNull { it.name }
 
     override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBawKeywords(this)
 
     override val spatialSystems = super.spatialSystems + (
-            (doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }?.map {
-                mapToCharacterStringModel(
-                    "verticalCoordinateReferenceSystem",
-                    it,
-                )
-            } ?: emptyList()
+        (doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }?.map {
+            mapToCharacterStringModel(
+                "verticalCoordinateReferenceSystem",
+                it,
             )
+        } ?: emptyList()
+        )
 }
