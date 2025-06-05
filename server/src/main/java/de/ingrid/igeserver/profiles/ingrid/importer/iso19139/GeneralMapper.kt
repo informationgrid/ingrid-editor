@@ -223,7 +223,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         .firstOrNull()
 
     private fun findPersonUuid(person: PersonInfo): String? = isoData.addressMaps[getPersonIdentifier(person)]
-        ?: documentService.docRepo.findAddressByPerson(catalogId, person.firstName, person.lastName)
+        ?: documentService.docRepo.findAddressByPerson(catalogId, person.firstName ?: "", person.lastName ?: "")
             .firstOrNull()
 
     private fun getPersonIdentifier(person: PersonInfo): String = "${person.firstName} ${person.lastName}"
