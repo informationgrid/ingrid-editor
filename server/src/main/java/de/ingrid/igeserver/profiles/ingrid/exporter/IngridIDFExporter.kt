@@ -43,6 +43,7 @@ import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass
 
 @Service
@@ -70,6 +71,7 @@ class IngridIDFExporter(
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
+    @Transactional
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
         val output: TemplateOutput = XMLStringOutput()
         if (doc.type == "FOLDER") return ""
