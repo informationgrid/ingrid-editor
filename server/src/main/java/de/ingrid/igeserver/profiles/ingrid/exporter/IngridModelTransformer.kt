@@ -550,7 +550,7 @@ open class IngridModelTransformer(
         "InGridProject" -> "4"
         "InGridDataCollection" -> "5"
         "InGridInformationSystem" -> "6"
-        else -> throw ServerException.withReason("Could not map document type: ${model.type}")
+        else -> throw ServerException.withReason("Could not map document type: $type")
     }
 
     // geodataservice

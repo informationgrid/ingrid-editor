@@ -25,6 +25,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
 import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
@@ -49,12 +50,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
         else -> super.hierarchyLevelName
     }
 
-    override fun mapDocumentType(type: String): String = when (type) {
-        "BawMeasurement",
-        "BawSimulation",
-        -> "1" // InGridGeoDataset
-        else -> super.mapDocumentType(type)
-    }
+    override fun mapDocumentType(type: String): String = mapDocumentTypeBaw(type) ?: super.mapDocumentType(type)
 
     val orderTitle = doc.data.getString("orderTitle")
     val orderNumber = doc.data.getString("orderNumber")

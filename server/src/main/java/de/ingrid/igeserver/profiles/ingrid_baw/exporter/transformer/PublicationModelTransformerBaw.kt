@@ -24,6 +24,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
@@ -39,10 +40,7 @@ open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) 
 
     override val hierarchyLevelName = "document"
 
-    override fun mapDocumentType(type: String): String = when (type) {
-        "BawPublication" -> "2" // InGridPublication
-        else -> super.mapDocumentType(type)
-    }
+    override fun mapDocumentType(type: String): String = mapDocumentTypeBaw(type) ?: super.mapDocumentType(type)
 
     fun getHandles(): List<String> = (doc.data.getPath("publication.additionalIdentifiers"))
         ?.filter { it.getString("type.key") == "1" } // "Handle" type

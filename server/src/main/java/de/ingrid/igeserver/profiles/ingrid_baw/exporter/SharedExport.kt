@@ -53,6 +53,14 @@ fun getBawTemplateForDocType(docType: String): String? = when (docType) {
     else -> null
 }
 
+fun mapDocumentTypeBaw(type: String): String? = when (type) {
+    "BawMeasurement",
+    "BawSimulation",
+    -> "1" // InGridGeoDataset
+    "BawPublication" -> "2" // InGridPublication
+    else -> null
+}
+
 fun getParentIdentifierBaw(transformer: IngridModelTransformer): String? = transformer.data.parentIdentifier ?: getIdentifierFromParent(transformer)
 
 private fun getIdentifierFromParent(transformer: IngridModelTransformer): String? {
