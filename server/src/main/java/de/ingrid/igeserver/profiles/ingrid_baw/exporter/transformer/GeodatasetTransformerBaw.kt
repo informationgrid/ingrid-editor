@@ -54,15 +54,12 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     val orderTitle = doc.data.getString("orderTitle")
     val orderNumber = doc.data.getString("orderNumber")
     val timestep = doc.data.getDouble("timestep")
-    val simulationParameters = doc.data.getPath("simulationParameters")
+    val simulationParameters = doc.data.getPath("simulationParameter")
         ?.map {
             SimParameter(
                 name = it.getString("name") ?: "",
                 role = codelists.getValue("3950004", it.getPath("role")?.mapToKeyValue()) ?: "",
-                // TODO handle multiple values when value input is clear
-                values = listOf(it.getString("value") ?: ""),
-                // TODO Determine value type based on the content of the value field
-                valueType = determineSimValueType(it.getString("value")),
+                value = it.getString("value") ?: "",
                 unit = it.getString("unit") ?: "",
             )
         } ?: emptyList()
@@ -130,19 +127,11 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
                 )
             } ?: emptyList(),
     )
-
-    private fun determineSimValueType(value: String?): String = when {
-        value.isNullOrEmpty() -> "string"
-        value.toDoubleOrNull() != null -> "double"
-        value.toIntOrNull() != null -> "integer"
-        else -> "string" // default case
-    }
 }
 
 data class SimParameter(
     val name: String,
     val role: String,
-    val values: List<String>,
-    val valueType: String,
+    val value: String,
     val unit: String,
 )

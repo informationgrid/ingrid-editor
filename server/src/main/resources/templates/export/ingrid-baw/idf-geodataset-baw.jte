@@ -80,18 +80,17 @@ extraContent = @`
                                     <gco:RecordType>${param.getName()}</gco:RecordType>
                                 </gmd:valueType>
                                 @if(TransformationTools.hasValue(param.getUnit()))
-                                    <gmd:valueUnit gco:nilReason="inapplicable"/>
-                                @else
                                     <gmd:valueUnit>${param.getUnit()}</gmd:valueUnit>
+                                @else
+                                    <gmd:valueUnit gco:nilReason="inapplicable"/>
                                 @endif
-                                @if(param.getValues().isEmpty())
+                                @if(TransformationTools.hasValue(param.getValue()))
+                                    <gmd:value>
+                                        <gco:Record>${param.getValue()}</gco:Record>
+                                    </gmd:value>
+                                @else
                                     <gmd:value gco:nilReason="unknown"/>
                                 @endif
-                                @for(String value : param.getValues())
-                                    <gmd:value>
-                                        <gco:Record xsi:type="xs:${param.getValueType()}">${value}</gco:Record>
-                                    </gmd:value>
-                                @endfor
                             </gmd:DQ_QuantitativeResult>
                         </gmd:result>
                     </gmd:DQ_QuantitativeAttributeAccuracy>
