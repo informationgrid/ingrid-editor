@@ -115,6 +115,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   disabledCondition: (node: TreeNode) => boolean = (node: TreeNode) => {
     return node.type === "FOLDER";
   };
+  private addressTypeCodelistId = "505";
 
   constructor(
     @Inject(MAT_DIALOG_DATA) private data: ChooseAddressDialogData,
@@ -126,13 +127,13 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (this.data.disabledCondition != null)
       this.disabledCondition = this.data.disabledCondition;
-    this.codelistService.byId("505");
+    this.codelistService.byId(this.addressTypeCodelistId);
     // disable the type selection if only one type is allowed for all doctypes
     this.typeSelectionEnabled.set(!(this.data.allowedTypes?.length === 1));
     this.codelists$
       .pipe(
         untilDestroyed(this),
-        map((item) => item["505"]),
+        map((item) => item[this.addressTypeCodelistId]),
         map((codelist) => CodelistService.mapToSelect(codelist)),
         tap((items) => {
           this.availableReferenceTypes = this.prepareReferenceTypes(items);
@@ -179,7 +180,11 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
       (item) => item.id === this.selectedType,
     ).title;
     this.dlgRef.close({
-      type: { key: this.selectedType, value: value },
+      type: {
+        key: this.selectedType,
+        value: value,
+        _codelistId: this.addressTypeCodelistId,
+      },
       address: this.selection(),
     });
   }

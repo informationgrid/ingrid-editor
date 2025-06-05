@@ -98,7 +98,11 @@ export class GeoDatasetDoctype extends IngridShared {
                 return items.map((item) => {
                   return <MetadataOptionItem>{
                     label: item.label,
-                    value: { key: item.value },
+                    value: {
+                      key: item.value,
+                      value: item.label,
+                      _codelistId: "525",
+                    },
                   };
                 });
               }),

@@ -17,13 +17,24 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, OnInit, signal, WritableSignal } from "@angular/core";
+import {
+  Component,
+  effect,
+  OnInit,
+  Signal,
+  signal,
+  WritableSignal,
+} from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { Observable, of } from "rxjs";
 import { debounceTime, filter, map, startWith, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
-import { FieldTypeConfig, FormlyModule } from "@ngx-formly/core";
+import {
+  FieldTypeConfig,
+  FormlyFieldProps,
+  FormlyModule,
+} from "@ngx-formly/core";
 import { BackendOption } from "../../store/codelist/codelist.model";
 import { MatInput } from "@angular/material/input";
 import {
@@ -36,6 +47,18 @@ import { MatSuffix } from "@angular/material/form-field";
 import { MatIcon } from "@angular/material/icon";
 import { MatDivider } from "@angular/material/divider";
 import { MatOption } from "@angular/material/core";
+
+interface AutocompleteProps extends FormlyFieldProps {
+  fieldLabel?: string;
+  placeholder?: string;
+  highlightMatches?: boolean;
+  hideDeleteButton?: boolean;
+  simple?: boolean;
+  doNotFilter?: boolean;
+  options?: any[] | Observable<any[]>;
+  codelistId?: string;
+  dynamicCodelistId?: Signal<string>;
+}
 
 @UntilDestroy()
 @Component({
@@ -56,11 +79,12 @@ import { MatOption } from "@angular/material/core";
   ],
 })
 export class AutocompleteTypeComponent
-  extends FieldType<FieldTypeConfig>
+  extends FieldType<FieldTypeConfig<AutocompleteProps>>
   implements OnInit
 {
   private parameterOptions: WritableSignal<BackendOption[]> = signal([]);
   filteredOptions: WritableSignal<BackendOption[]> = signal([]);
+  private currentCodelistId: string;
 
   displayFn(option: BackendOption | string): string {
     if (this.props.simple) return <string>option;
@@ -71,8 +95,22 @@ export class AutocompleteTypeComponent
     }
     return opt && opt.value ? opt.value : "";
   }
+  constructor() {
+    super();
+    effect(() => {
+      if (this.props.dynamicCodelistId) {
+        this.currentCodelistId = this.props.dynamicCodelistId();
+        this.formControl.setValue(
+          this.formControl.value?.value ?? this.formControl.value,
+        );
+      }
+    });
+  }
 
   ngOnInit() {
+    this.currentCodelistId = this.props.codelistId
+      ? this.props.codelistId
+      : this.props.dynamicCodelistId?.();
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
@@ -93,7 +131,7 @@ export class AutocompleteTypeComponent
                 this.formControl.setValue({
                   key: key,
                   value: value,
-                  _codelistId: this.props.codelistId ?? null,
+                  _codelistId: this.currentCodelistId ?? null,
                 });
               }
               return null;
@@ -130,7 +168,7 @@ export class AutocompleteTypeComponent
           <BackendOption>{
             key: option.value,
             value: option.label,
-            _codelistId: this.props.codelistId ?? null,
+            _codelistId: this.currentCodelistId ?? null,
             disabled: option.disabled,
           },
       ),
