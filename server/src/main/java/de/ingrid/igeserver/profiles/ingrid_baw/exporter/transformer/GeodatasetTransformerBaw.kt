@@ -33,6 +33,7 @@ import de.ingrid.igeserver.utils.mapToKeyValue
 
 class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
+    override fun mapDocumentType(type: String): String = mapDocumentTypeBaw(type) ?: super.mapDocumentType(type)
     override val metadataDateAsDateTime = true
     override val linkToVerticalCRS = true
     override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)
@@ -49,8 +50,6 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
         "BawSimulation" -> "Simulation"
         else -> super.hierarchyLevelName
     }
-
-    override fun mapDocumentType(type: String): String = mapDocumentTypeBaw(type) ?: super.mapDocumentType(type)
 
     val orderTitle = doc.data.getString("orderTitle")
     val orderNumber = doc.data.getString("orderNumber")

@@ -31,6 +31,7 @@ import de.ingrid.igeserver.utils.mapToKeyValue
 
 open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) : PublicationModelTransformer(transformerConfig) {
 
+    override fun mapDocumentType(type: String): String = mapDocumentTypeBaw(type) ?: super.mapDocumentType(type)
     override val metadataDateAsDateTime = true
     override val linkToVerticalCRS = true
     override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)
@@ -39,8 +40,6 @@ open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) 
     override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBawKeywords(this)
 
     override val hierarchyLevelName = "document"
-
-    override fun mapDocumentType(type: String): String = mapDocumentTypeBaw(type) ?: super.mapDocumentType(type)
 
     fun getHandles(): List<String> = (doc.data.getPath("publication.additionalIdentifiers"))
         ?.filter { it.getString("type.key") == "1" } // "Handle" type
