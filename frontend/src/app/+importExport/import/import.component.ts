@@ -241,9 +241,6 @@ export class ImportComponent implements OnInit {
       this.showMore = true;
       this.errorInAnalysis = data.errors?.length > 0;
     }
-
-    // remove already loaded tree node information
-    if (data?.stage === "IMPORT") this.documentService.clearTreeStores();
   }
 
   chooseLocationForDatasets() {

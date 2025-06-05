@@ -836,11 +836,6 @@ export class DocumentService {
     }
   }
 
-  clearTreeStores() {
-    this.documentTreeStore.set([]);
-    this.addressTreeStore.set([]);
-  }
-
   mapToDocumentAbstracts(docs: DocumentWithMetadata[]): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
