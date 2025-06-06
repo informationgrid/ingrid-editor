@@ -49,6 +49,11 @@
                 "glob": "*/assets/**/*",
                 "input": "src/profiles",
                 "output": "/assets/profiles"
+              },
+              {
+                "glob": "**/*",
+                "input": ".well-known",
+                "output": "/.well-known"
               }
             ],
             "styles": [
