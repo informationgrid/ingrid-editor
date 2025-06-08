@@ -72,48 +72,51 @@
         (cdkDropListDropped)="drop($event)"
         role="list"
     >
-        <div
-            *ngFor="let item of items(); let i = index"
-            cdkDrag
-            [cdkDragDisabled]="
-                props.noDrag || formControl.disabled || items().length < 2
-            "
-            class="clickable list-item"
-            data-cy="list-item"
-            tabindex="0"
-            (click)="this.onItemClick(item?.key)"
-            (keyup.enter)="removeItem(i, $event)"
-            role="listitem"
-            [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
-            aria-description="Klick auf die Eingabetaste, um den Eintrag zu entfernen"
-        >
-            <div class="text-wrapper">
-                <span class="list-display-element">
-                    @if (this.props.elementIcon) {
-                        <mat-icon [svgIcon]="this.props.elementIcon"></mat-icon>
-                    }
-                    @if (type !== "search") {
-                        {{ getParameter(item) }}
-                    } @else {
-                        <div class="label">
-                            {{ item[props.labelField] }}
-                        </div>
-                    }
-                </span>
+        @for (item of items(); track item; let i = $index) {
+            <div
+                cdkDrag
+                [cdkDragDisabled]="
+                    props.noDrag || formControl.disabled || items().length < 2
+                "
+                class="clickable list-item"
+                data-cy="list-item"
+                tabindex="0"
+                (click)="this.onItemClick(item?.key)"
+                (keyup.enter)="removeItem(i, $event)"
+                role="listitem"
+                [attr.aria-labelledby]="field | fieldToAriaLabelledBy"
+                aria-description="Klick auf die Eingabetaste, um den Eintrag zu entfernen"
+            >
+                <div class="text-wrapper">
+                    <span class="list-display-element">
+                        @if (this.props.elementIcon) {
+                            <mat-icon
+                                [svgIcon]="this.props.elementIcon"
+                            ></mat-icon>
+                        }
+                        @if (type !== "search") {
+                            {{ getParameter(item) }}
+                        } @else {
+                            <div class="label">
+                                {{ item[props.labelField] }}
+                            </div>
+                        }
+                    </span>
+                </div>
+                @if (formControl.enabled) {
+                    <button
+                        type="button"
+                        mat-icon-button
+                        class="close gray"
+                        (click)="removeItem(i, $event)"
+                        tabindex="-1"
+                    >
+                        <!--            <mat-icon svgIcon="Entfernen"></mat-icon>-->
+                        <mat-icon>close</mat-icon>
+                    </button>
+                }
             </div>
-            @if (formControl.enabled) {
-                <button
-                    type="button"
-                    mat-icon-button
-                    class="close gray"
-                    (click)="removeItem(i, $event)"
-                    tabindex="-1"
-                >
-                    <!--            <mat-icon svgIcon="Entfernen"></mat-icon>-->
-                    <mat-icon>close</mat-icon>
-                </button>
-            }
-        </div>
+        }
     </div>
 } @else {
     @if (this.props.selectionEmptyNotice) {
@@ -166,9 +169,9 @@
                 [ngTemplateOutlet]="props.suffix"
             ></ng-container>
         }
-        <mat-error *transloco="let t">{{
-            t("form.validationMessages.createOneEntry")
-        }}</mat-error>
+        <mat-error *transloco="let t"
+            >{{ t("form.validationMessages.createOneEntry") }}
+        </mat-error>
     </mat-form-field>
 }
 
@@ -223,13 +226,15 @@
             ></ng-container>
         }
         @if (!parameterOptions) {
-            <mat-hint>{{ props.hint }} </mat-hint>
+            <mat-hint>{{ props.hint }}</mat-hint>
         }
-        <mat-error *transloco="let t">{{
-            inputControl.errors?.mustBeEmpty
-                ? t("form.validationMessages.commitWithEnter")
-                : "Bitte erstellen Sie mindestens einen Eintrag"
-        }}</mat-error>
+        <mat-error *transloco="let t"
+            >{{
+                inputControl.errors?.mustBeEmpty
+                    ? t("form.validationMessages.commitWithEnter")
+                    : "Bitte erstellen Sie mindestens einen Eintrag"
+            }}
+        </mat-error>
     </mat-form-field>
 }
 
@@ -292,11 +297,13 @@
                 </button>
             }
         </div>
-        <mat-hint>{{ props.hint }} </mat-hint>
-        <mat-error *transloco="let t">{{
-            inputControl.errors?.mustBeEmpty
-                ? t("form.validationMessages.commitWithEnter")
-                : "Bitte erstellen Sie mindestens einen Eintrag"
-        }}</mat-error>
+        <mat-hint>{{ props.hint }}</mat-hint>
+        <mat-error *transloco="let t"
+            >{{
+                inputControl.errors?.mustBeEmpty
+                    ? t("form.validationMessages.commitWithEnter")
+                    : "Bitte erstellen Sie mindestens einen Eintrag"
+            }}
+        </mat-error>
     </mat-form-field>
 }

@@ -78,7 +78,7 @@ import {
   MatChipRemove,
 } from "@angular/material/chips";
 import { MatIcon } from "@angular/material/icon";
-import { AsyncPipe, NgFor, NgTemplateOutlet } from "@angular/common";
+import { AsyncPipe, NgTemplateOutlet } from "@angular/common";
 import { MatIconButton } from "@angular/material/button";
 import {
   MatError,
@@ -143,7 +143,6 @@ interface RepeatListProps extends FormlyFieldProps {
     CdkDrag,
     MatIcon,
     MatChipRemove,
-    NgFor,
     MatIconButton,
     MatFormField,
     MatSelect,

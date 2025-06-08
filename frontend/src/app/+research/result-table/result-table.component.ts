@@ -58,15 +58,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../services/config/config.service";
 import { ExportService } from "../../services/export.service";
 import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
-import {
-  DatePipe,
-  NgFor,
-  NgIf,
-  NgSwitch,
-  NgSwitchCase,
-  NgSwitchDefault,
-  NgTemplateOutlet,
-} from "@angular/common";
+import { DatePipe, NgTemplateOutlet } from "@angular/common";
 import { ResultTableHeaderComponent } from "./result-table-header/result-table-header.component";
 import { MatDivider } from "@angular/material/divider";
 import { DocumentIconComponent } from "../../shared/document-icon/document-icon.component";
@@ -81,24 +73,19 @@ import { MatIcon } from "@angular/material/icon";
   styleUrls: ["./result-table.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgIf,
     ResultTableHeaderComponent,
     MatDivider,
     TranslocoDirective,
     MatTable,
     MatSort,
-    NgFor,
     MatColumnDef,
     MatHeaderCellDef,
     MatHeaderCell,
     MatSortHeader,
     MatCellDef,
     MatCell,
-    NgSwitch,
-    NgSwitchCase,
     DocumentIconComponent,
     NgTemplateOutlet,
-    NgSwitchDefault,
     MatIconButton,
     MatTooltip,
     MatMenuTrigger,

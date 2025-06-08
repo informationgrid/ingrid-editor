@@ -32,7 +32,7 @@ import {
   FormlyFieldProps,
 } from "@ngx-formly/core";
 import { FormLabelComponent } from "../../wrapper/form-label/form-label.component";
-import { AsyncPipe, NgIf, NgTemplateOutlet } from "@angular/common";
+import { AsyncPipe, NgTemplateOutlet } from "@angular/common";
 import { MatChipListbox, MatChipOption } from "@angular/material/chips";
 import {
   AbstractControl,
@@ -93,7 +93,6 @@ export interface MetadataOptionItem {
   selector: "ige-metadata-type",
   imports: [
     FormLabelComponent,
-    NgIf,
     MatChipListbox,
     MatChipOption,
     ReactiveFormsModule,

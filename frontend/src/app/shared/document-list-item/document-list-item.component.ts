@@ -35,7 +35,7 @@ import {
   MatListOption,
   MatSelectionList,
 } from "@angular/material/list";
-import { AsyncPipe, DatePipe, LowerCasePipe, NgFor } from "@angular/common";
+import { AsyncPipe, DatePipe, LowerCasePipe } from "@angular/common";
 import { CdkMonitorFocus } from "@angular/cdk/a11y";
 import { MatIcon } from "@angular/material/icon";
 import { DocumentIconComponent } from "../document-icon/document-icon.component";
@@ -50,7 +50,6 @@ import { DateAgoPipe } from "../../directives/date-ago.pipe";
   styleUrls: ["./document-list-item.component.scss"],
   imports: [
     MatSelectionList,
-    NgFor,
     MatListOption,
     CdkMonitorFocus,
     MatIcon,
