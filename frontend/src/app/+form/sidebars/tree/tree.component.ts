@@ -173,7 +173,10 @@ export class TreeComponent implements OnInit {
         this.forAddresses,
       );
       if (doReload) {
-        this.reloadTree(true).subscribe();
+        // delay reload to use correct activeId
+        // when we jump from import page (after an import) the previously active node
+        // could be opened instead of the imported document
+        setTimeout(() => this.reloadTree(true).subscribe(), 100);
       }
     });
   }
