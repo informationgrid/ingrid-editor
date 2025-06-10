@@ -112,18 +112,18 @@ export class LeafletTypeComponent
       (<Map>this.leafletReference)._onResize();
       this.leafletReference.on("dragend", () => this.mapHasMoved.set(true));
 
-      // this.locations = this.formControl.value || [];
+      const locations = this.formControl.value || [];
       // delay update to prevent template error because of 'hasAnyLocations' update
-      /*setTimeout(() => {
+      setTimeout(() => {
         try {
-          this.updateBoundingBox();
+          this.updateBoundingBox(locations);
         } catch (e) {
           console.warn(
             "Failed to update bounding box. map already unloaded?",
             e,
           );
         }
-      });*/
+      });
     } catch (e) {
       console.error("Problem initializing the map component.", e);
       this.updateLocations([]);
