@@ -20,8 +20,8 @@
 import { Component, OnInit } from "@angular/core";
 import {
   FieldArrayType,
+  FormlyField,
   FormlyFieldConfig,
-  FormlyModule,
 } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
@@ -42,7 +42,6 @@ import { MatIcon } from "@angular/material/icon";
   templateUrl: "./uvp-sections.component.html",
   styleUrls: ["./uvp-sections.component.scss"],
   imports: [
-    FormlyModule,
     MatIconButton,
     MatTooltip,
     MatMenuTrigger,
@@ -50,6 +49,7 @@ import { MatIcon } from "@angular/material/icon";
     MatMenu,
     MatMenuItem,
     MatButton,
+    FormlyField,
   ],
 })
 export class UvpSectionsComponent extends FieldArrayType implements OnInit {

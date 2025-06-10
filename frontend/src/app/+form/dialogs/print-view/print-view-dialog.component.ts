@@ -24,7 +24,7 @@ import {
 } from "@angular/material/dialog";
 import { Component, effect, Inject, signal } from "@angular/core";
 import { UntypedFormGroup } from "@angular/forms";
-import { FormlyFormOptions, FormlyModule } from "@ngx-formly/core";
+import { FormlyForm, FormlyFormOptions } from "@ngx-formly/core";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { AngularSplitModule } from "angular-split";
@@ -49,10 +49,10 @@ import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-
     MatDialogModule,
     MatIconModule,
     MatButtonToggleModule,
-    FormlyModule,
     AngularSplitModule,
     MatButtonModule,
     DialogTemplateComponent,
+    FormlyForm,
   ],
 })
 export class PrintViewDialogComponent {

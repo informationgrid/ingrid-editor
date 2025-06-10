@@ -33,7 +33,7 @@ import {
 } from "@angular/core";
 import { FlatTreeControl } from "@angular/cdk/tree";
 import { TreeNode } from "../../../store/tree/tree-node.model";
-import { firstValueFrom, Observable, Subject } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged, map, tap } from "rxjs/operators";
 import { UpdateDatasetInfo } from "../../../models/update-dataset-info.model";
 import { UpdateType } from "../../../models/update-type.enum";
@@ -168,6 +168,17 @@ export class TreeComponent implements OnInit {
     effect(() => {
       this.multiEditMode.next(this.selection.multiSelectionModeEnabled());
     });
+    effect(() => {
+      const doReload = this.treeService.isReloadNeededWithReset(
+        this.forAddresses,
+      );
+      if (doReload) {
+        // delay reload to use correct activeId
+        // when we jump from import page (after an import) the previously active node
+        // could be opened instead of the imported document
+        setTimeout(() => this.reloadTree(true).subscribe(), 100);
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -237,13 +248,6 @@ export class TreeComponent implements OnInit {
     this.setActiveNode
       .pipe(untilDestroyed(this), debounceTime(100), distinctUntilChanged())
       .subscribe(async (id) => {
-        if (this.treeService.isReloadNeededWithReset(this.forAddresses)) {
-          this.activeNodeId.set(id);
-          await firstValueFrom(this.reloadTree(true));
-          // reloadTree will jump to node
-          return;
-        }
-
         if (this.activeNodeId() === id) {
           return;
         }

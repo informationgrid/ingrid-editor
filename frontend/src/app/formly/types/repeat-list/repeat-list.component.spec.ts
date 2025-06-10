@@ -19,7 +19,11 @@
  */
 import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
-import { FormlyFieldConfig, FormlyForm, FormlyModule } from "@ngx-formly/core";
+import {
+  FormlyFieldConfig,
+  FormlyForm,
+  provideFormlyCore,
+} from "@ngx-formly/core";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -43,21 +47,13 @@ import { getTranslocoModule } from "../../../transloco-testing.module";
 import { RepeatListComponent } from "./repeat-list.component";
 import { fakeAsync, tick } from "@angular/core/testing";
 
-xdescribe("RepeatListComponent", () => {
+describe("RepeatListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
   let form: FormGroup;
 
   const createHost = createHostFactory({
     component: FormlyForm,
     imports: [
-      FormlyModule.forRoot({
-        types: [
-          {
-            name: "repeatList",
-            component: RepeatListComponent,
-          },
-        ],
-      }),
       MatIconTestingModule,
       MatSnackBarModule,
       FormsModule,
@@ -71,6 +67,14 @@ xdescribe("RepeatListComponent", () => {
     providers: [
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
+      provideFormlyCore({
+        types: [
+          {
+            name: "repeatList",
+            component: RepeatListComponent,
+          },
+        ],
+      }),
     ],
   });
 
@@ -89,7 +93,7 @@ xdescribe("RepeatListComponent", () => {
       ];
       form = new FormGroup({});
       spectator = createHost(
-        `<formly-form [fields]="config" [form]="form" [model]="{}"></formly-form>`,
+        `<formly-form [fields]="config" [form]="form" [model]="model"></formly-form>`,
         {
           hostProps: {
             form: form,
@@ -114,8 +118,8 @@ xdescribe("RepeatListComponent", () => {
       expect(form.value.repeatListSimple).toEqual(["test-simple"]);
     }));
 
-    xit("should remove a simple value", fakeAsync(async () => {
-      // spectator.setInput("model", { repeatListSimple: ["item 1"] });
+    it("should remove a simple value", fakeAsync(async () => {
+      spectator.setHostInput("model", { repeatListSimple: ["item 1"] });
       detectAsync();
 
       checkItemCount(1);
@@ -125,10 +129,10 @@ xdescribe("RepeatListComponent", () => {
       expect(form.value.repeatListSimple).toEqual([]);
     }));
 
-    xit("should show multiple items", fakeAsync(async () => {
-      // spectator.setInput("model", {
-      //   repeatListSimple: ["item 1", "item 2", "item 3"],
-      // });
+    it("should show multiple items", fakeAsync(async () => {
+      spectator.setHostInput("model", {
+        repeatListSimple: ["item 1", "item 2", "item 3"],
+      });
       detectAsync();
 
       checkItemCount(3);
@@ -175,7 +179,7 @@ xdescribe("RepeatListComponent", () => {
       form = new FormGroup({});
 
       spectator = createHost(
-        `<formly-form [fields]="config" [form]="form"></formly-form>`,
+        `<formly-form [fields]="config" [form]="form" [model]="model"></formly-form>`,
         {
           hostProps: {
             form: form,
@@ -198,13 +202,15 @@ xdescribe("RepeatListComponent", () => {
 
       checkItemCount(1);
       checkItemContent(0, "Eins");
-      expect(form.value.repeatListCodelist).toEqual([{ key: "1" }]);
+      expect(form.value.repeatListCodelist).toEqual([
+        { key: "1", value: "Eins", _codelistId: null },
+      ]);
 
       checkDisabledOptions([true, false, false]);
     });
 
-    xit("should remove an item", fakeAsync(async () => {
-      // spectator.setInput("model", { repeatListCodelist: [{ key: "1" }] });
+    it("should remove an item", fakeAsync(async () => {
+      spectator.setHostInput("model", { repeatListCodelist: [{ key: "1" }] });
       detectAsync();
 
       removeItem(0);
@@ -274,7 +280,9 @@ xdescribe("RepeatListComponent", () => {
       await select.clickOptions({ text: "Drei" });
       checkItemCount(1);
       checkItemContent(0, "Drei");
-      expect(form.value.repeatListCodelist).toEqual([{ key: "3" }]);
+      expect(form.value.repeatListCodelist).toEqual([
+        { key: "3", value: "Drei", _codelistId: null },
+      ]);
     });
 
     it("should show a defined placeholder", async () => {
@@ -313,7 +321,7 @@ xdescribe("RepeatListComponent", () => {
       form = new FormGroup({});
 
       spectator = createHost(
-        `<formly-form [fields]="config" [form]="form"></formly-form>`,
+        `<formly-form [fields]="config" [form]="form" [model]="model"></formly-form>`,
         {
           hostProps: {
             form: form,
@@ -348,10 +356,10 @@ xdescribe("RepeatListComponent", () => {
       // checkDisabledOptions([false, false, false]);
     });
 
-    xit("should remove a value", fakeAsync(() => {
-      // spectator.setInput("model", {
-      //   repeatListCodelist: [{ label: "remote 2", other: "b" }],
-      // });
+    it("should remove a value", fakeAsync(() => {
+      spectator.setHostInput("model", {
+        repeatListCodelist: [{ label: "remote 2", other: "b" }],
+      });
       detectAsync();
 
       removeItem(0);
@@ -393,7 +401,7 @@ xdescribe("RepeatListComponent", () => {
       ];
 
       spectator = createHost(
-        `<formly-form [fields]="config" [form]="form"></formly-form>`,
+        `<formly-form [fields]="config" [form]="form" [model]="model"></formly-form>`,
         {
           hostProps: {
             form: form,
@@ -416,8 +424,8 @@ xdescribe("RepeatListComponent", () => {
       checkItemContent(0, "Eins");
     });
 
-    xit("should remove a chip", fakeAsync(async () => {
-      // spectator.setInput("model", { repeatListCodelist: [{ key: "1" }] });
+    it("should remove a chip", fakeAsync(async () => {
+      spectator.setHostInput("model", { repeatListCodelist: [{ key: "1" }] });
       detectAsync();
 
       removeChip(0);

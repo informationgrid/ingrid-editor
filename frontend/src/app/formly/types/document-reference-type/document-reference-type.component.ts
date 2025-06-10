@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
-import { FieldArrayType, FormlyModule } from "@ngx-formly/core";
+import { FieldArrayType, FormlyValidationMessage } from "@ngx-formly/core";
 import { MatDialog } from "@angular/material/dialog";
 import {
   SelectGeoDatasetData,
@@ -75,7 +75,6 @@ export const docReferenceTemplate: Partial<DocumentReference> = {
   styleUrls: ["./document-reference-type.component.scss"],
   imports: [
     FormErrorComponent,
-    FormlyModule,
     MatIcon,
     DocumentIconComponent,
     MatIconButton,
@@ -84,6 +83,7 @@ export const docReferenceTemplate: Partial<DocumentReference> = {
     MatMenuItem,
     MatProgressSpinner,
     AddButtonComponent,
+    FormlyValidationMessage,
   ],
 })
 export class DocumentReferenceTypeComponent

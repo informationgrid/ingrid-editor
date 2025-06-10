@@ -20,16 +20,20 @@
 import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
 
 import { RepeatDetailListComponent } from "./repeat-detail-list.component";
-import { FormlyFieldConfig, FormlyForm, FormlyModule } from "@ngx-formly/core";
+import {
+  FormlyFieldConfig,
+  FormlyForm,
+  provideFormlyCore,
+} from "@ngx-formly/core";
 import { getTranslocoModule } from "../../../transloco-testing.module";
 
-xdescribe("RepeatDetailListComponent", () => {
+describe("RepeatDetailListComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
   const createHost = createHostFactory({
     component: FormlyForm,
-    imports: [
-      RepeatDetailListComponent,
-      FormlyModule.forRoot({
+    imports: [RepeatDetailListComponent, getTranslocoModule()],
+    providers: [
+      provideFormlyCore({
         types: [
           {
             name: "repeatDetailList",
@@ -37,7 +41,6 @@ xdescribe("RepeatDetailListComponent", () => {
           },
         ],
       }),
-      getTranslocoModule(),
     ],
   });
 

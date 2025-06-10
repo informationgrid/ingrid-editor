@@ -40,7 +40,10 @@
                     "
                     [class.required]="option.required"
                 >
-                    {{ option.label }}<span *ngIf="option.required">*</span>
+                    {{ option.label }}
+                    @if (option.required) {
+                        <span>*</span>
+                    }
                 </ige-form-label>
 
                 <div class="flex-row align-items-center option-row">

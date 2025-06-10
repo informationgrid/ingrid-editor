@@ -52,8 +52,8 @@ import {
 import { FormUtils } from "../../form.utils";
 import {
   FormlyFieldConfig,
+  FormlyForm,
   FormlyFormOptions,
-  FormlyModule,
 } from "@ngx-formly/core";
 import { FormularService } from "../../formular.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -105,10 +105,10 @@ import { AuthenticationFactory } from "../../../security/auth.factory";
     QuickNavbarComponent,
     ReactiveFormsModule,
     FormsModule,
-    FormlyModule,
     FolderDashboardComponent,
     AsyncPipe,
     JsonPipe,
+    FormlyForm,
   ],
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {

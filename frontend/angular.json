@@ -49,6 +49,11 @@
                 "glob": "*/assets/**/*",
                 "input": "src/profiles",
                 "output": "/assets/profiles"
+              },
+              {
+                "glob": "**/*",
+                "input": ".well-known",
+                "output": "/.well-known"
               }
             ],
             "styles": [
@@ -195,11 +200,31 @@
     "@schematics/angular:component": {
       "standalone": true,
       "prefix": "ige",
-      "style": "scss"
+      "style": "scss",
+      "type": "component"
     },
     "@schematics/angular:directive": {
       "standalone": true,
-      "prefix": "ige"
+      "prefix": "ige",
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
     }
   }
 }
