@@ -176,7 +176,9 @@ export class TreeComponent implements OnInit {
         // delay reload to use correct activeId
         // when we jump from import page (after an import) the previously active node
         // could be opened instead of the imported document
-        setTimeout(() => this.reloadTree(true).subscribe(), 100);
+        setTimeout(() => this.reloadTree(true).subscribe(), 500);
+        // console.log("active tree node before reload: ", this.activeNodeId());
+        // this.reloadTree(true).subscribe();
       }
     });
   }
@@ -248,6 +250,7 @@ export class TreeComponent implements OnInit {
     this.setActiveNode
       .pipe(untilDestroyed(this), debounceTime(100), distinctUntilChanged())
       .subscribe(async (id) => {
+        console.log("active node changed: ", id);
         if (this.activeNodeId() === id) {
           return;
         }
@@ -303,6 +306,7 @@ export class TreeComponent implements OnInit {
   }
 
   reloadTree(forceFromServer = false): Observable<TreeNode[]> {
+    console.log("Reloading tree", this.activeNodeId(), forceFromServer);
     return this.database.initialData(forceFromServer, this.forAddresses).pipe(
       map((docs) => this.database.mapDocumentsToTreeNodes(docs, 0)),
       map((docs) => docs.sort(this.treeService.getSortTreeNodesFunction())),
