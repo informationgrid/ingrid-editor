@@ -35,7 +35,7 @@ import {
 } from "@angular/material/core";
 import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
-import { FieldTypeConfig, FormlyModule } from "@ngx-formly/core";
+import { FieldTypeConfig, FormlyAttributes } from "@ngx-formly/core";
 import { BackendOption } from "../../../store/codelist/codelist.model";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 import { NgTemplateOutlet } from "@angular/common";
@@ -53,11 +53,11 @@ import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabell
     MatPseudoCheckbox,
     MatSelect,
     ReactiveFormsModule,
-    FormlyModule,
     NgxMatSelectSearchModule,
     NgTemplateOutlet,
     MatDivider,
     FieldToAiraLabelledbyPipe,
+    FormlyAttributes,
   ],
 })
 export class SelectTypeComponent

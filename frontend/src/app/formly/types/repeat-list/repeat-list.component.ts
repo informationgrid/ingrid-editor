@@ -29,7 +29,7 @@ import {
 import {
   FieldTypeConfig,
   FormlyFieldProps,
-  FormlyModule,
+  FormlyValidationMessage,
 } from "@ngx-formly/core";
 import {
   MatAutocomplete,
@@ -135,7 +135,6 @@ interface RepeatListProps extends FormlyFieldProps {
   styleUrls: ["./repeat-list.component.scss"],
   imports: [
     FormErrorComponent,
-    FormlyModule,
     MatChipListbox,
     CdkDropListGroup,
     CdkDropList,
@@ -163,6 +162,7 @@ interface RepeatListProps extends FormlyFieldProps {
     MatProgressSpinner,
     AsyncPipe,
     FieldToAiraLabelledbyPipe,
+    FormlyValidationMessage,
   ],
 })
 export class RepeatListComponent

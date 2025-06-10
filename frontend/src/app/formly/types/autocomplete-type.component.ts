@@ -32,8 +32,9 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { SelectOptionUi } from "../../services/codelist/codelist.service";
 import {
   FieldTypeConfig,
+  FormlyAttributes,
   FormlyFieldProps,
-  FormlyModule,
+  FormlyForm,
 } from "@ngx-formly/core";
 import { BackendOption } from "../../store/codelist/codelist.model";
 import { MatInput } from "@angular/material/input";
@@ -69,13 +70,13 @@ interface AutocompleteProps extends FormlyFieldProps {
     MatInput,
     MatAutocompleteTrigger,
     ReactiveFormsModule,
-    FormlyModule,
     MatIconButton,
     MatSuffix,
     MatIcon,
     MatAutocomplete,
     MatDivider,
     MatOption,
+    FormlyAttributes,
   ],
 })
 export class AutocompleteTypeComponent

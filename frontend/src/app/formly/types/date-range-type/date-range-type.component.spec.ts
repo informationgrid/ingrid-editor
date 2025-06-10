@@ -22,13 +22,17 @@ import { createHostFactory, SpectatorHost } from "@ngneat/spectator";
 import { DateRangeTypeComponent } from "./date-range-type.component";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatDatepickerModule } from "@angular/material/datepicker";
-import { FormlyFieldConfig, FormlyForm, FormlyModule } from "@ngx-formly/core";
+import {
+  FormlyFieldConfig,
+  FormlyForm,
+  provideFormlyCore,
+} from "@ngx-formly/core";
 import { MatFormFieldModule } from "@angular/material/form-field";
-import { FormlyMaterialModule } from "@ngx-formly/material";
+import { withFormlyMaterial } from "@ngx-formly/material";
 import { provideNativeDateAdapter } from "@angular/material/core";
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 
-xdescribe("DateRangeTypeComponent", () => {
+describe("DateRangeTypeComponent", () => {
   let spectator: SpectatorHost<FormlyForm>;
   const createHost = createHostFactory({
     component: FormlyForm,
@@ -37,19 +41,23 @@ xdescribe("DateRangeTypeComponent", () => {
       MatDatepickerModule,
       MatFormFieldModule,
       ReactiveFormsModule,
-      FormlyMaterialModule,
       MatIconTestingModule,
       FormsModule,
-      FormlyModule.forRoot({
-        types: [
-          {
-            name: "dateRange",
-            component: DateRangeTypeComponent,
-          },
-        ],
-      }),
     ],
-    providers: [provideNativeDateAdapter()],
+    providers: [
+      provideNativeDateAdapter(),
+      provideFormlyCore([
+        {
+          types: [
+            {
+              name: "dateRange",
+              component: DateRangeTypeComponent,
+            },
+          ],
+        },
+        ...withFormlyMaterial(),
+      ]),
+    ],
   });
 
   beforeEach(() => {
