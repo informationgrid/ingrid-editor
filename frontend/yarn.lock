@@ -3141,27 +3141,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ngx-formly/core@npm:6.3.12":
-  version: 6.3.12
-  resolution: "@ngx-formly/core@npm:6.3.12"
+"@ngx-formly/core@npm:7.0.0":
+  version: 7.0.0
+  resolution: "@ngx-formly/core@npm:7.0.0"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
     "@angular/forms": ">=13.2.0"
     rxjs: ^6.5.3 || ^7.0.0
-  checksum: 10c0/c12c8aba938aa8c644e23a7b32aeca990e74603eb83246d35439b757d152d7655251b81e65ac30dbf1bf9e503afb7787e6b38fee59aeba4d93b0072cb7d32ffc
+  checksum: 10c0/94a60ec2505dcb297ab972bf62854067c9db61c33493bef0d3de004cdc2607c4132eaa8c0a667b447f6eff280cacb47838f798fdd5a166823fcc3e332b31ae83
   languageName: node
   linkType: hard
 
-"@ngx-formly/material@npm:6.3.12":
-  version: 6.3.12
-  resolution: "@ngx-formly/material@npm:6.3.12"
+"@ngx-formly/material@npm:7.0.0":
+  version: 7.0.0
+  resolution: "@ngx-formly/material@npm:7.0.0"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
-    "@angular/material": ">=13.0.0"
-    "@ngx-formly/core": 6.3.12
-  checksum: 10c0/569cb27b32b4ae145638d5896e25f08e67541f537e948bc2cb77b170b2436995dac6ab15d9e6c48fca369b98acb316858de3ca8b8d9cad0a063b739c038fa176
+    "@angular/material": ">=16.0.0"
+    "@ngx-formly/core": 7.0.0
+  checksum: 10c0/4059323b4ff2fc5d54d8ba4447d5c05bbb5fea23a1d9d3f9e4607ff5c90ca0d8045e3bb233e053be7e54fbd5b26ebaa299145655be6d18bef0233011b5accee8
   languageName: node
   linkType: hard
 
@@ -7726,8 +7726,8 @@ __metadata:
     "@ngneat/spectator": "npm:^19.4.1"
     "@ngneat/until-destroy": "npm:^10.0.0"
     "@ngrx/signals": "npm:19.2.1"
-    "@ngx-formly/core": "npm:6.3.12"
-    "@ngx-formly/material": "npm:6.3.12"
+    "@ngx-formly/core": "npm:7.0.0"
+    "@ngx-formly/material": "npm:7.0.0"
     "@stomp/rx-stomp": "npm:^2.0.1"
     "@stomp/stompjs": "npm:^7.1.0"
     "@terraformer/wkt": "npm:^2.2.1"
