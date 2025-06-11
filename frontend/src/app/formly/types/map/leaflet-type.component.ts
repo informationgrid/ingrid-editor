@@ -88,7 +88,6 @@ export class LeafletTypeComponent
   mapHasMoved = signal<boolean>(false);
 
   private leafletReference: L.Map;
-  // private locations: SpatialLocation[] = [];
   private drawnSpatialRefs: (Polyline<any> | GeoJSON)[] = [];
 
   ngAfterViewInit() {
@@ -97,7 +96,7 @@ export class LeafletTypeComponent
 
     this.formControl.valueChanges
       .pipe(untilDestroyed(this), debounceTime(0), distinctUntilChanged())
-      .subscribe((value) => this.updateBoundingBox(value || []));
+      .subscribe((value) => this.updateBoundingBoxCatchingErrors(value || []));
 
     try {
       const options: MapOptions = this.props.mapOptions;
@@ -114,21 +113,22 @@ export class LeafletTypeComponent
 
       const locations = this.formControl.value || [];
       // delay update to prevent template error because of 'hasAnyLocations' update
-      setTimeout(() => {
-        try {
-          this.updateBoundingBox(locations);
-        } catch (e) {
-          console.warn(
-            "Failed to update bounding box. map already unloaded?",
-            e,
-          );
-        }
-      });
+      setTimeout(() => this.updateBoundingBoxCatchingErrors(locations));
     } catch (e) {
       console.error("Problem initializing the map component.", e);
       this.updateLocations([]);
       this.formControl.setValue([]);
       throw Error("Problem initializing the map component: " + e.message);
+    }
+  }
+
+  private updateBoundingBoxCatchingErrors(
+    locations: SpatialLocationWithColor[],
+  ) {
+    try {
+      this.updateBoundingBox(locations);
+    } catch (e) {
+      console.warn("Failed to update bounding box. map already unloaded?", e);
     }
   }
 
