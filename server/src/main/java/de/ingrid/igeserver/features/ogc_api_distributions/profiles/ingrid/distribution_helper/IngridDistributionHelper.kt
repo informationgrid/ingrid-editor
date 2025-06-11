@@ -50,20 +50,22 @@ class IngridDistributionHelper(
 
     override fun canHandleDistribution(profile: String): Boolean = "ingrid" == profile
 
-    override fun getDistributionDetails(document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
-        val graphicOverviews = document.data["graphicOverviews"] ?: mapper.createArrayNode()
-        val fileReferences = document.data["fileReferences"] ?: mapper.createArrayNode()
+    override fun getDistributionDetails(
+        document: Document,
+        collectionId: String,
+        recordId: String,
+        distributionId: String?,
+    ): JsonNode = mapper.createArrayNode().let {
+        it.addAll(this.getFilteredGraphicOverviews(document, distributionId))
+        it.addAll(this.getFilteredFileReferences(document, distributionId))
+    }
 
-        val filteredGraphicOverviews = when {
-            distributionId.isNullOrEmpty() -> graphicOverviews
-            else -> convertListToJsonNode(
-                graphicOverviews.filter {
-                    it.getBoolean("fileName.asLink") == false && it.getString("fileName.uri") == distributionId
-                },
-            )
-        }
-
-        val filteredFileReferences = when {
+    private fun getFilteredFileReferences(
+        document: Document,
+        distributionId: String?,
+    ): ArrayNode {
+        val fileReferences = document.data["fileReferences"] as ArrayNode? ?: mapper.createArrayNode()
+        return when {
             distributionId.isNullOrEmpty() -> fileReferences
             else -> convertListToJsonNode(
                 fileReferences.filter {
@@ -71,11 +73,21 @@ class IngridDistributionHelper(
                 },
             )
         }
+    }
 
-        val resultArray = mapper.createArrayNode()
-        resultArray.addAll(filteredGraphicOverviews as ArrayNode)
-        resultArray.addAll(filteredFileReferences as ArrayNode)
-        return resultArray
+    private fun getFilteredGraphicOverviews(
+        document: Document,
+        distributionId: String?,
+    ): ArrayNode {
+        val graphicOverviews = document.data["graphicOverviews"] as ArrayNode? ?: mapper.createArrayNode()
+        return when {
+            distributionId.isNullOrEmpty() -> graphicOverviews
+            else -> convertListToJsonNode(
+                graphicOverviews.filter {
+                    it.getBoolean("fileName.asLink") == false && it.getString("fileName.uri") == distributionId
+                },
+            )
+        }
     }
 
     override fun searchForMissingFiles(
@@ -98,6 +110,4 @@ class IngridDistributionHelper(
 
         return missingFiles
     }
-
-    private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode = jacksonObjectMapper().valueToTree(listOfJsonNodes)
 }
