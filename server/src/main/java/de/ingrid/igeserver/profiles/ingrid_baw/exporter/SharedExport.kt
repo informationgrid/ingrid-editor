@@ -25,6 +25,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTransformerBaw
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.ProjectModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.PublicationModelTransformerBaw
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
@@ -38,6 +39,7 @@ fun getBawModelTransformerClass(docType: String): KClass<out Any>? = when (docTy
     "BawSimulation" -> GeodatasetTransformerBaw::class
     "InGridGeoService" -> GeoserviceTransformerBaw::class
     "BawPublication" -> PublicationModelTransformerBaw::class
+    "InGridProject" -> ProjectModelTransformerBaw::class
     "PublicationAddressDoc" -> AddressModelTransformer::class
     else -> null
 }
@@ -48,6 +50,7 @@ fun getBawTemplateForDocType(docType: String): String? = when (docType) {
     "BawSimulation" -> "export/ingrid-baw/idf-geodataset-baw.jte"
     "BawPublication" -> "export/ingrid-baw/idf-publication-baw.jte"
     "PublicationAddressDoc" -> "export/ingrid/idf/idf-address.jte"
+    "InGridProject" -> "export/ingrid-baw/idf-project-baw.jte"
 //    "InGridGeoService" -> "export/ingrid-baw/idf-geodataservice-baw.jte"
 //    "InGridSoftware" -> "export/ingrid-baw/idf-software-baw.jte"
     else -> null
