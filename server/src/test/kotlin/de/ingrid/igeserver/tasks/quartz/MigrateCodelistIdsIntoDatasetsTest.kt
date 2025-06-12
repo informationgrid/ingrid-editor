@@ -66,6 +66,7 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
     fun `migrate codelist ids inside document`() {
         migrationTask.run(jobExecutionContext)
 
+        // GEOSERVICE
         entityManager.createNativeQuery(
             "SELECT data FROM document WHERE id = 1001",
             JsonNode::class.java,
@@ -103,8 +104,14 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 it.getString("maintenanceInformation.maintenanceAndUpdateFrequency._codelistId") shouldBe "518"
                 it.getString("maintenanceInformation.userDefinedMaintenanceFrequency.unit._codelistId") shouldBe "1230"
                 it.getPath("extraInfo.legalBasicsDescriptions")!!.get(0).getString("_codelistId") shouldBe "1350"
+                it.getPath("fileReferences")!!.get(0).getString("format._codelistId") shouldBe "1320"
+                it.getPath("openDataCategories")!!.get(0).getString("_codelistId") shouldBe "6400"
+                it.getPath("hvdCategories")!!.get(0).getString("_codelistId") shouldBe "hvdCategories"
+                it.getPath("topicCategories")!!.get(0).getString("_codelistId") shouldBe "527"
+                it.getString("metadata.characterSet._codelistId") shouldBe "510"
             }
 
+        // GEODATASET
         entityManager.createNativeQuery(
             "SELECT data FROM document WHERE id = 1002",
             JsonNode::class.java,
@@ -122,8 +129,15 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 it.getPath("portrayalCatalogueInfo.citation")!!.get(0).getString("title._codelistId") shouldBe "3555"
                 it.getPath("featureCatalogueDescription.citation")!!.get(0).getString("title._codelistId") shouldBe "3535"
                 it.getPath("featureCatalogueDescription.featureTypes")!!.get(0).getString("_codelistId") shouldBe null
+                it.getPath("qualities")!!.get(0).getString("measureType._codelistId") shouldBe "7127"
+                it.getString("vectorSpatialRepresentation.topologyLevel._codelistId") shouldBe "528"
+                it.getString("vectorSpatialRepresentation.geometricObjectType._codelistId") shouldBe "515"
+                it.getPath("gridSpatialRepresentation.axesDimensionProperties")!!.get(0).getString("name._codelistId") shouldBe "514"
+                it.getString("gridSpatialRepresentation.cellGeometry._codelistId") shouldBe "509"
+                it.getString("gridSpatialRepresentation.georectified.pointInPixel._codelistId") shouldBe "2100"
             }
 
+        // PUBLICATION
         entityManager.createNativeQuery(
             "SELECT data FROM document WHERE id = 1003",
             JsonNode::class.java,
@@ -149,6 +163,28 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 it.getString("address.country._codelistId") shouldBe "6200"
                 it.getString("salutation._codelistId") shouldBe "4300"
                 it.getString("academic-title._codelistId") shouldBe "4305"
+            }
+
+        // INFORMATIONSYSTEM
+        entityManager.createNativeQuery(
+            "SELECT data FROM document WHERE id = 1006",
+            JsonNode::class.java,
+        ).resultList.first()
+            .let {
+                it as JsonNode
+                println(it)
+                it.getString("serviceType._codelistId") shouldBe "5300"
+            }
+
+        // KRZN: PUBLICATION
+        entityManager.createNativeQuery(
+            "SELECT data FROM document WHERE id = 1005",
+            JsonNode::class.java,
+        ).resultList.first()
+            .let {
+                it as JsonNode
+                println(it)
+                it.getString("mapLink._codelistId") shouldBe "10500"
             }
     }
 }

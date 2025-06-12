@@ -57,7 +57,7 @@ class MigrateCodelistIdsIntoDatasets(
         FieldToCodelist("spatial.spatialSystems", null, "100"),
 //          FieldToCodelistld("gridSpatialRepresentation.type", ""), -> IS NULL
         FieldToCodelist("distribution.format", "name", "1320"),
-        FieldToCodelist(null, "fileReferences.format", "1320"),
+        FieldToCodelist("fileReferences", "format", "1320"),
         FieldToCodelist("themes", null, "6100"),
         FieldToCodelist("openDataCategories", null, "6400"),
         FieldToCodelist("hvdCategories", null, "hvdCategories"),
@@ -80,6 +80,7 @@ class MigrateCodelistIdsIntoDatasets(
         FieldToCodelist("resource.accessConstraints", null, "6010"),
         FieldToCodelist("resource.useConstraints", "title", "6500"),
         FieldToCodelist("digitalTransferOptions", "name", "520"),
+//        FieldToCodelist("digitalTransferOptions", "transferSize", null),
         FieldToCodelist(null, "publication.generalResourceType", "3390"),
         FieldToCodelist(null, "publication.resourceType", "3386"),
         FieldToCodelist("references", "type", "2000"),
