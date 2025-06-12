@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 
 import {
   Component,
@@ -86,8 +86,8 @@ import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
     MatMenu,
     MatMenuItem,
     HeaderMoreComponent,
-    FormlyModule,
     MATOMO_DIRECTIVES,
+    FormlyForm,
   ],
   providers: [UserManagementService],
 })

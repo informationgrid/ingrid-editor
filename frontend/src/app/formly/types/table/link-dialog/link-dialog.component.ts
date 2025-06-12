@@ -29,8 +29,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { FormDialogData } from "../form-dialog/form-dialog.component";
 import {
   FormlyFieldConfig,
+  FormlyForm,
   FormlyFormOptions,
-  FormlyModule,
 } from "@ngx-formly/core";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 
@@ -38,7 +38,7 @@ import { DialogTemplateComponent } from "../../../../shared/dialog-template/dial
   selector: "ige-link-dialog",
   templateUrl: "./link-dialog.component.html",
   styleUrls: ["./link-dialog.component.scss"],
-  imports: [DialogTemplateComponent, ReactiveFormsModule, FormlyModule],
+  imports: [DialogTemplateComponent, ReactiveFormsModule, FormlyForm],
 })
 export class LinkDialogComponent implements OnInit, AfterViewInit {
   form = new UntypedFormGroup({});

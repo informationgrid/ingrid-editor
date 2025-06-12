@@ -20,8 +20,8 @@
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import {
   FormlyFieldConfig,
+  FormlyForm,
   FormlyFormOptions,
-  FormlyModule,
 } from "@ngx-formly/core";
 import { UntypedFormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
@@ -38,7 +38,7 @@ export interface FormDialogData {
   selector: "ige-form-dialog",
   templateUrl: "./form-dialog.component.html",
   styleUrls: ["./form-dialog.component.scss"],
-  imports: [DialogTemplateComponent, FormlyModule],
+  imports: [DialogTemplateComponent, FormlyForm],
 })
 export class FormDialogComponent implements OnInit, OnDestroy {
   form = new UntypedFormGroup({});

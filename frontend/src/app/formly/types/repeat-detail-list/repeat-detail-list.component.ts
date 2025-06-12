@@ -28,7 +28,7 @@ import {
   FieldTypeConfig,
   FormlyFieldConfig,
   FormlyFieldProps,
-  FormlyModule,
+  FormlyValidationMessage,
 } from "@ngx-formly/core";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import {
@@ -80,9 +80,9 @@ interface RepeatDetailListProps extends FormlyFieldProps {
     AddButtonComponent,
     MatButtonModule,
     FormErrorComponent,
-    FormlyModule,
     MatTooltipModule,
     NgComponentOutlet,
+    FormlyValidationMessage,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

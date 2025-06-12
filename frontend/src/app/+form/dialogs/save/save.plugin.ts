@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Inject, Injectable, signal } from "@angular/core";
+import {
+  effect,
+  inject,
+  Inject,
+  Injectable,
+  signal,
+  DOCUMENT,
+} from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { IgeDocument } from "../../../models/ige-document";
@@ -25,7 +32,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { catchError, finalize } from "rxjs/operators";
 import { SaveBase } from "./save.base";
 import { DocEventsService } from "../../../services/event/doc-events.service";
-import { DOCUMENT } from "@angular/common";
+
 import { IgeError } from "../../../models/ige-error";
 import { PluginService } from "../../../services/plugin/plugin.service";
 

@@ -29,7 +29,7 @@ import {
 import {
   FieldTypeConfig,
   FormlyFieldProps,
-  FormlyModule,
+  FormlyValidationMessage,
 } from "@ngx-formly/core";
 import {
   MatAutocomplete,
@@ -78,7 +78,7 @@ import {
   MatChipRemove,
 } from "@angular/material/chips";
 import { MatIcon } from "@angular/material/icon";
-import { AsyncPipe, NgFor, NgTemplateOutlet } from "@angular/common";
+import { AsyncPipe, NgTemplateOutlet } from "@angular/common";
 import { MatIconButton } from "@angular/material/button";
 import {
   MatError,
@@ -135,7 +135,6 @@ interface RepeatListProps extends FormlyFieldProps {
   styleUrls: ["./repeat-list.component.scss"],
   imports: [
     FormErrorComponent,
-    FormlyModule,
     MatChipListbox,
     CdkDropListGroup,
     CdkDropList,
@@ -143,7 +142,6 @@ interface RepeatListProps extends FormlyFieldProps {
     CdkDrag,
     MatIcon,
     MatChipRemove,
-    NgFor,
     MatIconButton,
     MatFormField,
     MatSelect,
@@ -164,6 +162,7 @@ interface RepeatListProps extends FormlyFieldProps {
     MatProgressSpinner,
     AsyncPipe,
     FieldToAiraLabelledbyPipe,
+    FormlyValidationMessage,
   ],
 })
 export class RepeatListComponent

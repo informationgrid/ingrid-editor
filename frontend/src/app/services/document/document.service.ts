@@ -836,11 +836,6 @@ export class DocumentService {
     }
   }
 
-  clearTreeStores() {
-    this.documentTreeStore.set([]);
-    this.addressTreeStore.set([]);
-  }
-
   mapToDocumentAbstracts(docs: DocumentWithMetadata[]): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
@@ -944,23 +939,21 @@ export class DocumentService {
 
       store.update(id, { _parent: parent, isRoot: parent === null });
 
-      // update children information of parent of each moved dataset
-      const hasChildren = Object.keys(entityMap).some(
-        (key) => entityMap[key]._parent === parentId,
-      );
+      if (parentId === null) return;
 
-      if (parentId !== null && !hasChildren) {
-        store.update(parentId, {
-          _hasChildren: false,
-        });
+      // update children information of the parent for each moved dataset
+      const hasChildren = store
+        .entities()
+        .some((item) => item._parent === parentId);
+
+      if (!hasChildren) {
+        store.update(parentId, { _hasChildren: false });
       }
     });
 
     // update children information of destination
     if (parent !== null) {
-      store.update(parent, {
-        _hasChildren: true,
-      });
+      store.update(parent, { _hasChildren: true });
     }
 
     this.generalStore.setDatasetsChanged(

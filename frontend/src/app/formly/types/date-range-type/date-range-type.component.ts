@@ -21,7 +21,7 @@ import { Component, OnInit } from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FieldTypeConfig, FormlyModule } from "@ngx-formly/core";
+import { FieldTypeConfig, FormlyValidationMessage } from "@ngx-formly/core";
 import { debounceTime } from "rxjs/operators";
 import {
   MatError,
@@ -53,7 +53,7 @@ import {
     MatSuffix,
     MatDateRangePicker,
     MatError,
-    FormlyModule,
+    FormlyValidationMessage,
   ],
 })
 export class DateRangeTypeComponent

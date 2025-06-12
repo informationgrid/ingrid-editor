@@ -1,4 +1,4 @@
-<ng-container *ngIf="columnsMap">
+@if (columnsMap) {
     <ige-result-table-header
         [totalHits]="totalHits"
         [isLoading]="isLoading"
@@ -15,38 +15,45 @@
     >
         <!--- Note that these columns can be defined in any order.
               The actual rendered columns are set as a property on the row definition" -->
-        <ng-container
-            *ngFor="let column of columnsMap"
-            [matColumnDef]="column.value"
-        >
-            <th
-                mat-header-cell
-                *matHeaderCellDef
-                mat-sort-header
-                [class.thin-column]="column.value === '_type'"
-            >
-                {{ column.label || column.value }}
-            </th>
-            <td mat-cell *matCellDef="let element" [ngSwitch]="column.value">
-                <ng-container *ngSwitchCase="'_type'">
-                    <ige-document-icon [doc]="element"></ige-document-icon>
-                </ng-container>
-                <ng-container *ngSwitchCase="'_created'">
-                    <ng-container *ngTemplateOutlet="dateColumn"></ng-container>
-                </ng-container>
-                <ng-container *ngSwitchCase="'_contentModified'">
-                    <ng-container *ngTemplateOutlet="dateColumn"></ng-container>
-                </ng-container>
-                <ng-container *ngSwitchDefault>
-                    {{ element[column.value] }}
-                </ng-container>
-                <ng-template #dateColumn>
-                    <div [title]="element[column.value]">
-                        {{ element[column.value] | date }}
-                    </div>
-                </ng-template>
-            </td>
-        </ng-container>
+        @for (column of columnsMap; track column.value) {
+            <ng-container [matColumnDef]="column.value">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    mat-sort-header
+                    [class.thin-column]="column.value === '_type'"
+                >
+                    {{ column.label || column.value }}
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    <ng-template #dateColumn>
+                        <div [title]="element[column.value]">
+                            {{ element[column.value] | date }}
+                        </div>
+                    </ng-template>
+                    @switch (column.value) {
+                        @case ("_type") {
+                            <ige-document-icon
+                                [doc]="element"
+                            ></ige-document-icon>
+                        }
+                        @case ("_created") {
+                            <ng-container
+                                *ngTemplateOutlet="dateColumn"
+                            ></ng-container>
+                        }
+                        @case ("_contentModified") {
+                            <ng-container
+                                *ngTemplateOutlet="dateColumn"
+                            ></ng-container>
+                        }
+                        @default {
+                            {{ element[column.value] }}
+                        }
+                    }
+                </td>
+            </ng-container>
+        }
 
         <ng-container matColumnDef="settings">
             <th mat-header-cell *matHeaderCellDef class="thin-column">
@@ -101,4 +108,4 @@
         [pageSizeOptions]="[10, 20, 50]"
         showFirstLastButtons
     ></mat-paginator>
-</ng-container>
+}
