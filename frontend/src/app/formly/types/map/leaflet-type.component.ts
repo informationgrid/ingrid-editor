@@ -128,7 +128,7 @@ export class LeafletTypeComponent
     try {
       this.updateBoundingBox(locations);
     } catch (e) {
-      console.warn("Failed to update bounding box. map already unloaded?", e);
+      console.warn("Failed to update bounding box. Map already unloaded?", e);
     }
   }
 
@@ -178,12 +178,19 @@ export class LeafletTypeComponent
    * https://github.com/angular/angular/issues/1618
    */
   public ngOnDestroy(): void {
-    if (this.leafletReference && this.leafletReference.remove) {
-      this.leafletReference.clearAllEventListeners();
-      this.leafletReference.remove();
-    }
-    if (this.leaflet && this.leaflet.nativeElement.remove) {
-      this.leaflet.nativeElement.remove();
+    try {
+      if (this.leafletReference && this.leafletReference.remove) {
+        this.leafletReference.clearAllEventListeners();
+        this.leafletReference.remove();
+      }
+      if (this.leaflet && this.leaflet.nativeElement.remove) {
+        this.leaflet.nativeElement.remove();
+      }
+    } catch (e) {
+      console.warn(
+        "Failed to update bounding box during destroy. Map already unloaded?",
+        e,
+      );
     }
   }
 

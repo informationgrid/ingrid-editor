@@ -176,7 +176,7 @@ export class TreeComponent implements OnInit {
         // delay reload to use correct activeId
         // when we jump from import page (after an import) the previously active node
         // could be opened instead of the imported document
-        setTimeout(() => this.reloadTree(true).subscribe(), 100);
+        setTimeout(() => this.reloadTree(true).subscribe(), 300);
       }
     });
   }
@@ -251,6 +251,7 @@ export class TreeComponent implements OnInit {
         if (this.activeNodeId() === id) {
           return;
         }
+        this.activeNodeId.set(id);
         // when setting a node from the outside, then do not emit activate event again
         this.jumpToNode(id, true, false).catch((e) => this.error.next(e));
       });

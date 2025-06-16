@@ -1743,16 +1743,16 @@ export abstract class IngridShared extends BaseDoctype {
         hasInlineContextHelp: true,
         wrappers: ["inline-help", "form-field"],
       }),
-      this.addAutoCompleteInline(
-        "generalResourceType",
-        "Ressourcen Typ (generell)",
-        {
-          options: this.getCodelistForSelect("3390", "generalResourceType"),
-          codelistId: "3390",
-          hasInlineContextHelp: true,
-          wrappers: ["inline-help", "form-field"],
+      this.addSelectInline("generalResourceType", "Ressourcen Typ (generell)", {
+        options: this.getCodelistForSelect("3390", "generalResourceType"),
+        codelistId: "3390",
+        hasInlineContextHelp: true,
+        wrappers: ["inline-help", "form-field"],
+        expressions: {
+          "props.required": (field: FormlyFieldConfig) =>
+            field.options.formState.mainModel?.publication?.doi,
         },
-      ),
+      }),
       this.addAutoCompleteInline("resourceType", "Ressourcen Typ", {
         options: this.getCodelistForSelect("3386", "resourceType"),
         codelistId: "3386",

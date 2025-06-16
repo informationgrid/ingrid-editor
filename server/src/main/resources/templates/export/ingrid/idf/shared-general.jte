@@ -328,7 +328,7 @@
                                 <gmd:identifier>
                                     <gmd:MD_Identifier>
                                         <gmd:code>
-                                            <gco:CharacterString>${page.getGeneralResourceType()}/${page.getResourceType()}</gco:CharacterString>
+                                            <gco:CharacterString>${page.getGeneralResourceType()}@if( TransformationTools.hasValue(page.getResourceType()) )/${page.getResourceType()}@endif</gco:CharacterString>
                                         </gmd:code>
                                     </gmd:MD_Identifier>
                                 </gmd:identifier>
