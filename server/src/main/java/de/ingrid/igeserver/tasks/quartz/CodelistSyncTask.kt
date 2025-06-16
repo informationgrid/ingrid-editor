@@ -79,8 +79,12 @@ class CodelistSyncTask(
                 var modified = false
 
                 val jsonPaths = findJsonPathsWithCodelistIdField(dataNode, "$") { path, node, fieldName ->
-                    updateCodelistEntry(node, path, uuid, catalogIdentifier, catalogLanguage).let {
-                        if (it) modified = true
+                    try {
+                        updateCodelistEntry(node, path, uuid, catalogIdentifier, catalogLanguage).let {
+                            if (it) modified = true
+                        }
+                    } catch (e: Exception) {
+                        log.error(e.message ?: "Error updating codelist entry at path: $path for uuid: $uuid")
                     }
                 }
 
@@ -132,7 +136,7 @@ class CodelistSyncTask(
         } else {
             val codelistEntryValue = codelist.entries?.find { it.id == entryKey }?.getField(catalogLanguage)
             if (codelistEntryValue == null) {
-                log.warn("Codelist entry not found for id: $entryKey at path: $path for uuid: $uuid")
+                log.warn("Codelist entry not be found for id: $entryKey at path: $path for uuid: $uuid")
                 // TODO: convert to free entry
                 (node as ObjectNode).put("key", null as String?)
             } else {

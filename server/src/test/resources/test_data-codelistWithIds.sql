@@ -100,6 +100,10 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
     "language": {
       "key": "150",
       "_codelistId": "99999999"
+    },
+    "characterSet": {
+      "key": "6",
+      "_codelistId": "510"
     }
   },
   "resource": {
@@ -245,7 +249,39 @@ VALUES (1001, 100, 'uuid-1', 'InGridGeoService', 'Anonymized Title', '{
       },
       "number": 1
     }
-  }
+  },"fileReferences": [
+    {
+      "title": "Mein Upload",
+      "link": {
+        "asLink": false,
+        "value": "test.txt",
+        "uri": "test.txt",
+        "lastModified": "2025-06-12T08:25:45.783Z",
+        "sizeInBytes": 292476
+      },
+      "format": {
+        "key": "5",
+        "_codelistId": "1320"
+      },
+      "description": "test"
+    }
+  ],
+  "openDataCategories": [
+    {
+      "key": "9",
+      "_codelistId": "6400"
+    }
+  ], "hvdCategories": [
+    {
+      "key": "c_dd313021",
+      "_codelistId": "hvdCategories"
+    }
+  ], "topicCategories": [
+    {
+      "key": "13",
+      "_codelistId": "527"
+    }
+  ]
 }',
         0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'PUBLISHED')
 ;
