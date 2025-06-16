@@ -54,7 +54,6 @@ import { IgeError } from "../../../app/models/ige-error";
 import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 import { ReferenceViewComponent } from "../components/reference-view/reference-view.component";
 import { DocumentService } from "../../../app/services/document/document.service";
-import { CatalogService } from "../../../app/+catalog/services/catalog.service";
 import { GeneralStore } from "../../../app/store/general.store";
 
 interface GeneralSectionOptions {
@@ -1670,16 +1669,16 @@ export abstract class IngridShared extends BaseDoctype {
         hasInlineContextHelp: true,
         wrappers: ["inline-help", "form-field"],
       }),
-      this.addAutoCompleteInline(
-        "generalResourceType",
-        "Ressourcen Typ (generell)",
-        {
-          options: this.getCodelistForSelect("3390", "generalResourceType"),
-          codelistId: "3390",
-          hasInlineContextHelp: true,
-          wrappers: ["inline-help", "form-field"],
+      this.addSelectInline("generalResourceType", "Ressourcen Typ (generell)", {
+        options: this.getCodelistForSelect("3390", "generalResourceType"),
+        codelistId: "3390",
+        hasInlineContextHelp: true,
+        wrappers: ["inline-help", "form-field"],
+        expressions: {
+          "props.required": (field: FormlyFieldConfig) =>
+            field.options.formState.mainModel?.publication?.doi,
         },
-      ),
+      }),
       this.addAutoCompleteInline("resourceType", "Ressourcen Typ", {
         options: this.getCodelistForSelect("3386", "resourceType"),
         codelistId: "3386",
