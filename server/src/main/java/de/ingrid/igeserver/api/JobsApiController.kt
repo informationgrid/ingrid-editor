@@ -35,6 +35,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.tasks.IndexingTask
+import de.ingrid.igeserver.tasks.quartz.CodelistSyncTask
 import de.ingrid.igeserver.tasks.quartz.ImportTask
 import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.tasks.quartz.UrlRequestService
@@ -274,7 +275,7 @@ class JobsApiController(
         val jobDataMap = JobDataMap().apply {
             put("catalogId", catalogId)
         }
-        scheduler.handleJobWithCommand(command, de.ingrid.igeserver.tasks.quartz.MigrateCodelistIdsIntoDatasets::class.java, jobKey, jobDataMap)
+        scheduler.handleJobWithCommand(command, CodelistSyncTask::class.java, jobKey, jobDataMap)
 
         return ResponseEntity.ok().build()
     }
