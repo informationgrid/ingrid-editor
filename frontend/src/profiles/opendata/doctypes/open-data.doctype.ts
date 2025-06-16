@@ -164,7 +164,7 @@ export class OpenDataDoctype extends BaseDoctype {
                 showSearch: true,
                 options: this.getCodelistForSelect(
                   "20003",
-                  "distributions.type",
+                  "distributions.format",
                 ).pipe(
                   map((data) => {
                     return data;

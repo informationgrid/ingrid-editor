@@ -20,11 +20,12 @@
 package de.ingrid.igeserver.tasks.quartz
 
 import de.ingrid.igeserver.api.messaging.Message
+import de.ingrid.igeserver.profiles.uvp.exporter.model.DataModel.Companion.behaviourService
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobExecutionContext
-import org.quartz.PersistJobDataAfterExecution
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import java.util.*
@@ -36,10 +37,10 @@ data class FieldToCodelist(
 )
 
 @Component
-@PersistJobDataAfterExecution
 class MigrateCodelistIdsIntoDatasets(
     private val jdbcTemplate: JdbcTemplate,
     private val catalogService: CatalogService,
+    private val behaviourService: BehaviourService,
 ) : IgeJob() {
 
     override val log = logger()
@@ -88,7 +89,7 @@ class MigrateCodelistIdsIntoDatasets(
         FieldToCodelist("pointOfContact", "type", "505"),
         FieldToCodelist(null, "service.type", "5100"),
         FieldToCodelist("service.classification", null, "5200"),
-        FieldToCodelist("service.version", null, "5152"), // dynamic!!!
+//        FieldToCodelist("service.version", null, "5152"), // dynamic -> special handling
 //        FieldToCodelist("service.operations", "name", "5110"), // dynamic -> special handling
 
         FieldToCodelist("featureCatalogueDescription.citation", "title", "3535"),
@@ -100,24 +101,26 @@ class MigrateCodelistIdsIntoDatasets(
         FieldToCodelist("gridSpatialRepresentation.axesDimensionProperties", "name", "514"),
         FieldToCodelist(null, "gridSpatialRepresentation.cellGeometry", "509"),
         FieldToCodelist(null, "gridSpatialRepresentation.georectified.pointInPixel", "2100"),
-        FieldToCodelist("qualities", "measureType", "7127"), // dynamic!!!
+//        FieldToCodelist("qualities", "measureType", "7127"), // dynamic!!!
         FieldToCodelist(null, "serviceType", "5300"),
         FieldToCodelist(null, "publication.documentType", "3385"),
     )
 
     val fieldsUvp = fieldsAddress + listOf(
-        FieldToCodelist("eiaNumbers", null, "9000"), // dynamic!!!
+//        FieldToCodelist("eiaNumbers", null, "9000"), // dynamic!!!
     )
     val fieldsOpendata = fieldsAddress + listOf(
         FieldToCodelist(null, "country", "6200"),
         FieldToCodelist("contact", "type", "4430"),
         FieldToCodelist(null, "openDataCategories", "6400"),
+        FieldToCodelist("addresses", "type", "505"),
         FieldToCodelist("hvdCategories", null, "hvdCategories"),
-        FieldToCodelist("distributions", "type", "20003"),
-        FieldToCodelist("distributions", "languages", "20007"),
+        FieldToCodelist("distributions", "format", "20003"),
+//        FieldToCodelist("distributions", "languages", "20007"), // array in array not supported => ignore
         FieldToCodelist("distributions", "license", "20004"),
         FieldToCodelist("distributions", "availability", "20005"),
         FieldToCodelist(null, "politicalGeocodingLevel", "20006"),
+        FieldToCodelist(null, "periodicity", "518"),
     )
     val fieldsTest = fieldsAddress + listOf(
         FieldToCodelist(null, "select", "8000"),
@@ -127,7 +130,7 @@ class MigrateCodelistIdsIntoDatasets(
         FieldToCodelist("repeatListCodelist", null, "100"),
     )
     val fieldsHmdk = fieldsAddress + fieldsInGrid + listOf(
-        FieldToCodelist(null, "informationHmbTG", "informationsgegenstand"),
+        FieldToCodelist("informationHmbTG", null, "informationsgegenstand"),
     )
     val fieldsKrzn = fieldsAddress + fieldsInGrid + listOf(
         FieldToCodelist(null, "mapLink", "10500"),
@@ -142,6 +145,7 @@ class MigrateCodelistIdsIntoDatasets(
         val catalogIdentifier = context.mergedJobDataMap!!.getString("catalogId")
         val catalog = catalogService.getCatalogById(catalogIdentifier)
         val profile = catalogService.getCatalogProfile(catalog.type)
+        log.info("Profile: $profile for catalog: $catalogIdentifier")
 
         getFields(profile).forEach {
             try {
@@ -149,11 +153,6 @@ class MigrateCodelistIdsIntoDatasets(
                 val sql = getSQL(it, catalogIdentifier)
                 log.info("Executing SQL: $sql")
                 val updatedRows = jdbcTemplate.update(sql)
-
-                getSQLForDynamicOperationsCodelistId(catalogIdentifier).let { operationSql ->
-                    log.info("Executing SQL for dynamic operations")
-                    jdbcTemplate.update(operationSql)
-                }
 
                 message.message = "Codelist synchronization completed successfully. Updated $updatedRows rows."
                 log.info("Codelist synchronization completed successfully. Updated $updatedRows rows for $it.")
@@ -163,6 +162,32 @@ class MigrateCodelistIdsIntoDatasets(
                 log.error(errorMessage, e)
             }
         }
+
+        if (profile.identifier == "ingrid" || profile.parentProfile == "ingrid") {
+            getSQLForDynamicOperationsCodelistId(catalogIdentifier).let { operationSql ->
+                log.info("Executing SQL for dynamic operations")
+                jdbcTemplate.update(operationSql)
+            }
+
+            getSQLForDynamicVersionsCodelistId(catalogIdentifier).let { operationSql ->
+                log.info("Executing SQL for dynamic version")
+                jdbcTemplate.update(operationSql)
+            }
+
+            getSQLForDynamicQualitiesCodelistId(catalogIdentifier).let { operationSql ->
+                log.info("Executing SQL for dynamic qualities")
+                jdbcTemplate.update(operationSql)
+            }
+        } else if (profile.identifier == "uvp") {
+            // get uvp number list of catalog
+            val uvpCodelistId = behaviourService.get(catalogIdentifier, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
+            FieldToCodelist("eiaNumbers", null, uvpCodelistId).let {
+                val sql = getSQL(it, catalogIdentifier)
+                log.info("Executing SQL: $sql")
+                val updatedRows = jdbcTemplate.update(sql)
+            }
+        }
+
         message.endTime = Date()
         finishJob(context, message)
     }
@@ -245,6 +270,70 @@ class MigrateCodelistIdsIntoDatasets(
               AND dw.deleted = 0
               AND d.state != 'ARCHIVED'
               AND d.data -> 'service' ->> 'operations' IS NOT NULL
+    """.trimIndent()
+
+    private fun getSQLForDynamicVersionsCodelistId(catalogIdentifier: String): String = """
+            UPDATE document d
+            SET data = jsonb_set(
+                d.data,
+                '{service,version}',
+                COALESCE(
+                    (
+                        SELECT jsonb_agg(
+                                    CASE
+                                        WHEN d.data -> 'service' -> 'type' ->> 'key' = '1' THEN jsonb_set(elem, '{_codelistId}', '"5151"', TRUE)
+                                        WHEN d.data -> 'service' -> 'type' ->> 'key' = '2' THEN jsonb_set(elem, '{_codelistId}', '"5152"', TRUE)
+                                        WHEN d.data -> 'service' -> 'type' ->> 'key' = '3' THEN jsonb_set(elem, '{_codelistId}', '"5153"', TRUE)
+                                        WHEN d.data -> 'service' -> 'type' ->> 'key' = '4' THEN jsonb_set(elem, '{_codelistId}', '"5154"', TRUE)
+                                    ELSE jsonb_set(elem, '{_codelistId}', '"5151"', TRUE)
+                                    END
+                                )
+                        FROM jsonb_array_elements(d.data -> 'service' -> 'version') elem
+                    ),
+                    '[]'::jsonb
+                )
+            )
+            FROM document_wrapper dw JOIN catalog cat ON dw.catalog_id = cat.id
+            WHERE d.uuid = dw.uuid
+              AND cat.identifier = '$catalogIdentifier'
+              AND dw.deleted = 0
+              AND d.state != 'ARCHIVED'
+              AND d.data -> 'service' ->> 'version' IS NOT NULL
+    """.trimIndent()
+
+    private fun getSQLForDynamicQualitiesCodelistId(catalogIdentifier: String): String = """
+            UPDATE document d
+            SET data = jsonb_set(
+                d.data,
+                '{qualities}',
+                COALESCE(
+                    (
+                        SELECT jsonb_agg(
+                                    CASE
+                                        WHEN elem ->> '_type' = 'completenessComission' THEN jsonb_set(elem, '{measureType,_codelistId}', '"7109"', TRUE)
+                                        WHEN elem ->> '_type' = 'conceptualConsistency' THEN jsonb_set(elem, '{measureType,_codelistId}', '"7112"', TRUE)
+                                        WHEN elem ->> '_type' = 'domainConsistency' THEN jsonb_set(elem, '{measureType,_codelistId}', '"7113"', TRUE)
+                                        WHEN elem ->> '_type' = 'formatConsistency' THEN jsonb_set(elem, '{measureType,_codelistId}', '"7114"', TRUE)
+                                        WHEN elem ->> '_type' = 'topologicalConsistency' THEN jsonb_set(elem, '{measureType,_codelistId}', '"7115"', TRUE)
+                                        WHEN elem ->> '_type' = 'temporalConsistency' THEN jsonb_set(elem, '{measureType,_codelistId}', '"7120"', TRUE)
+                                        WHEN elem ->> '_type' = 'thematicClassificationCorrectness' THEN jsonb_set(elem, '{measureType,_codelistId}', '"7125"', TRUE)
+                                        WHEN elem ->> '_type' = 'nonQuantitativeAttributeAccuracy' THEN jsonb_set(elem, '{measureType,_codelistId}', '"7126"', TRUE)
+                                        WHEN elem ->> '_type' = 'quantitativeAttributeAccuracy' THEN jsonb_set(elem, '{measureType,_codelistId}', '"7127"', TRUE)
+                                        WHEN elem ->> '_type' = 'relativeInternalPositionalAccuracy' THEN jsonb_set(elem, '{measureType,_codelistId}', '"7128"', TRUE)
+                                    ELSE jsonb_set(elem, '{measureType,_codelistId}', '"7109"', TRUE)
+                                    END
+                                )
+                        FROM jsonb_array_elements(d.data -> 'qualities') elem
+                    ),
+                    '[]'::jsonb
+                )
+            )
+            FROM document_wrapper dw JOIN catalog cat ON dw.catalog_id = cat.id
+            WHERE d.uuid = dw.uuid
+              AND cat.identifier = '$catalogIdentifier'
+              AND dw.deleted = 0
+              AND d.state != 'ARCHIVED'
+              AND d.data ->> 'qualities' IS NOT NULL
     """.trimIndent()
 
     private fun convertToJsonPathForNullCheck(dotPath: String): String {

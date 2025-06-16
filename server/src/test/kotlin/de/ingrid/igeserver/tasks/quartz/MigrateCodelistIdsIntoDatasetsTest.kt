@@ -21,9 +21,12 @@ package de.ingrid.igeserver.tasks.quartz
 
 import IntegrationTest
 import com.fasterxml.jackson.databind.JsonNode
+import com.ninjasquad.springmockk.MockkBean
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
+import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
@@ -37,6 +40,9 @@ import org.springframework.test.context.jdbc.SqlConfig
 
 @Sql(scripts = ["/test_data-codelist.sql"], config = SqlConfig(encoding = "UTF-8"))
 class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
+
+    @MockkBean(relaxed = true)
+    lateinit var behaviourService: BehaviourService
 
     @Autowired
     private lateinit var migrationTask: MigrateCodelistIdsIntoDatasets
@@ -52,18 +58,18 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
     fun setUp() {
         jobExecutionContext = mockk<JobExecutionContext>()
 
-        // Setup mock JobDataMap
-        val jobDataMap = JobDataMap().apply {
-            put("catalogId", "test_catalog")
-        }
-        every { jobExecutionContext.mergedJobDataMap } returns jobDataMap
         every { jobExecutionContext.jobDetail.jobDataMap } returns JobDataMap()
 
         mockCodelists(codelistHandler)
     }
 
     @Test
-    fun `migrate codelist ids inside document`() {
+    fun `migrate codelist ids inside documents for InGrid`() {
+        // Setup mock JobDataMap
+        every { jobExecutionContext.mergedJobDataMap } returns JobDataMap().apply {
+            this.put("catalogId", "test_catalog")
+        }
+
         migrationTask.run(jobExecutionContext)
 
         // GEOSERVICE
@@ -76,7 +82,7 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 println(it)
                 it.get("themes").get(0).getString("_codelistId") shouldBe "6100"
                 it.get("advProductGroups").get(0).getString("_codelistId") shouldBe "8010"
-                it.getPath("service.version")!!.get(0).getString("_codelistId") shouldBe "5152"
+                it.getPath("service.version")!!.get(0).getString("_codelistId") shouldBe "5153"
                 it.getPath("service.operations")!!.get(0).getString("name._codelistId") shouldBe "5120"
                 it.getPath("service.classification")!!.get(0).getString("_codelistId") shouldBe "5200"
                 it.getPath("spatial.spatialSystems")!!.get(0).getString("_codelistId") shouldBe "100"
@@ -125,14 +131,18 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 it.getString("publication.resourceType._codelistId") shouldBe "3386"
                 it.getPath("spatialRepresentationType")!!.get(0).getString("_codelistId") shouldBe "526"
                 it.getPath("spatialRepresentationType")!!.get(1).getString("_codelistId") shouldBe "526"
-                it.getPath("dataQualityInfo.lineage.source.descriptions")!!.get(0).getString("dateType._codelistId") shouldBe "502"
+                it.getPath("dataQualityInfo.lineage.source.descriptions")!!.get(0)
+                    .getString("dateType._codelistId") shouldBe "502"
                 it.getPath("portrayalCatalogueInfo.citation")!!.get(0).getString("title._codelistId") shouldBe "3555"
-                it.getPath("featureCatalogueDescription.citation")!!.get(0).getString("title._codelistId") shouldBe "3535"
+                it.getPath("featureCatalogueDescription.citation")!!.get(0)
+                    .getString("title._codelistId") shouldBe "3535"
                 it.getPath("featureCatalogueDescription.featureTypes")!!.get(0).getString("_codelistId") shouldBe null
-                it.getPath("qualities")!!.get(0).getString("measureType._codelistId") shouldBe "7127"
+                it.getPath("qualities")!!.get(0).getString("measureType._codelistId") shouldBe "7109"
+                it.getPath("qualities")!!.get(1).getString("measureType._codelistId") shouldBe "7127"
                 it.getString("vectorSpatialRepresentation.topologyLevel._codelistId") shouldBe "528"
                 it.getString("vectorSpatialRepresentation.geometricObjectType._codelistId") shouldBe "515"
-                it.getPath("gridSpatialRepresentation.axesDimensionProperties")!!.get(0).getString("name._codelistId") shouldBe "514"
+                it.getPath("gridSpatialRepresentation.axesDimensionProperties")!!.get(0)
+                    .getString("name._codelistId") shouldBe "514"
                 it.getString("gridSpatialRepresentation.cellGeometry._codelistId") shouldBe "509"
                 it.getString("gridSpatialRepresentation.georectified.pointInPixel._codelistId") shouldBe "2100"
             }
@@ -148,6 +158,7 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 it.getString("publication.documentType._codelistId") shouldBe "3385"
             }
 
+        // ADDRESS
         entityManager.createNativeQuery(
             "SELECT data FROM document WHERE id = 1004",
             JsonNode::class.java,
@@ -175,6 +186,16 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 println(it)
                 it.getString("serviceType._codelistId") shouldBe "5300"
             }
+    }
+
+    @Test
+    fun `migrate codelist ids inside documents for InGrid-KRZN`() {
+        // Setup mock JobDataMap
+        every { jobExecutionContext.mergedJobDataMap } returns JobDataMap().apply {
+            this.put("catalogId", "test_catalog-krzn")
+        }
+
+        migrationTask.run(jobExecutionContext)
 
         // KRZN: PUBLICATION
         entityManager.createNativeQuery(
@@ -187,4 +208,225 @@ class MigrateCodelistIdsIntoDatasetsTest : IntegrationTest() {
                 it.getString("mapLink._codelistId") shouldBe "10500"
             }
     }
+
+    @Test
+    fun `migrate codelist ids inside documents for UVP`() {
+        // Setup mock JobDataMap
+        every { jobExecutionContext.mergedJobDataMap } returns JobDataMap().apply {
+            this.put("catalogId", "test_catalog-uvp")
+        }
+
+        every {
+            behaviourService.get("test_catalog-uvp", "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString()
+        } returns "9003"
+
+        migrationTask.run(jobExecutionContext)
+
+        // KRZN: PUBLICATION
+        entityManager.createNativeQuery(
+            "SELECT data FROM document WHERE id = 1007",
+            JsonNode::class.java,
+        ).resultList.first()
+            .let {
+                it as JsonNode
+                println(it)
+                it.getPath("eiaNumbers")!!.get(0).getString("_codelistId") shouldBe "9003"
+            }
+    }
+
+    @Test
+    fun `migrate codelist ids inside documents for OpenData`() {
+        // Setup mock JobDataMap
+        every { jobExecutionContext.mergedJobDataMap } returns JobDataMap().apply {
+            this.put("catalogId", "test_catalog-opendata")
+        }
+
+        migrationTask.run(jobExecutionContext)
+
+        // KRZN: PUBLICATION
+        entityManager.createNativeQuery(
+            "SELECT data FROM document WHERE id = 1009",
+            JsonNode::class.java,
+        ).resultList.first()
+            .let {
+                it as JsonNode
+                println(it)
+                it.getPath("hvdCategories")!!.get(0).getString("_codelistId") shouldBe "hvdCategories"
+                it.getPath("addresses")!!.get(0).getString("type._codelistId") shouldBe "505"
+                it.getPath("distributions")!!.get(0).getString("format._codelistId") shouldBe "20003"
+                it.getPath("distributions")!!.get(0).getString("license._codelistId") shouldBe "20004"
+                it.getPath("distributions")!!.get(0).getString("availability._codelistId") shouldBe "20005"
+//                it.getPath("distributions")!!.get(0).getString("languages._codelistId") shouldBe "20007" // not supported
+                it.getString("politicalGeocodingLevel._codelistId") shouldBe "20006"
+                it.getString("periodicity._codelistId") shouldBe "518"
+            }
+    }
+
+    @Test
+    fun `migrate codelist ids inside documents for HMDK`() {
+        // Setup mock JobDataMap
+        every { jobExecutionContext.mergedJobDataMap } returns JobDataMap().apply {
+            this.put("catalogId", "test_catalog-hmdk")
+        }
+
+        migrationTask.run(jobExecutionContext)
+
+        // KRZN: PUBLICATION
+        entityManager.createNativeQuery(
+            "SELECT data FROM document WHERE id = 1010",
+            JsonNode::class.java,
+        ).resultList.first()
+            .let {
+                it as JsonNode
+                println(it)
+                it.getPath("informationHmbTG")!!.get(0).getString("_codelistId") shouldBe "informationsgegenstand"
+            }
+    }
+
+    @Test
+    fun `when no changes then dataset should not change at all`() {
+        every { jobExecutionContext.mergedJobDataMap } returns JobDataMap().apply {
+            this.put("catalogId", "test_catalog")
+        }
+
+        migrationTask.run(jobExecutionContext)
+
+        entityManager.createNativeQuery(
+            "SELECT data FROM document WHERE id = 1008",
+            JsonNode::class.java,
+        ).resultList.first()
+            .let {
+                it as JsonNode
+                println(it)
+                it.toPrettyString() shouldEqualJson expectedDataset
+            }
+    }
 }
+
+val expectedDataset = string().trimIndent()
+
+private fun string(): String = """{
+  "title": "full_geodatendienst",
+  "themes": [],
+  "service": {
+    "type": null,
+    "version": [],
+    "operations": [],
+    "resolution": [],
+    "classification": null,
+    "isAtomDownload": true,
+    "coupledResources": [],
+    "hasAccessConstraints": false
+  },
+  "spatial": {
+    "references": [
+      {
+        "ars": "",
+        "type": "free",
+        "title": "TE, Lübecker Straße, Altstadt, Schwerin, Mecklenburg-Vorpommern, 19053, Deutschland (clothes)",
+        "value": {
+          "lat1": 53.6279788,
+          "lat2": 53.6280788,
+          "lon1": 11.409222,
+          "lon2": 11.409322
+        }
+      }
+    ],
+    "spatialSystems": null,
+    "verticalExtent": {
+      "maximumValue": 11,
+      "minimumValue": 1,
+      "unitOfMeasure": null
+    }
+  },
+  "keywords": {
+    "free": [],
+    "gemet": [],
+    "umthes": []
+  },
+  "metadata": {
+    "language": null,
+    "characterSet": null
+  },
+  "resource": {
+    "useConstraints": [],
+    "accessConstraints": null
+  },
+  "temporal": {
+    "events": [
+      {
+        "referenceDate": "2023-07-31T22:00:00.000Z",
+        "referenceDateType": null
+      }
+    ],
+    "status": null,
+    "resourceDateType": null
+  },
+  "extraInfo": {
+    "legalBasicsDescriptions": null
+  },
+  "properties": {
+    "isInspireIdentified": "relevant"
+  },
+  "references": [
+    {
+      "url": "https://test.com/my.zip",
+      "type": null,
+      "title": "Daten zum Download",
+      "urlDataType": null,
+      "referenceType": "url"
+    }
+  ],
+  "description": "test",
+  "distribution": {
+    "format": []
+  },
+  "spatialScope": null,
+  "pointOfContact": [
+    {
+      "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4",
+      "type": null
+    },
+    {
+      "ref": "83f92167-6606-4182-948c-5747ad608b80"
+    }
+  ],
+  "advProductGroups": [],
+  "graphicOverviews": [],
+  "conformanceResult": [
+    {
+      "isInspire": true,
+      "specification": null,
+      "publicationDate": "2009-10-20T00:00:00.000Z"
+    }
+  ],
+  "digitalTransferOptions": [
+    {
+      "name": null,
+      "transferSize": {
+        "unit": null
+      }
+    }
+  ],
+  "maintenanceInformation": {
+    "maintenanceAndUpdateFrequency": null,
+    "userDefinedMaintenanceFrequency": {
+      "unit": null,
+      "number": 1
+    }
+  },"fileReferences": [
+    {
+      "title": "Mein Upload",
+      "link": {
+        "asLink": false,
+        "value": "test.txt",
+        "uri": "test.txt",
+        "lastModified": "2025-06-12T08:25:45.783Z",
+        "sizeInBytes": 292476
+      },
+      "format": null,
+      "description": "test"
+    }
+  ],
+  "openDataCategories": [], "hvdCategories": [], "topicCategories": []
+}"""
