@@ -64,8 +64,6 @@ export class PublicationAddressDoctype extends AddressShared {
   protected constructor() {
     super();
     this.options = {
-      defaultCountry: { key: "276", value: "Deutschland", _codelistId: "6200" },
-      requiredField: { administrativeArea: true },
       positionNameAndHoursOfService: true,
     };
 
