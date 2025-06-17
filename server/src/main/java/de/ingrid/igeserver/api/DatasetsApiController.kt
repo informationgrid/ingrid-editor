@@ -215,14 +215,18 @@ class DatasetsApiController(
         uuid: String,
         page: Int?,
         pageSize: Int?,
-        additionalOptions: List<String>,
+        options: List<String>,
     ): ResponseEntity<ResearchResponse> {
         val catalogIdentifier = catalogService.getCurrentCatalogForPrincipal(principal)
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, uuid)
         val doc = documentService.getDocumentByWrapperId(catalogIdentifier, wrapper.id!!)
         val profile = catalogService.getProfileFromCatalog(catalogIdentifier)
         val docType = documentService.getDocumentType(doc.type, profile.identifier, profile.parentProfile)
-        val refQuery = docType.getIncomingReferenceQuery(doc, additionalOptions + "forResearch")
+        val refQuery = docType.getIncomingReferenceQuery(doc, options + "forResearch")
+
+        if (refQuery.isEmpty()) {
+            return ResponseEntity.ok(ResearchResponse(0, emptyList()))
+        }
 
         val paging = if (page != null && pageSize != null) {
             ResearchPaging(page, pageSize)
