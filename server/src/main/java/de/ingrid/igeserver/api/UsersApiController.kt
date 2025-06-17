@@ -129,8 +129,9 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             }
             createdUser
         } else {
-            val password = keycloakService.createUser(user)
+            // order important here, first create user in catalog, then in keycloak
             val createdUser = catalogService.createUser(catalogId, user)
+            val password = keycloakService.createUser(user)
             if (!developmentMode) {
                 logger.info("Send welcome email to '${user.login}' (${user.email})")
                 email.sendWelcomeEmailWithPassword(

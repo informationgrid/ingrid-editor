@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.configuration.acl
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.checkForRootPermissions
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
@@ -44,7 +45,7 @@ import org.springframework.security.core.Authentication
 import java.io.Serializable
 import java.util.*
 
-class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthUtils) : AclPermissionEvaluator(aclService) {
+class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthUtils, val catalogService: CatalogService) : AclPermissionEvaluator(aclService) {
 
     val logger = logger()
 
@@ -121,10 +122,14 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
         oid: ObjectIdentity,
         permission: Any,
         domainObject: Any?,
-    ): Boolean {
+    ): Boolean = if (permission is String && catalogService.getPermission(permission) != null) {
+        // catalog permission handling
+        catalogService.hasPermission(authentication, catalogService.getPermission(permission)!!)
+    } else {
+        // keycloak permission handling
         // Obtain the SIDs applicable to the principal
         val sids = sidRetrievalStrategy.getSids(authentication)
-        return checkPermissionForSids(sids, oid, permission, domainObject)
+        checkPermissionForSids(sids, oid, permission, domainObject)
     }
 
     fun checkPermissionForSids(
