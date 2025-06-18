@@ -264,15 +264,18 @@ class OgcApiRecordsController(
         @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: String,
         @Parameter(description = "## Dataset Folder ID \n **Custom Parameter** \n\n Add Dataset to Folder with UUID") @RequestParam(value = "datasetFolderId", required = false) datasetFolderId: String?,
         @Parameter(description = "## Address Folder ID \n **Custom Parameter** \n\n Add Address to Folder with UUID") @RequestParam(value = "addressFolderId", required = false) addressFolderId: String?,
+        @Parameter(description = "Request body is draft (custom parameter)", style = ParameterStyle.FORM, explode = Explode.FALSE) @RequestParam(value = "state", required = false) state: DocState?,
     ): ResponseEntity<JsonNode> {
         apiValidationService.validateCollection(collectionId)
-        apiValidationService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId"))
+        apiValidationService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId", "state"))
         val profile = catalogService.getProfileFromCatalog(collectionId)
 
         val contentType = allHeaders["content-type"]!!
 
+        val isDraft = state?.isDraft ?: false
+
         val options = ImportOptions(
-            publish = true,
+            publish = !isDraft,
             parentDocument = if (!datasetFolderId.isNullOrBlank()) {
                 (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, datasetFolderId)).id
             } else {
@@ -304,14 +307,16 @@ class OgcApiRecordsController(
         @Parameter(description = "The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "The identifier for a specific record within a collection.", required = true) @Valid @PathVariable("recordId") recordId: String,
         @Parameter(description = "The data to be stored.", required = true) @RequestBody data: String,
+        @Parameter(description = "Request body is draft (custom parameter)", style = ParameterStyle.FORM, explode = Explode.FALSE) @RequestParam(value = "state", required = false) state: DocState?,
     ): ResponseEntity<JsonNode> {
         apiValidationService.validateCollection(collectionId)
-        apiValidationService.validateRequestParams(allRequestParams, listOf())
+        apiValidationService.validateRequestParams(allRequestParams, listOf("state"))
         val profile = catalogService.getProfileFromCatalog(collectionId)
 
         val contentType = allHeaders["content-type"]!!
 
-        val options = ImportOptions(publish = true, overwriteAddresses = true, overwriteDatasets = true)
+        val isDraft = state?.isDraft ?: false
+        val options = ImportOptions(publish = !isDraft, overwriteAddresses = true, overwriteDatasets = true)
         ogcRecordService.transactionalImportDocuments(
             options,
             collectionId,

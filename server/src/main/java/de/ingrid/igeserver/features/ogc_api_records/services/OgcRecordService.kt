@@ -181,7 +181,7 @@ class OgcRecordService(
     }
 
     fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?, profile: CatalogProfile) {
-        val docArray = prepareDataForImport(collectionId, contentType, data)
+        val docArray = prepareDataForImport(collectionId, contentType, data, options.publish)
         for (doc in docArray) {
             val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, doc)
             if (optimizedImportAnalysis.existingDatasets.isNotEmpty()) {
@@ -207,7 +207,7 @@ class OgcRecordService(
         }
     }
 
-    private fun prepareDataForImport(collectionId: String, mimeType: String, docData: String): List<String> {
+    private fun prepareDataForImport(collectionId: String, mimeType: String, docData: String, publish: Boolean): List<String> {
         val documents: MutableList<String> = mutableListOf()
         if (mimeType == "application/xml") {
             val parsedXml = parseXmlWithMultipleDocs(docData, collectionId)
@@ -225,7 +225,9 @@ class OgcRecordService(
                 } else {
                     doc
                 }
-                val docWithWrapper = internalExporter.addExportWrapper(collectionId, document, null)
+                val publishedVersion = document.takeIf { publish }
+                val draftVersion = document.takeIf { !publish }
+                val docWithWrapper = internalExporter.addExportWrapper(collectionId, publishedVersion, draftVersion)
                 documents.add(docWithWrapper.toString())
             }
         }
