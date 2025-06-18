@@ -20,12 +20,16 @@
 package de.ingrid.igeserver.tasks.quartz
 
 import de.ingrid.igeserver.api.messaging.Message
+import de.ingrid.igeserver.model.JobCommand
 import de.ingrid.igeserver.profiles.uvp.exporter.model.DataModel.Companion.behaviourService
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.SchedulerService
 import org.apache.logging.log4j.kotlin.logger
+import org.quartz.JobDataMap
 import org.quartz.JobExecutionContext
+import org.quartz.JobKey
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import java.util.*
@@ -41,9 +45,14 @@ class MigrateCodelistIdsIntoDatasets(
     private val jdbcTemplate: JdbcTemplate,
     private val catalogService: CatalogService,
     private val behaviourService: BehaviourService,
+    private val scheduler: SchedulerService,
 ) : IgeJob() {
 
     override val log = logger()
+
+    companion object {
+        const val JOB_KEY: String = "migrateCodelistIdsIntoDatasets"
+    }
 
     private final val fieldsAddress = listOf(
         FieldToCodelist(null, "salutation", "4300"),
@@ -151,11 +160,11 @@ class MigrateCodelistIdsIntoDatasets(
             try {
                 // Execute the SQL query to update codelist values
                 val sql = getSQL(it, catalogIdentifier)
-                log.info("Executing SQL: $sql")
+                log.debug("Executing SQL: $sql")
                 val updatedRows = jdbcTemplate.update(sql)
 
                 message.message = "Codelist synchronization completed successfully. Updated $updatedRows rows."
-                log.info("Codelist synchronization completed successfully. Updated $updatedRows rows for $it.")
+                log.debug("Codelist synchronization completed successfully. Updated $updatedRows rows for $it.")
             } catch (e: Exception) {
                 val errorMessage = "Error during codelist synchronization: ${e.message}"
                 message.errors.add(errorMessage)
@@ -165,17 +174,17 @@ class MigrateCodelistIdsIntoDatasets(
 
         if (profile.identifier == "ingrid" || profile.parentProfile == "ingrid") {
             getSQLForDynamicOperationsCodelistId(catalogIdentifier).let { operationSql ->
-                log.info("Executing SQL for dynamic operations")
+                log.debug("Executing SQL for dynamic operations")
                 jdbcTemplate.update(operationSql)
             }
 
             getSQLForDynamicVersionsCodelistId(catalogIdentifier).let { operationSql ->
-                log.info("Executing SQL for dynamic version")
+                log.debug("Executing SQL for dynamic version")
                 jdbcTemplate.update(operationSql)
             }
 
             getSQLForDynamicQualitiesCodelistId(catalogIdentifier).let { operationSql ->
-                log.info("Executing SQL for dynamic qualities")
+                log.debug("Executing SQL for dynamic qualities")
                 jdbcTemplate.update(operationSql)
             }
         } else if (profile.identifier == "uvp") {
@@ -183,10 +192,17 @@ class MigrateCodelistIdsIntoDatasets(
             val uvpCodelistId = behaviourService.get(catalogIdentifier, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
             FieldToCodelist("eiaNumbers", null, uvpCodelistId).let {
                 val sql = getSQL(it, catalogIdentifier)
-                log.info("Executing SQL: $sql")
+                log.debug("Executing SQL: $sql")
                 val updatedRows = jdbcTemplate.update(sql)
             }
         }
+
+        // now trigger another job to add the codelist values to the datasets
+        val jobKey = JobKey.jobKey(CodelistSyncTask.JOB_KEY, catalogIdentifier)
+        val jobDataMap = JobDataMap().apply {
+            this.put("catalogId", catalog.identifier)
+        }
+        scheduler.handleJobWithCommand(JobCommand.start, CodelistSyncTask::class.java, jobKey, jobDataMap)
 
         message.endTime = Date()
         finishJob(context, message)

@@ -47,6 +47,10 @@ class CodelistSyncTask(
 
     override val log = logger()
 
+    companion object {
+        const val JOB_KEY: String = "codelist-sync"
+    }
+
     private val sqlNonArchivedDocuments = """
         SELECT d.uuid, d.data 
         FROM document d
@@ -120,14 +124,12 @@ class CodelistSyncTask(
                     if (modified) {
                         val updatedJson = objectMapper.writeValueAsString(dataNode)
                         log.debug("Updating document with UUID: $uuid")
-                        log.debug("Modified JSON: $updatedJson")
 
                         jdbcTemplate.update(updateSql, updatedJson, uuid)
                     }
 
-                    // Log the results from the original behavior
                     if (jsonPaths.isNotEmpty()) {
-                        log.info("Found ${jsonPaths.size} paths with key field in document: $jsonPaths")
+                        log.debug("Found ${jsonPaths.size} paths with key field in document: $jsonPaths")
                     }
                     message.progress = (((processedCount + index) / totalDocuments) * 100).toInt()
                     notifier.sendMessage(notificationType, message)
@@ -172,10 +174,17 @@ class CodelistSyncTask(
         } else {
             val codelistEntryValue = codelist.entries?.find { it.id == entryKey }?.getField(catalogLanguage)
             if (codelistEntryValue == null) {
-                log.info("Codelist entry not be found for id: $entryKey at path: $path for uuid: $uuid. Converting to free entry")
+                log.info("Codelist entry not found for id: $entryKey at path: $path for uuid: $uuid. Converting to free entry")
                 (node as ObjectNode).put("key", null as String?)
                 return true
             } else if (node.getString("value") != codelistEntryValue) {
+                log.info(
+                    "Codelist entry value changed for id: $entryKey at path: $path for uuid: $uuid. From ${
+                        node.getString(
+                            "value",
+                        )
+                    } to $codelistEntryValue",
+                )
                 (node as ObjectNode).put("value", codelistEntryValue)
                 return true
             }
