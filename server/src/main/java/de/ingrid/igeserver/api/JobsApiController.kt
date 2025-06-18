@@ -35,6 +35,7 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.tasks.IndexingTask
+import de.ingrid.igeserver.tasks.quartz.CodelistSyncTask
 import de.ingrid.igeserver.tasks.quartz.ImportTask
 import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.tasks.quartz.UrlRequestService
@@ -263,6 +264,18 @@ class JobsApiController(
             put("catalogId", catalogId)
         }
         scheduler.handleJobWithCommand(command, IndexingTask::class.java, jobKey, jobDataMap)
+
+        return ResponseEntity.ok().build()
+    }
+
+    override fun syncCodelistValues(principal: Principal, command: JobCommand): ResponseEntity<Unit> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val jobKey = JobKey.jobKey("CODELIST_SYNC_JOB", catalogId)
+
+        val jobDataMap = JobDataMap().apply {
+            put("catalogId", catalogId)
+        }
+        scheduler.handleJobWithCommand(command, CodelistSyncTask::class.java, jobKey, jobDataMap)
 
         return ResponseEntity.ok().build()
     }

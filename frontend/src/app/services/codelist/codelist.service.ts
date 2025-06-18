@@ -391,4 +391,8 @@ export class CodelistService {
     newFavorites[id] = entryIds;
     this.generalStore.updateFavorites(newFavorites);
   }
+
+  syncCodelistValues() {
+    return this.dataService.syncCodelistValues();
+  }
 }
