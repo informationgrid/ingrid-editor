@@ -24,6 +24,7 @@ import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporterFactory
 import de.ingrid.igeserver.features.ogc_api_records.model.Link
 import de.ingrid.igeserver.features.ogc_api_records.model.MoveRecordsDTO
+import de.ingrid.igeserver.features.ogc_api_records.services.JsonSchemaService
 import de.ingrid.igeserver.features.ogc_api_records.services.OgcRecordService
 import de.ingrid.igeserver.features.ogc_api_records.services.QueryMetadata
 import de.ingrid.igeserver.features.ogc_api_records.services.research_query.OgcApiResearchQueryFactory
@@ -72,6 +73,32 @@ enum class RecordFormat(val mimeType: String, val exportType: String) {
     GEOJSON("application/json", "geojson"),
 }
 
+enum class SchemaFormat(val mimeType: String, val exportType: String) {
+    JSON("application/json", "internal"),
+}
+
+enum class DocTypeFormat(val docType: String) {
+    InGridSpecialisedTask("InGridSpecialisedTask"),
+    InGridGeoDataset("InGridGeoDataset"),
+    InGridPublication("InGridPublication"),
+    InGridGeoService("InGridGeoService"),
+    InGridProject("InGridProject"),
+    InGridDataCollection("InGridDataCollection"),
+    InGridInformationSystem("InGridInformationSystem"),
+    InGridOrganisationDoc("InGridOrganisationDoc"),
+    InGridPersonDoc("InGridPersonDoc"),
+    UvpApprovalProcedureDoc("UvpApprovalProcedureDoc"),
+    UvpForeignProjectDoc("UvpForeignProjectDoc"),
+    UvpLineDeterminationDoc("UvpLineDeterminationDoc"),
+    UvpNegativePreliminaryAssessmentDoc("UvpNegativePreliminaryAssessmentDoc"),
+    UvpSpatialPlanningProcedureDoc("UvpSpatialPlanningProcedureDoc"),
+}
+
+enum class DocState(val state: String, val isDraft: Boolean) {
+    DRAFT("DRAFT", true),
+    PUBLISHED("PUBLISHED", false),
+}
+
 @RestController
 @RequestMapping(path = ["/api/ogc"])
 class OgcApiRecordsController(
@@ -80,6 +107,7 @@ class OgcApiRecordsController(
     private val ogcCatalogExporterFactory: OgcCatalogExporterFactory,
     private val apiValidationService: ApiValidationService,
     private val documentService: DocumentService,
+    private val jsonSchemaService: JsonSchemaService,
     val catalogService: CatalogService,
     private val ogcApiResearchQueryFactory: OgcApiResearchQueryFactory,
 ) {
@@ -525,5 +553,35 @@ class OgcApiRecordsController(
         apiValidationService.validateCollection(collectionId)
         ogcRecordService.moveRecords(collectionId, data)
         return ResponseEntity.ok().build()
+    }
+
+    @GetMapping(value = ["/collections/{collectionId}/schema"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(
+        tags = ["OGC/Schema"],
+        hidden = false,
+        summary = "Schema of Records in Collection",
+        description = "Returns record schema.",
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Successful operation."),
+            ApiResponse(responseCode = "400", description = "Invalid input"),
+            ApiResponse(responseCode = "404", description = "Not found"),
+        ],
+    )
+    fun recordSchema(
+        @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
+        @RequestHeader allHeaders: Map<String, String>,
+        principal: Authentication,
+        @Parameter(description = "Collection ID - The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
+        @Parameter(description = "Record Type (custom parameter)") @RequestParam(value = "type", required = true) type: DocTypeFormat,
+        @Parameter(description = "Get JSON schema for draft/published version (custom parameter)", style = ParameterStyle.FORM, explode = Explode.FALSE) @RequestParam(value = "state", required = false) state: DocState?,
+    ): ResponseEntity<JsonNode> {
+        apiValidationService.validateCollection(collectionId)
+        apiValidationService.validateRequestParams(allRequestParams, listOf("type", "state"))
+        val jsonSchema = jsonSchemaService.getSchemaOfDocType(collectionId, type.docType, state?.isDraft ?: false)
+        val responseHeaders = HttpHeaders()
+        responseHeaders.add("Content-Type", "application/json")
+        return ResponseEntity.ok().headers(responseHeaders).body(jsonSchema)
     }
 }
