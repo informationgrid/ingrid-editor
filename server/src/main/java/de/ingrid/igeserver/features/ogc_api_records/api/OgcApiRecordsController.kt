@@ -364,11 +364,14 @@ class OgcApiRecordsController(
                 "\n\n• get response in JSON with value `JSON` (default). This represents the internal InGrid format. \n\n• get response in HTML with value `HTML`" +
                 "\n\n• get response in XML, ISO 19139 with value `INGRID_ISO` \n\n• get response in GEOJSON with value `GEOJSON`",
         ) @RequestParam(value = "f", required = false, defaultValue = "JSON") format: RecordFormat,
+        @Parameter(description = "Get record by state DRAFT or PUBLISHED (custom parameter)", style = ParameterStyle.FORM, explode = Explode.FALSE) @RequestParam(value = "state", required = false) state: DocState?,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
-        apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
+        apiValidationService.validateRequestParams(allRequestParams, listOf("f", "state"))
 
-        val record = ogcRecordService.prepareRecord(collectionId, recordId, format)
+        val useDraft = state?.isDraft ?: false
+
+        val record = ogcRecordService.prepareRecord(collectionId, recordId, format, useDraft)
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", format.mimeType)
         return ResponseEntity.ok().headers(responseHeaders).body(record)
@@ -501,9 +504,10 @@ class OgcApiRecordsController(
                 "\n\n[Source: DRAFT OGC API - Records - Part 1: Core](https://docs.ogc.org/DRAFTS/20-004.html#_operation_5)" +
                 "\n\n[Additional Source: DRAFT OGC API - Features - Part 3: Filtering](https://docs.ogc.org/DRAFTS/19-079r1.html#_requirements_class_filter)",
         ) @RequestParam(value = "filter", required = false) filter: String?,
+        @Parameter(description = "Get records by state DRAFT or PUBLISHED (custom parameter)", style = ParameterStyle.FORM, explode = Explode.FALSE) @RequestParam(value = "state", required = false) state: DocState?,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
-        apiValidationService.validateRequestParams(allRequestParams, listOf("limit", "offset", "type", "bbox", "datetime", "q", "externalid", "f", "filter"))
+        apiValidationService.validateRequestParams(allRequestParams, listOf("limit", "offset", "type", "bbox", "datetime", "q", "externalid", "f", "filter", "state"))
         apiValidationService.validateBbox(bbox)
 
         val profile = catalogService.getProfileFromCatalog(collectionId)
@@ -525,8 +529,10 @@ class OgcApiRecordsController(
             numberMatched = totalHits,
             Instant.now(),
         )
+        val useDraft = state?.isDraft ?: false
+
         // query all record details in right response format via exporter
-        val records: ByteArray = ogcRecordService.prepareRecords(researchRecords, collectionId, format, links, queryMetadata)
+        val records: ByteArray = ogcRecordService.prepareRecords(researchRecords, collectionId, format, links, queryMetadata, useDraft)
 
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", format.mimeType)

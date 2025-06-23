@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.InvalidParameterException
 import de.ingrid.igeserver.api.NotFoundException
@@ -451,33 +452,40 @@ class OgcRecordService(
         wrapper.id?.let { documentService.deleteDocument(principal, collectionId, it) }
     }
 
-    fun prepareRecord(collectionId: String, recordId: String, format: RecordFormat): ByteArray {
-        val record = exportRecord(recordId, collectionId, format)
+    fun prepareRecord(collectionId: String, recordId: String, format: RecordFormat, useDraft: Boolean): ByteArray {
+        val record = exportRecord(recordId, collectionId, format, useDraft)
         val singleRecordInList: List<ExportResult> = listOf(record)
-        val unwrappedRecord = removeDefaultWrapper(format, singleRecordInList)
+        val unwrappedRecord = removeDefaultWrapper(format, singleRecordInList, useDraft)
         val wrappedRecord = addWrapperToRecords(unwrappedRecord, format, null, true, null)
         return wrappedRecord
     }
 
-    fun prepareRecords(records: ResearchResponse, collectionId: String, format: RecordFormat, links: List<Link>, queryMetadata: QueryMetadata): ByteArray {
-        val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record.uuid!!, collectionId, format) }
-        val unwrappedRecords = removeDefaultWrapper(format, recordList)
+    fun prepareRecords(records: ResearchResponse, collectionId: String, format: RecordFormat, links: List<Link>, queryMetadata: QueryMetadata, useDraft: Boolean): ByteArray {
+        val recordList: List<ExportResult> = records.hits.map { record -> exportRecord(record.uuid!!, collectionId, format, useDraft) }
+        val unwrappedRecords = removeDefaultWrapper(format, recordList, useDraft)
         return addWrapperToRecords(unwrappedRecords, format, links, false, queryMetadata)
     }
 
-    private fun exportRecord(recordId: String, collectionId: String, format: RecordFormat): ExportResult {
+    private fun exportRecord(recordId: String, collectionId: String, format: RecordFormat, useDraft: Boolean): ExportResult {
         val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId)
         val id = wrapper.id!!
         val options = ExportRequestParameter(
             ids = listOf(id),
             exportFormat = format.exportType,
-            // TODO context of ingridISO exporter: check why address documents need to called as drafts
-            useDraft = (format == RecordFormat.INGRID_ISO && wrapper.category == "address"),
+            useDraft = useDraft,
         )
-        return exportService.export(collectionId, options)
+        return try {
+            exportService.export(collectionId, options)
+        } catch (exportError: ServerException) {
+            if (!useDraft) {
+                throw ServerException.withReason("No record with state 'PUBLISHED' found for recordId: $recordId")
+            } else {
+                throw exportError
+            }
+        }
     }
 
-    private fun removeDefaultWrapper(format: RecordFormat, recordList: List<ExportResult>): Any = if (format.mimeType == "text/xml") {
+    private fun removeDefaultWrapper(format: RecordFormat, recordList: List<ExportResult>, useDraft: Boolean): Any = if (format.mimeType == "text/xml") {
         var response = ""
         for (record in recordList) response += record.result?.toString(Charsets.UTF_8)?.substringAfter("?>")
         response
@@ -485,7 +493,10 @@ class OgcRecordService(
         val response: MutableList<JsonNode> = mutableListOf()
         for (record in recordList) {
             var wrapperlessRecord = jacksonObjectMapper().readValue(record.result, JsonNode::class.java)
-            if (format.exportType == "internal") wrapperlessRecord = wrapperlessRecord.get("resources").get("published")
+            if (format.exportType == "internal") {
+                val resources = wrapperlessRecord.get("resources")
+                wrapperlessRecord = if (useDraft) resources.get("draft") else resources.get("published")
+            }
             response.add(wrapperlessRecord)
         }
         response
