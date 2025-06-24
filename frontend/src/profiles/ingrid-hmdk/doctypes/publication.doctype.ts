@@ -20,7 +20,7 @@
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { inject, Injectable } from "@angular/core";
 import { SharedHmdk } from "./shared-hmdk";
-import { PublicationDoctype } from "../../ingrid/doctypes/publication-doctype.service";
+import { PublicationDoctype } from "../../ingrid/doctypes/publication-doctype";
 
 @Injectable({
   providedIn: "root",
