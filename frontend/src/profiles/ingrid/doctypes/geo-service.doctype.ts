@@ -17,19 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  SelectOption,
-  SelectOptionUi,
-} from "../../../app/services/codelist/codelist.service";
-import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Injectable, signal } from "@angular/core";
-import { IngridShared } from "./ingrid-shared";
-import { distinctUntilKeyChanged, filter, tap } from "rxjs/operators";
-import { BehaviorSubject } from "rxjs";
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from "../../../app/dialogs/confirm/confirm-dialog.component";
+import {SelectOption, SelectOptionUi,} from "../../../app/services/codelist/codelist.service";
+import {FormlyFieldConfig} from "@ngx-formly/core";
+import {Injectable, signal} from "@angular/core";
+import {IngridClass, IngridShared} from "./ingrid-shared";
+import {distinctUntilKeyChanged, filter, tap} from "rxjs/operators";
+import {BehaviorSubject} from "rxjs";
+import {ConfirmDialogComponent, ConfirmDialogData,} from "../../../app/dialogs/confirm/confirm-dialog.component";
 
 @Injectable({
   providedIn: "root",
@@ -284,7 +278,7 @@ export class GeoServiceDoctype extends IngridShared {
       this.addTimeReferenceSection(),
       this.addAdditionalInformationSection({ conformity: true }),
       this.addAvailabilitySection(),
-      this.addLinksSection(),
+      this.addLinksSection(IngridClass.InGridGeoService),
     ].filter(Boolean);
 
     return this.manipulateDocumentFields(fields);

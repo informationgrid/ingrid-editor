@@ -66,6 +66,16 @@ interface AdditionalInformationSectionOptions {
   extraInfoLangData?: boolean;
 }
 
+export enum IngridClass {
+  "InGridSpecialisedTask" = "0",
+  "InGridGeoDataset" = "1",
+  "InGridPublication" = "2",
+  "InGridGeoService" = "3",
+  "InGridProject" = "4",
+  "InGridDataCollection" = "5",
+  "InGridInformationSystem" = "6",
+}
+
 export abstract class IngridShared extends BaseDoctype {
   isAddressType = false;
   private keywordFieldHint =
@@ -1584,10 +1594,10 @@ export abstract class IngridShared extends BaseDoctype {
     );
   }
 
-  addLinksSection() {
+  addLinksSection(docClass: IngridClass) {
     return this.addSection("Verweise", [
       this.addRepeatDetailList("references", "Verweise", {
-        fields: [this.urlRefFields()],
+        fields: [this.urlRefFields(docClass)],
         viewComponent: ReferenceViewComponent,
         validators: {
           downloadLinkWhenOpenData: {
@@ -1762,20 +1772,19 @@ export abstract class IngridShared extends BaseDoctype {
     ]);
   }
 
-  protected urlRefFields() {
+  protected urlRefFields(docClass: IngridClass) {
     return this.addGroupSimple(null, [
       { key: "_type" },
       this.addAutoCompleteInline("type", "Typ", {
         required: true,
         options: this.getCodelistForSelect("2000", "references.type").pipe(
           map((data) => {
-            const mappedDoctype = this.mapDocumentTypeToClass(this.id);
             return data.filter(
               (item) =>
                 this.codelistStore
                   .getCodelistEntryByKey("2000", item.value)
                   ?.data?.split(",")
-                  ?.indexOf(mappedDoctype) !== -1,
+                  ?.indexOf(docClass) !== -1,
             );
           }),
         ),
@@ -2140,25 +2149,6 @@ export abstract class IngridShared extends BaseDoctype {
       item.disabled = true;
     }
     return item;
-  }
-
-  private mapDocumentTypeToClass(id: string) {
-    switch (id) {
-      case "InGridSpecialisedTask":
-        return "0";
-      case "InGridGeoDataset":
-        return "1";
-      case "InGridPublication":
-        return "2";
-      case "InGridGeoService":
-        return "3";
-      case "InGridProject":
-        return "4";
-      case "InGridDataCollection":
-        return "5";
-      case "InGridInformationSystem":
-        return "6";
-    }
   }
 
   protected handleInVeKoSBehaviour() {

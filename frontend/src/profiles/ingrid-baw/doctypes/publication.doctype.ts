@@ -17,10 +17,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormlyFieldConfig } from "@ngx-formly/core";
-import { inject, Injectable } from "@angular/core";
-import { CommonFieldsBaw } from "./common-fields";
-import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
+import {FormlyFieldConfig} from "@ngx-formly/core";
+import {inject, Injectable} from "@angular/core";
+import {CommonFieldsBaw} from "./common-fields";
+import {IngridClass, IngridShared} from "../../ingrid/doctypes/ingrid-shared";
 
 @Injectable({
   providedIn: "root",
@@ -92,7 +92,7 @@ export class PublicationDoctypeBaw extends IngridShared {
       this.addTimeReferenceSection(),
       this.addAdditionalInformationSection({ extraInfoLangData: true }),
       this.addAvailabilitySection(),
-      this.addLinksSection(),
+      this.addLinksSection(IngridClass.InGridPublication),
       this.addFileReferences(),
     ];
 

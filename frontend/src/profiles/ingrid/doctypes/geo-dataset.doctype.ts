@@ -17,18 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
-import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Injectable } from "@angular/core";
-import { IngridShared } from "./ingrid-shared";
-import { isNotEmptyObject } from "../../../app/shared/utils";
-import { generateUUID } from "../../../app/services/utils";
-import { map } from "rxjs/operators";
-import {
-  MetadataOption,
-  MetadataOptionItem,
-} from "../../../app/formly/types/metadata-type/metadata-type.component";
-import { dataOrigin } from "./geo-dataset.dataOrigin";
+import {SelectOptionUi} from "../../../app/services/codelist/codelist.service";
+import {FormlyFieldConfig} from "@ngx-formly/core";
+import {Injectable} from "@angular/core";
+import {IngridClass, IngridShared} from "./ingrid-shared";
+import {isNotEmptyObject} from "../../../app/shared/utils";
+import {generateUUID} from "../../../app/services/utils";
+import {map} from "rxjs/operators";
+import {MetadataOption, MetadataOptionItem,} from "../../../app/formly/types/metadata-type/metadata-type.component";
+import {dataOrigin} from "./geo-dataset.dataOrigin";
 
 @Injectable({
   providedIn: "root",
@@ -610,7 +607,7 @@ export class GeoDatasetDoctype extends IngridShared {
         extraInfoLangData: true,
       }),
       this.addAvailabilitySection(),
-      this.addLinksSection(),
+      this.addLinksSection(IngridClass.InGridGeoDataset),
       this.addFileReferences(),
     ].filter(Boolean);
 
