@@ -30,7 +30,6 @@ class ZabbixModel {
         val jsonrpc: String = JSONRPC,
         val method: String,
         val params: HostParams,
-        val auth: String?,
         val id: Int = 1,
     )
 
@@ -38,7 +37,6 @@ class ZabbixModel {
         val jsonrpc: String = JSONRPC,
         val method: String,
         val params: WebscenarioParams,
-        val auth: String?,
         val id: Int = 1,
     )
 
@@ -55,7 +53,6 @@ class ZabbixModel {
         val jsonrpc: String = JSONRPC,
         val method: String,
         val params: TriggerParams,
-        val auth: String?,
         val id: Int = 1,
     )
 
@@ -106,7 +103,6 @@ class ZabbixModel {
         val jsonrpc: String = JSONRPC,
         val method: String,
         val params: CreateParams,
-        val auth: String?,
         val id: Int = 1,
     )
 
@@ -118,7 +114,6 @@ class ZabbixModel {
         val jsonrpc: String = JSONRPC,
         val method: String,
         val params: List<String>,
-        val auth: String?,
         val id: Int = 1,
     )
 
@@ -138,7 +133,6 @@ class ZabbixModel {
         val jsonrpc: String = JSONRPC,
         val method: String,
         val params: UserParams,
-        val auth: String?,
         val id: Int = 1,
     )
 
@@ -186,7 +180,6 @@ fun getUploadsPayload(uuid: String, apiKey: String): String = """
                 }
             ]
         },
-        "auth": "$apiKey",
         "id": 1
     }
 """.trimIndent()
@@ -240,7 +233,6 @@ fun getActionPayload(uuid: String, updatedUserId: String, apiKey: String): Strin
             }
             ]
         },
-        "auth": "$apiKey",
         "id": 1
     }
 """.trimIndent()
