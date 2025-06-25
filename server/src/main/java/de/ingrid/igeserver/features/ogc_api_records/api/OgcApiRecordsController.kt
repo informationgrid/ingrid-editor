@@ -248,10 +248,10 @@ class OgcApiRecordsController(
     }
 
     @PostMapping(value = ["/collections/{collectionId}/items"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
-    @Operation(tags = ["OGC/Records"], summary = "Add/import record(s) to a collection.", hidden = false)
+    @Operation(tags = ["OGC/Records"], summary = "Create new record in collection.", hidden = false)
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Successful operation."),
+            ApiResponse(responseCode = "201", description = "Successful creation of record."),
             ApiResponse(responseCode = "400", description = "Invalid input"),
             ApiResponse(responseCode = "404", description = "Not found"),
         ],
@@ -260,11 +260,11 @@ class OgcApiRecordsController(
         @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
         @RequestHeader allHeaders: Map<String, String>,
         principal: Authentication,
-        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "The dataset to be stored.", required = true) @RequestBody data: String,
-        @Parameter(description = "## Dataset Folder ID \n **Custom Parameter** \n\n Add Dataset to Folder with UUID") @RequestParam(value = "datasetFolderId", required = false) datasetFolderId: String?,
-        @Parameter(description = "## Address Folder ID \n **Custom Parameter** \n\n Add Address to Folder with UUID") @RequestParam(value = "addressFolderId", required = false) addressFolderId: String?,
-        @Parameter(description = "Request body is draft (custom parameter)", style = ParameterStyle.FORM, explode = Explode.FALSE) @RequestParam(value = "state", required = false) state: DocState?,
+        @Parameter(description = "Identifier of a record collection (catalog identifier)", required = true) @PathVariable("collectionId") collectionId: String,
+        @Parameter(description = "Data of record to be stored", required = true) @RequestBody data: String,
+        @Parameter(description = "Adds dataset to FOLDER with UUID (custom parameter)") @RequestParam(value = "datasetFolderId", required = false) datasetFolderId: String?,
+        @Parameter(description = "Adds address to FOLDER with UUID (custom parameter)") @RequestParam(value = "addressFolderId", required = false) addressFolderId: String?,
+        @Parameter(description = "Describes STATE of data in request body as DRAFT or PUBLISHED (custom parameter)", style = ParameterStyle.FORM, explode = Explode.FALSE) @RequestParam(value = "state", required = false) state: DocState?,
     ): ResponseEntity<JsonNode> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId", "state"))
@@ -287,8 +287,8 @@ class OgcApiRecordsController(
                 null
             },
         )
-        ogcRecordService.transactionalImportDocuments(options, collectionId, contentType, data, principal, recordMustExist = false, null, profile)
-        return ResponseEntity.ok().build()
+        val uri = ogcRecordService.transactionalImportDocuments(options, collectionId, contentType, data, principal, recordMustExist = false, null, profile)
+        return ResponseEntity.created(uri).build()
     }
 
     @PutMapping(value = ["/collections/{collectionId}/items/{recordId}"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])

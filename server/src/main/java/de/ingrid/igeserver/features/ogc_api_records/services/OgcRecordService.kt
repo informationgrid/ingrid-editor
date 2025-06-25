@@ -60,6 +60,7 @@ import org.w3c.dom.Node
 import org.xml.sax.InputSource
 import java.io.StringReader
 import java.io.StringWriter
+import java.net.URI
 import java.security.Principal
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -177,35 +178,34 @@ class OgcRecordService(
         recordMustExist: Boolean,
         recordId: String?,
         profile: CatalogProfile,
-    ) {
-        importDocuments(options, collectionId, contentType, data, principal, recordMustExist, recordId, profile)
-    }
+    ): URI = importDocuments(options, collectionId, contentType, data, principal, recordMustExist, recordId, profile)
 
-    fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?, profile: CatalogProfile) {
+    fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?, profile: CatalogProfile): URI {
         val docArray = prepareDataForImport(collectionId, contentType, data, options.publish)
-        for (doc in docArray) {
-            val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, doc)
-            if (optimizedImportAnalysis.existingDatasets.isNotEmpty()) {
-                val id = optimizedImportAnalysis.existingDatasets[0].uuid
-                if (!recordMustExist) {
-                    throw ClientException.withReason("Import Failed: Record with ID '$id' already exists.")
-                } else {
-                    if (recordId != id) throw ClientException.withReason("Update Failed: Target ID '$recordId' does not match dataset ID '$id'.")
-                }
+//        for (doc in docArray) {
+        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, docArray[0])
+        if (optimizedImportAnalysis.existingDatasets.isNotEmpty()) {
+            val id = optimizedImportAnalysis.existingDatasets[0].uuid
+            if (!recordMustExist) {
+                throw ClientException.withReason("Import Failed: Record with ID '$id' already exists.")
             } else {
-                if (recordMustExist) {
-//                    val id = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId!!).id
-                    throw NotFoundException.withMissingResource(recordId!!, "Record")
-                }
+                if (recordId != id) throw ClientException.withReason("Update Failed: Target ID '$recordId' does not match dataset ID '$id'.")
             }
-            importService.importAnalyzedDatasets(
-                principal = principal,
-                catalogId = collectionId,
-                analysis = optimizedImportAnalysis,
-                options = options,
-                message = Message(),
-            )
+        } else {
+            if (recordMustExist) {
+//                    val id = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId!!).id
+                throw NotFoundException.withMissingResource(recordId!!, "Record")
+            }
         }
+        importService.importAnalyzedDatasets(
+            principal = principal,
+            catalogId = collectionId,
+            analysis = optimizedImportAnalysis,
+            options = options,
+            message = Message(),
+        )
+//        }
+        return generateUriOfCreatedRecord(collectionId, optimizedImportAnalysis.references[0].document.uuid)
     }
 
     private fun prepareDataForImport(collectionId: String, mimeType: String, docData: String, publish: Boolean): List<String> {
@@ -288,6 +288,8 @@ class OgcRecordService(
         }
         return LimitAndOffset(queryLimit, queryOffset)
     }
+
+    fun generateUriOfCreatedRecord(collectionId: String, recordId: String): URI = URI("/collections/$collectionId/items/$recordId")
 
     fun getLinksForRecords(offset: Int?, limit: Int?, totalHits: Int, collectionId: String, requestedFormat: RecordFormat): List<Link> {
         val list: MutableList<Link> = mutableListOf()
