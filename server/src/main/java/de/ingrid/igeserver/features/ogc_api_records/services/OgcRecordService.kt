@@ -169,7 +169,7 @@ class OgcRecordService(
     }
 
     @Transactional
-    fun transactionalImportDocuments(
+    fun transactionalImportDocument(
         options: ImportOptions,
         collectionId: String,
         contentType: String,
@@ -178,12 +178,11 @@ class OgcRecordService(
         recordMustExist: Boolean,
         recordId: String?,
         profile: CatalogProfile,
-    ): URI = importDocuments(options, collectionId, contentType, data, principal, recordMustExist, recordId, profile)
+    ): URI = importDocument(options, collectionId, contentType, data, principal, recordMustExist, recordId, profile)
 
-    fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?, profile: CatalogProfile): URI {
+    fun importDocument(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?, profile: CatalogProfile): URI {
         val docArray = prepareDataForImport(collectionId, contentType, data, options.publish)
-//        for (doc in docArray) {
-        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, docArray[0])
+        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, docArray)
         if (optimizedImportAnalysis.existingDatasets.isNotEmpty()) {
             val id = optimizedImportAnalysis.existingDatasets[0].uuid
             if (!recordMustExist) {
@@ -204,38 +203,33 @@ class OgcRecordService(
             options = options,
             message = Message(),
         )
-//        }
+
         return generateUriOfCreatedRecord(collectionId, optimizedImportAnalysis.references[0].document.uuid)
     }
 
-    private fun prepareDataForImport(collectionId: String, mimeType: String, docData: String, publish: Boolean): List<String> {
+    private fun prepareDataForImport(collectionId: String, mimeType: String, docData: String, publish: Boolean): String {
         val documents: MutableList<String> = mutableListOf()
         if (mimeType == "application/xml") {
-            val parsedXml = parseXmlWithMultipleDocs(docData, collectionId)
-            for (doc in parsedXml) {
-                documents.add(doc)
-            }
+            val parsedXml = parseXmlWithMultipleDocs(docData)
+            documents.add(parsedXml)
         }
         if (mimeType == "application/json") {
-            var jsonData: JsonNode = jacksonObjectMapper().readValue(docData, JsonNode::class.java)
-            // wrap data in array if single dataset without array
-            jsonData = if (jsonData[0] == null) jacksonObjectMapper().createArrayNode().add(jsonData) else jsonData
-            for (doc in jsonData) {
-                val document = if (jsonData[0].getBoolean("isGeojson") == true) {
-                    doc.get("properties")
-                } else {
-                    doc
-                }
-                val publishedVersion = document.takeIf { publish }
-                val draftVersion = document.takeIf { !publish }
-                val docWithWrapper = internalExporter.addExportWrapper(collectionId, publishedVersion, draftVersion)
-                documents.add(docWithWrapper.toString())
+            val jsonData: JsonNode = jacksonObjectMapper().readValue(docData, JsonNode::class.java)
+            if (jsonData.isArray) throw ClientException.withReason("Invalid request: JSON body must be a single object, not an array.")
+            val document = if (jsonData.getBoolean("isGeojson") == true) {
+                jsonData.get("properties")
+            } else {
+                jsonData
             }
+            val publishedVersion = document.takeIf { publish }
+            val draftVersion = document.takeIf { !publish }
+            val docWithWrapper = internalExporter.addExportWrapper(collectionId, publishedVersion, draftVersion)
+            documents.add(docWithWrapper.toString())
         }
-        return documents
+        return documents[0]
     }
 
-    private fun parseXmlWithMultipleDocs(data: String, collectionId: String): List<String> {
+    private fun parseXmlWithMultipleDocs(data: String): String {
         val documents: MutableList<String> = mutableListOf()
 
         val xmlInput = InputSource(StringReader(data))
@@ -244,13 +238,10 @@ class OgcRecordService(
         val doc = dbf.newDocumentBuilder().parse(xmlInput)
 
         val datasetList = doc.documentElement.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd", "MD_Metadata")
-        for (i in 0 until datasetList.length) {
-            val stringMeta = xmlNodeToString(datasetList.item(i))
-            documents.add(stringMeta)
-        }
-        // if not datasets-wrapper found return raw data
-        if (datasetList.length == 0) documents.add(data)
-        return documents
+
+        if (datasetList.length > 1) throw ClientException.withReason("Invalid request: XML body must contain exactly one 'MD_Metadata' element.")
+
+        return data
     }
 
     @Throws(java.lang.Exception::class)

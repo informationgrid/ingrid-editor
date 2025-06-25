@@ -287,7 +287,7 @@ class OgcApiRecordsController(
                 null
             },
         )
-        val uri = ogcRecordService.transactionalImportDocuments(options, collectionId, contentType, data, principal, recordMustExist = false, null, profile)
+        val uri = ogcRecordService.transactionalImportDocument(options, collectionId, contentType, data, principal, recordMustExist = false, null, profile)
         return ResponseEntity.created(uri).build()
     }
 
@@ -317,7 +317,7 @@ class OgcApiRecordsController(
 
         val isDraft = state?.isDraft ?: false
         val options = ImportOptions(publish = !isDraft, overwriteAddresses = true, overwriteDatasets = true)
-        ogcRecordService.transactionalImportDocuments(
+        ogcRecordService.transactionalImportDocument(
             options,
             collectionId,
             contentType,
