@@ -169,7 +169,7 @@ export class ConfigService {
     }
     ConfigService.catalogId = userInfo.currentCatalog.id;
     ConfigService.catalogLanguage =
-      userInfo.currentCatalog.settings.config.language ?? "de";
+      userInfo.currentCatalog.settings?.config?.language ?? "de";
     this.generalStore.updateFavorites(
       userInfo.currentCatalog.settings?.config?.codelistFavorites ?? {},
     );
