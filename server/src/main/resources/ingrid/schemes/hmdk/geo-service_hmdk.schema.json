@@ -1,7 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/hmdk/GeoServiceHmdk",
-  "$ref": "../geo-service-base.schema.json",
+  "allOf": [
+    { "$ref": "../geo-service-base.schema.json" },
+    { "$ref": "../constraints/if_isInspireIdentified-geo-service.schema.json"},
+    { "$ref": "../constraints/if_isOpenData-hmdk.schema.json"},
+    { "$ref": "../constraints/if_isAdVCompatible.schema.json"}
+  ],
   "properties": {
     "properties": {
       "unevaluatedProperties": false,

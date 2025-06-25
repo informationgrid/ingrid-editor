@@ -2,7 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wemove.com/schemas/ingrid/schemes/geodataset",
   "type": "object",
-  "$ref": "geo-dataset-base.schema.json",
+  "allOf": [
+    { "$ref": "geo-dataset-base.schema.json" },
+    { "$ref": "constraints/if_isInspireIdentified-geo-dataset.schema.json"},
+    { "$ref": "constraints/if_isOpenData-ingrid.schema.json"},
+    { "$ref": "constraints/if_isHvd.schema.json"},
+    { "$ref": "constraints/if_isAdVCompatible.schema.json"}
+  ],
   "properties": {
     "resource": {
       "$ref": "refs/general.schema.json#/definitions/resource",
