@@ -83,7 +83,7 @@ class ZabbixService(
         val paramsUsergroup = listOf(ZabbixModel.UserGroup(userGroupId))
         val paramsMedias = listOf(ZabbixModel.Media("1", addressMail, 0, 63, "1-7,00:00-24:00"))
         val params = ZabbixModel.UserParams(addressMail, passwd, "4", paramsUsergroup, paramsMedias)
-        val user = ZabbixModel.User(method = "user.create", params = params, auth = apiKey, id = 1)
+        val user = ZabbixModel.User(method = "user.create", params = params, auth = apiKey)
         val values = jacksonObjectMapper().writeValueAsString(user)
         val response = requestApi(values)
         val userid: String = if (response.has("error")) {
@@ -156,61 +156,7 @@ class ZabbixService(
     private fun createAction(uuid: String, addressMail: String) {
         val userid = getUser("username", addressMail)?.get("userid")?.asText() ?: createUser(addressMail)
         val updatedUserId = updateUserMail(uuid, addressMail) ?: userid
-        val jsonActionCreate =
-            """
-                {
-                    "jsonrpc": "$JSONRPC",
-                    "method": "action.create",
-                    "params": {
-                        "name": "$uuid",
-                        "eventsource": 0,
-                        "notify_if_canceled": 0,
-                        "filter": {
-                            "evaltype": 0,
-                            "conditions": [
-                            {
-                                "conditiontype": 16,
-                                "operator": 11
-                            },
-                            {
-                                "conditiontype": 26,
-                                "operator": 0,
-                                "value": "$uuid",
-                                "value2": "id"
-                            }
-                            ]
-                        },
-                        "operations": [
-                        {
-                            "operationtype": 0,
-                            "esc_period": "24h",
-                            "esc_step_from": 1,
-                            "esc_step_to": 2,
-                            "opmessage_usr": [
-                            {
-                                "userid": "$updatedUserId"
-                            }
-                            ],
-                            "opmessage": {
-                                "default_msg": 1,
-                                "mediatypeid": "1"
-                            }
-                        }
-                        ],
-                        "recovery_operations": [
-                        {
-                            "operationtype": "11",
-                            "opmessage": {
-                                "default_msg": 1
-                            }
-                        }
-                        ]
-                    },
-                    "auth": "$apiKey",
-                    "id": 1
-                }
-            """.trimIndent()
-        val response = requestApi(jsonActionCreate)
+        requestApi(getActionPayload(uuid, updatedUserId, apiKey))
     }
 
     private fun getUserId(username: String): String {
@@ -221,13 +167,13 @@ class ZabbixService(
     }
 
     private fun deleteUser(userid: List<String>) {
-        val user = ZabbixModel.Delete(method = "user.delete", params = userid, auth = apiKey, id = 1)
+        val user = ZabbixModel.Delete(method = "user.delete", params = userid, auth = apiKey)
         val values = jacksonObjectMapper().writeValueAsString(user)
         requestApi(values)
     }
 
     private fun deleteAction(actionid: List<String>) {
-        val action = ZabbixModel.Delete(method = "action.delete", params = actionid, auth = apiKey, id = 1)
+        val action = ZabbixModel.Delete(method = "action.delete", params = actionid, auth = apiKey)
         val values = jacksonObjectMapper().writeValueAsString(action)
         requestApi(values)
     }
@@ -265,7 +211,7 @@ class ZabbixService(
 
     private fun createHostgroup(name: String): String {
         val params = ZabbixModel.CreateParams(name)
-        val hostgroup = ZabbixModel.Create(method = "hostgroup.create", params = params, auth = apiKey, id = 1)
+        val hostgroup = ZabbixModel.Create(method = "hostgroup.create", params = params, auth = apiKey)
         val values = jacksonObjectMapper().writeValueAsString(hostgroup)
         val response = requestApi(values)
         return getFromResultAsList(response, "groupids")[0].asText()
@@ -299,7 +245,7 @@ class ZabbixService(
             ZabbixModel.Tag("url", hostUrl),
         )
         val params = ZabbixModel.HostParams(uuid, visiblename, groups, tags)
-        val host = ZabbixModel.Host(method = "host.create", params = params, auth = apiKey, id = 1)
+        val host = ZabbixModel.Host(method = "host.create", params = params, auth = apiKey)
         val response = requestApi(
             jacksonObjectMapper().writeValueAsString(host),
         )
@@ -357,9 +303,9 @@ class ZabbixService(
             ZabbixModel.Tag("document url", docUrlTag),
         )
         val steps =
-            listOf(ZabbixModel.Step(name = docNameStep, url = docUrl, required = "", status_codes = "200", no = 1))
+            listOf(ZabbixModel.Step(name = docNameStep, url = docUrl, required = ""))
         val params = ZabbixModel.WebscenarioParams(docNameStep, hostId, checkDelay, steps, tags)
-        val webscenario = ZabbixModel.Webscenario(method = "httptest.create", params = params, auth = apiKey, id = 1)
+        val webscenario = ZabbixModel.Webscenario(method = "httptest.create", params = params, auth = apiKey)
         val values = jacksonObjectMapper().writeValueAsString(webscenario)
         requestApi(values)
     }
@@ -389,13 +335,13 @@ class ZabbixService(
     }
 
     private fun deleteHosts(ids: List<String>) {
-        val host = ZabbixModel.Delete(method = "host.delete", params = ids, auth = apiKey, id = 1)
+        val host = ZabbixModel.Delete(method = "host.delete", params = ids, auth = apiKey)
         val values = jacksonObjectMapper().writeValueAsString(host)
         requestApi(values)
     }
 
     private fun deleteWebscenario(ids: List<String>) {
-        val webscenario = ZabbixModel.Delete(method = "httptest.delete", params = ids, auth = apiKey, id = 1)
+        val webscenario = ZabbixModel.Delete(method = "httptest.delete", params = ids, auth = apiKey)
         val values = jacksonObjectMapper().writeValueAsString(webscenario)
         requestApi(values)
     }

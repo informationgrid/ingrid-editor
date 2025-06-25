@@ -31,7 +31,7 @@ class ZabbixModel {
         val method: String,
         val params: HostParams,
         val auth: String?,
-        val id: Int,
+        val id: Int = 1,
     )
 
     data class Webscenario(
@@ -39,22 +39,20 @@ class ZabbixModel {
         val method: String,
         val params: WebscenarioParams,
         val auth: String?,
-        val id: Int,
+        val id: Int = 1,
     )
 
     data class Step(
         val name: String,
         val retrieve_mode: Int = 1,
         val url: String,
-        val required: String?,
-        val status_codes: String,
-        // TODO: refactor or comment if not possible
-        val no: Int,
+        val required: String,
+        val status_codes: String = "200",
+        val no: Int = 1,
     )
 
     data class Trigger(
         val jsonrpc: String = JSONRPC,
-        // TODO: set default values where possible (same for host etc.)
         val method: String,
         val params: TriggerParams,
         val auth: String?,
@@ -109,7 +107,7 @@ class ZabbixModel {
         val method: String,
         val params: CreateParams,
         val auth: String?,
-        val id: Int,
+        val id: Int = 1,
     )
 
     data class CreateParams(
@@ -121,7 +119,7 @@ class ZabbixModel {
         val method: String,
         val params: List<String>,
         val auth: String?,
-        val id: Int,
+        val id: Int = 1,
     )
 
     data class Problem(
@@ -141,7 +139,7 @@ class ZabbixModel {
         val method: String,
         val params: UserParams,
         val auth: String?,
-        val id: Int,
+        val id: Int = 1,
     )
 
     data class UserParams(
@@ -186,6 +184,60 @@ fun getUploadsPayload(uuid: String, apiKey: String): String = """
                     "value": "$uuid",
                     "operator": "1"
                 }
+            ]
+        },
+        "auth": "$apiKey",
+        "id": 1
+    }
+""".trimIndent()
+
+fun getActionPayload(uuid: String, updatedUserId: String, apiKey: String): String = """
+    {
+        "jsonrpc": "$JSONRPC",
+        "method": "action.create",
+        "params": {
+            "name": "$uuid",
+            "eventsource": 0,
+            "notify_if_canceled": 0,
+            "filter": {
+                "evaltype": 0,
+                "conditions": [
+                {
+                    "conditiontype": 16,
+                    "operator": 11
+                },
+                {
+                    "conditiontype": 26,
+                    "operator": 0,
+                    "value": "$uuid",
+                    "value2": "id"
+                }
+                ]
+            },
+            "operations": [
+            {
+                "operationtype": 0,
+                "esc_period": "24h",
+                "esc_step_from": 1,
+                "esc_step_to": 2,
+                "opmessage_usr": [
+                {
+                    "userid": "$updatedUserId"
+                }
+                ],
+                "opmessage": {
+                    "default_msg": 1,
+                    "mediatypeid": "1"
+                }
+            }
+            ],
+            "recovery_operations": [
+            {
+                "operationtype": "11",
+                "opmessage": {
+                    "default_msg": 1
+                }
+            }
             ]
         },
         "auth": "$apiKey",
