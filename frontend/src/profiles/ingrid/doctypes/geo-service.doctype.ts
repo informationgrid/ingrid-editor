@@ -189,7 +189,7 @@ export class GeoServiceDoctype extends IngridShared {
                   this.addAutoCompleteInline("name", "Name", {
                     required: true,
                     options: this.getServiceOperationNameOptions,
-                  dynamicCodelistId: this.currentServiceOperationNameCodelist,
+                    dynamicCodelistId: this.currentServiceOperationNameCodelist,
                   }),
                   this.addInputInline("description", "Beschreibung"),
                   this.addInputInline("methodCall", "Zugriffs-URL", {
@@ -230,7 +230,7 @@ export class GeoServiceDoctype extends IngridShared {
                   this.addSelectInline("couplingType", "Kopplungstyp", {
                     showSearch: true,
                     defaultValue: { key: "loose" },
-                  options: this.couplingTypeOptions,
+                    options: this.couplingTypeOptions,
                     hasInlineContextHelp: true,
                     wrappers: ["inline-help", "form-field"],
                     expressions: {
