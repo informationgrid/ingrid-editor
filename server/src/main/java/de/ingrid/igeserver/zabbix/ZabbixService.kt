@@ -223,15 +223,13 @@ class ZabbixService(
     private fun deleteUser(userid: List<String>) {
         val user = ZabbixModel.Delete(method = "user.delete", params = userid, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(user)
-        val response = requestApi(values)
-        log.debug(response)
+        requestApi(values)
     }
 
     private fun deleteAction(actionid: List<String>) {
         val action = ZabbixModel.Delete(method = "action.delete", params = actionid, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(action)
-        val response = requestApi(values)
-        log.debug(response)
+        requestApi(values)
     }
 
     private fun getUpload(item: JsonNode) = ZabbixModel.Upload(
@@ -250,7 +248,7 @@ class ZabbixService(
         addressMail: String?,
         documentsToAdd: List<ZabbixModel.Upload>,
     ) {
-        val hostId = createHost(uuid, name, url, catalogIdentifier)
+        val hostId = getHostId(uuid) ?: createHost(uuid, name, url, catalogIdentifier)
         if (!addressMail.isNullOrEmpty()) {
             // only create notification job when mail is set
             createUser(addressMail)
@@ -270,7 +268,6 @@ class ZabbixService(
         val hostgroup = ZabbixModel.Create(method = "hostgroup.create", params = params, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(hostgroup)
         val response = requestApi(values)
-        log.debug(response)
         return getFromResultAsList(response, "groupids")[0].asText()
     }
 
@@ -281,10 +278,15 @@ class ZabbixService(
         return responseHostGroupGet.get("result").get(0)?.get("groupid")?.asText()
     }
 
-    // TODO: move request order around.
-    // first try to get host, then create host if not exists
+    private fun getHostId(uuid: String): String? {
+        val jsonHostGet =
+            """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output":"extend","filter":{"host":["$uuid"]}},"auth":"$apiKey","id":1}"""
+        val responseHostGet = requestApi(jsonHostGet)
+        return responseHostGet.get("result").get(0)?.get("hostid")?.asText()
+    }
+
     private fun createHost(uuid: String, name: String, url: String, catalogName: String): String {
-        var groupid = getHostGroupId(catalogName) ?: createHostgroup(catalogName)
+        val groupid = getHostGroupId(catalogName) ?: createHostgroup(catalogName)
         val hostname = shortenString(name, 255)
         // e.g. "name": "test (12345678)"
         val visiblename = shortenString(name, 117, true) + " (" + uuid.take(8) + ")"
@@ -301,18 +303,7 @@ class ZabbixService(
         val response = requestApi(
             jacksonObjectMapper().writeValueAsString(host),
         )
-
-        val hostId: String = if (response.has("error")) {
-            val jsonHostGet =
-                """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output":"extend","filter":{"host":["$uuid"]}},"auth":"$apiKey","id":1}"""
-            val responseHostGet = requestApi(jsonHostGet)
-            val result = getFromResultArray(responseHostGet, "hostid")
-            result.asText()
-        } else {
-            val result = getFromResultAsList(response, "hostids")
-            result[0].asText()
-        }
-        return hostId
+        return getFromResultAsList(response, "hostids")[0].asText()
     }
 
     fun getProblems(catalogName: String): List<ZabbixModel.Problem> {
@@ -370,8 +361,7 @@ class ZabbixService(
         val params = ZabbixModel.WebscenarioParams(docNameStep, hostId, checkDelay, steps, tags)
         val webscenario = ZabbixModel.Webscenario(method = "httptest.create", params = params, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(webscenario)
-        val response = requestApi(values)
-        log.debug(response)
+        requestApi(values)
     }
 
     private fun createTrigger(uuid: String, docName: String, docUrl: String) {
@@ -395,31 +385,25 @@ class ZabbixService(
         )
         val trigger = ZabbixModel.Trigger(method = "trigger.create", params = params, auth = apiKey)
         val values = jacksonObjectMapper().writeValueAsString(trigger)
-        val response = requestApi(values)
-        log.debug(response)
+        requestApi(values)
     }
 
     private fun deleteHosts(ids: List<String>) {
         val host = ZabbixModel.Delete(method = "host.delete", params = ids, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(host)
-        val response = requestApi(values)
-        log.debug(response)
+        requestApi(values)
     }
 
     private fun deleteWebscenario(ids: List<String>) {
         val webscenario = ZabbixModel.Delete(method = "httptest.delete", params = ids, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(webscenario)
-        val response = requestApi(values)
-        // TODO avoid logging without context
-        // log.debug("deleteWebscenario: $response")
-        log.debug(response)
+        requestApi(values)
     }
 
     fun deleteDocument(uuid: String) {
         val deleteJson =
             """{"jsonrpc":"$JSONRPC","method":"host.get","params":{"output": ["hostid", "name", "status"],"selectTags": "extend","tags":[{"tag":"id","value":"$uuid","operator":"1"}]},"auth":"$apiKey","id":1}"""
         val response = requestApi(deleteJson)
-        log.debug(response)
         if (resultArrayIsEmpty(response)) {
             log.debug("No host found for uuid $uuid")
             return
@@ -479,7 +463,6 @@ class ZabbixService(
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
         val json = jacksonObjectMapper().readTree(response.body())
 
-        // TODO: add comments and better logging
         if (json.has("error")) {
             val error = json.get("error").get("data")?.asText()
             if (error?.contains("exist") == true) {
