@@ -29,7 +29,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
 
   label = "Simulation";
 
-  iconClass = "Projekt";
+  iconClass = "simulationsdaten";
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedGeoDatasetFields(this, fieldConfig);
@@ -41,6 +41,199 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
         this.common.getTimestepFieldConfig(),
         this.getSimulationModelTypeFieldConfig(),
         this.getSimulationParameterFieldConfig(),
+      ]),
+      this.addSection("Neue Felder", [
+        this.addGroup("software", "Software", [
+          this.addAutocomplete("name", null, {
+            fieldLabel: "Name",
+            wrappers: ["form-field"],
+            options: [{ label: "Dlubal", value: "Dlubal" }],
+          }),
+          this.addAutocomplete("version", null, {
+            fieldLabel: "Version",
+            wrappers: ["form-field"],
+            options: [{ label: "1", value: "1" }],
+          }),
+        ]),
+        this.addRepeatList("object", "Objekt", {
+          options: [
+            { label: "Schleusen: Kammern", value: "Schleusen: Kammern" },
+            { label: "Schleusen: Häupter", value: "Schleusen: Häupter" },
+            {
+              label: "Schleusen: Oberhäupter",
+              value: "Schleusen: Oberhäupter",
+            },
+            {
+              label: "Schleusen: Unterhäupter",
+              value: "Schleusen: Unterhäupter",
+            },
+            { label: "Wehre: Wehrpfeiler", value: "Wehre: Wehrpfeiler" },
+            { label: "Wehre: Wehrfelder", value: "Wehre: Wehrfelder" },
+            { label: "Brücken", value: "Brücken" },
+            { label: "Kanalbrücken", value: "Kanalbrücken" },
+            { label: "Molen", value: "Molen" },
+            { label: "Talsperren", value: "Talsperren" },
+            { label: "Leuchttürme", value: "Leuchttürme" },
+            { label: "Unterführungsbauwerke", value: "Unterführungsbauwerke" },
+            { label: "Fischaufstiegsanlagen", value: "Fischaufstiegsanlagen" },
+            {
+              label: "Verschlusskörper: Umlauf-/Grundlauf-/Füllschütze",
+              value: "Verschlusskörper: Umlauf-/Grundlauf-/Füllschütze",
+            },
+            {
+              label: "Verschlusskörper: Sparbecken",
+              value: "Verschlusskörper: Sparbecken",
+            },
+            {
+              label: "Verschlusskörper: Wehre",
+              value: "Verschlusskörper: Wehre",
+            },
+            {
+              label: "Verschlusskörper: Hochwasserentlastungen",
+              value: "Verschlusskörper: Hochwasserentlastungen",
+            },
+            {
+              label: "Verschlusskörper: Grundablässe",
+              value: "Verschlusskörper: Grundablässe",
+            },
+            {
+              label: "Verschlusskörper: Revisionen",
+              value: "Verschlusskörper: Revisionen",
+            },
+            { label: "Schiffshebewerke", value: "Schiffshebewerke" },
+            { label: "Schleusentore", value: "Schleusentore" },
+            { label: "Poller", value: "Poller" },
+            { label: "Stoßschütze", value: "Stoßschütze" },
+            {
+              label: "Schlauchwehre: Menbran",
+              value: "Schlauchwehre: Menbran",
+            },
+            {
+              label: "Schlauchwehre: Klemmleiste/Klemmschiene",
+              value: "Schlauchwehre: Klemmleiste/Klemmschiene",
+            },
+            { label: "Spundwände", value: "Spundwände" },
+            { label: "Düker", value: "Düker" },
+            { label: "Feste Teile", value: "Feste Teile" },
+            { label: "Maschinenteile", value: "Maschinenteile" },
+            {
+              label: "Überbauten: Wehrstege/-brücken",
+              value: "Überbauten: Wehrstege/-brücken",
+            },
+            {
+              label: "Überbauten: Hubportale",
+              value: "Überbauten: Hubportale",
+            },
+            { label: "Verbindungselemente", value: "Verbindungselemente" },
+            { label: "Sperrwerke", value: "Sperrwerke" },
+          ],
+        }),
+        this.addRepeatList("objectPart", "Objektteil", {
+          options: [
+            { label: "Aufsatzklappe", value: "Aufsatzklappe" },
+            { label: "Dammbalken", value: "Dammbalken" },
+          ],
+        }),
+        this.addRepeatList("researchGoal", "Untersuchungsziel", {
+          options: [
+            {
+              label: "Tragfähigkeitsnachweis",
+              value: "Tragfähigkeitsnachweis",
+            },
+            { label: "Verformungsberechnung", value: "Verformungsberechnung" },
+          ],
+        }),
+        this.addGroup("dimension", "Dimensionen", [
+          this.addSelect("spatialDimension", null, {
+            fieldLabel: "Räumliche Dimensionen",
+            showSearch: true,
+            wrappers: ["form-field"],
+            options: [
+              { label: "1D", value: "1D" },
+              { label: "2D", value: "2D" },
+              { label: "3D", value: "3D" },
+            ],
+          }),
+          this.addCheckboxInline("timeDimension", "Zeit"),
+        ]),
+        this.addRepeatList("level", "Level der Untersuchung", {
+          options: [
+            { label: "mean", value: "mean" },
+            { label: "design", value: "design" },
+          ],
+        }),
+        this.addRepeatList("phase", "Untersuchungsstufe nach TbW oder TbVS", {
+          options: [
+            { label: "A", value: "A" },
+            { label: "B", value: "B" },
+            { label: "C", value: "C" },
+            { label: "I", value: "I" },
+            { label: "II", value: "II" },
+            { label: "III", value: "III" },
+          ],
+        }),
+        this.addGroup("concept", "Berechnungskonzepte", [
+          this.addCheckboxInline("materiell", "materiell linear"),
+          this.addCheckboxInline("geometrisch", "geometrisch linear"),
+          this.addCheckboxInline("imperfections", "Imperfektionen"),
+        ]),
+        this.addRepeatList("materials", "Werkstoffe", {
+          options: [
+            { label: "Beton", value: "Beston" },
+            { label: "Bewehrung", value: "Bewehrung" },
+          ],
+        }),
+        this.addRepeat("concrete", "Grundlegende Werkstoffparameter", {
+          fields: [
+            this.addInputInline("denominator", "Betondruckfestigkeit", {
+              type: "number",
+            }),
+            this.addInputInline("distanceMeter", "Fließgrenze der Bewehrung", {
+              type: "number",
+              className: "flex-1 right-align",
+              wrappers: ["form-field"],
+              suffix: {
+                text: "m",
+              },
+            }),
+            this.addInputInline("distanceDPI", "Fließgrenze Stahl", {
+              type: "number",
+              className: "flex-1 right-align",
+              wrappers: ["form-field"],
+            }),
+          ],
+        }),
+        this.addRepeatList("materialModel", "Materialmodell", {
+          options: [
+            { label: "Stahl", value: "Stahl" },
+            { label: "Fließplateau", value: "Fließplateau" },
+            { label: "Bruchmechanik", value: "Bruchmechanik" },
+          ],
+        }),
+        this.addRepeatList("elementTypes", "Elementtypen", {
+          options: [
+            { label: "Stab/Balken", value: "StabBalken" },
+            { label: "Scheiben", value: "Scheiben" },
+          ],
+        }),
+        this.addRepeatList("einwirkung", "Einwirkung", {
+          options: [
+            { label: "Eigengewicht", value: "Eigengewicht" },
+            { label: "Erddruck", value: "Erddruck" },
+          ],
+        }),
+        this.addRepeatList("physics", "Physik", {
+          options: [
+            { label: "Strukturmechanik", value: "Strukturmechanik" },
+            { label: "Strukturdynamik", value: "Strukturdynamik" },
+          ],
+        }),
+        this.addRepeatList("analysisType", "Analysetyp", {
+          options: [
+            { label: "Spannungsanalyse", value: "Spannungsanalyse" },
+            { label: "Schwingungsanalyse", value: "Schwingungsanalyse" },
+          ],
+        }),
       ]),
     );
 
