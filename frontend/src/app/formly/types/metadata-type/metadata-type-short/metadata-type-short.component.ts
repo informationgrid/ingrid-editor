@@ -24,13 +24,8 @@ import {
   MetadataOptionItem,
   MetadataOptionItems,
 } from "../metadata-type.component";
-import { AsyncPipe } from "@angular/common";
-import { map } from "rxjs/operators";
-import { Observable, of } from "rxjs";
-import {
-  CodelistService,
-  SelectOptionUi,
-} from "../../../../services/codelist/codelist.service";
+import { CodelistStore } from "../../../../store/codelist/codelist.store";
+import { GeneralStore } from "../../../../store/general.store";
 
 interface PropertyItem {
   id: string;
@@ -40,7 +35,7 @@ interface PropertyItem {
 
 @Component({
   selector: "ige-metadata-type-short",
-  imports: [MatChipOption, MatChipListbox, AsyncPipe],
+  imports: [MatChipOption, MatChipListbox],
   templateUrl: "./metadata-type-short.component.html",
   styleUrl: "./metadata-type-short.component.scss",
 })
@@ -48,39 +43,54 @@ export class MetadataTypeShortComponent {
   options = input.required<MetadataOption[]>();
   value = input.required<any>();
 
-  private codelistService = inject(CodelistService);
+  private codelistStore = inject(CodelistStore);
+  private generalStore = inject(GeneralStore);
 
-  filteredOptions: Signal<Observable<PropertyItem[]>[]> = computed(() => {
+  filteredOptions: Signal<PropertyItem[]> = computed(() => {
     const data = this.value();
-    return this.options()
-      .flatMap((option) => option.typeOptions)
-      .map((typeOption) => {
-        const codelistObs = typeOption.codelistId
-          ? this.codelistService
-              .observe(typeOption.codelistId)
-              .pipe(map((items) => this.mapToMetadataOptionItems(items)))
-          : null;
-        const genericItems =
-          typeOption.asyncItems ?? codelistObs ?? of(typeOption.items);
-        return genericItems.pipe(
-          map((item) => {
-            return (
-              item
-                ?.map((item) => this.filterSelected(data, typeOption, item))
-                ?.filter((item) => item !== null) ?? []
-            );
-          }),
-        );
-      });
+    const typeOptions = this.options().flatMap((option) => option.typeOptions);
+
+    // Process all type options and collect the results
+    const result: PropertyItem[] = [];
+    for (const typeOption of typeOptions) {
+      // Get the items from codelist or direct items
+      let items: MetadataOptionItem[] = [];
+      if (typeOption.codelistId) {
+        items = this.getItemsFromCodelistStore(typeOption);
+      } else if (typeOption.items) {
+        items = typeOption.items;
+      }
+
+      // Filter and map the items
+      const filteredItems =
+        items
+          ?.map((item) => this.filterSelected(data, typeOption, item))
+          ?.filter((item) => item !== null) ?? [];
+
+      // Add to result
+      result.push(...filteredItems);
+    }
+
+    return result;
   });
 
-  private mapToMetadataOptionItems(items: SelectOptionUi[]) {
-    return items.map((item) => {
-      return <MetadataOptionItem>{
-        label: item.label,
-        value: { key: item.value },
-      };
-    });
+  private getItemsFromCodelistStore(
+    typeOption: MetadataOptionItems,
+  ): MetadataOptionItem[] {
+    try {
+      const codelist = this.codelistStore.entityMap()[typeOption.codelistId];
+      if (codelist) {
+        // Map codelist entries to MetadataOptionItems
+        return codelist.entries.map((entry) => ({
+          label:
+            entry.fields?.[this.generalStore.catalogLanguage()] || entry.id,
+          value: { key: entry.id },
+        }));
+      }
+    } catch (e) {
+      console.error(`Error getting codelist ${typeOption.codelistId}:`, e);
+    }
+    return [];
   }
 
   private filterSelected(

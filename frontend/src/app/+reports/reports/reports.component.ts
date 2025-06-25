@@ -19,14 +19,10 @@
  */
 import { Component } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { SessionService } from "../../services/session.service";
-import {
-  ActivatedRoute,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from "@angular/router";
+import { TabPage } from "../../services/session.service";
+import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
+import { TabContainerComponent } from "../../+research/tab-container.component";
 
 @UntilDestroy()
 @Component({
@@ -42,10 +38,6 @@ import { MatTabLink, MatTabNav, MatTabNavPanel } from "@angular/material/tabs";
     RouterOutlet,
   ],
 })
-export class ReportsComponent {
-  tabs = [];
-
-  constructor(sessionService: SessionService, activeRoute: ActivatedRoute) {
-    this.tabs = sessionService.getTabsFromRoute(activeRoute.snapshot);
-  }
+export class ReportsComponent extends TabContainerComponent {
+  tabPage: TabPage = "reports";
 }

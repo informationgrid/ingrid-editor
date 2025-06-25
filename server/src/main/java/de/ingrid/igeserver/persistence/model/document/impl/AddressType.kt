@@ -19,15 +19,11 @@
  */
 package de.ingrid.igeserver.persistence.model.document.impl
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.exceptions.IsReferencedException
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.services.InitiatorAction
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
@@ -45,33 +41,6 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
     override val className = "AddressDoc"
 
     val referenceFieldInDocuments = "addresses"
-
-    override fun onCreate(doc: Document, initiator: InitiatorAction) {
-        super.onCreate(doc, initiator)
-
-        var address = doc.data.get("address") as ObjectNode?
-        if (address == null) {
-            address = jacksonObjectMapper().createObjectNode()
-            doc.data.set<JsonNode>("address", address)
-        }
-        if (address!!.get("administrativeArea") == null) {
-            val value =
-                convertIdToKeyValue(codelistHandler.getDefaultCatalogCodelistEntryId(doc.catalog?.identifier!!, "6250"))
-            address.set<JsonNode>("administrativeArea", value)
-        }
-        if (address.get("country") == null) {
-            val value = convertIdToKeyValue(codelistHandler.getDefaultCodelistEntryId("6200"))
-            address.set<JsonNode>("country", value)
-        }
-    }
-
-    private fun convertIdToKeyValue(codelistEntryId: String?): JsonNode? {
-        if (codelistEntryId.isNullOrEmpty()) return null
-
-        return jacksonObjectMapper().createObjectNode().apply {
-            put("key", codelistEntryId)
-        }
-    }
 
     override fun onDelete(doc: Document) {
         super.onDelete(doc)

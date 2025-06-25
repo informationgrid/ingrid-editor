@@ -255,7 +255,7 @@
                                     <gmd:date>
                                         <gmd:CI_Date>
                                             <gmd:date>
-                                                <gco:DateTime>${description.getDate()}</gco:DateTime>
+                                                <gco:Date>${description.getDate()}</gco:Date>
                                             </gmd:date>
                                             <gmd:dateType>
                                                 <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="${description.getDateType()}">${description.getDateType()}</gmd:CI_DateTypeCode>
@@ -267,6 +267,9 @@
                                             <gmd:code>
                                                 <gco:CharacterString>${description.getIdentifier()}</gco:CharacterString>
                                             </gmd:code>
+                                            @if(description.getUuidRef() != null)
+                                                <idf:uuid>${description.getUuidRef()}</idf:uuid>
+                                            @endif
                                         </gmd:MD_Identifier>
                                     </gmd:identifier>
                                 </gmd:CI_Citation>

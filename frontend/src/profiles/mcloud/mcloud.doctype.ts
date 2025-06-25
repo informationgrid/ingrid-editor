@@ -134,7 +134,10 @@ export class McloudDoctype extends BaseDoctype {
                 label: "Typ",
                 appearance: "outline",
                 required: true,
-                options: this.getCodelistForSelect("20002", null),
+                options: this.getCodelistForSelect(
+                  "20002",
+                  "distributions.type",
+                ),
                 codelistId: "20002",
                 formatter: (item: any) =>
                   this.formatCodelistValue("20002", item),
@@ -149,7 +152,10 @@ export class McloudDoctype extends BaseDoctype {
               props: {
                 label: "Datenformat",
                 appearance: "outline",
-                options: this.getCodelistForSelect("20003", null),
+                options: this.getCodelistForSelect(
+                  "20003",
+                  "distributions.format",
+                ),
                 codelistId: "20003",
                 formatter: (item: any) =>
                   this.formatCodelistValue("20003", item),

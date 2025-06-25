@@ -24,6 +24,7 @@ import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeoserviceMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImportProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ImportProfileData
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
@@ -32,10 +33,10 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class ISOImportLUBW(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig) : ISOImportProfile {
+class ISOImportLUBW(val codelistHandler: CodelistHandler, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig, @Lazy val catalogService: CatalogService) : ISOImportProfile {
     override fun handle(catalogId: String, data: Metadata, addressMaps: MutableMap<String, String>): ImportProfileData? {
-        val catalogLanguage = documentService.catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
-        val isoData = IsoImportData(data, codelistHandler, catalogId, catalogLanguage, documentService, addressMaps, researchService, uploadConfig)
+        val catalogLanguage = catalogService.getCatalogById(catalogId).settings.config.language ?: "de"
+        val isoData = IsoImportData(data, codelistHandler, catalogId, documentService, addressMaps, researchService, uploadConfig, catalogLanguage)
 
         return when (data.hierarchyLevel?.get(0)?.scopeCode?.codeListValue) {
             "dataset", "series" -> {

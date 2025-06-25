@@ -17,20 +17,21 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 
 import {
   Component,
   computed,
   effect,
   inject,
+  OnDestroy,
   OnInit,
   Signal,
   signal,
 } from "@angular/core";
 import { UserService } from "../../services/user/user.service";
 import { FrontendUser, User } from "../user";
-import { Observable, of } from "rxjs";
+import { Observable, of, Subscription } from "rxjs";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { GroupService } from "../../services/role/group.service";
 import { FormControl, FormGroup } from "@angular/forms";
@@ -40,10 +41,10 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../dialogs/confirm/confirm-dialog.component";
-import { finalize, map, tap } from "rxjs/operators";
+import { filter, finalize, map, tap } from "rxjs/operators";
 import { UserManagementService } from "../user-management.service";
 import { ConfigService } from "../../services/config/config.service";
-import { Router } from "@angular/router";
+import { NavigationEnd, Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {
   FormMenuService,
@@ -85,12 +86,12 @@ import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
     MatMenu,
     MatMenuItem,
     HeaderMoreComponent,
-    FormlyModule,
     MATOMO_DIRECTIVES,
+    FormlyForm,
   ],
   providers: [UserManagementService],
 })
-export class UserComponent implements OnInit {
+export class UserComponent implements OnInit, OnDestroy {
   private groupStore = inject(GroupStore);
   private generalStore = inject(GeneralStore);
   private uiStore = inject(UiStore);
@@ -106,6 +107,7 @@ export class UserComponent implements OnInit {
   tableWidth: Signal<number> = this.uiStore.userTableWidth;
   query = new FormControl<string>("");
   private previousSelectedUser: User = null;
+  private routerSubscription: Subscription;
 
   formChange$ = toSignal(this.form.valueChanges);
   userTitle = computed<string>(() => {
@@ -135,10 +137,13 @@ export class UserComponent implements OnInit {
       const user = this.userService.selectedUser$();
       // set user in case we come from another page
       // TODO: should be done with URL-parameter to load the user like it's done on document page
-      if (!user) return;
-
-      this.explicitUserLogin.set(user.login);
-      if (this.loadedUser()?.id !== user.id) this.loadUser(user.id);
+      this.explicitUserLogin.set(user?.login);
+      if (user) {
+        if (this.loadedUser()?.id !== user.id) this.loadUser(user.id);
+      } else {
+        this.loadedUser.set(null);
+        this.form.reset(null);
+      }
     });
   }
 
@@ -149,6 +154,15 @@ export class UserComponent implements OnInit {
       .getUsers()
       .pipe(finalize(() => this.hideLoading()))
       .subscribe();
+
+    this.handleUserReloadOnVisit();
+  }
+
+  ngOnDestroy() {
+    // Clean up the router events subscription
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
   }
 
   groupSelectCallback = (groupIdString: string) => {
@@ -315,6 +329,21 @@ export class UserComponent implements OnInit {
   private hideLoading() {
     this.enableForm();
     this.isLoading.set(false);
+  }
+
+  private handleUserReloadOnVisit() {
+    this.routerSubscription = this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        filter((event: NavigationEnd) => event.url.includes("/manage/user")),
+      )
+      .subscribe(() => {
+        // Reload the current user data if a user is loaded
+        const currentUser = this.loadedUser();
+        if (currentUser) {
+          this.loadUser(currentUser.id);
+        }
+      });
   }
 
   handleUserSelect(user: User) {

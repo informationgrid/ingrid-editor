@@ -43,9 +43,9 @@ import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
+import org.apache.commons.text.StringEscapeUtils.escapeJson
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
-import org.unbescape.json.JsonEscape
 
 @Service
 class OpenDataLuceneExporter(
@@ -146,7 +146,7 @@ class OpenDataLuceneExporter(
         override fun writeUserContent(value: String?) {
             if (value == null) return
             super.writeUserContent(
-                JsonEscape.escapeJson(value),
+                escapeJson(value),
             )
         }
     }

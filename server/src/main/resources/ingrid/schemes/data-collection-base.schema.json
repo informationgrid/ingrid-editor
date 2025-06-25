@@ -51,7 +51,7 @@
         "generalResourceType": {
           "anyOf": [
             {
-              "$ref": "refs/general.schema.json#/definitions/KeyValue"
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
             },
             {
               "type": "null"
@@ -61,7 +61,7 @@
         "resourceType": {
           "anyOf": [
             {
-              "$ref": "refs/general.schema.json#/definitions/KeyValue"
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
             },
             {
               "type": "null"

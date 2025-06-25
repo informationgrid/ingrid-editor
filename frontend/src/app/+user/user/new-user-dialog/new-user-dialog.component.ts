@@ -31,8 +31,8 @@ import { catchError, filter, tap } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
 import {
   FormlyFieldConfig,
+  FormlyForm,
   FormlyFormOptions,
-  FormlyModule,
 } from "@ngx-formly/core";
 import { ModalService } from "../../../services/modal/modal.service";
 import { IgeError } from "../../../models/ige-error";
@@ -51,9 +51,9 @@ import { MatIcon } from "@angular/material/icon";
     DialogTemplateComponent,
     ReactiveFormsModule,
     MatProgressSpinner,
-    FormlyModule,
     MatButton,
     MatIcon,
+    FormlyForm,
   ],
 })
 export class NewUserDialogComponent implements OnInit {

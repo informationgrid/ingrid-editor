@@ -17,211 +17,217 @@
             role="list"
             [attr.aria-label]="$any(props)?.ariaLabel"
         >
-            <mat-list-item
-                *ngFor="let item of items(); let i = index"
-                cdkDrag
-                [cdkDragDisabled]="formControl.disabled"
-                [class.clickable]="formControl.enabled"
-                [class.draggable]="formControl.enabled"
-            >
-                <mat-expansion-panel
-                    hideToggle
-                    [expanded]="!formControl.enabled"
-                    [disabled]="!formControl.enabled"
-                    (opened)="showMore[i] = true"
-                    (closed)="showMore[i] = false"
+            @for (item of items(); track item; let i = $index) {
+                <mat-list-item
+                    cdkDrag
+                    [cdkDragDisabled]="formControl.disabled"
+                    [class.clickable]="formControl.enabled"
+                    [class.draggable]="formControl.enabled"
                 >
-                    <mat-expansion-panel-header role="listitem">
-                        <mat-panel-title>
-                            @if (formControl.enabled) {
-                                <mat-icon cdkDragHandle aria-hidden="true"
-                                    >drag_indicator
-                                </mat-icon>
-                            }
-                            {{ item.title }}
-                        </mat-panel-title>
-                        <mat-panel-description>
-                            <div class="flex-1 flex-col align-items-start">
-                                @if (item.link.asLink) {
-                                    <a
-                                        class="url no-text-transform icon-in-table"
-                                        [href]="item.link.uri"
+                    <mat-expansion-panel
+                        hideToggle
+                        [expanded]="!formControl.enabled"
+                        [disabled]="!formControl.enabled"
+                        (opened)="showMore[i] = true"
+                        (closed)="showMore[i] = false"
+                    >
+                        <mat-expansion-panel-header role="listitem">
+                            <mat-panel-title>
+                                @if (formControl.enabled) {
+                                    <mat-icon cdkDragHandle aria-hidden="true"
+                                        >drag_indicator
+                                    </mat-icon>
+                                }
+                                {{ item.title }}
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                <div class="flex-1 flex-col align-items-start">
+                                    @if (item.link.asLink) {
+                                        <a
+                                            class="url no-text-transform icon-in-table"
+                                            [href]="item.link.uri"
+                                            (click)="$event.stopPropagation()"
+                                            (keydown)="$event.stopPropagation()"
+                                            target="_blank"
+                                        >
+                                            <img
+                                                width="20"
+                                                height="20"
+                                                src="assets/icons/external_link.svg"
+                                                alt="Link"
+                                            />
+                                            {{ item.link.uri }}</a
+                                        >
+                                    }
+                                    @if (!item.link.asLink) {
+                                        <a
+                                            class="url no-text-transform icon-in-table"
+                                            [href]="
+                                                getDownloadURL(item.link.uri)
+                                            "
+                                            (click)="
+                                                handleCellClick(
+                                                    i,
+                                                    item.link,
+                                                    $event
+                                                );
+                                                $event.stopPropagation()
+                                            "
+                                            (keydown)="$event.stopPropagation()"
+                                            target="_blank"
+                                        >
+                                            <img
+                                                width="20"
+                                                height="20"
+                                                src="assets/icons/download.svg"
+                                                alt="Herunterladen"
+                                            />
+                                            {{ item.link.uri }}</a
+                                        >
+                                    }
+                                </div>
+                                @if (formControl.enabled) {
+                                    <button
+                                        mat-icon-button
+                                        class="menu-button expander"
+                                        [class.expanded]="showMore[i]"
+                                        (click)="showMore[i] = !showMore[i]"
+                                        [matTooltip]="
+                                            showMore[i] ? 'Schließen' : 'Öffnen'
+                                        "
+                                        [attr.aria-label]="
+                                            (showMore[i]
+                                                ? 'Schließen'
+                                                : 'Öffnen') +
+                                            ' Details des Ressource'
+                                        "
+                                        data-cy="toggle-details"
+                                    >
+                                        <mat-icon class="animated"
+                                            >keyboard_arrow_down
+                                        </mat-icon>
+                                    </button>
+                                }
+                                @if (formControl.enabled) {
+                                    <button
+                                        #moreButton
+                                        mat-icon-button
+                                        type="button"
+                                        class="menu-button"
+                                        [matMenuTriggerFor]="menu"
                                         (click)="$event.stopPropagation()"
                                         (keydown)="$event.stopPropagation()"
-                                        target="_blank"
+                                        matTooltip="Bearbeiten"
+                                        aria-label="Ressource bearbeiten"
+                                        data-cy="show-actions"
                                     >
-                                        <img
-                                            width="20"
-                                            height="20"
-                                            src="assets/icons/external_link.svg"
-                                            alt="Link"
-                                        />
-                                        {{ item.link.uri }}</a
-                                    >
+                                        <mat-icon svgIcon="Mehr"></mat-icon>
+                                        <mat-menu #menu>
+                                            <button
+                                                mat-menu-item
+                                                (click)="
+                                                    moreButton.focus();
+                                                    editItem(i)
+                                                "
+                                            >
+                                                Bearbeiten
+                                            </button>
+                                            <button
+                                                mat-menu-item
+                                                (click)="
+                                                    moreButton.focus();
+                                                    removeItem(i)
+                                                "
+                                            >
+                                                Entfernen
+                                            </button>
+                                        </mat-menu>
+                                    </button>
                                 }
-                                @if (!item.link.asLink) {
-                                    <a
-                                        class="url no-text-transform icon-in-table"
-                                        [href]="getDownloadURL(item.link.uri)"
-                                        (click)="
-                                            handleCellClick(
-                                                i,
-                                                item.link,
-                                                $event
-                                            );
-                                            $event.stopPropagation()
-                                        "
-                                        (keydown)="$event.stopPropagation()"
-                                        target="_blank"
-                                    >
-                                        <img
-                                            width="20"
-                                            height="20"
-                                            src="assets/icons/download.svg"
-                                            alt="Herunterladen"
-                                        />
-                                        {{ item.link.uri }}</a
-                                    >
-                                }
-                            </div>
-                            @if (formControl.enabled) {
-                                <button
-                                    mat-icon-button
-                                    class="menu-button expander"
-                                    [class.expanded]="showMore[i]"
-                                    (click)="showMore[i] = !showMore[i]"
-                                    [matTooltip]="
-                                        showMore[i] ? 'Schließen' : 'Öffnen'
-                                    "
-                                    [attr.aria-label]="
-                                        (showMore[i] ? 'Schließen' : 'Öffnen') +
-                                        ' Details des Ressource'
-                                    "
-                                    data-cy="toggle-details"
-                                >
-                                    <mat-icon class="animated"
-                                        >keyboard_arrow_down
-                                    </mat-icon>
-                                </button>
-                            }
-                            @if (formControl.enabled) {
-                                <button
-                                    #moreButton
-                                    mat-icon-button
-                                    type="button"
-                                    class="menu-button"
-                                    [matMenuTriggerFor]="menu"
-                                    (click)="$event.stopPropagation()"
-                                    (keydown)="$event.stopPropagation()"
-                                    matTooltip="Bearbeiten"
-                                    aria-label="Ressource bearbeiten"
-                                    data-cy="show-actions"
-                                >
-                                    <mat-icon svgIcon="Mehr"></mat-icon>
-                                    <mat-menu #menu>
-                                        <button
-                                            mat-menu-item
-                                            (click)="
-                                                moreButton.focus(); editItem(i)
-                                            "
-                                        >
-                                            Bearbeiten
-                                        </button>
-                                        <button
-                                            mat-menu-item
-                                            (click)="
-                                                moreButton.focus();
-                                                removeItem(i)
-                                            "
-                                        >
-                                            Entfernen
-                                        </button>
-                                    </mat-menu>
-                                </button>
-                            }
-                        </mat-panel-description>
-                    </mat-expansion-panel-header>
-                    <div class="flex-1 flex-col align-items-start">
-                        @if (item.description) {
-                            <div class="explanation">
-                                {{ item.description }}
-                            </div>
-                        }
-                        @if (item.format) {
-                            <div>
-                                <div class="type">
-                                    Format:
-                                    @if (item.format?.key) {
-                                        {{
-                                            item.format?.key
-                                                | codelist
-                                                    : props.codelistIdForFileReferenceFormats
-                                                | async
-                                        }}
-                                    } @else {
-                                        {{ item.format?.value }}
-                                    }
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="flex-1 flex-col align-items-start">
+                            @if (item.description) {
+                                <div class="explanation">
+                                    {{ item.description }}
                                 </div>
-                            </div>
-                        }
-                        @if (item.languages?.length > 0) {
-                            <div>
-                                <div class="type">
-                                    Sprachen:
-                                    @for (
-                                        language of item.languages;
-                                        track language
-                                    ) {
-                                        <span>
+                            }
+                            @if (item.format) {
+                                <div>
+                                    <div class="type">
+                                        Format:
+                                        @if (item.format?.key) {
                                             {{
-                                                language.key
-                                                    | codelist: "20007"
+                                                item.format?.key
+                                                    | codelist
+                                                        : props.codelistIdForFileReferenceFormats
                                                     | async
                                             }}
-                                        </span>
-                                    }
+                                        } @else {
+                                            {{ item.format?.value }}
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                        }
-                        @if (item.modified) {
+                            }
+                            @if (item.languages?.length > 0) {
+                                <div>
+                                    <div class="type">
+                                        Sprachen:
+                                        @for (
+                                            language of item.languages;
+                                            track language
+                                        ) {
+                                            <span>
+                                                {{
+                                                    language.key
+                                                        | codelist: "20007"
+                                                        | async
+                                                }}
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            @if (item.modified) {
+                                <div>
+                                    <div class="type">
+                                        Zuletzt Bearbeitet:
+                                        {{ getDateString(item.modified) }}
+                                    </div>
+                                </div>
+                            }
                             <div>
-                                <div class="type">
-                                    Zuletzt Bearbeitet:
-                                    {{ getDateString(item.modified) }}
-                                </div>
+                                @if (item.license?.key) {
+                                    <a
+                                        class="url no-text-transform icon-in-table"
+                                        [href]="item.license?.key"
+                                        target="_blank"
+                                    >
+                                        {{
+                                            item.license?.key
+                                                | codelist: "20004"
+                                                | async
+                                        }}
+                                    </a>
+                                }
+                                @if (item.byClause) {
+                                    Namensnennung:
+                                    {{ item.byClause }}
+                                }
                             </div>
-                        }
-                        <div>
-                            @if (item.license?.key) {
-                                <a
-                                    class="url no-text-transform icon-in-table"
-                                    [href]="item.license?.key"
-                                    target="_blank"
-                                >
+                            @if (item.availability?.key) {
+                                <div>
                                     {{
-                                        item.license?.key
-                                            | codelist: "20004"
+                                        item.availability?.key
+                                            | codelist: "20005"
                                             | async
                                     }}
-                                </a>
-                            }
-                            @if (item.byClause) {
-                                Namensnennung:
-                                {{ item.byClause }}
+                                </div>
                             }
                         </div>
-                        @if (item.availability?.key) {
-                            <div>
-                                {{
-                                    item.availability?.key
-                                        | codelist: "20005"
-                                        | async
-                                }}
-                            </div>
-                        }
-                    </div>
-                </mat-expansion-panel>
-            </mat-list-item>
+                    </mat-expansion-panel>
+                </mat-list-item>
+            }
         </mat-list>
     }
 </mat-accordion>

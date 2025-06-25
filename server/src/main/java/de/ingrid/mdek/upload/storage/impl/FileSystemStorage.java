@@ -33,8 +33,6 @@ import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
-//import org.joda.time.DateTime;
-//import org.joda.time.Duration;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.*;
@@ -43,8 +41,6 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
@@ -52,8 +48,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
 
 /**
  * FileSystemStorage manages files in the server file system
@@ -788,6 +782,7 @@ public class FileSystemStorage implements Storage {
         });
     }
 
+    @SafeVarargs
     private void checkAndLogForMissingFiles(String datasetID, List<String> referencedFiles, List<FileSystemItem> ...filesOnStorage) {
         List<String> missingFiles = referencedFiles.stream()
                 .filter(ref -> Arrays.stream(filesOnStorage)
@@ -821,10 +816,11 @@ public class FileSystemStorage implements Storage {
     @Override
     public void unpublishDataset(final String catalog, String datasetID, List<String> referencedFiles) throws IOException{
         var publishedFiles = this.listFiles(catalog, null, datasetID, this.docsDir, Scope.PUBLISHED);
+        var archivedFiles = this.listFiles(catalog, null, datasetID, this.docsDir, Scope.ARCHIVED);
 
         final CopyOption[] copyOptions = DEFAULT_COPY_OPTIONS;
 
-        checkAndLogForMissingFiles(datasetID, referencedFiles, publishedFiles);
+        checkAndLogForMissingFiles(datasetID, referencedFiles, publishedFiles, archivedFiles);
 
         publishedFiles.stream().filter(f -> referencedFiles.contains(f.getRelativePath())).forEach(f -> {
             try {

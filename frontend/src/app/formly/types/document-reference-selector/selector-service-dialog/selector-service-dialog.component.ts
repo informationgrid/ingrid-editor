@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { Component, inject, Inject } from "@angular/core";
-import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 import { FormGroup } from "@angular/forms";
 import { Subject } from "rxjs";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
@@ -52,7 +52,7 @@ export interface SelectServiceResponse {
 @Component({
   templateUrl: "./selector-service-dialog.component.html",
   styleUrl: "./selector-service-dialog.component.scss",
-  imports: [DialogTemplateComponent, TreeComponent, FormlyModule],
+  imports: [DialogTemplateComponent, TreeComponent, FormlyForm],
 })
 export class SelectorServiceDialogComponent {
   private generalStore = inject(GeneralStore);
@@ -67,7 +67,7 @@ export class SelectorServiceDialogComponent {
   form = new FormGroup<any>({});
   model = { layerNames: [] };
   initialNode = new Subject<number>();
-  label: String = "Dokument auswählen";
+  label = "Dokument auswählen";
   docTypeFilter = [];
   public showLayernames = false;
 

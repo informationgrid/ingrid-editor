@@ -21,7 +21,7 @@ import { FormlyFieldConfig } from "@ngx-formly/core";
 import { Observable } from "rxjs";
 import { SelectOptionUi } from "../app/services/codelist/codelist.service";
 import { HttpClient } from "@angular/common/http";
-import { Component, inject } from "@angular/core";
+import { Component, inject, Signal } from "@angular/core";
 import { TranslocoService } from "@jsverse/transloco";
 import { toAriaLabelledBy } from "../app/directives/fieldToAiraLabelledby.pipe";
 import { AddButtonOptions } from "../app/shared/add-button/add-button.component";
@@ -183,7 +183,7 @@ export interface TextAreaOptions extends Options {
   autosizeMaxRows?: number;
   updateOn?: "change" | "blur" | "submit";
 }
-
+// TODO: use AutocompleteProps instead
 export interface AutocompleteOptions extends Options {
   fieldLabel?: string;
   placeholder?: string;
@@ -191,6 +191,7 @@ export interface AutocompleteOptions extends Options {
   hideDeleteButton?: boolean;
   options?: any[] | Observable<any[]>;
   codelistId?: string;
+  dynamicCodelistId?: Signal<string>;
 }
 
 export interface UnitInputOptions extends InputOptions {
@@ -533,6 +534,7 @@ export class FormFieldHelper {
         hideDeleteButton: options?.hideDeleteButton,
         options: options?.options,
         codelistId: options?.codelistId,
+        dynamicCodelistId: options?.dynamicCodelistId,
         hasInlineContextHelp: options?.hasInlineContextHelp,
         contextHelpId: options?.contextHelpId,
       },

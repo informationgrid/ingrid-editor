@@ -19,7 +19,7 @@
  */
 import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FieldTypeConfig, FormlyModule } from "@ngx-formly/core";
+import { FieldTypeConfig, FormlyValidationMessage } from "@ngx-formly/core";
 import { catchError, debounceTime, map, startWith } from "rxjs/operators";
 import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
@@ -71,11 +71,11 @@ interface UrlReference extends Reference {
     MatIcon,
     MatIconButton,
     MatMenu,
-    FormlyModule,
     MatMenuTrigger,
     MatProgressSpinner,
     MatMenuItem,
     MatButton,
+    FormlyValidationMessage,
   ],
 })
 export class DocumentReferenceSelectorComponent

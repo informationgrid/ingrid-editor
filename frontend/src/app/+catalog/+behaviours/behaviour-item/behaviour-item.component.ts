@@ -29,7 +29,7 @@ import {
   MatCardTitle,
 } from "@angular/material/card";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
-import { FormlyModule } from "@ngx-formly/core";
+import { FormlyForm } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Component({
@@ -44,7 +44,7 @@ import { FormlyModule } from "@ngx-formly/core";
     MatSlideToggle,
     ReactiveFormsModule,
     MatCardContent,
-    FormlyModule,
+    FormlyForm,
   ],
 })
 export class BehaviourItemComponent implements OnInit {

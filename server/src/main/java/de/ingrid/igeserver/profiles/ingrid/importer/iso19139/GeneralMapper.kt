@@ -52,6 +52,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val fieldToCodelist = FieldToCodelist()
 
     val metadata = isoData.data
+    val catalogLanguage = isoData.catalogLanguage
     val codeListService: CodelistHandler = isoData.codelistService
     val catalogId: String = isoData.catalogId
     val documentService: DocumentService = isoData.documentService
@@ -65,6 +66,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     val title = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.title?.value
     val isInspireIdentified = containsKeyword("inspireidentifiziert")
     val isAdVCompatible = containsKeyword("AdVMIS")
+    val isHvd = getHvdCategories().isNotEmpty()
     val isOpenData = containsKeyword("opendata")
     val parentUuid = metadata.parentIdentifier?.value
 
@@ -129,7 +131,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             // then it gets special role: pointOfContactMd (key=12)
             val roleIso = contact.responsibleParty?.role?.codelist?.codeListValue!!
             val role: KeyValue = if (roleIso == "pointOfContact" && index < mainContact.size) {
-                KeyValue("12")
+                KeyValue("12", codeListService.getCodelistValue("505", "12", catalogLanguage))
             } else {
                 mapRoleToContactType(roleIso)
             }
@@ -222,7 +224,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         .firstOrNull()
 
     private fun findPersonUuid(person: PersonInfo): String? = isoData.addressMaps[getPersonIdentifier(person)]
-        ?: documentService.docRepo.findAddressByPerson(catalogId, person.firstName, person.lastName)
+        ?: documentService.docRepo.findAddressByPerson(catalogId, person.firstName ?: "", person.lastName ?: "")
             .firstOrNull()
 
     private fun getPersonIdentifier(person: PersonInfo): String = "${person.firstName} ${person.lastName}"
@@ -310,12 +312,12 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     private fun getSalutationKeyValue(value: String): KeyValue? {
         val salutationKey = value.trim().let { codeListService.getCodeListEntryId("4300", it, isoData.catalogLanguage) }
-        return if (salutationKey == null) null else KeyValue(salutationKey)
+        return if (salutationKey == null) null else KeyValue(salutationKey, value)
     }
 
     private fun mapRoleToContactType(value: String): KeyValue {
         val entryId = codeListService.getCodeListEntryId("505", value, "iso")
-        return if (entryId == null) KeyValue(null, value) else KeyValue(entryId)
+        return if (entryId == null) KeyValue(null, value) else KeyValue(entryId, value)
     }
 
     fun getAdvProductGroups(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.citation?.citation?.alternateTitle
@@ -348,6 +350,13 @@ open class GeneralMapper(val isoData: IsoImportData) {
         ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "IACS data" }
         ?.flatMap { it.keywords?.keyword?.map { item -> item.value } ?: emptyList() }
         ?.map { inVeKoSKeywordMapping.filter { item -> item.value == it }.keys.first() }
+        ?.map { KeyValue(it) } ?: emptyList()
+
+    fun getHvdCategories(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
+        ?.filter { it.keywords?.thesaurusName?.citation?.title?.value == "High-value dataset categories" }
+        ?.flatMap { it.keywords?.keyword?.map { item -> item.value } ?: emptyList() }
+        ?.map { it?.removePrefix("http://data.europa.eu/bna/") }
+        ?.map { codeListService.getCodeListEntryId("hvdCategories", it, "de") }
         ?.map { KeyValue(it) } ?: emptyList()
 
     fun getOpenDataCategories(): List<KeyValue> = metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords
@@ -395,6 +404,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             "Spatial scope",
             "Further legal basis",
             "IACS data",
+            "High-value dataset categories",
         ) + ignoreAdditional
         val ignoreKeywords = listOf("inspireidentifiziert", "opendata", "AdVMIS")
         return metadata.identificationInfo[0].identificationInfo?.descriptiveKeywords

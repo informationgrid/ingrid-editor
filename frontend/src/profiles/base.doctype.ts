@@ -33,6 +33,7 @@ import { inject } from "@angular/core";
 import { FormStateService } from "../app/+form/form-state.service";
 import { CodelistStore } from "../app/store/codelist/codelist.store";
 import { toObservable } from "@angular/core/rxjs-interop";
+import { Codelist } from "../app/store/codelist/codelist.model";
 import { GeneralStore } from "../app/store/general.store";
 
 export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
@@ -243,10 +244,11 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
             filter((codelist) => codelist.default && codelist.default != "-1"),
             tap((codelist) => {
               if (field.type === "ige-select") {
-                field.defaultValue = { key: codelist.default };
+                field.defaultValue = this.getDefaultCodelistOption(codelist);
               } else if (field.type === "repeatList") {
-                field.defaultValue = [{ key: codelist.default }];
+                field.defaultValue = [this.getDefaultCodelistOption(codelist)];
               } else {
+                // auto-complete automatically sets correct value
                 field.defaultValue = codelist.entries.find(
                   (entry) => entry.id === codelist.default,
                 ).fields["de"]; // FIXME: choose dynamic correct value or use codelist (needs changing of component)
@@ -256,6 +258,21 @@ export abstract class BaseDoctype extends FormFieldHelper implements Doctype {
           .subscribe();
       }
     });
+  }
+
+  private getDefaultCodelistOption(codelist: Codelist) {
+    const entry = codelist.entries.find(
+      (entry) => entry.id === codelist.default,
+    );
+    if (entry) {
+      return {
+        key: entry.id,
+        value: entry.fields["de"],
+        _codelistId: codelist.id,
+      };
+    } else {
+      return null;
+    }
   }
 
   private createPrefix(prefix: string, field: FormlyFieldConfig) {

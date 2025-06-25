@@ -110,7 +110,7 @@ export class BehavioursComponent implements OnInit {
       const formGroup = new FormGroup({});
 
       // initially set disabled state for fields
-      if (plugin.fields.length > 0 && !plugin.isActive) {
+      if (plugin.fields.length > 0 && !plugin.isActive()) {
         // we need to build form when we want to set it disabled initially
         this.builder.buildForm(
           formGroup,
@@ -123,8 +123,8 @@ export class BehavioursComponent implements OnInit {
 
       acc[plugin.id] = {
         form: formGroup,
-        active: new FormControl<boolean>(plugin.isActive),
-        modified: plugin.isActive !== plugin.defaultActive,
+        active: new FormControl<boolean>(plugin.isActive()),
+        modified: plugin.isActive() !== plugin.defaultActive,
         fields: plugin.fields,
         data: plugin.data ? plugin.data : {},
       };

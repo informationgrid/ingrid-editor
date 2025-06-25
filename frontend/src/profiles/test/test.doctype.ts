@@ -208,7 +208,7 @@ export class TestDoctype extends BaseDoctype {
               props: {
                 label: "Typ",
                 appearance: "outline",
-                options: this.getCodelistForSelect("20002", null),
+                options: this.getCodelistForSelect("20002", "table.type"),
                 codelistId: "20002",
                 formatter: (item: any) =>
                   this.formatCodelistValue("20002", item),

@@ -20,6 +20,8 @@
 import { TemplateRef } from "@angular/core";
 import { isObservable } from "rxjs";
 import { AbstractControl } from "@angular/forms";
+import { IgeDocument } from "../models/ige-document";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 /**
  * Escapes a string to be used in a regular expression
@@ -865,4 +867,42 @@ export function removeDuplicatesByValue(arr: any[], uniqueKey: string) {
     (item, index, self) =>
       index === self.findIndex((t) => t[uniqueKey] === item[uniqueKey]),
   );
+}
+
+export function trimObjectAndRemoveEvilTags(
+  obj: IgeDocument,
+  snackbar: MatSnackBar = undefined,
+): IgeDocument {
+  const trimmed = JSON.stringify(obj, (_key, value) => {
+    return typeof value === "string"
+      ? removeEvilTags(value.trim(), snackbar)
+      : value;
+  });
+  return JSON.parse(trimmed);
+}
+
+function removeEvilTags(val: String, snackbar?: MatSnackBar): String {
+  // strip all tags except anchors and simple <b>, <i>, <u>, <p>, <br>, <strong>, <ul>, <ol>, <li> tags
+  let processed = val.replace(
+    /<(?!a>|a href|\/a>|b>|\/b>|i>|\/i>|u>|\/u>|p>|\/p>|br>|br\/>|br \/>|strong>|\/strong>|ul>|\/ul>|ol>|\/ol>|li>|\/li>)[^>]*>/gi,
+    "",
+  );
+  // strip anchors with javascript
+  processed = processed.replace(
+    /<a[^>]*?href="javascript[^>]*?>.*?<\/a>/gi,
+    "",
+  );
+  // remove all event handlers
+  processed = processed.replace(/ on\w+="[^"]*"/g, "");
+
+  if (snackbar && processed !== val) {
+    snackbar.open(
+      "Bitte beachten Sie, dass bestimmte HTML-Tags nicht erlaubt sind und daher entfernt wurden.",
+      "OK",
+      {
+        duration: 5000,
+      },
+    );
+  }
+  return processed;
 }

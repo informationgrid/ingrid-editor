@@ -35,7 +35,7 @@ import {
 } from "@angular/material/core";
 import { debounceTime, filter, map, tap } from "rxjs/operators";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
-import { FieldTypeConfig, FormlyModule } from "@ngx-formly/core";
+import { FieldTypeConfig, FormlyAttributes } from "@ngx-formly/core";
 import { BackendOption } from "../../../store/codelist/codelist.model";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 import { NgTemplateOutlet } from "@angular/common";
@@ -53,11 +53,11 @@ import { FieldToAiraLabelledbyPipe } from "../../../directives/fieldToAiraLabell
     MatPseudoCheckbox,
     MatSelect,
     ReactiveFormsModule,
-    FormlyModule,
     NgxMatSelectSearchModule,
     NgTemplateOutlet,
     MatDivider,
     FieldToAiraLabelledbyPipe,
+    FormlyAttributes,
   ],
 })
 export class SelectTypeComponent
@@ -143,10 +143,14 @@ export class SelectTypeComponent
       // if value is undefined, set formControl to null
       this.formControl.setValue(null, { emitEvent: false });
     } else if (!this.props.simple) {
-      // if not simple, value is an object. set as object
-      if (value?.key != null && value?.value != null) {
-        this.formControl.setValue({ key: value.key });
-      } else if (value?.key === null && !value?.value) {
+      if (value && value?._codelistId === undefined) {
+        this.formControl.setValue({
+          key: value.key ?? null,
+          value: value.value,
+          _codelistId: this.props.codelistId ?? null,
+        });
+      }
+      if (value?.key === null && !value?.value) {
         this.formControl.setValue(null);
       }
     } else if (this.props.multiple) {

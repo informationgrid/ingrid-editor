@@ -93,6 +93,7 @@ class IsoImporterTest : AnnotationSpec() {
             ),
         )
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog()
+        every { catalogService.getCatalogById(any()) } returns Catalog()
         every { documentService.docRepo } returns documentRepository
         every { documentRepository.findAddressByOrganisationName(any(), any()) } returns emptyList()
         // needed for checking if imported address-reference already exists (default yes)

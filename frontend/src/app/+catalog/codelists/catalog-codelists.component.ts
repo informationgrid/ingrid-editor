@@ -369,4 +369,33 @@ export class CatalogCodelistsComponent implements OnInit {
     this.favorites = this.favorites.filter((f) => f !== item);
     this.updateFavorites();
   }
+
+  syncCodelistValues() {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          message: `Möchten Sie die Codelistenwerte wirklich synchronisieren?`,
+          title: "Synchronisieren",
+          buttons: [
+            { text: "Abbrechen" },
+            {
+              text: "Synchronisieren",
+              alignRight: true,
+              id: "confirm",
+              emphasize: true,
+            },
+          ],
+        },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.codelistService.syncCodelistValues().subscribe(() => {
+            this._snackBar.open("Codelistenwerte werden synchronisiert", "", {
+              duration: 3000,
+            });
+          });
+        }
+      });
+  }
 }
