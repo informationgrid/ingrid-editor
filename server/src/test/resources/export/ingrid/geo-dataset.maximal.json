@@ -96,14 +96,7 @@
   "alternateTitle": "short description",
   "pointOfContact": [
     { "ref": "83f92167-6606-4182-948c-5747ad608b80", "type": { "key": "11" } },
-    {
-      "type": {
-        "key": "7",
-        "value": "Ansprechpartner",
-        "_codelistId": "505"
-      },
-      "ref": "dcf24d5c-7a33-4ffa-8f27-5f47af964a73"
-    }
+    { "ref": "dcf24d5c-7a33-4ffa-8f27-5f47af964a73", "type": { "key": "7" } }
   ],
   "dataQualityInfo": {
     "lineage": {
