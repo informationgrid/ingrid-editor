@@ -61,7 +61,7 @@ class ZabbixService(
 
         data.uploads.forEach { upload ->
             remoteUploads
-                .find { upload.url == it.url }
+                .find { upload.url == it.url || it.name == "Verfahren" }
                 ?.let { documentsToDelete.remove(it) }
                 ?: documentsToAdd.add(upload).also {
                     log.debug("Remote document not found: ${upload.url} in $remoteUploads")
@@ -257,6 +257,9 @@ class ZabbixService(
         documentsToAdd: List<ZabbixModel.Upload>,
     ) {
         val hostId = createHost(uuid, name, url, catalogIdentifier)
+        log.debug("Add document url")
+        createWebscenario(uuid, hostId, "Verfahren", url, 2, "page-wrapper")
+        createTrigger(uuid, "Verfahren", url)
         if (!addressMail.isNullOrEmpty()) {
             // only create notification job when mail is set
             createUser(addressMail)
@@ -264,7 +267,7 @@ class ZabbixService(
         }
         documentsToAdd.forEach { document ->
             log.debug("Add document ${document.name}")
-            createWebscenario(uuid, hostId, document.name, document.url)
+            createWebscenario(uuid, hostId, document.name, document.url, 1, "")
             createTrigger(uuid, document.name, document.url)
         }
     }
@@ -357,7 +360,7 @@ class ZabbixService(
         severity = item.get("severity").asText(),
     )
 
-    private fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String) {
+    private fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String, retrieveMode: Int, required: String) {
         val docNameStep = shortenString(docName, 64)
         val docNameTag = shortenString(docName, 255)
         val docUrlTag = shortenString(docUrl, 255, true)
@@ -368,7 +371,7 @@ class ZabbixService(
             ZabbixModel.Tag("document url", docUrlTag),
         )
         val steps =
-            listOf(ZabbixModel.Step(name = docNameStep, url = docUrl, required = "", status_codes = "200", no = 1))
+            listOf(ZabbixModel.Step(name = docNameStep, retrieve_mode = retrieveMode, url = docUrl, required = required, status_codes = "200", no = 1))
         val params = ZabbixModel.WebscenarioParams(docNameStep, hostId, checkDelay, steps, tags)
         val webscenario = ZabbixModel.Webscenario(method = "httptest.create", params = params, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(webscenario)
