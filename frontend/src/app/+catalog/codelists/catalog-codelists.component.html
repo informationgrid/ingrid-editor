@@ -25,7 +25,11 @@
             <button mat-button color="primary" (click)="resetAllCodelists()">
                 Alle Codelisten zurücksetzen
             </button>
-            <button mat-button color="primary" (click)="syncCodelistValues()">
+            <button
+                mat-button
+                color="primary"
+                (click)="syncCodelistValues($event)"
+            >
                 Codelistenwerte synchronisieren
             </button>
         </div>

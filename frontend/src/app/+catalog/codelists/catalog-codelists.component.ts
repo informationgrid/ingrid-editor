@@ -373,7 +373,7 @@ export class CatalogCodelistsComponent implements OnInit {
     this.updateFavorites();
   }
 
-  syncCodelistValues() {
+  syncCodelistValues($event: MouseEvent) {
     this.dialog
       .open(ConfirmDialogComponent, {
         data: <ConfirmDialogData>{
@@ -393,11 +393,14 @@ export class CatalogCodelistsComponent implements OnInit {
       .afterClosed()
       .subscribe((result) => {
         if (result) {
-          this.codelistService.syncCodelistValues().subscribe(() => {
-            this._snackBar.open("Codelistenwerte werden synchronisiert", "", {
-              duration: 3000,
+          // hidden option to migrate before synchronisation
+          this.codelistService
+            .syncCodelistValues($event.ctrlKey)
+            .subscribe(() => {
+              this._snackBar.open("Codelistenwerte werden synchronisiert", "", {
+                duration: 3000,
+              });
             });
-          });
         }
       });
   }

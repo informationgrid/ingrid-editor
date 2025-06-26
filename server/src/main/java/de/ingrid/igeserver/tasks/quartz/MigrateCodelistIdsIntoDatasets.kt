@@ -160,7 +160,7 @@ class MigrateCodelistIdsIntoDatasets(
             try {
                 // Execute the SQL query to update codelist values
                 val sql = getSQL(it, catalogIdentifier)
-                log.debug("Executing SQL: $sql")
+//                log.debug("Executing SQL: $sql")
                 val updatedRows = jdbcTemplate.update(sql)
 
                 message.message = "Codelist synchronization completed successfully. Updated $updatedRows rows."
@@ -200,7 +200,7 @@ class MigrateCodelistIdsIntoDatasets(
         // now trigger another job to add the codelist values to the datasets
         val jobKey = JobKey.jobKey(CodelistSyncTask.JOB_KEY, catalogIdentifier)
         val jobDataMap = JobDataMap().apply {
-            this.put("catalogId", catalog.identifier)
+            this.put("catalogId", catalogIdentifier)
         }
         scheduler.handleJobWithCommand(JobCommand.start, CodelistSyncTask::class.java, jobKey, jobDataMap)
 
