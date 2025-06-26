@@ -90,9 +90,10 @@ export class SharedHmdk {
   downloadLinkWhenHmbtg = {
     expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
       !field.model.properties?.publicationHmbTG ||
-      ctrl.value?.some((row: any) => row.type?.key === "9990"), // Datendownload
+      ctrl.value?.some((row: any) => row.type?.key === "9990") || // Datendownload
+      field.form.value.fileReferences?.length > 0, // or one item in "Dateien"
     message:
-      "Bei aktivierter 'Veröffentlichung gemäß HmbgTG'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein",
+      "Bei aktivierter 'Veröffentlichung gemäß HmbgTG'-Checkbox muss mindestens ein Link vom Typ 'Datendownload' angegeben sein ODER eine Datei im Abschnitt 'Dateien' hochgeladen werden.",
   };
 
   private getInformationHmbTGFieldConfig(doc: IngridShared) {
