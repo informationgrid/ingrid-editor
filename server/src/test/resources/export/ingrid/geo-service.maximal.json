@@ -109,7 +109,15 @@
   "spatialScope": { "key": "-673152846" },
   "alternateTitle": "short_descr",
   "pointOfContact": [
-    { "ref": "36ec9150-2f1b-4164-8221-08f9a85fc4fb", "type": { "key": "3" } }
+    { "ref": "36ec9150-2f1b-4164-8221-08f9a85fc4fb", "type": { "key": "3" } },
+    {
+      "type": {
+        "key": "7",
+        "value": "Ansprechpartner",
+        "_codelistId": "505"
+      },
+      "ref": "dcf24d5c-7a33-4ffa-8f27-5f47af964a73"
+    }
   ],
   "advProductGroups": [{ "key": "2" }],
   "graphicOverviews": [

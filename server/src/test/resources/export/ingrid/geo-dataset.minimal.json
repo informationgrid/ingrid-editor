@@ -7,6 +7,38 @@
     "isAdVCompatible": false,
     "subType": { "key": "5" }
   },
+  "openDataCategories": [
+    {
+      "key": "5",
+      "value": "Umwelt",
+      "_codelistId": "6400"
+    }
+  ],
+  "informationHmbTG": [
+    {
+      "key": "hmbtg_01_senatsbeschluss",
+      "value": "Senatsbeschlüsse",
+      "_codelistId": "informationsgegenstand"
+    }
+  ],
+  "fileReferences": [
+    {
+      "title": "File name",
+      "link": {
+        "asLink": false,
+        "value": "filename.pdf",
+        "uri": "filename.pdf",
+        "lastModified": "2025-06-26T08:13:26.284Z",
+        "sizeInBytes": 429866
+      },
+      "format": {
+        "key": "21",
+        "value": "PDF",
+        "_codelistId": "1320"
+      },
+      "description": ""
+    }
+  ],
   "themes": [],
   "dataset": { "languages": [] },
   "lineage": { "statement": "basics" },
@@ -54,7 +86,15 @@
   "distribution": {},
   "spatialScope": null,
   "pointOfContact": [
-    { "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4", "type": { "key": "11" } }
+    { "ref": "826cd85e-9b65-43f6-b2a7-3f20b57450f4", "type": { "key": "11" } },
+    {
+      "type": {
+        "key": "10",
+        "value": "Herausgeber",
+        "_codelistId": "505"
+      },
+      "ref": "506677eb-9328-4484-9d30-2cecadba353c"
+    }
   ],
   "dataQualityInfo": {
     "lineage": { "source": { "processStep": {}, "descriptions": [] } }
