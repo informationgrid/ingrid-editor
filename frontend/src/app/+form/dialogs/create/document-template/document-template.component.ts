@@ -20,9 +20,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
   input,
-  OnInit,
   output,
 } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
@@ -52,7 +52,7 @@ import { DoctypeStore } from "../../../../store/doctype/doctype.store";
     DocumentListItemComponent,
   ],
 })
-export class DocumentTemplateComponent implements OnInit {
+export class DocumentTemplateComponent {
   form = input.required<UntypedFormGroup>();
   isFolder = input<boolean>(true);
 
@@ -67,12 +67,17 @@ export class DocumentTemplateComponent implements OnInit {
     null,
   );
 
-  ngOnInit(): void {
-    if (this.isFolder()) {
-      this.setDocType({ id: "FOLDER" } as DocumentAbstract);
-    } else {
-      this.initializeDocumentTypes(this.doctypeStore.dataDoctypes());
-    }
+  constructor() {
+    effect(() => {
+      if (this.isFolder()) {
+        this.setDocType({ id: "FOLDER" } as DocumentAbstract);
+      } else {
+        const docTypes = this.doctypeStore.dataDoctypes();
+        if (docTypes.length > 0) {
+          this.initializeDocumentTypes(docTypes);
+        }
+      }
+    });
   }
 
   private initializeDocumentTypes(doctypes: DoctypeAbstract[]) {

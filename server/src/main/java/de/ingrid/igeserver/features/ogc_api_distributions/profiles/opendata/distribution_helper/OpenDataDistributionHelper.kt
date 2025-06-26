@@ -20,7 +20,6 @@
 package de.ingrid.igeserver.features.ogc_api_distributions.profiles.opendata.distribution_helper
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper.DistributionTypeInfo
 import de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper.OgcDistributionHelper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
@@ -77,6 +76,4 @@ class OpenDataDistributionHelper(
         }
         return missingFiles
     }
-
-    private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode = jacksonObjectMapper().valueToTree(listOfJsonNodes)
 }

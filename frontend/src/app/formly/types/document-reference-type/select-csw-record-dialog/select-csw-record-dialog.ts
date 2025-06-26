@@ -33,7 +33,7 @@ import {
 } from "../document-reference.service";
 import { Observable, of } from "rxjs";
 import { REGEX_URL } from "../../../input.validators";
-import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 import { MatError, MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
@@ -62,7 +62,6 @@ export interface SelectCswRecordData {
   styleUrls: ["./select-csw-record-dialog.scss"],
   imports: [
     DialogTemplateComponent,
-    FormlyModule,
     MatFormField,
     MatLabel,
     MatInput,
@@ -70,6 +69,7 @@ export interface SelectCswRecordData {
     FocusDirective,
     MatError,
     FormErrorComponent,
+    FormlyForm,
   ],
 })
 export class SelectCswRecordDialog implements OnInit {

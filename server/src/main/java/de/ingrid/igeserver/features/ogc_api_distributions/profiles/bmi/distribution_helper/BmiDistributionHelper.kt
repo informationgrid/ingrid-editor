@@ -19,23 +19,15 @@
  */
 package de.ingrid.igeserver.features.ogc_api_distributions.profiles.bmi.distribution_helper
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper.DistributionTypeInfo
-import de.ingrid.igeserver.features.ogc_api_distributions.distribution_helper.OgcDistributionHelper
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.utils.getBoolean
-import de.ingrid.igeserver.utils.getString
-import de.ingrid.igeserver.utils.ifFalse
+import de.ingrid.igeserver.features.ogc_api_distributions.profiles.opendata.distribution_helper.OpenDataDistributionHelper
 import de.ingrid.mdek.upload.storage.Storage
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Profile("bmi")
 @Service
-class BmiDistributionHelper(
-    private val storage: Storage,
-) : OgcDistributionHelper {
+class BmiDistributionHelper(storage: Storage) : OpenDataDistributionHelper(storage) {
 
     override val typeInfo: DistributionTypeInfo
         get() = DistributionTypeInfo(
@@ -46,37 +38,4 @@ class BmiDistributionHelper(
         )
 
     override fun canHandleDistribution(profile: String): Boolean = "bmi" == profile
-
-    override fun getDistributionDetails(document: Document, collectionId: String, recordId: String, distributionId: String?): JsonNode {
-        val allDistributions = document.data["distributions"]
-
-        return if (distributionId.isNullOrEmpty()) {
-            allDistributions
-        } else {
-            val filteredDistributions = allDistributions.filter { it.getString("link.uri") == distributionId }
-            convertListToJsonNode(filteredDistributions)
-        }
-    }
-
-    override fun searchForMissingFiles(
-        distributions: JsonNode,
-        collectionId: String,
-        userID: String,
-        recordId: String,
-        distributionId: String?,
-    ): List<String> {
-        val missingFiles: MutableList<String> = mutableListOf()
-
-        distributions.forEach { distribution ->
-            val currentDistributionId = distribution.getString("link.uri")!!
-            val isLink = distribution.getBoolean("link.asLink")!!
-            isLink.ifFalse {
-                val distributionExists = storage.exists(collectionId, userID, recordId, currentDistributionId)
-                distributionExists.ifFalse { missingFiles.add(currentDistributionId) }
-            }
-        }
-        return missingFiles
-    }
-
-    private fun convertListToJsonNode(listOfJsonNodes: List<Any>): JsonNode = jacksonObjectMapper().valueToTree(listOfJsonNodes)
 }

@@ -37,27 +37,27 @@ body {
 }
 
 html {
-  --mdc-checkbox-disabled-selected-icon-color: rgba(0, 0, 0, 0.38);
-  --mdc-checkbox-disabled-unselected-icon-color: rgba(0, 0, 0, 0.38);
-  --mdc-checkbox-selected-checkmark-color: #fff;
-  --mdc-checkbox-selected-focus-icon-color: #398c32;
-  --mdc-checkbox-selected-hover-icon-color: #398c32;
-  --mdc-checkbox-selected-icon-color: #398c32;
-  --mdc-checkbox-selected-pressed-icon-color: #398c32;
-  --mdc-checkbox-unselected-focus-icon-color: #212121;
-  --mdc-checkbox-unselected-hover-icon-color: #212121;
-  --mdc-checkbox-unselected-icon-color: rgba(0, 0, 0, 0.54);
-  --mdc-checkbox-unselected-pressed-icon-color: rgba(0, 0, 0, 0.54);
-  --mdc-checkbox-selected-focus-state-layer-color: #398c32;
-  --mdc-checkbox-selected-hover-state-layer-color: #398c32;
-  --mdc-checkbox-selected-pressed-state-layer-color: #398c32;
-  --mdc-checkbox-unselected-focus-state-layer-color: black;
-  --mdc-checkbox-unselected-hover-state-layer-color: black;
-  --mdc-checkbox-unselected-pressed-state-layer-color: black;
+  --mat-checkbox-disabled-selected-icon-color: rgba(0, 0, 0, 0.38);
+  --mat-checkbox-disabled-unselected-icon-color: rgba(0, 0, 0, 0.38);
+  --mat-checkbox-selected-checkmark-color: #fff;
+  --mat-checkbox-selected-focus-icon-color: #398c32;
+  --mat-checkbox-selected-hover-icon-color: #398c32;
+  --mat-checkbox-selected-icon-color: #398c32;
+  --mat-checkbox-selected-pressed-icon-color: #398c32;
+  --mat-checkbox-unselected-focus-icon-color: #212121;
+  --mat-checkbox-unselected-hover-icon-color: #212121;
+  --mat-checkbox-unselected-icon-color: rgba(0, 0, 0, 0.54);
+  --mat-checkbox-unselected-pressed-icon-color: rgba(0, 0, 0, 0.54);
+  --mat-checkbox-selected-focus-state-layer-color: #398c32;
+  --mat-checkbox-selected-hover-state-layer-color: #398c32;
+  --mat-checkbox-selected-pressed-state-layer-color: #398c32;
+  --mat-checkbox-unselected-focus-state-layer-color: black;
+  --mat-checkbox-unselected-hover-state-layer-color: black;
+  --mat-checkbox-unselected-pressed-state-layer-color: black;
 }
 
 html {
-  --mdc-checkbox-state-layer-size: 40px;
+  --mat-checkbox-state-layer-size: 40px;
 }
 body {
   font-family:

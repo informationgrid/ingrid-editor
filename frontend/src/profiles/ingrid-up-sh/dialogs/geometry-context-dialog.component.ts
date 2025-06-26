@@ -26,7 +26,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 
-import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 import { geometryContextFields } from "./geometry-context.fields";
 import { DialogTemplateComponent } from "../../../app/shared/dialog-template/dialog-template.component";
 
@@ -38,8 +38,8 @@ import { DialogTemplateComponent } from "../../../app/shared/dialog-template/dia
     MatInputModule,
     MatSelectModule,
     ReactiveFormsModule,
-    FormlyModule,
     DialogTemplateComponent,
+    FormlyForm,
   ],
 })
 export class GeometryContextDialogComponent implements OnInit {

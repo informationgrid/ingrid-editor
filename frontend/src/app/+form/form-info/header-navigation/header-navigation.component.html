@@ -13,7 +13,9 @@
             >
                 {{ section }}
             </button>
-            <ng-container *ngIf="i !== sections.length - 1">|</ng-container>
+            @if (i !== sections.length - 1) {
+                |
+            }
         }
     }
 </div>

@@ -22,9 +22,10 @@ import {
   FieldArrayType,
   FieldGroupTypeConfig,
   FieldTypeConfig,
+  FormlyField,
   FormlyFieldConfig,
   FormlyFieldProps,
-  FormlyModule,
+  FormlyValidationMessage,
 } from "@ngx-formly/core";
 import {
   CdkDrag,
@@ -62,7 +63,6 @@ export interface RepeatProps extends FormlyFieldProps {
   styleUrls: ["./repeat.component.scss"],
   imports: [
     FormErrorComponent,
-    FormlyModule,
     CdkDropList,
     CdkDrag,
     MatIcon,
@@ -70,6 +70,8 @@ export interface RepeatProps extends FormlyFieldProps {
     MatTooltip,
     MatIconButton,
     AddButtonComponent,
+    FormlyValidationMessage,
+    FormlyField,
   ],
 })
 export class RepeatComponent
