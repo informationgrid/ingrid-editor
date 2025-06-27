@@ -170,7 +170,10 @@ class CodelistSyncTask(
             ?: throw ServerException.withReason("Codelist not found for id: $codelistId at path: $path for uuid: $uuid")
 
         if (entryKey == null) {
-            // TODO: check if value is now a codelist-entry
+            codelist.entries?.find { it.fields[catalogLanguage] == node.getString("value") }?.let {
+                (node as ObjectNode).put("key", it.id)
+                return true
+            }
         } else {
             val codelistEntryValue = codelist.entries?.find { it.id == entryKey }?.getField(catalogLanguage)
             if (codelistEntryValue == null) {
