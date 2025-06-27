@@ -25,9 +25,15 @@
             <button mat-button color="primary" (click)="resetAllCodelists()">
                 Alle Codelisten zurücksetzen
             </button>
-            <button mat-button color="primary" (click)="syncCodelistValues()">
-                Codelistenwerte synchronisieren
-            </button>
+            @if (showSyncButton()) {
+                <button
+                    mat-button
+                    color="primary"
+                    (click)="syncCodelistValues($event)"
+                >
+                    Codelistenwerte synchronisieren
+                </button>
+            }
         </div>
     </ng-container>
 
