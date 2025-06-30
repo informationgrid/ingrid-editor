@@ -99,6 +99,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                         identifier = if (internalGeoDatasetUuid == null) identifier else null,
                         uuidRef = internalGeoDatasetUuid,
                         _type = if (internalGeoDatasetUuid == null) "freeDescription" else "internalDataOrigin",
+                        url = null,
                     )
                 } ?: emptyList()
         }
@@ -504,6 +505,7 @@ data class GeometryContextInternal(
     val attributes: List<KeyValue>,
 )
 
+// TODO: class LineageSourceDescription is defined 2 times (see exporter)! Refactor to use model from Importer?
 data class LineageSourceDescription(
     val _type: String,
     val value: String?,
@@ -512,4 +514,5 @@ data class LineageSourceDescription(
     val date: String?,
     val dateType: String?,
     val uuidRef: String?,
+    val url: String?,
 )

@@ -2,6 +2,7 @@
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer.DisplayableQuality
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.ConformanceResult
+@import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.LineageSourceDescription
 
 @param GeodatasetModelTransformer page
 <gmd:dataQualityInfo>
@@ -240,7 +241,7 @@
                     </gmd:LI_ProcessStep>
                 </gmd:processStep>
                 @endfor
-                @for( GeodatasetModelTransformer.LineageSourceDescription description : page.getLineageSourceDescriptions())
+                @for( LineageSourceDescription description : page.getLineageSourceDescriptions())
                 <gmd:source>
                     <gmd:LI_Source>
                         <gmd:description>

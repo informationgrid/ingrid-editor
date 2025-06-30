@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.exporter.TransformationTools
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Quality
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.LineageSourceDescription
 import de.ingrid.igeserver.utils.getString
 
 open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : IngridModelTransformer(transformerConfig) {
@@ -241,17 +242,6 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
         data.dataQualityInfo?.lineage?.source?.processStep?.description?.map { codelists.getValue("", it) }
             ?: emptyList()
 
-    // TODO: class LineageSourceDescription is defined 3 times! Refactor to use model from Importer?
-    data class LineageSourceDescription(
-        val value: String,
-        val title: String?,
-        val identifier: String?,
-        val date: String?,
-        val dateType: String?,
-        val uuidRef: String?,
-        val url: String?,
-    )
-
     val lineageSourceDescriptions =
         data.dataQualityInfo?.lineage?.source?.descriptions?.mapNotNull {
             val title: String?
@@ -272,6 +262,7 @@ open class GeodatasetModelTransformer(transformerConfig: TransformerConfig) : In
                 }
             }
             LineageSourceDescription(
+                _type = it._type,
                 value = it.value,
                 title,
                 identifier,
