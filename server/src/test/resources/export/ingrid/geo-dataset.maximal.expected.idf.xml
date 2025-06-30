@@ -1229,6 +1229,38 @@
                                     </gmd:description>
                                 </gmd:LI_Source>
                             </gmd:source>
+                            <gmd:source>
+                                <gmd:LI_Source>
+                                    <gmd:description>
+                                        <gco:CharacterString>Description of internal reference</gco:CharacterString>
+                                    </gmd:description>
+                                    <gmd:sourceCitation>
+                                        <gmd:CI_Citation>
+                                            <gmd:title>
+                                                <gco:CharacterString>Test-Datensatz</gco:CharacterString>
+                                            </gmd:title>
+                                            <gmd:date>
+                                                <gmd:CI_Date>
+                                                    <gmd:date>
+                                                        <gco:Date>2023-05-01T22:00:00Z</gco:Date>
+                                                    </gmd:date>
+                                                    <gmd:dateType>
+                                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision">revision</gmd:CI_DateTypeCode>
+                                                    </gmd:dateType>
+                                                </gmd:CI_Date>
+                                            </gmd:date>
+                                            <gmd:identifier>
+                                                <gmd:MD_Identifier>
+                                                    <gmd:code>
+                                                        <gco:CharacterString>https://registry.gdi-de.org/id/test-catalog/f4b077b0-91e1-49d3-aac6-826284562537</gco:CharacterString>
+                                                    </gmd:code>
+                                                    <idf:uuid>a910fde0-3910-413e-9c14-4fa86f3d12c2</idf:uuid>
+                                                </gmd:MD_Identifier>
+                                            </gmd:identifier>
+                                        </gmd:CI_Citation>
+                                    </gmd:sourceCitation>
+                                </gmd:LI_Source>
+                            </gmd:source>
                         </gmd:LI_Lineage>
                     </gmd:lineage>
                 </gmd:DQ_DataQuality>

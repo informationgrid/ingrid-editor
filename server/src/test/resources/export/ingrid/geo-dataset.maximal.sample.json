@@ -106,6 +106,17 @@
             {
               "value": "Datengrundlage",
               "_type": "freeDescription"
+            },
+            {
+              "value": "Description of internal reference",
+              "uuidRef": "a910fde0-3910-413e-9c14-4fa86f3d12c2",
+              "date": "2023-05-01T22:00:00Z",
+              "dateType": {
+                "key": "3",
+                "value": "Letzte Änderung",
+                "_codelistId": "502"
+              },
+              "_type": "internalDataOrigin"
             }
           ],
           "processStep": {
