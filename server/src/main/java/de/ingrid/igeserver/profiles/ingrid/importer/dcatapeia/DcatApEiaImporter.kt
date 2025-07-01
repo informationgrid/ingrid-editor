@@ -31,7 +31,6 @@ import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
 import de.ingrid.igeserver.services.CatalogService
-import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.mdek.upload.UploadConfig
@@ -40,7 +39,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class DcatApEiaImporter(val codelistService: CodelistHandler, @Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig) : IgeImporter {
+class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig) : IgeImporter {
     private val log = logger()
 
     override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
@@ -64,7 +63,7 @@ class DcatApEiaImporter(val codelistService: CodelistHandler, @Lazy val catalogS
         )
 
         if (json is ObjectNode) {
-            json.remove("model") // Remove a specific field
+            json.remove("model") // Remove a model field (contains content of DCAT-AP.eia document)
         }
 
         log.debug("Created JSON from imported file: $json")
