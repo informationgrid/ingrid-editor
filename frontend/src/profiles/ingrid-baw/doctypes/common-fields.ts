@@ -29,6 +29,7 @@ import { FormControl } from "@angular/forms";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
 import { isNotEmptyObject } from "../../../app/shared/utils";
 import { FormStateService } from "../../../app/+form/form-state.service";
+import { timezones } from "./timezones";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
@@ -122,6 +123,36 @@ export class CommonFieldsBaw extends FormFieldHelper {
       verticalExtent?: boolean;
     } = {},
   ) {
+    const timeRefPosition = this.findFieldElementWithId(
+      fieldConfig,
+      "resourceDate",
+    );
+
+    const content = timeRefPosition.fieldConfig[timeRefPosition.index];
+    timeRefPosition.fieldConfig[timeRefPosition.index] = this.addGroupSimple(
+      null,
+      [content, this.addTimepickerInline("resourceDate", "Zeit", {})],
+      {
+        fieldGroupClassName: "flex-row",
+        hideExpression: (field: FormlyFieldConfig) =>
+          field.model.resourceDateTypeSince?.key === "exactDate",
+      },
+    );
+
+    const timeRefRangePosition = this.findFieldElementWithId(
+      fieldConfig,
+      "resourceRange",
+    );
+    timeRefRangePosition.fieldConfig[
+      timeRefRangePosition.index
+    ].props.showTimeInputs = true;
+    this.addAfter(
+      timeRefRangePosition,
+      this.addSelectInline("resourceTimezone", "Zeitzone", {
+        options: timezones,
+      }),
+    );
+
     const gemetKeywordsPosition = this.findFieldElementWithId(
       fieldConfig,
       "gemet",

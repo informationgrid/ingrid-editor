@@ -1114,6 +1114,7 @@ export abstract class IngridShared extends BaseDoctype {
                   required: this.options.required.resourceDateType,
                   showSearch: true,
                   wrappers: ["form-field"],
+                  className: "width-null",
                   options: [
                     { label: "am", value: "at" },
                     { label: "bis", value: "till" },

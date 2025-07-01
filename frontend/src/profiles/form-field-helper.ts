@@ -793,6 +793,39 @@ export class FormFieldHelper {
     });
   }
 
+  addTimepicker(id, label, options: any = {}) {
+    const expressions = this.initExpressions(options?.expressions);
+    return {
+      key: id,
+      type: "timepicker",
+      className: options?.className ?? "width-date-small",
+      wrappers:
+        options?.wrappers === undefined
+          ? ["panel", "form-field"]
+          : options?.wrappers,
+      defaultValue: null,
+      props: {
+        label: options?.fieldLabel,
+        externalLabel: label,
+        placeholder: options?.placeholder,
+        appearance: "outline",
+        required: options?.required,
+        hasInlineContextHelp: options?.hasInlineContextHelp,
+        contextHelpId: options?.contextHelpId,
+      },
+      expressions: expressions,
+      validators: options?.validators,
+    };
+  }
+
+  addTimepickerInline(id, label, options: Options = {}) {
+    return this.addTimepicker(id, null, {
+      fieldLabel: label,
+      wrappers: options?.wrappers ?? ["form-field"],
+      ...options,
+    });
+  }
+
   addDateRange(id, label, options?): FormlyFieldConfig {
     const expressions = this.initExpressions(options?.expressions);
     return {
