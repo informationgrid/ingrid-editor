@@ -398,7 +398,11 @@ class ZabbixService(
         }
     }
 
-    private fun addAuthToBody(requestBody: String) = if (requestBody.contains("auth")) requestBody else requestBody.substringBeforeLast("}") + ", \"auth\": \"${this.apiKey}\" }"
+    private fun addAuthToBody(requestBody: String) = if (requestBody.contains("auth")) {
+        requestBody
+    } else {
+        requestBody.substringBeforeLast("}") + ", \"auth\": \"${this.apiKey}\" }"
+    }
 
     private fun requestApi(requestBody: String): JsonNode {
         val client = HttpClient.newBuilder().build()
@@ -412,26 +416,31 @@ class ZabbixService(
             .header("Content-Type", "application/json-rpc")
             .build()
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+
+        if (response.statusCode() != 200) {
+            throw ServerException.withReason("Api request failed with status code: ${response.statusCode()} ${sanitizeRequest(requestBody)}")
+        }
+
         val json = jacksonObjectMapper().readTree(response.body())
 
         if (json.has("error")) {
             val error = json.get("error").get("data")?.asText()
-            if (error?.contains("exist") == true) {
-                log.debug(error)
-            } else if (error?.contains("invalid") == true) {
-                // for catch invalid email user create request
-                // TODO make sure no other errors are caught
-                val sanitizedRequest = if (requestBody.contains("auth")) {
-                    requestBody.substring(0, requestBody.indexOf("auth"))
-                } else {
-                    requestBody
+            with(error) {
+                when {
+                    isNullOrEmpty() -> throw ServerException.withReason("Request Error occurred. No error Data")
+                    contains("already exists") -> log.debug(this)
+                    contains("Invalid email address") -> log.error("Request failed: ${sanitizeRequest(requestBody)}")
+                    else -> throw ServerException.withReason(this)
                 }
-                log.error("Request failed: $sanitizedRequest")
-            } else {
-                throw ServerException.withReason(json.get("error").get("data")?.asText() ?: "Request Error occurred")
             }
         }
         return json
+    }
+
+    private fun sanitizeRequest(requestBody: String): String = if (requestBody.contains("auth")) {
+        requestBody.substring(0, requestBody.indexOf("auth"))
+    } else {
+        requestBody
     }
 
     fun getTriggerEvents(triggerId: String): List<ZabbixModel.Problem>? {
