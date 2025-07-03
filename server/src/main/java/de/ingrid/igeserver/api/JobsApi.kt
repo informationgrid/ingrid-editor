@@ -157,5 +157,9 @@ interface JobsApi {
             value = "command",
             required = true,
         ) command: JobCommand,
+        @Parameter(description = "command for the job", required = false) @RequestParam(
+            value = "migrate",
+            required = false,
+        ) migrate: Boolean = false,
     ): ResponseEntity<Unit>
 }

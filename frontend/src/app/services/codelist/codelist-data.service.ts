@@ -80,9 +80,10 @@ export class CodelistDataService {
     );
   }
 
-  syncCodelistValues() {
+  syncCodelistValues(migrate: boolean) {
     return this.http.post<void>(
-      this.configuration.backendUrl + "jobs/codelist-sync?command=start",
+      this.configuration.backendUrl +
+        `jobs/codelist-sync?command=start&migrate=${migrate}`,
       {},
     );
   }

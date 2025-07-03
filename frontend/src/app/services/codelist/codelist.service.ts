@@ -392,7 +392,7 @@ export class CodelistService {
     this.generalStore.updateFavorites(newFavorites);
   }
 
-  syncCodelistValues() {
-    return this.dataService.syncCodelistValues();
+  syncCodelistValues(migrate: boolean) {
+    return this.dataService.syncCodelistValues(migrate);
   }
 }
