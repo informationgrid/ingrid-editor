@@ -58,11 +58,11 @@ class ZabbixService(
         val remoteUploads = result.map { getUpload(it) }.toMutableList()
 
         val documentsToAdd = mutableListOf<ZabbixModel.Upload>()
-        val documentsToDelete = remoteUploads.toMutableList()
+        val documentsToDelete = remoteUploads.filter { !it.name.matches(Regex("^Verfahren \\w{4}$")) }.toMutableList()
 
         data.uploads.forEach { upload ->
             remoteUploads
-                .find { upload.url == it.url || it.name == "Verfahren" }
+                .find { upload.url == it.url }
                 ?.let { documentsToDelete.remove(it) }
                 ?: documentsToAdd.add(upload).also {
                     log.debug("Remote document not found: ${upload.url} in $remoteUploads")
