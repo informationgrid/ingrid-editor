@@ -62,7 +62,7 @@ class ZabbixService(
 
         data.uploads.forEach { upload ->
             remoteUploads
-                .find { upload.url == it.url || it.name == "Verfahren" }
+                .find { upload.url == it.url || it.name.matches(Regex("^Verfahren \\w{4}$")) }
                 ?.let { documentsToDelete.remove(it) }
                 ?: documentsToAdd.add(upload).also {
                     log.debug("Remote document not found: ${upload.url} in $remoteUploads")
