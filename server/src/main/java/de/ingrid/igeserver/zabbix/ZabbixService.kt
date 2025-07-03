@@ -257,7 +257,7 @@ class ZabbixService(
         documentsToAdd: List<ZabbixModel.Upload>,
     ) {
         val hostId = createHost(uuid, name, url, catalogIdentifier)
-        log.debug("Add document url")
+        log.debug("Add document url: $url to host $hostId with name $name and uuid $uuid")
         createWebscenario(uuid, hostId, "Verfahren", url, 2, "page-wrapper")
         createTrigger(uuid, "Verfahren", url)
         if (!addressMail.isNullOrEmpty()) {
@@ -360,6 +360,7 @@ class ZabbixService(
         severity = item.get("severity").asText(),
     )
 
+    // TODO: use enum for retrieveMode
     private fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String, retrieveMode: Int, required: String) {
         val docNameStep = shortenString(docName, 64)
         val docNameTag = shortenString(docName, 255)
