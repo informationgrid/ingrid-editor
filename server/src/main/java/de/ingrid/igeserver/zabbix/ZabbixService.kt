@@ -31,6 +31,7 @@ import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.security.MessageDigest
 
 const val JSONRPC = "2.0"
 
@@ -358,7 +359,7 @@ class ZabbixService(
     )
 
     private fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String) {
-        val docNameStep = shortenString(docName, 64)
+        val docNameStep = createDocumentName(docName, docUrl)
         val docNameTag = shortenString(docName, 255)
         val docUrlTag = shortenString(docUrl, 255, true)
 
@@ -377,7 +378,7 @@ class ZabbixService(
     }
 
     private fun createTrigger(uuid: String, docName: String, docUrl: String) {
-        val docNameShort = shortenString(docName, 64)
+        val docNameShort = createDocumentName(docName, docUrl)
         val docNameTriggerExpression = if (docNameShort.contains(",")) "\"$docNameShort\"" else docNameShort
         val docNameTag = shortenString(docName, 255)
         val docUrlTag = shortenString(docUrl, 255, true)
@@ -388,7 +389,7 @@ class ZabbixService(
             ZabbixModel.Tag("document url", docUrlTag),
         )
         val params = ZabbixModel.TriggerParams(
-            "Dokument: ${docName.trim()}",
+            "Dokument: $docNameShort",
             "min(/$uuid/web.test.fail[$docNameTriggerExpression],#$checkCount)>0",
             4,
             0,
@@ -449,15 +450,15 @@ class ZabbixService(
 
     private fun shortenString(name: String, length: Int, onlyEnd: Boolean = false): String {
         val delimiter = ".."
-        val tname = name.trim()
-        return if (tname.length > length) {
+        val trimmedName = name.trim()
+        return if (trimmedName.length > length) {
             if (onlyEnd) {
-                tname.take(length - delimiter.length) + delimiter
+                trimmedName.take(length - delimiter.length) + delimiter
             } else {
-                tname.take(length / 2) + delimiter + tname.takeLast(length / 2 - delimiter.length)
+                trimmedName.take(length / 2) + delimiter + trimmedName.takeLast(length / 2 - delimiter.length)
             }
         } else {
-            tname
+            trimmedName
         }
     }
 
@@ -532,5 +533,17 @@ class ZabbixService(
             """.trimIndent()
         val results = requestApi(jsonTriggerGet).get("result") as ArrayNode
         return results.mapNotNull { it.get("triggerid")?.asText() }
+    }
+
+    private fun createHash(url: String): String {
+        val bytes = url.toByteArray()
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(bytes)
+        return digest.fold("", { str, it -> str + "%02x".format(it) })
+    }
+
+    private fun createDocumentName(docName: String, docUrl: String): String {
+        val hash = createHash(docUrl)
+        return shortenString(docName + " " + hash.take(4), 64)
     }
 }
