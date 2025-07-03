@@ -450,15 +450,15 @@ class ZabbixService(
 
     private fun shortenString(name: String, length: Int, onlyEnd: Boolean = false): String {
         val delimiter = ".."
-        val tname = name.trim()
-        return if (tname.length > length) {
+        val trimmedName = name.trim()
+        return if (trimmedName.length > length) {
             if (onlyEnd) {
-                tname.take(length - delimiter.length) + delimiter
+                trimmedName.take(length - delimiter.length) + delimiter
             } else {
-                tname.take(length / 2) + delimiter + tname.takeLast(length / 2 - delimiter.length)
+                trimmedName.take(length / 2) + delimiter + trimmedName.takeLast(length / 2 - delimiter.length)
             }
         } else {
-            tname
+            trimmedName
         }
     }
 
@@ -535,14 +535,14 @@ class ZabbixService(
         return results.mapNotNull { it.get("triggerid")?.asText() }
     }
 
-    fun createHash(url: String): String {
+    private fun createHash(url: String): String {
         val bytes = url.toByteArray()
         val md = MessageDigest.getInstance("SHA-256")
         val digest = md.digest(bytes)
         return digest.fold("", { str, it -> str + "%02x".format(it) })
     }
 
-    fun createDocumentName(docName: String, docUrl: String): String {
+    private fun createDocumentName(docName: String, docUrl: String): String {
         val hash = createHash(docUrl)
         return shortenString(docName + " " + hash.take(4), 64)
     }
