@@ -58,11 +58,11 @@ class ZabbixService(
         val remoteUploads = result.map { getUpload(it) }.toMutableList()
 
         val documentsToAdd = mutableListOf<ZabbixModel.Upload>()
-        val documentsToDelete = remoteUploads.toMutableList()
+        val documentsToDelete = getUploadedDocuments(remoteUploads)
 
         data.uploads.forEach { upload ->
             remoteUploads
-                .find { upload.url == it.url || it.name.matches(Regex("^Verfahren \\w{4}$")) }
+                .find { upload.url == it.url }
                 ?.let { documentsToDelete.remove(it) }
                 ?: documentsToAdd.add(upload).also {
                     log.debug("Remote document not found: ${upload.url} in $remoteUploads")
@@ -81,6 +81,9 @@ class ZabbixService(
             documentsToAdd,
         )
     }
+
+    // get only uploaded documents without check for assessment website
+    private fun getUploadedDocuments(remoteUploads: MutableList<ZabbixModel.Upload>): MutableList<ZabbixModel.Upload> = remoteUploads.filter { !it.name.matches(Regex("^Verfahren \\w{4}$")) }.toMutableList()
 
     /**
      * @return userId of created user
