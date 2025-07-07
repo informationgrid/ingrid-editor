@@ -54,9 +54,13 @@ class ZabbixServiceTest : ShouldSpec() {
 
             every { HttpClient.newBuilder().build() } returns httpClientMock
             every { responseGetHostGroup.body() } returns """{ "result": [{ "groupid": "1"}] }"""
+            every { responseGetHostGroup.statusCode() } returns 200
             every { responseCreateHost.body() } returns """{ "result": { "hostids": [ "1" ] } }"""
+            every { responseCreateHost.statusCode() } returns 200
             every { responseCreateUser.body() } returns """{ "result": { "userids": [ "1" ] } }"""
+            every { responseCreateUser.statusCode() } returns 200
             every { response.body() } returns """{ "result": [] }"""
+            every { response.statusCode() } returns 200
 
             val bodyHandler = HttpResponse.BodyHandlers.ofString()
             every {
@@ -78,12 +82,13 @@ class ZabbixServiceTest : ShouldSpec() {
             service.addOrUpdateDocument(data)
 
             // requests for httptest, hostgroup and host
-            verify(exactly = 3) { httpClientMock.send(any(), bodyHandler) }
+            verify(exactly = 4) { httpClientMock.send(any(), bodyHandler) }
         }
 
         should("get Problems for a catalog") {
             every { HttpClient.newBuilder().build() } returns httpClientMock
             every { responseGetHostGroup.body() } returns """{ "result": [{ "groupid": "1"}] }"""
+            every { responseGetHostGroup.statusCode() } returns 200
             every { response.body() } returns
                 """
                         {
@@ -121,6 +126,7 @@ class ZabbixServiceTest : ShouldSpec() {
                         "id": 1
                         }
                     """
+            every { response.statusCode() } returns 200
 
             val bodyHandler = HttpResponse.BodyHandlers.ofString()
             every {
