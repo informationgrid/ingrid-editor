@@ -134,6 +134,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
       [content, this.addTimepickerInline("resourceDate", "Zeit", {})],
       {
         fieldGroupClassName: "flex-row",
+        className: "two-sub-fields",
         hideExpression: (field: FormlyFieldConfig) =>
           field.model.resourceDateTypeSince?.key === "exactDate",
       },
