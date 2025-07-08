@@ -93,16 +93,13 @@ class IngridIndexExporter(
 
         val previousFingerprintInfo = getPreviousFingerprint(catalogId, uuid)
 
-        val idfDoc = convertStringToDocument(idf)
-
-        // TODO: consolidate with PostDocumentIndexingFingerprint.kt so only one place is used to update the date
-        //  ( OffsetDateTime.now() in here != OffsetDateTime.now() in updateFingerprintIfChanged in PostDocumentIndexingFingerprint.kt )
-        addPublishDateToIndexDocument(
-            idfDoc!!,
-            if (fingerprint == previousFingerprintInfo?.fingerprint) previousFingerprintInfo.date else OffsetDateTime.now(),
-        )
-
-        return XMLUtils.toString(idfDoc)
+        if (fingerprint == previousFingerprintInfo?.fingerprint) {
+            log.debug("Fingerprint did not change. Using last publish date")
+            val idfDoc = convertStringToDocument(idf)
+            addPublishDateToIndexDocument(idfDoc!!, previousFingerprintInfo.date)
+            return XMLUtils.toString(idfDoc)
+        }
+        return idf
     }
 
     private fun addPublishDateToIndexDocument(idf: org.w3c.dom.Document, publishDate: OffsetDateTime) {
