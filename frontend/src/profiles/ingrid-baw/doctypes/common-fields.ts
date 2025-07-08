@@ -150,6 +150,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
       timeRefRangePosition,
       this.addSelectInline("resourceTimezone", "Zeitzone", {
         options: timezones,
+        showSearch: true,
       }),
     );
 
