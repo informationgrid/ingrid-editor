@@ -58,6 +58,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.time.OffsetDateTime
 import java.util.function.BiConsumer
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -418,6 +419,12 @@ class ImportService(
             remove(FIELD_MODIFIED_BY)
             remove(FIELD_PARENT)
             remove(FIELD_ID)
+        }
+        // add contentModified information
+        ref.document.apply {
+            contentModifiedByUser = null
+            contentmodifiedby = principal.name // for now always "Import"
+            contentmodified = OffsetDateTime.now()
         }
 
         val publish = options.publish || ref.forcePublish
