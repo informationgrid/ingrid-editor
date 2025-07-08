@@ -24,6 +24,7 @@ import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.extension.pipe.impl.SimpleContext
 import de.ingrid.igeserver.persistence.filter.PostIndexPayload
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.FingerprintInfo
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
@@ -63,18 +64,25 @@ class PostDocumentIndexingFingerprint(
         val uuid = (context as SimpleContext).uuid
         val wrapper = documentWrapperRepository.findByCatalog_IdentifierAndUuid(catalogIdentifier, uuid)
 
-        val fingerprintList = if (wrapper.fingerprint == null) mutableListOf() else wrapper.fingerprint!!
-
-        val previousFingerprint = fingerprintList.find { it.exportType == exporterType }
-        if (previousFingerprint?.fingerprint != isoFingerprint) {
+        val previousFingerprint = wrapper.fingerprint?.find { it.exportType == exporterType }?.fingerprint
+        if (previousFingerprint != isoFingerprint) {
             log.debug("Fingerprint changed. Updating metadata-date")
-            val publishDate = OffsetDateTime.now()
-            wrapper.fingerprint = (fingerprintList.filter { it.exportType != exporterType }) + FingerprintInfo(
+            updateDocumentFingerprint(wrapper, exporterType, isoFingerprint)
+        }
+    }
+
+    fun updateDocumentFingerprint(
+        wrapper: DocumentWrapper,
+        exporterType: String,
+        isoFingerprint: String,
+    ) {
+        val publishDate = OffsetDateTime.now()
+        wrapper.fingerprint = (wrapper.fingerprint ?: mutableListOf()).filter { it.exportType != exporterType } +
+            FingerprintInfo(
                 exporterType,
                 isoFingerprint,
                 publishDate,
             )
-            documentWrapperRepository.save(wrapper)
-        }
+        documentWrapperRepository.save(wrapper)
     }
 }
