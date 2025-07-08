@@ -49,11 +49,9 @@ class IngridIndexExporter(
 
     override fun exportSql(catalogId: String): String = "${super.exportSql(catalogId)} AND document.data ->> 'hideAddress' IS DISTINCT FROM 'true'"
 
-    private val typeId = "indexInGridIDF"
-
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
-        typeId,
+        "indexInGridIDF",
         "Standard Export Portal (InGrid)",
         "Export von Ingrid Dokumenten ins IDF Format für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
@@ -127,7 +125,7 @@ class IngridIndexExporter(
 
     private fun getPreviousFingerprint(catalogId: String, uuid: String): FingerprintInfo? {
         val wrapper = documentWrapperRepository.findByCatalog_IdentifierAndUuid(catalogId, uuid)
-        return wrapper.fingerprint?.find { it.exportType == typeId }
+        return wrapper.fingerprint?.find { it.exportType == typeInfo.type }
     }
 
     override fun calculateFingerprint(doc: Any): String {
