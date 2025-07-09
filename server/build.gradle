@@ -5,7 +5,7 @@ import java.nio.file.Paths
 //import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 
 buildscript {
-    ext.kotlin_version = '2.1.0'
+    ext.kotlin_version = '2.2.0'
     ext.spring_boot_version = '3.5.3'
     ext.kotest_version = '5.9.1'
     ext.jte_version = '3.2.1'
@@ -227,8 +227,8 @@ dependencyManagement {
         dependency "commons-collections:commons-collections:3.2.2"
 
         // conflict with kotest and search-client -> kotlinx-serialization
-        dependency "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.0"
-        dependency "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.0"
+        dependency "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.9.0"
+        dependency "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.9.0"
     }
 }
 
