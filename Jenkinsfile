@@ -34,15 +34,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh './gradlew :frontend:test'
-                    } catch(error) {}
-                    try {
-                        sh './gradlew :frontend:testFormatting'
-                    } catch(error) {
-                        currentBuild.result = 'UNSTABLE'
-                    }
-                    try {
-                        sh './gradlew :server:spotlessCheck'
+                        sh './gradlew :frontend:test :frontend:testFormatting :server:spotlessCheck'
                     } catch(error) {
                         currentBuild.result = 'UNSTABLE'
                     }
