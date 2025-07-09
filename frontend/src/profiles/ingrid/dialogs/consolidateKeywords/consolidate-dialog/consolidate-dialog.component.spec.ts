@@ -195,8 +195,8 @@ describe("ConsolidateDialogComponent", () => {
     const keywordAnalysis = spectator.inject(KeywordAnalysis);
     spyOn(keywordAnalysis, "analyzeKeywords").and.returnValue(
       new Promise((resolve) => {
-        // @ts-ignore
-        resolve({ free: [], gemet: [], umthes: [] });
+        // @ts-ignore: force an error in the component
+        resolve("Some error message.");
       }),
     );
     tick();
