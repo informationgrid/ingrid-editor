@@ -308,7 +308,7 @@ class OgcApiRecordsController(
             recordId,
             profile,
         )
-        return ResponseEntity.ok().build()
+        return ResponseEntity.noContent().build()
     }
 
     @GetMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
