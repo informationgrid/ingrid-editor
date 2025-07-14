@@ -268,8 +268,8 @@ class OgcApiRecordsController(
                 null
             },
         )
-        val uri = ogcRecordService.transactionalImportDocument(options, collectionId, contentType, data, principal, recordMustExist = false, null, profile)
-        return ResponseEntity.created(uri).build()
+        val location = ogcRecordService.transactionalImportDocument(options, collectionId, contentType, data, principal, recordMustExist = false, null, profile)
+        return ResponseEntity.created(location).build()
     }
 
     @PutMapping(value = ["/collections/{collectionId}/items/{recordId}"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])

@@ -38,7 +38,7 @@ class FormatFactory {
 
     fun getFormater(mimeType: String, exportType: String): BodyFormater {
         val responsibleFormater = formater
-            .filter { it.typeInfo.mimeType === mimeType && it.typeInfo.exportType == exportType }
+            .filter { it.typeInfo.mimeType == mimeType && it.typeInfo.exportType == exportType }
 
         if (responsibleFormater.isEmpty()) {
             throw ConfigurationException.withReason("No OGC body formater found for mimeType '$mimeType' and exportType '$exportType'.")
