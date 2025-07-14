@@ -63,9 +63,9 @@ function getKeycloakOptions(configService: ConfigService): KeycloakOptions {
     loadUserProfileAtStartUp: false,
     initOptions: {
       onLoad: "check-sso",
-      silentCheckSsoRedirectUri: `${
-        window.location.origin + config.contextPath
-      }assets/silent-check-sso.html`,
+      //silentCheckSsoRedirectUri: `${
+      //  window.location.origin + config.contextPath
+      //}assets/silent-check-sso.html`,
     },
   };
 }
