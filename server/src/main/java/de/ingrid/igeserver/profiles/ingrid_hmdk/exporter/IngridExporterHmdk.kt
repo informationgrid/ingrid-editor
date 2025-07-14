@@ -44,8 +44,7 @@ import kotlin.reflect.KClass
 class IngridExporterHmdk(
     idfExporter: IngridIdfExporterHmdk,
     luceneExporter: IngridLuceneExporterHmdk,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridIndexExporter(idfExporter, luceneExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -64,8 +63,7 @@ class IngridExporterHmdk(
 class IngridExporterHmdkMetaver(
     idfExporter: IngridIdfExporterHmdkMetaver,
     luceneExporter: IngridLuceneExporterHmdk,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridIndexExporter(idfExporter, luceneExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -86,7 +84,8 @@ class IngridIdfExporterHmdk(
     uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService) {
+    documentWrapperRepository: DocumentWrapperRepository,
+) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getHmdkModelTransformerClass(docType) ?: super.getModelTransformerClass(docType)
 }
@@ -97,7 +96,8 @@ class IngridIdfExporterHmdkMetaver(
     uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService) {
+    documentWrapperRepository: DocumentWrapperRepository,
+) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getHmdkModelMetaverTransformerClass(docType) ?: super.getModelTransformerClass(docType)
 }
@@ -143,8 +143,7 @@ class IngridLuceneExporterHmdk(
 class IngridISOExporterHmdk(
     idfExporter: IngridIdfExporterHmdk,
     luceneExporter: IngridLuceneExporterHmdk,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridExporterHmdk(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridExporterHmdk(idfExporter, luceneExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,

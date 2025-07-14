@@ -22,6 +22,7 @@ package de.ingrid.igeserver.exports.ingrid
 import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -46,6 +47,7 @@ class SpecialisedTask : ShouldSpec() {
 
     // this bean must be mocked, although it might not be used in this class
     private val catalogService = mockk<CatalogService>()
+    private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
 
     private val codelistHandler = mockk<CodelistHandler>()
     private val uploadConfig = mockk<UploadConfig>()
@@ -54,7 +56,7 @@ class SpecialisedTask : ShouldSpec() {
 
     override suspend fun beforeSpec(spec: Spec) {
         clearAllMocks()
-        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService)
+        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository)
 
         mockkObject(SpringContext)
         every { SpringContext.getBean(DocumentService::class.java) } answers {

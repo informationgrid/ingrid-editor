@@ -63,9 +63,9 @@ class DataCollection : ShouldSpec() {
 
     override suspend fun beforeSpec(spec: Spec) {
         clearAllMocks()
-        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService)
+        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository)
         this.luceneExporter = IngridLuceneExporter(codelistHandler, uploadConfig, catalogService, documentService)
-        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)
+        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter)
 
         mockkObject(SpringContext.Companion)
         every { SpringContext.getBean(DocumentService::class.java) } answers {
