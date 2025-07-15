@@ -29,9 +29,15 @@ module.exports = function (config) {
       reporters: [{ type: "html" }, { type: "text-summary" }],
     },
     reporters: ["progress", "kjhtml", "junit"],
-    browsers: ["Chrome"],
+    browsers: ["Chrome", "ChromeHeadlessNoSandbox"],
     junitReporter: {
       outputDir: "target/surefire-reports/",
+    },
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: "ChromeHeadless",
+        flags: ["--no-sandbox"],
+      },
     },
     restartOnFileChange: true,
   });
