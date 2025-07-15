@@ -13,7 +13,7 @@
     "update-angular": "ng update @angular/cli @angular/core --allow-dirty",
     "update-material": "ng update @angular/cdk @angular/material --allow-dirty --force",
     "test": "ng test",
-    "test-headless": "ng test --no-watch --no-progress --browsers=ChromeHeadless",
+    "test-headless": "ng test --no-watch --no-progress --browsers=ChromeHeadlessNoSandbox",
     "lint": "ng lint",
     "wba": "webpack-bundle-analyzer dist/stats.json",
     "sme": "source-map-explorer"
