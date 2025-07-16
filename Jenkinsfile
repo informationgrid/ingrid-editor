@@ -21,11 +21,7 @@ pipeline {
         stage('Build') {
             when { not { buildingTag() } }
             steps {
-                script {
-                    withEnv(["GRADLE_RO_DEP_CACHE=/var/jenkins_home/shared-ro-gradle-cache"]) {
-                        sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain clean build -x test -x check'
-                    }
-                }
+                sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain clean build -x test -x check'
             }
         }
 
@@ -39,9 +35,7 @@ pipeline {
                         currentBuild.result = 'UNSTABLE'
                     }
 
-                    withEnv(["GRADLE_RO_DEP_CACHE=/var/jenkins_home/shared-ro-gradle-cache"]) {
-                        sh './gradlew --no-daemon :server:test'
-                    }
+                    sh './gradlew --no-daemon :server:test'
                 }
             }
         }
@@ -49,11 +43,7 @@ pipeline {
         stage ('Base-Image Update') {
             when { buildingTag() }
             steps {
-                script {
-                    withEnv(["GRADLE_RO_DEP_CACHE=/var/jenkins_home/shared-ro-gradle-cache"]) {
-                        sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain build -x test -x check'
-                    }
-                }
+                sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain build -x test -x check'
             }
         }
 
