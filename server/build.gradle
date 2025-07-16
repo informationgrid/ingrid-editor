@@ -196,12 +196,15 @@ dependencies {
     testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version" // for kotest core jvm assertions
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
     testImplementation 'io.kotest.extensions:kotest-extensions-spring:1.3.0' // to wire dependencies using Spring
+    testImplementation "io.kotest.extensions:kotest-extensions-testcontainers:2.0.2"
     testImplementation 'io.mockk:mockk:1.14.4'
     testImplementation "com.ninja-squad:springmockk:4.0.2"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.mockito"
     }
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation 'org.testcontainers:postgresql'
 
     // Elasticsearch communication
     implementation("com.jillesvangurp:search-client:2.5.0")

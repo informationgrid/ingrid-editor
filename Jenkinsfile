@@ -39,18 +39,8 @@ pipeline {
                         currentBuild.result = 'UNSTABLE'
                     }
 
-                    // since container is run on host and not within Jenkins, we cannot map init sql file
-                    // so we use here a modified postgres image for the tests
-                    image = docker.image('docker-registry.wemove.com/postgres-ige-ng-test')
-                    image.pull()
-                    image.withRun() { c ->
-                        // use another container, where we can link the database to so that we can access it
-                        // for volume mapping remember that we cannot use filesystem from Jenkins container, but only from HOST!
-                        docker.image('ubuntu:20.04').inside("--link ${c.id}:db -v /root/.docker/config.json:/root/.docker/config.json --mount type=bind,src=/opt/docker-setup/jenkins-nexus-sonar/jenkins-home/shared-ro-gradle-cache,dst=/.gradle-ro-cache") {
-                            withEnv(["GRADLE_RO_DEP_CACHE=/.gradle-ro-cache"]) {
-                                sh './gradlew --no-daemon :server:test'
-                            }
-                        }
+                    withEnv(["GRADLE_RO_DEP_CACHE=/var/jenkins_home/shared-ro-gradle-cache"]) {
+                        sh './gradlew --no-daemon :server:test'
                     }
                 }
             }
@@ -60,10 +50,8 @@ pipeline {
             when { buildingTag() }
             steps {
                 script {
-                    docker.image('ubuntu:20.04').inside("-v /root/.docker/config.json:/root/.docker/config.json --mount type=bind,src=/opt/docker-setup/jenkins-nexus-sonar/jenkins-home/shared-ro-gradle-cache,dst=/.gradle-ro-cache") {
-                        withEnv(["GRADLE_RO_DEP_CACHE=/.gradle-ro-cache"]) {
-                            sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain build -x test -x check'
-                        }
+                    withEnv(["GRADLE_RO_DEP_CACHE=/var/jenkins_home/shared-ro-gradle-cache"]) {
+                        sh './gradlew --no-daemon -PbuildProfile=prod -PbuildDockerImage -Djib.console=plain build -x test -x check'
                     }
                 }
             }
