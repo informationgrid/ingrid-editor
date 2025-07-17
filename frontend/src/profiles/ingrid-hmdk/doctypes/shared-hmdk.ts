@@ -114,6 +114,7 @@ export class SharedHmdk {
         "informationHmbTG",
         "value",
       ),
+      codelistId: "informationsgegenstand",
     });
   }
 

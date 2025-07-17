@@ -107,6 +107,7 @@ export class AddressTypeComponent
     this.documentService.reload$
       .pipe(
         untilDestroyed(this),
+        filter((info) => info.forAddress === false),
         map((item) => item.uuid),
       )
       .subscribe(() => {

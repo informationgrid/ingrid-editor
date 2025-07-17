@@ -284,9 +284,16 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     private fun getCommunications(ciContact: CIContact?): List<Communication> {
         val list = mutableListOf<Communication>()
+        // Mail addresses
         ciContact?.address?.address?.electronicMailAddress?.mapNotNull { it.value }
             ?.forEach { list.add(Communication(KeyValue("3"), it)) }
-        ciContact?.phone?.value?.let { list.add(Communication(KeyValue("1"), it)) }
+        // Phone numbers
+        ciContact?.phone?.phone?.voice?.mapNotNull { it.value }?.forEach { list.add(Communication(KeyValue("1"), it)) }
+        // Fax numbers
+        ciContact?.phone?.phone?.facsimile?.mapNotNull { it.value }?.forEach { list.add(Communication(KeyValue("2"), it)) }
+        // Homepage
+        ciContact?.onlineResource?.onlineResource?.linkage?.url?.let { list.add(Communication(KeyValue("4"), it)) }
+
         return list
     }
 

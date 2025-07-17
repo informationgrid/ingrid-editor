@@ -32,6 +32,7 @@ import {
   HTTP_INTERCEPTORS,
   HttpClient,
   provideHttpClient,
+  withFetch,
   withInterceptorsFromDi,
   withXsrfConfiguration,
 } from "@angular/common/http";
@@ -369,7 +370,11 @@ bootstrapApplication(AppComponent, {
       withFormlyFieldToggle(),
       withFormlyFieldDatepicker(),
     ]),
-    provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
+    provideHttpClient(
+      withInterceptorsFromDi(),
+      withXsrfConfiguration({}),
+      withFetch(),
+    ),
     // make sure we are authenticated by keycloak before bootstrap
     provideAppInitializer(() => {
       const initializerFn = ConfigLoader(

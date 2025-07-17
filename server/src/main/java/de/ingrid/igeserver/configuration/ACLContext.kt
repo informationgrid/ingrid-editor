@@ -22,6 +22,7 @@ package de.ingrid.igeserver.configuration
 import de.ingrid.igeserver.configuration.acl.CustomPermissionFactory
 import de.ingrid.igeserver.configuration.acl.IgeAclPermissionCacheOptimizer
 import de.ingrid.igeserver.configuration.acl.IgeAclPermissionEvaluator
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.cache.CacheManager
@@ -46,7 +47,7 @@ import javax.sql.DataSource
 @Configuration
 @EnableAutoConfiguration
 @EnableMethodSecurity
-class ACLContext(val dataSource: DataSource, val cacheManager: CacheManager) {
+class ACLContext(val dataSource: DataSource, val cacheManager: CacheManager, val catalogService: CatalogService) {
 
     @Bean
     fun aclCache(): SpringCacheBasedAclCache = SpringCacheBasedAclCache(
@@ -64,14 +65,14 @@ class ACLContext(val dataSource: DataSource, val cacheManager: CacheManager) {
     @Bean
     fun defaultMethodSecurityExpressionHandler(authUtils: AuthUtils): MethodSecurityExpressionHandler? {
         val expressionHandler = DefaultMethodSecurityExpressionHandler()
-        val permissionEvaluator = IgeAclPermissionEvaluator(aclService(), authUtils)
+        val permissionEvaluator = IgeAclPermissionEvaluator(aclService(), authUtils, catalogService)
         expressionHandler.setPermissionEvaluator(permissionEvaluator)
         expressionHandler.setPermissionCacheOptimizer(IgeAclPermissionCacheOptimizer(aclService()))
         return expressionHandler
     }
 
     @Bean
-    fun igeAclPermissionEvaluator(authUtils: AuthUtils): IgeAclPermissionEvaluator = IgeAclPermissionEvaluator(aclService(), authUtils)
+    fun igeAclPermissionEvaluator(authUtils: AuthUtils): IgeAclPermissionEvaluator = IgeAclPermissionEvaluator(aclService(), authUtils, catalogService)
 
     @Bean
     fun lookupStrategy(): LookupStrategy {

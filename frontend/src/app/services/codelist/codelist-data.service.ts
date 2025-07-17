@@ -79,4 +79,12 @@ export class CodelistDataService {
       entryIds,
     );
   }
+
+  syncCodelistValues(migrate: boolean) {
+    return this.http.post<void>(
+      this.configuration.backendUrl +
+        `jobs/codelist-sync?command=start&migrate=${migrate}`,
+      {},
+    );
+  }
 }

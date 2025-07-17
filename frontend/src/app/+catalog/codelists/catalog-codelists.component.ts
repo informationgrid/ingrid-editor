@@ -21,6 +21,7 @@ import {
   Component,
   computed,
   effect,
+  HostListener,
   inject,
   OnInit,
   signal,
@@ -111,6 +112,8 @@ export class CatalogCodelistsComponent implements OnInit {
 
   private codelistsValue: Codelist[];
   showAllCodelists = signal<boolean>(true);
+  showSyncButton = signal<boolean>(false);
+  private ctrlKeyPressCount = 0;
 
   constructor(
     private codelistService: CodelistService,
@@ -139,6 +142,17 @@ export class CatalogCodelistsComponent implements OnInit {
     this.filterCtrl.valueChanges.subscribe((value) =>
       this.filterCtrlValue.set(value),
     );
+  }
+
+  @HostListener("document:keydown", ["$event"])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key === "Control") {
+      this.ctrlKeyPressCount++;
+      if (this.ctrlKeyPressCount === 5) {
+        this.showSyncButton.set(true);
+        this.ctrlKeyPressCount = 0;
+      }
+    }
   }
 
   addCodelist() {
@@ -368,5 +382,37 @@ export class CatalogCodelistsComponent implements OnInit {
   removeFavorite(item: CodelistEntry) {
     this.favorites = this.favorites.filter((f) => f !== item);
     this.updateFavorites();
+  }
+
+  syncCodelistValues($event: MouseEvent) {
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        data: <ConfirmDialogData>{
+          message: `Möchten Sie die Codelistenwerte wirklich synchronisieren?`,
+          title: "Synchronisieren",
+          buttons: [
+            { text: "Abbrechen" },
+            {
+              text: "Synchronisieren",
+              alignRight: true,
+              id: "confirm",
+              emphasize: true,
+            },
+          ],
+        },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          // hidden option to migrate before synchronisation
+          this.codelistService
+            .syncCodelistValues($event.ctrlKey || $event.altKey)
+            .subscribe(() => {
+              this._snackBar.open("Codelistenwerte werden synchronisiert", "", {
+                duration: 3000,
+              });
+            });
+        }
+      });
   }
 }

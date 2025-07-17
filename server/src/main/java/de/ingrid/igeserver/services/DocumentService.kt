@@ -667,10 +667,10 @@ class DocumentService(
 
             // set name of user who modifies document
             modifiedby = authUtils.getFullNameFromPrincipal(principal)
-            contentModifiedByUser = actualUser ?: contentModifiedByUser
+            contentModifiedByUser = actualUser ?: newDocument.contentModifiedByUser ?: contentModifiedByUser
             contentmodifiedby =
-                if (actualUser != null) authUtils.getFullNameFromPrincipal(principal) else contentmodifiedby
-            contentmodified = if (actualUser != null) dateService.now() else contentmodified
+                if (actualUser != null) authUtils.getFullNameFromPrincipal(principal) else (newDocument.contentmodifiedby ?: contentmodifiedby)
+            contentmodified = if (actualUser != null) dateService.now() else (newDocument.contentmodified ?: contentmodified)
         }
         return dbDocument
     }

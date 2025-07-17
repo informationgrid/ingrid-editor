@@ -51,10 +51,7 @@
                 <div>In Bearbeitung</div>
                 @if (showPercentages && total > 0) {
                     <div class="count">
-                        {{
-                            (dataMap.first / total) * 100 ?? 0
-                                | number: "1.0-0"
-                        }}%
+                        {{ (dataMap.first / total) * 100 | number: "1.0-0" }}%
                     </div>
                 }
             </div>
@@ -65,10 +62,7 @@
                 <div>Veröffentlicht</div>
                 @if (showPercentages && total > 0) {
                     <div class="count">
-                        {{
-                            (dataMap.second / total) * 100 ?? 0
-                                | number: "1.0-0"
-                        }}%
+                        {{ (dataMap.second / total) * 100 | number: "1.0-0" }}%
                     </div>
                 }
             </div>

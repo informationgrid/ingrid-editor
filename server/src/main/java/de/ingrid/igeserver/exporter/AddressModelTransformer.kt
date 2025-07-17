@@ -150,10 +150,14 @@ open class AddressModelTransformer(
 
     private fun valOrNull(value: String?) = value?.takeIf { it.isNotEmpty() }
 
-    val telephone = contactType("1")
-    val fax = contactType("2")
-    val email = contactType("3")
-    val homepage = contactType("4")
+    val telephones = contactType("1")
+    val faxes = contactType("2")
+    val emails = contactType("3")
+
+    // ISO only allows one homepage, so we take the first one
+    val homepage = contactType("4").firstOrNull()
+
+    fun hasPhoneData() = telephones.isNotEmpty() || faxes.isNotEmpty()
 
     val firstName = displayAddress.data.getString("firstName")
     val lastName = displayAddress.data.getString("lastName")
@@ -258,9 +262,10 @@ open class AddressModelTransformer(
         }
     }
 
-    private fun contactType(type: String): String? = displayAddress.data.get("contact")
-        ?.firstOrNull { it.get("type")?.getString("key") == type }
-        ?.getString("connection")
+    private fun contactType(type: String): List<String> = displayAddress.data.get("contact")
+        ?.filter { it.get("type")?.getString("key") == type }
+        ?.mapNotNull { it.getString("connection") }
+        ?: emptyList()
 
     fun getSortHash(): String = DigestUtils.sha1Hex(title)
 }

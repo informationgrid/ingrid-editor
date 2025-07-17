@@ -696,6 +696,10 @@ ige-one-column-wrapper formly-group {
 
 formly-field {
   min-width: 130px;
+
+  &.two-sub-fields {
+    min-width: 270px;
+  }
 }
 
 formly-field:empty {

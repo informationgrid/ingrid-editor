@@ -19,16 +19,11 @@
  */
 package de.ingrid.igeserver.persistence.model.document.impl
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.ingrid.codelists.model.CodeListEntry
 import de.ingrid.igeserver.exceptions.IsReferencedException
 import de.ingrid.igeserver.persistence.model.EntityType
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
-import de.ingrid.igeserver.services.InitiatorAction
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
@@ -46,38 +41,6 @@ class AddressType(val jdbcTemplate: JdbcTemplate) : EntityType() {
     override val className = "AddressDoc"
 
     val referenceFieldsInDocuments = listOf("addresses")
-
-    override fun onCreate(doc: Document, initiator: InitiatorAction) {
-        super.onCreate(doc, initiator)
-
-        var address = doc.data.get("address") as ObjectNode?
-        if (address == null) {
-            address = jacksonObjectMapper().createObjectNode()
-            doc.data.set<JsonNode>("address", address)
-        }
-        if (address!!.get("administrativeArea") == null) {
-            val codelistEntry = codelistHandler.getDefaultCatalogCodelistEntry(doc.catalog?.identifier!!, "6250")
-            val value =
-                convertIdToKeyValue(codelistEntry, "6250")
-            if (value != null) address.set<JsonNode>("administrativeArea", value)
-        }
-        if (address.get("country") == null) {
-            val codelistEntry = codelistHandler.getDefaultCatalogCodelistEntry(doc.catalog?.identifier!!, "6200")
-            val value = convertIdToKeyValue(codelistEntry, "6200")
-            if (value != null) address.set<JsonNode>("country", value)
-        }
-    }
-
-    private fun convertIdToKeyValue(codelistEntry: CodeListEntry?, codelistId: String): JsonNode? {
-        if (codelistEntry == null) return null
-
-        return jacksonObjectMapper().createObjectNode().apply {
-            put("key", codelistEntry.id)
-            // TODO: use catalog language
-            put("value", codelistEntry.fields["de"])
-            put("_codelistId", codelistId)
-        }
-    }
 
     override fun onDelete(doc: Document) {
         super.onDelete(doc)

@@ -227,7 +227,11 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     return [
       doc._uuid,
       this.translocoService.translate(`docState.${doc._state}`),
-      doc._tags ? this.translocoService.translate(`tags.${doc._tags}`) : "",
+      doc._tags?.length
+        ? doc._tags
+            .map((tag) => this.translocoService.translate(`tags.${tag}`))
+            .join(",")
+        : "",
       this.translocoService.translate(`docType.${doc._type}`),
       doc.title,
       doc._contentModified,

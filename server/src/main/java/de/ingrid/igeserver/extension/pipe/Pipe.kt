@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Value
  * NOTE Filters are injected using the @Autowired annotation. This means that
  * two Pipe instances with the same Payload type will receive the same filter set.
  */
-open class Pipe<T : Payload>(@Value("AnonymousPipe") override val id: String) : ExtensionPoint<Filter<T>> {
+open class Pipe<T : Payload>(@param:Value("AnonymousPipe") override val id: String) : ExtensionPoint<Filter<T>> {
 
     private val log = logger()
 

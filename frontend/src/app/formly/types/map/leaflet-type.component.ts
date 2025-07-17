@@ -219,6 +219,7 @@ export class LeafletTypeComponent
 
           this.formControl.setValue([...locations]);
           this.formControl.markAsDirty();
+          this.updateBoundingBoxCatchingErrors();
         }
       });
   }
@@ -227,6 +228,8 @@ export class LeafletTypeComponent
     this.formControl.value.splice(index, 1);
     this.formControl.setValue([...this.formControl.value]);
     this.formControl.markAsDirty();
+
+    this.updateBoundingBoxCatchingErrors();
   }
 
   highlightLocation(index: number) {
@@ -239,7 +242,7 @@ export class LeafletTypeComponent
       ]);
       if (bounds) this.leafletReference.fitBounds(bounds);
     } else {
-      this.updateBoundingBox(locations);
+      this.updateBoundingBoxCatchingErrors();
     }
 
     this.mapHasMoved.set(locations.length === 1 ? false : index != null);

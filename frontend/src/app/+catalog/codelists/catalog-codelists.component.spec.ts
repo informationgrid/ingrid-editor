@@ -41,6 +41,8 @@ import {
 import { MatIconTestingModule } from "@angular/material/icon/testing";
 import { Observable, of } from "rxjs";
 import { getTranslocoModule } from "../../transloco-testing.module";
+import "zone.js";
+import "zone.js/testing";
 
 describe("CatalogCodelistsComponent", () => {
   let spectator: Spectator<CatalogCodelistsComponent>;
