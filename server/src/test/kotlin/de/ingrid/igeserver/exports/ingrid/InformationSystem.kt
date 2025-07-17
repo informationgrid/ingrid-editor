@@ -136,7 +136,8 @@ class InformationSystem : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/information-system.maximal.expected.idf.xml")
+            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/information-system.maximal.expected.idf.xml"))
+            result shouldBe expectedXml
         }
     }
 }
