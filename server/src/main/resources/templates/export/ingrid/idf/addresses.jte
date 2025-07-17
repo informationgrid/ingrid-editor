@@ -85,15 +85,15 @@
                     @endfor
                 </gmd:CI_Address>
             </gmd:address>
-            @for( String homepage : address.getHomepages())
+            @if( TransformationTools.hasValue(address.getHomepage()) )
                 <gmd:onlineResource>
                     <gmd:CI_OnlineResource>
                         <gmd:linkage>
-                            <gmd:URL>${homepage}</gmd:URL>
+                            <gmd:URL>${address.getHomepage()}</gmd:URL>
                         </gmd:linkage>
                     </gmd:CI_OnlineResource>
                 </gmd:onlineResource>
-            @endfor
+            @endif
             @if(TransformationTools.hasValue(address.getHoursOfService()))
                 <gmd:hoursOfService>
                     <gco:CharacterString>${address.getHoursOfService()}</gco:CharacterString>

@@ -153,7 +153,9 @@ open class AddressModelTransformer(
     val telephones = contactType("1")
     val faxes = contactType("2")
     val emails = contactType("3")
-    val homepages = contactType("4")
+
+    // ISO only allows one homepage, so we take the first one
+    val homepage = contactType("4").firstOrNull()
 
     fun hasPhoneData() = telephones.isNotEmpty() || faxes.isNotEmpty()
 

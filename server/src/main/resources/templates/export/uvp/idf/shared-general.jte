@@ -26,7 +26,7 @@
             @endif
             <country>${page.getCodelistValue("6200", address.getCountry())}</country>
             <mail>${address.getEmails().isEmpty() ? null : address.getEmails().getFirst()}</mail>
-            <url>${address.getHomepages().isEmpty() ? null : address.getHomepages().getFirst()}</url>
+            <url>${address.getHomepage()}</url>
             @for(var parent : page.getUvpAddressParents())
                 <parent id="${page.getAddressShort(parent.getDocument()).getUuid()}">
                     <name>${page.getAddressShort(parent.getDocument()).getTitle()}</name>
