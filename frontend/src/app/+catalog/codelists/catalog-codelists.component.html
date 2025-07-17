@@ -21,10 +21,19 @@
             verwendet, mit dem eingestellten Defaultwert vorausgefüllt.
         </p>
 
-        <div>
+        <div class="flex-col gap-12">
             <button mat-button color="primary" (click)="resetAllCodelists()">
                 Alle Codelisten zurücksetzen
             </button>
+            @if (showSyncButton()) {
+                <button
+                    mat-button
+                    color="primary"
+                    (click)="syncCodelistValues($event)"
+                >
+                    Codelistenwerte synchronisieren
+                </button>
+            }
         </div>
     </ng-container>
 

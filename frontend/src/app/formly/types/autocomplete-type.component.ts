@@ -99,7 +99,8 @@ export class AutocompleteTypeComponent
   constructor() {
     super();
     effect(() => {
-      if (this.props.dynamicCodelistId) {
+      // ensure it only runs when parameterOptions are set
+      if (this.props.dynamicCodelistId && this.parameterOptions().length > 0) {
         this.currentCodelistId = this.props.dynamicCodelistId();
         this.formControl.setValue(
           this.formControl.value?.value ?? this.formControl.value,

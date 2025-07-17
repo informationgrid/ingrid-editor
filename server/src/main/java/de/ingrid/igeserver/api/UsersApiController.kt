@@ -47,6 +47,7 @@ import org.springframework.core.env.Environment
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
@@ -97,6 +98,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     @Autowired
     lateinit var generalProperties: GeneralProperties
 
+    @PreAuthorize("hasPermission(#user,'manage_users')")
     override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<User> {
         // user login must be lowercase
         validateLoginName(user)
@@ -129,9 +131,8 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
             }
             createdUser
         } else {
-            // order important here, first create user in catalog, then in keycloak
-            val createdUser = catalogService.createUser(catalogId, user)
             val password = keycloakService.createUser(user)
+            val createdUser = catalogService.createUser(catalogId, user)
             if (!developmentMode) {
                 logger.info("Send welcome email to '${user.login}' (${user.email})")
                 email.sendWelcomeEmailWithPassword(
@@ -168,6 +169,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         }
     }
 
+    @PreAuthorize("hasPermission(#userId,'manage_users')")
     @Transactional(noRollbackFor = [MailException::class])
     override fun deleteUser(principal: Principal, userId: Int): ResponseEntity<Void> {
         val frontendUser =
@@ -301,6 +303,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok(filteredUsers)
     }
 
+    @PreAuthorize("hasPermission(#user,'manage_users')")
     override fun updateUser(principal: Principal, user: User): ResponseEntity<User> {
         if (!catalogService.canEditUser(principal, user.login)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
@@ -430,6 +433,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok(null)
     }
 
+    @PreAuthorize("hasPermission(#userId,'manage_all_catalogs')")
     override fun assignUserToCatalog(
         principal: Principal,
         userId: String,

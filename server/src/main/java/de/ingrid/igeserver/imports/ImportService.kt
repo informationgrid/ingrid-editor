@@ -33,6 +33,7 @@ import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.services.CatalogProfile
 import de.ingrid.igeserver.services.DeleteOptions
+import de.ingrid.igeserver.services.DocumentData
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.DocumentState
 import de.ingrid.igeserver.services.FIELD_CREATED
@@ -43,13 +44,21 @@ import de.ingrid.igeserver.services.FIELD_MODIFIED_BY
 import de.ingrid.igeserver.services.FIELD_PARENT
 import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.getString
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import org.apache.http.entity.ContentType
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.time.OffsetDateTime
 import java.util.function.BiConsumer
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -364,25 +373,36 @@ class ImportService(
     ): ImportCounter {
         val counter = ImportCounter()
         val notificationType = MessageTarget(NotificationType.IMPORT, catalogId)
+        val jobs = mutableListOf<Deferred<DocumentData>>()
 
         analysis.references.forEachIndexed { index, ref ->
             val progress = ((index + 1f) / analysis.references.size) * 100
             notifier.sendMessage(notificationType, message.apply { this.progress = progress.toInt() })
             handleParent(ref, options, catalogId)
-            importReference(principal, catalogId, ref, options, counter)
+            importReference(principal, catalogId, ref, options, counter)?.let { job -> jobs.add(job) }
+        }
+
+        runBlocking {
+            try {
+                jobs.awaitAll()
+            } catch (ex: Exception) {
+                log.error("Error during import", ex)
+                message.errors.add(ex.message ?: "Unknown error")
+            }
         }
 
         log.info("Import result: $counter")
         return counter
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun importReference(
         principal: Authentication,
         catalogId: String,
         ref: DocumentAnalysis,
         options: ImportOptions,
         counter: ImportCounter,
-    ) {
+    ): Deferred<DocumentData>? {
         handleAddressTitle(ref)
         val exists = try {
             documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid)
@@ -400,6 +420,12 @@ class ImportService(
             remove(FIELD_PARENT)
             remove(FIELD_ID)
         }
+        // add contentModified information
+        ref.document.apply {
+            contentModifiedByUser = null
+            contentmodifiedby = principal.name // for now always "Import"
+            contentmodified = OffsetDateTime.now()
+        }
 
         val publish = options.publish || ref.forcePublish
         if (!exists && !ref.deleted) {
@@ -416,17 +442,24 @@ class ImportService(
             val wrapperId =
                 ref.wrapperId ?: documentService.getWrapperByCatalogAndDocumentUuid(catalogId, ref.document.uuid).id!!
             setVersionInfo(catalogId, wrapperId, ref.document)
-            if (publish) {
-                documentService.publishDocument(principal, catalogId, wrapperId, ref.document)
-            } else {
-                documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
+
+            // run in parallel to greatly improve speed
+            val job = GlobalScope.async {
+                // set same principal in new context
+                SecurityContextHolder.getContext().authentication = principal
+                if (publish) {
+                    documentService.publishDocument(principal, catalogId, wrapperId, ref.document)
+                } else {
+                    documentService.updateDocument(principal, catalogId, wrapperId, ref.document)
+                }
             }
-//            documentService.updateParent(catalogId, wrapperId, ref.parent)
 
             counter.overwritten++
+            return job
         } else {
             counter.skipped++
         }
+        return null
     }
 
     private fun handleAddressTitle(ref: DocumentAnalysis) {

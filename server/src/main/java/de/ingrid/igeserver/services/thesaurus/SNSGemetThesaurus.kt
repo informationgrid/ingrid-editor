@@ -25,15 +25,22 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.getStringOrEmpty
+import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 import java.net.URLEncoder
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executors
 
 @Service
 class SNSGemetThesaurus : ThesaurusService() {
 
+    private val log = logger()
     override val id = "gemet"
 
     private val searchUrlTemplate = "https://www.eionet.europa.eu/gemet"
+
+    // Thread pool for parallel execution of HTTP requests, lazy initialized
+    private val executor by lazy { Executors.newFixedThreadPool(10) }
 
     override fun search(term: String, options: ThesaurusSearchOptions): List<Keyword> {
         if (term.isEmpty()) return emptyList()
@@ -51,18 +58,33 @@ class SNSGemetThesaurus : ThesaurusService() {
         return mapToKeywordList(json)
     }
 
-    private fun mapToKeywordList(json: ArrayNode): List<Keyword> = json.map {
-        // get alternate English name
-        val englishResponse = sendRequest(
-            "GET",
-            "$searchUrlTemplate/getConcept?concept_uri=${it.getStringOrEmpty("uri")}&language=en",
-        )
-        val englishNode = jacksonObjectMapper().readValue<ObjectNode>(englishResponse)
-        Keyword(
-            it.getStringOrEmpty("uri"),
-            it.getStringOrEmpty("preferredLabel.string"),
-            englishNode.getString("preferredLabel.string"),
-        )
+    private fun mapToKeywordList(json: ArrayNode): List<Keyword> {
+        log.debug("Processing ${json.size()} keywords in parallel")
+
+        // Create a list of CompletableFuture for each request using our thread pool
+        val futures = json.map { item ->
+            CompletableFuture.supplyAsync({
+                val uri = item.getStringOrEmpty("uri")
+                log.debug("Fetching English label for concept: $uri")
+
+                // get alternate English name
+                val englishResponse = sendRequest(
+                    "GET",
+                    "$searchUrlTemplate/getConcept?concept_uri=$uri&language=en",
+                )
+                val englishNode = jacksonObjectMapper().readValue<ObjectNode>(englishResponse)
+                Keyword(
+                    uri,
+                    item.getStringOrEmpty("preferredLabel.string"),
+                    englishNode.getString("preferredLabel.string"),
+                )
+            }, executor)
+        }
+
+        // Wait for all futures to complete and collect results
+        return futures
+            .map { it.join() }
+            .also { log.debug("Completed processing ${it.size} keywords") }
     }
 
     private fun convertSearchMode(searchType: ThesaurusSearchType): Int = when (searchType) {

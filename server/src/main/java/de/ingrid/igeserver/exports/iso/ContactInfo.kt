@@ -26,11 +26,24 @@ data class ContactInfo(
 )
 
 data class CIContact(
-    val phone: CharacterString?,
+    val phone: PhoneWrapper?,
     val address: AddressWrapper?,
-    val onlineResource: CharacterString?,
+    val onlineResource: OnlineResourceWrapper?,
     val hoursOfService: CharacterString?,
     val contactInstructions: CharacterString?,
+)
+
+data class OnlineResourceWrapper(
+    @JacksonXmlProperty(localName = "CI_OnlineResource") var onlineResource: CIOnlineResource? = null,
+)
+
+data class PhoneWrapper(
+    @JacksonXmlProperty(localName = "CI_Telephone") var phone: Phone? = null,
+)
+
+data class Phone(
+    var voice: List<CharacterString>? = null,
+    var facsimile: List<CharacterString>? = null,
 )
 
 data class AddressWrapper(

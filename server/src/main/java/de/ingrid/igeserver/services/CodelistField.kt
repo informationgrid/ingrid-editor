@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * Copyright (C) 2023-2025 wemove digital solutions GmbH
+ * Copyright (C) 2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -19,21 +19,15 @@
  */
 package de.ingrid.igeserver.services
 
-import org.springframework.stereotype.Component
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.time.OffsetDateTime
-import java.util.*
+sealed class CodelistField {
+    data class SingleField(
+        val field: String?,
+        val codelist: String,
+    ) : CodelistField()
 
-@Component
-class DateService {
-
-    fun now(): OffsetDateTime = OffsetDateTime.now()
-
-    fun toISO8601UTC(date: Date?): String? {
-        val tz: TimeZone = TimeZone.getTimeZone("UTC")
-        val df: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'")
-        df.timeZone = tz
-        return df.format(date)
-    }
+    data class ListField(
+        val arrayField: String? = null,
+        val subField: String?,
+        val codelist: String,
+    ) : CodelistField()
 }

@@ -22,12 +22,17 @@ package de.ingrid.igeserver.extension
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.extension.pipe.Pipe
 import de.ingrid.igeserver.extension.pipe.impl.DefaultContext
+import de.ingrid.igeserver.services.DateService
+import de.ingrid.igeserver.utils.SpringContext
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.core.test.TestCase
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldStartWith
 import io.kotest.matchers.types.beInstanceOf
+import io.mockk.every
+import io.mockk.mockkObject
 import org.apache.http.auth.BasicUserPrincipal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
@@ -59,6 +64,13 @@ class PipeTest : FunSpec() {
 
     @Autowired
     lateinit var postPublishPipe: Pipe<TestPayloadPostPublish>
+
+    override suspend fun beforeAny(testCase: TestCase) {
+        mockkObject(SpringContext.Companion)
+        every { SpringContext.getBean(DateService::class.java) } answers {
+            DateService()
+        }
+    }
 
     init {
         test("a pipe should run all contained filters") {

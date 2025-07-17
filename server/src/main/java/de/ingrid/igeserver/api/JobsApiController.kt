@@ -35,7 +35,9 @@ import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.tasks.IndexingTask
+import de.ingrid.igeserver.tasks.quartz.CodelistSyncTask
 import de.ingrid.igeserver.tasks.quartz.ImportTask
+import de.ingrid.igeserver.tasks.quartz.MigrateCodelistIdsIntoDatasets
 import de.ingrid.igeserver.tasks.quartz.URLChecker
 import de.ingrid.igeserver.tasks.quartz.UrlRequestService
 import de.ingrid.igeserver.utils.AuthUtils
@@ -263,6 +265,25 @@ class JobsApiController(
             put("catalogId", catalogId)
         }
         scheduler.handleJobWithCommand(command, IndexingTask::class.java, jobKey, jobDataMap)
+
+        return ResponseEntity.ok().build()
+    }
+
+    override fun syncCodelistValues(principal: Principal, command: JobCommand, migrate: Boolean): ResponseEntity<Unit> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+
+        val jobDataMap = JobDataMap().apply {
+            put("catalogId", catalogId)
+        }
+
+        if (migrate) {
+            val jobKey = JobKey.jobKey(MigrateCodelistIdsIntoDatasets.JOB_KEY, catalogId)
+            // this task also syncs codelists afterwards!
+            scheduler.handleJobWithCommand(command, MigrateCodelistIdsIntoDatasets::class.java, jobKey, jobDataMap)
+        } else {
+            val jobKey = JobKey.jobKey(CodelistSyncTask.JOB_KEY, catalogId)
+            scheduler.handleJobWithCommand(command, CodelistSyncTask::class.java, jobKey, jobDataMap)
+        }
 
         return ResponseEntity.ok().build()
     }

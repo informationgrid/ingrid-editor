@@ -74,10 +74,15 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
         }
 
         val objectIdentity = objectIdentityGenerator.createObjectIdentity(targetId, targetType)
-        return checkPermission(authentication, objectIdentity, permission, null)
+        return checkACLPermission(authentication, objectIdentity, permission, null)
     }
 
     override fun hasPermission(authentication: Authentication, domainObject: Any?, permission: Any): Boolean {
+        // catalog permission handling
+        if (permission is String && catalogService.getPermission(permission) != null) {
+            return catalogService.hasPermission(authentication, catalogService.getPermission(permission)!!)
+        }
+
         if (domainObject == null) {
             return false
         }
@@ -104,7 +109,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
 
 //        try {
         val objectIdentity = objectIdentityRetrievalStrategy.getObjectIdentity(finalDomainObject)
-        return checkPermission(authentication, objectIdentity, permission, finalDomainObject)
+        return checkACLPermission(authentication, objectIdentity, permission, finalDomainObject)
         /*} catch (ex: IdentityUnavailableException) {
             // in this case we probably want to create document where the DB-ID is not known yet
             // check for permission for parent
@@ -117,19 +122,15 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
         }*/
     }
 
-    private fun checkPermission(
+    private fun checkACLPermission(
         authentication: Authentication,
         oid: ObjectIdentity,
         permission: Any,
         domainObject: Any?,
-    ): Boolean = if (permission is String && catalogService.getPermission(permission) != null) {
-        // catalog permission handling
-        catalogService.hasPermission(authentication, catalogService.getPermission(permission)!!)
-    } else {
-        // keycloak permission handling
+    ): Boolean {
         // Obtain the SIDs applicable to the principal
         val sids = sidRetrievalStrategy.getSids(authentication)
-        checkPermissionForSids(sids, oid, permission, domainObject)
+        return checkPermissionForSids(sids, oid, permission, domainObject)
     }
 
     fun checkPermissionForSids(

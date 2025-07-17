@@ -223,6 +223,8 @@ describe("ConformityDialogComponent", () => {
     codelistStore.addCodelists([
       {
         id: "6005",
+        name: "",
+        default: "",
         entries: [
           {
             id: "1",
@@ -236,6 +238,8 @@ describe("ConformityDialogComponent", () => {
     codelistStore.addCodelists([
       {
         id: "6006",
+        name: "",
+        default: "",
         entries: [
           {
             id: "1",

@@ -8,7 +8,7 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "aot": true,
             "outputPath": {
@@ -75,23 +75,6 @@
             }
           },
           "configurations": {
-            "hmr": {
-              "budgets": [
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
-                }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.hmr.ts"
-                }
-              ]
-            },
-            "es5": {
-              "tsConfig": "src/tsconfig-es5.app.json"
-            },
             "production": {
               "budgets": [
                 {
@@ -118,44 +101,41 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ]
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
             }
           },
-          "defaultConfiguration": ""
+          "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "proxyConfig": "src/environments/proxy.config.json",
             "port": 4300,
             "buildTarget": "ige-ng:build"
           },
           "configurations": {
-            "hmr": {
-              "hmr": true,
-              "buildTarget": "ige-ng:build:hmr"
-            },
-            "es5": {
-              "buildTarget": "ige-ng:build:es5"
-            },
             "production": {
               "buildTarget": "ige-ng:build:production"
+            },
+            "development": {
+              "buildTarget": "ige-ng:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "buildTarget": "ige-ng:build"
-          }
+          "builder": "@angular/build:extract-i18n"
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
-            "main": "src/test.ts",
-            "karmaConfig": "./karma.conf.js",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": ["src/polyfills.ts"],
             "tsConfig": "src/tsconfig.spec.json",
-            "scripts": [],
+
             "stylePreprocessorOptions": {
               "includePaths": ["."]
             },
@@ -171,22 +151,8 @@
                 "input": "src",
                 "output": "/"
               }
-            ]
-          }
-        }
-      }
-    },
-    "ige-ng-e2e": {
-      "root": "e2e",
-      "projectType": "application",
-      "cli": {},
-      "schematics": {},
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "ige-ng:serve"
+            ],
+            "karmaConfig": "karma.conf.js"
           }
         }
       }
