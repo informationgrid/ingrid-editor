@@ -30,19 +30,19 @@
     @endif
     <gmd:contactInfo>
         <gmd:CI_Contact>
-            @if( address.getTelephone() != null || address.getFax() != null )
+            @if( address.hasPhoneData() )
                 <gmd:phone>
                     <gmd:CI_Telephone>
-                        @if(address.getTelephone() != null)
+                        @for( String phone : address.getTelephones())
                             <gmd:voice>
-                                <gco:CharacterString>${address.getTelephone()}</gco:CharacterString>
+                                <gco:CharacterString>${phone}</gco:CharacterString>
                             </gmd:voice>
-                        @endif
-                        @if(address.getFax() != null)
+                        @endfor
+                        @for (String fax: address.getFaxes())
                             <gmd:facsimile>
-                                <gco:CharacterString>${address.getFax()}</gco:CharacterString>
+                                <gco:CharacterString>${fax}</gco:CharacterString>
                             </gmd:facsimile>
-                        @endif
+                        @endfor
                     </gmd:CI_Telephone>
                 </gmd:phone>
             @endif
@@ -78,22 +78,22 @@
                             <gco:CharacterString>${address.getCountryIso3166()}</gco:CharacterString>
                         </gmd:country>
                     @endif
-                    @if(TransformationTools.hasValue(address.getEmail()))
+                    @for( String email : address.getEmails())
                         <gmd:electronicMailAddress>
-                            <gco:CharacterString>${address.getEmail()}</gco:CharacterString>
+                            <gco:CharacterString>${email}</gco:CharacterString>
                         </gmd:electronicMailAddress>
-                    @endif
+                    @endfor
                 </gmd:CI_Address>
             </gmd:address>
-            @if(TransformationTools.hasValue(address.getHomepage()))
+            @for( String homepage : address.getHomepages())
                 <gmd:onlineResource>
                     <gmd:CI_OnlineResource>
                         <gmd:linkage>
-                            <gmd:URL>${address.getHomepage()}</gmd:URL>
+                            <gmd:URL>${homepage}</gmd:URL>
                         </gmd:linkage>
                     </gmd:CI_OnlineResource>
                 </gmd:onlineResource>
-            @endif
+            @endfor
             @if(TransformationTools.hasValue(address.getHoursOfService()))
                 <gmd:hoursOfService>
                     <gco:CharacterString>${address.getHoursOfService()}</gco:CharacterString>

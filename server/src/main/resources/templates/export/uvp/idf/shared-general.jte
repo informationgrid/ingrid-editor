@@ -16,8 +16,8 @@
     @if(address != null)
         <address id="${address.getUuid()}" type="7">
             <name>${address.getOrganization() != null ? address.getOrganization(): address.getIndividualName()}</name>
-            <phone>${address.getTelephone()}</phone>
-            <fax>${address.getFax()}</fax>
+            <phone>${address.getTelephones().isEmpty() ? null : address.getTelephones().getFirst()}</phone>
+            <fax>${address.getFaxes().isEmpty() ? null : address.getFaxes().getFirst()}</fax>
             <street>${address.getStreet()}</street>
             <city>${address.getCity()}</city>
             <postalcode>${address.getZipCode()}</postalcode>
@@ -25,8 +25,8 @@
             <postbox>${page.getPostBoxString()}</postbox>
             @endif
             <country>${page.getCodelistValue("6200", address.getCountry())}</country>
-            <mail>${address.getEmail()}</mail>
-            <url>${address.getHomepage()}</url>
+            <mail>${address.getEmails().isEmpty() ? null : address.getEmails().getFirst()}</mail>
+            <url>${address.getHomepages().isEmpty() ? null : address.getHomepages().getFirst()}</url>
             @for(var parent : page.getUvpAddressParents())
                 <parent id="${page.getAddressShort(parent.getDocument()).getUuid()}">
                     <name>${page.getAddressShort(parent.getDocument()).getTitle()}</name>
