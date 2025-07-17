@@ -27,7 +27,7 @@ class InternalImportMigrations : AnnotationSpec() {
     @Test
     fun migrateGeodatasetFrom110ToCurrent() {
         val importer = InternalImporter()
-        val result = importer.run("test", getFile("ingrid/import/internal_ingrid_110.json"), mutableMapOf())
+        val result = importer.run("test", null, getFile("ingrid/import/internal_ingrid_110.json"), mutableMapOf())
         println(result.toString())
 
         result.toPrettyString().shouldEqualJson(

@@ -55,7 +55,7 @@ class JsonMergePatchImporterTest : AnnotationSpec() {
         val patchJson = """{"uuid": "1", "type": "SomeDocType", "jsonPatch": [{"op": "replace", "path": "/test", "value": "xyz"}]}"""
 
         // Just verify that the method doesn't throw an exception
-        val result = importer.run(catalogId, patchJson, mutableMapOf())
+        val result = importer.run(catalogId, null, patchJson, mutableMapOf())
 
         // Verify that the result is a JsonNode
         result.shouldBeInstanceOf<JsonNode>()
@@ -68,7 +68,7 @@ class JsonMergePatchImporterTest : AnnotationSpec() {
         val patchJson = """{"uuid": "1", "type": "SomeDocType", "jsonMerge": {"test": "xyz"}}"""
 
         // Just verify that the method doesn't throw an exception
-        val result = importer.run(catalogId, patchJson, mutableMapOf())
+        val result = importer.run(catalogId, null, patchJson, mutableMapOf())
 
         // Verify that the result is a JsonNode
         result.shouldBeInstanceOf<JsonNode>()
@@ -81,7 +81,7 @@ class JsonMergePatchImporterTest : AnnotationSpec() {
         val patchJson = """{"uuid": "1", "type": "SomeDocType", "jsonMerge": {"test": "xyz"}, "jsonPatch": [{"op": "replace", "path": "/test", "value": "abc"}]}"""
 
         shouldThrow<ServerException> {
-            importer.run(catalogId, patchJson, mutableMapOf())
+            importer.run(catalogId, null, patchJson, mutableMapOf())
         }
     }
 }
