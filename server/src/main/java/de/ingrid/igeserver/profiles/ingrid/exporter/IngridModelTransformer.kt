@@ -1109,7 +1109,7 @@ open class IngridModelTransformer(
     }
 
     private fun addressIsPointContactMD(it: AddressRefModel) = codelists.getValue("505", it.type, "iso").equals("pointOfContactMd")
-    private fun addressHasEmail(it: AddressModelTransformer) = it.email?.isNotEmpty() ?: false
+    private fun addressHasEmail(it: AddressModelTransformer) = it.emails.isNotEmpty()
 
     private fun addressIsDistributor(it: AddressRefModel) = codelists.getValue("505", it.type, "iso").equals("distributor")
 
