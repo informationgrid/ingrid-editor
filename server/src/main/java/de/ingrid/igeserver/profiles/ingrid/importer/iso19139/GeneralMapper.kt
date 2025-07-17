@@ -439,14 +439,14 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     fun getSpatialSystems(): List<KeyValue> = metadata.referenceSystemInfo
         ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
-        // remove all spatial systems that are vertical
-        ?.filter { codeListService.getCodeListEntryId("verticalSpatialSystems", it, "de") == null || splitSpatialSystems }
+        // if splitSpatialSystems is true, we filter out vertical spatial systems
+        ?.filter { splitSpatialSystems && codeListService.getCatalogCodelistKey(catalogId, "verticalSpatialSystems", it, "de") == null }
         ?.map { codeListService.getCodeListEntryId("100", it, "de")?.let { KeyValue(it) } ?: KeyValue(null, it) }
         ?: emptyList()
 
     fun getVerticalSpatialSystems(): List<KeyValue> = metadata.referenceSystemInfo
         ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
-        ?.mapNotNull { value -> codeListService.getCodeListEntryId("verticalSpatialSystems", value, "de")?.let { KeyValue(it) } }
+        ?.mapNotNull { value -> codeListService.getCatalogCodelistKey(catalogId, "verticalSpatialSystems", value, "de")?.let { KeyValue(it) } }
         ?: emptyList()
 
     fun getSpatialReferences(): List<SpatialReference> {

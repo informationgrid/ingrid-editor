@@ -119,10 +119,10 @@ class CodelistHandler(
         ?.find { it.id == key }
         ?.fields?.get(language)
 
-    fun getCatalogCodelistKey(catalogId: String, codelistId: String, value: String, language: String = "de"): String? = getCatalogCodelists(catalogId)
+    fun getCatalogCodelistKey(catalogId: String, codelistId: String, value: String?, language: String = "de"): String? = getCatalogCodelists(catalogId)
         .find { it.id == codelistId }
         ?.entries
-        ?.find { it.getField(language) == value }
+        ?.find { value != null && it.getField(language) == value }
         ?.id
 
     fun getCodelistEntry(codelistId: String, key: String): CodeListEntry? = getCodelists(listOf(codelistId))
