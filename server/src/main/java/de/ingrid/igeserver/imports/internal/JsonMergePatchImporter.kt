@@ -52,7 +52,7 @@ class JsonMergePatchImporter(val documentService: DocumentService) : IgeImporter
             emptyList(),
         )
 
-    override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
+    override fun run(catalogId: String, docUuid: String?, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
         val input: IgeJsonPatch = jacksonObjectMapper().readValue(data as String, IgeJsonPatch::class.java)
         val doc = try {
             val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogId, input.uuid)

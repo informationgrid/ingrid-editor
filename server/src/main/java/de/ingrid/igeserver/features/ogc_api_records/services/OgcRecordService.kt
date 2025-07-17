@@ -132,21 +132,21 @@ class OgcRecordService(
 
     @Transactional
     fun transactionalImportDocument(
-        options: ImportOptions,
         collectionId: String,
+        recordId: String?,
+        options: ImportOptions,
         contentType: String,
         data: String,
         principal: Authentication,
         recordMustExist: Boolean,
-        recordId: String?,
         profile: CatalogProfile,
-    ): URI = importDocument(options, collectionId, contentType, data, principal, recordMustExist, recordId, profile)
+    ): URI = importDocument(collectionId, recordId, options, contentType, data, principal, recordMustExist, profile)
 
-    fun importDocument(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?, profile: CatalogProfile): URI {
+    fun importDocument(collectionId: String, recordId: String?, options: ImportOptions, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, profile: CatalogProfile): URI {
         val bodyFormater = formatFactory.getFormater(contentType)
         val docArray = bodyFormater.formatBeforeImport(collectionId, data, options.publish)
 
-        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, docArray)
+        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, recordId, contentType, docArray)
         if (optimizedImportAnalysis.existingDatasets.isNotEmpty()) {
             val id = optimizedImportAnalysis.existingDatasets[0].uuid
             if (!recordMustExist) {
@@ -155,10 +155,7 @@ class OgcRecordService(
                 if (recordId != id) throw ClientException.withReason("Update Failed: Target ID '$recordId' does not match dataset ID '$id'.")
             }
         } else {
-            if (recordMustExist) {
-//                    val id = documentService.getWrapperByCatalogAndDocumentUuid(collectionId, recordId!!).id
-                throw NotFoundException.withMissingResource(recordId!!, "Record")
-            }
+            if (recordMustExist) throw NotFoundException.withMissingResource(recordId!!, "Record")
         }
         importService.importAnalyzedDatasets(
             principal = principal,

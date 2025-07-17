@@ -268,11 +268,11 @@ class OgcApiRecordsController(
                 null
             },
         )
-        val location = ogcRecordService.transactionalImportDocument(options, collectionId, contentType, data, principal, recordMustExist = false, null, profile)
+        val location = ogcRecordService.transactionalImportDocument(collectionId, null, options, contentType, data, principal, recordMustExist = false, profile)
         return ResponseEntity.created(location).build()
     }
 
-    @PutMapping(value = ["/collections/{collectionId}/items/{recordId}"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
+    @PutMapping(value = ["/collections/{collectionId}/items/{recordId}"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, "application/rdf+xml"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
     @Operation(tags = ["OGC/Records"], summary = "Replace/update an existing record in a collection with a replacement resource with the same resource identifier.", hidden = false)
     @ApiResponses(
         value = [
@@ -299,13 +299,13 @@ class OgcApiRecordsController(
         val isDraft = state?.isDraft ?: false
         val options = ImportOptions(publish = !isDraft, overwriteAddresses = true, overwriteDatasets = true)
         ogcRecordService.transactionalImportDocument(
-            options,
             collectionId,
+            recordId,
+            options,
             contentType,
             data,
             principal,
             recordMustExist = true,
-            recordId,
             profile,
         )
         return ResponseEntity.noContent().build()

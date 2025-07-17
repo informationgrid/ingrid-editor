@@ -69,7 +69,7 @@ class ISOImport(val codelistService: CodelistHandler, @Lazy val catalogService: 
 
     var profileMapper: MutableMap<String, ISOImportProfile> = mutableMapOf()
 
-    override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
+    override fun run(catalogId: String, docUuid: String?, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
         val xmlDeserializer = XmlMapper(
             JacksonXmlModule().apply {
                 setDefaultUseWrapper(false)

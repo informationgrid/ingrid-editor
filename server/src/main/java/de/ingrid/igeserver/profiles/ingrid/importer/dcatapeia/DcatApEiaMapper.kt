@@ -23,9 +23,14 @@ import com.wemove.dcatparser.dcatapde.model.dcat.Dataset
 
 class DcatApEiaMapper(
     var model: Dataset,
+    var docUuid: String?,
 ) {
     @Suppress("PropertyName")
     val _type: String = "UvpApprovalProcedureDoc"
+
+    @Suppress("PropertyName")
+    val _uuid: String? = docUuid
+
     val title = model.title.firstOrNull()
     val description = model.description.firstOrNull()
 }

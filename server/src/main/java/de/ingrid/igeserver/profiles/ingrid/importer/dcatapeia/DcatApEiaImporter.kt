@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service
 class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig) : IgeImporter {
     private val log = logger()
 
-    override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
+    override fun run(catalogId: String, docUuid: String?, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
         val deserializer = DcatApEiaDeserializer(null)
         val catalog: Catalog? = deserializer.deserialize(data as String).firstOrNull()
             ?: throw ServerException.withReason("DCAT-AP.EIA record could not be deserialized")
@@ -51,7 +51,7 @@ class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val docu
 
         if (dataset == null) throw ServerException.withReason("DCAT-AP.EIA catalog does not contain any dataset")
 
-        val parsedDoc = DcatApEiaMapper(dataset)
+        val parsedDoc = DcatApEiaMapper(dataset, docUuid)
 
         val mapper = jacksonObjectMapper()
             .registerModule(JavaTimeModule())
@@ -63,10 +63,11 @@ class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val docu
         )
 
         if (json is ObjectNode) {
-            json.remove("model") // Remove a model field (contains content of DCAT-AP.eia document)
+            json.remove("model")
+            json.remove("docUuid")
         }
 
-        log.debug("Created JSON from imported file: $json")
+        log.debug("Created JSON from imported DCAT-AP.eia file: $json")
         return json
     }
 

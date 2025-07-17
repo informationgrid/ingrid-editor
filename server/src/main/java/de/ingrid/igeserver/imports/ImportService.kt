@@ -151,19 +151,20 @@ class ImportService(
         }
 
         val fileContent = file.readText(Charsets.UTF_8)
-        return prepareImportAnalysis(profile, catalogId, type, fileContent)
+        return prepareImportAnalysis(profile, catalogId, null, type, fileContent)
     }
 
     fun prepareImportAnalysis(
         profile: CatalogProfile,
         catalogId: String,
+        docUuid: String?,
         type: String,
         fileContent: String,
     ): OptimizedImportAnalysis {
         val importer = factory.getImporter(profile, type, fileContent)
 
         val addressMap = mutableMapOf<String, String>()
-        val result = importer[0].run(catalogId, fileContent, addressMap)
+        val result = importer[0].run(catalogId, docUuid, fileContent, addressMap)
         return if (result is ArrayNode) {
             val analyzedDocs = analyzeMultipleDocuments(result, catalogId)
             prepareForImport(importer.map { it.typeInfo.id }, analyzedDocs)
@@ -289,7 +290,7 @@ class ImportService(
                     else -> null
                 }
                 val importer = factory.getImporter(profile, type.toString(), os.toString())
-                val result = importer[0].run(catalogId, os.toString(), addressMap)
+                val result = importer[0].run(catalogId, null, os.toString(), addressMap)
                 docs.add(result)
                 importers.addAll(importer.map { it.typeInfo.id })
             }

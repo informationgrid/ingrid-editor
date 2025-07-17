@@ -144,7 +144,7 @@ class CswtService(
     }
 
     private fun importDocuments(options: ImportOptions, collectionId: String, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, recordId: String?, profile: CatalogProfile) {
-        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, data)
+        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, null, contentType, data)
         if (optimizedImportAnalysis.existingDatasets.isNotEmpty()) {
             val id = optimizedImportAnalysis.existingDatasets[0].uuid
             if (!recordMustExist) {
