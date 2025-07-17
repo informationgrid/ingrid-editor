@@ -54,7 +54,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedFields(this, fieldConfig, {
-      verticalCoordinateReferenceSystem: true,
+      verticalSpatialSystems: true,
       verticalExtent: true,
     });
 

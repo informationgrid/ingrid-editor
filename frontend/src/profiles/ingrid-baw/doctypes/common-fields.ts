@@ -73,39 +73,27 @@ export class CommonFieldsBaw extends FormFieldHelper {
     });
   }
 
-  getVerticalCoordinateReferenceSystemFieldConfig(
-    doc: IngridShared,
-  ): FormlyFieldConfig {
+  getVerticalSpatialSystemsFieldConfig(doc: IngridShared): FormlyFieldConfig {
     return this.addRepeatList(
-      "verticalCoordinateReferenceSystem",
+      "verticalSpatialSystems",
       "Raumbezugssystem (Höhe)",
       {
         asSelect: false,
         showSearch: true,
-        options: doc.getCodelistForSelect(
-          "verticalCoordinateReferenceSystem",
-          "null",
-        ),
-        codelistId: "verticalCoordinateReferenceSystem",
+        options: doc.getCodelistForSelect("verticalSpatialSystems", "null"),
+        codelistId: "verticalSpatialSystems",
       },
     );
   }
 
-  getInlineVerticalCoordinateReferenceSystemFieldConfig(
+  getInlineVerticalSpatialSystemsFieldConfig(
     doc: IngridShared,
     selectOptions: SelectOptions = {},
   ): FormlyFieldConfig {
-    return this.addSelectInline(
-      "verticalCoordinateReferenceSystem",
-      "Höhenbezugssystem",
-      {
-        options: doc.getCodelistForSelect(
-          "verticalCoordinateReferenceSystem",
-          "null",
-        ),
-        ...selectOptions,
-      },
-    );
+    return this.addSelectInline("verticalSpatialSystems", "Höhenbezugssystem", {
+      options: doc.getCodelistForSelect("verticalSpatialSystems", "null"),
+      ...selectOptions,
+    });
   }
 
   getUnitOfMeasurementFieldConfig(doc: IngridShared) {
@@ -119,7 +107,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
     doc: IngridShared,
     fieldConfig: FormlyFieldConfig[],
     exclude: {
-      verticalCoordinateReferenceSystem?: boolean;
+      verticalSpatialSystems?: boolean;
       verticalExtent?: boolean;
     } = {},
   ) {
@@ -184,10 +172,10 @@ export class CommonFieldsBaw extends FormFieldHelper {
     );
 
     // Vertikale Koordinatenreferenzsysteme
-    if (!exclude.verticalCoordinateReferenceSystem) {
+    if (!exclude.verticalSpatialSystems) {
       this.addAfter(
         spatialSystemPosition,
-        this.getVerticalCoordinateReferenceSystemFieldConfig(doc),
+        this.getVerticalSpatialSystemsFieldConfig(doc),
       );
     }
 
@@ -270,10 +258,10 @@ export class CommonFieldsBaw extends FormFieldHelper {
             }),
             this.addAutoCompleteInline("Datum", "Raumbezugssystem", {
               options: doc.getCodelistForSelect(
-                "verticalCoordinateReferenceSystem",
+                "verticalSpatialSystems",
                 "null",
               ),
-              codelistId: "verticalCoordinateReferenceSystem",
+              codelistId: "verticalSpatialSystems",
               expressions: {
                 "props.required": (field: FormlyFieldConfig) =>
                   isNotEmptyObject(field.form.value),

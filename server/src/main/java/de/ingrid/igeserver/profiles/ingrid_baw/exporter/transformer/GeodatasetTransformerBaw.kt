@@ -65,9 +65,9 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
         } ?: emptyList()
 
     override val spatialSystems = super.spatialSystems + (
-        (doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }?.map {
+        (doc.data.getPath("spatial.verticalSpatialSystems"))?.mapNotNull { it.mapToKeyValue() }?.map {
             mapToCharacterStringModel(
-                "verticalCoordinateReferenceSystem",
+                "verticalSpatialSystems",
                 it,
             )
         } ?: emptyList()

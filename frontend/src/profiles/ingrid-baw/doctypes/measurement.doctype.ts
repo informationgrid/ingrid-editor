@@ -103,7 +103,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
         className: "single-field width-25 right-align",
         wrappers: ["form-field", "addons"],
       }),
-      this.common.getInlineVerticalCoordinateReferenceSystemFieldConfig(this),
+      this.common.getInlineVerticalSpatialSystemsFieldConfig(this),
     ]);
   }
 
@@ -137,10 +137,9 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
                   type: "number",
                 }),
                 this.common.getUnitOfMeasurementFieldConfig(this),
-                this.common.getInlineVerticalCoordinateReferenceSystemFieldConfig(
-                  this,
-                  { required: true },
-                ),
+                this.common.getInlineVerticalSpatialSystemsFieldConfig(this, {
+                  required: true,
+                }),
               ],
               {
                 fieldGroupClassName: "flex-row",

@@ -84,7 +84,7 @@
             "$ref": "../../../general.schema.json#/definitions/KeyValue"
           }
         },
-        "verticalCoordinateReferenceSystem": {
+        "verticalSpatialSystems": {
           "type": "array",
           "items": {
             "$ref": "../../../general.schema.json#/definitions/KeyValue"

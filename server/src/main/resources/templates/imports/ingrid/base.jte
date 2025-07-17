@@ -77,6 +77,9 @@
 @endfor
 ],
 "spatialSystems": @template.imports.ingrid.partial.key-values(list = model.getSpatialSystems()),
+@if(model.getSplitSpatialSystems())
+"verticalSpatialSystems": @template.imports.ingrid.partial.key-values(list = model.getVerticalSpatialSystems()),
+@endif
 @if(model.getVerticalExtent() != null)
     "verticalExtent": {
     "minimumValue": ${model.getVerticalExtent().getMin()},

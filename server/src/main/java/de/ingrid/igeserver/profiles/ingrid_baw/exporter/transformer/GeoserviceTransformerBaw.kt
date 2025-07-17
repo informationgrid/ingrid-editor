@@ -39,9 +39,9 @@ class GeoserviceTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBawKeywords(this)
 
     override val spatialSystems = super.spatialSystems + (
-        (doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }?.map {
+        (doc.data.getPath("spatial.verticalSpatialSystems"))?.mapNotNull { it.mapToKeyValue() }?.map {
             mapToCharacterStringModel(
-                "verticalCoordinateReferenceSystem",
+                "verticalSpatialSystems",
                 it,
             )
         } ?: emptyList()

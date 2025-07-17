@@ -22,4 +22,6 @@ package de.ingrid.igeserver.profiles.ingrid_baw.importer
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeodatasetMapper
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.IsoImportData
 
-class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData)
+class GeodatasetMapperBaw(isoData: IsoImportData) : GeodatasetMapper(isoData) {
+    override val splitSpatialSystems = true
+}

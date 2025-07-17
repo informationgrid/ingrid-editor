@@ -47,6 +47,8 @@ import java.util.*
 
 open class GeneralMapper(val isoData: IsoImportData) {
 
+    open val splitSpatialSystems = false
+
     private val log = logger()
 
     val fieldToCodelist = FieldToCodelist()
@@ -437,7 +439,14 @@ open class GeneralMapper(val isoData: IsoImportData) {
 
     fun getSpatialSystems(): List<KeyValue> = metadata.referenceSystemInfo
         ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
+        // remove all spatial systems that are vertical
+        ?.filter { codeListService.getCodeListEntryId("verticalSpatialSystems", it, "de") == null || splitSpatialSystems }
         ?.map { codeListService.getCodeListEntryId("100", it, "de")?.let { KeyValue(it) } ?: KeyValue(null, it) }
+        ?: emptyList()
+
+    fun getVerticalSpatialSystems(): List<KeyValue> = metadata.referenceSystemInfo
+        ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
+        ?.mapNotNull { value -> codeListService.getCodeListEntryId("verticalSpatialSystems", value, "de")?.let { KeyValue(it) } }
         ?: emptyList()
 
     fun getSpatialReferences(): List<SpatialReference> {

@@ -79,7 +79,7 @@ class BawProfile(
             "3950032" to createCodelist3950032(catalogRef),
             "3950033" to createCodelist3950033(catalogRef),
             "identifierType" to createCodelistIdentifierType(catalogRef),
-            "verticalCoordinateReferenceSystem" to createCodelistVerticalCoordinateReferenceSystem(catalogRef),
+            "verticalSpatialSystems" to createCodelistVerticalSpatialSystems(catalogRef),
             "bwastrids" to createBwaStrIds(catalogRef),
         )
 
@@ -449,8 +449,8 @@ class BawProfile(
         }
     }
 
-    private fun createCodelistVerticalCoordinateReferenceSystem(catalogRef: Catalog): Codelist = Codelist().apply {
-        identifier = "verticalCoordinateReferenceSystem"
+    private fun createCodelistVerticalSpatialSystems(catalogRef: Catalog): Codelist = Codelist().apply {
+        identifier = "verticalSpatialSystems"
         catalog = catalogRef
         name = "Vertical Coordinate Reference System"
         description = ""

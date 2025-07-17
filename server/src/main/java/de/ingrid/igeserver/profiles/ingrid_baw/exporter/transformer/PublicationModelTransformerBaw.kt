@@ -50,10 +50,10 @@ open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) 
 
     override val spatialSystems =
         super.spatialSystems + (
-            (doc.data.getPath("spatial.verticalCoordinateReferenceSystem"))?.mapNotNull { it.mapToKeyValue() }
+            (doc.data.getPath("spatial.verticalSpatialSystems"))?.mapNotNull { it.mapToKeyValue() }
                 ?.map {
                     mapToCharacterStringModel(
-                        "verticalCoordinateReferenceSystem",
+                        "verticalSpatialSystems",
                         it,
                     )
                 } ?: emptyList()
