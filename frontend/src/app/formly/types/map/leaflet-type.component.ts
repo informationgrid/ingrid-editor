@@ -219,7 +219,7 @@ export class LeafletTypeComponent
 
           this.formControl.setValue([...locations]);
           this.formControl.markAsDirty();
-          this.updateBoundingBoxCatchingErrors();
+          this.updateBoundingBoxCatchingErrors(locations);
         }
       });
   }
@@ -229,11 +229,11 @@ export class LeafletTypeComponent
     this.formControl.setValue([...this.formControl.value]);
     this.formControl.markAsDirty();
 
-    this.updateBoundingBoxCatchingErrors();
+    this.updateBoundingBoxCatchingErrors(this.formControl.value);
   }
 
   highlightLocation(index: number) {
-    const locations: SpatialLocation[] = this.formControl.value;
+    const locations: SpatialLocationWithColor[] = this.formControl.value;
     if (index !== null) {
       if (!this.leafletService.containsCoordinates(locations[index])) return;
 
@@ -242,7 +242,7 @@ export class LeafletTypeComponent
       ]);
       if (bounds) this.leafletReference.fitBounds(bounds);
     } else {
-      this.updateBoundingBoxCatchingErrors();
+      this.updateBoundingBoxCatchingErrors(locations);
     }
 
     this.mapHasMoved.set(locations.length === 1 ? false : index != null);
