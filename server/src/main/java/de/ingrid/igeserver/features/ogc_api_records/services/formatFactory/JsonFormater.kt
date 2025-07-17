@@ -84,7 +84,7 @@ class JsonFormater(
         get() = FormaterTypeInfo(
             "internal",
             "Internes Format",
-            mimeType = "application/json",
+            mimeTypes = listOf("application/json"),
             exportType = "internal",
         )
 }

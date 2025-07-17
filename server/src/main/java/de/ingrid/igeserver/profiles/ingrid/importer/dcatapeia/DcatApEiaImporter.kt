@@ -70,7 +70,7 @@ class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val docu
         return json
     }
 
-    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean = "application/xml" == contentType && fileContent.contains("<dcat:Catalog") && fileContent.contains("xmlns:eia")
+    override fun canHandleImportFile(contentType: String, fileContent: String): Boolean = "application/rdf+xml" == contentType && fileContent.contains("<dcat:Catalog") && fileContent.contains("xmlns:eia")
 
     override val typeInfo: ImportTypeInfo
         get() = ImportTypeInfo(

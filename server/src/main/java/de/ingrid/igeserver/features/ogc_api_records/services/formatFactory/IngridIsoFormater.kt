@@ -134,7 +134,7 @@ class IngridIsoFormater : BodyFormater {
         get() = FormaterTypeInfo(
             "ingrid-iso",
             "InGrid ISO Formater",
-            mimeType = "text/xml",
+            mimeTypes = listOf("text/xml", "application/rdf+xml", "application/xml"),
             exportType = "ingridISO",
         )
 }

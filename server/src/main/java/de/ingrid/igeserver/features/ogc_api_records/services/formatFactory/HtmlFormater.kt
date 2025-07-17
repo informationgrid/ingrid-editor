@@ -60,7 +60,7 @@ class HtmlFormater(
         get() = FormaterTypeInfo(
             "html",
             "HTML Format",
-            mimeType = "text/html",
+            mimeTypes = listOf("text/html"),
             exportType = "html",
         )
 }

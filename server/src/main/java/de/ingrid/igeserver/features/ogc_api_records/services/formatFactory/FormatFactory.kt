@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service
 data class FormaterTypeInfo(
     val id: String,
     val name: String,
-    val mimeType: String,
+    val mimeTypes: List<String>,
     val exportType: String,
 )
 
@@ -36,15 +36,15 @@ class FormatFactory {
     @Autowired
     private lateinit var formater: List<BodyFormater>
 
-    fun getFormater(mimeType: String, exportType: String): BodyFormater {
+    fun getFormater(mimeType: String): BodyFormater {
         val responsibleFormater = formater
-            .filter { it.typeInfo.mimeType == mimeType && it.typeInfo.exportType == exportType }
+            .filter { it.typeInfo.mimeTypes.contains(mimeType) }
 
         if (responsibleFormater.isEmpty()) {
-            throw ConfigurationException.withReason("No OGC body formater found for mimeType '$mimeType' and exportType '$exportType'.")
+            throw ConfigurationException.withReason("No OGC body formater found for mimeType '$mimeType'")
         } else if (responsibleFormater.size > 1) {
             val formaterNames = responsibleFormater.joinToString(",") { it.typeInfo.name }
-            throw ConfigurationException.withReason("More than one OGC body formater found for mimeType '$mimeType' and exportType '$exportType': '$formaterNames'.")
+            throw ConfigurationException.withReason("More than one OGC body formater found for mimeType '$mimeType'.")
         }
 
         return responsibleFormater[0]

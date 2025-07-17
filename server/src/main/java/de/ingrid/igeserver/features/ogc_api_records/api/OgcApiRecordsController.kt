@@ -71,7 +71,7 @@ enum class RecordFormat(val mimeType: String, val exportType: String) {
     JSON("application/json", "internal"),
     HTML("text/html", "html"),
     INGRID_ISO("text/xml", "ingridISO"),
-    GEOJSON("application/json", "geojson"),
+    GEOJSON("application/geo+json", "geojson"),
 }
 
 enum class SchemaFormat(val mimeType: String, val exportType: String) {
@@ -228,7 +228,7 @@ class OgcApiRecordsController(
         return ResponseEntity.ok().build()
     }
 
-    @PostMapping(value = ["/collections/{collectionId}/items"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
+    @PostMapping(value = ["/collections/{collectionId}/items"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, "application/geo+json", "application/rdf+xml"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
     @Operation(tags = ["OGC/Records"], summary = "Create new record in collection.", hidden = false)
     @ApiResponses(
         value = [

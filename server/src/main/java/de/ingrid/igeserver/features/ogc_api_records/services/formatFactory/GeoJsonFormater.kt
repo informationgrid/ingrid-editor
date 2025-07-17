@@ -65,7 +65,7 @@ class GeoJsonFormater : BodyFormater {
         get() = FormaterTypeInfo(
             "geojson",
             "GEOJSON Format",
-            mimeType = "application/json",
+            mimeTypes = listOf("application/geo+json"),
             exportType = "geojson",
         )
 }
