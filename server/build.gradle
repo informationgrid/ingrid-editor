@@ -39,6 +39,12 @@ repositories {
         url = 'https://nexus.informationgrid.eu/repository/maven-public'
     }
     maven {
+        url = 'https://nexus.informationgrid.eu/repository/maven-snapshots'
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
+    maven {
         url = "https://repo.osgeo.org/repository/release/"
     }
     mavenCentral()
@@ -188,6 +194,9 @@ dependencies {
 
     // RDF for DCAT-AP.de
     implementation "org.apache.jena:apache-jena-libs:5.3.0"
+
+    // DCAT-parser from ingrid-harvester for DCAT-AP.de and DCAT-AP.eia
+    implementation("com.wemove:dcat-parser:0.1.0-SNAPSHOT")
 
     // Test
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version" // for kotest framework
