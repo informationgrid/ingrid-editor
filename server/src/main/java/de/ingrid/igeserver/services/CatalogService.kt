@@ -254,7 +254,7 @@ class CatalogService(
         userRepo.save(user)
     }
 
-    val catAdminPermisssions = listOf(
+    val catAdminPermissions = listOf(
         Permissions.manage_messages.name,
         Permissions.manage_catalog.name,
         Permissions.manage_codelist_repository.name,
@@ -293,7 +293,7 @@ class CatalogService(
         val permissions = if (isSuperAdmin) {
             superAdminPermissions
         } else if (isCatAdmin) {
-            catAdminPermisssions
+            catAdminPermissions
         } else if (isMdAdmin) {
             listOf(Permissions.manage_users.name) + determineNonAdminUserPermissions(principal)
         } else {
