@@ -24,6 +24,8 @@ import { TranslocoService } from "@jsverse/transloco";
 import { ConfigService } from "../app/services/config/config.service";
 import { BehaviourService } from "../app/services/behavior/behaviour.service";
 import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw/doctypes/geo-dataset.doctype";
+import { FormControl } from "@angular/forms";
+import { FormlyFieldConfig } from "@ngx-formly/core";
 
 @Component({
   template: "",
@@ -39,6 +41,7 @@ class InGridLUBWComponent extends InGridComponent {
   constructor() {
     super();
     this.isoView.isoExportFormat = "ingridISOLUBW";
+    this.modifyFormFieldConfiguration();
 
     const isAuthor = this.configService.$userInfo.value.role === "author";
     if (isAuthor) {
@@ -47,6 +50,8 @@ class InGridLUBWComponent extends InGridComponent {
         "plugin.folder",
         "plugin.copy.cut.paste",
         "plugin.deleteDocs",
+        "plugin.tags",
+        "plugin.getCapWizard",
       ]);
       this.formMenuService.addExcludedMenuItems("publish", [
         "PUBLISH",
@@ -65,6 +70,52 @@ class InGridLUBWComponent extends InGridComponent {
         { merge: true },
       );
     }
+  }
+
+  private modifyFormFieldConfiguration() {
+    [
+      this.specialisedTask,
+      this.geoDataset,
+      this.publication,
+      this.geoService,
+      this.project,
+      this.dataCollection,
+      this.informationSyste,
+    ].forEach((docType) => {
+      const manipulateDocumentFieldsBase = docType.manipulateDocumentFields;
+      docType.manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
+        manipulateDocumentFieldsBase(fieldConfig);
+        const contacts = docType.findFieldElementWithId(
+          fieldConfig,
+          "pointOfContact,
+        );
+        contacts.field.validators.atLeastOneDistributor = {
+          expression: (ctrl: FormControl) =>
+            ctrl.value
+              ? ctrl.value.some((address: any) => address.type?.key === "5")
+              : false,
+          message: "Es muss mindestens einen 'Vertrieb' geben.,
+        };
+
+        const keywordsField = docType.findFieldElementWithId(
+          fieldConfig,
+          "keywords,
+        );
+        const analyzeField = keywordsField.fieldConfig.splice(
+          keywordsField.index + 1,
+          ,
+        );
+        docType.addBefore(keywordsField, analyzeField[0]);
+
+        /*const freeKeywords = docType.findFieldElementWithId(
+          fieldConfig,
+          "free",
+        );
+        freeKeywords.field.expressions["props.disabled"] = () => true;*/
+
+        return fieldConfig;
+      };
+    });
   }
 
   private disablePlugins(pluginIds: string[]) {

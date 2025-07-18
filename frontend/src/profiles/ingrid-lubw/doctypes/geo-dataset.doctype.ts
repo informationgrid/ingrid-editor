@@ -39,27 +39,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
 
   protected metadataOptions(): MetadataOption[] {
     return [
-      /*      {
-        label: "Verantwortung der Änderung",
-        contextHelpKey: "responsible",
-        required: true,
-        typeOptions: [
-          {
-            multiple: false,
-            key: "responsible",
-            items: [
-              {
-                label: "Fachredaktion",
-                value: "editor",
-              },
-              {
-                label: "WIBAS AG Daten",
-                value: "wibas",
-              },
-            ],
-          },
-        ],
-      }*/ ...super
+      ...super
         .metadataOptions()
         .filter((item) => item.contextHelpKey !== "subType"),
     ];
@@ -67,7 +47,6 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.addOACFieldConfig(fieldConfig);
-    // this.addEnvironmentDescriptionFieldConfig(fieldConfig);
 
     const position = this.findFieldElementWithId(fieldConfig, "pointOfContact");
 
@@ -75,7 +54,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
     if (isAuthor) {
       this.hideFieldsForEditor(fieldConfig);
       // only allow pointOfContact
-      position.field.props.allowedTypes = ["7"];
+      position.field.props.allowedTypes = ["5", "7", "12"];
     }
 
     this.addMultipleAfter(position, [
@@ -345,17 +324,6 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
     );
   }
 
-  addEnvironmentDescriptionFieldConfig(fieldConfig: FormlyFieldConfig[]) {
-    const processStepPosition = this.findFieldElementWithId(
-      fieldConfig,
-      "processStep",
-    );
-    this.addAfter(
-      processStepPosition,
-      this.addTextArea("environmentDescription", "Produktionsumgebung", "lfub"),
-    );
-  }
-
   private handleNonPersonRelatedChoice(field: FormlyFieldConfig) {
     const accessConstraints = field.form.get("accessConstraints").value;
     const snackMessage = [];
@@ -431,6 +399,7 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
   private hideFieldsForEditor(fieldConfig: FormlyFieldConfig[]) {
     [
       "parentIdentifier",
+      "graphicOverviews",
       "alternateTitle",
       "identifier",
       "spatialRepresentationType",
