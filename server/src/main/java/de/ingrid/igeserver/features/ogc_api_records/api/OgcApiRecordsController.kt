@@ -127,7 +127,11 @@ class OgcApiRecordsController(
     fun getLandingPage(
         @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
         principal: Principal,
-        @Parameter(description = "Response format") @RequestParam(value = "f", required = false, defaultValue = "JSON") format: CollectionFormat,
+        @Parameter(
+            description = "Response format:" +
+                "\n\n• get response in JSON with value `JSON` (default)." +
+                "\n\n• get response in HTML with value `HTML`",
+        ) @RequestParam(value = "f", required = false, defaultValue = "JSON") format: CollectionFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
@@ -149,7 +153,11 @@ class OgcApiRecordsController(
     fun getConformance(
         @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
         principal: Principal,
-        @Parameter(description = "Response format") @RequestParam(value = "f", required = false, defaultValue = "JSON") format: CollectionFormat,
+        @Parameter(
+            description = "Response format:" +
+                "\n\n• get response in JSON with value `JSON` (default)." +
+                "\n\n• get response in HTML with value `HTML`",
+        ) @RequestParam(value = "f", required = false, defaultValue = "JSON") format: CollectionFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
@@ -171,7 +179,11 @@ class OgcApiRecordsController(
     fun getCatalogs(
         @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
         principal: Principal,
-        @Parameter(description = "Response format") @RequestParam(value = "f", required = false, defaultValue = "JSON") format: CollectionFormat,
+        @Parameter(
+            description = "Response format:" +
+                "\n\n• get response in JSON with value `JSON` (default)." +
+                "\n\n• get response in HTML with value `HTML`",
+        ) @RequestParam(value = "f", required = false, defaultValue = "JSON") format: CollectionFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
 
@@ -194,7 +206,11 @@ class OgcApiRecordsController(
     fun getCatalog(
         @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
         @Parameter(description = "Identifier of collection (catalog identifier)", required = true) @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "Response format") @RequestParam(value = "f", required = false, defaultValue = "JSON") format: CollectionFormat,
+        @Parameter(
+            description = "Response format:" +
+                "\n\n• get response in JSON with value `JSON` (default)." +
+                "\n\n• get response in HTML with value `HTML`",
+        ) @RequestParam(value = "f", required = false, defaultValue = "JSON") format: CollectionFormat,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("f"))
@@ -329,7 +345,13 @@ class OgcApiRecordsController(
         @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
         @Parameter(description = "Identifier of collection (catalog identifier)", required = true) @Valid @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "Identifier of record within a collection", required = true) @Valid @PathVariable("recordId") recordId: String,
-        @Parameter(description = "Response format") @RequestParam(value = "f", required = false, defaultValue = "JSON") format: RecordFormat,
+        @Parameter(
+            description = "Response format:" +
+                "\n\n• get response in JSON with value `JSON` (default). This represents the internal InGrid format." +
+                "\n\n• get response in XML, ISO 19139 with value `INGRID_ISO`" +
+                "\n\n• get response in GEOJSON with value `GEOJSON`" +
+                "\n\n• get response in HTML with value `HTML`",
+        ) @RequestParam(value = "f", required = false, defaultValue = "JSON") format: RecordFormat,
         @Parameter(description = "Response state (custom parameter)", style = ParameterStyle.FORM, explode = Explode.FALSE) @RequestParam(value = "state", required = false, defaultValue = "PUBLISHED") state: DocState?,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
