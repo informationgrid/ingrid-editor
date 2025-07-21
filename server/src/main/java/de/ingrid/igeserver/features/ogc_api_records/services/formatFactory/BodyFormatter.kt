@@ -27,9 +27,9 @@ import de.ingrid.igeserver.features.ogc_api_records.services.QueryMetadata
 import de.ingrid.igeserver.services.ExportResult
 import java.text.SimpleDateFormat
 
-interface BodyFormater {
+interface BodyFormatter {
 
-    val typeInfo: FormaterTypeInfo
+    val typeInfo: FormatterTypeInfo
 
     fun basic(content: Any, title: String?): ByteArray
 

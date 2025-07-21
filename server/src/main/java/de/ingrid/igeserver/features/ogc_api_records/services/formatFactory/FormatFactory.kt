@@ -23,7 +23,7 @@ import de.ingrid.igeserver.configuration.ConfigurationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-data class FormaterTypeInfo(
+data class FormatterTypeInfo(
     val id: String,
     val name: String,
     val mimeTypes: List<String>,
@@ -34,19 +34,19 @@ data class FormaterTypeInfo(
 class FormatFactory {
 
     @Autowired
-    private lateinit var formater: List<BodyFormater>
+    private lateinit var formatter: List<BodyFormatter>
 
-    fun getFormater(mimeType: String): BodyFormater {
-        val responsibleFormater = formater
+    fun getFormatter(mimeType: String): BodyFormatter {
+        val responsibleFormatter = formatter
             .filter { it.typeInfo.mimeTypes.contains(mimeType) }
 
-        if (responsibleFormater.isEmpty()) {
-            throw ConfigurationException.withReason("No OGC body formater found for mimeType '$mimeType'")
-        } else if (responsibleFormater.size > 1) {
-            val formaterNames = responsibleFormater.joinToString(",") { it.typeInfo.name }
-            throw ConfigurationException.withReason("More than one OGC body formater found for mimeType '$mimeType'.")
+        if (responsibleFormatter.isEmpty()) {
+            throw ConfigurationException.withReason("No OGC body formatter found for mimeType '$mimeType'")
+        } else if (responsibleFormatter.size > 1) {
+            val formatterNames = responsibleFormatter.joinToString(",") { it.typeInfo.name }
+            throw ConfigurationException.withReason("More than one OGC body formatter found for mimeType '$mimeType'.")
         }
 
-        return responsibleFormater[0]
+        return responsibleFormatter[0]
     }
 }

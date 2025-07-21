@@ -28,9 +28,9 @@ import org.keycloak.util.JsonSerialization
 import org.springframework.stereotype.Service
 
 @Service
-class HtmlFormater(
+class HtmlFormatter(
     private val ogcHtmlConverterService: OgcHtmlConverterService,
-) : BodyFormater {
+) : BodyFormatter {
 
     override fun formatBeforeImport(collectionId: String, data: String, publish: Boolean): String = throw NotImplementedError("Import of records in format HTML is not implemented.")
 
@@ -56,8 +56,8 @@ class HtmlFormater(
         return wrappedResponse.toByteArray()
     }
 
-    override val typeInfo: FormaterTypeInfo
-        get() = FormaterTypeInfo(
+    override val typeInfo: FormatterTypeInfo
+        get() = FormatterTypeInfo(
             "html",
             "HTML Format",
             mimeTypes = listOf("text/html"),

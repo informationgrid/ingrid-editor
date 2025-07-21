@@ -36,7 +36,7 @@ import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
 @Service
-class IngridIsoFormater : BodyFormater {
+class IngridIsoFormatter : BodyFormatter {
 
     override fun formatBeforeImport(collectionId: String, data: String, publish: Boolean): String {
         val documents: MutableList<String> = mutableListOf()
@@ -130,10 +130,10 @@ class IngridIsoFormater : BodyFormater {
         return data
     }
 
-    override val typeInfo: FormaterTypeInfo
-        get() = FormaterTypeInfo(
+    override val typeInfo: FormatterTypeInfo
+        get() = FormatterTypeInfo(
             "ingrid-iso",
-            "InGrid ISO Formater",
+            "InGrid ISO Formatter",
             mimeTypes = listOf("text/xml", "application/rdf+xml", "application/xml"),
             exportType = "ingridISO",
         )

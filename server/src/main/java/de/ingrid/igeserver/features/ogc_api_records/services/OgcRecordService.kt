@@ -105,8 +105,8 @@ class OgcRecordService(
             links = linkList,
         )
 
-        val bodyFormater = formatFactory.getFormater(requestedFormat.mimeType)
-        val responseByteArray = bodyFormater.basic(info, "Landing page")
+        val bodyFormatter = formatFactory.getFormatter(requestedFormat.mimeType)
+        val responseByteArray = bodyFormatter.basic(info, "Landing page")
 
         return responseByteArray
     }
@@ -121,8 +121,8 @@ class OgcRecordService(
             ),
         )
 
-        val bodyFormater = formatFactory.getFormater(requestedFormat.mimeType)
-        val responseByteArray = bodyFormater.basic(conformance, "Landing page")
+        val bodyFormatter = formatFactory.getFormatter(requestedFormat.mimeType)
+        val responseByteArray = bodyFormatter.basic(conformance, "Landing page")
 
         return ResponsePackage(
             data = responseByteArray,
@@ -143,8 +143,8 @@ class OgcRecordService(
     ): URI = importDocument(collectionId, recordId, options, contentType, data, principal, recordMustExist, profile)
 
     fun importDocument(collectionId: String, recordId: String?, options: ImportOptions, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, profile: CatalogProfile): URI {
-        val bodyFormater = formatFactory.getFormater(contentType)
-        val docArray = bodyFormater.formatBeforeImport(collectionId, data, options.publish)
+        val bodyFormatter = formatFactory.getFormatter(contentType)
+        val docArray = bodyFormatter.formatBeforeImport(collectionId, data, options.publish)
 
         val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, recordId, contentType, docArray)
         if (optimizedImportAnalysis.existingDatasets.isNotEmpty()) {
@@ -276,8 +276,8 @@ class OgcRecordService(
 
     fun prepareCatalog(collectionId: String, exporter: OgcCatalogExporter, format: CollectionFormat): ByteArray {
         val catalog = exportCatalog(collectionId, exporter)
-        val bodyFormater = formatFactory.getFormater(format.mimeType)
-        val formatedCatalog = bodyFormater.collections(listOf(catalog), true, null, null)
+        val bodyFormatter = formatFactory.getFormatter(format.mimeType)
+        val formatedCatalog = bodyFormatter.collections(listOf(catalog), true, null, null)
         return formatedCatalog
     }
 
@@ -286,8 +286,8 @@ class OgcRecordService(
         val exporter = ogcCatalogExporterFactory.getExporter(format)
         val catalogList: MutableList<Any> = mutableListOf()
         for (catalog in catalogs) catalogList.add(exportCatalog(catalog.identifier, exporter))
-        val bodyFormater = formatFactory.getFormater(format.mimeType)
-        val formatedCatalogs = bodyFormater.collections(catalogList, false, null, null)
+        val bodyFormatter = formatFactory.getFormatter(format.mimeType)
+        val formatedCatalogs = bodyFormatter.collections(catalogList, false, null, null)
         return formatedCatalogs
     }
 
@@ -307,15 +307,15 @@ class OgcRecordService(
 
     fun prepareRecord(collectionId: String, recordId: String, format: RecordFormat, useDraft: Boolean): ByteArray {
         val record = exportRecord(recordId, collectionId, format, useDraft)
-        val bodyFormater = formatFactory.getFormater(format.mimeType)
-        val formatedRecord = bodyFormater.records(listOf(record), useDraft, true, null, null)
+        val bodyFormatter = formatFactory.getFormatter(format.mimeType)
+        val formatedRecord = bodyFormatter.records(listOf(record), useDraft, true, null, null)
         return formatedRecord
     }
 
     fun prepareRecords(records: ResearchResponse, collectionId: String, format: RecordFormat, links: List<Link>, queryMetadata: QueryMetadata, useDraft: Boolean): ByteArray {
         val records: List<ExportResult> = records.hits.map { record -> exportRecord(record.uuid!!, collectionId, format, useDraft) }
-        val bodyFormater = formatFactory.getFormater(format.mimeType)
-        val formatedRecords = bodyFormater.records(records, useDraft, false, links, queryMetadata)
+        val bodyFormatter = formatFactory.getFormatter(format.mimeType)
+        val formatedRecords = bodyFormatter.records(records, useDraft, false, links, queryMetadata)
         return formatedRecords
     }
 

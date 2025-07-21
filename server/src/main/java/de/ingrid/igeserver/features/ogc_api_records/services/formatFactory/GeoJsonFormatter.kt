@@ -28,7 +28,7 @@ import de.ingrid.igeserver.services.ExportResult
 import org.springframework.stereotype.Service
 
 @Service
-class GeoJsonFormater : BodyFormater {
+class GeoJsonFormatter : BodyFormatter {
 
     override fun formatBeforeImport(collectionId: String, data: String, publish: Boolean): String = throw NotImplementedError("Import of records in format GEOJSON is not implemented.")
 
@@ -61,8 +61,8 @@ class GeoJsonFormater : BodyFormater {
         }
     }
 
-    override val typeInfo: FormaterTypeInfo
-        get() = FormaterTypeInfo(
+    override val typeInfo: FormatterTypeInfo
+        get() = FormatterTypeInfo(
             "geojson",
             "GEOJSON Format",
             mimeTypes = listOf("application/geo+json"),
