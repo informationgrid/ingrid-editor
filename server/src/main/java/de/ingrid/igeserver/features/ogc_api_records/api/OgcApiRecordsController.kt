@@ -227,7 +227,7 @@ class OgcApiRecordsController(
     @Operation(tags = ["OGC/Records"], responses = [], summary = "Remove a record from a collection", hidden = false)
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Successful operation"),
+            ApiResponse(responseCode = "204", description = "No Content"),
             ApiResponse(responseCode = "400", description = "Invalid input"),
             ApiResponse(responseCode = "404", description = "Not found"),
         ],
@@ -241,14 +241,14 @@ class OgcApiRecordsController(
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf())
         ogcRecordService.deleteRecord(principal, collectionId, recordId)
-        return ResponseEntity.ok().build()
+        return ResponseEntity.noContent().build()
     }
 
     @PostMapping(value = ["/collections/{collectionId}/items"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, "application/geo+json", "application/rdf+xml"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(tags = ["OGC/Records"], summary = "Create new record in collection.", hidden = false)
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Successful creation of record."),
+            ApiResponse(responseCode = "201", description = "Created"),
             ApiResponse(responseCode = "400", description = "Invalid input"),
             ApiResponse(responseCode = "404", description = "Not found"),
         ],
@@ -292,7 +292,7 @@ class OgcApiRecordsController(
     @Operation(tags = ["OGC/Records"], summary = "Replace/update an existing record in a collection with a replacement resource with the same resource identifier.", hidden = false)
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Successful operation"),
+            ApiResponse(responseCode = "204", description = "No content"),
             ApiResponse(responseCode = "400", description = "Invalid input"),
             ApiResponse(responseCode = "404", description = "Not found"),
         ],
