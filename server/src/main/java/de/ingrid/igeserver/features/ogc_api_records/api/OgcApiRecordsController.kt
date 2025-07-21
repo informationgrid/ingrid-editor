@@ -95,9 +95,9 @@ enum class DocTypeFormat(val docType: String) {
     UvpSpatialPlanningProcedureDoc("UvpSpatialPlanningProcedureDoc"),
 }
 
-enum class DocState(val state: String, val isDraft: Boolean) {
-    DRAFT("DRAFT", true),
-    PUBLISHED("PUBLISHED", false),
+enum class DocState(val state: String) {
+    DRAFT("DRAFT"),
+    PUBLISHED("PUBLISHED"),
 }
 
 @RestController
@@ -269,10 +269,8 @@ class OgcApiRecordsController(
 
         val contentType = allHeaders["content-type"]!!
 
-        val isDraft = state?.isDraft ?: false
-
         val options = ImportOptions(
-            publish = !isDraft,
+            publish = state == DocState.PUBLISHED,
             parentDocument = if (!datasetFolderId.isNullOrBlank()) {
                 (documentService.getWrapperByCatalogAndDocumentUuid(collectionId, datasetFolderId)).id
             } else {
@@ -312,8 +310,12 @@ class OgcApiRecordsController(
 
         val contentType = allHeaders["content-type"]!!
 
-        val isDraft = state?.isDraft ?: false
-        val options = ImportOptions(publish = !isDraft, overwriteAddresses = true, overwriteDatasets = true)
+        val options = ImportOptions(
+            publish = state == DocState.PUBLISHED,
+            overwriteAddresses = true,
+            overwriteDatasets = true,
+        )
+
         ogcRecordService.transactionalImportDocument(
             collectionId,
             recordId,
@@ -357,9 +359,7 @@ class OgcApiRecordsController(
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("f", "state"))
 
-        val useDraft = state?.isDraft ?: false
-
-        val record = ogcRecordService.prepareRecord(collectionId, recordId, format, useDraft)
+        val record = ogcRecordService.prepareRecord(collectionId, recordId, format, state == DocState.DRAFT)
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", format.mimeType)
         return ResponseEntity.ok().headers(responseHeaders).body(record)
@@ -464,10 +464,8 @@ class OgcApiRecordsController(
             numberMatched = totalHits,
             Instant.now(),
         )
-        val useDraft = state?.isDraft ?: false
-
         // query all record details in right response format via exporter
-        val records: ByteArray = ogcRecordService.prepareRecords(researchRecords, collectionId, format, links, queryMetadata, useDraft)
+        val records: ByteArray = ogcRecordService.prepareRecords(researchRecords, collectionId, format, links, queryMetadata, state == DocState.DRAFT)
 
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", format.mimeType)
@@ -528,7 +526,7 @@ class OgcApiRecordsController(
 
         // TODO Throw exception if requested docType is not supported by catalog. Include list of supported docTypes in exception.
 
-        val jsonSchema = jsonSchemaService.getSchemaOfDocType(collectionId, type.docType, state?.isDraft ?: false)
+        val jsonSchema = jsonSchemaService.getSchemaOfDocType(collectionId, type.docType, state == DocState.DRAFT)
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", "application/schema+json")
         return ResponseEntity.ok().headers(responseHeaders).body(jsonSchema)
