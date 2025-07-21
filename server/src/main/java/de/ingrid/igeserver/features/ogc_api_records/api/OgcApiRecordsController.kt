@@ -167,7 +167,7 @@ class OgcApiRecordsController(
         return ResponseEntity.ok().headers(responseHeaders).body(response.data)
     }
 
-    @GetMapping(value = ["/collections"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
+    @GetMapping(value = ["/collections"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
     @Operation(tags = ["OGC/RecordCollections"], responses = [], summary = "Fetch all collections", hidden = false)
     @ApiResponses(
         value = [
@@ -194,7 +194,7 @@ class OgcApiRecordsController(
         return ResponseEntity.ok().headers(responseHeaders).body(catalogs)
     }
 
-    @GetMapping(value = ["/collections/{collectionId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
+    @GetMapping(value = ["/collections/{collectionId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
     @Operation(tags = ["OGC/RecordCollections"], responses = [], summary = "Fetch collection by identifier", hidden = false)
     @ApiResponses(
         value = [
@@ -223,7 +223,7 @@ class OgcApiRecordsController(
         return ResponseEntity.ok().headers(responseHeaders).body(catalog)
     }
 
-    @DeleteMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
+    @DeleteMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(tags = ["OGC/Records"], responses = [], summary = "Remove a record from a collection", hidden = false)
     @ApiResponses(
         value = [
@@ -244,7 +244,7 @@ class OgcApiRecordsController(
         return ResponseEntity.ok().build()
     }
 
-    @PostMapping(value = ["/collections/{collectionId}/items"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, "application/geo+json", "application/rdf+xml"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
+    @PostMapping(value = ["/collections/{collectionId}/items"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, "application/geo+json", "application/rdf+xml"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(tags = ["OGC/Records"], summary = "Create new record in collection.", hidden = false)
     @ApiResponses(
         value = [
@@ -288,7 +288,7 @@ class OgcApiRecordsController(
         return ResponseEntity.created(location).build()
     }
 
-    @PutMapping(value = ["/collections/{collectionId}/items/{recordId}"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, "application/rdf+xml"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
+    @PutMapping(value = ["/collections/{collectionId}/items/{recordId}"], consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, "application/rdf+xml"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(tags = ["OGC/Records"], summary = "Replace/update an existing record in a collection with a replacement resource with the same resource identifier.", hidden = false)
     @ApiResponses(
         value = [
@@ -365,7 +365,7 @@ class OgcApiRecordsController(
         return ResponseEntity.ok().headers(responseHeaders).body(record)
     }
 
-    @GetMapping(value = ["/collections/{collectionId}/items"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE])
+    @GetMapping(value = ["/collections/{collectionId}/items"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE, "application/geo+json"])
     @Operation(
         tags = ["OGC/Records"],
         responses = [],
@@ -475,7 +475,7 @@ class OgcApiRecordsController(
         return ResponseEntity.ok().headers(responseHeaders).body(records)
     }
 
-    @PostMapping(value = ["/collections/{collectionId}/items/actions/move"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
+    @PostMapping(value = ["/collections/{collectionId}/items/actions/move"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
         tags = ["OGC/Records/Actions"],
         hidden = false,
@@ -501,7 +501,7 @@ class OgcApiRecordsController(
         return ResponseEntity.ok().build()
     }
 
-    @GetMapping(value = ["/collections/{collectionId}/schema"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(value = ["/collections/{collectionId}/schema"], produces = ["application/schema+json"])
     @Operation(
         tags = ["OGC/Schema"],
         hidden = false,
@@ -530,7 +530,7 @@ class OgcApiRecordsController(
 
         val jsonSchema = jsonSchemaService.getSchemaOfDocType(collectionId, type.docType, state?.isDraft ?: false)
         val responseHeaders = HttpHeaders()
-        responseHeaders.add("Content-Type", "application/json")
+        responseHeaders.add("Content-Type", "application/schema+json")
         return ResponseEntity.ok().headers(responseHeaders).body(jsonSchema)
     }
 }
