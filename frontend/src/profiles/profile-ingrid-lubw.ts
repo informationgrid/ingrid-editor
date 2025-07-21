@@ -80,30 +80,29 @@ class InGridLUBWComponent extends InGridComponent {
       this.geoService,
       this.project,
       this.dataCollection,
-      this.informationSyste,
+      this.informationSystem,
     ].forEach((docType) => {
       const manipulateDocumentFieldsBase = docType.manipulateDocumentFields;
       docType.manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
         manipulateDocumentFieldsBase(fieldConfig);
         const contacts = docType.findFieldElementWithId(
           fieldConfig,
-          "pointOfContact,
+          "pointOfContact",
         );
         contacts.field.validators.atLeastOneDistributor = {
           expression: (ctrl: FormControl) =>
             ctrl.value
               ? ctrl.value.some((address: any) => address.type?.key === "5")
               : false,
-          message: "Es muss mindestens einen 'Vertrieb' geben.,
+          message: "Es muss mindestens einen 'Vertrieb' geben.",
         };
 
         const keywordsField = docType.findFieldElementWithId(
           fieldConfig,
-          "keywords,
+          "keywords",
         );
         const analyzeField = keywordsField.fieldConfig.splice(
           keywordsField.index + 1,
-          ,
         );
         docType.addBefore(keywordsField, analyzeField[0]);
 
