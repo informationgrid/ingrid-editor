@@ -440,7 +440,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
     fun getSpatialSystems(): List<KeyValue> = metadata.referenceSystemInfo
         ?.map { it.referenceSystem?.referenceSystemIdentifier?.identifier?.code?.value }
         // if splitSpatialSystems is true, we filter out vertical spatial systems
-        ?.filter { splitSpatialSystems && codeListService.getCatalogCodelistKey(catalogId, "verticalSpatialSystems", it, "de") == null }
+        ?.filter { splitSpatialSystems.not() || codeListService.getCatalogCodelistKey(catalogId, "verticalSpatialSystems", it, "de") == null }
         ?.map { codeListService.getCodeListEntryId("100", it, "de")?.let { KeyValue(it) } ?: KeyValue(null, it) }
         ?: emptyList()
 
