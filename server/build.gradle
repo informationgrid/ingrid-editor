@@ -40,12 +40,6 @@ repositories {
         url = 'https://nexus.informationgrid.eu/repository/maven-public'
     }
     maven {
-        url = 'https://nexus.informationgrid.eu/repository/maven-snapshots'
-        mavenContent {
-            snapshotsOnly()
-        }
-    }
-    maven {
         url = "https://repo.osgeo.org/repository/release/"
     }
     mavenCentral()
