@@ -44,6 +44,8 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -389,8 +391,8 @@ class OgcApiRecordsController(
         @Parameter(hidden = true) @RequestParam allRequestParams: Map<String, String>,
         principal: Authentication,
         @Parameter(description = "Identifier of collection (catalog identifier)", required = true) @Valid @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "Paging limit of requested records") @RequestParam(value = "limit", required = false) limit: Int?,
-        @Parameter(description = "Paging offset of requested records") @RequestParam(value = "offset", required = false) offset: Int?,
+        @Parameter(description = "Paging limit of requested records") @RequestParam(value = "limit", required = false, defaultValue = "10") @Max(100000) @Min(1) limit: Int,
+        @Parameter(description = "Paging offset of requested records") @RequestParam(value = "offset", required = false, defaultValue = "0") @Min(0) offset: Int,
         @Parameter(description = "Comma-separated list of record types", explode = Explode.FALSE, style = ParameterStyle.MATRIX) @RequestParam(value = "type", required = false) type: List<String>?,
         @Parameter(
             description = "Bounding box - array of 4 numbers in order:" +
@@ -453,10 +455,7 @@ class OgcApiRecordsController(
 
         val profile = catalogService.getProfileFromCatalog(collectionId)
 
-        // create research query
-        val (queryLimit, queryOffset) = ogcRecordService.pageLimitAndOffset(offset, limit)
-
-        val ogcParameter = OgcFilterParameter(queryLimit, queryOffset, type, bbox, datetime, qParameter)
+        val ogcParameter = OgcFilterParameter(limit, offset, type, bbox, datetime, qParameter)
 
         val ogcApiResearchQuery = ogcApiResearchQueryFactory.getQuery(profile, ogcParameter)
 
@@ -466,7 +465,7 @@ class OgcApiRecordsController(
         val totalHits = researchRecords.totalHits
         val links: List<Link> = ogcRecordService.getLinksForRecords(offset, limit, totalHits, collectionId, format)
         val queryMetadata = QueryMetadata(
-            numberReturned = if (totalHits < queryLimit) totalHits else queryLimit,
+            numberReturned = if (totalHits < limit) totalHits else limit,
             numberMatched = totalHits,
             Instant.now(),
         )

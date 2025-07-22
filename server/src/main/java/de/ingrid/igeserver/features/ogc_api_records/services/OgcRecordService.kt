@@ -22,7 +22,6 @@ package de.ingrid.igeserver.features.ogc_api_records.services
 import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.api.ImportOptions
-import de.ingrid.igeserver.api.InvalidParameterException
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.Message
 import de.ingrid.igeserver.configuration.GeneralProperties
@@ -30,7 +29,6 @@ import de.ingrid.igeserver.features.ogc_api_records.api.CollectionFormat
 import de.ingrid.igeserver.features.ogc_api_records.api.RecordFormat
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporter
 import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExporterFactory
-import de.ingrid.igeserver.features.ogc_api_records.model.LimitAndOffset
 import de.ingrid.igeserver.features.ogc_api_records.model.Link
 import de.ingrid.igeserver.features.ogc_api_records.model.MoveRecordsDTO
 import de.ingrid.igeserver.features.ogc_api_records.services.formatFactory.FormatFactory
@@ -168,36 +166,18 @@ class OgcRecordService(
         return generateUriOfCreatedRecord(collectionId, optimizedImportAnalysis.references[0].document.uuid)
     }
 
-    fun pageLimitAndOffset(offset: Int?, limit: Int?): LimitAndOffset {
-        val defaultLimit = 10
-        val minLimit = 1
-        val maxLimit = Int.MAX_VALUE
-        val queryLimit: Int = limit ?: defaultLimit
-        if (queryLimit < minLimit || queryLimit > maxLimit) throw InvalidParameterException.withInvalidParameters("limit")
-//        if (queryLimit > maxLimit) queryLimit = maxLimit
-        val queryOffset: Int = if (offset == null) {
-            0
-        } else {
-            if (offset < 0) 0 else offset
-        }
-        return LimitAndOffset(queryLimit, queryOffset)
-    }
-
     fun generateUriOfCreatedRecord(collectionId: String, recordId: String): URI = URI("/collections/$collectionId/items/$recordId")
 
-    fun getLinksForRecords(offset: Int?, limit: Int?, totalHits: Int, collectionId: String, requestedFormat: RecordFormat): List<Link> {
+    fun getLinksForRecords(offset: Int, limit: Int, totalHits: Int, collectionId: String, requestedFormat: RecordFormat): List<Link> {
         val list: MutableList<Link> = mutableListOf()
 
-        // prepare pageing numbers
-        val (queryLimit, queryOffset) = pageLimitAndOffset(offset, limit)
-        val nextOffset: Int = queryOffset + queryLimit
-        val prevOffset: Int = if (queryOffset < queryLimit) 0 else queryOffset - queryLimit
-
-        // prepare string fragments
+        // prepare pageing numbers & string fragments
+        val nextOffset: Int = offset + limit
+        val prevOffset: Int = if (offset < limit) 0 else offset - limit
         val baseUrl = "$hostnameOgcApi/collections/$collectionId"
         val recordBaseUrl = "$baseUrl/items?f="
-        val limitString = if (limit != null) "&limit=$queryLimit" else ""
-        val selfOffsetString = if (offset != null) "&offset=$queryOffset" else ""
+        val limitString = "&limit=$limit"
+        val selfOffsetString = "&offset=$offset"
         val prevOffsetString = "&offset=$prevOffset"
         val nextOffsetString = "&offset=$nextOffset"
 
@@ -252,7 +232,7 @@ class OgcRecordService(
                     ),
                 )
             }
-            if (queryOffset != 0) {
+            if (offset > 0) {
                 list.add(
                     createLink(
                         url = recordBaseUrl + supportedFormat + limitString + prevOffsetString,

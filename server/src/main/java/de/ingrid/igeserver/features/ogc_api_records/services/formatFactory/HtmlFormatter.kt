@@ -52,7 +52,7 @@ class HtmlFormatter(
         var response = ""
         for (record in records) response += record.result?.toString(Charsets.UTF_8)
 
-        val wrappedResponse = ogcHtmlConverterService.wrapperForHtml(response, null, null)
+        val wrappedResponse = ogcHtmlConverterService.wrapperForHtml(response, links, queryMetadata)
         return wrappedResponse.toByteArray()
     }
 
