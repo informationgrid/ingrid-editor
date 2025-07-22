@@ -90,7 +90,7 @@ class UploadApiController(
             storage.validate(catalogId, userID, docUuid, flowFilename, flowTotalSize)
         } catch (ex: Exception) {
             log.warn("Validation failed for file: $flowFilename")
-            log.warn("Validation error: ${ex.message}")
+            log.warn("Validation error:", ex)
             return ResponseEntity<UploadResponse>(UploadResponse(ex), HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
