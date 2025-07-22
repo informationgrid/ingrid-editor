@@ -76,6 +76,8 @@ class PostDocumentIndexingFingerprint(
         exporterType: String,
         isoFingerprint: String,
     ) {
+        // For Ingrid Profiles: this date is technically slightly different from the publishDate in IDFExporter when the Fingerprint has changed
+        // after indexing this date is used on the next indexing if no changes were made
         val publishDate = OffsetDateTime.now()
         wrapper.fingerprint = (wrapper.fingerprint ?: mutableListOf()).filter { it.exportType != exporterType } +
             FingerprintInfo(
