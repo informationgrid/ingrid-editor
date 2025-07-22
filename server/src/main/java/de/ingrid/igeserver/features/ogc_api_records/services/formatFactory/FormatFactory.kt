@@ -23,12 +23,12 @@ import de.ingrid.igeserver.configuration.ConfigurationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-data class FormatterTypeInfo(
-    val id: String,
-    val name: String,
-    val mimeTypes: List<String>,
-    val exportType: String,
-)
+enum class FormatContentTypes(val mimeType: List<String>) {
+    JSON(listOf("application/json")),
+    GEOJSON(listOf("application/geo+json")),
+    HTML(listOf("text/html")),
+    INGRID_ISO(listOf("text/xml", "application/rdf+xml", "application/xml")),
+}
 
 @Service
 class FormatFactory {
@@ -38,12 +38,11 @@ class FormatFactory {
 
     fun getFormatter(mimeType: String): BodyFormatter {
         val responsibleFormatter = formatter
-            .filter { it.typeInfo.mimeTypes.contains(mimeType) }
+            .filter { it.supportedContent.mimeType.contains(mimeType) }
 
         if (responsibleFormatter.isEmpty()) {
             throw ConfigurationException.withReason("No OGC body formatter found for mimeType '$mimeType'")
         } else if (responsibleFormatter.size > 1) {
-            val formatterNames = responsibleFormatter.joinToString(",") { it.typeInfo.name }
             throw ConfigurationException.withReason("More than one OGC body formatter found for mimeType '$mimeType'.")
         }
 

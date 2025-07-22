@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service
 @Service
 class GeoJsonFormatter : BodyFormatter {
 
+    override val supportedContent = FormatContentTypes.GEOJSON
+
     override fun formatBeforeImport(collectionId: String, data: String, publish: Boolean): String = throw NotImplementedError("Import of records in format GEOJSON is not implemented.")
 
     override fun basic(content: Any, title: String?): ByteArray = convertObject2Json(content).toString().toByteArray()
@@ -60,12 +62,4 @@ class GeoJsonFormatter : BodyFormatter {
             return wrappedResponse.toString().toByteArray(Charsets.UTF_8)
         }
     }
-
-    override val typeInfo: FormatterTypeInfo
-        get() = FormatterTypeInfo(
-            "geojson",
-            "GEOJSON Format",
-            mimeTypes = listOf("application/geo+json"),
-            exportType = "geojson",
-        )
 }

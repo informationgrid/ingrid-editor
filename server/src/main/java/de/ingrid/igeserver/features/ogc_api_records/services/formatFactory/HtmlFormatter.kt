@@ -32,6 +32,8 @@ class HtmlFormatter(
     private val ogcHtmlConverterService: OgcHtmlConverterService,
 ) : BodyFormatter {
 
+    override val supportedContent = FormatContentTypes.HTML
+
     override fun formatBeforeImport(collectionId: String, data: String, publish: Boolean): String = throw NotImplementedError("Import of records in format HTML is not implemented.")
 
     override fun basic(content: Any, title: String?): ByteArray {
@@ -55,12 +57,4 @@ class HtmlFormatter(
         val wrappedResponse = ogcHtmlConverterService.wrapperForHtml(response, links, queryMetadata)
         return wrappedResponse.toByteArray()
     }
-
-    override val typeInfo: FormatterTypeInfo
-        get() = FormatterTypeInfo(
-            "html",
-            "HTML Format",
-            mimeTypes = listOf("text/html"),
-            exportType = "html",
-        )
 }

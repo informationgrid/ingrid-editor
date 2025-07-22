@@ -29,7 +29,7 @@ import java.text.SimpleDateFormat
 
 interface BodyFormatter {
 
-    val typeInfo: FormatterTypeInfo
+    val supportedContent: FormatContentTypes
 
     fun basic(content: Any, title: String?): ByteArray
 

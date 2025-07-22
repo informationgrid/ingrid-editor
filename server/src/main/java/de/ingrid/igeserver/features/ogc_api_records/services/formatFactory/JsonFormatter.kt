@@ -35,6 +35,8 @@ class JsonFormatter(
     private val internalExporter: InternalExporter,
 ) : BodyFormatter {
 
+    override val supportedContent = FormatContentTypes.JSON
+
     override fun formatBeforeImport(collectionId: String, data: String, publish: Boolean): String {
         val documents: MutableList<String> = mutableListOf()
 
@@ -79,12 +81,4 @@ class JsonFormatter(
         }
         return if (isSingleRecord) response[0].toString().toByteArray() else response.toString().toByteArray()
     }
-
-    override val typeInfo: FormatterTypeInfo
-        get() = FormatterTypeInfo(
-            "internal",
-            "Internes Format",
-            mimeTypes = listOf("application/json"),
-            exportType = "internal",
-        )
 }
