@@ -142,9 +142,9 @@ class OgcRecordService(
 
     fun importDocument(collectionId: String, recordId: String?, options: ImportOptions, contentType: String, data: String, principal: Authentication, recordMustExist: Boolean, profile: CatalogProfile): URI {
         val bodyFormatter = formatFactory.getFormatter(contentType)
-        val docArray = bodyFormatter.formatBeforeImport(collectionId, data, options.publish)
+        val formatedData = bodyFormatter.formatBeforeImport(collectionId, data, options.publish)
 
-        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, docArray)
+        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, formatedData)
 
         if (optimizedImportAnalysis.existingDatasets.isEmpty()) {
             if (recordMustExist) throw NotFoundException.withMissingResource(recordId!!, "Record")
