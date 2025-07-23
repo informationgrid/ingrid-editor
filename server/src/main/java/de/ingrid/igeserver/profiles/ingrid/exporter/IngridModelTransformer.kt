@@ -265,6 +265,7 @@ open class IngridModelTransformer(
 
     fun getGeographicElements(): List<GeographicElement> = spatialReferences.flatMap { ref ->
         val geoElements = mutableListOf<GeographicElement>()
+
         when (ref.type) {
             "free", "wfsgnde" -> {
                 if (!ref.title.isNullOrEmpty()) {
@@ -275,6 +276,7 @@ open class IngridModelTransformer(
                         ),
                     )
                 }
+
                 if (ref.value != null) {
                     geoElements.add(
                         GeographicElement(
@@ -284,8 +286,8 @@ open class IngridModelTransformer(
                     )
                 }
             }
-            "wkt" ->
-                if (!ref.polygon.isNullOrEmpty()) {
+            "wkt" -> {
+                if (ref.polygon != null) {
                     geoElements.add(
                         GeographicElement(
                             type = GeoElementType.BOUNDINGPOLYGON,
@@ -293,7 +295,7 @@ open class IngridModelTransformer(
                         ),
                     )
                 }
-            else -> null
+            }
         }
 
         if (!ref.ars.isNullOrEmpty()) {
@@ -301,11 +303,15 @@ open class IngridModelTransformer(
                 GeographicElement(
                     type = GeoElementType.DESCRIPTION,
                     hasExtentTypeCode = false,
-                    geographicIdentifier = CharacterStringModel(padARS(ref.ars), "https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${ref.ars}"),
+                    geographicIdentifier = CharacterStringModel(
+                        padARS(ref.ars),
+                        "https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${ref.ars}",
+                    ),
                 ),
             )
         }
-        return geoElements
+
+        geoElements
     }
 
     fun padARS(ars: String): String = ars.padEnd(12, '0')
