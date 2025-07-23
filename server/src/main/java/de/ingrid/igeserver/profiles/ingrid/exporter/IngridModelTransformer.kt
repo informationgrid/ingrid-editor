@@ -291,7 +291,7 @@ open class IngridModelTransformer(
                     geoElements.add(
                         GeographicElement(
                             type = GeoElementType.BOUNDINGPOLYGON,
-                            polygon = ref.polygon,
+                            polygon = ref.getWktCoordinatesISO(),
                         ),
                     )
                 }

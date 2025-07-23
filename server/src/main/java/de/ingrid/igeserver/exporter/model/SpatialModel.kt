@@ -124,7 +124,7 @@ data class GeographicElement(
         get() = when (type) {
             GeoElementType.DESCRIPTION -> "EX_GeographicDescription"
             GeoElementType.BOUNDINGBOX -> "EX_GeographicBoundingBox"
-            GeoElementType.BOUNDINGPOLYGON -> "EX_GeographicPolygon"
+            GeoElementType.BOUNDINGPOLYGON -> "EX_BoundingPolygon"
         }
 }
 
