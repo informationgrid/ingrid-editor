@@ -117,7 +117,7 @@ class IngridIsoFormatter : BodyFormatter {
         return sw.toString()
     }
 
-    private fun parseXmlWithMultipleDocs(data: String): String {
+    fun parseXmlWithMultipleDocs(data: String): String {
         val documents: MutableList<String> = mutableListOf()
 
         val xmlInput = InputSource(StringReader(data))

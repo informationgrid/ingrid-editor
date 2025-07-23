@@ -21,16 +21,18 @@ package de.ingrid.igeserver.profiles.ingrid.importer.dcatapeia
 
 import com.bedatadriven.jackson.datatype.jts.JtsModule
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.wemove.dcatparser.dcatapde.model.dcat.Catalog
+import com.wemove.dcatparser.dcatapeia.model.dcat.Dataset
 import com.wemove.dcatparser.dcatapeia.serialization.DcatApEiaDeserializer
 import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.imports.IgeImporter
 import de.ingrid.igeserver.imports.ImportTypeInfo
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.mdek.upload.UploadConfig
@@ -39,7 +41,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig) : IgeImporter {
+class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig, val behaviourService: BehaviourService, val codelistHandler: CodelistHandler) : IgeImporter {
     private val log = logger()
 
     override fun run(catalogId: String, docUuid: String?, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
@@ -51,21 +53,22 @@ class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val docu
 
         if (dataset == null) throw ServerException.withReason("DCAT-AP.EIA catalog does not contain any dataset")
 
-        val parsedDoc = DcatApEiaMapper(dataset, docUuid)
+        val dcatApEiaMapper = DcatApEiaMapper(
+            dataset as Dataset,
+            catalogId,
+            catalogService,
+            behaviourService,
+            codelistHandler,
+        )
+
+        val parsedDoc = dcatApEiaMapper.getDocument()
 
         val mapper = jacksonObjectMapper()
             .registerModule(JavaTimeModule())
             .registerModule(JtsModule())
             .registerKotlinModule()
 
-        val json = mapper.valueToTree<JsonNode>(
-            parsedDoc,
-        )
-
-        if (json is ObjectNode) {
-            json.remove("model")
-            json.remove("docUuid")
-        }
+        val json = mapper.valueToTree<JsonNode>(parsedDoc)
 
         log.debug("Created JSON from imported DCAT-AP.eia file: $json")
         return json

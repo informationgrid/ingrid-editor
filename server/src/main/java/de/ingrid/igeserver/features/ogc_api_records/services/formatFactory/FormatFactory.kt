@@ -27,7 +27,8 @@ enum class FormatContentTypes(val mimeType: List<String>) {
     JSON(listOf("application/json")),
     GEOJSON(listOf("application/geo+json")),
     HTML(listOf("text/html")),
-    INGRID_ISO(listOf("text/xml", "application/rdf+xml", "application/xml")),
+    INGRID_ISO(listOf("text/xml", "application/xml")),
+    DCAT(listOf("application/rdf+xml")),
 }
 
 @Service

@@ -19,18 +19,78 @@
  */
 package de.ingrid.igeserver.profiles.ingrid.importer.dcatapeia
 
-import com.wemove.dcatparser.dcatapde.model.dcat.Dataset
+import com.wemove.dcatparser.dcatapeia.model.dcat.Dataset
+import de.ingrid.igeserver.ClientException
+import de.ingrid.igeserver.exporter.model.SpatialModel
+import de.ingrid.igeserver.exports.iso.Contact
+import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.services.BehaviourService
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.CodelistHandler
+import java.util.UUID
+import kotlin.collections.List
+
+data class DcatApEiaDto(
+    val _type: String,
+    val _uuid: String,
+    val title: String?,
+    val description: String?,
+    val receiptDate: String,
+    val prelimAssessment: Boolean,
+    val eiaNumbers: List<KeyValue>?,
+)
 
 class DcatApEiaMapper(
-    var model: Dataset,
-    var docUuid: String?,
+    var dataset: Dataset,
+    var catalogId: String,
+    val catalogService: CatalogService,
+    val behaviourService: BehaviourService,
+    var codelistHandler: CodelistHandler,
 ) {
+
+    fun getDocument(): DcatApEiaDto = DcatApEiaDto(
+        _type = _type,
+        _uuid = _uuid,
+        title = title,
+        description = description,
+        receiptDate = receiptDate,
+        prelimAssessment = prelimAssessment,
+        eiaNumbers = eiaNumbers,
+    )
+
     @Suppress("PropertyName")
     val _type: String = "UvpApprovalProcedureDoc"
 
     @Suppress("PropertyName")
-    val _uuid: String? = docUuid
+    val _uuid: String = dataset.identifier?.first() ?: UUID.randomUUID().toString()
 
-    val title = model.title.firstOrNull()
-    val description = model.description.firstOrNull()
+    val title = dataset.title.firstOrNull()
+
+    val description = dataset.description.firstOrNull()
+
+    val receiptDate = dataset.receiptDate.toString()
+
+    val prelimAssessment: Boolean = dataset.prelimAssessment
+
+    val pointOfContact: List<Contact>? = run {
+        // TODO How to map contacts? -> dcat:contactPoint -> vcard:Organization
+        val mail = dataset.contactPoint.firstOrNull()?.email
+        listOf()
+    }
+
+    val spatial: List<SpatialModel> = run {
+        // TODO How to map bounding box? -> dct:spatial -> dct:Location
+        listOf()
+    }
+
+    val eiaNumbers: List<KeyValue>? = run {
+        // TODO Load language from catalog and include in codelist request
+        val catalog = catalogService.getCatalogById(catalogId)
+        val uvpCodelistId = behaviourService.get(catalogId, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
+        val eiaNumbers: List<KeyValue> = dataset.number.map { value ->
+            val key = codelistHandler.getCodeListEntryId(uvpCodelistId, value, "de") ?: throw ClientException.withReason("Element '<eia:number>' of request body contains invalid value '$value'. It does NOT match a codelist entry.")
+            KeyValue(key, value, uvpCodelistId)
+        }
+        eiaNumbers
+    }
 }
