@@ -44,7 +44,7 @@ import org.springframework.stereotype.Service
 class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig, val behaviourService: BehaviourService, val codelistHandler: CodelistHandler) : IgeImporter {
     private val log = logger()
 
-    override fun run(catalogId: String, docUuid: String?, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
+    override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
         val deserializer = DcatApEiaDeserializer(null)
         val catalog: Catalog? = deserializer.deserialize(data as String).firstOrNull()
             ?: throw ServerException.withReason("DCAT-AP.EIA record could not be deserialized")

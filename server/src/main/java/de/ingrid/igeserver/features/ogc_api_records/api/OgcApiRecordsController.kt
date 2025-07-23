@@ -231,7 +231,7 @@ class OgcApiRecordsController(
         return ResponseEntity.ok().headers(responseHeaders).body(catalog)
     }
 
-    @DeleteMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping(value = ["/collections/{collectionId}/items/{recordId}"], produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE])
     @Operation(tags = ["OGC/Records"], responses = [], summary = "Remove a record from a collection", hidden = false)
     @ApiResponses(
         value = [

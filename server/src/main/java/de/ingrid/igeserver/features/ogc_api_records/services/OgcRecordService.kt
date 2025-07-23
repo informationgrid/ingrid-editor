@@ -144,7 +144,7 @@ class OgcRecordService(
         val bodyFormatter = formatFactory.getFormatter(contentType)
         val docArray = bodyFormatter.formatBeforeImport(collectionId, data, options.publish)
 
-        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, recordId, contentType, docArray)
+        val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, docArray)
         if (optimizedImportAnalysis.existingDatasets.isNotEmpty()) {
             val id = optimizedImportAnalysis.existingDatasets[0].uuid
             if (!recordMustExist) {

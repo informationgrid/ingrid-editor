@@ -104,7 +104,7 @@ class IsoImporterTest : AnnotationSpec() {
     @Test
     fun importGeoservice() {
         val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
-        val result = isoImporter.run("test", null, getFile("ingrid/import/iso_geoservice_full.xml"), mutableMapOf())
+        val result = isoImporter.run("test", getFile("ingrid/import/iso_geoservice_full.xml"), mutableMapOf())
 
         changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "D")
         changeUuidOfOrganisationTo(result, "Adressvererbung Test", "C")
@@ -119,7 +119,7 @@ class IsoImporterTest : AnnotationSpec() {
     fun importGeodataset() {
         setAdminAuthentication()
         val isoImporter = ISOImport(codelistService, catalogService, documentService, researchService, uploadConfig)
-        val result = isoImporter.run("test", null, getFile("ingrid/import/iso_geodataset_full.xml"), mutableMapOf())
+        val result = isoImporter.run("test", getFile("ingrid/import/iso_geodataset_full.xml"), mutableMapOf())
 
         changeUuidOfOrganisationTo(result, "Some Organisation", "some_organisation")
 
@@ -148,7 +148,7 @@ class IsoImporterTest : AnnotationSpec() {
             """.trimIndent(),
         )
 
-        val result = isoImporter.run("test", null, data, mutableMapOf())
+        val result = isoImporter.run("test", data, mutableMapOf())
         assertPointOfContact(result, "2B83F58E-60C2-11D6-884A-0000F4ABB4D8", expectedPersonSingle)
     }
 
@@ -175,7 +175,7 @@ class IsoImporterTest : AnnotationSpec() {
             """.trimIndent(),
         )
 
-        val result = isoImporter.run("test", null, data, mutableMapOf())
+        val result = isoImporter.run("test", data, mutableMapOf())
         assertPointOfContact(result, "2B83F58E-60C2-11D6-884A-0000F4ABB4D8", expectedPersonPositionName)
     }
 
@@ -205,7 +205,7 @@ class IsoImporterTest : AnnotationSpec() {
             """.trimIndent(),
         )
 
-        val result = isoImporter.run("test", null, data, mutableMapOf())
+        val result = isoImporter.run("test", data, mutableMapOf())
         changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "D")
 
         assertPointOfContact(result, "Objektbesitzer Institut", expectedParentOrganisation)
@@ -238,7 +238,7 @@ class IsoImporterTest : AnnotationSpec() {
             """.trimIndent(),
         )
 
-        val result = isoImporter.run("test", null, data, mutableMapOf())
+        val result = isoImporter.run("test", data, mutableMapOf())
         changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "D")
 
         assertPointOfContact(result, "Objektbesitzer Institut", expectedParentOrganisation)
@@ -265,7 +265,7 @@ class IsoImporterTest : AnnotationSpec() {
             """.trimIndent(),
         )
 
-        val result = isoImporter.run("test", null, data, mutableMapOf())
+        val result = isoImporter.run("test", data, mutableMapOf())
         changeUuidOfOrganisationTo(result, "Objektbesitzer Institut", "D")
 
         assertPointOfContact(result, "Objektbesitzer Institut", expectedParentOrganisation)
@@ -294,7 +294,7 @@ class IsoImporterTest : AnnotationSpec() {
             """.trimIndent(),
         )
 
-        val result = isoImporter.run("test", null, data, mutableMapOf())
+        val result = isoImporter.run("test", data, mutableMapOf())
         assertPointOfContact(result, "Institution with position name", expectedOrganisationWithPositionName)
     }
 
@@ -316,7 +316,7 @@ class IsoImporterTest : AnnotationSpec() {
         """.trimIndent()
 
         val data = addPointOfContact(minimalMetadata, pointOfContact)
-        val result = isoImporter.run("test", null, data, mutableMapOf())
+        val result = isoImporter.run("test", data, mutableMapOf())
         assertPointOfContact(result, "Objektbesitzer Institut", expectedOrganisationAsPointOfContact)
         assertPointOfContactHasTypes(result, "Objektbesitzer Institut", listOf("7", "12"))
     }

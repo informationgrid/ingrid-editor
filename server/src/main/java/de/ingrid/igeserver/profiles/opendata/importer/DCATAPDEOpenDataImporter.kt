@@ -48,7 +48,7 @@ class DCATAPDEOpenDataImporter(
 
     val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
-    override fun run(catalogId: String, docUuid: String?, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
+    override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
         val deserializeRecord = rdfDeserializer.deserializeRecord(data as String)
             ?: throw ServerException.withReason("DCAT-AP.DE record could not be deserialized")
 
