@@ -145,15 +145,13 @@ class OgcRecordService(
         val docArray = bodyFormatter.formatBeforeImport(collectionId, data, options.publish)
 
         val optimizedImportAnalysis = importService.prepareImportAnalysis(profile, collectionId, contentType, docArray)
-        if (optimizedImportAnalysis.existingDatasets.isNotEmpty()) {
-            val id = optimizedImportAnalysis.existingDatasets[0].uuid
-            if (!recordMustExist) {
-                throw ClientException.withReason("Import Failed: Record with ID '$id' already exists.")
-            } else {
-                if (recordId != id) throw ClientException.withReason("Update Failed: Target ID '$recordId' does not match dataset ID '$id'.")
-            }
-        } else {
+
+        if (optimizedImportAnalysis.existingDatasets.isEmpty()) {
             if (recordMustExist) throw NotFoundException.withMissingResource(recordId!!, "Record")
+        } else {
+            if (!recordMustExist) throw ClientException.withReason("Import Failed: Record with ID '$recordId' already exists.")
+            val id = optimizedImportAnalysis.existingDatasets[0].uuid
+            if (recordId != id) throw ClientException.withReason("Update Failed: Target ID '$recordId' does not match dataset ID '$id'.")
         }
         importService.importAnalyzedDatasets(
             principal = principal,
