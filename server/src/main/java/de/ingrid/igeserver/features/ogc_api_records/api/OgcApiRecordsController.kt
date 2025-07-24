@@ -78,7 +78,7 @@ enum class CollectionFormat(val mimeType: String, val exportType: String) {
 enum class RecordFormat(val mimeType: String, val exportType: String) {
     JSON("application/json", "internal"),
     HTML("text/html", "html"),
-    INGRID_ISO("text/xml", "ingridISO"),
+    INGRID_ISO("application/xml", "ingridISO"),
     GEOJSON("application/geo+json", "geojson"),
 }
 
