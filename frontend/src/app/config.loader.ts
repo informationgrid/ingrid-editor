@@ -37,7 +37,7 @@ import { ProfileService } from "./services/profile.service";
 import { catchError, filter, map, switchMap, take } from "rxjs/operators";
 import { ProfileMapper } from "../profiles/profile.mapper";
 import { Type } from "@angular/core";
-import { MatomoInitializerService } from "ngx-matomo-client";
+import { MatomoInitializerService, MatomoTracker } from "ngx-matomo-client";
 
 registerLocaleData(de);
 
@@ -79,6 +79,7 @@ export function ConfigLoader(
   translocoService: TranslocoService,
   generalStore: any,
   matomoInitializer: MatomoInitializerService,
+  matomoTracker: MatomoTracker,
 ) {
   function getRedirectNavigationCommand(catalogId: string, urlPath: string) {
     const splittedUrl = urlPath.split(";");
@@ -158,6 +159,7 @@ export function ConfigLoader(
   }
 
   function initializeMatomo(config: Configuration) {
+    matomoTracker.disableCookies();
     matomoInitializer.initializeTracker({
       siteId: config.matomoSiteId,
       trackerUrl: config.matomoUrl,
