@@ -76,9 +76,57 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
           ],
         }),
       ]),
+      {
+        key: "measurementPhases",
+        type: "bawPhases",
+        fieldArray: {
+          fieldGroup: [this.waterMeasurement()],
+        },
+        validators: {
+          consistent: (control, field) => {
+            const missingType = field.model?.some((item) => !item.type);
+            if (missingType) {
+              throw new Error(
+                "Datensatz inkonsistent. Bitte laden Sie die IGE-NG Seite erneut.",
+              );
+            }
+            return true;
+          },
+        },
+      },
     );
     return fieldConfig;
   };
+
+  waterMeasurement() {
+    return {
+      name: "waterMeasurement",
+      expressions: {
+        hide: (field: FormlyFieldConfig) =>
+          field.model?.type !== "waterMeasurement",
+      },
+      props: {
+        label: "Wasserbau Messdaten",
+      },
+      fieldGroup: [
+        this.addSection("Wasserbau Messdaten", [
+          { key: "type" },
+          this.getMeasuringMethodFieldConfig(),
+          this.getSpatialityFieldConfig(),
+          this.getMeasuringDepthFieldConfig(),
+          this.common.getTimestepFieldConfig(),
+          this.getFrequencyFieldConfig(),
+          this.getAverageWaterLevelFieldConfig(),
+          this.getZeroLevelFieldConfig(),
+          this.getDrainFieldConfig(),
+          this.getGaugeFieldConfig(),
+          this.getTargetParametersFieldConfig(),
+          this.getPosAccuracyFieldConfig(),
+          this.getDataQualityDescFieldConfig(),
+        ]),
+      ],
+    };
+  }
 
   getMeasuringMethodFieldConfig() {
     return this.addRepeatList("measuringMethod", "Messverfahren", {

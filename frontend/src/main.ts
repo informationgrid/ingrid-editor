@@ -152,6 +152,7 @@ import {
 } from "ngx-matomo-client";
 import { AppInjector } from "./app/app_injector";
 import { TimepickerTypeComponent } from "./app/formly/types/time-picker-type/timepicker-type.component";
+import { BawSectionsComponent } from "./app/formly/types/baw-sections/baw-sections.component";
 
 if (environment.production) {
   enableProdMode();
@@ -258,6 +259,10 @@ bootstrapApplication(AppComponent, {
           {
             name: "uvpPhases",
             component: UvpSectionsComponent,
+          },
+          {
+            name: "bawPhases",
+            component: BawSectionsComponent,
           },
           {
             name: "referencedDocuments",
