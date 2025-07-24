@@ -147,6 +147,7 @@ import { GermanDateIntl } from "./app/services/german-date.intl";
 import { GeneralStore } from "./app/store/general.store";
 import {
   MatomoInitializerService,
+  MatomoTracker,
   provideMatomo,
   withRouter,
 } from "ngx-matomo-client";
@@ -381,6 +382,7 @@ bootstrapApplication(AppComponent, {
         inject(TranslocoService),
         inject(GeneralStore),
         inject(MatomoInitializerService),
+        inject(MatomoTracker),
       );
       return initializerFn();
     }),
