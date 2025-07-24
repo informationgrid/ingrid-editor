@@ -18,7 +18,7 @@
  * limitations under the Licence.
  */
 import { Component, OnInit } from "@angular/core";
-import { Observable, Subscription } from "rxjs";
+import { Observable, of, Subscription } from "rxjs";
 import { UserService } from "../../../services/user/user.service";
 import { BackendUser, FrontendUser } from "../../user";
 import {
@@ -27,14 +27,13 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { catchError, filter, tap } from "rxjs/operators";
+import { catchError, filter, finalize, tap } from "rxjs/operators";
 import { MatDialogRef } from "@angular/material/dialog";
 import {
   FormlyFieldConfig,
   FormlyForm,
   FormlyFormOptions,
 } from "@ngx-formly/core";
-import { ModalService } from "../../../services/modal/modal.service";
 import { IgeError } from "../../../models/ige-error";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DialogTemplateComponent } from "../../../shared/dialog-template/dialog-template.component";
@@ -83,7 +82,6 @@ export class NewUserDialogComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<NewUserDialogComponent>,
     private userService: UserService,
-    private modalService: ModalService,
   ) {}
 
   ngOnInit(): void {
@@ -148,43 +146,21 @@ export class NewUserDialogComponent implements OnInit {
     this.userService
       .createUser(user, !this.importExternal)
       .pipe(
-        catchError((error) => this.handleCreateUserError(error)),
-        filter((user) => user),
+        filter((user) => user !== undefined),
+        catchError((error: IgeError) => {
+          if (error.message.includes("Problem beim Versenden der Email")) {
+            this.dialogRef.close();
+            throw error;
+            return of(null);
+          }
+        }),
+        finalize(() => this.form.enable()),
       )
       .subscribe((u) => this.dialogRef.close(u));
   }
 
   showGroupsPage(show: boolean) {
     this.options.formState.showGroups = show;
-  }
-
-  private handleCreateUserError(error: any): Observable<any> {
-    this.form.enable();
-    const errorText: string = error.error?.errorText;
-    if (error.status === 409) {
-      if (errorText.includes("User already exists with login")) {
-        const login = errorText.split(" ").pop();
-        this.modalService.showJavascriptError(
-          "Es existiert bereits ein Benutzer mit dem Login: " + login,
-        );
-        return null;
-      } else {
-        let EMAIL_NOT_UNIQUE =
-          "New user cannot be created, because another user might have the same email address";
-        if (errorText.includes(EMAIL_NOT_UNIQUE)) {
-          throw new IgeError(
-            "Es existiert bereits ein Benutzer mit dieser Mailadresse",
-          );
-        } else {
-          throw error;
-        }
-      }
-    } else if (errorText.includes("Mail server connection failed")) {
-      this.dialogRef.close(null);
-      throw new IgeError("Es gab ein Problem beim Versenden der Email");
-    } else {
-      throw error;
-    }
   }
 
   handleSubmit() {

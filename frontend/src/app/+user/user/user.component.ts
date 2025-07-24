@@ -221,16 +221,15 @@ export class UserComponent implements OnInit, OnDestroy {
       if (allClear)
         this.dialog
           .open(NewUserDialogComponent, {
+            width: "490px",
             hasBackdrop: true,
             disableClose: true,
           })
           .afterClosed()
           .subscribe((result) => {
-            if (result?.id) {
-              this.userService
-                .getUsers()
-                .subscribe(() => this.userService.selectedUser$.set(result));
-            }
+            this.userService
+              .getUsers()
+              .subscribe(() => this.userService.selectedUser$.set(result));
           });
     });
   }
