@@ -66,7 +66,7 @@ class DcatApEiaMapper(
 
     val title = dataset.title.firstOrNull()
 
-    val description = dataset.description.firstOrNull()
+    val description = dataset.description.firstOrNull()?.trimIndent()?.trim()
 
     val receiptDate = dataset.receiptDate.toString()
 
