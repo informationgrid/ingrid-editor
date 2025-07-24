@@ -44,6 +44,11 @@ import org.springframework.stereotype.Service
 class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig, val behaviourService: BehaviourService, val codelistHandler: CodelistHandler) : IgeImporter {
     private val log = logger()
 
+    private val mapper = jacksonObjectMapper()
+        .registerModule(JavaTimeModule())
+        .registerModule(JtsModule())
+        .registerKotlinModule()
+
     override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
         val deserializer = DcatApEiaDeserializer(null)
         val catalog: Catalog? = deserializer.deserialize(data as String).firstOrNull()
@@ -62,11 +67,6 @@ class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val docu
         )
 
         val parsedDoc = dcatApEiaMapper.getDocument()
-
-        val mapper = jacksonObjectMapper()
-            .registerModule(JavaTimeModule())
-            .registerModule(JtsModule())
-            .registerKotlinModule()
 
         val json = mapper.valueToTree<JsonNode>(parsedDoc)
 
