@@ -255,8 +255,7 @@ class OgcRecordService(
     fun prepareCatalog(collectionId: String, exporter: OgcCatalogExporter, format: CollectionFormat): ByteArray {
         val catalog = exportCatalog(collectionId, exporter)
         val bodyFormatter = formatFactory.getFormatter(format.mimeType)
-        val formatedCatalog = bodyFormatter.collections(listOf(catalog), true, null, null)
-        return formatedCatalog
+        return bodyFormatter.collections(listOf(catalog), true, null, null)
     }
 
     fun prepareCatalogs(principal: Principal, format: CollectionFormat): ByteArray {
@@ -265,8 +264,7 @@ class OgcRecordService(
         val catalogList: MutableList<Any> = mutableListOf()
         for (catalog in catalogs) catalogList.add(exportCatalog(catalog.identifier, exporter))
         val bodyFormatter = formatFactory.getFormatter(format.mimeType)
-        val formatedCatalogs = bodyFormatter.collections(catalogList, false, null, null)
-        return formatedCatalogs
+        return bodyFormatter.collections(catalogList, false, null, null)
     }
 
     private fun exportCatalog(collectionId: String, exporter: OgcCatalogExporter): Any {
