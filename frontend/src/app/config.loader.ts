@@ -159,7 +159,7 @@ export function ConfigLoader(
   }
 
   function initializeMatomo(config: Configuration) {
-    matomoTracker.disableCookies();
+    if (config.matomoDisableCookies) matomoTracker.disableCookies();
     matomoInitializer.initializeTracker({
       siteId: config.matomoSiteId,
       trackerUrl: config.matomoUrl,
