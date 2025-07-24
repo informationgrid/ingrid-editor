@@ -184,8 +184,8 @@ class OgcRecordService(
             .filter { it == requestedFormat }
             .forEach {
                 list.add(
-                    createLink(
-                        url = recordBaseUrl + requestedFormat + limitString + selfOffsetString,
+                    Link(
+                        recordBaseUrl + requestedFormat + limitString + selfOffsetString,
                         "self",
                         it.mimeType,
                         "Link to this response",
@@ -197,8 +197,8 @@ class OgcRecordService(
         CollectionFormat.entries.forEach {
             val supportedFormat = it
             list.add(
-                createLink(
-                    url = "$baseUrl?f=$supportedFormat",
+                Link(
+                    "$baseUrl?f=$supportedFormat",
                     "collection",
                     it.mimeType,
                     "Link to the containing collection in format '$supportedFormat' ",
@@ -212,8 +212,8 @@ class OgcRecordService(
             val mimeType = it.mimeType
             if (supportedFormat != requestedFormat) {
                 list.add(
-                    createLink(
-                        url = recordBaseUrl + supportedFormat + limitString + selfOffsetString,
+                    Link(
+                        recordBaseUrl + supportedFormat + limitString + selfOffsetString,
                         "alternate",
                         mimeType,
                         "Link to this response in format '$supportedFormat' ",
@@ -222,8 +222,8 @@ class OgcRecordService(
             }
             if (totalHits > nextOffset) {
                 list.add(
-                    createLink(
-                        url = recordBaseUrl + supportedFormat + limitString + nextOffsetString,
+                    Link(
+                        recordBaseUrl + supportedFormat + limitString + nextOffsetString,
                         "next",
                         mimeType,
                         "Link to the next set of records in format '$supportedFormat' ",
@@ -232,8 +232,8 @@ class OgcRecordService(
             }
             if (offset > 0) {
                 list.add(
-                    createLink(
-                        url = recordBaseUrl + supportedFormat + limitString + prevOffsetString,
+                    Link(
+                        recordBaseUrl + supportedFormat + limitString + prevOffsetString,
                         "prev",
                         mimeType,
                         "Link to the previous set of records in format '$supportedFormat' ",
@@ -244,13 +244,6 @@ class OgcRecordService(
 
         return list
     }
-
-    private fun createLink(url: String, rel: String, type: String, title: String): Link = Link(
-        href = url,
-        rel = rel,
-        type = type,
-        title = title,
-    )
 
     fun prepareCatalog(collectionId: String, exporter: OgcCatalogExporter, format: CollectionFormat): ByteArray {
         val catalog = exportCatalog(collectionId, exporter)
