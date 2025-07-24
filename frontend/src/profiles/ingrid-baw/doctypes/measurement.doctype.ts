@@ -48,39 +48,11 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
         this.getPosAccuracyFieldConfig(),
         this.getDataQualityDescFieldConfig(),
       ]),
-      this.addSection("Neue Felder", [
-        this.addRepeatList("researchGoal", "Untersuchungsziel", {
-          options: [
-            {
-              label: "Zustand des Bauwerks (Gutachten)",
-              value: "Zustand des Bauwerks (Gutachten)",
-            },
-            {
-              label: "Forschung & Entwicklung (F&E)",
-              value: "Forschung & Entwicklung (F&E)",
-            },
-          ],
-        }),
-
-        this.addSelect("measurementDirection", "Messrichtung", {
-          options: [
-            { label: "horizontal", value: "horizontal" },
-            { label: "vertikal", value: "vertikal" },
-            { label: "3D", value: "3D" },
-          ],
-        }),
-        this.addRepeatList("parameter", "Messparameter (Zielparameter?)", {
-          options: [
-            { label: "Koordinaten", value: "Koordinaten" },
-            { label: "Temperatur", value: "Temperatur" },
-          ],
-        }),
-      ]),
       {
         key: "measurementPhases",
         type: "bawPhases",
         fieldArray: {
-          fieldGroup: [this.waterMeasurement()],
+          fieldGroup: [this.waterMeasurement(), this.bautechnickMeasurement()],
         },
         validators: {
           consistent: (control, field) => {
@@ -97,6 +69,50 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
     );
     return fieldConfig;
   };
+
+  bautechnickMeasurement() {
+    return {
+      name: "bautechnickMeasurement",
+      expressions: {
+        hide: (field: FormlyFieldConfig) =>
+          field.model?.type !== "bautechnickMeasurement",
+      },
+      props: {
+        label: "Bautechnik Messdaten",
+      },
+      fieldGroup: [
+        this.addSection("Bautechnik Messdaten", [
+          { key: "type" },
+          this.addRepeatList("researchGoal", "Untersuchungsziel", {
+            options: [
+              {
+                label: "Zustand des Bauwerks (Gutachten)",
+                value: "Zustand des Bauwerks (Gutachten)",
+              },
+              {
+                label: "Forschung & Entwicklung (F&E)",
+                value: "Forschung & Entwicklung (F&E)",
+              },
+            ],
+          }),
+
+          this.addSelect("measurementDirection", "Messrichtung", {
+            options: [
+              { label: "horizontal", value: "horizontal" },
+              { label: "vertikal", value: "vertikal" },
+              { label: "3D", value: "3D" },
+            ],
+          }),
+          this.addRepeatList("parameter", "Messparameter (Zielparameter?)", {
+            options: [
+              { label: "Koordinaten", value: "Koordinaten" },
+              { label: "Temperatur", value: "Temperatur" },
+            ],
+          }),
+        ]),
+      ],
+    };
+  }
 
   waterMeasurement() {
     return {
