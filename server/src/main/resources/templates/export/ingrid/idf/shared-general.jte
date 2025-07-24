@@ -1,6 +1,7 @@
 @import de.ingrid.igeserver.exporter.AddressModelTransformer
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.exporter.model.CharacterStringModel
+@import de.ingrid.igeserver.exporter.model.GeoElementType
 @import de.ingrid.igeserver.exporter.model.GeographicElement
 @import de.ingrid.igeserver.profiles.ingrid.exporter.*
 @import de.ingrid.igeserver.profiles.ingrid.exporter.OperatesOn
@@ -559,60 +560,72 @@
         @endif
         @for(GeographicElement ref : page.getGeographicElements())
             <gmd:geographicElement>
-                <gmd:${ref.getEXType()}>
-                    @if(ref.getHasExtentTypeCode())
-                    <gmd:extentTypeCode>
-                        <gco:Boolean>true</gco:Boolean>
-                    </gmd:extentTypeCode>
-                    @endif
-                    @if(ref.getGeographicIdentifier() != null)
-                        <gmd:geographicIdentifier>
-                            @if(ref.getAuthority() != null)
-                            <gmd:authority>
-                                <gmd:CI_Citation>
-                                    <gmd:title>
-                                        <gco:CharacterString>${ref.getAuthority().getTitle()}</gco:CharacterString>
-                                    </gmd:title>
-                                    <gmd:date>
-                                        <gmd:CI_Date>
+                @if(ref.getType() == GeoElementType.DESCRIPTION)
+                    <gmd:EX_GeographicDescription>
+                        @if(ref.getHasExtentTypeCode())
+                            <gmd:extentTypeCode>
+                                <gco:Boolean>true</gco:Boolean>
+                            </gmd:extentTypeCode>
+                        @endif
+                            <gmd:geographicIdentifier>
+                                @if(ref.getAuthority() != null)
+                                    <gmd:authority>
+                                        <gmd:CI_Citation>
+                                            <gmd:title>
+                                                <gco:CharacterString>${ref.getAuthority().getTitle()}</gco:CharacterString>
+                                            </gmd:title>
                                             <gmd:date>
-                                                <gco:Date>${ref.getAuthority().getDate()}</gco:Date>
+                                                <gmd:CI_Date>
+                                                    <gmd:date>
+                                                        <gco:Date>${ref.getAuthority().getDate()}</gco:Date>
+                                                    </gmd:date>
+                                                    <gmd:dateType>
+                                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+                                                    </gmd:dateType>
+                                                </gmd:CI_Date>
                                             </gmd:date>
-                                            <gmd:dateType>
-                                                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
-                                            </gmd:dateType>
-                                        </gmd:CI_Date>
-                                    </gmd:date>
-                                </gmd:CI_Citation>
-                            </gmd:authority>
-                            @endif
-                            <gmd:MD_Identifier>
-                                <gmd:code>
-                                    @template.export.ingrid.idf.anchorOrCharacterString(model = ref.getGeographicIdentifier())
-                                </gmd:code>
-                            </gmd:MD_Identifier>
-                        </gmd:geographicIdentifier>
-                    @endif
-                @if(ref.getBoundingBox() != null)
-                    <gmd:westBoundLongitude>
-                        <gco:Decimal>${ref.getBoundingBox().getLon1()}</gco:Decimal>
-                    </gmd:westBoundLongitude>
-                    <gmd:eastBoundLongitude>
-                        <gco:Decimal>${ref.getBoundingBox().getLon2()}</gco:Decimal>
-                    </gmd:eastBoundLongitude>
-                    <gmd:southBoundLatitude>
-                        <gco:Decimal>${ref.getBoundingBox().getLat1()}</gco:Decimal>
-                    </gmd:southBoundLatitude>
-                    <gmd:northBoundLatitude>
-                        <gco:Decimal>${ref.getBoundingBox().getLat2()}</gco:Decimal>
-                    </gmd:northBoundLatitude>
+                                        </gmd:CI_Citation>
+                                    </gmd:authority>
+                                @endif
+                                <gmd:MD_Identifier>
+                                    <gmd:code>
+                                        @template.export.ingrid.idf.anchorOrCharacterString(model = ref.getGeographicIdentifier())
+                                    </gmd:code>
+                                </gmd:MD_Identifier>
+                            </gmd:geographicIdentifier>
+                        </gmd:EX_GeographicDescription>
+                @elseif(ref.getType() == GeoElementType.BOUNDINGBOX)
+                    <gmd:EX_GeographicBoundingBox>
+                        @if(ref.getHasExtentTypeCode())
+                            <gmd:extentTypeCode>
+                                <gco:Boolean>true</gco:Boolean>
+                            </gmd:extentTypeCode>
+                        @endif
+                        <gmd:westBoundLongitude>
+                            <gco:Decimal>${ref.getBoundingBox().getLon1()}</gco:Decimal>
+                        </gmd:westBoundLongitude>
+                        <gmd:eastBoundLongitude>
+                            <gco:Decimal>${ref.getBoundingBox().getLon2()}</gco:Decimal>
+                        </gmd:eastBoundLongitude>
+                        <gmd:southBoundLatitude>
+                            <gco:Decimal>${ref.getBoundingBox().getLat1()}</gco:Decimal>
+                        </gmd:southBoundLatitude>
+                        <gmd:northBoundLatitude>
+                            <gco:Decimal>${ref.getBoundingBox().getLat2()}</gco:Decimal>
+                        </gmd:northBoundLatitude>
+                    </gmd:EX_GeographicBoundingBox>
+                @elseif(ref.getType() == GeoElementType.BOUNDINGPOLYGON)
+                    <gmd:EX_BoundingPolygon>
+                        @if(ref.getHasExtentTypeCode())
+                            <gmd:extentTypeCode>
+                                <gco:Boolean>true</gco:Boolean>
+                            </gmd:extentTypeCode>
+                        @endif
+                        <gmd:polygon>
+                            $unsafe{ref.getPolygon()}
+                        </gmd:polygon>
+                    </gmd:EX_BoundingPolygon>
                 @endif
-                    @if(TransformationTools.hasValue(ref.getPolygon()))
-                    <gmd:polygon>
-                        $unsafe{ref.getPolygon()}
-                    </gmd:polygon>
-                    @endif
-                </gmd:${ref.getEXType()}>
             </gmd:geographicElement>
         @endfor
         @if(page.getResourceDateType() != null && page.getHasAnyResourceDate())

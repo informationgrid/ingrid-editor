@@ -119,14 +119,7 @@ data class GeographicElement(
     val authority: Authority? = null,
     val boundingBox: BoundingBoxModel? = null,
     val polygon: String? = null,
-) {
-    val EXType: String
-        get() = when (type) {
-            GeoElementType.DESCRIPTION -> "EX_GeographicDescription"
-            GeoElementType.BOUNDINGBOX -> "EX_GeographicBoundingBox"
-            GeoElementType.BOUNDINGPOLYGON -> "EX_BoundingPolygon"
-        }
-}
+)
 
 data class Authority(
     val title: String,
