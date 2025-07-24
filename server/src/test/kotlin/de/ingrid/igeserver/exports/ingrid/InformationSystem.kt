@@ -22,6 +22,7 @@ package de.ingrid.igeserver.exports.ingrid
 import MockDocument
 import de.ingrid.igeserver.exports.GENERATED_UUID_REGEX
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.schema.SchemaUtils
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
@@ -49,6 +50,7 @@ class InformationSystem : ShouldSpec() {
 
     // this bean must be mocked, although it might not be used in this class
     private val catalogService = mockk<CatalogService>()
+    private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
 
     private val codelistHandler = mockk<CodelistHandler>()
     private val uploadConfig = mockk<UploadConfig>()
@@ -57,7 +59,7 @@ class InformationSystem : ShouldSpec() {
 
     override suspend fun beforeSpec(spec: Spec) {
         clearAllMocks()
-        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService)
+        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository)
 
         mockkObject(SpringContext)
         every { SpringContext.getBean(DocumentService::class.java) } answers {
@@ -134,7 +136,8 @@ class InformationSystem : ShouldSpec() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/information-system.maximal.expected.idf.xml")
+            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/information-system.maximal.expected.idf.xml"))
+            result shouldBe expectedXml
         }
     }
 }

@@ -830,7 +830,7 @@ open class IngridModelTransformer(
 
     val parentIdentifier: String? = data.parentIdentifier
     val hierarchyParent: String? = data._parent
-    val modifiedMetadataDate: String = formatDate(formatterOnlyDate, data.modifiedMetadata ?: model._contentModified)
+
     var pointOfContact: List<AddressModelTransformer> = emptyList()
     var orderInfoContact: List<AddressModelTransformer>
     fun getAddressesToUuids() = pointOfContact.flatMap { model ->

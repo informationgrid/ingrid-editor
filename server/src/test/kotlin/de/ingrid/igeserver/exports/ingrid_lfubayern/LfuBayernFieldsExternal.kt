@@ -50,6 +50,7 @@ class LfuBayernFieldsExternal : GeodatasetBase() {
                 this.uploadConfig,
                 this.catalogService,
                 this.documentService,
+                this.documentWrapperRepository,
             )
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog("ingrid-lfubayern")
         every { codelistHandler.getCatalogCodelistValue(any(), "20000", "1") } returns "geological eins"
