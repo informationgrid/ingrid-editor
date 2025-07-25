@@ -150,9 +150,8 @@ export class NewUserDialogComponent implements OnInit {
         catchError((error: IgeError) => {
           if (error.message.includes("Problem beim Versenden der Email")) {
             this.dialogRef.close();
-            throw error;
-            return of(null);
           }
+          throw error;
         }),
         finalize(() => this.form.enable()),
       )

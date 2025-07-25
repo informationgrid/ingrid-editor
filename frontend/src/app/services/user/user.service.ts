@@ -172,12 +172,14 @@ export class UserService {
           panelClass: "green",
         });
       }),
-      catchError((error) => this.handleCreateUserError(error)),
+      catchError((error) => this.handleUserOperationError(error)),
     );
   }
 
   deleteUser(userId: number): Observable<any> {
-    return this.dataService.deleteUser(userId);
+    return this.dataService
+      .deleteUser(userId)
+      .pipe(catchError((error) => this.handleUserOperationError(error)));
   }
 
   getAssignedDatasets(userId: number): Observable<number[]> {
@@ -227,7 +229,7 @@ export class UserService {
     return this.dataService.resetPassword(login);
   }
 
-  private handleCreateUserError(error: any): Observable<any> {
+  private handleUserOperationError(error: any): Observable<any> {
     const errorText: string = error.error?.errorText;
     const EMAIL_NOT_UNIQUE =
       "New user cannot be created, because another user might have the same email address";
