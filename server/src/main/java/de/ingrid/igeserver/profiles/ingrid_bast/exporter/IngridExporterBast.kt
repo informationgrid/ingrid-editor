@@ -45,8 +45,7 @@ import kotlin.reflect.KClass
 class IngridExporterBast(
     idfExporter: IngridIdfExporterBast,
     luceneExporter: IngridLuceneExporterBast,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridIndexExporter(idfExporter, luceneExporter) {
 
     override val typeInfo =
         ExportTypeInfo(
@@ -68,7 +67,8 @@ class IngridIdfExporterBast(
     uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService) {
+    documentWrapperRepository: DocumentWrapperRepository,
+) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -137,8 +137,7 @@ class IngridLuceneExporterBast(
 class IngridISOExporterBast(
     idfExporter: IngridIdfExporterBast,
     luceneExporter: IngridLuceneExporterBast,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridExporterBast(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridExporterBast(idfExporter, luceneExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,

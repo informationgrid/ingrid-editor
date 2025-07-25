@@ -29,21 +29,32 @@ import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.FingerprintInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.UploadConfig
+import de.ingrid.utils.ElasticDocument
+import de.ingrid.utils.xml.ConfigurableNamespaceContext
+import de.ingrid.utils.xml.IDFNamespaceContext
+import de.ingrid.utils.xml.IgcProfileNamespaceContext
+import de.ingrid.utils.xml.XMLUtils
+import de.ingrid.utils.xpath.XPathUtils
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
 import gg.jte.output.StringOutput
+import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.w3c.dom.Node
+import java.time.OffsetDateTime
 import kotlin.reflect.KClass
 
 @Service
@@ -52,11 +63,24 @@ class IngridIDFExporter(
     val uploadConfig: UploadConfig,
     val catalogService: CatalogService,
     @Lazy val documentService: DocumentService,
+    val documentWrapperRepository: DocumentWrapperRepository,
 ) : IgeExporter {
 
     val log = logger()
 
     protected val mapper = ObjectMapper().registerKotlinModule()
+
+    private lateinit var xpathUtils: XPathUtils
+
+    val elementsRemovedFromIsoBeforeFingerprint = arrayOf("/gmd:MD_Metadata/gmd:dateStamp", "//@gml:id")
+
+    init {
+        val cnc = ConfigurableNamespaceContext()
+        cnc.addNamespaceContext(IDFNamespaceContext())
+        cnc.addNamespaceContext(IgcProfileNamespaceContext())
+
+        xpathUtils = XPathUtils(cnc)
+    }
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -85,8 +109,11 @@ class IngridIDFExporter(
         // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
         //       are new lines for example
         val prettyXml = output.toString() // prettyFormat(output.toString(), 4)
-        log.debug(prettyXml)
-        return prettyXml
+
+        // handle fingerprint and update publish date
+        val processedXml = handleFingerprint(catalogId, doc.uuid, prettyXml)
+        log.debug(processedXml)
+        return processedXml
     }
 
     fun getTemplateForDoctype(type: String): String = when (type) {
@@ -156,6 +183,79 @@ class IngridIDFExporter(
                 "model" to modelTransformer,
             ),
         )
+    }
+
+    fun handleFingerprint(catalogId: String, uuid: String, idf: String): String {
+        val fingerprint = calculateFingerprint(ElasticDocument().apply { put("idf", idf) })
+
+        val previousFingerprintInfo = getPreviousFingerprint(catalogId, uuid)
+
+        val idfDoc = convertStringToDocument(idf)
+
+        addPublishDateToIndexDocument(
+            idfDoc!!,
+            if (fingerprint == previousFingerprintInfo?.fingerprint) previousFingerprintInfo.date else OffsetDateTime.now(),
+        )
+
+        return XMLUtils.toString(idfDoc)
+    }
+
+    private fun addPublishDateToIndexDocument(idf: org.w3c.dom.Document, publishDate: OffsetDateTime) {
+        // TODO: use correct date format for IDF depending on the dateStamp element
+        //  combine with baw functionality where dateStamp Type can be set by profile.
+        val date = publishDate.toLocalDate().toString()
+        if (xpathUtils.nodeExists(idf, "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:Date")) {
+            XMLUtils.createOrReplaceTextNode(
+                xpathUtils.getNode(
+                    idf,
+                    "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:Date",
+                ),
+                date,
+            )
+        } else if (xpathUtils.nodeExists(idf, "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:DateTime")) {
+            XMLUtils.createOrReplaceTextNode(
+                xpathUtils.getNode(
+                    idf,
+                    "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:DateTime",
+                ),
+                date,
+            )
+        }
+    }
+
+    private fun getPreviousFingerprint(catalogId: String, uuid: String): FingerprintInfo? {
+        val wrapper = documentWrapperRepository.findByCatalog_IdentifierAndUuid(catalogId, uuid)
+        return wrapper.fingerprint?.find { it.exportType == typeInfo.type }
+    }
+
+    override fun calculateFingerprint(doc: Any): String {
+        doc as ElasticDocument
+        if (doc["idf"] == null) return ""
+
+        val idf = doc["idf"] as String
+        val idfDoc = convertStringToDocument(idf)
+
+        return createFingerprint(
+            transformIDFtoIso(idfDoc!!).also { prepareIsoForFingerprinting(it) },
+        )
+    }
+
+    private fun createFingerprint(doc: org.w3c.dom.Document): String {
+        val isoDocAsString = XMLUtils.toString(doc, false)
+        return DigestUtils.sha256Hex(isoDocAsString)
+    }
+
+    private fun prepareIsoForFingerprinting(doc: org.w3c.dom.Document) {
+        elementsRemovedFromIsoBeforeFingerprint.forEach {
+            removeNodes(doc, it)
+        }
+    }
+
+    private fun removeNodes(isoDoc: Node, xpath: String) {
+        val nodes = xpathUtils.getNodeList(isoDoc, xpath)
+        for (i in 0 until nodes.length) {
+            XMLUtils.remove(nodes.item(i))
+        }
     }
 }
 

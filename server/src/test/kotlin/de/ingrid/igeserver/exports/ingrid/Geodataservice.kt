@@ -67,9 +67,9 @@ class Geodataservice : ShouldSpec() {
 
     override suspend fun beforeSpec(spec: Spec) {
         clearAllMocks()
-        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService)
+        this.exporter = IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository)
         this.luceneExporter = IngridLuceneExporter(codelistHandler, uploadConfig, catalogService, documentService)
-        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, documentWrapperRepository)
+        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter)
 
         mockkObject(SpringContext.Companion)
         every { SpringContext.getBean(DocumentService::class.java) } answers {
@@ -137,7 +137,8 @@ class Geodataservice : ShouldSpec() {
         should("minimalExport") {
             val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.minimal.sample.json")
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.minimal.expected.idf.xml")
+            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.minimal.expected.idf.xml"))
+            result shouldBe expectedXml
             result shouldNotContain "<gmd:distributionInfo>"
         }
 
@@ -151,7 +152,8 @@ class Geodataservice : ShouldSpec() {
             result = result
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.maximal.expected.idf.xml")
+            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.maximal.expected.idf.xml"))
+            result shouldBe expectedXml
         }
 
         /*
@@ -162,7 +164,8 @@ class Geodataservice : ShouldSpec() {
             every { documentService.getIncomingReferenceUUIDs(any(), "test-catalog", any()) } returns emptySet()
             val result = exportJsonToXML(exporter, "/export/ingrid/geo-service.DownloadDienste.json")
             result shouldNotBe null
-            result shouldBe SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.DownloadDienste.expected.idf.xml")
+            val expectedXml = updateDatestampInExpectedXml(SchemaUtils.getJsonFileContent("/export/ingrid/geo-service.DownloadDienste.expected.idf.xml"))
+            result shouldBe expectedXml
         }
 
         xshould("completeLuceneExport") {

@@ -35,12 +35,14 @@ import { Group } from "../../models/user-group";
 // @ts-ignore
 import { FormlyAttributeEvent } from "@ngx-formly/core/lib/models";
 import { GroupStore } from "../../store/group/group.store";
+import { ModalService } from "../modal/modal.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class UserService {
   private groupStore = inject(GroupStore);
+  private modalService = inject(ModalService);
 
   availableRoles: SelectOptionUi[] = [
     new SelectOption("cat-admin", "Katalog-Administrator"),
@@ -170,11 +172,14 @@ export class UserService {
           panelClass: "green",
         });
       }),
+      catchError((error) => this.handleUserOperationError(error)),
     );
   }
 
   deleteUser(userId: number): Observable<any> {
-    return this.dataService.deleteUser(userId);
+    return this.dataService
+      .deleteUser(userId)
+      .pipe(catchError((error) => this.handleUserOperationError(error)));
   }
 
   getAssignedDatasets(userId: number): Observable<number[]> {
@@ -222,5 +227,50 @@ export class UserService {
 
   resetPassword(login: string) {
     return this.dataService.resetPassword(login);
+  }
+
+  private handleUserOperationError(error: any): Observable<any> {
+    const errorText: string = error.error?.errorText;
+    const EMAIL_NOT_UNIQUE =
+      "New user cannot be created, because another user might have the same email address";
+    if (error.status === 409) {
+      if (errorText.includes("User already exists with login")) {
+        const login = errorText.split(" ").pop();
+        this.modalService.showJavascriptError(
+          "Es existiert bereits ein Benutzer mit dem Login: " + login,
+        );
+        return null;
+      } else if (errorText.includes(EMAIL_NOT_UNIQUE)) {
+        throw new IgeError(
+          "Es existiert bereits ein Benutzer mit dieser Mailadresse",
+        );
+      } else {
+        throw error;
+      }
+    } else if (errorText.includes("Mail server connection failed")) {
+      throw new IgeError("Es gab ein Problem beim Versenden der Email");
+    } else {
+      if (errorText.includes("Error creating user")) {
+        let reason;
+        try {
+          reason = JSON.parse(errorText.substring(errorText.indexOf("{")));
+        } catch (e) {
+          throw error;
+        }
+        if (
+          reason.field === "username" &&
+          reason.errorMessage === "error-invalid-lengthX"
+        ) {
+          throw new IgeError(
+            `Der Benutzer konnte nicht erstellt werden, da der Login eine ungültige Länge hat. Erlaubt sind ${reason.params[1]}-${reason.params[2]} Zeichen.`,
+          );
+        } else {
+          throw new IgeError(
+            `Der Benutzer konnte nicht erstellt werden. Feld: "${reason.field}" Grund: "${reason.errorMessage}"`,
+          );
+        }
+      }
+      throw error;
+    }
   }
 }

@@ -30,7 +30,6 @@ import de.ingrid.igeserver.utils.getString
 open class ProjectModelTransformerBaw(transformerConfig: TransformerConfig) : ProjectModelTransformer(transformerConfig) {
 
     override fun mapDocumentType(type: String): String = mapDocumentTypeBaw(type) ?: super.mapDocumentType(type)
-    override val metadataDateAsDateTime = true
     override val linkToVerticalCRS = true
     override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)
     override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() + getBawKeywords(this).keywords.mapNotNull { it.name }

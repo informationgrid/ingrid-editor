@@ -21,7 +21,6 @@ package de.ingrid.igeserver.profiles.ingrid_baw.exporter
 
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporterAddress
-import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.stereotype.Service
 
@@ -29,8 +28,7 @@ import org.springframework.stereotype.Service
 class IngridExporterAddressBaw(
     idfExporter: IngridIdfExporterBaw,
     luceneExporter: IngridLuceneExporterBaw,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridIndexExporterAddress(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridIndexExporterAddress(idfExporter, luceneExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.ADDRESS,

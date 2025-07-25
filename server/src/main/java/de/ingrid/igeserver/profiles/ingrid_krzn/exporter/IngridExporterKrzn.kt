@@ -44,8 +44,7 @@ import kotlin.reflect.KClass
 class IngridExporterKrzn(
     idfExporter: IngridIdfExporterKrzn,
     luceneExporter: IngridLuceneExporterKrzn,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridIndexExporter(idfExporter, luceneExporter) {
 
     override val typeInfo =
         ExportTypeInfo(
@@ -67,7 +66,8 @@ class IngridIdfExporterKrzn(
     uploadConfig: UploadConfig,
     catalogService: CatalogService,
     @Lazy documentService: DocumentService,
-) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService) {
+    documentWrapperRepository: DocumentWrapperRepository,
+) : IngridIDFExporter(codelistHandler, uploadConfig, catalogService, documentService, documentWrapperRepository) {
 
     override fun getModelTransformerClass(docType: String): KClass<out Any>? = getKrznTransformer(docType) ?: super.getModelTransformerClass(docType)
 }
@@ -113,8 +113,7 @@ class IngridLuceneExporterKrzn(
 class IngridISOExporterKrzn(
     idfExporter: IngridIdfExporterKrzn,
     luceneExporter: IngridLuceneExporterKrzn,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridExporterKrzn(idfExporter, luceneExporter, documentWrapperRepository) {
+) : IngridExporterKrzn(idfExporter, luceneExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
