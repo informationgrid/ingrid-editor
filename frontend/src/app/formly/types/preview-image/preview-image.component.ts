@@ -287,15 +287,58 @@ export class PreviewImageComponent extends FieldArrayType implements OnInit {
     this.cdr.detectChanges();
   }
 
-  private getBase64StringFromImage(index: number) {
+  private getBase64StringFromImage(
+    index: number,
+    maxWidth: number = 800,
+    quality: number = 0.8,
+  ) {
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     const img: HTMLImageElement = document.querySelector(
       "img.preview-image-" + index,
     );
-    canvas.height = img.height;
-    canvas.width = img.width;
-    context.drawImage(img, 0, 0, img.width, img.height);
-    return canvas.toDataURL();
+    if (!img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) {
+      console.warn(
+        `Bild mit Index ${index} konnte nicht geladen werden oder ist beschädigt`,
+      );
+      return null;
+    }
+
+    let { width, height } = this.calculateOptimalSize(
+      img.naturalWidth,
+      img.naturalHeight,
+      maxWidth,
+    );
+
+    canvas.width = width;
+    canvas.height = height;
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = "high";
+
+    context.drawImage(img, 0, 0, width, height);
+
+    const mimeType = this.hasTransparency(img) ? "image/png" : "image/jpeg";
+    return canvas.toDataURL(mimeType, quality);
+  }
+
+  private calculateOptimalSize(
+    originalWidth: number,
+    originalHeight: number,
+    maxWidth: number,
+  ) {
+    if (originalWidth <= maxWidth) {
+      return { width: originalWidth, height: originalHeight };
+    }
+
+    const ratio = originalHeight / originalWidth;
+    return {
+      width: maxWidth,
+      height: Math.round(maxWidth * ratio),
+    };
+  }
+
+  private hasTransparency(img: HTMLImageElement): boolean {
+    const src = img.src.toLowerCase();
+    return src.includes(".png") || src.includes(".gif") || src.includes("svg");
   }
 }
