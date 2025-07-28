@@ -266,10 +266,16 @@ class OgcApiRecordsController(
         @RequestHeader allHeaders: Map<String, String>,
         principal: Authentication,
         @Parameter(description = "Identifier of collection (catalog identifier)", required = true) @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "Data of record to be stored", required = true) @RequestBody data: String,
+        @Parameter(description = "Data of record to be stored\n\nFor records in DRAFT state, the request body must include at least the `_type` field (if using JSON) to identify the record type.", required = true) @RequestBody data: String,
         @Parameter(description = "Adds dataset to FOLDER with UUID (custom parameter)") @RequestParam(value = "datasetFolderId", required = false) datasetFolderId: String?,
         @Parameter(description = "Adds address to FOLDER with UUID (custom parameter)") @RequestParam(value = "addressFolderId", required = false) addressFolderId: String?,
-        @Parameter(description = "Describes STATE of data in request body (custom parameter)", style = ParameterStyle.FORM, explode = Explode.FALSE) @RequestParam(value = "state", required = false, defaultValue = "PUBLISHED") state: DocState?,
+        @Parameter(
+            description = "Describes STATE of data in request body (custom parameter)" +
+                "\n\n• `PUBLISHED` – Save the record as PUBLISHED. Validates against JSON Schema." +
+                "\n\n• `DRAFT` – Save the record as DRAFT. No schema validation is performed.",
+            style = ParameterStyle.FORM,
+            explode = Explode.FALSE,
+        ) @RequestParam(value = "state", required = false, defaultValue = "PUBLISHED") state: DocState?,
     ): ResponseEntity<JsonNode> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("datasetFolderId", "addressFolderId", "state"))
@@ -309,8 +315,14 @@ class OgcApiRecordsController(
         principal: Authentication,
         @Parameter(description = "Identifier of collection (catalog identifier)", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "Identifier of record within a collection", required = true) @Valid @PathVariable("recordId") recordId: String,
-        @Parameter(description = "Data of record to be stored", required = true) @RequestBody data: String,
-        @Parameter(description = "Describes STATE of data in request body (custom parameter)", style = ParameterStyle.FORM, explode = Explode.FALSE) @RequestParam(value = "state", required = false, defaultValue = "PUBLISHED") state: DocState?,
+        @Parameter(description = "Data of record to be stored\n\nFor records in DRAFT state, the request body must include at least the `_type` field (if using JSON) to identify the record type.", required = true) @RequestBody data: String,
+        @Parameter(
+            description = "Describes STATE of data in request body (custom parameter)" +
+                "\n\n• `PUBLISHED` – Save the record as PUBLISHED. Validates against JSON Schema." +
+                "\n\n• `DRAFT` – Save the record as DRAFT. No schema validation is performed.",
+            style = ParameterStyle.FORM,
+            explode = Explode.FALSE,
+        ) @RequestParam(value = "state", required = false, defaultValue = "PUBLISHED") state: DocState?,
     ): ResponseEntity<JsonNode> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("state"))
@@ -362,7 +374,13 @@ class OgcApiRecordsController(
                 "\n\n• get response in GEOJSON with value `GEOJSON`" +
                 "\n\n• get response in HTML with value `HTML`",
         ) @RequestParam(value = "f", required = false, defaultValue = "JSON") format: RecordFormat,
-        @Parameter(description = "Response state (custom parameter)", style = ParameterStyle.FORM, explode = Explode.FALSE) @RequestParam(value = "state", required = false, defaultValue = "PUBLISHED") state: DocState?,
+        @Parameter(
+            description = "Filters record by its current state (custom parameter)" +
+                "\n\n• `PUBLISHED` – Only return published version of record." +
+                "\n\n• `DRAFT` – Only return draft version of record",
+            style = ParameterStyle.FORM,
+            explode = Explode.FALSE,
+        ) @RequestParam(value = "state", required = false, defaultValue = "PUBLISHED") state: DocState?,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("f", "state"))
@@ -444,7 +462,13 @@ class OgcApiRecordsController(
                 "\n\n[Source](https://docs.ogc.org/is/20-004r1/20-004r1.html#_da692373-54f2-13c1-2d81-f16cf3fe8c94)" +
                 "\n\n[Additional Source](https://portal.ogc.org/files/96288#filter-param)",
         ) @RequestParam(value = "filter", required = false) filter: String?,
-        @Parameter(description = "Get records by its state (custom parameter)", style = ParameterStyle.FORM, explode = Explode.FALSE) @RequestParam(value = "state", required = false, defaultValue = "PUBLISHED") state: DocState?,
+        @Parameter(
+            description = "Filters records by their current state (custom parameter)" +
+                "\n\n• `PUBLISHED` – Only return records that are published." +
+                "\n\n• `DRAFT` – Only return records that are drafts",
+            style = ParameterStyle.FORM,
+            explode = Explode.FALSE,
+        ) @RequestParam(value = "state", required = false, defaultValue = "PUBLISHED") state: DocState?,
     ): ResponseEntity<ByteArray> {
         apiValidationService.validateCollection(collectionId)
         apiValidationService.validateRequestParams(allRequestParams, listOf("limit", "offset", "type", "bbox", "datetime", "q", "externalIds", "f", "filter", "state"))
