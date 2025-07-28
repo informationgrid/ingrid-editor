@@ -46,7 +46,11 @@ import {
   CdkDropList,
   moveItemInArray,
 } from "@angular/cdk/drag-drop";
-import { FieldTypeConfig, FormlyFieldConfig } from "@ngx-formly/core";
+import {
+  FieldTypeConfig,
+  FormlyFieldConfig,
+  FormlyValidationMessage,
+} from "@ngx-formly/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {
   ConfirmDialogComponent,
@@ -76,6 +80,7 @@ import { waitForCondition } from "../../../services/utils";
     AddressCardComponent,
     AddButtonComponent,
     FieldToAiraLabelledbyPipe,
+    FormlyValidationMessag,
   ],
 })
 export class AddressTypeComponent
