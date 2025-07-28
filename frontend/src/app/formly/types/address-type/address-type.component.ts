@@ -80,7 +80,7 @@ import { waitForCondition } from "../../../services/utils";
     AddressCardComponent,
     AddButtonComponent,
     FieldToAiraLabelledbyPipe,
-    FormlyValidationMessag,
+    FormlyValidationMessage,
   ],
 })
 export class AddressTypeComponent
