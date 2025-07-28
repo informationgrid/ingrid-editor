@@ -128,6 +128,8 @@ class DocumentWrapper {
     @JsonProperty("pending_date")
     var pending_date: OffsetDateTime? = null
 
+    @JsonSerialize(using = DateSerializer::class)
+    @JsonDeserialize(using = DateDeserializer::class)
     @JdbcTypeCode(SqlTypes.JSON)
     var fingerprint: List<FingerprintInfo>? = null
 
