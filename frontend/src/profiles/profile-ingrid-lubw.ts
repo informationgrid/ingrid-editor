@@ -97,17 +97,14 @@ class InGridLUBWComponent extends InGridComponent {
             ctrl.value
               ? ctrl.value.some((address: any) => address.type?.key === "5")
               : false,
-          message: () =>
-            this.translocoService.translate(
-              "form.validationMessages.missingContact",
-              {
-                type: this.codelistStore.getCodelistEntryValueByKey(
-                  "505",
-                  "5",
-                  ConfigService.catalogId,
-                ),
-              },
-            ),
+          message: docType.validateRequiredContactType("5"),
+        };
+        contacts.field.validators.atLeastOnePointOfContact = {
+          expression: (ctrl: FormControl) =>
+            ctrl.value
+              ? ctrl.value.some((address: any) => address.type?.key === "7")
+              : false,
+          message: docType.validateRequiredContactType("7"),
         };
 
         const keywordsField = docType.findFieldElementWithId(
