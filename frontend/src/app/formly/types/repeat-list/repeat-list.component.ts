@@ -126,6 +126,7 @@ interface RepeatListProps extends FormlyFieldProps {
   view: "chip";
   selectLabelField: string | ((item: any) => string);
   convert: (item: any) => string;
+  hideInputField: boolean;
 }
 
 @UntilDestroy()

@@ -43,9 +43,9 @@ class InGridLUBWComponent extends InGridComponent {
   constructor() {
     super();
     this.isoView.isoExportFormat = "ingridISOLUBW";
-    this.modifyFormFieldConfiguration();
-
     const isAuthor = this.configService.$userInfo.value.role === "author";
+    this.modifyFormFieldConfiguration(isAuthor);
+
     if (isAuthor) {
       this.geoService.showUpdateGetCapabilities = false;
       this.disablePlugins([
@@ -75,7 +75,7 @@ class InGridLUBWComponent extends InGridComponent {
     }
   }
 
-  private modifyFormFieldConfiguration() {
+  private modifyFormFieldConfiguration(isAuthor: boolean) {
     [
       this.specialisedTask,
       this.geoDataset,
@@ -116,11 +116,13 @@ class InGridLUBWComponent extends InGridComponent {
         );
         docType.addBefore(keywordsField, analyzeField[0]);
 
-        /*const freeKeywords = docType.findFieldElementWithId(
-          fieldConfig,
-          "free",
-        );
-        freeKeywords.field.expressions["props.disabled"] = () => true;*/
+        if (isAuthor) {
+          const freeKeywords = docType.findFieldElementWithId(
+            fieldConfig,
+            "free",
+          );
+          freeKeywords.field.props.hideInputField = true;
+        }
 
         return fieldConfig;
       };
