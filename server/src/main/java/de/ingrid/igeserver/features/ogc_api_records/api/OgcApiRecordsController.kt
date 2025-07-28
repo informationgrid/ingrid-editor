@@ -508,8 +508,9 @@ class OgcApiRecordsController(
     @Operation(
         tags = ["OGC/Schema"],
         hidden = false,
-        summary = "Fetch json schema of record type in collection",
-        description = "In the context of InGrid, a collection can include multiple types of records. Therefore, the request parameter `type` is mandatory.",
+        summary = "Retrieves the JSON Schema for a specific record type in a collection",
+        description = "In the context of InGrid, a collection can contain multiple types of records. Therefore, the request parameter `type` is mandatory to specify the desired record type. " +
+            "\n\nTo publish a record, it must conform to the returned JSON Schema.",
     )
     @ApiResponses(
         value = [
@@ -524,14 +525,13 @@ class OgcApiRecordsController(
         principal: Authentication,
         @Parameter(description = "Identifier of collection (catalog identifier)", required = true) @PathVariable("collectionId") collectionId: String,
         @Parameter(description = "Record type (custom parameter)") @RequestParam(value = "type", required = true) type: DocTypeFormat,
-        @Parameter(description = "Get JSON schema for different states of record (custom parameter)", style = ParameterStyle.FORM, explode = Explode.FALSE) @RequestParam(value = "state", required = false, defaultValue = "PUBLISHED") state: DocState?,
     ): ResponseEntity<JsonNode> {
         apiValidationService.validateCollection(collectionId)
-        apiValidationService.validateRequestParams(allRequestParams, listOf("type", "state"))
+        apiValidationService.validateRequestParams(allRequestParams, listOf("type"))
 
         // TODO Throw exception if requested docType is not supported by catalog. Include list of supported docTypes in exception.
 
-        val jsonSchema = jsonSchemaService.getSchemaOfDocType(collectionId, type.docType, state == DocState.DRAFT)
+        val jsonSchema = jsonSchemaService.getSchemaOfDocType(collectionId, type.docType)
         val responseHeaders = HttpHeaders()
         responseHeaders.add("Content-Type", CustomMediaTypes.APPLICATION_SCHEMA_JSON_VALUE)
         return ResponseEntity.ok().headers(responseHeaders).body(jsonSchema)

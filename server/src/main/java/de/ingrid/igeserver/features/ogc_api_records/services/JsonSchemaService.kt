@@ -38,7 +38,7 @@ class JsonSchemaService(
     private val documentService: DocumentService,
 ) {
 
-    fun getSchemaOfDocType(catalogId: String, docType: String, isDraft: Boolean): JsonNode {
+    fun getSchemaOfDocType(catalogId: String, docType: String): JsonNode {
         val profile = catalogService.getProfileFromCatalog(catalogId)
         val docType = documentService.getDocumentType(docType, profile.identifier, null)
         val schemaPath = docType.jsonSchema
@@ -50,11 +50,7 @@ class JsonSchemaService(
 
         val completeJsonSchema = resolveAllRefs(rootSchema, baseUri)
 
-        return if (isDraft) {
-            removeRequiredConstraints(completeJsonSchema)
-        } else {
-            completeJsonSchema
-        }
+        return completeJsonSchema
     }
 
     private fun resolveAllRefs(node: JsonNode, baseUri: URI): JsonNode {
@@ -103,31 +99,4 @@ class JsonSchemaService(
     private fun toJsonPointer(fragment: String): String = fragment.split('/')
         .filter { it.isNotEmpty() }
         .joinToString("/", prefix = "/") { it.replace("~1", "/").replace("~0", "~") }
-
-    fun removeRequiredConstraints(schemaNode: JsonNode): JsonNode {
-        val copy = schemaNode.deepCopy<ObjectNode>()
-
-        if (copy.has("required")) {
-            copy.remove("required")
-        }
-
-        // Recurse into properties and definitions
-        copy.get("properties")?.let {
-            if (it is ObjectNode) {
-                for ((key, defSchema) in it.fields()) {
-                    val modifiedDef = removeRequiredConstraints(defSchema)
-                    (it).set<JsonNode>(key, modifiedDef)
-                }
-            }
-        }
-        copy.get("definitions")?.let {
-            if (it is ObjectNode) {
-                for ((key, propSchema) in it.fields()) {
-                    val modifiedProp = removeRequiredConstraints(propSchema)
-                    (it).set<JsonNode>(key, modifiedProp)
-                }
-            }
-        }
-        return copy
-    }
 }
