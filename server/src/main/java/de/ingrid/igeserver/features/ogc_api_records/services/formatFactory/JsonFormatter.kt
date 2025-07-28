@@ -28,6 +28,7 @@ import de.ingrid.igeserver.features.ogc_api_records.model.RecordCollection
 import de.ingrid.igeserver.features.ogc_api_records.services.QueryMetadata
 import de.ingrid.igeserver.services.ExportResult
 import de.ingrid.igeserver.utils.getBoolean
+import de.ingrid.igeserver.utils.getStringOrEmpty
 import org.springframework.stereotype.Service
 
 @Service
@@ -42,6 +43,10 @@ class JsonFormatter(
 
         val jsonData: JsonNode = jacksonObjectMapper().readValue(data, JsonNode::class.java)
         if (jsonData.isArray) throw ClientException.withReason("Invalid request: JSON body must be a single object, not an array.")
+
+        if (jsonData.getStringOrEmpty("_type").isEmpty()) throw ClientException.withReason("Invalid request body: JSON must contain '_type' field to identify record type.")
+        // TODO Check if _type is supported by profile
+
         val document = if (jsonData.getBoolean("isGeojson") == true) {
             jsonData.get("properties")
         } else {
