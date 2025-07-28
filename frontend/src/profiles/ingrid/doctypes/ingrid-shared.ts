@@ -395,11 +395,11 @@ export abstract class IngridShared extends BaseDoctype {
     }
 
     const message = `
-      Wird diese Auswahl gewählt, so:
+      Bei Auswahl dieses Merkmals wird:
       <ul>
-        <li>wird "Es gelten keine Zugriffsbeschränkungen" zu den Zugriffsbeschränkungen hinzugefügt</li>
-        <li>wird die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li>
-        <li>wird dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li>
+        <li>"Es gelten keine Zugriffsbeschränkungen" zu den Zugriffsbeschränkungen hinzugefügt.</li>
+        <li>die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li>
+        <li>dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li>
       </ul>`;
     return this.showConfirmDialog(message, cookieId).pipe(
       map((decision) => {
