@@ -26,6 +26,7 @@ import { BehaviourService } from "../app/services/behavior/behaviour.service";
 import { GeoDatasetDoctypeLubwSkdvOk } from "./ingrid-lubw/doctypes/geo-dataset.doctype";
 import { FormControl } from "@angular/forms";
 import { FormlyFieldConfig } from "@ngx-formly/core";
+import { CodelistStore } from "../app/store/codelist/codelist.store";
 
 @Component({
   template: "",
@@ -37,6 +38,7 @@ class InGridLUBWComponent extends InGridComponent {
   configService = inject(ConfigService);
   formMenuService = inject(FormMenuService);
   translocoService = inject(TranslocoService);
+  protected codelistStore = inject(CodelistStore);
 
   constructor() {
     super();
@@ -45,6 +47,7 @@ class InGridLUBWComponent extends InGridComponent {
 
     const isAuthor = this.configService.$userInfo.value.role === "author";
     if (isAuthor) {
+      this.geoService.showUpdateGetCapabilities = false;
       this.disablePlugins([
         "plugin.newDoc",
         "plugin.folder",
@@ -94,7 +97,17 @@ class InGridLUBWComponent extends InGridComponent {
             ctrl.value
               ? ctrl.value.some((address: any) => address.type?.key === "5")
               : false,
-          message: "Es muss mindestens einen 'Vertrieb' geben.",
+          message: () =>
+            this.translocoService.translate(
+              "form.validationMessages.missingContact",
+              {
+                type: this.codelistStore.getCodelistEntryValueByKey(
+                  "505",
+                  "5",
+                  ConfigService.catalogId,
+                ),
+              },
+            ),
         };
 
         const keywordsField = docType.findFieldElementWithId(
