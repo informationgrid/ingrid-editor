@@ -1,5 +1,20 @@
 # Changelog
 
+## 8.0.1 (29.07.2025)
+
+### Features
+
+* Capabilities-Assistent in Diensten, auf denen jemand nur Leserechte hat, ausblenden (#8038)
+* Filterung/Kennzeichnung von WWA-AB-Daten im LfU-Bayern Portal (#7548)
+* Stacktraces aus Fehlerresponses entfernen (#5773)
+
+### Bugfixes
+
+* Fehler beim Erstellen eines Benutzer (#8041)
+* JSON-Schema-Validierung Fehler bei Literatur- MD mit Dateiupload (#8030)
+* Schlagworte konsolidieren funktioniert nicht für Autoren (#8016)
+* Default Codeliste für UVP-Nummer führt zu Fehler (#7952)
+    
 ## 8.0.0 (04.07.2025)
 
 ### Features
