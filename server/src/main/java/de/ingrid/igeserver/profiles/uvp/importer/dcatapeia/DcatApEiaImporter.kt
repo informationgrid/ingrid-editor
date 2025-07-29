@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package de.ingrid.igeserver.profiles.ingrid.importer.dcatapeia
+package de.ingrid.igeserver.profiles.uvp.importer.dcatapeia
 
 import com.bedatadriven.jackson.datatype.jts.JtsModule
 import com.fasterxml.jackson.databind.JsonNode
