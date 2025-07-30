@@ -191,6 +191,9 @@ dependencies {
     // RDF for DCAT-AP.de
     implementation "org.apache.jena:apache-jena-libs:5.4.0"
 
+    // DCAT-parser from ingrid-harvester for DCAT-AP.de and DCAT-AP.eia
+    implementation("com.wemove:dcat-parser:0.1.0-SNAPSHOT")
+
     // Test
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version" // for kotest framework
     testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version" // for kotest core jvm assertions

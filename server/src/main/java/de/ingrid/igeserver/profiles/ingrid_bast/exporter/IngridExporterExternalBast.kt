@@ -19,13 +19,11 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_bast.exporter
 
-import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridISOExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
-import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -82,8 +80,7 @@ class IngridIdfExporterExternalBast(
 @Service
 class IngridISOExporterExternalBast(
     idfExporter: IngridIdfExporterExternalBast,
-    @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
-) : IngridExporterExternalBast(idfExporter, luceneExporter) {
+) : IngridISOExporter(idfExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -94,9 +91,4 @@ class IngridISOExporterExternalBast(
         "xml",
         listOf("ingrid-bast"),
     )
-
-    override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
-        val indexString = super.run(doc, catalogId, options) as String
-        return getISOFromElasticDocumentString(indexString)
-    }
 }

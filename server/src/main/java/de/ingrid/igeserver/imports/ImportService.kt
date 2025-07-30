@@ -22,6 +22,7 @@ package de.ingrid.igeserver.imports
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.ClientException
 import de.ingrid.igeserver.api.ImportOptions
 import de.ingrid.igeserver.api.NotFoundException
 import de.ingrid.igeserver.api.messaging.DatasetInfo
@@ -388,6 +389,7 @@ class ImportService(
             } catch (ex: Exception) {
                 log.error("Error during import", ex)
                 message.errors.add(ex.message ?: "Unknown error")
+                throw ClientException.withReason("Import failed. ${ex.message}")
             }
         }
 

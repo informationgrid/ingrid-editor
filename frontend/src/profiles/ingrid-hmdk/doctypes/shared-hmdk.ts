@@ -30,11 +30,16 @@ import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { FormStateService } from "../../../app/+form/form-state.service";
 import { MetadataOptionItem } from "../../../app/formly/types/metadata-type/metadata-type.component";
+import { ConfigService } from "../../../app/services/config/config.service";
+import { TranslocoService } from "@jsverse/transloco";
+import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 
 @Injectable({ providedIn: "root" })
 export class SharedHmdk {
   private tagsService = inject(TagsService);
   private formStateService = inject(FormStateService);
+  private transloco = inject(TranslocoService);
+  private codelistStore = inject(CodelistStore);
 
   metadataOptions = (doc: IngridShared) => {
     return <MetadataOptionItem>{
@@ -84,7 +89,17 @@ export class SharedHmdk {
       (ctrl.value
         ? ctrl.value.some((address: any) => address.type?.key === "10")
         : false),
-    message: "Es muss mindestens einen 'Herausgeber' geben.",
+    message: () =>
+      this.transloco.translate(
+        "form.validationMessages.missingAnotherContact",
+        {
+          type: this.codelistStore.getCodelistEntryValueByKey(
+            "505",
+            "10",
+            ConfigService.catalogId,
+          ),
+        },
+      ),
   };
 
   downloadLinkWhenHmbtg = {

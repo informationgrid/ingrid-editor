@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exporter.CodelistTransformer
 import de.ingrid.igeserver.exporter.model.CharacterStringModel
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
@@ -32,6 +33,7 @@ import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.external.Informati
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.GeodatasetTransformerLfub
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.GeoserviceTransformerLfub
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.internal.InformationSystemTransformerLfub
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.prefixIfNot
 import kotlin.reflect.KClass
@@ -98,6 +100,18 @@ fun lfubGetDescriptiveKeywords(
         superDescriptiveKeywords + lfugeoKeywords
     } else {
         superDescriptiveKeywords + lfuInternalKeywords + lfugeoKeywords
+    }
+}
+
+fun lfubGetTreePathNames(
+    documentService: DocumentService,
+    catalogIdentifier: String,
+    doc: Document,
+): List<String> {
+    val wrapper = documentService.getWrapperByCatalogAndDocumentUuid(catalogIdentifier, doc.uuid)
+    return wrapper.path.map {
+        val pathDoc = documentService.getDocumentByWrapperId(catalogIdentifier, it)
+        pathDoc.title ?: "???"
     }
 }
 

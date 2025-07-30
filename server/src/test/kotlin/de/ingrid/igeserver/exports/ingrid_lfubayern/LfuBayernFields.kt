@@ -24,6 +24,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.ingrid.igeserver.DummyCatalog
 import de.ingrid.igeserver.exports.ingrid.GeodatasetBase
 import de.ingrid.igeserver.exports.ingrid.exportJsonToXML
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid_lfubayern.exporter.IngridIdfExporterLfub
 import io.kotest.core.spec.Spec
 import io.kotest.matchers.string.shouldContain
@@ -57,6 +58,7 @@ class LfuBayernFields : GeodatasetBase() {
         every { codelistHandler.getCatalogCodelistValue(any(), "20000", "2") } returns "geological zwei"
         every { codelistHandler.getCatalogCodelistValue(any(), "20001", "1") } returns "intern eins"
         every { codelistHandler.getCatalogCodelistValue(any(), "20001", "2") } returns "intern zwei"
+        every { documentService.getWrapperByCatalogAndDocumentUuid(any(), any(), any()) } returns DocumentWrapper()
     }
 
     init {

@@ -259,7 +259,7 @@ export class UserService {
         }
         if (
           reason.field === "username" &&
-          reason.errorMessage === "error-invalid-lengthX"
+          reason.errorMessage === "error-invalid-length"
         ) {
           throw new IgeError(
             `Der Benutzer konnte nicht erstellt werden, da der Login eine ungültige Länge hat. Erlaubt sind ${reason.params[1]}-${reason.params[2]} Zeichen.`,
