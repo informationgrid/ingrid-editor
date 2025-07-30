@@ -128,8 +128,6 @@ class DocumentWrapper {
     @JsonProperty("pending_date")
     var pending_date: OffsetDateTime? = null
 
-    @JsonSerialize(using = DateSerializer::class)
-    @JsonDeserialize(using = DateDeserializer::class)
     @JdbcTypeCode(SqlTypes.JSON)
     var fingerprint: List<FingerprintInfo>? = null
 
@@ -153,4 +151,10 @@ class DocumentWrapper {
     var hasOnlySubtreeWritePermission: Boolean = false
 }
 
-data class FingerprintInfo(val exportType: String, val fingerprint: String, val date: OffsetDateTime)
+data class FingerprintInfo(
+    val exportType: String,
+    val fingerprint: String,
+    @JsonDeserialize(using = DateDeserializer::class)
+    @JsonSerialize(using = DateSerializer::class)
+    val date: OffsetDateTime,
+)
