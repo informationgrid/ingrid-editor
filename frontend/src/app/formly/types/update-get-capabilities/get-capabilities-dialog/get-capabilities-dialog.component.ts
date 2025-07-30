@@ -51,6 +51,7 @@ import { BreadcrumbComponent } from "../../../../+form/form-info/breadcrumb/brea
 import { MatCheckbox } from "@angular/material/checkbox";
 import { AsyncPipe, DatePipe } from "@angular/common";
 import { CodelistPipe } from "../../../../directives/codelist.pipe";
+import { CredentialsDialogComponent } from "../credentials-dialog/credentials-dialog.component";
 
 @UntilDestroy()
 @Component({
@@ -110,14 +111,14 @@ export class GetCapabilitiesDialogComponent {
       .subscribe(() => this.handleAddressConstraint());
   }
 
-  analyze(url: string) {
+  analyze(url: string, username?: string, password?: string) {
     this.report = null;
     this.error = null;
     this.isAnalyzing = true;
     this.getCapService
-      .analyze(url)
+      .analyze(url, username, password)
       .pipe(
-        catchError((error) => this.handleError(error)),
+        catchError((error) => this.handleError(error, url)),
         filter((report) => report !== null),
         finalize(() => (this.isAnalyzing = false)),
       )
@@ -128,9 +129,26 @@ export class GetCapabilitiesDialogComponent {
       });
   }
 
-  private handleError(error: any): Observable<null> {
-    this.error = error.error?.errorText ?? error.message;
+  private handleError(error: any, url: string): Observable<null> {
+    if (error?.error?.errorCode === "FORBIDDEN") {
+      this.retryWithCredentials(url);
+    } else {
+      this.error = error.error?.errorText ?? error.message;
+    }
     return of(null);
+  }
+
+  private retryWithCredentials(url: string) {
+    this.dialog
+      .open(CredentialsDialogComponent, { width: "300px" })
+      .afterClosed()
+      .pipe(
+        filter((result) => result !== ""),
+        tap((result) => {
+          this.analyze(url, result.username, result.password);
+        }),
+      )
+      .subscribe();
   }
 
   submit() {

@@ -50,14 +50,24 @@ class IngridIndexExporter(
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
-        val idf = idfExporter.run(doc, catalogId, options)
         val luceneDoc = luceneExporter.run(doc, catalogId, options) as String
 
         val mapper = jacksonObjectMapper()
         val luceneJson = mapper.readValue(luceneDoc, ObjectNode::class.java)
 
         if (doc.type != "FOLDER") {
-            luceneJson.put("idf", idf)
+            val wrapper = idfExporter.documentWrapperRepository.findByCatalog_IdentifierAndUuid(catalogId, doc.uuid)
+            val idf = idfExporter.run(doc, catalogId, options)
+            val fingerprint = idfExporter.calculateFingerprint(idf)
+            val previousFingerprintInfo = idfExporter.getPreviousFingerprint(wrapper, idfExporter.typeInfo)
+
+            val dateStampDate = if (fingerprint != previousFingerprintInfo?.fingerprint) {
+                // updates the fingerprint in the database
+                idfExporter.updateDocumentFingerprint(wrapper, fingerprint, idfExporter.typeInfo)
+            } else {
+                previousFingerprintInfo.date
+            }
+            luceneJson.put("idf", idfExporter.updateDateStamp(idf, dateStampDate))
         }
 
         return luceneJson.toPrettyString()

@@ -19,17 +19,15 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_up_sh.exporter
 
-import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
+import de.ingrid.igeserver.profiles.ingrid.exporter.IngridISOExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerCache
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerData
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
-import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -112,8 +110,7 @@ class IngridLuceneExporterUPSH(
 @Service
 class IngridISOExporterUPSH(
     idfExporter: IngridIdfExporterUPSH,
-    luceneExporter: IngridLuceneExporterUPSH,
-) : IngridExporterUPSH(idfExporter, luceneExporter) {
+) : IngridISOExporter(idfExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -124,9 +121,4 @@ class IngridISOExporterUPSH(
         "xml",
         listOf("ingrid-up-sh"),
     )
-
-    override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
-        val indexString = super.run(doc, catalogId, options) as String
-        return getISOFromElasticDocumentString(indexString)
-    }
 }

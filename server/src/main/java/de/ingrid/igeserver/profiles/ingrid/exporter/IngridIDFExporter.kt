@@ -29,7 +29,6 @@ import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.FingerprintInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
@@ -37,7 +36,6 @@ import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.mdek.upload.UploadConfig
-import de.ingrid.utils.ElasticDocument
 import de.ingrid.utils.xml.ConfigurableNamespaceContext
 import de.ingrid.utils.xml.IDFNamespaceContext
 import de.ingrid.utils.xml.IgcProfileNamespaceContext
@@ -103,15 +101,23 @@ class IngridIDFExporter(
             getMapFromObject(doc, catalogId, options),
             output,
         )
-        // pretty printing takes around 5ms
-        // TODO: prettyFormat turns encoded new lines back to real ones which leads to an error when in a description
-        //       are new lines for example
-        val prettyXml = output.toString() // prettyFormat(output.toString(), 4)
 
-        // handle fingerprint and update publish date
-        val processedXml = handleFingerprint(catalogId, doc.uuid, prettyXml)
-        log.debug(processedXml)
-        return processedXml
+        var idf = output.toString()
+
+        // update DateStamp as if it was indexed now. the fingerprint is only calculated not updated
+        // as the actual update of the document wrapper is only done in the index exporter when indexing
+        val wrapper = documentWrapperRepository.findByCatalog_IdentifierAndUuid(catalogId, doc.uuid)
+        val fingerprint = calculateFingerprint(idf)
+        val previousFingerprintInfo = getPreviousFingerprint(wrapper, typeInfo)
+
+        val dateStampDate = if (fingerprint != previousFingerprintInfo?.fingerprint) {
+            OffsetDateTime.now()
+        } else {
+            previousFingerprintInfo.date
+        }
+        idf = updateDateStamp(idf, dateStampDate)
+
+        return idf
     }
 
     private fun getTemplateForDoctype(type: String): String = when (type) {
@@ -183,56 +189,34 @@ class IngridIDFExporter(
         )
     }
 
-    fun handleFingerprint(catalogId: String, uuid: String, idf: String): String {
-        val fingerprint = calculateFingerprint(ElasticDocument().apply { put("idf", idf) })
-
-        val previousFingerprintInfo = getPreviousFingerprint(catalogId, uuid)
-
-        val idfDoc = convertStringToDocument(idf)
-
-        addPublishDateToIndexDocument(
-            idfDoc!!,
-            if (fingerprint == previousFingerprintInfo?.fingerprint) previousFingerprintInfo.date else OffsetDateTime.now(),
-        )
-
-        return XMLUtils.toString(idfDoc)
-    }
-
-    private fun addPublishDateToIndexDocument(idf: org.w3c.dom.Document, publishDate: OffsetDateTime) {
+    fun updateDateStamp(idf: String, publishDate: OffsetDateTime): String {
+        val xmlDoc = convertStringToDocument(idf)
         // TODO: use correct date format for IDF depending on the dateStamp element
         //  combine with baw functionality where dateStamp Type can be set by profile.
         val date = publishDate.toLocalDate().toString()
-        if (xpathUtils.nodeExists(idf, "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:Date")) {
+        if (xpathUtils.nodeExists(xmlDoc, "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:Date")) {
             XMLUtils.createOrReplaceTextNode(
                 xpathUtils.getNode(
-                    idf,
+                    xmlDoc,
                     "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:Date",
                 ),
                 date,
             )
-        } else if (xpathUtils.nodeExists(idf, "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:DateTime")) {
+        } else if (xpathUtils.nodeExists(xmlDoc, "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:DateTime")) {
             XMLUtils.createOrReplaceTextNode(
                 xpathUtils.getNode(
-                    idf,
+                    xmlDoc,
                     "/idf:html/idf:body/idf:idfMdMetadata/gmd:dateStamp/gco:DateTime",
                 ),
                 date,
             )
         }
-    }
-
-    private fun getPreviousFingerprint(catalogId: String, uuid: String): FingerprintInfo? {
-        val wrapper = documentWrapperRepository.findByCatalog_IdentifierAndUuid(catalogId, uuid)
-        return wrapper.fingerprint?.find { it.exportType == typeInfo.type }
+        return XMLUtils.toString(xmlDoc)
     }
 
     override fun calculateFingerprint(doc: Any): String {
-        doc as ElasticDocument
-        if (doc["idf"] == null) return ""
-
-        val idf = doc["idf"] as String
+        val idf = doc as String
         val idfDoc = convertStringToDocument(idf)
-
         return createFingerprint(
             transformIDFtoIso(idfDoc!!).also { prepareIsoForFingerprinting(it) },
         )

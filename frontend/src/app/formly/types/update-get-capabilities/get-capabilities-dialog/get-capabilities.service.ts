@@ -63,10 +63,10 @@ export class GetCapabilitiesService {
     );
   }
 
-  analyze(url: string) {
+  analyze(url: string, username?: string, password?: string) {
     return this.http.post<GetCapabilitiesAnalysis>(
       this.backendUrl + "getCapabilities/analyzeGetCapabilities",
-      url,
+      { url, username, password },
     );
   }
 

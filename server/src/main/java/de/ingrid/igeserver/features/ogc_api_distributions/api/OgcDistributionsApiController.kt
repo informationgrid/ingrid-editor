@@ -47,7 +47,7 @@ class OgcDistributionsApiController(
     val log = logger()
 
     @PostMapping("/collections/{collectionId}/items/{recordId}/distributions", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]) // "multipart/form-data",
-    @Operation(tags = ["OGC/Distributions"], responses = [], summary = "Upload distributions (files) to a specific collection and record", hidden = false)
+    @Operation(tags = ["OGC/Distributions"], responses = [], summary = "Upload distributions (files) to a specific record", hidden = false)
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Distributions uploaded successfully"),
@@ -57,9 +57,9 @@ class OgcDistributionsApiController(
     fun postDistribution(
         @RequestHeader allHeaders: Map<String, String>,
         principal: Authentication,
-        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
-        @Parameter(description = "File the should be uploaded.", required = true) @RequestPart files: List<MultipartFile>,
+        @Parameter(description = "Identifier of collection (catalog identifier)", required = true) @PathVariable("collectionId") collectionId: String,
+        @Parameter(description = "Identifier of record within a collection", required = true) @PathVariable("recordId") recordId: String,
+        @Parameter(description = "Files that should be uploaded.", required = true) @RequestPart files: List<MultipartFile>,
     ): ResponseEntity<String> {
         val userID = principal.name
         ogcDistributionsService.handleUploadDistribution(principal, userID, collectionId, recordId, files)
@@ -77,9 +77,9 @@ class OgcDistributionsApiController(
     fun deleteDistribution(
         @RequestHeader allHeaders: Map<String, String>,
         principal: Authentication,
-        @Parameter(description = "## Collection ID \n **OGC Parameter** \n\n The identifier for a specific record collection (i.e. catalogue identifier).", required = true) @PathVariable("collectionId") collectionId: String,
-        @Parameter(description = "## Record ID \n **OGC Parameter** \n\n The identifier for a specific record (i.e. record identifier).", required = true) @PathVariable("recordId") recordId: String,
-        @Parameter(description = "## Filename as distribution ID \n\n The filename is the identifier of the distribution.") @RequestParam(value = "filename", required = true) distributionId: String,
+        @Parameter(description = "Identifier of collection (catalog identifier)", required = true) @PathVariable("collectionId") collectionId: String,
+        @Parameter(description = "Identifier of record within a collection", required = true) @PathVariable("recordId") recordId: String,
+        @Parameter(description = "Filename as identifier of distribution") @RequestParam(value = "filename", required = true) distributionId: String,
     ): ResponseEntity<String> {
         val userID = principal.name
         ogcDistributionsService.handleDeleteDistribution(principal, userID, collectionId, recordId, distributionId)

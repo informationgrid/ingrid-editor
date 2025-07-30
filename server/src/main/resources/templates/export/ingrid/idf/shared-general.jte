@@ -57,7 +57,7 @@
 @template.export.ingrid.idf.addresses(addresses = page.getContacts(), wrapperElement = "gmd:contact")
 @if( page.getContacts().isEmpty() ) <gmd:contact/> @endif
 <gmd:dateStamp>
-    <gco:Date>THIS_IS_FILLED_BY_IngridIndexExporter</gco:Date>
+    <gco:Date>filled_by_exporter_via_updateDateStamp</gco:Date>
 </gmd:dateStamp>
 <gmd:metadataStandardName>
     <gco:CharacterString>${page.getMdStandardName()}</gco:CharacterString>

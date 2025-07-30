@@ -20,9 +20,14 @@
 package de.ingrid.igeserver.exports
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.FingerprintInfo
+import de.ingrid.igeserver.repository.DocumentWrapperRepository
+import de.ingrid.igeserver.utils.SpringContext
 import org.apache.commons.codec.digest.DigestUtils
 import java.io.StringReader
 import java.io.StringWriter
+import java.time.OffsetDateTime
 import javax.xml.XMLConstants
 import javax.xml.transform.OutputKeys
 import javax.xml.transform.Source
@@ -64,4 +69,32 @@ interface IgeExporter {
     }
 
     fun calculateFingerprint(doc: Any): String = DigestUtils.sha256Hex(doc.toString())
+
+    /**
+     * Updates the document's fingerprint in the database with the current date and time.
+     * If the fingerprint for the implementing exporter already exists, it will be replaced.
+     * @param wrapper The document wrapper to update.
+     * @param fingerprint The new fingerprint to set.
+     * @return The current date and time when the fingerprint was updated.
+     */
+    fun updateDocumentFingerprint(
+        wrapper: DocumentWrapper,
+        fingerprint: String,
+        typeInfo: ExportTypeInfo,
+    ): OffsetDateTime {
+        val currentDate = OffsetDateTime.now()
+        wrapper.fingerprint = (wrapper.fingerprint ?: mutableListOf()).filter { it.exportType != typeInfo.type } +
+            FingerprintInfo(
+                typeInfo.type,
+                fingerprint,
+                currentDate,
+            )
+        SpringContext.getBean(DocumentWrapperRepository::class.java)!!.save(wrapper)
+        return currentDate
+    }
+
+    fun getPreviousFingerprint(
+        wrapper: DocumentWrapper,
+        typeInfo: ExportTypeInfo,
+    ): FingerprintInfo? = wrapper.fingerprint?.find { it.exportType == typeInfo.type }
 }
