@@ -29,7 +29,6 @@ import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
 import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.FingerprintInfo
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.IngridModel
 import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.CatalogService
@@ -213,11 +212,6 @@ class IngridIDFExporter(
             )
         }
         return XMLUtils.toString(xmlDoc)
-    }
-
-    private fun getPreviousFingerprint(catalogId: String, uuid: String): FingerprintInfo? {
-        val wrapper = documentWrapperRepository.findByCatalog_IdentifierAndUuid(catalogId, uuid)
-        return wrapper.fingerprint?.find { it.exportType == typeInfo.type }
     }
 
     override fun calculateFingerprint(doc: Any): String {
