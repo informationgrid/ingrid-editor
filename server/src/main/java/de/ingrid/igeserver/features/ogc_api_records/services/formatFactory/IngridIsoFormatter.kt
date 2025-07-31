@@ -118,7 +118,6 @@ class IngridIsoFormatter : BodyFormatter {
         return sw.toString()
     }
 
-    @Throws(ClientException::class)
     fun parseXmlWithMultipleDocs(data: String): String {
         val xmlInput = InputSource(StringReader(data))
         val dbf = DocumentBuilderFactory.newInstance()
