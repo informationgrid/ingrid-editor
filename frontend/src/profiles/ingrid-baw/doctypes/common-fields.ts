@@ -139,6 +139,9 @@ export class CommonFieldsBaw extends FormFieldHelper {
       timeRefRangePosition,
       this.addSelectInline("resourceTimezone", "Zeitzone", {
         options: timezones,
+        defaultValue: {
+          key: "(GMT+01:00) Berlin",
+        },
         showSearch: true,
       }),
     );
