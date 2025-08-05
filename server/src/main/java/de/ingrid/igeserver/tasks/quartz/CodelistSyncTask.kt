@@ -52,7 +52,7 @@ class CodelistSyncTask(
     }
 
     private val sqlNonArchivedDocuments = """
-        SELECT d.uuid, d.data 
+        SELECT d.id, d.uuid, d.data 
         FROM document d
         JOIN document_wrapper dw ON d.uuid = dw.uuid
         JOIN catalog c ON dw.catalog_id = c.id
@@ -75,7 +75,7 @@ class CodelistSyncTask(
     private val updateSql = """
         UPDATE document
         SET data = ?::jsonb
-        WHERE uuid = ?
+        WHERE id = ?
     """.trimIndent()
 
     private val batchSize = 100 // Process 100 documents at a time
@@ -105,6 +105,7 @@ class CodelistSyncTask(
                 log.info("Processing batch: offset=$offset, limit=$batchSize")
 
                 val batchCount = jdbcTemplate.query(sqlNonArchivedDocuments, { rs, index ->
+                    val id = rs.getInt("id")
                     val uuid = rs.getString("uuid")
                     val dataJson = rs.getString("data")
                     val dataNode = objectMapper.readTree(dataJson)
@@ -125,7 +126,7 @@ class CodelistSyncTask(
                         val updatedJson = objectMapper.writeValueAsString(dataNode)
                         log.debug("Updating document with UUID: $uuid")
 
-                        jdbcTemplate.update(updateSql, updatedJson, uuid)
+                        jdbcTemplate.update(updateSql, updatedJson, id)
                     }
 
                     if (jsonPaths.isNotEmpty()) {
