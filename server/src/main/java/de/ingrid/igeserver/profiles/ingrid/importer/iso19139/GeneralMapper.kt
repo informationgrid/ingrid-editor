@@ -617,7 +617,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         } ?: emptyList()
 
     fun getUseLimitation(): String = metadata.identificationInfo[0].identificationInfo?.resourceConstraints
-        ?.flatMap { it.legalConstraint?.useLimitation?.mapNotNull { use -> use.value?.replace(Regex("\\s+"), " ")?.trim() } ?: emptyList() }
+        ?.flatMap { it.legalConstraint?.useLimitation?.mapNotNull { use -> use.value?.trim() } ?: emptyList() }
         ?.joinToString(";") ?: ""
 
     fun getDistributionFormat(): List<DistributionFormat> = metadata.distributionInfo?.mdDistribution?.distributionFormat
