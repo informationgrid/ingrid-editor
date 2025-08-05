@@ -1,4 +1,6 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
+@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.CitedResponsibleParty
+@import de.ingrid.igeserver.profiles.ingrid_baw.exporter.LiteratureAggregate
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTransformerBaw
 @import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.SimParameter
 @import java.util.Map
@@ -35,6 +37,60 @@ additionalCitation = @`
             </gmd:MD_AggregateInformation>
         </gmd:aggregationInfo>
     @endif
+    @for(LiteratureAggregate lit : page.getLiteratureAggregates())
+        <gmd:aggregationInfo>
+            <gmd:MD_AggregateInformation>
+                <gmd:aggregateDataSetName uuidref="${lit.getUuid()}">
+                    <gmd:CI_Citation>
+                        <gmd:title>
+                            <gco:CharacterString>${lit.getTitle()}</gco:CharacterString>
+                        </gmd:title>
+                        <gmd:date>
+                            <gmd:CI_Date>
+                                <gmd:date>
+                                    <gco:Date>${lit.getPubDate()}</gco:Date>
+                                </gmd:date>
+                                <gmd:dateType>
+                                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#gmd:CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                </gmd:dateType>
+                            </gmd:CI_Date>
+                        </gmd:date>
+                        @for( String identifier : lit.getIdentifiers() )
+                        <gmd:identifier>
+                            <gmd:MD_Identifier>
+                                <gmd:code>
+                                    <gco:CharacterString>${identifier}</gco:CharacterString>
+                                </gmd:code>
+                            </gmd:MD_Identifier>
+                        </gmd:identifier>
+                        @endfor
+                        @for(CitedResponsibleParty party : lit.getCitedParties())
+                        <gmd:citedResponsibleParty>
+                            <gmd:CI_ResponsibleParty uuid="${party.getUuid()}">
+                                @if( TransformationTools.hasValue(party.getIndividualName()) )
+                                <gmd:individualName>
+                                    <gco:CharacterString>${party.getIndividualName()}</gco:CharacterString>
+                                </gmd:individualName>
+                                @endif
+                                @if( TransformationTools.hasValue(party.getOrganisationName()) )
+                                <gmd:organisationName>
+                                    <gco:CharacterString>${party.getOrganisationName()}</gco:CharacterString>
+                                </gmd:organisationName>
+                                @endif
+                                <gmd:role>
+                                    <gmd:CI_RoleCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="${party.getRole()}">${party.getRole()}</gmd:CI_RoleCode>
+                                </gmd:role>
+                            </gmd:CI_ResponsibleParty>
+                        </gmd:citedResponsibleParty>
+                    @endfor
+                    </gmd:CI_Citation>
+                </gmd:aggregateDataSetName>
+                <gmd:associationType>
+                    <gmd:DS_AssociationTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#DS_AssociationTypeCode" codeListValue="crossReference">crossReference</gmd:DS_AssociationTypeCode>
+                </gmd:associationType>
+            </gmd:MD_AggregateInformation>
+        </gmd:aggregationInfo>
+    @endfor
 `,
 extraContent = @`
     @if( TransformationTools.hasValue(page.getTimestep()) )

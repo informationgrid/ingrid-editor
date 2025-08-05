@@ -263,7 +263,7 @@ open class IngridModelTransformer(
         )
     }
 
-    fun getGeographicElements(): List<GeographicElement> = spatialReferences.flatMap { ref ->
+    open fun getGeographicElements(): List<GeographicElement> = spatialReferences.flatMap { ref ->
         val geoElements = mutableListOf<GeographicElement>()
 
         when (ref.type) {

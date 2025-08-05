@@ -19,7 +19,13 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw.exporter
 
+import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.exporter.AddressModelTransformer
+import de.ingrid.igeserver.exporter.model.Authority
+import de.ingrid.igeserver.exporter.model.CharacterStringModel
+import de.ingrid.igeserver.exporter.model.GeoElementType
+import de.ingrid.igeserver.exporter.model.GeographicElement
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
@@ -27,6 +33,7 @@ import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeodatasetTr
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.GeoserviceTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.ProjectModelTransformerBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer.PublicationModelTransformerBaw
+import de.ingrid.igeserver.utils.getDouble
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
@@ -94,3 +101,99 @@ fun getBawKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaurus(
         }
         ?: emptyList(),
 )
+
+fun getBwastrGeographicElements(transformer: IngridModelTransformer) = (
+    transformer.doc.data.getPath("spatial.references")?.filter { it.getString("type") == "bwastr" }?.map {
+        GeographicElement(
+            type = GeoElementType.DESCRIPTION,
+            geographicIdentifier = (
+                // Use the BWASTR code with start and end as the geographic identifier if available, otherwise fall back to the title
+                getBwastrCode(it.get("bwastr"))
+                    ?: it.getString("title")
+                )?.let { text ->
+                CharacterStringModel(
+                    text,
+                    null,
+                )
+            },
+            authority = Authority(
+                title = "VV-WSV 1103",
+                date = "2019-05-29",
+            ),
+        )
+    } ?: emptyList()
+    )
+
+private fun getBwastrCode(bwastrNode: JsonNode): String? {
+    val bwastrId = bwastrNode.getString("bwastrid")
+    val kmStart = bwastrNode.getDouble("start")
+    val kmEnd = bwastrNode.getDouble("end")
+
+    return if (bwastrId != null && kmStart != null && kmEnd != null) {
+        "$bwastrId-$kmStart-$kmEnd"
+    } else {
+        null
+    }
+}
+
+data class LiteratureAggregate(
+    val uuid: String,
+    val title: String,
+    val pubDate: String,
+    val identifiers: List<String>,
+    val citedParties: List<CitedResponsibleParty>,
+)
+
+data class CitedResponsibleParty(
+    val uuid: String,
+    val individualName: String?,
+    val organisationName: String?,
+    val role: String,
+)
+
+fun getLiteratureAggregates(transformer: IngridModelTransformer): List<LiteratureAggregate> = transformer.references.filter { it.type.key == "10001" && it.uuidRef != null }
+    .map {
+        val litDoc = transformer.documentService.getLastPublishedDocument(transformer.catalogIdentifier, it.uuidRef!!)
+        calcLiteratureAggregate(transformer, litDoc)
+    }
+
+private fun calcLiteratureAggregate(transformer: IngridModelTransformer, litDoc: Document): LiteratureAggregate = LiteratureAggregate(
+    uuid = litDoc.uuid,
+    title = litDoc.title ?: "missing",
+    pubDate = extractPublicationDate(litDoc.data) ?: "missing",
+    identifiers = extractIdentifiers(litDoc.data),
+    citedParties = extractCitedParties(transformer, litDoc.data),
+)
+
+private fun extractPublicationDate(data: JsonNode): String? = data.getPath("temporal.events")?.find {
+    it.getString("referenceDateType.key") == "2" // Publication
+}?.getString("referenceDate")
+
+private fun extractIdentifiers(data: JsonNode): List<String> = listOfNotNull(
+    data.getString("publication.doi")?.let { "https://doi.org/$it" },
+    data.getPath("publication.additionalIdentifiers")?.find {
+        it.getString("type.key") == "1" // Handle
+    }?.getString("value"),
+)
+
+private val addressTypeMapping = mapOf(
+    "10" to "author",
+    "11" to "publisher",
+)
+private fun extractCitedParties(transformer: IngridModelTransformer, data: JsonNode): List<CitedResponsibleParty> = data.getPath("pointOfContact")
+    ?.filter { addressTypeMapping.containsKey(it.getString("type.key")) }?.map {
+        val party = transformer.documentService.getLastPublishedDocument(transformer.catalogIdentifier, it.getString("ref")!!)
+
+        CitedResponsibleParty(
+            uuid = party.uuid,
+            individualName = createIndividualName(party.data),
+            organisationName = party.data.getString("organization"),
+            role = addressTypeMapping.getValue(it.getString("type.key")!!),
+        )
+    } ?: emptyList()
+
+private fun createIndividualName(partyData: JsonNode): String? {
+    val firstName = partyData.getString("firstName") ?: return null
+    val lastName = partyData.getString("lastName") ?: return null
+    return "$firstName, $lastName"
+}
