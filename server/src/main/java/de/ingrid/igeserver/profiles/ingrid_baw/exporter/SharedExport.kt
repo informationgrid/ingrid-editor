@@ -38,6 +38,8 @@ import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.igeserver.utils.mapToKeyValue
 import org.springframework.dao.EmptyResultDataAccessException
+import java.time.Instant
+import java.time.ZoneId
 import kotlin.reflect.KClass
 
 fun getBawModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
@@ -139,7 +141,7 @@ private fun getBwastrCode(bwastrNode: JsonNode): String? {
 data class LiteratureAggregate(
     val uuid: String,
     val title: String,
-    val pubDate: String,
+    val pubDate: String?,
     val identifiers: List<String>,
     val citedParties: List<CitedResponsibleParty>,
 )
@@ -159,15 +161,20 @@ fun getLiteratureAggregates(transformer: IngridModelTransformer): List<Literatur
 
 private fun calcLiteratureAggregate(transformer: IngridModelTransformer, litDoc: Document): LiteratureAggregate = LiteratureAggregate(
     uuid = litDoc.uuid,
-    title = litDoc.title ?: "missing",
-    pubDate = extractPublicationDate(litDoc.data) ?: "missing",
+    title = litDoc.title!!,
+    pubDate = extractPublicationDate(litDoc.data),
     identifiers = extractIdentifiers(litDoc.data),
     citedParties = extractCitedParties(transformer, litDoc.data),
 )
 
 private fun extractPublicationDate(data: JsonNode): String? = data.getPath("temporal.events")?.find {
     it.getString("referenceDateType.key") == "2" // Publication
-}?.getString("referenceDate")
+}?.getString("referenceDate")?.let { dateString ->
+    // Parse ISO datetime string and convert to local date
+    val instant = Instant.parse(dateString)
+    val localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate()
+    localDate.toString()
+}
 
 private fun extractIdentifiers(data: JsonNode): List<String> = listOfNotNull(
     data.getString("publication.doi")?.let { "https://doi.org/$it" },

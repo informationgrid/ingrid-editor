@@ -45,6 +45,7 @@ additionalCitation = @`
                         <gmd:title>
                             <gco:CharacterString>${lit.getTitle()}</gco:CharacterString>
                         </gmd:title>
+                        @if(TransformationTools.hasValue(lit.getPubDate()))
                         <gmd:date>
                             <gmd:CI_Date>
                                 <gmd:date>
@@ -55,6 +56,7 @@ additionalCitation = @`
                                 </gmd:dateType>
                             </gmd:CI_Date>
                         </gmd:date>
+                        @endif
                         @for( String identifier : lit.getIdentifiers() )
                         <gmd:identifier>
                             <gmd:MD_Identifier>
