@@ -786,7 +786,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         val otherConstraints = metadata.identificationInfo[0].identificationInfo?.resourceConstraints
             ?.map { it.legalConstraint }
             ?.filter { it?.useConstraints != null }
-            ?.flatMap { legalConstraint -> legalConstraint?.otherConstraints?.mapNotNull { it.value?.trim() } ?: emptyList() }
+            ?.flatMap { legalConstraint -> legalConstraint?.otherConstraints?.mapNotNull { it.value?.replace(Regex("\\s+"), " ")?.trim() } ?: emptyList() }
             ?: emptyList()
 
         val result = mutableListOf<UseConstraint>()
