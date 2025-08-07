@@ -25,8 +25,8 @@
     "bwstr-strecken_km_von": [
     @for(var entry : ForSupport.of(SharedExportKt.getBwastrForIndex(page)))
         "${entry.get().getStart()}"@if (!entry.isLast()),@endif
-    ],
     @endfor
+    ],
     "bwstr-strecken_km_bis": [
     @for(var entry : ForSupport.of(SharedExportKt.getBwastrForIndex(page)))
         "${entry.get().getEnd()}"@if (!entry.isLast()),@endif
