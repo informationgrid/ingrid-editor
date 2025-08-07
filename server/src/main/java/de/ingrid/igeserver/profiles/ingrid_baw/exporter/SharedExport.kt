@@ -88,6 +88,11 @@ private fun getIdentifierFromParent(transformer: IngridModelTransformer): String
     return parentDoc?.data?.getString("identifier")?.let { id -> transformer.addNamespaceIfNeeded(id) }
 }
 
+fun getPlainBawKeywords(transformer: IngridModelTransformer): List<String> = transformer.doc.data.getPath("keywords.bawKeywords")
+    ?.mapNotNull { it.mapToKeyValue() }
+    ?.mapNotNull { transformer.codelists.getValue("3950005", it) }
+    ?: emptyList()
+
 fun getBawKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaurus(
     "BAW-Schlagwortkatalog",
     "2012-01-01",
@@ -103,6 +108,21 @@ fun getBawKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaurus(
         }
         ?: emptyList(),
 )
+
+data class BwastrInfo(
+    val title: String,
+    val bwastrId: String,
+    val start: String,
+    val end: String,
+)
+fun getBwastrForIndex(transformerBaw: IngridModelTransformer) = transformerBaw.doc.data.getPath("spatial.references")?.filter { it.getString("type") == "bwastr" }?.map {
+    BwastrInfo(
+        title = it.getString("title") ?: "",
+        bwastrId = it.getString("bwastr.bwastrid") ?: "",
+        start = it.getString("bwastr.start") ?: "",
+        end = it.getString("bwastr.end") ?: "",
+    )
+} ?: emptyList()
 
 fun getBwastrGeographicElements(transformer: IngridModelTransformer) = (
     transformer.doc.data.getPath("spatial.references")?.filter { it.getString("type") == "bwastr" }?.map {

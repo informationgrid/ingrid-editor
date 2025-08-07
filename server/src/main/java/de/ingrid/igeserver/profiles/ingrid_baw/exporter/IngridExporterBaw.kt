@@ -140,11 +140,22 @@ class IngridLuceneExporterBaw(
             "export/ingrid/lucene/template-lucene-address.jte",
             getMapper(IngridDocType.ADDRESS, doc, catalog, options),
         )
+        "InGridProject",
+        -> Pair(
+            "export/ingrid-baw/lucene/template-lucene-baw-project.jte",
+            getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
+        )
+        "InGridGeoDataset",
         "BawMeasurement",
         "BawSimulation",
+        -> Pair(
+            "export/ingrid-baw/lucene/template-lucene-baw-geodataset.jte",
+            getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
+        )
+        "InGridGeoService",
         "BawPublication",
         -> Pair(
-            "export/ingrid/lucene/template-lucene.jte",
+            "export/ingrid-baw/lucene/template-lucene-baw.jte",
             getMapper(IngridDocType.DOCUMENT, doc, catalog, options),
         )
         else -> super.getTemplateForDoctype(doc, catalog, options)

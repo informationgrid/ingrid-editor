@@ -167,5 +167,16 @@ extraContent = @`
             </gmd:DQ_DataQuality>
         </gmd:dataQualityInfo>
     @endfor
+    <idf:additionalDataSection id="bawDmqsAdditionalFields">
+        <idf:title lang="de">BAW DMQS Zusatzfelder</idf:title>
+        <idf:additionalDataField id="bwstr-bwastr_name">
+            <idf:title lang="de">Bwstr Name</idf:title>
+            <idf:data>[Aller, Rhein]</idf:data>
+        </idf:additionalDataField>
+        <idf:additionalDataField id="bwstr-strecken_name">
+            <idf:title lang="de">Bwstr Streckenname</idf:title>
+            <idf:data>[Altarm Hülsen, Hauptstrecke]</idf:data>
+        </idf:additionalDataField>
+    </idf:additionalDataSection>
 `
 )

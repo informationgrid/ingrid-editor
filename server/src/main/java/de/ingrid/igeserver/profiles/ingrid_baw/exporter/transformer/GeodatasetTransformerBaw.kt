@@ -84,53 +84,57 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
         methodThesaurus,
     ).filter { it.keywords.isNotEmpty() }
 
+    val dimensionality = doc.data.getPath("dimensionality")?.mapToKeyValue()?.let { codelists.getValue("3950000", it) }
+
     val dimensionalityThesaurus = Thesaurus(
         "de.baw.codelist.model.dimensionality",
         "2017-01-17",
         showType = true,
         type = "discipline",
-        keywords = doc.data.getPath("dimensionality")
-            ?.mapToKeyValue()
-            ?.let {
-                listOf(
-                    KeywordIso(
-                        name = codelists.getValue("3950000", it),
-                        link = null,
-                    ),
-                )
-            } ?: emptyList(),
+        keywords = dimensionality?.let {
+            listOf(
+                KeywordIso(
+                    name = it,
+                    link = null,
+                ),
+            )
+        } ?: emptyList(),
     )
+
+    val process = doc.data.getPath("process")?.mapToKeyValue()?.let { codelists.getValue("3950001", it) }
+    val measuringMethod: List<String> = doc.data.getPath("measuringMethod")?.map { codelists.getValue("3950011", it.mapToKeyValue())!! } ?: emptyList()
+
+    // measurementMethod for Messdaten and process for Simulationen
+    val method = measuringMethod + (process?.let { listOf(it) } ?: emptyList())
 
     val methodThesaurus = Thesaurus(
         "de.baw.codelist.model.method",
         "2017-01-17",
         showType = true,
         type = "discipline",
-        keywords = doc.data.getPath("process")
-            ?.mapToKeyValue()
-            ?.let {
-                listOf(
-                    KeywordIso(
-                        name = codelists.getValue("3950001", it),
-                        link = null,
-                    ),
-                )
-            } ?: emptyList(),
+        keywords = process?.let {
+            listOf(
+                KeywordIso(
+                    name = it,
+                    link = null,
+                ),
+            )
+        } ?: emptyList(),
     )
+
+    val modelType = doc.data.getPath("simulationModelType")?.map { codelists.getValue("3950003", it.mapToKeyValue())!! } ?: emptyList()
 
     val modelTypeThesaurus = Thesaurus(
         "de.baw.codelist.model.type",
         "2017-01-17",
         showType = true,
         type = "discipline",
-        keywords = doc.data.getPath("simulationModelType")
-            ?.map { it.mapToKeyValue() }
-            ?.map {
-                KeywordIso(
-                    name = codelists.getValue("3950003", it),
-                    link = null,
-                )
-            } ?: emptyList(),
+        keywords = modelType.map {
+            KeywordIso(
+                name = it,
+                link = null,
+            )
+        },
     )
 }
 
