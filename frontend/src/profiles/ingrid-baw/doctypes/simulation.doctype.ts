@@ -34,6 +34,42 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedGeoDatasetFields(this, fieldConfig);
 
+    fieldConfig.unshift(
+      this.addSection("Langfristspeicher", [
+        this.addGroup("lfs", "LFS-Dateien", [
+          this.addDocumentCard("path", {
+            docTypeFilter: [],
+            label: "Datensatzverweis",
+            allowRedirectToDocument: false,
+            allowMultiSelect: true,
+            titleOfDocumentSelectorDialog: "Datei verlinken",
+            required: false,
+            // expressions: {
+            //   hide: (field: FormlyFieldConfig) => {
+            //     return field.form.value.referenceType != "uuidRef";
+            //   },
+            // },
+          }),
+        ]),
+
+        this.addGroup("docReferences", "Verlinkte Datensätze", [
+          this.addDocumentCard("ref", {
+            docTypeFilter: [],
+            label: "Datensatzverweis",
+            allowRedirectToDocument: false,
+            allowMultiSelect: true,
+            titleOfDocumentSelectorDialog: "Datensatz verlinken",
+            required: false,
+            // expressions: {
+            //   hide: (field: FormlyFieldConfig) => {
+            //     return field.form.value.referenceType != "uuidRef";
+            //   },
+            // },
+          }),
+        ]),
+      ]),
+    );
+
     fieldConfig.push(
       this.addSection("Simulationsdaten", [
         this.getSimulationFieldConfig(),

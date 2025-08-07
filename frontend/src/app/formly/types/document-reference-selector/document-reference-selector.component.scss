@@ -5,6 +5,10 @@
   margin-bottom: 12px;
 }
 
+.ref-selector-container > :not(:first-child) {
+  border-top: 1px solid var(--as-gutter-background-color);
+}
+
 .item {
   padding: 5px 5px;
   display: flex;

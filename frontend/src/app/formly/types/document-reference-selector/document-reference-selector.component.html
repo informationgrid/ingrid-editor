@@ -28,7 +28,7 @@
                     <span>{{ item.title ?? "???" }}</span>
                 </div>
                 @if (props.showLayernames) {
-                    <ul>
+                    <ul style="text-underline: #1a1b1f">
                         @for (name of item.layerNames; track name) {
                             <li>{{ name }}</li>
                         }
@@ -71,7 +71,12 @@
     }
 
     @if (allowMultiSelect || (!allowMultiSelect && !myModel?.[0])) {
-        <button mat-button color="primary" (click)="showInternalRefDialog()">
+        <button
+            type="button"
+            mat-stroked-button
+            color="primary"
+            (click)="showInternalRefDialog()"
+        >
             {{ titleOfDocumentSelectorDialog }}
         </button>
     }
