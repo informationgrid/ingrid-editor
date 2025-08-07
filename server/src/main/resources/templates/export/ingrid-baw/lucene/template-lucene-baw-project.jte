@@ -7,5 +7,5 @@
 
 @template.export.ingrid-baw.lucene.template-lucene-baw(map = map, extraFields = @`
     ,
-    "bawauftragsnummer": "${page.getOrderNumber()}",
+    "bawauftragsnummer": "${page.getOrderNumber()}"
 `)
