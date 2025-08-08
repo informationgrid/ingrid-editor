@@ -91,6 +91,7 @@ describe("DashboardComponent", () => {
         totalNum: 5,
         numDrafts: 3,
         numPublished: 2,
+        numAllDrafts: 4,
       }),
     );
   });
