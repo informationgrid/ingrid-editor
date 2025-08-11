@@ -41,11 +41,14 @@ import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { getTranslocoModule } from "../transloco-testing.module";
 import { provideLocationMocks } from "@angular/common/testing";
 import {
+  HttpResourceRef,
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
 import { ProfileService } from "../services/profile.service";
-import { GeneralStore } from "../store/general.store";
+import { DashboardService } from "./dashboard.service";
+import { DocumentAbstract } from "../store/document/document.model";
+import { signal } from "@angular/core";
 
 describe("DashboardComponent", () => {
   let spectator: Spectator<DashboardComponent>;
@@ -78,14 +81,31 @@ describe("DashboardComponent", () => {
       ModalService,
       MessageService,
       ProfileService,
+      DashboardService,
     ],
     detectChanges: false,
   });
 
   beforeEach(() => {
-    spectator = createComponent();
-    const dataService = spectator.inject<DocumentService>(DocumentService);
-    dataService.getStatistic.and.returnValue(
+    spectator = createComponent({
+      providers: [
+        // Override the DashboardService mock with specific behavior
+        {
+          provide: DashboardService,
+          useValue: {
+            fetchRecentDocs: jasmine
+              .createSpy("fetchRecentDocs")
+              .and.returnValue({
+                value: signal<DocumentAbstract[]>(recentDocuments),
+              } as HttpResourceRef<DocumentAbstract[]>),
+          },
+        },
+      ],
+    });
+
+    // Set up other mocks after component creation
+    const docService = spectator.inject<DocumentService>(DocumentService);
+    docService.getStatistic.and.returnValue(
       of({
         statsPerType: new Map(),
         totalNum: 5,
@@ -101,14 +121,6 @@ describe("DashboardComponent", () => {
   });
 
   it("should show last recent documents", () => {
-    const sessionStore = spectator.inject(GeneralStore);
-    const dataService = spectator.inject<DocumentService>(DocumentService);
-    dataService.findRecentDrafts.and.callFake(() => {
-      sessionStore.setLatestDocuments(recentDocuments);
-    });
-    dataService.findRecentPublished.and.callFake(() => {
-      sessionStore.setLatestDocuments(recentDocuments);
-    });
     spectator.detectChanges();
 
     const recentDocs = spectator.queryAll(
