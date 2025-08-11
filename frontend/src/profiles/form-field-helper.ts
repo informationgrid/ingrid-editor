@@ -956,18 +956,29 @@ export class FormFieldHelper {
   ): FieldConfigPosition {
     if (!fieldConfig) return null;
 
-    const index = fieldConfig.findIndex((field) => {
-      if (field.key === id) return true;
-    });
+    // Use a queue for breadth-first search
+    const queue: Array<FormlyFieldConfig[]> = [fieldConfig];
 
-    if (index !== -1) return { fieldConfig, index };
+    while (queue.length > 0) {
+      const config = queue.shift();
 
-    let subFound = null;
-    fieldConfig.some((item) => {
-      subFound = this.findFieldElementWithId(item.fieldGroup, id);
-      return subFound;
-    });
-    return subFound;
+      if (!config) continue;
+
+      // Check all fields at current level first
+      const index = config.findIndex((field) => field.key === id);
+      if (index !== -1) {
+        return { fieldConfig: config, index };
+      }
+
+      // Add all child fieldGroups to queue for next level processing
+      config.forEach((item) => {
+        if (item.fieldGroup) {
+          queue.push(item.fieldGroup);
+        }
+      });
+    }
+
+    return null;
   }
 
   // TODO: merge with findFieldElementWithId
