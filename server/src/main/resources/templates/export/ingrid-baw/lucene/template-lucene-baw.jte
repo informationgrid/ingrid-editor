@@ -33,9 +33,8 @@
     @endfor
     ],
 
-
-    "baw_abteilung_short": "TODO",
-    "baw_abteilung_long": "TODO",
+    "baw_abteilung_short": "${SharedExportKt.getAbteilung(page).getShort()}",
+    "baw_abteilung_long": "${SharedExportKt.getAbteilung(page).getLong()}",
 
     "bawKeywordCatalogueEntry": [
     @for(var entry : ForSupport.of(SharedExportKt.getPlainBawKeywords(page)))

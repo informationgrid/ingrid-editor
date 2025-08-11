@@ -223,9 +223,8 @@ export class CommonFieldsBaw extends FormFieldHelper {
       // only "Herausgeber" and "Autor"
       allowedTypesByDoctype: { PublicationAddressDoc: ["10", "11"] },
       validators: {
-        // TODO: add if needed
         // Require reference to address 'Bundesanstalt für Wasserbau' as 'Ansprechpartner'
-        // hasBAWPointOfContact: this.hasBAWPointOfContact,
+        hasBAWPointOfContact: this.hasBAWPointOfContact,
         ...additionalValidators,
       },
     });
@@ -361,8 +360,6 @@ export class CommonFieldsBaw extends FormFieldHelper {
       // equals "Herausgeber"
       ctrl.value
         ? ctrl.value.some(
-            // TODO: was address.institution (title) in ige classic. refactor or define reserved address.ref
-            // also check if functionality is still needed
             (address) =>
               address.type?.key === "7" &&
               address.ref === "891d8fdf-e6cf-3f61-9ca4-668880483ca8",

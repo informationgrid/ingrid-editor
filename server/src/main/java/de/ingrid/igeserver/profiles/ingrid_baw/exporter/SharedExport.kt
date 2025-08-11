@@ -124,6 +124,23 @@ fun getBwastrForIndex(transformerBaw: IngridModelTransformer) = transformerBaw.d
     )
 } ?: emptyList()
 
+data class Abteilung(
+    val short: String,
+    val long: String,
+)
+val abteilungsMap = mapOf(
+    "9341dbb5-4e09-3fca-b343-2990fc935761" to Abteilung("b", "Bautechnik"),
+    "88b9d568-288e-391f-9649-af31fc0fc128" to Abteilung("g", "Geotechnik"),
+    "30d30a3b-27fe-3470-aec2-63183b8052ce" to Abteilung("w", "Wasserbau im Binnenbereich"),
+    "eaaf4d0d-44cd-356e-a3e3-520191945ca5" to Abteilung("k", "Wasserbau im Küstenbereich"),
+    "d28ee28e-83d3-3996-aaf7-d053a05ec7ff" to Abteilung("z", "Zentraler Service"),
+)
+fun getAbteilung(transformerBaw: IngridModelTransformer) = transformerBaw.doc.data.getPath("pointOfContact")
+    // Ansprechpartner
+    ?.filter { it.getString("type.key") == "7" }
+    // use first match only for now
+    ?.firstNotNullOfOrNull { abteilungsMap[it.getString("ref")] } ?: Abteilung("", "")
+
 fun getBwastrGeographicElements(transformer: IngridModelTransformer) = (
     transformer.doc.data.getPath("spatial.references")?.filter { it.getString("type") == "bwastr" }?.map {
         GeographicElement(
