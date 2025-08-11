@@ -95,6 +95,8 @@ export class DocumentReferenceTypeComponent
 
   refreshing = true;
 
+  onlyInternalRefs = false;
+
   constructor(
     private cdr: ChangeDetectorRef,
     private dialog: MatDialog,
@@ -105,6 +107,7 @@ export class DocumentReferenceTypeComponent
   }
 
   ngOnInit() {
+    this.onlyInternalRefs = this.props.onlyInternalRefs;
     this.formControl.valueChanges
       .pipe(
         untilDestroyed(this),
@@ -120,6 +123,8 @@ export class DocumentReferenceTypeComponent
       activeRef: index >= 0 ? this.getRefUuids()[index] : null,
       layerNames: index >= 0 ? this.formControl.value[index].layerNames : [],
       showLayernames: this.props.showLayernames,
+      docTypeFilter: this.props.docTypeFilter,
+      dialogTitle: this.props.titleOfDocumentSelectorDialog,
     };
     this.dialog
       .open(SelectGeoDatasetDialog, {

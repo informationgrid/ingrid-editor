@@ -206,6 +206,13 @@ export class CommonFieldsBaw extends FormFieldHelper {
         pointOfContactPosition.fieldConfig[pointOfContactPosition.index]
           .validators,
       );
+
+    // literature references
+    const referencesPosition = this.findFieldElementWithId(
+      fieldConfig,
+      "references",
+    );
+    this.addAfter(referencesPosition, this.getLiteratureReferenceFieldConfig());
   }
 
   getBAWPointOfContactFieldConfig(
@@ -318,6 +325,22 @@ export class CommonFieldsBaw extends FormFieldHelper {
     this.addBefore(parentIdentifierPosition, this.getOrderTitleFieldConfig());
 
     this.addSharedFields(doc, fieldConfig);
+  }
+
+  getLiteratureReferenceFieldConfig(): FormlyFieldConfig {
+    return this.addGroup(null, "Literatur-Verweise", [
+      <FormlyFieldConfig>{
+        key: "literatureReferences",
+        type: "couplingService",
+        className: "flex-1",
+        props: {
+          label: "Literatur-Verweise",
+          onlyInternalRefs: true,
+          titleOfDocumentSelectorDialog: "Literatur-Datensatz auswählen",
+          docTypeFilter: ["BawPublication"],
+        },
+      },
+    ]);
   }
 
   removeDataQualitySection(
