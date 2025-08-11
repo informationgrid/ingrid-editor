@@ -74,7 +74,7 @@ class DcatApEiaMapper(
 
     val pointOfContact: List<Contact>? = run {
         // TODO How to map contacts? -> dcat:contactPoint -> vcard:Organization
-        val mail = dataset.contactPoint?.firstOrNull()?.email
+        // val mail = dataset.contactPoint?.firstOrNull()?.email
         listOf()
     }
 
