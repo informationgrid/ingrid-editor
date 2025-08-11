@@ -17,17 +17,8 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Component,
-  effect,
-  inject,
-  Input,
-  OnInit,
-  Signal,
-} from "@angular/core";
-import { DocumentAbstract } from "../../store/document/document.model";
+import { Component, input, signal } from "@angular/core";
 import { Router } from "@angular/router";
-import { DocumentService } from "../../services/document/document.service";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { DashboardAddressHeaderComponent } from "./dashboard-address-header/dashboard-address-header.component";
@@ -36,7 +27,7 @@ import { CardBoxComponent } from "../../shared/card-box/card-box.component";
 import { DocumentListItemComponent } from "../../shared/document-list-item/document-list-item.component";
 import { MatIcon } from "@angular/material/icon";
 import { TranslocoDirective } from "@jsverse/transloco";
-import { GeneralStore } from "../../store/general.store";
+import { DashboardService } from "../../+dashboard/dashboard.service";
 
 @UntilDestroy()
 @Component({
@@ -52,12 +43,16 @@ import { GeneralStore } from "../../store/general.store";
     TranslocoDirective,
   ],
 })
-export class FormDashboardComponent implements OnInit {
-  @Input() address = false;
+export class FormDashboardComponent {
+  address = input<boolean>(false);
 
-  private generalStore = inject(GeneralStore);
+  onlyModifiedFromCurrentUser = signal<boolean>(false);
 
-  childDocs: Signal<DocumentAbstract[]>;
+  childDocs = this.dashboardService.fetchRecentDocs(
+    this.onlyModifiedFromCurrentUser,
+    false,
+    this.address,
+  );
   canCreateDatasets: boolean;
   canCreateAddress: boolean;
   canImport: boolean;
@@ -65,37 +60,16 @@ export class FormDashboardComponent implements OnInit {
   constructor(
     configService: ConfigService,
     private router: Router,
-    private docService: DocumentService,
+    private dashboardService: DashboardService,
   ) {
-    // TODO switch to user specific query
     this.canCreateDatasets = configService.hasPermission("can_create_dataset");
     this.canCreateAddress = configService.hasPermission("can_create_address");
     this.canImport = configService.hasPermission("can_import");
-
-    effect(() => {
-      const doc = this.generalStore.getOpenedDocument(this.address);
-      if (doc === null) {
-        this.address
-          ? this.docService.findRecentAddresses()
-          : this.updateRecentDocs();
-      }
-    });
-  }
-
-  ngOnInit(): void {
-    this.childDocs = this.address
-      ? this.generalStore.latestAddresses
-      : this.generalStore.latestDocuments;
   }
 
   openDocument(uuid: string) {
     const target =
-      ConfigService.catalogId + (this.address ? "/address" : "/form");
+      ConfigService.catalogId + (this.address() ? "/address" : "/form");
     this.router.navigate([target, { id: uuid }]);
-  }
-
-  private updateRecentDocs() {
-    this.docService.findRecentDrafts();
-    this.docService.findRecentPublished();
   }
 }

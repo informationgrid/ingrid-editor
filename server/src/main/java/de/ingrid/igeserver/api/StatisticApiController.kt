@@ -20,13 +20,21 @@
 package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.BoolFilter
+import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
+import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.utils.AuthUtils
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 
@@ -144,4 +152,44 @@ class StatisticApiController(
         )
         return result
     }
+
+    @Operation
+    @GetMapping(value = ["/statistic/recentDocuments"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun getRecentDocuments(
+        principal: Principal,
+        @Parameter(description = "") @RequestParam("recentlyPublished") recentlyPublished: Boolean = false,
+        @Parameter(description = "") @RequestParam("fromUser") fromUser: Boolean = false,
+        @Parameter(description = "") @RequestParam("addresses") addresses: Boolean = false,
+    ): ResponseEntity<ResearchResponse> {
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val userId = catalogService.getUser(authUtils.getUsernameFromPrincipal(principal))?.id
+
+        val typeFilter = if (addresses) "selectAddresses" else "selectDocuments"
+        val stateFilter = "document1.state ${if (recentlyPublished) "= 'PUBLISHED'" else " IS NOT NULL"}"
+        val userFilter = if (fromUser) "document1.modifiedbyuser = $userId" else null
+
+        val query = getResearchQuery(stateFilter, userFilter, typeFilter)
+
+        return ResponseEntity.ok(researchService.query(dbId, query, principal))
+    }
+
+    private fun getResearchQuery(stateFilter: String?, userFilter: String?, typeFilter: String): ResearchQuery = ResearchQuery(
+        null,
+        BoolFilter(
+            "AND",
+            null,
+            listOfNotNull(stateFilter, userFilter).map { BoolFilter("OR", listOf(it), null, null, isFacet = false) } +
+                BoolFilter(
+                    "AND",
+                    listOf(typeFilter, "exceptFolders"),
+                    null,
+                    null,
+                ),
+            null,
+        ),
+        "modified",
+        "DESC",
+        ResearchPaging(1, 10),
+    )
 }
