@@ -394,7 +394,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
             } else {
                 it.mdBrowseGraphic?.fileName?.value
             }
-            PreviewGraphic(fileName, it.mdBrowseGraphic?.fileDescription?.value, !isInternalStorage)
+            PreviewGraphic(fileName?.trim(), it.mdBrowseGraphic?.fileDescription?.value, !isInternalStorage)
         } ?: emptyList()
 
     data class PreviewGraphic(
@@ -626,7 +626,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         } ?: emptyList()
 
     fun getUseLimitation(): String = metadata.identificationInfo[0].identificationInfo?.resourceConstraints
-        ?.flatMap { it.legalConstraint?.useLimitation?.mapNotNull { use -> use.value } ?: emptyList() }
+        ?.flatMap { it.legalConstraint?.useLimitation?.mapNotNull { use -> use.value?.trim() } ?: emptyList() }
         ?.joinToString(";") ?: ""
 
     fun getDistributionFormat(): List<DistributionFormat> = metadata.distributionInfo?.mdDistribution?.distributionFormat
@@ -699,7 +699,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
                     val typeId =
                         if (fileFormatCode == null) null else codeListService.getCodeListEntryId("1320", fileFormatCode, "de")
                     val keyValue = if (typeId == null) KeyValue("9999") else KeyValue(typeId)
-                    val fileName = resource.linkage.url?.substringAfterLast('/') ?: ""
+                    val fileName = resource.linkage.url?.substringAfterLast('/')?.trim() ?: ""
                     val sizeInBytes = transferOption.mdDigitalTransferOptions.transferSize?.value?.times(1_000_000)
                     val fileReferenceLink = FileReferenceLink(
                         asLink = false,
@@ -795,7 +795,7 @@ open class GeneralMapper(val isoData: IsoImportData) {
         val otherConstraints = metadata.identificationInfo[0].identificationInfo?.resourceConstraints
             ?.map { it.legalConstraint }
             ?.filter { it?.useConstraints != null }
-            ?.flatMap { legalConstraint -> legalConstraint?.otherConstraints?.mapNotNull { it.value } ?: emptyList() }
+            ?.flatMap { legalConstraint -> legalConstraint?.otherConstraints?.mapNotNull { it.value?.trim() } ?: emptyList() }
             ?: emptyList()
 
         val result = mutableListOf<UseConstraint>()

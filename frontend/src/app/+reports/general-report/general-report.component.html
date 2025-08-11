@@ -87,10 +87,18 @@
                 </ng-container>
                 <ng-container matColumnDef="working">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                        in Bearbeitung
+                        unveröffentlicht
                     </th>
                     <td mat-cell *matCellDef="let element">
                         {{ element.working }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="allWorking">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        in Bearbeitung
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.allWorking }}
                     </td>
                 </ng-container>
 
