@@ -54,7 +54,7 @@ class IngridIsoFormatter : BodyFormatter {
         for (catalog in collections) response += catalog.toString().substringAfter("?>")
         response
 
-        val wrappedResponse = wrapperForXml(response, links, queryMetadata)
+        val wrappedResponse = wrapperForXml(response, links, queryMetadata, isSingleRecord)
 
         return wrappedResponse.toByteArray()
     }
@@ -64,13 +64,14 @@ class IngridIsoFormatter : BodyFormatter {
         for (record in records) response += record.result?.toString(Charsets.UTF_8)?.substringAfter("?>")
         response
 
-        val wrappedResponse = wrapperForXml(response, links, queryMetadata)
+        val wrappedResponse = wrapperForXml(response, links, queryMetadata, isSingleRecord)
 
         return wrappedResponse.toByteArray()
     }
 
-    private fun wrapperForXml(responseRecords: String, links: List<Link>?, queryMetadata: QueryMetadata?): String {
-        // TODO Remove "<datasets>" if isSingleRecord ?
+    private fun wrapperForXml(responseRecords: String, links: List<Link>?, queryMetadata: QueryMetadata?, isSingleRecord: Boolean): String {
+        if (isSingleRecord) return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>$responseRecords"
+
         val xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><datasets>$responseRecords</datasets>"
         if (links == null && queryMetadata == null) return xmlString
 
@@ -118,15 +119,14 @@ class IngridIsoFormatter : BodyFormatter {
     }
 
     fun parseXmlWithMultipleDocs(data: String): String {
-        val documents: MutableList<String> = mutableListOf()
-
         val xmlInput = InputSource(StringReader(data))
         val dbf = DocumentBuilderFactory.newInstance()
         dbf.isNamespaceAware = true
         val doc = dbf.newDocumentBuilder().parse(xmlInput)
 
-        val datasetList = doc.documentElement.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd", "MD_Metadata")
+        if (doc.documentElement.localName == "datasets") throw ClientException.withReason("Invalid XML structure: <gmd:MD_Metadata> must be the document root and must not be wrapped in <datasets>.")
 
+        val datasetList = doc.documentElement.getElementsByTagNameNS("http://www.isotc211.org/2005/gmd", "MD_Metadata")
         if (datasetList.length > 1) throw ClientException.withReason("Invalid request: XML body must contain exactly one 'MD_Metadata' element.")
 
         return data
