@@ -45,6 +45,7 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { AddButtonComponent } from "../../../shared/add-button/add-button.component";
 import { TreeStore } from "../../../store/tree/tree.store";
+import { ProfileService } from "../../../services/profile.service";
 
 interface Reference {
   layerNames: string[];
@@ -56,7 +57,7 @@ export interface DocumentReference extends Reference {
   uuid: string;
   state: DocumentState;
   type: string;
-  icon: "Geodatensatz";
+  icon: string;
 }
 
 interface UrlReference extends Reference {
@@ -102,6 +103,7 @@ export class DocumentReferenceTypeComponent
     private dialog: MatDialog,
     private router: Router,
     private docService: DocumentService,
+    private profileService: ProfileService,
   ) {
     super();
   }
@@ -266,7 +268,7 @@ export class DocumentReferenceTypeComponent
       state: doc?._state,
       type: doc?._type,
       layerNames: layerNames,
-      icon: "Geodatensatz",
+      icon: this.profileService.getDocumentIcon(doc._type),
     };
   }
 
