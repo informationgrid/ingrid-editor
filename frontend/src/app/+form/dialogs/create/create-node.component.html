@@ -121,7 +121,7 @@
                 mat-flat-button
                 color="primary"
                 data-cy="create-applyLocation"
-                [disabled]="!isAdmin && !selectedLocation"
+                [disabled]="!isAdmin && !parent()"
                 (click)="applyLocation()"
             >
                 Übernehmen

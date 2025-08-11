@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.configuration.acl
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.checkForRootPermissions
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
@@ -44,7 +45,7 @@ import org.springframework.security.core.Authentication
 import java.io.Serializable
 import java.util.*
 
-class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthUtils) : AclPermissionEvaluator(aclService) {
+class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthUtils, val catalogService: CatalogService) : AclPermissionEvaluator(aclService) {
 
     val logger = logger()
 
@@ -73,10 +74,15 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
         }
 
         val objectIdentity = objectIdentityGenerator.createObjectIdentity(targetId, targetType)
-        return checkPermission(authentication, objectIdentity, permission, null)
+        return checkACLPermission(authentication, objectIdentity, permission, null)
     }
 
     override fun hasPermission(authentication: Authentication, domainObject: Any?, permission: Any): Boolean {
+        // catalog permission handling
+        if (permission is String && catalogService.getPermission(permission) != null) {
+            return catalogService.hasPermission(authentication, catalogService.getPermission(permission)!!)
+        }
+
         if (domainObject == null) {
             return false
         }
@@ -103,7 +109,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
 
 //        try {
         val objectIdentity = objectIdentityRetrievalStrategy.getObjectIdentity(finalDomainObject)
-        return checkPermission(authentication, objectIdentity, permission, finalDomainObject)
+        return checkACLPermission(authentication, objectIdentity, permission, finalDomainObject)
         /*} catch (ex: IdentityUnavailableException) {
             // in this case we probably want to create document where the DB-ID is not known yet
             // check for permission for parent
@@ -116,7 +122,7 @@ class IgeAclPermissionEvaluator(val aclService: AclService, val authUtils: AuthU
         }*/
     }
 
-    private fun checkPermission(
+    private fun checkACLPermission(
         authentication: Authentication,
         oid: ObjectIdentity,
         permission: Any,

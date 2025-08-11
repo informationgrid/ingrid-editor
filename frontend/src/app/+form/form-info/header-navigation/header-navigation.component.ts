@@ -19,13 +19,12 @@
  */
 import { Component, Input, OnInit } from "@angular/core";
 import { MatButton } from "@angular/material/button";
-import { NgIf } from "@angular/common";
 
 @Component({
   selector: "ige-header-navigation",
   templateUrl: "./header-navigation.component.html",
   styleUrls: ["./header-navigation.component.scss"],
-  imports: [MatButton, NgIf],
+  imports: [MatButton],
 })
 export class HeaderNavigationComponent implements OnInit {
   @Input() sections: string[] = [];

@@ -29,6 +29,7 @@ import de.ingrid.igeserver.zabbix.ZabbixJob
 import de.ingrid.igeserver.zabbix.ZabbixModel
 import de.ingrid.igeserver.zabbix.ZabbixService
 import de.ingrid.utils.xpath.XPathUtils
+import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
 import org.quartz.JobKey
 import org.springframework.context.annotation.Profile
@@ -49,6 +50,8 @@ class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler
 
     private val xpath = XPathUtils()
 
+    private val log = logger()
+
     override fun invoke(payload: PostIndexPayload, context: Context): PostIndexPayload {
         val catalogIdentifier = context.catalogId
         val category = payload.category
@@ -66,6 +69,7 @@ class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler
                 }
                 scheduler.handleJobWithCommand(JobCommand.start, ZabbixJob::class.java, jobKey, jobDataMap, 1, false)
             } catch (ex: Exception) {
+                log.error("Error while scheduling zabbix job for document ${data.uuid} in catalog $catalogIdentifier: ${ex.message}")
                 throw ex
             }
         }

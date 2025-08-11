@@ -846,32 +846,6 @@ public class FileSystemStorage implements Storage {
                 throw new UncheckedIOException(ex);
             }
         });
-
-        // Also move published archived files to unpublished archive
-        archivedFiles.stream().filter(f -> referencedFiles.contains(f.getRelativePath())).forEach(f -> {
-            try {
-                var srcPath = this.getRealPath(catalog, datasetID, f.getRelativePath(), this.docsDir);
-                var targetPath = this.getArchivePath(catalog, datasetID, f.getRelativePath(), this.docsDir, Scope.UNPUBLISHED);
-
-                if(!targetPath.toFile().exists()){
-                    Files.createDirectories(targetPath.getParent());
-                    Files.move(srcPath, targetPath);
-                }
-                else{
-                    var trashPath = this.getTrashPath(catalog, datasetID, srcPath.getFileName().toString(), this.docsDir, Scope.ARCHIVED);
-                    Files.createDirectories(trashPath.getParent());
-                    Files.move(srcPath, trashPath, copyOptions);
-                }
-            }
-            catch (final FileAlreadyExistsException faex) {
-
-                final StorageItem[] items = null;//{this.getFileInfo(faex.getFile())};
-                throw new ConflictException(faex.getMessage(), items, "");
-            }
-            catch (final IOException ex) {
-                throw new UncheckedIOException(ex);
-            }
-        });
     }
 
     @Override

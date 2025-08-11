@@ -1,0 +1,102 @@
+/**
+ * ==================================================
+ * Copyright (C) 2025 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * https://joinup.ec.europa.eu/software/page/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
+package de.ingrid.igeserver.features.ogc_api_records.services
+
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
+import de.ingrid.igeserver.persistence.filter.publish.PreJsonSchemaValidator
+import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.DocumentService
+import org.springframework.stereotype.Service
+import java.net.URI
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.iterator
+
+@Service
+class JsonSchemaService(
+    private val catalogService: CatalogService,
+    private val documentService: DocumentService,
+) {
+
+    fun getSchemaOfDocType(catalogId: String, docType: String): JsonNode {
+        val profile = catalogService.getProfileFromCatalog(catalogId)
+        val docType = documentService.getDocumentType(docType, profile.identifier, null)
+        val schemaPath = docType.jsonSchema
+        val resource = PreJsonSchemaValidator::class.java.getResource(schemaPath as String)
+            ?: error("Schema file not found: $schemaPath")
+
+        val baseUri = resource.toURI()
+        val rootSchema = ObjectMapper().readTree(resource)
+
+        val completeJsonSchema = resolveAllRefs(rootSchema, baseUri)
+
+        return completeJsonSchema
+    }
+
+    private fun resolveAllRefs(node: JsonNode, baseUri: URI): JsonNode {
+        return when (node) {
+            is ObjectNode -> {
+                if (node.has("\$ref")) {
+                    val ref = node["\$ref"].asText()
+                    val targetUri = if (ref.startsWith("#")) baseUri else baseUri.resolve(ref.substringBefore("#"))
+                    val resolved = resolveRef(ref, baseUri)
+                    return resolveAllRefs(resolved, targetUri)
+                }
+
+                node.deepCopy<ObjectNode>().apply {
+                    fields().forEach { (field, value) ->
+                        set<JsonNode>(field, resolveAllRefs(value, baseUri))
+                    }
+                }
+            }
+
+            is ArrayNode -> node.deepCopy<ArrayNode>().apply {
+                for (i in 0 until size()) {
+                    set(i, resolveAllRefs(get(i), baseUri))
+                }
+            }
+
+            else -> node
+        }
+    }
+
+    private fun resolveRef(ref: String, baseUri: URI): JsonNode {
+        val (relativePath, fragment) = ref.split("#", limit = 2).let {
+            it[0] to it.getOrNull(1)
+        }
+
+        val uri = if (relativePath.isEmpty()) baseUri else baseUri.resolve(relativePath)
+        val rootNode = ObjectMapper().readTree(uri.toURL())
+
+        return fragment?.let {
+            val pointer = toJsonPointer(it)
+            val resolved = rootNode.at(pointer)
+            if (resolved.isMissingNode) error("Fragment not found: $ref (resolved from: $uri)")
+            resolved
+        } ?: rootNode
+    }
+
+    private fun toJsonPointer(fragment: String): String = fragment.split('/')
+        .filter { it.isNotEmpty() }
+        .joinToString("/", prefix = "/") { it.replace("~1", "/").replace("~0", "~") }
+}

@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from "@angular/core";
 import { FieldType } from "@ngx-formly/material";
 import {
   FieldTypeConfig,
@@ -25,7 +32,7 @@ import {
   FormlyFieldProps,
 } from "@ngx-formly/core";
 import { FormLabelComponent } from "../../wrapper/form-label/form-label.component";
-import { AsyncPipe, NgIf, NgTemplateOutlet } from "@angular/common";
+import { AsyncPipe, NgTemplateOutlet } from "@angular/common";
 import { MatChipListbox, MatChipOption } from "@angular/material/chips";
 import {
   AbstractControl,
@@ -86,7 +93,6 @@ export interface MetadataOptionItem {
   selector: "ige-metadata-type",
   imports: [
     FormLabelComponent,
-    NgIf,
     MatChipListbox,
     MatChipOption,
     ReactiveFormsModule,
@@ -104,7 +110,7 @@ export interface MetadataOptionItem {
 })
 export class MetadataTypeComponent
   extends FieldType<FieldTypeConfig<MetadataProps>>
-  implements OnInit
+  implements OnInit, OnDestroy
 {
   private contextHelpService = inject(ContextHelpService);
   private formStateService = inject(FormStateService);
@@ -161,6 +167,11 @@ export class MetadataTypeComponent
         return null;
       },
     );
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+    this.formControl?.clearValidators();
   }
 
   private hasValue(data: any) {

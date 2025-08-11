@@ -46,7 +46,11 @@ import {
   CdkDropList,
   moveItemInArray,
 } from "@angular/cdk/drag-drop";
-import { FieldTypeConfig, FormlyFieldConfig } from "@ngx-formly/core";
+import {
+  FieldTypeConfig,
+  FormlyFieldConfig,
+  FormlyValidationMessage,
+} from "@ngx-formly/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import {
   ConfirmDialogComponent,
@@ -76,6 +80,7 @@ import { waitForCondition } from "../../../services/utils";
     AddressCardComponent,
     AddButtonComponent,
     FieldToAiraLabelledbyPipe,
+    FormlyValidationMessage,
   ],
 })
 export class AddressTypeComponent
@@ -107,6 +112,7 @@ export class AddressTypeComponent
     this.documentService.reload$
       .pipe(
         untilDestroyed(this),
+        filter((info) => info.forAddress === false),
         map((item) => item.uuid),
       )
       .subscribe(() => {

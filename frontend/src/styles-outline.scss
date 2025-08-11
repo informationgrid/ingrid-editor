@@ -41,7 +41,7 @@
     outline-offset: 2px;
     outline: 3px solid vars.$ige-primary;
     --mat-mdc-button-persistent-ripple-color: unset;
-    --mat-standard-button-toggle-focus-state-layer-opacity: 0;
+    --mat-button-toggle-focus-state-layer-opacity: 0;
   }
 }
 
@@ -61,10 +61,10 @@ ige-side-menu .mdc-list-item,
 }
 
 .mat-mdc-tab-nav-panel .mdc-tab {
-  --mat-tab-header-active-label-text-color: #196ea2;
-  --mat-tab-header-active-focus-label-text-color: #196ea2;
-  --mdc-tab-indicator-active-indicator-color: #196ea2;
-  --mat-tab-header-active-focus-indicator-color: #196ea2;
+  --mat-tab-active-label-text-color: #196ea2;
+  --mat-tab-active-focus-label-text-color: #196ea2;
+  --mat-tab-active-indicator-color: #196ea2;
+  --mat-tab-active-focus-indicator-color: #196ea2;
 
   &.cdk-focused.cdk-keyboard-focused {
     outline-offset: -2px;
@@ -72,8 +72,8 @@ ige-side-menu .mdc-list-item,
 
     .mdc-tab__ripple:before {
       opacity: unset;
-      --mat-tab-header-active-ripple-color: transparent;
-      --mat-tab-header-inactive-ripple-color: transparent;
+      --mat-tab-active-ripple-color: transparent;
+      --mat-tab-inactive-ripple-color: transparent;
     }
   }
 }
@@ -89,10 +89,10 @@ form-toolbar :not(.save-buttons) > .mdc-button {
 
 .mdc-checkbox input[type="checkbox"]:focus-visible + .mdc-checkbox__ripple {
   border: 2px solid vars.$ige-primary;
-  --mdc-checkbox-selected-focus-state-layer-opacity: 1;
-  --mdc-checkbox-unselected-focus-state-layer-opacity: 1;
-  --mdc-checkbox-selected-focus-state-layer-color: transparent;
-  --mdc-checkbox-unselected-focus-state-layer-color: transparent;
+  --mat-checkbox-selected-focus-state-layer-opacity: 1;
+  --mat-checkbox-unselected-focus-state-layer-opacity: 1;
+  --mat-checkbox-selected-focus-state-layer-color: transparent;
+  --mat-checkbox-unselected-focus-state-layer-color: transparent;
 }
 
 .mat-mdc-slide-toggle,

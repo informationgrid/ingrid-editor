@@ -20,7 +20,7 @@
 import { Component, inject, Inject } from "@angular/core";
 import { TreeNode } from "../../../../store/tree/tree-node.model";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 
 import { FormGroup } from "@angular/forms";
 import { Subject } from "rxjs";
@@ -46,7 +46,7 @@ export interface SelectServiceResponse {
 @Component({
   templateUrl: "./select-geo-dataset-dialog.component.html",
   styleUrls: ["./select-geo-dataset-dialog.component.scss"],
-  imports: [FormlyModule, DialogTemplateComponent, TreeComponent],
+  imports: [DialogTemplateComponent, TreeComponent, FormlyForm],
 })
 export class SelectGeoDatasetDialog {
   private documentService = inject(DocumentService);

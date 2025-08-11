@@ -37,7 +37,8 @@ import { TreeStore } from "../../../../app/store/tree/tree.store";
 export class ConsolidateKeywordsPlugin extends Plugin {
   id = "plugin.consolidate.keywords";
   name = "Schlagworte konsolidieren";
-  description = "Schlagworte konsolidieren";
+  description =
+    "Bereits eingetragene Schlagworte werden neu analysiert und zu den verschiedenen Schlagwortfeldern hinzugefügt. Die Funktion befindet sich im 3-Punkte-Menü des Datensatzes.";
   defaultActive = true;
 
   private treeStore = inject(TreeStore);
@@ -66,6 +67,8 @@ export class ConsolidateKeywordsPlugin extends Plugin {
       configService.hasCatAdminRights() || configService.hasMdAdminRights();
 
     effect(() => {
+      if (!this.isActive() || !this.isPrivileged) return;
+
       this.handleMenuItem(
         this.generalStore.getOpenedDocument(this.forAddress()),
       );

@@ -64,11 +64,11 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from "../../../dialogs/confirm/confirm-dialog.component";
-import { FieldTypeConfig, FormlyModule } from "@ngx-formly/core";
+import { FieldTypeConfig, FormlyValidationMessage } from "@ngx-formly/core";
 import { ValidationErrors } from "@angular/forms";
 import { FormStateService } from "../../../+form/form-state.service";
 import { FormLabelComponent } from "../../wrapper/form-label/form-label.component";
-import { NgIf, NgTemplateOutlet } from "@angular/common";
+import { NgTemplateOutlet } from "@angular/common";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 import { MatCheckbox } from "@angular/material/checkbox";
@@ -84,13 +84,11 @@ import { AddButtonComponent } from "../../../shared/add-button/add-button.compon
   styleUrls: ["table-type.component.scss"],
   imports: [
     FormLabelComponent,
-    NgIf,
     NgTemplateOutlet,
     MatButton,
     MatIcon,
     MatCheckbox,
     FormErrorComponent,
-    FormlyModule,
     MatTable,
     CdkDropList,
     CdkDrag,
@@ -110,6 +108,7 @@ import { AddButtonComponent } from "../../../shared/add-button/add-button.compon
     MatRowDef,
     MatRow,
     AddButtonComponent,
+    FormlyValidationMessage,
   ],
 })
 export class TableTypeComponent

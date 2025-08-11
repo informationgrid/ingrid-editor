@@ -99,7 +99,7 @@ export class LeafletTypeComponent
         distinctUntilChanged(),
         tap((value: SpatialLocation[]) => (this.locations = value || [])),
       )
-      .subscribe(() => this.updateBoundingBox());
+      .subscribe(() => this.updateBoundingBoxCatchingErrors());
 
     try {
       const options: MapOptions = this.props.mapOptions;
@@ -116,21 +116,20 @@ export class LeafletTypeComponent
 
       this.locations = this.formControl.value || [];
       // delay update to prevent template error because of 'hasAnyLocations' update
-      setTimeout(() => {
-        try {
-          this.updateBoundingBox();
-        } catch (e) {
-          console.warn(
-            "Failed to update bounding box. map already unloaded?",
-            e,
-          );
-        }
-      });
+      setTimeout(() => this.updateBoundingBoxCatchingErrors());
     } catch (e) {
       console.error("Problem initializing the map component.", e);
       this.updateLocations([]);
       this.formControl.setValue([]);
       throw Error("Problem initializing the map component: " + e.message);
+    }
+  }
+
+  private updateBoundingBoxCatchingErrors() {
+    try {
+      this.updateBoundingBox();
+    } catch (e) {
+      console.warn("Failed to update bounding box. Map already unloaded?", e);
     }
   }
 
@@ -181,12 +180,19 @@ export class LeafletTypeComponent
    * https://github.com/angular/angular/issues/1618
    */
   public ngOnDestroy(): void {
-    if (this.leafletReference && this.leafletReference.remove) {
-      this.leafletReference.clearAllEventListeners();
-      this.leafletReference.remove();
-    }
-    if (this.leaflet && this.leaflet.nativeElement.remove) {
-      this.leaflet.nativeElement.remove();
+    try {
+      if (this.leafletReference && this.leafletReference.remove) {
+        this.leafletReference.clearAllEventListeners();
+        this.leafletReference.remove();
+      }
+      if (this.leaflet && this.leaflet.nativeElement.remove) {
+        this.leaflet.nativeElement.remove();
+      }
+    } catch (e) {
+      console.warn(
+        "Failed to update bounding box during destroy. Map already unloaded?",
+        e,
+      );
     }
   }
 
@@ -222,7 +228,7 @@ export class LeafletTypeComponent
           );
           this.formControl.setValue(this.locations);
           this.formControl.markAsDirty();
-          this.updateBoundingBox();
+          this.updateBoundingBoxCatchingErrors();
         }
       });
   }
@@ -232,7 +238,7 @@ export class LeafletTypeComponent
     this.formControl.setValue(this.locations);
     this.formControl.markAsDirty();
 
-    this.updateBoundingBox();
+    this.updateBoundingBoxCatchingErrors();
   }
 
   highlightLocation(index: number) {
@@ -244,7 +250,7 @@ export class LeafletTypeComponent
       ]);
       this.leafletReference.fitBounds(bounds);
     } else {
-      this.updateBoundingBox();
+      this.updateBoundingBoxCatchingErrors();
     }
 
     this.mapHasMoved = this.locations.length === 1 ? false : index != null;

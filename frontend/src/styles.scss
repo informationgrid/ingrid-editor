@@ -11,6 +11,7 @@ body {
 
   // hover effect in select boxes
   --mat-sys-on-surface: #1a1b1f;
+  --mat-snack-bar-button-color: #398c32;
 }
 
 body {
@@ -691,6 +692,10 @@ ige-one-column-wrapper formly-group {
 
 formly-field {
   min-width: 130px;
+
+  &.two-sub-fields {
+    min-width: 270px;
+  }
 }
 
 formly-field:empty {
@@ -814,14 +819,9 @@ svg {
 }
 
 .icon-in-table {
-  display: flex;
-  padding-right: 10px;
-  flex: 1;
-  align-items: flex-start;
-
   img {
     padding-right: 10px;
-    padding-top: 1px;
+    vertical-align: middle;
   }
 
   word-break: break-all;
@@ -1401,11 +1401,6 @@ table.big-font {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-}
-
-.longtext-no-wrap {
-  white-space: nowrap; /* Prevent text from wrapping */
-  overflow: hidden; /* Hide any overflow text */
 }
 
 .rectangular-chips mat-chip-option,

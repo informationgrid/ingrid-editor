@@ -52,6 +52,9 @@ class GroupsApiController(
         ) {
             return ResponseEntity(HttpStatus.FORBIDDEN)
         }
+        if (group.name === null) {
+            return ResponseEntity(HttpStatus.BAD_REQUEST)
+        }
         val manager = catalogService.getUser(authUtils.getUsernameFromPrincipal(principal))
         return ResponseEntity.ok(groupService.create(catalogId, group, manager))
     }

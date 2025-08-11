@@ -30,9 +30,9 @@ import de.ingrid.igeserver.api.ValidationException
 import de.ingrid.igeserver.extension.pipe.Context
 import de.ingrid.igeserver.extension.pipe.Filter
 import de.ingrid.igeserver.persistence.filter.PrePublishPayload
+import org.apache.commons.text.StringEscapeUtils.escapeJson
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Component
-import org.unbescape.json.JsonEscape
 
 data class JsonErrorEntry(
     val error: String,
@@ -68,12 +68,12 @@ class PreJsonSchemaValidator : Filter<PrePublishPayload> {
         payload: PrePublishPayload,
     ): String {
         var extraFields = if (json.isEmpty) "" else ","
-        extraFields += """"title": "${JsonEscape.escapeJson(payload.document.title)}""""
+        extraFields += """"title": "${escapeJson(payload.document.title)}""""
         if (!json.has("_type")) {
-            extraFields += ""","_type": "${JsonEscape.escapeJson(payload.document.type)}""""
+            extraFields += ""","_type": "${escapeJson(payload.document.type)}""""
         }
         if (!json.has("_uuid")) {
-            extraFields += ""","_uuid": "${JsonEscape.escapeJson(payload.document.uuid)}""""
+            extraFields += ""","_uuid": "${escapeJson(payload.document.uuid)}""""
         }
         return json.toString().substringBeforeLast("}") + extraFields + "}"
     }

@@ -75,7 +75,10 @@ export class KeywordAnalysis {
     "321": "5",
   };
 
-  async analyzeKeywords(values: string[], checkThemes: boolean) {
+  async analyzeKeywords(
+    values: string[],
+    checkThemes: boolean,
+  ): Promise<ThesaurusResult[]> {
     return await Promise.all(
       values
         .map((item: string) => item.trim())

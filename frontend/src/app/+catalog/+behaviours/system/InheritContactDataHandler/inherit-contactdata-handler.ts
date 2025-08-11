@@ -60,6 +60,8 @@ export class InheritContactDataHandler extends Plugin {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
+      if (!this.isActive()) return;
+
       this.handleDocumentLoad(this.generalStore.getOpenedDocument(true));
     });
   }

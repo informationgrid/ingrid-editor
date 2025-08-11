@@ -31,6 +31,7 @@ import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.security.MessageDigest
 
 const val JSONRPC = "2.0"
 
@@ -57,12 +58,15 @@ class ZabbixService(
         val remoteUploads = result.map { getUpload(it) }.toMutableList()
 
         val documentsToAdd = mutableListOf<ZabbixModel.Upload>()
-        val documentsToDelete = remoteUploads
+        val documentsToDelete = getUploadedDocuments(remoteUploads)
 
         data.uploads.forEach { upload ->
             remoteUploads
                 .find { upload.url == it.url }
-                ?.let { documentsToDelete.remove(it) } ?: documentsToAdd.add(upload)
+                ?.let { documentsToDelete.remove(it) }
+                ?: documentsToAdd.add(upload).also {
+                    log.debug("Remote document not found: ${upload.url} in $remoteUploads")
+                }
         }
 
         log.debug("Delete documents: $documentsToDelete")
@@ -77,6 +81,9 @@ class ZabbixService(
             documentsToAdd,
         )
     }
+
+    // get only uploaded documents without check for assessment website
+    private fun getUploadedDocuments(remoteUploads: MutableList<ZabbixModel.Upload>): MutableList<ZabbixModel.Upload> = remoteUploads.filter { !it.name.matches(Regex("^Verfahren \\w{4}$")) }.toMutableList()
 
     /**
      * @return userId of created user
@@ -254,6 +261,9 @@ class ZabbixService(
         documentsToAdd: List<ZabbixModel.Upload>,
     ) {
         val hostId = createHost(uuid, name, url, catalogIdentifier)
+        log.debug("Add document url: $url to host $hostId with name $name and uuid $uuid")
+        createWebscenario(uuid, hostId, "Verfahren", url, 2, "page-wrapper")
+        createTrigger(uuid, "Verfahren", url)
         if (!addressMail.isNullOrEmpty()) {
             // only create notification job when mail is set
             createUser(addressMail)
@@ -261,7 +271,7 @@ class ZabbixService(
         }
         documentsToAdd.forEach { document ->
             log.debug("Add document ${document.name}")
-            createWebscenario(uuid, hostId, document.name, document.url)
+            createWebscenario(uuid, hostId, document.name, document.url, 1, "")
             createTrigger(uuid, document.name, document.url)
         }
     }
@@ -354,8 +364,8 @@ class ZabbixService(
         severity = item.get("severity").asText(),
     )
 
-    private fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String) {
-        val docNameStep = shortenString(docName, 64)
+    private fun createWebscenario(uuid: String, hostId: String, docName: String, docUrl: String, retrieveMode: Int, required: String) {
+        val docNameStep = createDocumentName(docName, docUrl)
         val docNameTag = shortenString(docName, 255)
         val docUrlTag = shortenString(docUrl, 255, true)
 
@@ -365,7 +375,7 @@ class ZabbixService(
             ZabbixModel.Tag("document url", docUrlTag),
         )
         val steps =
-            listOf(ZabbixModel.Step(name = docNameStep, url = docUrl, required = "", status_codes = "200", no = 1))
+            listOf(ZabbixModel.Step(name = docNameStep, retrieve_mode = retrieveMode, url = docUrl, required = required, status_codes = "200", no = 1))
         val params = ZabbixModel.WebscenarioParams(docNameStep, hostId, checkDelay, steps, tags)
         val webscenario = ZabbixModel.Webscenario(method = "httptest.create", params = params, auth = apiKey, id = 1)
         val values = jacksonObjectMapper().writeValueAsString(webscenario)
@@ -374,7 +384,7 @@ class ZabbixService(
     }
 
     private fun createTrigger(uuid: String, docName: String, docUrl: String) {
-        val docNameShort = shortenString(docName, 64)
+        val docNameShort = createDocumentName(docName, docUrl)
         val docNameTriggerExpression = if (docNameShort.contains(",")) "\"$docNameShort\"" else docNameShort
         val docNameTag = shortenString(docName, 255)
         val docUrlTag = shortenString(docUrl, 255, true)
@@ -385,7 +395,7 @@ class ZabbixService(
             ZabbixModel.Tag("document url", docUrlTag),
         )
         val params = ZabbixModel.TriggerParams(
-            "Dokument: ${docName.trim()}",
+            "Dokument: $docNameShort",
             "min(/$uuid/web.test.fail[$docNameTriggerExpression],#$checkCount)>0",
             4,
             0,
@@ -446,15 +456,15 @@ class ZabbixService(
 
     private fun shortenString(name: String, length: Int, onlyEnd: Boolean = false): String {
         val delimiter = ".."
-        val tname = name.trim()
-        return if (tname.length > length) {
+        val trimmedName = name.trim()
+        return if (trimmedName.length > length) {
             if (onlyEnd) {
-                tname.take(length - delimiter.length) + delimiter
+                trimmedName.take(length - delimiter.length) + delimiter
             } else {
-                tname.take(length / 2) + delimiter + tname.takeLast(length / 2 - delimiter.length)
+                trimmedName.take(length / 2) + delimiter + trimmedName.takeLast(length / 2 - delimiter.length)
             }
         } else {
-            tname
+            trimmedName
         }
     }
 
@@ -529,5 +539,17 @@ class ZabbixService(
             """.trimIndent()
         val results = requestApi(jsonTriggerGet).get("result") as ArrayNode
         return results.mapNotNull { it.get("triggerid")?.asText() }
+    }
+
+    private fun createHash(url: String): String {
+        val bytes = url.toByteArray()
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(bytes)
+        return digest.fold("", { str, it -> str + "%02x".format(it) })
+    }
+
+    private fun createDocumentName(docName: String, docUrl: String): String {
+        val hash = createHash(docUrl)
+        return shortenString(docName + " " + hash.take(4), 64)
     }
 }

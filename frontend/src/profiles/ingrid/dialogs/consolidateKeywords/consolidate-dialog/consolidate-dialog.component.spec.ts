@@ -195,7 +195,8 @@ describe("ConsolidateDialogComponent", () => {
     const keywordAnalysis = spectator.inject(KeywordAnalysis);
     spyOn(keywordAnalysis, "analyzeKeywords").and.returnValue(
       new Promise((resolve) => {
-        resolve({ free: [], gemet: [], umthes: [] });
+        // @ts-ignore: force an error in the component
+        resolve("Some error message.");
       }),
     );
     tick();
@@ -285,7 +286,10 @@ describe("ConsolidateDialogComponent", () => {
       });
     }
     formStateService.updateForm(form);
-    formStateService.updateMetadata({});
+    formStateService.updateMetadata({
+      docType: "InGridGeoService",
+      parentId: null,
+    });
   }
 
   function mockHttp(data?: {

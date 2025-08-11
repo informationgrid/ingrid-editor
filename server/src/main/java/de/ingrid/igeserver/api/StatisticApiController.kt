@@ -105,6 +105,7 @@ class StatisticApiController(
         val allData = queryResult.totalHits.toLong()
         var allDataDrafts: Long = 0
         var allDataPublished: Long = 0
+        var allDataWithDraft: Long = 0
         val statsPerType = mutableMapOf<String, StatisticResponse>()
         queryResult.hits.forEach { hit ->
             if (hit.type != null) {
@@ -114,18 +115,30 @@ class StatisticApiController(
                         totalNum = 0,
                         numDrafts = 0,
                         numPublished = 0,
+                        numAllDrafts = 0,
                         statsPerType = null,
                     ),
                 )
 
                 val statsType = statsPerType[hit.type]!!
                 statsType.totalNum = statsType.totalNum!! + 1
-                if (hit.state == "PW" || hit.state == "P") {
-                    allDataPublished++
-                    statsType.numPublished++
-                } else {
-                    allDataDrafts++
-                    statsType.numDrafts++
+                when (hit.state) {
+                    "PW" -> {
+                        allDataPublished++
+                        statsType.numPublished++
+                        allDataWithDraft++
+                        statsType.numAllDrafts++
+                    }
+                    "P" -> {
+                        allDataPublished++
+                        statsType.numPublished++
+                    }
+                    "W" -> {
+                        allDataDrafts++
+                        statsType.numDrafts++
+                        allDataWithDraft++
+                        statsType.numAllDrafts++
+                    }
                 }
             }
         }
@@ -134,6 +147,7 @@ class StatisticApiController(
             totalNum = allData,
             numDrafts = allDataDrafts,
             numPublished = allDataPublished,
+            numAllDrafts = allDataWithDraft,
             statsPerType = statsPerType,
         )
         return result

@@ -40,14 +40,10 @@ export abstract class TabContainerComponent implements OnInit {
     // example: reload page being on 2nd tab -> goto dashboard -> come back again
     const currentPath = this.router.parseUrl(this.router.url).root.children
       .primary.segments[2].path;
-    const activeTabIndex = this.tabs.findIndex(
-      (tab) => tab.path === currentPath,
-    );
-    this.updateTab(activeTabIndex);
+    this.updateTab(currentPath);
   }
 
-  updateTab(index: number) {
-    const tabPaths = this.sessionService.getTabPaths(this.activeRoute.snapshot);
-    this.sessionService.updateCurrentSubpage(this.tabPage, tabPaths[index]);
+  updateTab(path: string) {
+    this.sessionService.updateCurrentSubpage(this.tabPage, path);
   }
 }

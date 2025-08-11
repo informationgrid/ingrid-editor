@@ -39,7 +39,7 @@ open class ValidationException protected constructor(
         /**
          * Factory method for invalid fields
          */
-        fun withInvalidFields(vararg fields: InvalidField, cause: Throwable? = null): ValidationException {
+        fun withInvalidFields(fields: List<InvalidField>, cause: Throwable? = null): ValidationException {
             val errorText = getErrorText(ERROR_TEXT_INVALID, mapOf("fieldNames" to fields.joinToString(", ") { it.name }))
             return ValidationException(STATUS_CODE, ERROR_CODE_FIELD, errorText, mapOf("fields" to fields), cause)
         }

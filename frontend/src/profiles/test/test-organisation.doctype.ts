@@ -30,7 +30,7 @@ export class TestOrganisationDoctype extends OrganisationDoctype {
     super("addresses");
     this.options = {
       hideAdministrativeArea: true,
-      defaultCountry: { key: "276" },
+      defaultCountry: { key: "276", value: "Deutschland", _codelistId: "6200" },
     };
   }
 }

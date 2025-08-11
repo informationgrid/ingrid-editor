@@ -46,7 +46,6 @@ import {
 } from "@angular/common/http";
 import { ProfileService } from "../services/profile.service";
 import { GeneralStore } from "../store/general.store";
-import { provideMatomoTesting } from "ngx-matomo-client/testing";
 
 describe("DashboardComponent", () => {
   let spectator: Spectator<DashboardComponent>;
@@ -87,7 +86,13 @@ describe("DashboardComponent", () => {
     spectator = createComponent();
     const dataService = spectator.inject<DocumentService>(DocumentService);
     dataService.getStatistic.and.returnValue(
-      of({ totalNum: 5, numDrafts: 3, numPublished: 2 }),
+      of({
+        statsPerType: new Map(),
+        totalNum: 5,
+        numDrafts: 3,
+        numPublished: 2,
+        numAllDrafts: 4,
+      }),
     );
   });
 
