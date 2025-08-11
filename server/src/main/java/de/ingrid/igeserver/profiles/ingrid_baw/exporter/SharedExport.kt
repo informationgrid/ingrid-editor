@@ -173,11 +173,10 @@ data class CitedResponsibleParty(
     val role: String,
 )
 
-fun getLiteratureAggregates(transformer: IngridModelTransformer): List<LiteratureAggregate> = transformer.references.filter { it.type.key == "10001" && it.uuidRef != null }
-    .map {
-        val litDoc = transformer.documentService.getLastPublishedDocument(transformer.catalogIdentifier, it.uuidRef!!)
-        calcLiteratureAggregate(transformer, litDoc)
-    }
+fun getLiteratureAggregates(transformer: IngridModelTransformer): List<LiteratureAggregate> = transformer.doc.data.getPath("literatureReferences")?.mapNotNull {
+    val litDoc = transformer.documentService.getLastPublishedDocument(transformer.catalogIdentifier, it.getString("uuid")!!)
+    calcLiteratureAggregate(transformer, litDoc)
+} ?: emptyList()
 
 private fun calcLiteratureAggregate(transformer: IngridModelTransformer, litDoc: Document): LiteratureAggregate = LiteratureAggregate(
     uuid = litDoc.uuid,
