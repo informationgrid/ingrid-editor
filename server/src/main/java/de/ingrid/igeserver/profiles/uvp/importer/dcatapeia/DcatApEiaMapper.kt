@@ -64,11 +64,11 @@ class DcatApEiaMapper(
     @Suppress("PropertyName")
     val _uuid: String = dataset.identifier?.first() ?: UUID.randomUUID().toString()
 
-    val title = dataset.title.firstOrNull()
+    val title = dataset.title?.firstOrNull() ?: throw ClientException.withReason("DCAT-AP.EIA field 'dct:title' is missing.")
 
-    val description = dataset.description.firstOrNull()?.trimIndent()?.trim()
+    val description = dataset.description?.firstOrNull()?.trimIndent()?.trim()
 
-    val receiptDate = dataset.receiptDate.toString()
+    val receiptDate = dataset.receiptDate?.toString() ?: ""
 
     val prelimAssessment: Boolean = dataset.prelimAssessment
 
@@ -87,7 +87,7 @@ class DcatApEiaMapper(
         // TODO Load language from catalog and include in codelist request
         val catalog = catalogService.getCatalogById(catalogId)
         val uvpCodelistId = behaviourService.get(catalogId, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
-        val eiaNumbers: List<KeyValue> = dataset.number.map { value ->
+        val eiaNumbers: List<KeyValue>? = dataset.number?.map { value ->
             val key = codelistHandler.getCodeListEntryId(uvpCodelistId, value, "de") ?: throw ClientException.withReason("Element '<eia:number>' of request body contains invalid value '$value'. It does NOT match a codelist entry.")
             KeyValue(key, value, uvpCodelistId)
         }
