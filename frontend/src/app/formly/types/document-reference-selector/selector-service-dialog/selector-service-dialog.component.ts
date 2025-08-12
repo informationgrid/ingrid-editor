@@ -38,6 +38,7 @@ export interface SelectDatasetData {
   allowMultiSelect?: boolean;
   docTypeFilter?: string[];
   titleOfDocumentSelectorDialog?: string;
+  isLongTermFileStorage?: boolean;
 }
 
 export interface SelectServiceResponse {
@@ -69,6 +70,7 @@ export class SelectorServiceDialogComponent {
   initialNode = new Subject<number>();
   label = "Dokument auswählen";
   docTypeFilter = [];
+  isLongTermFileStorage = false;
   public showLayernames = false;
 
   constructor(
@@ -85,6 +87,7 @@ export class SelectorServiceDialogComponent {
     this.showLayernames = data.showLayernames;
     this.docTypeFilter = data.docTypeFilter;
     this.label = data.titleOfDocumentSelectorDialog;
+    this.isLongTermFileStorage = data.isLongTermFileStorage;
   }
 
   disableTreeNodes() {

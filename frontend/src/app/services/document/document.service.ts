@@ -62,6 +62,7 @@ import { GeneralStore } from "../../store/general.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { EntityMap } from "@ngrx/signals/entities";
 import { UiStore } from "../../store/ui.store";
+import { TreeStoreLongTermFileStorage } from "../../store/tree/tree.storeLongTermFileStorage";
 
 export type AddressTitleFn = (address: IgeDocument) => string;
 
@@ -80,6 +81,7 @@ export class DocumentService {
   private uiStore = inject(UiStore);
   private addressTreeStore = inject(AddressTreeStore);
   private documentTreeStore = inject(TreeStore);
+  private longTermFileStorageTreeStore = inject(TreeStoreLongTermFileStorage);
   // TODO: check usefulness
   documentOperationFinished$ = new Subject<any>();
   publishState$ = new BehaviorSubject<boolean>(false);
@@ -291,20 +293,40 @@ export class DocumentService {
     );
   }
   getChildren(
-    parentId: number,
+    parentId: number | string,
     isAddress?: boolean,
+    isLongTermStorage?: boolean,
   ): Observable<DocumentAbstract[]> {
-    return this.dataService.getChildren(parentId, isAddress).pipe(
-      map((docs) => {
-        docs.forEach((doc) => {
-          doc.icon = this.profileService.getDocumentIcon(doc._type);
-          if (!doc.title) doc.title = "-Kein Titel-";
-          doc.isRoot = parentId === null;
-        });
-        return docs as DocumentAbstract[];
-      }),
-      tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs)),
-    );
+    return isLongTermStorage
+      ? this.dataService
+          .getLongTermFileStorageChildren(parentId as string)
+          .pipe(
+            map((docs) => {
+              console.log("document.service get children:", docs);
+              docs.forEach((doc) => {
+                doc.icon = this.profileService.getDocumentIcon(doc._type);
+                if (!doc.title) doc.title = "-Kein Titel-";
+                doc.isRoot = parentId === null;
+              });
+              return docs as DocumentAbstract[];
+            }),
+            tap((docs) =>
+              this.updateTreeStoreLongTermFileStorage(parentId as string, docs),
+            ),
+          )
+      : this.dataService.getChildren(parentId as number, isAddress).pipe(
+          map((docs) => {
+            docs.forEach((doc) => {
+              doc.icon = this.profileService.getDocumentIcon(doc._type);
+              if (!doc.title) doc.title = "-Kein Titel-";
+              doc.isRoot = parentId === null;
+            });
+            return docs as DocumentAbstract[];
+          }),
+          tap((docs) =>
+            this.updateTreeStoreDocs(isAddress, parentId as number, docs),
+          ),
+        );
   }
 
   load(
@@ -842,6 +864,18 @@ export class DocumentService {
     docs: DocumentAbstract[],
   ) {
     const store = isAddress ? this.addressTreeStore : this.documentTreeStore;
+    if (parentId === null) {
+      store.set(docs);
+    } else {
+      store.add(docs);
+    }
+  }
+
+  private updateTreeStoreLongTermFileStorage(
+    parentId: string,
+    docs: DocumentAbstract[],
+  ) {
+    const store = this.longTermFileStorageTreeStore;
     if (parentId === null) {
       store.set(docs);
     } else {

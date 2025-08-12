@@ -20,6 +20,8 @@
             [disabledCondition]="disableTreeNodes()"
             (selected)="selectDatasets($event)"
             [setActiveNode]="initialNode"
+            [showHeader]="!isLongTermFileStorage"
+            [isLongTermStorage]="isLongTermFileStorage"
         ></ige-tree>
     </div>
 </ige-dialog-template>

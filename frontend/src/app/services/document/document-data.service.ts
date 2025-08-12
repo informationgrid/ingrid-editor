@@ -53,6 +53,39 @@ export class DocumentDataService {
     return this.http.get<Partial<DocumentAbstract>[]>(url);
   }
 
+  getLongTermFileStorageChildren(
+    parentPath: string,
+  ): Observable<Partial<DocumentAbstract>[]> {
+    const apiUrl = "http://localhost:3001/isibaw/api/list";
+    const url = `${apiUrl}?folder=${parentPath}`;
+    return this.http
+      .get<
+        {
+          name: string;
+          type: "container" | "object" | string;
+        }[]
+      >(url)
+      .pipe(
+        map((items) =>
+          items.map((item) => ({
+            id: parentPath ? `${parentPath}/${item.name}` : item.name,
+            _uuid: parentPath ? `${parentPath}/${item.name}` : item.name,
+            _type: item.type === "container" ? "FOLDER" : "BawSimulation",
+            _hasChildren: item.type === "container",
+            title: item.name,
+            icon: item.type === "container" ? "Daten" : "BawSimulation",
+            isAddress: false,
+            _parent: null,
+            _modified: null,
+            _contentModified: null,
+            _pendingDate: null,
+            _tags: null,
+            _state: "P",
+          })),
+        ),
+      );
+  }
+
   load(id: string | number, useUuid = false): Observable<DocumentWithMetadata> {
     if (useUuid) {
       return this.http

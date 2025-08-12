@@ -98,6 +98,7 @@ export enum TreeActionType {
 })
 export class TreeComponent implements OnInit {
   @Input() forAddresses: boolean;
+  @Input() isLongTermStorage: boolean;
   @Input() showHeader = true;
   @Input() showMultiSelectButton = false;
   @Input() showReloadButton = true;
@@ -191,7 +192,8 @@ export class TreeComponent implements OnInit {
       )
       .subscribe();
 
-    this.database.init(this.forAddresses);
+    console.log("database:", this.database);
+    this.database.init(this.forAddresses, this.isLongTermStorage);
 
     this.dataSource = new DynamicDataSource(
       this.treeControl,

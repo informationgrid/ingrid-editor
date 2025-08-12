@@ -87,6 +87,7 @@ export class DocumentReferenceSelectorComponent
   myModel: (SelectedDocumentReference | UrlReference)[];
   allowMultiSelect = false;
   allowRedirectToDocument = false;
+  isLongTermFileStorage = false;
   titleOfDocumentSelectorDialog: "Dokument auswählen";
   refreshing = true;
 
@@ -112,6 +113,7 @@ export class DocumentReferenceSelectorComponent
   private async buildModel() {
     this.allowMultiSelect = this.props.allowMultiSelect;
     this.allowRedirectToDocument = this.props.allowRedirectToDocument;
+    this.isLongTermFileStorage = this.props.isLongTermFileStorage;
     this.refreshing = true;
     this.titleOfDocumentSelectorDialog =
       this.props.titleOfDocumentSelectorDialog;
@@ -153,6 +155,7 @@ export class DocumentReferenceSelectorComponent
       allowMultiSelect: this.props.allowMultiSelect,
       docTypeFilter: this.props.docTypeFilter,
       titleOfDocumentSelectorDialog: this.props.titleOfDocumentSelectorDialog,
+      isLongTermFileStorage: this.isLongTermFileStorage,
     };
     this.dialog
       .open(SelectorServiceDialogComponent, {

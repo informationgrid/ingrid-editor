@@ -28,6 +28,7 @@ import { map } from "rxjs/operators";
 import { GeneralStore } from "../../../store/general.store";
 import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
 import { TreeStore } from "../../../store/tree/tree.store";
+import { TreeStoreLongTermFileStorage } from "../../../store/tree/tree.storeLongTermFileStorage";
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
@@ -39,6 +40,8 @@ export class DynamicDatabase {
   private generalStore = inject(GeneralStore);
   private addressTreeStore = inject(AddressTreeStore);
   private documentTreeStore = inject(TreeStore);
+  private longTermFileStorageTreeStore = inject(TreeStoreLongTermFileStorage);
+  private isLongTermStorage = false;
 
   treeUpdates = new Subject<UpdateDatasetInfo>();
 
@@ -53,8 +56,9 @@ export class DynamicDatabase {
     });
   }
 
-  init(forAdresses: boolean): void {
+  init(forAdresses: boolean, isLongTermStorage: boolean): void {
     this.isAddress = forAdresses;
+    this.isLongTermStorage = isLongTermStorage;
   }
 
   /** Initial data from database */
@@ -86,7 +90,11 @@ export class DynamicDatabase {
     if (forceFromServer) {
       children = [];
     } else {
-      const query = isAddress ? this.addressTreeStore : this.documentTreeStore;
+      const query = isAddress
+        ? this.addressTreeStore
+        : this.isLongTermStorage
+          ? this.longTermFileStorageTreeStore
+          : this.documentTreeStore;
       children = query.getChildren(parentId);
     }
 
@@ -94,7 +102,11 @@ export class DynamicDatabase {
       return of(children);
     }
 
-    const moreChildren = this.docService.getChildren(parentId, isAddress);
+    const moreChildren = this.docService.getChildren(
+      parentId,
+      isAddress,
+      this.isLongTermStorage,
+    );
     if (this.hideReadOnly) {
       return moreChildren.pipe(
         map((docs) =>
