@@ -19,24 +19,30 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.igeserver.tasks.ExpiredDataset
+import de.ingrid.igeserver.tasks.ExpiredDatasetsTask
 import de.ingrid.igeserver.utils.AuthUtils
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
+import java.time.OffsetDateTime
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -44,6 +50,8 @@ class StatisticApiController(
     val researchService: ResearchService,
     val authUtils: AuthUtils,
     val catalogService: CatalogService,
+    val expiredDatasetsTask: ExpiredDatasetsTask,
+    private val aclService: IgeAclService,
 ) : StatisticApi {
 
     override fun getStatistic(principal: Principal): ResponseEntity<StatisticResponse> {
@@ -129,10 +137,12 @@ class StatisticApiController(
                         allDataWithDraft++
                         statsType.numAllDrafts++
                     }
+
                     "P" -> {
                         allDataPublished++
                         statsType.numPublished++
                     }
+
                     "W" -> {
                         allDataDrafts++
                         statsType.numDrafts++
@@ -179,7 +189,15 @@ class StatisticApiController(
         BoolFilter(
             "AND",
             null,
-            listOfNotNull(stateFilter, userFilter).map { BoolFilter("OR", listOf(it), null, null, isFacet = false) } +
+            listOfNotNull(stateFilter, userFilter).map {
+                BoolFilter(
+                    "OR",
+                    listOf(it),
+                    null,
+                    null,
+                    isFacet = false,
+                )
+            } +
                 BoolFilter(
                     "AND",
                     listOf(typeFilter, "exceptFolders"),
@@ -192,4 +210,34 @@ class StatisticApiController(
         "DESC",
         ResearchPaging(1, 10),
     )
+
+    override fun expiredDatasets(principal: Principal): ResponseEntity<List<ExpiredDataset>> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalog = catalogService.getCatalogById(catalogId)
+
+        val expiryDays = catalog.settings.config.expiredDatasetConfig?.expiryDuration?.toLong()
+            ?: throw ServerException.withReason("No expiryDuration found for catalog ${catalog.identifier}")
+
+        val cutoffDate = OffsetDateTime.now().minusDays(expiryDays)
+
+        val expiredCandidates = expiredDatasetsTask.getPublishedDatasetsEditedBefore(
+            catalog = catalog,
+            date = cutoffDate,
+            expiryState = null,
+        )
+
+        val userRoles = authUtils.getCurrentUserRoles(catalog.identifier)
+        val hasRootReadAccess = authUtils.isAdmin(principal) || aclService.hasRootReadAccess(userRoles)
+        val auth = principal as Authentication
+
+        val visible = if (hasRootReadAccess) {
+            expiredCandidates
+        } else {
+            expiredCandidates.filter {
+                aclService.getPermissionInfo(auth, it.wrapperId).canRead
+            }
+        }
+
+        return ResponseEntity.ok(visible)
+    }
 }

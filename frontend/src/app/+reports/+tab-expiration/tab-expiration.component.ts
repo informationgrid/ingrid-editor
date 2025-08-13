@@ -26,14 +26,11 @@ import {
 } from "@angular/core";
 
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import {
-  ResearchResponse,
-  ResearchService,
-} from "../../+research/research.service";
-import { combineLatestWith, concatMap, debounce, of, timer } from "rxjs";
+import { ResearchService } from "../../+research/research.service";
+import { concatMap, debounce, of, timer } from "rxjs";
 import { ExpirationTableComponent } from "./expiration-table/expiration-table.component";
 import { MatButtonModule } from "@angular/material/button";
-import { catchError, filter, map, tap } from "rxjs/operators";
+import { catchError, filter, tap } from "rxjs/operators";
 import { ConfigService } from "../../services/config/config.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatDividerModule } from "@angular/material/divider";
@@ -43,7 +40,6 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { NavigationEnd, Router } from "@angular/router";
 import { ExpiredData } from "./tab-expiration.model";
 import { FormsModule } from "@angular/forms";
-import { isExpired } from "../../services/utils";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
 
 @UntilDestroy()
@@ -64,7 +60,7 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
 })
 export class TabExpirationComponent implements OnInit {
   currentUserId: number;
-  expiryDurationInDays = signal<number | null>(null);
+  expiryFunctionalityActive = signal<boolean>(false);
 
   isSearching = signal<boolean>(false);
   onSearch = new EventEmitter<void>();
@@ -111,7 +107,9 @@ export class TabExpirationComponent implements OnInit {
       .getExpiryDuration()
       .pipe(
         untilDestroyed(this),
-        tap((expiryDuration) => this.expiryDurationInDays.set(expiryDuration)),
+        tap((expiryDuration) =>
+          this.expiryFunctionalityActive.set(expiryDuration > 0),
+        ),
         tap(() => this.onSearch.emit()),
       )
       .subscribe();
@@ -132,41 +130,12 @@ export class TabExpirationComponent implements OnInit {
   }
 
   private updateResult() {
-    if (!this.expiryDurationInDays()) return of();
+    if (!this.expiryFunctionalityActive()) return of();
 
-    return this.search("selectDocuments").pipe(
-      combineLatestWith(this.search("selectAddresses")),
-      map(([objects, addresses]) =>
-        this.expiredData.set(new ExpiredData(objects.hits, addresses.hits)),
-      ),
+    return this.researchService.getExpiredDatasetStatistics().pipe(
+      tap((expiredData) => this.expiredData.set(expiredData)),
+      catchError((error) => this.updateOnError(error)),
     );
-  }
-
-  private search(type: string) {
-    return this.researchService
-      .search(
-        "",
-        {
-          type: type,
-          state: { exceptFolders: true },
-          selectOnlyPublished: "document1.state = 'PUBLISHED'",
-        },
-        "contentmodified",
-        "ASC",
-        undefined,
-        ["selectOnlyPublished"],
-      )
-      .pipe(
-        catchError((error) => this.updateOnError(error)),
-        map((res) => this.filterByExpiry(res)),
-      );
-  }
-
-  private filterByExpiry(res: ResearchResponse): ResearchResponse {
-    const filtered = res.hits.filter((doc) =>
-      isExpired(doc._contentModified, this.expiryDurationInDays()),
-    );
-    return { totalHits: filtered.length, hits: filtered };
   }
 
   toggleFilter() {
@@ -175,6 +144,6 @@ export class TabExpirationComponent implements OnInit {
 
   private updateOnError(error: any) {
     console.warn("Error during search", error);
-    return of({ totalHits: 0, hits: [] });
+    return of(new ExpiredData([], []));
   }
 }
