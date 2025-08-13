@@ -134,14 +134,15 @@ class ExpiredDatasetsTask(
     }
 
     private fun mapToDataset(dbResponse: Array<Any?>): ExpiredDataset = ExpiredDataset(
-        dbResponse[0].toString(),
-        dbResponse[1] as Integer,
-        dbResponse[2].toString(),
+        dbResponse[0] as Int,
+        dbResponse[1].toString(),
+        dbResponse[2] as Int,
         dbResponse[3].toString(),
-        dbResponse[4] as OffsetDateTime,
-        dbResponse[5].toString(),
+        dbResponse[4].toString(),
+        dbResponse[5] as OffsetDateTime,
         dbResponse[6].toString(),
         dbResponse[7].toString(),
+        dbResponse[8].toString(),
     )
 
     fun getPublishedDatasetsEditedBefore(
@@ -169,7 +170,7 @@ class ExpiredDatasetsTask(
 
         val query = entityManager.createQuery(
             """
-                SELECT d.uuid, dw.responsibleUser.id, dw.responsibleUser.userId, d.title, d.contentmodified, d.contentmodifiedby, dw.type, dw.category
+                SELECT dw.id, d.uuid, dw.responsibleUser.id, dw.responsibleUser.userId, d.title, d.contentmodified, d.contentmodifiedby, dw.type, dw.category
                     FROM DocumentWrapper dw, Document d
                     WHERE dw.uuid = d.uuid AND dw.catalog = :catalog AND dw.type != 'FOLDER' AND dw.deleted != 1 AND d.state = 'PUBLISHED' AND d.contentmodified < :date 
                     $limitDateFilter
@@ -267,8 +268,9 @@ class ExpiredDatasetsTask(
 }
 
 data class ExpiredDataset(
+    var wrapperId: Int? = null,
     var uuid: String? = null,
-    var responsibleUserId: Integer? = null,
+    var responsibleUserId: Int? = null,
     var responsibleUserLogin: String? = null,
     var title: String? = null,
     var contentmodified: OffsetDateTime? = null,

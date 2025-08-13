@@ -26,6 +26,7 @@ import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.igeserver.tasks.ExpiredDataset
 import de.ingrid.igeserver.tasks.ExpiredDatasetsTask
@@ -34,6 +35,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -49,6 +51,7 @@ class StatisticApiController(
     val authUtils: AuthUtils,
     val catalogService: CatalogService,
     val expiredDatasetsTask: ExpiredDatasetsTask,
+    private val aclService: IgeAclService,
 ) : StatisticApi {
 
     override fun getStatistic(principal: Principal): ResponseEntity<StatisticResponse> {
@@ -209,14 +212,32 @@ class StatisticApiController(
     )
 
     override fun expiredDatasets(principal: Principal): ResponseEntity<List<ExpiredDataset>> {
-        val catalog = catalogService.getCatalogById(catalogService.getCurrentCatalogForPrincipal(principal))
-        val expiryDuration = catalog.settings.config.expiredDatasetConfig?.expiryDuration?.toLong()
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalog = catalogService.getCatalogById(catalogId)
+
+        val expiryDays = catalog.settings.config.expiredDatasetConfig?.expiryDuration?.toLong()
             ?: throw ServerException.withReason("No expiryDuration found for catalog ${catalog.identifier}")
-        val expiredDatasets = expiredDatasetsTask.getPublishedDatasetsEditedBefore(
+
+        val cutoffDate = OffsetDateTime.now().minusDays(expiryDays)
+
+        val expiredCandidates = expiredDatasetsTask.getPublishedDatasetsEditedBefore(
             catalog = catalog,
-            date = OffsetDateTime.now().minusDays(expiryDuration),
+            date = cutoffDate,
             expiryState = null,
         )
-        return ResponseEntity.ok(expiredDatasets)
+
+        val userRoles = authUtils.getCurrentUserRoles(catalog.identifier)
+        val hasRootReadAccess = authUtils.isAdmin(principal) || aclService.hasRootReadAccess(userRoles)
+        val auth = principal as Authentication
+
+        val visible = if (hasRootReadAccess) {
+            expiredCandidates
+        } else {
+            expiredCandidates.filter {
+                aclService.getPermissionInfo(auth, it.wrapperId).canRead
+            }
+        }
+
+        return ResponseEntity.ok(visible)
     }
 }

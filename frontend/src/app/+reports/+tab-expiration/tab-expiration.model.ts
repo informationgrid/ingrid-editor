@@ -43,6 +43,7 @@ export class ExpiredData {
 }
 // Data structure for expired dataset
 export class ExpiredDataset {
+  wrapperId: number | null = null;
   uuid: string | null = null;
   responsibleUserId: number | null = null;
   responsibleUserLogin: string | null = null;
