@@ -124,7 +124,7 @@ export class DocumentReferenceSelectorComponent
       }
       this.myModel = await Promise.all(
         (this.formControl.value as any[]).map(async (item: any) => {
-          return this.mapInternalRef(item);
+          return item.isExternalRef ? item : this.mapInternalRef(item);
         }),
       );
     } else {
@@ -146,7 +146,11 @@ export class DocumentReferenceSelectorComponent
     this.cdr.detectChanges();
   }
 
-  showInternalRefDialog(index?: number) {
+  showInternalRefDialog(index?: number | string) {
+    if (typeof index == "string") {
+      index = 0;
+    }
+
     const data: SelectDatasetData = {
       currentRefs: this.getRefUuids().filter((item, idx) => idx !== index),
       activeRef: index >= 0 ? this.getRefUuids()[index] : null,
@@ -169,7 +173,8 @@ export class DocumentReferenceSelectorComponent
           {
             uuid: item.uuid,
             layerNames: item.layerNames,
-            isExternalRef: false,
+            isExternalRef: item.isExternalRef,
+            title: item.title,
           },
           index,
         );

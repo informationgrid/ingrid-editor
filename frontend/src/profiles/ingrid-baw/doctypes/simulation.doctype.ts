@@ -38,7 +38,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
       this.addSection("Langfristspeicher", [
         this.addGroup("lfs", "LFS-Dateien", [
           this.addDocumentCard("path", {
-            docTypeFilter: ["BawSimulation"],
+            docTypeFilter: [],
             isLongTermFileStorage: true,
             label: "Datensatzverweis",
             allowRedirectToDocument: false,

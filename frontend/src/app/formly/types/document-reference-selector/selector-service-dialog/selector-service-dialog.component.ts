@@ -27,6 +27,7 @@ import { TreeComponent } from "../../../../+form/sidebars/tree/tree.component";
 import { DialogTemplateComponent } from "../../../../shared/dialog-template/dialog-template.component";
 import { TreeStore } from "../../../../store/tree/tree.store";
 import { GeneralStore } from "../../../../store/general.store";
+import { TreeStoreLongTermFileStorage } from "../../../../store/tree/tree.storeLongTermFileStorage";
 
 export interface SelectDatasetData {
   currentRefs: string[];
@@ -48,6 +49,7 @@ export interface SelectServiceResponse {
   type: string;
   layerNames: string[];
   icon: string;
+  isExternalRef: boolean;
 }
 
 @Component({
@@ -57,8 +59,9 @@ export interface SelectServiceResponse {
 })
 export class SelectorServiceDialogComponent {
   private generalStore = inject(GeneralStore);
-  private treeStore = inject(TreeStore);
-  selectedNode: number = null;
+  private treeStoreDocuments = inject(TreeStore);
+  private treeStoreLongTermFileStorage = inject(TreeStoreLongTermFileStorage);
+  selectedNode: number | string = null;
   field: FormlyFieldConfig[] = [
     {
       key: "layerNames",
@@ -72,6 +75,8 @@ export class SelectorServiceDialogComponent {
   docTypeFilter = [];
   isLongTermFileStorage = false;
   public showLayernames = false;
+
+  treeStore = null;
 
   constructor(
     private dlgRef: MatDialogRef<any>,
@@ -88,6 +93,9 @@ export class SelectorServiceDialogComponent {
     this.docTypeFilter = data.docTypeFilter;
     this.label = data.titleOfDocumentSelectorDialog;
     this.isLongTermFileStorage = data.isLongTermFileStorage;
+    this.treeStore = this.isLongTermFileStorage
+      ? this.treeStoreLongTermFileStorage
+      : this.treeStoreDocuments;
   }
 
   disableTreeNodes() {
@@ -118,11 +126,12 @@ export class SelectorServiceDialogComponent {
       type: entity._type,
       layerNames: this.form.value.layerNames,
       icon: entity.icon,
+      isExternalRef: this.isLongTermFileStorage,
     };
     this.dlgRef.close(response);
   }
 
-  selectDatasets(node: number[]) {
+  selectDatasets(node: number[] | string[]) {
     this.selectedNode = node[0];
   }
 }
