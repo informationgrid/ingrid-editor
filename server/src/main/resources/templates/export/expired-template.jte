@@ -14,9 +14,9 @@ Bitte prüfen Sie, ob die Angaben noch aktuell sind.
 @for( ExpiredDataset expDS : documents )
 Titel: ${expDS.getTitle()}
 Uuid: ${expDS.getUuid()}
-Geändert am: ${expDS.getModified().toString()}
-Geändert von: ${expDS.getModifiedBy()}
-!{var type = expDS.getType().equals("data") ? "form" : "address";}
+Geändert am: ${expDS.getContentmodified().toString()}
+Geändert von: ${expDS.getContentmodifiedBy()}
+!{var type = expDS.getCategory().equals("data") ? "form" : "address";}
 Direkter Link: ${linkstub + "/" + type + ";id=" + expDS.getUuid()}
 
 @endfor

@@ -19,6 +19,7 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.BoolFilter
 import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
@@ -26,6 +27,8 @@ import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.igeserver.tasks.ExpiredDataset
+import de.ingrid.igeserver.tasks.ExpiredDatasetsTask
 import de.ingrid.igeserver.utils.AuthUtils
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -37,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
+import java.time.OffsetDateTime
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -44,6 +48,7 @@ class StatisticApiController(
     val researchService: ResearchService,
     val authUtils: AuthUtils,
     val catalogService: CatalogService,
+    val expiredDatasetsTask: ExpiredDatasetsTask,
 ) : StatisticApi {
 
     override fun getStatistic(principal: Principal): ResponseEntity<StatisticResponse> {
@@ -129,10 +134,12 @@ class StatisticApiController(
                         allDataWithDraft++
                         statsType.numAllDrafts++
                     }
+
                     "P" -> {
                         allDataPublished++
                         statsType.numPublished++
                     }
+
                     "W" -> {
                         allDataDrafts++
                         statsType.numDrafts++
@@ -179,7 +186,15 @@ class StatisticApiController(
         BoolFilter(
             "AND",
             null,
-            listOfNotNull(stateFilter, userFilter).map { BoolFilter("OR", listOf(it), null, null, isFacet = false) } +
+            listOfNotNull(stateFilter, userFilter).map {
+                BoolFilter(
+                    "OR",
+                    listOf(it),
+                    null,
+                    null,
+                    isFacet = false,
+                )
+            } +
                 BoolFilter(
                     "AND",
                     listOf(typeFilter, "exceptFolders"),
@@ -192,4 +207,16 @@ class StatisticApiController(
         "DESC",
         ResearchPaging(1, 10),
     )
+
+    override fun expiredDatasets(principal: Principal): ResponseEntity<List<ExpiredDataset>> {
+        val catalog = catalogService.getCatalogById(catalogService.getCurrentCatalogForPrincipal(principal))
+        val expiryDuration = catalog.settings.config.expiredDatasetConfig?.expiryDuration?.toLong()
+            ?: throw ServerException.withReason("No expiryDuration found for catalog ${catalog.identifier}")
+        val expiredDatasets = expiredDatasetsTask.getPublishedDatasetsEditedBefore(
+            catalog = catalog,
+            date = OffsetDateTime.now().minusDays(expiryDuration),
+            expiryState = null,
+        )
+        return ResponseEntity.ok(expiredDatasets)
+    }
 }

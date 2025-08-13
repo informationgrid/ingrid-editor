@@ -1,6 +1,6 @@
 <page-template label="Abgelaufene Metadaten">
     <div left-side>
-        @if (expiryDurationInDays()) {
+        @if (expiryFunctionalityActive()) {
             Hier sehen Sie die Metadaten, deren Verfallszeitspanne abgelaufen
             ist und auf die Sie Schreib- oder Leserechte haben.
         } @else {
@@ -12,7 +12,7 @@
     </div>
 
     <div main-header class="flex-col gap-12 align-items-start">
-        @if (expiryDurationInDays() > 0) {
+        @if (expiryFunctionalityActive()) {
             <button
                 mat-flat-button
                 color="primary"
@@ -32,7 +32,7 @@
     </div>
 
     <div main-content>
-        @if (expiryDurationInDays() > 0) {
+        @if (expiryFunctionalityActive()) {
             @let data = showData();
             @if (data) {
                 <div
