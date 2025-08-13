@@ -3,10 +3,12 @@
 .ref-selector-container {
   min-height: 50px;
   margin-bottom: 12px;
-}
-
-.ref-selector-container > :not(:first-child) {
-  border-top: 1px solid var(--as-gutter-background-color);
+  > :not(:first-child) {
+    border-top: 1px solid var(--as-gutter-background-color);
+  }
+  > :nth-last-child(2) {
+    margin-bottom: 10px;
+  }
 }
 
 .item {
@@ -14,6 +16,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
 
   ul {
     margin: 5px;
@@ -23,6 +29,18 @@
   .title {
     display: flex;
     align-items: center;
+
+    .title-content {
+      display: grid;
+
+      .subtitle {
+        font-size: small;
+        opacity: 0.8;
+        margin-top: 4px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
 
     ige-document-icon {
       margin-right: 6px;

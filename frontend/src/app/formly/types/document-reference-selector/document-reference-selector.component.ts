@@ -45,11 +45,11 @@ import { TreeStore } from "../../../store/tree/tree.store";
 interface Reference {
   layerNames: string[];
   isExternalRef: boolean;
+  uuid: string;
 }
 
 export interface SelectedDocumentReference extends Reference {
   title: string;
-  uuid: string;
   state: DocumentState;
   type: string;
   icon: string;

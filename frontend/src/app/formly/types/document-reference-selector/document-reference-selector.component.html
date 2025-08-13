@@ -25,7 +25,12 @@
                     } @else {
                         <ige-document-icon [doc]="item"></ige-document-icon>
                     }
-                    <span>{{ item.title ?? "???" }}</span>
+                    <div class="title-content">
+                        <span>{{ item.title ?? "???" }}</span>
+                        @if (item.isExternalRef && item?.uuid?.length) {
+                            <span class="subtitle">{{ item.uuid }}</span>
+                        }
+                    </div>
                 </div>
                 @if (props.showLayernames) {
                     <ul style="text-underline: #1a1b1f">
