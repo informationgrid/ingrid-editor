@@ -57,6 +57,9 @@ class BawProfile(
     init {
         isoImport.profileMapper[ID] = isoImportBaw
     }
+
+    override fun getElasticsearchMapping(format: String): String = {}.javaClass.getResource("/ingrid/mappings/baw/default-mapping.json")?.readText() ?: ""
+
     override val indexExportFormatID = "indexInGridIDFBaw"
     private val boundingBoxGermany = """{ "lat1": 47.2701114, "lon1": 5.8663153, "lat2": 55.099161, "lon2": 15.0419309 }"""
 
