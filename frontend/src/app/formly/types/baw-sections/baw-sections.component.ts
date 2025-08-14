@@ -53,8 +53,11 @@ import { MatIcon } from "@angular/material/icon";
   ],
 })
 export class BawSectionsComponent extends FieldArrayType implements OnInit {
+  allowMultipleSections = false;
+
   markSection = {};
   sectionTypes = [];
+  docType: string;
 
   constructor(
     private dialog: MatDialog,
@@ -74,6 +77,7 @@ export class BawSectionsComponent extends FieldArrayType implements OnInit {
       .subscribe((value) => this.formService.setAdditionalSections(value));
 
     this.sectionTypes = (<FormlyFieldConfig>this.field.fieldArray).fieldGroup;
+    this.docType = this.props.docType;
   }
 
   private getLabelFromSections(values: FormlyFieldConfig[]) {
@@ -92,7 +96,7 @@ export class BawSectionsComponent extends FieldArrayType implements OnInit {
         autoFocus: "first-tabbable",
         hasBackdrop: true,
         data: <ConfirmDialogData>{
-          title: "Messdaten entfernen",
+          title: `${this.docType} entfernen`,
           message: "Wollen Sie die Daten wirklich entfernen?",
         },
       })

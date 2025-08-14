@@ -36,23 +36,17 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
     fieldConfig.push(
       this.addSection("Messdaten", [
         this.getMeasuringMethodFieldConfig(),
-        this.getSpatialityFieldConfig(),
-        this.getMeasuringDepthFieldConfig(),
-        this.common.getTimestepFieldConfig(),
-        this.getFrequencyFieldConfig(),
-        this.getAverageWaterLevelFieldConfig(),
-        this.getZeroLevelFieldConfig(),
-        this.getDrainFieldConfig(),
         this.getGaugeFieldConfig(),
         this.getTargetParametersFieldConfig(),
-        this.getPosAccuracyFieldConfig(),
-        this.getDataQualityDescFieldConfig(),
       ]),
       {
         key: "measurementPhases",
         type: "bawPhases",
         fieldArray: {
           fieldGroup: [this.waterMeasurement(), this.bautechnickMeasurement()],
+        },
+        props: {
+          docType: "Messdaten",
         },
         validators: {
           consistent: (control, field) => {
@@ -127,7 +121,6 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
       fieldGroup: [
         this.addSection("Wasserbau Messdaten", [
           { key: "type" },
-          this.getMeasuringMethodFieldConfig(),
           this.getSpatialityFieldConfig(),
           this.getMeasuringDepthFieldConfig(),
           this.common.getTimestepFieldConfig(),
@@ -135,8 +128,6 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
           this.getAverageWaterLevelFieldConfig(),
           this.getZeroLevelFieldConfig(),
           this.getDrainFieldConfig(),
-          this.getGaugeFieldConfig(),
-          this.getTargetParametersFieldConfig(),
           this.getPosAccuracyFieldConfig(),
           this.getDataQualityDescFieldConfig(),
         ]),

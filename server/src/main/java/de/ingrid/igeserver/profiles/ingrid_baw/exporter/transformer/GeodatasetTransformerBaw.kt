@@ -55,10 +55,12 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     }
 
     fun getLiteratureAggregates() = getLiteratureAggregates(this)
+    val waterMeasurements = doc.data.getPath("measurementPhases")?.find { it.getString("type") == "waterMeasurement" }
 
     val orderTitle = doc.data.getString("orderTitle")
     val orderNumber = doc.data.getString("orderNumber")
-    val timestep = doc.data.getDouble("timestep")
+    val timestep = waterMeasurements?.getDouble("timestep")
+
     val simulationParameters = doc.data.getPath("simulationParameter")
         ?.map {
             SimParameter(

@@ -35,24 +35,26 @@
             }
         </div>
     }
-    <div class="flex-row justify-content-center">
-        @if (!isDisabled) {
-            <button
-                mat-flat-button
-                type="button"
-                color="primary"
-                class="button-square-icon padding-btn add-button"
-                [matMenuTriggerFor]="menu"
-            >
-                <mat-icon color="white">add</mat-icon>
-                <span class="btn-title">Messdaten Hinzufügen</span>
-            </button>
-        }
-    </div>
+    @if (allowMultipleSections) {
+        <div class="flex-row justify-content-center">
+            @if (!isDisabled) {
+                <button
+                    mat-flat-button
+                    type="button"
+                    color="primary"
+                    class="button-square-icon padding-btn add-button"
+                    [matMenuTriggerFor]="menu"
+                >
+                    <mat-icon color="white">add</mat-icon>
+                    <span class="btn-title">{{ docType }} Hinzufügen</span>
+                </button>
+            }
+        </div>
+    }
 }
 @if (field.fieldGroup.length < 1) {
     <div class="section-wrapper">
-        <h3>Messdaten</h3>
+        <h3>Weitere {{ docType }}</h3>
         @if (!isDisabled) {
             <button
                 mat-flat-button
