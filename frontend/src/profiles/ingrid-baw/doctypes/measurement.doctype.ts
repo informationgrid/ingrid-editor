@@ -72,10 +72,10 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
           field.model?.type !== "bautechnickMeasurement",
       },
       props: {
-        label: "Bautechnik Messdaten",
+        label: "Messdaten (Bautechnik)",
       },
       fieldGroup: [
-        this.addSection("Bautechnik Messdaten", [
+        this.addSection("Messdaten (Bautechnik)", [
           { key: "type" },
           this.addRepeatList("researchGoal", "Untersuchungsziel", {
             options: [
@@ -116,10 +116,10 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
           field.model?.type !== "waterMeasurement",
       },
       props: {
-        label: "Wasserbau Messdaten",
+        label: "Messdaten (Wasserbau)",
       },
       fieldGroup: [
-        this.addSection("Wasserbau Messdaten", [
+        this.addSection("Messdaten (Wasserbau)", [
           { key: "type" },
           this.getSpatialityFieldConfig(),
           this.getMeasuringDepthFieldConfig(),

@@ -113,10 +113,10 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
           field.model?.type !== "bautechnickSimulation",
       },
       props: {
-        label: "Bautechnick Simulationsdaten",
+        label: "Simulationsdaten (Bautechnick)",
       },
       fieldGroup: [
-        this.addSection("Bautechnick Simulationsdaten", [
+        this.addSection("Simulationsdaten (Bautechnick)", [
           this.addGroup("software", "Software", [
             this.addAutocomplete("name", null, {
               fieldLabel: "Name",
