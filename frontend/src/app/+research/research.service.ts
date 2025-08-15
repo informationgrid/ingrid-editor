@@ -185,7 +185,7 @@ export class ResearchService {
       _contentModified: exData.contentmodified,
       _type: exData.type,
       _parent: null,
-      category: exData.category,
+      _category: exData.category,
       _responsibleUser: exData.responsibleUserId,
     } as IgeDocument;
   }
