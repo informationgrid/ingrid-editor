@@ -20,8 +20,8 @@
 package de.ingrid.igeserver.profiles.uvp.importer.dcatapeia
 
 import com.wemove.dcatparser.dcatapeia.model.dcat.Dataset
+import com.wemove.dcatparser.dcatapeia.model.dct.Location
 import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.exporter.model.SpatialModel
 import de.ingrid.igeserver.exports.iso.Contact
 import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.services.BehaviourService
@@ -38,6 +38,22 @@ data class DcatApEiaDto(
     val receiptDate: String,
     val prelimAssessment: Boolean,
     val eiaNumbers: List<KeyValue>?,
+    val spatial: List<Spatial>?,
+    val pointOfContact: List<Contact>?,
+)
+
+data class Spatial(
+    val type: String?,
+    val title: String?,
+    val value: Bbox?,
+    val wkt: String?,
+)
+
+data class Bbox(
+    val lat1: Number,
+    val lat2: Number,
+    val lon1: Number,
+    val lon2: Number,
 )
 
 class DcatApEiaMapper(
@@ -56,6 +72,8 @@ class DcatApEiaMapper(
         receiptDate = receiptDate,
         prelimAssessment = prelimAssessment,
         eiaNumbers = eiaNumbers,
+        spatial = spatial,
+        pointOfContact = pointOfContact,
     )
 
     @Suppress("PropertyName")
@@ -78,9 +96,37 @@ class DcatApEiaMapper(
         listOf()
     }
 
-    val spatial: List<SpatialModel> = run {
-        // TODO How to map bounding box? -> dct:spatial -> dct:Location
-        listOf()
+    val spatial: List<Spatial> = run {
+        val location = dataset.spatial.firstOrNull() as? Location
+        val spatial = Spatial(
+            type = "free",
+            title = location?.geographicName as String,
+            value = polygonToBbox(location.bbox.toString()),
+            wkt = location.bbox.toString(),
+//            ars = null,
+        )
+        listOf(spatial)
+    }
+
+    fun polygonToBbox(wkt: String): Bbox {
+        val coordsPart = wkt
+            .removePrefix("POLYGON ((")
+            .removeSuffix("))")
+
+        val coords = coordsPart.split(",").map { pair ->
+            val (lon, lat) = pair.trim().split(" ")
+            lon.toDouble() to lat.toDouble()
+        }
+
+        val lons = coords.map { it.first }
+        val lats = coords.map { it.second }
+
+        return Bbox(
+            lat1 = lats.minOrNull()!!,
+            lat2 = lats.maxOrNull()!!,
+            lon1 = lons.minOrNull()!!,
+            lon2 = lons.maxOrNull()!!,
+        )
     }
 
     val eiaNumbers: List<KeyValue>? = run {
