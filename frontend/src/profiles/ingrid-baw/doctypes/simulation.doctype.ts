@@ -117,6 +117,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
       },
       fieldGroup: [
         this.addSection("Simulationsdaten (Bautechnik)", [
+          { key: "type" },
           this.addGroup("software", "Software", [
             this.addAutocomplete("name", null, {
               fieldLabel: "Name",
