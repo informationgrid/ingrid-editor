@@ -130,11 +130,10 @@ class DcatApEiaMapper(
     }
 
     val eiaNumbers: List<KeyValue>? = run {
-        // TODO Load language from catalog and include in codelist request
         val catalog = catalogService.getCatalogById(catalogId)
         val uvpCodelistId = behaviourService.get(catalogId, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
         val eiaNumbers: List<KeyValue>? = dataset.number?.map { value ->
-            val key = codelistHandler.getCodeListEntryId(uvpCodelistId, value, "de") ?: throw ClientException.withReason("Element '<eia:number>' of request body contains invalid value '$value'. It does NOT match a codelist entry.")
+            val key = codelistHandler.getCodeListEntryId(uvpCodelistId, value, catalog.settings.config.language ?: "de") ?: throw ClientException.withReason("Element '<eia:number>' of request body contains invalid value '$value'. It does NOT match a codelist entry.")
             KeyValue(key, value, uvpCodelistId)
         }
         eiaNumbers
