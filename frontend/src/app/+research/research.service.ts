@@ -187,6 +187,8 @@ export class ResearchService {
       _parent: null,
       _category: exData.category,
       _responsibleUser: exData.responsibleUserId,
+      // for display purposes. information not passed from backend
+      hasWritePermission: true,
     } as IgeDocument;
   }
 
