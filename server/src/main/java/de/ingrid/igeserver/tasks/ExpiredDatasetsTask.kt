@@ -136,8 +136,8 @@ class ExpiredDatasetsTask(
     private fun mapToDataset(dbResponse: Array<Any?>): ExpiredDataset = ExpiredDataset(
         dbResponse[0] as Int,
         dbResponse[1].toString(),
-        dbResponse[2] as Int,
-        dbResponse[3].toString(),
+        dbResponse[2] as Int?,
+        dbResponse[3]?.toString(),
         dbResponse[4].toString(),
         dbResponse[5] as OffsetDateTime,
         dbResponse[6].toString(),
@@ -170,8 +170,8 @@ class ExpiredDatasetsTask(
 
         val query = entityManager.createQuery(
             """
-                SELECT dw.id, d.uuid, dw.responsibleUser.id, dw.responsibleUser.userId, d.title, d.contentmodified, d.contentmodifiedby, dw.type, dw.category
-                    FROM DocumentWrapper dw, Document d
+                SELECT dw.id, d.uuid, ru.id, ru.userId, d.title, d.contentmodified, d.contentmodifiedby, dw.type, dw.category
+                    FROM DocumentWrapper dw LEFT JOIN dw.responsibleUser ru, Document d
                     WHERE dw.uuid = d.uuid AND dw.catalog = :catalog AND dw.type != 'FOLDER' AND dw.deleted != 1 AND d.state = 'PUBLISHED' AND d.contentmodified < :date 
                     $limitDateFilter
                     $expiryFilter
@@ -234,7 +234,10 @@ class ExpiredDatasetsTask(
     private fun createMailDatasetMap(expiredDatasetList: List<ExpiredDataset>): Map<String, MutableList<ExpiredDataset>> {
         val mailDatasetMap: MutableMap<String, MutableList<ExpiredDataset>> = HashMap()
         for (expDataset in expiredDatasetList) {
-            val login = expDataset.responsibleUserLogin ?: continue
+            val login = expDataset.responsibleUserLogin ?: run {
+                log.warn("Dataset ${expDataset.uuid} has no responsible user. Email notification will be skipped.")
+                continue
+            }
             var datasetList = mailDatasetMap[login]
             if (datasetList == null) {
                 datasetList = ArrayList()
