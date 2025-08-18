@@ -43,7 +43,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
         key: "measurementPhases",
         type: "bawPhases",
         fieldArray: {
-          fieldGroup: [this.waterMeasurement(), this.bautechnickMeasurement()],
+          fieldGroup: [this.waterMeasurement(), this.bautechnikMeasurement()],
         },
         props: {
           docType: "Messdaten",
@@ -64,12 +64,12 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
     return fieldConfig;
   };
 
-  bautechnickMeasurement() {
+  bautechnikMeasurement() {
     return {
-      name: "bautechnickMeasurement",
+      name: "bautechnikMeasurement",
       expressions: {
         hide: (field: FormlyFieldConfig) =>
-          field.model?.type !== "bautechnickMeasurement",
+          field.model?.type !== "bautechnikMeasurement",
       },
       props: {
         label: "Messdaten (Bautechnik)",

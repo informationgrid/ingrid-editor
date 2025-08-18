@@ -46,7 +46,7 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
         key: "simulationPhases",
         type: "bawPhases",
         fieldArray: {
-          fieldGroup: [this.bautechnickSimulation()],
+          fieldGroup: [this.bautechnikSimulation()],
         },
         props: {
           docType: "Simulationsdaten",
@@ -105,18 +105,18 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
     });
   }
 
-  bautechnickSimulation() {
+  bautechnikSimulation() {
     return {
-      name: "bautechnickSimulation",
+      name: "bautechnikSimulation",
       expressions: {
         hide: (field: FormlyFieldConfig) =>
-          field.model?.type !== "bautechnickSimulation",
+          field.model?.type !== "bautechnikSimulation",
       },
       props: {
-        label: "Simulationsdaten (Bautechnick)",
+        label: "Simulationsdaten (Bautechnik)",
       },
       fieldGroup: [
-        this.addSection("Simulationsdaten (Bautechnick)", [
+        this.addSection("Simulationsdaten (Bautechnik)", [
           this.addGroup("software", "Software", [
             this.addAutocomplete("name", null, {
               fieldLabel: "Name",
