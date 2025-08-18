@@ -34,7 +34,7 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedGeoDatasetFields(this, fieldConfig);
     fieldConfig.push(
-      this.addSection("Messdaten", [
+      this.addSection("Messdaten (Allgemein)", [
         this.getMeasuringMethodFieldConfig(),
         this.getGaugeFieldConfig(),
         this.getTargetParametersFieldConfig(),
@@ -97,9 +97,32 @@ export class MeasurementDoctypeBaw extends GeoDatasetDoctypeBaw {
               { label: "3D", value: "3D" },
             ],
           }),
-          this.addRepeatList("parameter", "Messparameter (Zielparameter?)", {
+          this.addRepeatList("parameter", "Messparameter", {
             options: [
               { label: "Koordinaten", value: "Koordinaten" },
+              { label: "Bild", value: "Bild" },
+              {
+                label: "Räumliche Verschiebung",
+                value: "Räumliche Verschiebung",
+              },
+              { label: "Strecke / Länge", value: "Strecke / Länge" },
+              {
+                label: "Horizontale Verschiebung",
+                value: "Horizontale Verschiebung",
+              },
+              {
+                label: "Vertikale Verschiebung (Setzung)",
+                value: "Vertikale Verschiebung (Setzung)",
+              },
+              {
+                label: "Bewegung von Riss und Fugen",
+                value: "Bewegung von Riss und Fugen",
+              },
+              { label: "Dehnung", value: "Dehnung" },
+              { label: "Neigung", value: "Neigung" },
+              { label: "Kräfte / Spannungen", value: "Kräfte / Spannungen" },
+              { label: "Wasserstand", value: "Wasserstand" },
+              { label: "Wasserdruck", value: "Wasserdruck" },
               { label: "Temperatur", value: "Temperatur" },
             ],
           }),
