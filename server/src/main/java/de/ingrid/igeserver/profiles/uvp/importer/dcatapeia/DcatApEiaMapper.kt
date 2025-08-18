@@ -50,10 +50,10 @@ data class Spatial(
 )
 
 data class Bbox(
-    val lat1: Number,
-    val lat2: Number,
-    val lon1: Number,
-    val lon2: Number,
+    val lat1: Double,
+    val lat2: Double,
+    val lon1: Double,
+    val lon2: Double,
 )
 
 class DcatApEiaMapper(
@@ -90,7 +90,7 @@ class DcatApEiaMapper(
 
     val prelimAssessment: Boolean = dataset.prelimAssessment
 
-    val pointOfContact: List<Contact>? = run {
+    val pointOfContact: List<Contact> = run {
         // TODO How to map contacts? -> dcat:contactPoint -> vcard:Organization
         // val mail = dataset.contactPoint?.firstOrNull()?.email
         listOf()
