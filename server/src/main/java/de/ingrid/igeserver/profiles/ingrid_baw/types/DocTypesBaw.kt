@@ -31,6 +31,7 @@ class BawGeoDatasetSimulation(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetType
     override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
     override val className = "BawSimulation"
+    override fun parentClassName() = super.className
 }
 
 @Component
@@ -39,6 +40,7 @@ class BawGeoDatasetMeasurement(jdbcTemplate: JdbcTemplate) : InGridGeoDatasetTyp
     override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
     override val className = "BawMeasurement"
+    override fun parentClassName() = super.className
 }
 
 @Component

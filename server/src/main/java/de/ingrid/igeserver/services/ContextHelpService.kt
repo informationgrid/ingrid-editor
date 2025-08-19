@@ -28,26 +28,39 @@ import org.apache.logging.log4j.kotlin.logger
 import org.springframework.stereotype.Service
 
 @Service
-class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils, val catalogService: CatalogService, val documentService: DocumentService) {
+class ContextHelpService(
+    private val helpUtils: MarkdownContextHelpUtils,
+    private val catalogService: CatalogService,
+    private val documentService: DocumentService,
+) {
 
-    val log = logger()
-    val defaultLanguage = "de"
+    private val log = logger()
 
-    private val markdownContextHelp: Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> = helpUtils.availableMarkdownHelpFiles
+    companion object {
+        private const val DEFAULT_LANGUAGE: String = "de"
+    }
+
+    private val markdownContextHelp: Map<MarkdownContextHelpItemKey, MarkdownContextHelpItem> =
+        helpUtils.availableMarkdownHelpFiles
 
     fun getHelp(profile: String, docType: String, id: String): HelpMessage {
-        val help: MarkdownContextHelpItem = getContextHelp(profile, docType, id)
-            ?: catalogService.getCatalogProfile(profile).parentProfile?.let { getContextHelp(it, docType, id) }
-            ?: getContextHelp("all", "all", id)
-            ?: run {
-                log.debug("No markdown help file found for { profile: $profile, guid: $id; oid: $docType; language: de}.")
-                throw NotFoundException.withMissingResource(id, "ContextHelp")
-            }
+        val parentProfile = catalogService.getCatalogProfile(profile).parentProfile
+        val parentDocType = getParentDoctype(docType, profile, parentProfile)
+        val help: MarkdownContextHelpItem = listOfNotNull(
+            getContextHelp(profile, docType, id),
+            getContextHelp(profile, parentDocType, id),
+            getContextHelp(parentProfile, docType, id),
+            getContextHelp(parentProfile, parentDocType, id),
+            getContextHelp("all", "all", id),
+        ).firstOrNull() ?: run {
+            log.debug("No markdown help file found for { profile: $profile, guid: $id; oid: $docType; language: $DEFAULT_LANGUAGE}.")
+            throw NotFoundException.withMissingResource(id, "ContextHelp")
+        }
 
         return HelpMessage(
             fieldId = id,
             docType = docType,
-            language = defaultLanguage,
+            language = DEFAULT_LANGUAGE,
             name = help.title,
             helpText = helpUtils.renderMarkdownFile(help.markDownFilename),
             profile = profile,
@@ -56,33 +69,50 @@ class ContextHelpService(private val helpUtils: MarkdownContextHelpUtils, val ca
 
     fun getHelpIDs(profile: String, docType: String): List<String> {
         val parentProfile = catalogService.getCatalogProfile(profile).parentProfile
+        val parentDocType = getParentDoctype(docType, profile, parentProfile)
         return markdownContextHelp.keys
-            .filter { matchProfileAndParentProfile(it, profile, parentProfile, docType) || matchCommonIDs(it) }
+            .filter {
+                matchProfileAndParentProfile(
+                    it,
+                    profile,
+                    parentProfile,
+                    docType,
+                    parentDocType,
+                ) ||
+                    matchCommonIDs(it)
+            }
             .map { it.fieldId }
             .distinct()
     }
 
-    private fun matchCommonIDs(it: MarkdownContextHelpItemKey) = it.profile == "all"
+    private fun matchCommonIDs(key: MarkdownContextHelpItemKey) = key.profile == "all"
 
     private fun matchProfileAndParentProfile(
-        it: MarkdownContextHelpItemKey,
+        key: MarkdownContextHelpItemKey,
         profile: String,
         parentProfile: String?,
         docType: String,
-    ) = ((it.profile == profile || it.profile == parentProfile) && it.docType == docType)
+        parentDocType: String?,
+    ): Boolean = (key.profile == profile && key.docType == docType) ||
+        (key.profile == profile && key.docType == parentDocType) ||
+        (key.profile == parentProfile && key.docType == docType) ||
+        (key.profile == parentProfile && key.docType == parentDocType)
 
-    private fun getContextHelp(profile: String, docType: String, id: String): MarkdownContextHelpItem? {
+    private fun getContextHelp(profile: String?, docType: String?, id: String?): MarkdownContextHelpItem? {
+        if (profile == null || docType == null || id == null) return null
         val itemKey = MarkdownContextHelpItemKey(
             fieldId = id,
             profile = profile,
             docType = docType,
-            lang = defaultLanguage,
+            lang = DEFAULT_LANGUAGE,
         )
+        return markdownContextHelp[itemKey]
+    }
 
-        if (markdownContextHelp.containsKey(itemKey)) {
-            return markdownContextHelp[itemKey]
-        }
-
-        return null
+    private fun getParentDoctype(docType: String, profile: String, parentProfile: String?): String? = try {
+        documentService.getDocumentType(docType, profile, parentProfile).parentClassName()
+    } catch (e: Exception) {
+        log.debug { "Error getting parent doctype for $docType in profile $profile: ${e.message}" }
+        null
     }
 }
