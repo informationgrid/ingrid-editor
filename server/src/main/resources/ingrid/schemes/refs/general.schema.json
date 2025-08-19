@@ -371,7 +371,7 @@
     },
     "temporal": {
       "type": "object",
-      "unevaluatedProperties": false,
+      "unevaluatedProperties": true,
       "properties": {
         "events": {
           "$ref": "#/definitions/events"
