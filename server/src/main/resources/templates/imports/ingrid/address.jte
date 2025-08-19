@@ -1,9 +1,10 @@
-@import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.GeneralMapper
+@import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.PointOfContact
 @import gg.jte.support.ForSupport
-@param GeneralMapper model
+@import java.util.List
+@param List<PointOfContact> contacts
 
 [
-@for(var contact : ForSupport.of(model.getUniquePointOfContacts()))
+@for(var contact : ForSupport.of(contacts))
     {
         "_uuid": "${contact.get().getRefUuid()}",
         "_type": "${contact.get().getAddressType()}",

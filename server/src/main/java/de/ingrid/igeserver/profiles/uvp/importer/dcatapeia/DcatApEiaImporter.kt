@@ -64,6 +64,8 @@ class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val docu
             catalogService,
             behaviourService,
             codelistHandler,
+            researchService,
+            documentService,
         )
 
         val parsedDoc = dcatApEiaMapper.getDocument()

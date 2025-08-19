@@ -19,16 +19,27 @@
  */
 package de.ingrid.igeserver.profiles.uvp.importer.dcatapeia
 
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.wemove.dcatparser.dcatapde.model.vcard.Kind
 import com.wemove.dcatparser.dcatapeia.model.dcat.Dataset
 import com.wemove.dcatparser.dcatapeia.model.dct.Location
 import de.ingrid.igeserver.ClientException
-import de.ingrid.igeserver.exports.iso.Contact
+import de.ingrid.igeserver.exporter.model.AddressRefModel
 import de.ingrid.igeserver.model.KeyValue
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.AddressInfo
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.Communication
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport.JsonStringOutput
+import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.PointOfContact
 import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
-import java.util.UUID
-import kotlin.collections.List
+import de.ingrid.igeserver.services.DocumentService
+import de.ingrid.igeserver.services.ResearchService
+import gg.jte.ContentType
+import gg.jte.TemplateEngine
+import gg.jte.TemplateOutput
+import java.util.*
 
 data class DcatApEiaDto(
     val _type: String,
@@ -39,7 +50,7 @@ data class DcatApEiaDto(
     val prelimAssessment: Boolean,
     val eiaNumbers: List<KeyValue>?,
     val spatial: List<Spatial>?,
-    val pointOfContact: List<Contact>?,
+    val pointOfContact: List<AddressRefModel>?,
 )
 
 data class Spatial(
@@ -62,6 +73,8 @@ class DcatApEiaMapper(
     val catalogService: CatalogService,
     val behaviourService: BehaviourService,
     var codelistHandler: CodelistHandler,
+    val researchService: ResearchService,
+    val documentService: DocumentService,
 ) {
 
     fun getDocument(): DcatApEiaDto = DcatApEiaDto(
@@ -73,30 +86,101 @@ class DcatApEiaMapper(
         prelimAssessment = prelimAssessment,
         eiaNumbers = eiaNumbers,
         spatial = spatial,
-        pointOfContact = pointOfContact,
+        pointOfContact = getPointOfContact(),
     )
 
-    @Suppress("PropertyName")
-    val _type: String = "UvpApprovalProcedureDoc"
+    private val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
     @Suppress("PropertyName")
-    val _uuid: String = dataset.identifier?.first() ?: UUID.randomUUID().toString()
+    private val _type: String = "UvpApprovalProcedureDoc"
 
-    val title = dataset.title?.firstOrNull() ?: throw ClientException.withReason("DCAT-AP.EIA field 'dct:title' is missing.")
+    @Suppress("PropertyName")
+    private val _uuid: String = dataset.identifier?.first() ?: UUID.randomUUID().toString()
 
-    val description = dataset.description?.firstOrNull()?.trimIndent()?.trim()
+    private val title = dataset.title?.firstOrNull() ?: throw ClientException.withReason("DCAT-AP.EIA field 'dct:title' is missing.")
 
-    val receiptDate = dataset.receiptDate?.toString() ?: ""
+    private val description = dataset.description?.firstOrNull()?.trimIndent()?.trim()
 
-    val prelimAssessment: Boolean = dataset.prelimAssessment
+    private val receiptDate = dataset.receiptDate?.toString() ?: ""
 
-    val pointOfContact: List<Contact> = run {
-        // TODO How to map contacts? -> dcat:contactPoint -> vcard:Organization
-        // val mail = dataset.contactPoint?.firstOrNull()?.email
-        listOf()
+    private val prelimAssessment: Boolean = dataset.prelimAssessment
+
+    private fun getPointOfContact(): List<AddressRefModel> {
+        val eiaContact: Kind? = dataset.contactPoint?.firstOrNull()
+        val email = eiaContact?.email ?: throw ClientException.withReason("DCAT-AP.EIA field 'vcard:hasEmail' is missing")
+
+        var uuidOfAddressRef: String? = documentService.docRepo.findAddressesByOrganisationEmail(catalogId, email).firstOrNull()
+
+        if (uuidOfAddressRef.isNullOrEmpty()) {
+            val jsonAddress = convertVcardToAddressJsonDocument(eiaContact)
+            uuidOfAddressRef = jsonAddress.firstOrNull()?.get("_uuid").toString()
+        }
+
+        return listOf(
+            AddressRefModel(
+                ref = uuidOfAddressRef,
+                type = KeyValue(
+                    key = "7",
+                    value = "Ansprechpartner",
+                    _codelistId = "505",
+                ),
+            ),
+        )
     }
 
-    val spatial: List<Spatial> = run {
+    private fun convertVcardToAddressJsonDocument(vcardKind: Kind): ArrayNode {
+        val communicationCodelistId = "4430"
+        val communications: MutableList<Communication> = mutableListOf(
+            Communication(
+                KeyValue("3", "E-Mail", communicationCodelistId),
+                vcardKind.email,
+            ),
+        )
+        if (!vcardKind.telephone.isNullOrEmpty()) {
+            communications.add(
+                Communication(
+                    KeyValue("1", "Telefon", communicationCodelistId),
+                    vcardKind.telephone,
+                ),
+            )
+        }
+        if (!vcardKind.url.isNullOrEmpty()) {
+            communications.add(
+                Communication(
+                    KeyValue("4", "URL", communicationCodelistId),
+                    vcardKind.url,
+                ),
+            )
+        }
+
+        val newContact = PointOfContact(
+            UUID.randomUUID().toString(),
+            "UvpOrganisationDoc",
+            communications,
+            KeyValue(),
+            false,
+            vcardKind.fn,
+            null,
+            address = AddressInfo(
+                city = vcardKind.locality,
+                street = vcardKind.streetAddress,
+                zipCode = vcardKind.postalCode,
+                country = KeyValue("276", vcardKind.countryName, "6200"),
+                administrativeArea = KeyValue("", vcardKind.region, ""),
+                pOBox = "",
+                zipPOBox = "",
+            ),
+            positionName = "",
+            hoursOfService = "",
+            null, // TODO Add uuid of parent address
+        )
+
+        val outputReferences: TemplateOutput = JsonStringOutput()
+        templateEngine.render("imports/ingrid/address.jte", mapOf("contacts" to listOf(newContact)), outputReferences)
+        return jacksonObjectMapper().readValue(outputReferences.toString(), ArrayNode::class.java)
+    }
+
+    val spatial: List<Spatial> by lazy {
         val location = dataset.spatial.firstOrNull() as? Location
         val wktBbox = location?.bbox.toString()
 //        val wktGeometry = location?.geometry.toString()
@@ -132,7 +216,7 @@ class DcatApEiaMapper(
         )
     }
 
-    val eiaNumbers: List<KeyValue>? = run {
+    val eiaNumbers: List<KeyValue>? by lazy {
         val catalog = catalogService.getCatalogById(catalogId)
         val uvpCodelistId = behaviourService.get(catalogId, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
         val eiaNumbers: List<KeyValue>? = dataset.number?.map { value ->
