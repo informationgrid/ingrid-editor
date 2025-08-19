@@ -47,7 +47,11 @@ import { AsyncPipe } from "@angular/common";
 import { GeneralStore } from "../store/general.store";
 import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
 import { DashboardService } from "./dashboard.service";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { tap } from "rxjs/operators";
+import { CatalogService } from "../+catalog/services/catalog.service";
 
+@UntilDestroy()
 @Component({
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
@@ -93,6 +97,7 @@ export class DashboardComponent implements OnInit {
     private docService: DocumentService,
     private messageService: MessageService,
     private dashboardService: DashboardService,
+    private catalogService: CatalogService,
   ) {
     this.messages$ = this.messageService.messages$;
     this.canCreateAddress = configService.hasPermission("can_create_address");
@@ -102,7 +107,16 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.fetchStatistic();
-    this.fetchData();
+    this.catalogService
+      .getExpiryDuration()
+      .pipe(
+        untilDestroyed(this),
+        // update Expired documents if expiry duration is set
+        tap((expiryDuration) =>
+          expiryDuration > 0 ? this.updateExpired() : null,
+        ),
+      )
+      .subscribe();
     this.messageService.loadStoredMessages();
   }
 
@@ -110,10 +124,6 @@ export class DashboardComponent implements OnInit {
     this.docService.getStatistic().subscribe((response) => {
       this.chartDataPublished.set([response.numDrafts, response.numPublished]);
     });
-  }
-
-  fetchData() {
-    this.updateExpired();
   }
 
   createNewDocument() {
