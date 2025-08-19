@@ -98,11 +98,14 @@ class DcatApEiaMapper(
 
     val spatial: List<Spatial> = run {
         val location = dataset.spatial.firstOrNull() as? Location
+        val wktBbox = location?.bbox.toString()
+//        val wktGeometry = location?.geometry.toString()
+//        val wktCentroid = location?.centroid.toString()
         val spatial = Spatial(
-            type = "free",
             title = location?.geographicName as String,
-            value = polygonToBbox(location.bbox.toString()),
-            wkt = location.bbox.toString(),
+            type = "free",
+            value = polygonToBbox(wktBbox),
+            wkt = wktBbox,
 //            ars = null,
         )
         listOf(spatial)
