@@ -49,6 +49,7 @@ import { ProfileService } from "../services/profile.service";
 import { DashboardService } from "./dashboard.service";
 import { DocumentAbstract } from "../store/document/document.model";
 import { signal } from "@angular/core";
+import { CatalogService } from "../+catalog/services/catalog.service";
 
 describe("DashboardComponent", () => {
   let spectator: Spectator<DashboardComponent>;
@@ -77,6 +78,7 @@ describe("DashboardComponent", () => {
     mocks: [
       ConfigService,
       DocumentService,
+      CatalogService,
       FormularService,
       ModalService,
       MessageService,
@@ -114,6 +116,9 @@ describe("DashboardComponent", () => {
         numAllDrafts: 4,
       }),
     );
+
+    const catalogService = spectator.inject<CatalogService>(CatalogService);
+    catalogService.getExpiryDuration.and.returnValue(of(1));
   });
 
   it("should create", () => {
