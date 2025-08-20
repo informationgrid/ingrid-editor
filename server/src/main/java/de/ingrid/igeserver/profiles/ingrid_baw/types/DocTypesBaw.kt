@@ -49,6 +49,7 @@ class BawPublication(jdbcTemplate: JdbcTemplate) : InGridPublicationType(jdbcTem
     override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
     override val className = "BawPublication"
+    override fun parentClassName() = super.className
 }
 
 @Component
@@ -57,4 +58,5 @@ class PublicationAddressDoc(jdbcTemplate: JdbcTemplate) : InGridOrganisationType
     override val jsonSchema = "/ingrid/schemes/baw/placeholder.schema.json"
     override val profiles = arrayOf(BawProfile.ID)
     override val className = "PublicationAddressDoc"
+    override fun parentClassName() = super.className
 }
