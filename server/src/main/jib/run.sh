@@ -57,8 +57,12 @@ if [[ -n "${MATOMO_URL}" ]]; then
   sed -i -r "s@matomoUrl\":.*@matomoUrl\": \"$MATOMO_URL\",@" /app/resources/static/assets/config.json
 fi
 
-if [ -n "${MATOMO_SITE_ID}" ]; then
+if [[ -n "${MATOMO_SITE_ID}" ]]; then
   sed -i -r "s@matomoSiteId\":.*@matomoSiteId\": \"$MATOMO_SITE_ID\",@" /app/resources/static/assets/config.json
+fi
+
+if [[ -n "${MATOMO_DISABLE_COOKIES}" ]]; then
+  sed -i -r "s@matomoDisableCookies\":.*@matomoDisableCookies\": \"$MATOMO_DISABLE_COOKIES\",@" /app/resources/static/assets/config.json
 fi
 
 

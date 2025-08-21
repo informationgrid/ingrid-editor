@@ -19,16 +19,30 @@
  */
 package de.ingrid.igeserver.api
 
+import de.ingrid.igeserver.ServerException
 import de.ingrid.igeserver.model.BoolFilter
+import de.ingrid.igeserver.model.ResearchPaging
 import de.ingrid.igeserver.model.ResearchQuery
+import de.ingrid.igeserver.model.ResearchResponse
 import de.ingrid.igeserver.model.StatisticResponse
 import de.ingrid.igeserver.services.CatalogService
+import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.services.ResearchService
+import de.ingrid.igeserver.tasks.ExpiredDataset
+import de.ingrid.igeserver.tasks.ExpiredDatasetsTask
 import de.ingrid.igeserver.utils.AuthUtils
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
+import java.time.OffsetDateTime
 
 @RestController
 @RequestMapping(path = ["/api"])
@@ -36,6 +50,8 @@ class StatisticApiController(
     val researchService: ResearchService,
     val authUtils: AuthUtils,
     val catalogService: CatalogService,
+    val expiredDatasetsTask: ExpiredDatasetsTask,
+    private val aclService: IgeAclService,
 ) : StatisticApi {
 
     override fun getStatistic(principal: Principal): ResponseEntity<StatisticResponse> {
@@ -97,6 +113,7 @@ class StatisticApiController(
         val allData = queryResult.totalHits.toLong()
         var allDataDrafts: Long = 0
         var allDataPublished: Long = 0
+        var allDataWithDraft: Long = 0
         val statsPerType = mutableMapOf<String, StatisticResponse>()
         queryResult.hits.forEach { hit ->
             if (hit.type != null) {
@@ -106,18 +123,32 @@ class StatisticApiController(
                         totalNum = 0,
                         numDrafts = 0,
                         numPublished = 0,
+                        numAllDrafts = 0,
                         statsPerType = null,
                     ),
                 )
 
                 val statsType = statsPerType[hit.type]!!
                 statsType.totalNum = statsType.totalNum!! + 1
-                if (hit.state == "PW" || hit.state == "P") {
-                    allDataPublished++
-                    statsType.numPublished++
-                } else {
-                    allDataDrafts++
-                    statsType.numDrafts++
+                when (hit.state) {
+                    "PW" -> {
+                        allDataPublished++
+                        statsType.numPublished++
+                        allDataWithDraft++
+                        statsType.numAllDrafts++
+                    }
+
+                    "P" -> {
+                        allDataPublished++
+                        statsType.numPublished++
+                    }
+
+                    "W" -> {
+                        allDataDrafts++
+                        statsType.numDrafts++
+                        allDataWithDraft++
+                        statsType.numAllDrafts++
+                    }
                 }
             }
         }
@@ -126,8 +157,87 @@ class StatisticApiController(
             totalNum = allData,
             numDrafts = allDataDrafts,
             numPublished = allDataPublished,
+            numAllDrafts = allDataWithDraft,
             statsPerType = statsPerType,
         )
         return result
+    }
+
+    @Operation
+    @GetMapping(value = ["/statistic/recentDocuments"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun getRecentDocuments(
+        principal: Principal,
+        @Parameter(description = "") @RequestParam("recentlyPublished") recentlyPublished: Boolean = false,
+        @Parameter(description = "") @RequestParam("fromUser") fromUser: Boolean = false,
+        @Parameter(description = "") @RequestParam("addresses") addresses: Boolean = false,
+    ): ResponseEntity<ResearchResponse> {
+        val dbId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val userId = catalogService.getUser(authUtils.getUsernameFromPrincipal(principal))?.id
+
+        val typeFilter = if (addresses) "selectAddresses" else "selectDocuments"
+        val stateFilter = "document1.state ${if (recentlyPublished) "= 'PUBLISHED'" else " IS NOT NULL"}"
+        val userFilter = if (fromUser) "document1.modifiedbyuser = $userId" else null
+
+        val query = getResearchQuery(stateFilter, userFilter, typeFilter)
+
+        return ResponseEntity.ok(researchService.query(dbId, query, principal))
+    }
+
+    private fun getResearchQuery(stateFilter: String?, userFilter: String?, typeFilter: String): ResearchQuery = ResearchQuery(
+        null,
+        BoolFilter(
+            "AND",
+            null,
+            listOfNotNull(stateFilter, userFilter).map {
+                BoolFilter(
+                    "OR",
+                    listOf(it),
+                    null,
+                    null,
+                    isFacet = false,
+                )
+            } +
+                BoolFilter(
+                    "AND",
+                    listOf(typeFilter, "exceptFolders"),
+                    null,
+                    null,
+                ),
+            null,
+        ),
+        "modified",
+        "DESC",
+        ResearchPaging(1, 10),
+    )
+
+    override fun expiredDatasets(principal: Principal): ResponseEntity<List<ExpiredDataset>> {
+        val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
+        val catalog = catalogService.getCatalogById(catalogId)
+
+        val expiryDays = catalog.settings.config.expiredDatasetConfig?.expiryDuration?.toLong()
+            ?: throw ServerException.withReason("No expiryDuration found for catalog ${catalog.identifier}")
+
+        val cutoffDate = OffsetDateTime.now().minusDays(expiryDays)
+
+        val expiredCandidates = expiredDatasetsTask.getPublishedDatasetsEditedBefore(
+            catalog = catalog,
+            date = cutoffDate,
+            expiryState = null,
+        )
+
+        val userRoles = authUtils.getCurrentUserRoles(catalog.identifier)
+        val hasRootReadAccess = authUtils.isAdmin(principal) || aclService.hasRootReadAccess(userRoles)
+        val auth = principal as Authentication
+
+        val visible = if (hasRootReadAccess) {
+            expiredCandidates
+        } else {
+            expiredCandidates.filter {
+                aclService.getPermissionInfo(auth, it.wrapperId).canRead
+            }
+        }
+
+        return ResponseEntity.ok(visible)
     }
 }

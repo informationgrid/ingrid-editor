@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.exporter.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import de.ingrid.igeserver.exporter.model.SpatialModel.BoundingBoxModel
 import de.ingrid.igeserver.utils.convertWktToGml32
 import org.apache.logging.log4j.kotlin.logger
 
@@ -104,3 +105,23 @@ data class SpatialModel(val type: String?, val title: String?, val value: Boundi
         return this.title
     }
 }
+
+enum class GeoElementType {
+    DESCRIPTION,
+    BOUNDINGBOX,
+    BOUNDINGPOLYGON,
+}
+
+data class GeographicElement(
+    val type: GeoElementType,
+    val hasExtentTypeCode: Boolean = true,
+    val geographicIdentifier: CharacterStringModel? = null,
+    val authority: Authority? = null,
+    val boundingBox: BoundingBoxModel? = null,
+    val polygon: String? = null,
+)
+
+data class Authority(
+    val title: String,
+    val date: String,
+)

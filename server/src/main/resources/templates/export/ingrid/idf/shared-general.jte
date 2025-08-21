@@ -1,7 +1,8 @@
 @import de.ingrid.igeserver.exporter.AddressModelTransformer
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.exporter.model.CharacterStringModel
-@import de.ingrid.igeserver.exporter.model.SpatialModel
+@import de.ingrid.igeserver.exporter.model.GeoElementType
+@import de.ingrid.igeserver.exporter.model.GeographicElement
 @import de.ingrid.igeserver.profiles.ingrid.exporter.*
 @import de.ingrid.igeserver.profiles.ingrid.exporter.OperatesOn
 @import de.ingrid.igeserver.profiles.ingrid.exporter.IngridModelTransformer.UseConstraintTemplate
@@ -56,7 +57,7 @@
 @template.export.ingrid.idf.addresses(addresses = page.getContacts(), wrapperElement = "gmd:contact")
 @if( page.getContacts().isEmpty() ) <gmd:contact/> @endif
 <gmd:dateStamp>
-    <gco:Date>${page.getModifiedMetadataDate()}</gco:Date>
+    <gco:Date>filled_by_exporter_via_updateDateStamp</gco:Date>
 </gmd:dateStamp>
 <gmd:metadataStandardName>
     <gco:CharacterString>${page.getMdStandardName()}</gco:CharacterString>
@@ -557,71 +558,75 @@
                 <gco:CharacterString>${spatial.getDescription()}</gco:CharacterString>
             </gmd:description>
         @endif
-        @for(SpatialModel ref : page.getSpatialReferences())
-            @if(ref.getType().equals("free") || ref.getType().equals("wfsgnde"))
-                @if(TransformationTools.hasValue(ref.getTitle()))
-                    <gmd:geographicElement>
-                        <gmd:EX_GeographicDescription>
+        @for(GeographicElement ref : page.getGeographicElements())
+            <gmd:geographicElement>
+                @if(ref.getType() == GeoElementType.DESCRIPTION)
+                    <gmd:EX_GeographicDescription>
+                        @if(ref.getHasExtentTypeCode())
                             <gmd:extentTypeCode>
                                 <gco:Boolean>true</gco:Boolean>
                             </gmd:extentTypeCode>
+                        @endif
                             <gmd:geographicIdentifier>
+                                @if(ref.getAuthority() != null)
+                                    <gmd:authority>
+                                        <gmd:CI_Citation>
+                                            <gmd:title>
+                                                <gco:CharacterString>${ref.getAuthority().getTitle()}</gco:CharacterString>
+                                            </gmd:title>
+                                            <gmd:date>
+                                                <gmd:CI_Date>
+                                                    <gmd:date>
+                                                        <gco:Date>${ref.getAuthority().getDate()}</gco:Date>
+                                                    </gmd:date>
+                                                    <gmd:dateType>
+                                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+                                                    </gmd:dateType>
+                                                </gmd:CI_Date>
+                                            </gmd:date>
+                                        </gmd:CI_Citation>
+                                    </gmd:authority>
+                                @endif
                                 <gmd:MD_Identifier>
                                     <gmd:code>
-                                        <gco:CharacterString>${ref.getTitleWithArs()}</gco:CharacterString>
+                                        @template.export.ingrid.idf.anchorOrCharacterString(model = ref.getGeographicIdentifier())
                                     </gmd:code>
                                 </gmd:MD_Identifier>
                             </gmd:geographicIdentifier>
                         </gmd:EX_GeographicDescription>
-                    </gmd:geographicElement>
-                @endif
-                @if(ref.getValue() != null)
-                    <gmd:geographicElement>
-                        <gmd:EX_GeographicBoundingBox>
+                @elseif(ref.getType() == GeoElementType.BOUNDINGBOX)
+                    <gmd:EX_GeographicBoundingBox>
+                        @if(ref.getHasExtentTypeCode())
                             <gmd:extentTypeCode>
                                 <gco:Boolean>true</gco:Boolean>
                             </gmd:extentTypeCode>
-                            <gmd:westBoundLongitude>
-                                <gco:Decimal>${ref.getValue().getLon1()}</gco:Decimal>
-                            </gmd:westBoundLongitude>
-                            <gmd:eastBoundLongitude>
-                                <gco:Decimal>${ref.getValue().getLon2()}</gco:Decimal>
-                            </gmd:eastBoundLongitude>
-                            <gmd:southBoundLatitude>
-                                <gco:Decimal>${ref.getValue().getLat1()}</gco:Decimal>
-                            </gmd:southBoundLatitude>
-                            <gmd:northBoundLatitude>
-                                <gco:Decimal>${ref.getValue().getLat2()}</gco:Decimal>
-                            </gmd:northBoundLatitude>
-                        </gmd:EX_GeographicBoundingBox>
-                    </gmd:geographicElement>
-                @endif
-            @elseif(ref.getType().equals("wkt"))
-                <gmd:geographicElement>
+                        @endif
+                        <gmd:westBoundLongitude>
+                            <gco:Decimal>${ref.getBoundingBox().getLon1()}</gco:Decimal>
+                        </gmd:westBoundLongitude>
+                        <gmd:eastBoundLongitude>
+                            <gco:Decimal>${ref.getBoundingBox().getLon2()}</gco:Decimal>
+                        </gmd:eastBoundLongitude>
+                        <gmd:southBoundLatitude>
+                            <gco:Decimal>${ref.getBoundingBox().getLat1()}</gco:Decimal>
+                        </gmd:southBoundLatitude>
+                        <gmd:northBoundLatitude>
+                            <gco:Decimal>${ref.getBoundingBox().getLat2()}</gco:Decimal>
+                        </gmd:northBoundLatitude>
+                    </gmd:EX_GeographicBoundingBox>
+                @elseif(ref.getType() == GeoElementType.BOUNDINGPOLYGON)
                     <gmd:EX_BoundingPolygon>
-                        <gmd:extentTypeCode>
-                            <gco:Boolean>true</gco:Boolean>
-                        </gmd:extentTypeCode>
+                        @if(ref.getHasExtentTypeCode())
+                            <gmd:extentTypeCode>
+                                <gco:Boolean>true</gco:Boolean>
+                            </gmd:extentTypeCode>
+                        @endif
                         <gmd:polygon>
-                            $unsafe{ref.getWktCoordinatesISO()}
+                            $unsafe{ref.getPolygon()}
                         </gmd:polygon>
                     </gmd:EX_BoundingPolygon>
-                </gmd:geographicElement>
-            @endif
-            @if(TransformationTools.hasValue(ref.getArs()))
-                <gmd:geographicElement>
-                    <gmd:EX_GeographicDescription>
-                        <gmd:geographicIdentifier>
-                            <gmd:MD_Identifier>
-                                <gmd:code>
-                                    <gmx:Anchor
-                                            xlink:href="https://registry.gdi-de.org/id/de.bund.bkg.regschluessel/${ref.getArs()}">${page.padARS(ref.getArs())}</gmx:Anchor>
-                                </gmd:code>
-                            </gmd:MD_Identifier>
-                        </gmd:geographicIdentifier>
-                    </gmd:EX_GeographicDescription>
-                </gmd:geographicElement>
-            @endif
+                @endif
+            </gmd:geographicElement>
         @endfor
         @if(page.getResourceDateType() != null && page.getHasAnyResourceDate())
             <gmd:temporalElement>

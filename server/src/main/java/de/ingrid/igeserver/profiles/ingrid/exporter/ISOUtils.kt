@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.utils.tool.XsltUtils
+import de.ingrid.utils.xml.XMLUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.w3c.dom.Document
 import org.xml.sax.InputSource
@@ -43,3 +44,9 @@ fun convertStringToDocument(record: String): Document? {
 }
 
 fun transformIDFtoIso(idfDocument: Document) = XsltUtils().transform(idfDocument, XSL_IDF_TO_ISO_FULL) as Document
+
+fun getISOFromIdfString(idfString: String): String {
+    val idfDoc = convertStringToDocument(idfString)
+    val isoDoc = transformIDFtoIso(idfDoc!!)
+    return XMLUtils.toString(isoDoc)
+}

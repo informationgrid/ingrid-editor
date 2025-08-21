@@ -328,7 +328,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         ?.getOrNull(0) ?: ""
 
     fun getMDIdentifier(): String = identificationInfo?.citation?.citation?.identifier
-        ?.map { it.mdIdentifier?.code?.value }
+        ?.map { it.mdIdentifier?.code?.value?.trim() }
         ?.getOrNull(0) ?: ""
 
     fun getSpatialRepresentationTypes(): List<KeyValue> = identificationInfo?.spatialRepresentationType

@@ -25,7 +25,6 @@ import {
   signal,
   ViewChild,
 } from "@angular/core";
-import { DocumentService } from "../../services/document/document.service";
 import { firstValueFrom } from "rxjs";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
 import {
@@ -105,6 +104,7 @@ export class GeneralReportComponent implements OnInit {
     "count",
     "published",
     "working",
+    "allWorking",
   ];
 
   facetModel: any;
@@ -118,14 +118,9 @@ export class GeneralReportComponent implements OnInit {
   facets: Facets;
 
   constructor(
-    private docService: DocumentService,
     private profileService: ProfileService,
     private researchService: ResearchService,
   ) {}
-
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-  }
 
   async ngOnInit() {
     await this.initFacets();
@@ -148,11 +143,13 @@ export class GeneralReportComponent implements OnInit {
     var filteredTotal = 0;
     var filteredDrafts = 0;
     var filteredPublished = 0;
+    var filteredAllDraft = 0;
     Object.keys(response.statsPerType).forEach((type) => {
       if (!this.ignoredTypes.includes(type)) {
         filteredTotal += response.statsPerType[type].totalNum;
         filteredDrafts += response.statsPerType[type].numPublished;
         filteredPublished += response.statsPerType[type].numDrafts;
+        filteredAllDraft += response.statsPerType[type].numAllDrafts;
       }
     });
     Object.keys(response.statsPerType).forEach((type) => {
@@ -168,6 +165,7 @@ export class GeneralReportComponent implements OnInit {
         count: stats.totalNum,
         published: stats.numPublished,
         working: stats.numDrafts,
+        allWorking: stats.numAllDrafts,
       };
       entry = { ...entry, ariaLabel: this.getAriaLabelForRow(entry) };
       data.push(entry);
@@ -202,6 +200,6 @@ export class GeneralReportComponent implements OnInit {
       entry.percentage
     }%, Anzahl: ${entry.count}, davon veröffentlicht: ${
       entry.published
-    }, in Bearbeitung: ${entry.working}`;
+    }, unveröffentlicht: ${entry.working}`;
   }
 }

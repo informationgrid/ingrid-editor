@@ -11,7 +11,7 @@ title: InVeKoS
 
 # InVeKoS
 
-InVeKoS ist das Integrierte Verwaltungs- und Kontrollsystem in Agrarsektor und dient der Durchsetzung einer einheitlichen Agrarpolitik in den Mitgliedstaaten der Europäischen Union.
+InVeKoS ist das Integrierte Verwaltungs- und Kontrollsystem im Agrarsektor und dient der Durchsetzung einer einheitlichen Agrarpolitik in den Mitgliedstaaten der Europäischen Union.
 Sie haben mit diesem Feld die Möglichkeit, den Metadatensatz entsprechend zu kennzeichnen:
 
 Option 1: InVeKoS/IACS (GSAA)

@@ -1,5 +1,7 @@
 @if (showError && formControl.invalid && !formControl.hasError("required")) {
-    <ige-form-error>{{ getFirstError() }}</ige-form-error>
+    <ige-form-error>
+        <formly-validation-message [field]="field"></formly-validation-message>
+    </ige-form-error>
 }
 
 @if (resolvedAddresses().length > 0) {

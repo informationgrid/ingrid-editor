@@ -21,5 +21,6 @@ export interface StatisticResponse {
   totalNum: number;
   numPublished: number;
   numDrafts: number;
+  numAllDrafts: number;
   statsPerType: Map<string, StatisticResponse>;
 }

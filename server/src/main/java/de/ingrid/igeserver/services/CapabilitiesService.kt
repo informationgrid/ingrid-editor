@@ -20,10 +20,12 @@
 package de.ingrid.igeserver.services
 
 import de.ingrid.igeserver.ServerException
+import de.ingrid.igeserver.api.ForbiddenException
 import de.ingrid.igeserver.model.GetRecordUrlAnalysis
 import de.ingrid.igeserver.services.getCapabilities.CapabilitiesBean
 import de.ingrid.igeserver.services.getCapabilities.GetCapabilitiesParserFactory
 import de.ingrid.utils.xpath.XPathUtils
+import jakarta.ws.rs.NotFoundException
 import org.springframework.stereotype.Service
 import org.w3c.dom.Document
 import org.xml.sax.InputSource
@@ -51,7 +53,8 @@ class CapabilitiesService constructor(val capabilitiesParserFactory: GetCapabili
             doc,
             "//identificationInfo/MD_DataIdentification//citation/CI_Citation/title/CharacterString",
         ) ?: throw ServerException.withReason("Title could not be found in record")
-        val uuid = xpath.getString(doc, "//MD_Metadata/fileIdentifier/CharacterString") ?: throw ServerException.withReason("Uuid could not be found in record")
+        val uuid = xpath.getString(doc, "//MD_Metadata/fileIdentifier/CharacterString")
+            ?: throw ServerException.withReason("Uuid could not be found in record")
         val downloads = mutableListOf<String>()
 
         val resources = xpath.getNodeList(
@@ -69,24 +72,49 @@ class CapabilitiesService constructor(val capabilitiesParserFactory: GetCapabili
         return GetRecordUrlAnalysis(id, uuid, title, downloads)
     }
 
-    private fun getDocumentFromUrl(urlStr: String, namespaceAware: Boolean = false): Document {
+    private fun getDocumentFromUrl(
+        urlStr: String,
+        namespaceAware: Boolean = false,
+        username: String? = null,
+        password: String? = null,
+    ): Document {
         val url = URI(urlStr)
-        // get the content in UTF-8 format, to avoid "MalformedByteSequenceException: Invalid byte 1 of 1-byte UTF-8 sequence"
-        val input = checkForUtf8BOMAndDiscardIfAny(url.toURL().openStream())
-        val reader = InputStreamReader(input, StandardCharsets.UTF_8)
-        val inputSource = InputSource(reader)
-        // Build a document from the xml response
-        val factory = DocumentBuilderFactory.newInstance()
-        // nameSpaceAware is false by default. Otherwise we would have to
-        // query for the correct namespace for every evaluation
-        factory.isNamespaceAware = namespaceAware
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true)
-        factory.setFeature("http://xml.org/sax/features/external-general-entities", false)
-        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false)
-        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false)
-        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-        val builder = factory.newDocumentBuilder()
-        return builder.parse(inputSource)
+        val connection = url.toURL().openConnection()
+
+        try {
+            if (username != null && password != null) {
+                val auth = "$username:$password"
+                val encodedAuth = java.util.Base64.getEncoder().encodeToString(auth.toByteArray(StandardCharsets.UTF_8))
+                connection.setRequestProperty("Authorization", "Basic $encodedAuth")
+            }
+
+            // get the content in UTF-8 format, to avoid "MalformedByteSequenceException: Invalid byte 1 of 1-byte UTF-8 sequence"
+            val input = checkForUtf8BOMAndDiscardIfAny(connection.getInputStream())
+            val reader = InputStreamReader(input, StandardCharsets.UTF_8)
+            val inputSource = InputSource(reader)
+
+            // Build a document from the xml response
+            val factory = DocumentBuilderFactory.newInstance()
+            // nameSpaceAware is false by default. Otherwise we would have to
+            // query for the correct namespace for every evaluation
+            factory.isNamespaceAware = namespaceAware
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true)
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false)
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false)
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false)
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+            val builder = factory.newDocumentBuilder()
+            return builder.parse(inputSource)
+        } catch (e: java.io.IOException) {
+            // Handle HTTP errors including 401
+            val httpConnection = connection as java.net.HttpURLConnection
+            val responseCode = httpConnection.responseCode
+            when (responseCode) {
+                in listOf(401, 403) -> throw ForbiddenException.withUser(username ?: "")
+                404 -> throw NotFoundException("URL not found: $urlStr")
+                else -> throw ServerException.withReason("HTTP error $responseCode when accessing URL: $urlStr", e)
+            }
+        }
     }
 
     private fun checkForUtf8BOMAndDiscardIfAny(inputStream: InputStream): InputStream {
@@ -98,8 +126,14 @@ class CapabilitiesService constructor(val capabilitiesParserFactory: GetCapabili
         return pushbackInputStream
     }
 
-    fun analyzeGetCapabilitiesUrl(principal: Principal, catalogId: String, url: String): CapabilitiesBean {
-        val document = getDocumentFromUrl(url, true)
+    fun analyzeGetCapabilitiesUrl(
+        principal: Principal,
+        catalogId: String,
+        url: String,
+        username: String?,
+        password: String?,
+    ): CapabilitiesBean {
+        val document = getDocumentFromUrl(url, true, username, password)
 
         return capabilitiesParserFactory.get(document, catalogId).getCapabilitiesData(document)
     }

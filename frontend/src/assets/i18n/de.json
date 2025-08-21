@@ -61,8 +61,8 @@
     "application": "INGRID",
     "newDocument": "Neuer Datensatz",
     "importDocument": "Datensatz importieren",
-    "mostRecent": "Zuletzt bearbeitet im Katalog",
-    "mostRecentPublished": "Zuletzt veröffentlicht im Katalog",
+    "recentlyModifiedDocs": "Zuletzt bearbeitet im Katalog",
+    "recentlyPublishedDocs": "Zuletzt veröffentlicht im Katalog",
     "oldestExpired": "Älteste abgelaufene Metadaten",
     "form": "Daten",
     "formSingular": "Datensatz"
@@ -139,7 +139,9 @@
       "maxLength": "Die maximale Anzahl der Einträge ist beschränkt auf: {{value}}",
       "max": "Der Wert darf nicht größer sein als {{value}}",
       "commitWithEnter": "Der Inhalt muss noch mit der Eingabetaste bestätigt werden",
-      "JSON_SCHEMA": "Es trat ein Fehler bei der JSON-Schema Validierung auf"
+      "JSON_SCHEMA": "Es trat ein Fehler bei der JSON-Schema Validierung auf",
+      "missingContact": "Es muss mindestens einen '{{type}}' geben",
+      "missingAnotherContact": "Neben dem '{{type}}' muss mindestens eine weitere Adresse angegeben werden."
     },
     "create-dialog": {
       "titleRequired": "Bitte geben Sie einen Titel ein",
