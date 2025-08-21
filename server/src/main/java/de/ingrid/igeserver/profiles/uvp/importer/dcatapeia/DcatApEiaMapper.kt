@@ -89,6 +89,8 @@ class DcatApEiaMapper(
         pointOfContact = getPointOfContact(),
     )
 
+    var newAddress: ArrayNode? = null
+
     private val templateEngine: TemplateEngine = TemplateEngine.createPrecompiled(ContentType.Plain)
 
     @Suppress("PropertyName")
@@ -112,8 +114,8 @@ class DcatApEiaMapper(
         var uuidOfAddressRef: String? = documentService.docRepo.findAddressesByOrganisationEmail(catalogId, email).firstOrNull()
 
         if (uuidOfAddressRef.isNullOrEmpty()) {
-            val jsonAddress = convertVcardToAddressJsonDocument(eiaContact)
-            uuidOfAddressRef = jsonAddress.firstOrNull()?.get("_uuid").toString()
+            uuidOfAddressRef = UUID.randomUUID().toString()
+            newAddress = convertVcardToAddressJsonDocument(eiaContact, uuidOfAddressRef)
         }
 
         return listOf(
@@ -128,7 +130,7 @@ class DcatApEiaMapper(
         )
     }
 
-    private fun convertVcardToAddressJsonDocument(vcardKind: Kind): ArrayNode {
+    private fun convertVcardToAddressJsonDocument(vcardKind: Kind, refUuid: String): ArrayNode {
         val communicationCodelistId = "4430"
         val communications: MutableList<Communication> = mutableListOf(
             Communication(
@@ -154,11 +156,11 @@ class DcatApEiaMapper(
         }
 
         val newContact = PointOfContact(
-            UUID.randomUUID().toString(),
+            refUuid,
             "UvpOrganisationDoc",
             communications,
             KeyValue(),
-            false,
+            true,
             vcardKind.fn,
             null,
             address = AddressInfo(

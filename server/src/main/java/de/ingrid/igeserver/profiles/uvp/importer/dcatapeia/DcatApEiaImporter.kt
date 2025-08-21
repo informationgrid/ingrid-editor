@@ -51,15 +51,14 @@ class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val docu
 
     override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
         val deserializer = DcatApEiaDeserializer(null)
-        val catalog: Catalog? = deserializer.deserialize(data as String).firstOrNull()
+        val catalog: Catalog = deserializer.deserialize(data as String).firstOrNull()
             ?: throw ServerException.withReason("DCAT-AP.EIA record could not be deserialized")
 
-        val dataset = catalog?.dataset?.firstOrNull()
-
-        if (dataset == null) throw ServerException.withReason("DCAT-AP.EIA catalog does not contain any dataset")
+        val dataset: Dataset = catalog.dataset?.firstOrNull() as Dataset?
+            ?: throw ServerException.withReason("DCAT-AP.EIA catalog does not contain any dataset")
 
         val dcatApEiaMapper = DcatApEiaMapper(
-            dataset as Dataset,
+            dataset,
             catalogId,
             catalogService,
             behaviourService,
@@ -69,11 +68,20 @@ class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val docu
         )
 
         val parsedDoc = dcatApEiaMapper.getDocument()
+        val jsonDoc = mapper.valueToTree<JsonNode>(parsedDoc)
 
-        val json = mapper.valueToTree<JsonNode>(parsedDoc)
+        val newAddress = dcatApEiaMapper.newAddress
 
-        log.debug("Created JSON from imported DCAT-AP.eia file: $json")
-        return json
+        log.debug("Created JSON document from imported DCAT-AP.eia file. New document: $jsonDoc")
+        return if (newAddress == null) {
+            jsonDoc
+        } else {
+            log.debug("Created JSON address from imported DCAT-AP.eia file. New address: $newAddress")
+            jacksonObjectMapper().createArrayNode().apply {
+                add(jsonDoc)
+                addAll(newAddress)
+            }
+        }
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean = "application/rdf+xml" == contentType && fileContent.contains("<dcat:Catalog") && fileContent.contains("xmlns:eia")
