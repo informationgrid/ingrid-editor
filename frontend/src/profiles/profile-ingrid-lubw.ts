@@ -92,19 +92,23 @@ class InGridLUBWComponent extends InGridComponent {
           fieldConfig,
           "pointOfContact",
         );
-        contacts.field.validators.atLeastOneDistributor = {
-          expression: (ctrl: FormControl) =>
-            ctrl.value
-              ? ctrl.value.some((address: any) => address.type?.key === "5")
-              : false,
-          message: docType.validateRequiredContactType("5"),
-        };
-        contacts.field.validators.atLeastOnePointOfContact = {
-          expression: (ctrl: FormControl) =>
-            ctrl.value
-              ? ctrl.value.some((address: any) => address.type?.key === "7")
-              : false,
-          message: docType.validateRequiredContactType("7"),
+        contacts.field.validators = {
+          threeAddressTypesNeeded: {
+            expression: (ctrl: FormControl) => {
+              const requiredTypes = ["12", "7", "5"];
+              return requiredTypes.every((requiredType) =>
+                ctrl.value
+                  ? ctrl.value.some(
+                      (address: any) => address.type?.key === requiredType,
+                    )
+                  : false,
+              );
+            },
+            message: () => {
+              const addressTypes = this.getAddressTypesByKeys(["12", "7", "5"]);
+              return `Es müssen insgesamt drei Adressen angegeben werden: '${addressTypes[0]}', '${addressTypes[1]}' und '${addressTypes[2]}'.`;
+            },
+          },
         };
 
         const keywordsField = docType.findFieldElementWithId(
@@ -126,6 +130,16 @@ class InGridLUBWComponent extends InGridComponent {
 
         return fieldConfig;
       };
+    });
+  }
+
+  private getAddressTypesByKeys(keys: string[]) {
+    return keys.map((key) => {
+      return this.codelistStore.getCodelistEntryValueByKey(
+        "505",
+        key,
+        ConfigService.catalogId,
+      );
     });
   }
 
