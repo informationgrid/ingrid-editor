@@ -13,6 +13,7 @@ INSERT INTO catalog VALUES (200, 'test_catalog-krzn', 'ingrid-krzn', 'Test Catal
 INSERT INTO catalog VALUES (300, 'test_catalog-uvp', 'uvp', 'Test Catalog UVP', 'Test Catalog Description UVP', now(), now(), NULL);
 INSERT INTO catalog VALUES (400, 'test_catalog-opendata', 'opendata', 'Test Catalog OpenData', 'Test Catalog Description OpenData', now(), now(), NULL);
 INSERT INTO catalog VALUES (500, 'test_catalog-hmdk', 'ingrid-hmdk', 'Test Catalog HMDK', 'Test Catalog Description HMDK', now(), now(), NULL);
+INSERT INTO catalog VALUES (600, 'test_catalog-lfubayern', 'ingrid-lfubayern', 'Test Catalog LfU Bayern', 'Test Catalog Description LfU Bayern', now(), now(), NULL);
 
 -- users
 INSERT INTO user_info VALUES (10, 'user1', NULL, '{"recentLogins": [1604100256021]}');
@@ -21,6 +22,7 @@ INSERT INTO catalog_user_info VALUES (200, 10);
 INSERT INTO catalog_user_info VALUES (300, 10);
 INSERT INTO catalog_user_info VALUES (400, 10);
 INSERT INTO catalog_user_info VALUES (500, 10);
+INSERT INTO catalog_user_info VALUES (600, 10);
 
 -- documents and wrappers
 
@@ -841,6 +843,23 @@ VALUES (1010, 500, 'uuid-10', 'InGridGeoService', 'Test HMDK', '{
   ]}',
         0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'PUBLISHED')
 ;
+INSERT INTO document
+VALUES (1011, 600, 'uuid-11', 'InGridGeoService', 'Test LfU Bayern', '{
+  "references": [
+    {
+      "url": "https://test.com/my.zip",
+      "type": {
+        "key": "9990"
+      },
+      "title": "Daten zum Download",
+      "urlDataType": {
+        "key": "27"
+      },
+      "referenceType": "url"
+    }
+  ]}',
+        0, '2020-10-09 22:48:28.644575+00', '2020-10-09 22:48:28.644575+00', null, null, null, null, true, 'PUBLISHED')
+;
 
 INSERT INTO document_wrapper VALUES (1, 100, null, 'uuid-1', 'InGridGeoService', 'data', 0);
 INSERT INTO document_wrapper VALUES (2, 100, null, 'uuid-2', 'InGridGeoDataset', 'data', 0);
@@ -852,6 +871,7 @@ INSERT INTO document_wrapper VALUES (7, 300, null, 'uuid-7', 'UvpApprovalProcedu
 INSERT INTO document_wrapper VALUES (8, 100, null, 'uuid-8', 'InGridGeoService', 'data', 0);
 INSERT INTO document_wrapper VALUES (9, 400, null, 'uuid-9', 'OpenDataDoc', 'data', 0);
 INSERT INTO document_wrapper VALUES (10, 500, null, 'uuid-10', 'InGridGeoService', 'data', 0);
+INSERT INTO document_wrapper VALUES (11, 600, null, 'uuid-11', 'InGridGeoService', 'data', 0);
 
 INSERT INTO codelist VALUES (1,1350,100,'Rechtliche Grundlagen','','[{"id": "1", "localisations": {"de": "Atomgesetz (AtG)"}}, {"id": "2", "localisations": {"de": "Baugesetzbuch (BauGB)"}}, {"id": "3", "localisations": {"de": "Bürgerl. Gesetzbuch (BGB)"}}, {"id": "4", "localisations": {"de": "Bodenschutzgesetz (BodSchG)"}}, {"id": "5", "localisations": {"de": "Bundesberggesetz (BBergG)"}}, {"id": "7", "localisations": {"de": "Bundesnaturschutzgesetz (BNatSchG)"}}, {"id": "8", "localisations": {"de": "Bundeswaldgesetz (BundeswaldG)"}}, {"id": "9", "localisations": {"de": "Chemikaliengesetz (ChemG)"}}, {"id": "10", "localisations": {"de": "Flurbereinigungsgesetz (FlurbG)"}}, {"id": "11", "localisations": {"de": "Gentechnikgesetz (GenTG)"}}, {"id": "13", "localisations": {"de": "Kreislaufwirtschafts- u. Abfallgesetz (KrW-/AbfG)"}}, {"id": "14", "localisations": {"de": "Landesabfallgesetz (LAbfG)"}}, {"id": "15", "localisations": {"de": "Landesabfallwirtschaftsgesetz (LAbfWG)"}}, {"id": "16", "localisations": {"de": "Landschaftsgesetz (LG)"}}, {"id": "17", "localisations": {"de": "Pflanzenschutzgesetz (PflSchG)"}}, {"id": "18", "localisations": {"de": "Raumordnungsgesetz (ROG)"}}, {"id": "19", "localisations": {"de": "Strahlenschutzvorsorgegesetz (StrVG)"}}, {"id": "20", "localisations": {"de": "Tierschutzgesetz (TierSchG)"}}, {"id": "21", "localisations": {"de": "Umwelthaftungsgesetz (UmweltHG)"}}, {"id": "22", "localisations": {"de": "Umweltinformationsgesetz (UIG)"}}, {"id": "23", "localisations": {"de": "Verwaltungsverfahrensgesetz (VwVfG)"}}, {"id": "24", "localisations": {"de": "Bundeswasserstraßengesetz (WaStrG)"}}, {"id": "25", "localisations": {"de": "Wasserhaushaltsgesetz (WHG)"}}, {"id": "26", "localisations": {"de": "Umweltstatistikgesetz (Fass. 21.06.1994)"}}, {"id": "27", "localisations": {"de": "Umweltstatistikgesetz (Fass. 14.03.1980)"}}, {"id": "29", "localisations": {"de": "Trinkwasserverordnung (TrinkwV)"}}, {"id": "30", "localisations": {"de": "TA Siedlungsabfall"}}, {"id": "31", "localisations": {"de": "TA Abfall"}}, {"id": "32", "localisations": {"de": "Strahlenschutzverordnung (StrlSchVO)"}}, {"id": "33", "localisations": {"de": "Richtl. Em.- u. Im.-Überwachung. kerntech. Anl."}}, {"id": "34", "localisations": {"de": "RdErl. d. ML v. 16.1.1986, GültL 10/66"}}, {"id": "35", "localisations": {"de": "Nieders. Wassergesetz (NWG)"}}, {"id": "36", "localisations": {"de": "Nieders. Naturschutzgesetz (NNatG)"}}, {"id": "38", "localisations": {"de": "Nieders. Abfallgesetz (NAbfG)"}}, {"id": "39", "localisations": {"de": "Nieders. Deichgesetz (NDG)"}}, {"id": "40", "localisations": {"de": "Nieders. Abfallgesetz. 6. Teil \"Altlasten\""}}, {"id": "41", "localisations": {"de": "Nieders. Abfallabgabengesetz"}}, {"id": "42", "localisations": {"de": "Landesraumordnungsprogramm LROP"}}, {"id": "43", "localisations": {"de": "KTA 1508"}}, {"id": "45", "localisations": {"de": "Gesetz über eine Holzstatistik"}}, {"id": "46", "localisations": {"de": "Ges. Statistik im Produzierenden Gewerbe"}}, {"id": "47", "localisations": {"de": "Gesetz ü. d. Umweltverträglichkeitsprüfung (UVPG)"}}, {"id": "48", "localisations": {"de": "Erlaß Nds. Umweltministerium vom 16.10.1992"}}, {"id": "49", "localisations": {"de": "Bundesimmissionsschutzgesetz (BImSchG)"}}, {"id": "50", "localisations": {"de": "BImSchG §47a"}}, {"id": "51", "localisations": {"de": "Arbeitsschutzgesetz"}}, {"id": "52", "localisations": {"de": "Anleitung zur Berechnung von Fluglärm"}}, {"id": "53", "localisations": {"de": "Agrarstatistikgesetz (AgrStatG)"}}, {"id": "54", "localisations": {"de": "Abfallklärschlammverordnung (AbfKlärV)"}}, {"id": "55", "localisations": {"de": "Bundesimmissionsschutzverordnung, 23."}}, {"id": "56", "localisations": {"de": "Abwasserabgabengesetz (AbwAG)"}}, {"id": "57", "localisations": {"de": "Wasserhaushaltsgesetz (WHG) § 7a"}}, {"id": "58", "localisations": {"de": "§ 152 NWG (Abwasserbeseitigungspläne)"}}, {"id": "59", "localisations": {"de": "§ 52 Nieders. Wassergesetz (NWG)"}}, {"id": "60", "localisations": {"de": "§ 67 NWG"}}, {"id": "61", "localisations": {"de": "23. Bundesimmissionsschutzverordnung"}}, {"id": "62", "localisations": {"de": "Abfallgesetz (AbfG)"}}, {"id": "63", "localisations": {"de": "AdV-Plenumsbeschluß von 1994"}}, {"id": "64", "localisations": {"de": "AdV-Plenumsbeschluß von1994"}}, {"id": "65", "localisations": {"de": "Agrarstatistikgesetz AgrStatG"}}, {"id": "67", "localisations": {"de": "Betriebssatzung der LGN v. 7.7.1997"}}, {"id": "68", "localisations": {"de": "Bundesimmissionsschutzverordnung"}}]');
 INSERT INTO codelist VALUES (2,3390,100,'Ressourcen-Typ (generell)','Die Liste der generellen Ressourcentypen ist übernommen von https://datacite-metadata-schema.readthedocs.io/en/4.5/properties/resourcetype/#a-resourcetypegeneral','[{"id": "1", "localisations": {"de": "Audiovisual", "en": "Audiovisual"}}, {"id": "2", "localisations": {"de": "Book", "en": "Book"}}, {"id": "3", "localisations": {"de": "BookChapter", "en": "BookChapter"}}, {"id": "4", "localisations": {"de": "Collection", "en": "Collection"}}, {"id": "5", "localisations": {"de": "ComputationalNotebook", "en": "ComputationalNotebook"}}, {"id": "6", "localisations": {"de": "ConferencePaper", "en": "ConferencePaper"}}, {"id": "7", "localisations": {"de": "ConferenceProceeding", "en": "ConferenceProceeding"}}, {"id": "8", "localisations": {"de": "DataPaper", "en": "DataPaper"}}, {"id": "9", "localisations": {"de": "Dataset", "en": "Dataset"}}, {"id": "10", "localisations": {"de": "Dissertation", "en": "Dissertation"}}, {"id": "11", "localisations": {"de": "Event", "en": "Event"}}, {"id": "12", "localisations": {"de": "Image", "en": "Image"}}, {"id": "13", "localisations": {"de": "InteractiveResource", "en": "InteractiveResource"}}, {"id": "14", "localisations": {"de": "Instrument", "en": "Instrument"}}, {"id": "15", "localisations": {"de": "Journal", "en": "Journal"}}, {"id": "16", "localisations": {"de": "JournalArticle", "en": "JournalArticle"}}, {"id": "17", "localisations": {"de": "Model", "en": "Model"}}, {"id": "18", "localisations": {"de": "OutputManagementPlan", "en": "OutputManagementPlan"}}, {"id": "19", "localisations": {"de": "PeerReview", "en": "PeerReview"}}, {"id": "20", "localisations": {"de": "PhysicalObject", "en": "PhysicalObject"}}, {"id": "21", "localisations": {"de": "Preprint", "en": "Preprint"}}, {"id": "22", "localisations": {"de": "Report", "en": "Report"}}, {"id": "23", "localisations": {"de": "Service", "en": "Service"}}, {"id": "24", "localisations": {"de": "Software", "en": "Software"}}, {"id": "25", "localisations": {"de": "Sound", "en": "Sound"}}, {"id": "26", "localisations": {"de": "Standard", "en": "Standard"}}, {"id": "27", "localisations": {"de": "StudyRegistration", "en": "StudyRegistration"}}, {"id": "28", "localisations": {"de": "Text", "en": "Text"}}, {"id": "29", "localisations": {"de": "Workflow", "en": "Workflow"}}, {"id": "30", "localisations": {"de": "Other", "en": "Other"}}]');
