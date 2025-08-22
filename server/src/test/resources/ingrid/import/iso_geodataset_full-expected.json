@@ -321,7 +321,7 @@
       {
         "type": {
           "key": "9999",
-          "value": "",
+          "value": "unspezifischer Verweis",
           "_codelistId": "2000"
         },
         "title": "Bekanntmachung im HmbGVBl als PDF Datei",
@@ -332,7 +332,7 @@
       {
         "type": {
           "key": "9999",
-          "value": "",
+          "value": "unspezifischer Verweis",
           "_codelistId": "2000"
         },
         "title": "URL zu weiteren Informationen über den Datensatz",
@@ -343,7 +343,7 @@
       {
         "type": {
           "key": "9999",
-          "value": "",
+          "value": "unspezifischer Verweis",
           "_codelistId": "2000"
         },
         "title": "Begründung des Bebauungsplans als PDF Datei",
@@ -354,7 +354,7 @@
       {
         "type": {
           "key": "9999",
-          "value": "",
+          "value": "unspezifischer Verweis",
           "_codelistId": "2000"
         },
         "title": "Festsetzungen (Planzeichnung / Verordnung) als PDF Datei",

@@ -746,8 +746,8 @@ open class GeneralMapper(val isoData: IsoImportData) {
                 ?.map { resource ->
                     val value = resource.function?.code?.codeListValue
                     val typeId =
-                        if (value == null) null else codeListService.getCodeListEntryId("2000", value, "iso")
-                    val keyValue = if (typeId == null) KeyValue("9999", value, "2000") else KeyValue(typeId, value, "2000")
+                        if (value == null) "9999" else codeListService.getCodeListEntryId("2000", value, "iso") ?: "9999"
+                    val keyValue = KeyValue(typeId, codeListService.getCodelistValue("2000", typeId, catalogLanguage), "2000")
                     val applicationValue = resource.applicationProfile?.value
                     val applicationId = if (applicationValue == null) {
                         null
