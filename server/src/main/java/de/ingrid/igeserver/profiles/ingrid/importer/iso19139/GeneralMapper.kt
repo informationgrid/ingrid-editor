@@ -678,7 +678,12 @@ open class GeneralMapper(val isoData: IsoImportData) {
             ?.mapNotNull { it.value }
             ?.joinToString(";")
 
-        return MaintenanceInterval(value?.toInt(), KeyValue(intervalUnitKey, intervalUnit, "1230"), KeyValue(updateFrequencyKey, updateFrequencyValue, "518"), description)
+        return MaintenanceInterval(
+            value?.toInt(),
+            intervalUnitKey?.let { KeyValue(intervalUnitKey, intervalUnit, "1230") },
+            updateFrequencyKey?.let { KeyValue(updateFrequencyKey, updateFrequencyValue, "518") },
+            description,
+        )
     }
 
     fun getDigitalTransferOptions(): List<DigitalTransferOption> = metadata.distributionInfo?.mdDistribution?.transferOptions
