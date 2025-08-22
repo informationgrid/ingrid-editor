@@ -35,7 +35,7 @@ import org.springframework.test.context.jdbc.SqlConfig
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(scripts = ["/test_data_acl.sql"], config = SqlConfig(encoding = "UTF-8"))
 @AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles(profiles = ["default", "uvp", "ogc-api", "ingrid", "mcloud", "ingrid-krzn", "opendata", "ingrid-hmdk"])
+@ActiveProfiles(profiles = ["default", "uvp", "ogc-api", "ingrid", "mcloud", "ingrid-krzn", "opendata", "ingrid-hmdk", "ingrid-lfubayern"])
 class IntegrationTest : AnnotationSpec() {
     override fun extensions() = listOf(SpringExtension)
 
