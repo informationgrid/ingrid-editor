@@ -28,14 +28,15 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
 
     fun getServiceCategories(): List<KeyValue> = info?.descriptiveKeywords
         ?.flatMap { it.keywords?.keyword?.map { it.value } ?: emptyList() }
-        ?.mapNotNull { codeListService.getCodeListEntryId("5200", it, "iso") }
-        ?.map { KeyValue(it) } ?: emptyList()
+        ?.mapNotNull { value ->
+            val key = codeListService.getCodeListEntryId("5200", value, "iso")
+            key?.let { KeyValue(key, codeListService.getCodelistValue("5200", it, catalogLanguage), "5200") }
+        } ?: emptyList()
 
     fun getServiceVersions(): List<KeyValue> = info?.serviceTypeVersion
         ?.map {
-            codeListService.getCodeListEntryId("5153", it.value, "iso")
-                ?.let { id -> KeyValue(id) }
-                ?: KeyValue(null, it.value)
+            val key = codeListService.getCodeListEntryId("5153", it.value, "iso")
+            KeyValue(key, key?.let { codeListService.getCodelistValue("5153", key, catalogLanguage) } ?: it.value, "5153")
         } ?: emptyList()
 
     fun getOperations(): List<Operation> = info?.containsOperations
@@ -58,14 +59,14 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             "4" -> "5130"
             else -> null
         }
-        val id = if (codelistId == null) null else codeListService.getCodeListEntryId(codelistId, value, "de")
-        return if (id == null) KeyValue(null, value) else KeyValue(id)
+        val key = if (codelistId == null) null else codeListService.getCodeListEntryId(codelistId, value, "de")
+        return KeyValue(key, value, codelistId)
     }
 
     fun getServiceType(): KeyValue {
         val value = info?.serviceType?.value
-        val id = codeListService.getCodeListEntryId("5100", value, "iso")
-        return KeyValue(id)
+        val key = codeListService.getCodeListEntryId("5100", value, "iso")
+        return KeyValue(key, key?.let { codeListService.getCodelistValue("5100", key, catalogLanguage) } ?: value, "5100")
     }
 
     fun getSystemEnvironment(): String {
@@ -104,8 +105,8 @@ open class GeoserviceMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         ?.joinToString(";") ?: ""
 
     fun getCouplingType(): KeyValue {
-        val id = info?.couplingType?.code?.codeListValue
-        return KeyValue(id)
+        val key = info?.couplingType?.code?.codeListValue
+        return KeyValue(key, key) // key and value are the same!
     }
 
     fun getCoupledResources(): List<CoupledResourceModel> {
