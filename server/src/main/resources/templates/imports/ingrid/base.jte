@@ -81,12 +81,8 @@
     "verticalExtent": {
     "minimumValue": ${model.getVerticalExtent().getMin()},
     "maximumValue": ${model.getVerticalExtent().getMax()},
-    "unitOfMeasure": {
-        "key": "${model.getVerticalExtent().getUom()}"
-    },
-    "Datum": {
-        "key": "${model.getVerticalExtent().getDatum()}"
-    }
+    "unitOfMeasure": @template.imports.ingrid.partial.key-value(item = model.getVerticalExtent().getUom()),
+    "Datum": @template.imports.ingrid.partial.key-value(item = model.getVerticalExtent().getDatum())
     },
 @endif
 "description": "${model.getSpatialDescription()}"
@@ -172,7 +168,7 @@
 @for(var option : ForSupport.of(model.getDigitalTransferOptions()))
     {
     "name": @template.imports.ingrid.partial.key-value(item = option.get().getName()),
-    "transferSize": @if(option.get().getTransferSize() != null){ "value": ${option.get().getTransferSize().getValue()}, "unit": { "key": "${option.get().getTransferSize().getUnit().getKey()}" } } @else null@endif,
+    "transferSize": @if(option.get().getTransferSize() != null){ "value": ${option.get().getTransferSize().getValue()}, "unit": @template.imports.ingrid.partial.key-value(item = option.get().getTransferSize().getUnit()) } @else null@endif,
     "mediumNote": "${option.get().getMediumNote()}"
     }@if (!option.isLast()),@endif
 @endfor

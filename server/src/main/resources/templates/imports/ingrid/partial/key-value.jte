@@ -5,10 +5,7 @@
 @if (item == null)null
 @else
 {
-    @if (item.getKey() == null)
-    "key": null,
-    "value": "${item.getValue()}"
-    @else 
-    "key": "${item.getKey()}"
-    @endif
+    "key":  @if (item.getKey() == null)null@else"${item.getKey()}"@endif,
+    "value": "${item.getValue()}",
+    "_codelistId": @if (item.get_codelistId() == null)null@else"${item.get_codelistId()}"@endif
 }@endif
