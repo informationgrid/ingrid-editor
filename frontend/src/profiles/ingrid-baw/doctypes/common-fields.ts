@@ -213,6 +213,13 @@ export class CommonFieldsBaw extends FormFieldHelper {
       "references",
     );
     this.addAfter(referencesPosition, this.getLiteratureReferenceFieldConfig());
+
+    // remove fileReferences
+    const fileReferencesPosition = this.findParentFieldElementWithId(
+      fieldConfig,
+      "fileReferences",
+    );
+    fileReferencesPosition?.fieldConfig.splice(fileReferencesPosition.index, 1);
   }
 
   getBAWPointOfContactFieldConfig(
