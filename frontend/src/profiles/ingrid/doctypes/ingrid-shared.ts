@@ -1790,7 +1790,7 @@ export abstract class IngridShared extends BaseDoctype {
         wrappers: ["inline-help", "form-field"],
         expressions: {
           "props.required": (field: FormlyFieldConfig) =>
-            field.options.formState.mainModel?.publication?.doi,
+            field.options.formState.mainModel?.publication?.doi?.length > 0,
         },
       }),
       this.addAutoCompleteInline("resourceType", "Ressourcen Typ", {
