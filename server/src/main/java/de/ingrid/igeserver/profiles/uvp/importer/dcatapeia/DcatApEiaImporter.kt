@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig, val behaviourService: BehaviourService, val codelistHandler: CodelistHandler) : IgeImporter {
+class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, val uploadConfig: UploadConfig, val behaviourService: BehaviourService, val codelistHandler: CodelistHandler) : IgeImporter {
     private val log = logger()
 
     private val mapper = jacksonObjectMapper()
@@ -54,16 +54,14 @@ class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val docu
         val catalog: Catalog = deserializer.deserialize(data as String).firstOrNull()
             ?: throw ServerException.withReason("DCAT-AP.EIA record could not be deserialized")
 
-        val dataset: Dataset = catalog.dataset?.firstOrNull() as Dataset?
-            ?: throw ServerException.withReason("DCAT-AP.EIA catalog does not contain any dataset")
+        val dataset = catalog.dataset?.firstOrNull() ?: throw ServerException.withReason("DCAT-AP.EIA catalog does not contain any dataset")
 
         val dcatApEiaMapper = DcatApEiaMapper(
-            dataset,
+            dataset as Dataset,
             catalogId,
             catalogService,
             behaviourService,
             codelistHandler,
-            researchService,
             documentService,
         )
 

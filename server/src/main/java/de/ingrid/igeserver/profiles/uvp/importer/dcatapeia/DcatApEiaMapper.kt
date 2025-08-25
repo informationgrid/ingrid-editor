@@ -35,7 +35,6 @@ import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.services.ResearchService
 import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.TemplateOutput
@@ -73,7 +72,6 @@ class DcatApEiaMapper(
     val catalogService: CatalogService,
     val behaviourService: BehaviourService,
     var codelistHandler: CodelistHandler,
-    val researchService: ResearchService,
     val documentService: DocumentService,
 ) {
 
@@ -99,7 +97,8 @@ class DcatApEiaMapper(
     @Suppress("PropertyName")
     private val _uuid: String = dataset.identifier?.first() ?: UUID.randomUUID().toString()
 
-    private val title = dataset.title?.firstOrNull() ?: throw ClientException.withReason("DCAT-AP.EIA field 'dct:title' is missing.")
+    private val title =
+        dataset.title?.firstOrNull() ?: throw ClientException.withReason("DCAT-AP.EIA field 'dct:title' is missing.")
 
     private val description = dataset.description?.firstOrNull()?.trimIndent()?.trim()
 
@@ -109,9 +108,11 @@ class DcatApEiaMapper(
 
     private fun getPointOfContact(): List<AddressRefModel> {
         val eiaContact: Kind? = dataset.contactPoint?.firstOrNull()
-        val email = eiaContact?.email ?: throw ClientException.withReason("DCAT-AP.EIA field 'vcard:hasEmail' is missing")
+        val email =
+            eiaContact?.email ?: throw ClientException.withReason("DCAT-AP.EIA field 'vcard:hasEmail' is missing")
 
-        var uuidOfAddressRef: String? = documentService.docRepo.findAddressesByOrganisationEmail(catalogId, email).firstOrNull()
+        var uuidOfAddressRef: String? =
+            documentService.docRepo.findAddressesByOrganisationEmail(catalogId, email).firstOrNull()
 
         if (uuidOfAddressRef.isNullOrEmpty()) {
             uuidOfAddressRef = UUID.randomUUID().toString()
@@ -220,9 +221,11 @@ class DcatApEiaMapper(
 
     val eiaNumbers: List<KeyValue>? by lazy {
         val catalog = catalogService.getCatalogById(catalogId)
-        val uvpCodelistId = behaviourService.get(catalogId, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
+        val uvpCodelistId =
+            behaviourService.get(catalogId, "plugin.uvp.eia-number")?.data?.get("uvpCodelist")?.toString() ?: "9000"
         val eiaNumbers: List<KeyValue>? = dataset.number?.map { value ->
-            val key = codelistHandler.getCodeListEntryId(uvpCodelistId, value, catalog.settings.config.language ?: "de") ?: throw ClientException.withReason("Element '<eia:number>' of request body contains invalid value '$value'. It does NOT match a codelist entry.")
+            val key = codelistHandler.getCodeListEntryId(uvpCodelistId, value, catalog.settings.config.language ?: "de")
+                ?: throw ClientException.withReason("Element '<eia:number>' of request body contains invalid value '$value'. It does NOT match a codelist entry.")
             KeyValue(key, value, uvpCodelistId)
         }
         eiaNumbers
