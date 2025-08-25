@@ -50,9 +50,6 @@ export class FormMenuService {
         title: "Hilfe",
         name: "help",
         link: this.configService.$userInfo.getValue().externalHelp,
-        action: () => {
-          console.debug("Calling help");
-        },
       },
     ].filter(Boolean) as FormularMenuItem[],
   };

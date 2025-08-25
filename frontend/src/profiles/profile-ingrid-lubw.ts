@@ -72,6 +72,7 @@ class InGridLUBWComponent extends InGridComponent {
         "de",
         { merge: true },
       );
+      this.replaceHelpLink();
     }
   }
 
@@ -146,6 +147,16 @@ class InGridLUBWComponent extends InGridComponent {
   private disablePlugins(pluginIds: string[]) {
     pluginIds.forEach((id) => {
       this.behaviourService.getBehaviour(id).isActive.set(false);
+    });
+  }
+
+  private replaceHelpLink() {
+    // update external help for authors
+    this.formMenuService.removeMenuItem("settings", "help");
+    this.formMenuService.addMenuItem("settings", {
+      title: "Hilfe",
+      name: "help",
+      link: "https://wissensplattform-umwelt.bwl.de/hilfsmittel_und_hinweise",
     });
   }
 }
