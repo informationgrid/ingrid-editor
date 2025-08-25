@@ -41,6 +41,7 @@ import { MatAutocomplete } from "@angular/material/autocomplete";
 import { MatOption } from "@angular/material/core";
 import { DocumentListItemComponent } from "../../../../shared/document-list-item/document-list-item.component";
 import { AsyncPipe } from "@angular/common";
+import { MatSlideToggle } from "@angular/material/slide-toggle";
 
 @UntilDestroy()
 @Component({
@@ -58,10 +59,12 @@ import { AsyncPipe } from "@angular/common";
     MatOption,
     DocumentListItemComponent,
     AsyncPipe,
+    MatSlideToggle,
   ],
 })
 export class TreeHeaderComponent implements OnInit {
   @Input() showReloadButton = false;
+  @Input() showWriteAccessToggle = false;
   @Input() isAddress = false;
   @Input() showOptions = true;
   @Input() showOnlyFolders = false;

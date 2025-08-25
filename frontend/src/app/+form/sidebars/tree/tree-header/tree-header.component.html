@@ -43,12 +43,14 @@
                 </div>
             }
             <div class="flex-1 flex-row justify-content-end align-items-center">
-                <!--            <mat-slide-toggle
-        class="show-all"
-        checked
-        (change)="toggleView.emit($event.checked)"
-        >Alle anzeigen
-      </mat-slide-toggle>-->
+                @if (showWriteAccessToggle) {
+                    <mat-slide-toggle
+                        class="show-all"
+                        checked
+                        (change)="toggleView.emit($event.checked)"
+                        >Alle anzeigen
+                    </mat-slide-toggle>
+                }
                 @if (showReloadButton) {
                     <button
                         mat-icon-button
