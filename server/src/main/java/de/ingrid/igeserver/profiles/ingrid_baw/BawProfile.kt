@@ -19,7 +19,9 @@
  */
 package de.ingrid.igeserver.profiles.ingrid_baw
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
 import de.ingrid.igeserver.profiles.ingrid.InGridProfile
@@ -28,6 +30,7 @@ import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.profiles.ingrid_baw.importer.ISOImportBaw
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
+import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DateService
 import de.ingrid.igeserver.services.DocumentService
@@ -44,6 +47,7 @@ class BawProfile(
     openDataCategory: OpenDataCategory,
     isoImport: ISOImport,
     isoImportBaw: ISOImportBaw,
+    @JsonIgnore val behaviourService: BehaviourService,
 ) : InGridProfile(catalogRepo, codelistHandler, documentService, query, dateService, openDataCategory) {
 
     companion object {
@@ -95,6 +99,17 @@ class BawProfile(
         } else {
             super.initCatalogCodelists(catalogId, codelistId)
         }
+    }
+
+    override fun initCatalogQueries(catalogId: String) {
+        val behaviours = listOf("plugin.publish").map {
+            Behaviour().apply {
+                name = it
+                active = true
+                data = mapOf("unpublishDisabled" to true)
+            }
+        }
+        behaviourService.save(catalogId, behaviours)
     }
 
     private fun createBwaStrIds(catalogRef: Catalog): Codelist = Codelist().apply {
