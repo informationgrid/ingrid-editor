@@ -1,5 +1,17 @@
 # Changelog
 
+## 8.0.2 (26.08.2025)
+
+### Features
+
+* ISO-Import mit Codelist-IDs und Values (#8119)
+
+### Bugfixes
+
+* Eintrag "WMS-URL"  bzw. "Dienste-URL" im Anwendungsprofil ist verloren gegangen (#8082)
+* Migration kann zu falschen Datensatzänderungen führen (#8050)
+* Importer liest aus den Adressen kein Telefon/Fax? (#7991)
+    
 ## 8.0.1 (29.07.2025)
 
 ### Features
