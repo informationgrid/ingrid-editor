@@ -5,6 +5,18 @@
 ### Features
 
 * ISO-Import mit Codelist-IDs und Values (#8119)
+* E-Mail über abgelaufene Metadaten anpassen (#7785)
+
+### Bugfixes
+
+* Eintrag "WMS-URL"  bzw. "Dienste-URL" im Anwendungsprofil ist verloren gegangen (#8082)
+* Wiedervorlage E-Mail muss aus Profil genommen werden (#8072)
+* Migration kann zu falschen Datensatzänderungen führen (#8050)
+* Importer liest aus den Adressen kein Telefon/Fax? (#7991)
+    
+## Features
+
+* ISO-Import mit Codelist-IDs und Values (#8119)
 
 ### Bugfixes
 
