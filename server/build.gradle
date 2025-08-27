@@ -27,7 +27,7 @@ plugins {
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.4.5'
     id "com.gorylenko.gradle-git-properties" version "2.5.2"
-//    id 'io.kotest' version '0.4.11'
+    id 'io.kotest' version "$kotest_version"
     id "com.github.ben-manes.versions" version "0.52.0"
     id "gg.jte.gradle" version "$jte_version"
     id "org.hibernate.orm" version "6.6.20.Final"
@@ -195,11 +195,12 @@ dependencies {
     implementation("com.wemove:dcat-parser:0.1.0-SNAPSHOT")
 
     // Test
+    testImplementation "io.kotest:kotest-framework-engine:$kotest_version"
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version" // for kotest framework
     testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version" // for kotest core jvm assertions
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
-    testImplementation 'io.kotest.extensions:kotest-extensions-spring:1.3.0' // to wire dependencies using Spring
-    testImplementation "io.kotest.extensions:kotest-extensions-testcontainers:2.0.2"
+    testImplementation "io.kotest:kotest-extensions-spring:$kotest_version" // to wire dependencies using Spring
+    testImplementation "io.kotest:kotest-extensions-testcontainers-jvm:$kotest_version"
     testImplementation 'io.mockk:mockk:1.14.5'
     testImplementation "com.ninja-squad:springmockk:4.0.2"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
