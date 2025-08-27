@@ -51,7 +51,7 @@ import org.springframework.test.context.TestPropertySource
     ],
 )
 class PipeTest : FunSpec() {
-    override fun extensions() = listOf(SpringExtension)
+    override val extensions = listOf(SpringExtension)
 
     @Autowired
     lateinit var createPipe: Pipe<TestPayloadCreate>

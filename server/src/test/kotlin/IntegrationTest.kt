@@ -20,8 +20,9 @@
 import com.ninjasquad.springmockk.MockkBean
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.services.UserManagementService
+import io.kotest.core.extensions.ApplyExtension
 import io.kotest.core.spec.style.AnnotationSpec
-import io.kotest.extensions.spring.SpringExtension
+import io.kotest.extensions.spring.SpringTestExtension
 import io.kotest.extensions.testcontainers.perProject
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -36,9 +37,9 @@ import org.testcontainers.containers.PostgreSQLContainer
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(scripts = ["/test_data_acl.sql"], config = SqlConfig(encoding = "UTF-8"))
 @AutoConfigureMockMvc(addFilters = false)
+@ApplyExtension(SpringTestExtension::class)
 @ActiveProfiles(profiles = ["default", "uvp", "ogc-api", "ingrid", "mcloud", "ingrid-krzn", "opendata", "ingrid-hmdk", "ingrid-lfubayern"])
 class IntegrationTest : AnnotationSpec() {
-    override fun extensions() = listOf(SpringExtension)
 
     @MockkBean(relaxed = true)
     lateinit var userManagementService: UserManagementService
@@ -48,7 +49,6 @@ class IntegrationTest : AnnotationSpec() {
         private val postgres = PostgreSQLContainer("postgres:17-alpine")
             .apply { start() }
     }
-    init {
-        listener(postgres.perProject())
-    }
+
+    override val extensions = listOf(postgres.perProject())
 }
