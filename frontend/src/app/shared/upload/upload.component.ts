@@ -36,7 +36,7 @@ import {
   transition,
   trigger,
 } from "@angular/animations";
-import { FlowDirective, NgxFlowModule, Transfer } from "@flowjs/ngx-flow";
+import { FlowConfig, NgxFlowModule, Transfer } from "@flowjs/ngx-flow";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { map, skip } from "rxjs/operators";
 import { IgeError } from "../../models/ige-error";
@@ -92,7 +92,7 @@ export class UploadComponent implements AfterViewInit {
   @Output() chosenFiles = new EventEmitter<TransfersWithErrorInfo[]>();
   @Output() removeFile = new EventEmitter<string>();
 
-  @ViewChild("flow") flow: FlowDirective;
+  @ViewChild("flow") flow: FlowConfig;
 
   target = input.required<string>();
   multiple = input<boolean>();
