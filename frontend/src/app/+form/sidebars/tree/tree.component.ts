@@ -104,6 +104,7 @@ export class TreeComponent implements OnInit {
   @Input() setActiveNode: Subject<number>;
   @Input() update: Observable<any>;
   @Input() showHeaderOptions = true;
+  @Input() showWriteAccessToggle = false;
   @Input() showOnlyFolders = false;
   @Input() enableDrag = false;
   @Input() hideReadOnly = false;
@@ -659,8 +660,8 @@ export class TreeComponent implements OnInit {
     }
   }
 
-  toggleView(showAll: boolean) {
-    this.database.hideReadOnly = !showAll;
+  toggleWriteAccess(showDocsWithWriteAccess: boolean) {
+    this.database.hideReadOnly = showDocsWithWriteAccess;
     this.reloadTree(true).subscribe();
   }
 

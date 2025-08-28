@@ -5,6 +5,7 @@
             (reload)="reloadTree(true).subscribe()"
             [isAddress]="forAddresses"
             [showOptions]="showHeaderOptions"
+            [showWriteAccessToggle]="showWriteAccessToggle"
             [showOnlyFolders]="showOnlyFolders"
             [showMultiSelectButton]="hasData && showMultiSelectButton"
             [showSearch]="hasData"
@@ -15,7 +16,7 @@
             "
             [multiSelectionModeEnabled]="selection?.multiSelectionModeEnabled()"
             (toggleAllSelection)="selection?.toggleAllSelection($event)"
-            (toggleView)="toggleView($event)"
+            (toggleWriteAccess)="toggleWriteAccess($event)"
             (edit)="toggleSelectionMode($event)"
             (open)="handleSelection($event)"
         ></ige-tree-header>

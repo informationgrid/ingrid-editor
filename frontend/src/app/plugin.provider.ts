@@ -42,6 +42,7 @@ import { FieldsToggleButtonBehaviour } from "./+catalog/+behaviours/system/Field
 import { ExpiredDocumentsBehaviour } from "./+catalog/+behaviours/system/expiredDocuments/expired-documents.behaviour";
 import { DocumentsAsParentBehaviour } from "./+catalog/+behaviours/system/AllowDocumentsAsParent/documents-as-parent.behaviour";
 import { ArchivePlugin } from "./+catalog/+behaviours/system/Archive/archive.plugin";
+import { ToggleWriteAccessInTreeBehaviour } from "./+catalog/+behaviours/system/ToggleWriteAccessInTree/toggle-write-access-in-tree.behaviour";
 
 export const pluginProvider = [
   { provide: PluginToken, useClass: ShowJsonBehaviour, multi: true },
@@ -64,6 +65,11 @@ export const pluginProvider = [
     multi: true,
   },
   { provide: PluginToken, useClass: SortTreeByTypeBehaviour, multi: true },
+  {
+    provide: PluginToken,
+    useClass: ToggleWriteAccessInTreeBehaviour,
+    multi: true,
+  },
   { provide: PluginToken, useClass: AddressTitleBehaviour, multi: true },
   {
     provide: PluginToken,

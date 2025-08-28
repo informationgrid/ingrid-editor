@@ -19,12 +19,14 @@
  */
 import {
   Component,
+  computed,
   effect,
   EventEmitter,
   inject,
   Input,
   OnInit,
   Output,
+  signal,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { TreeStore } from "../../store/tree/tree.store";
@@ -38,6 +40,7 @@ import { TreeComponent } from "./tree/tree.component";
 import { GeneralStore } from "../../store/general.store";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { UiStore } from "../../store/ui.store";
+import { BehaviourService } from "../../services/behavior/behaviour.service";
 
 @UntilDestroy()
 @Component({
@@ -51,10 +54,17 @@ export class SidebarComponent implements OnInit {
 
   @Output() dropped = new EventEmitter();
 
+  showWriteAccessToggle = computed(() => {
+    return this.behaviourService
+      .getBehaviour("plugin.show.writable.tree")
+      ?.isActive();
+  });
+
   private documentTreeStore = inject(TreeStore);
   private addressTreeStore = inject(AddressTreeStore);
   private generalStore = inject(GeneralStore);
   private uiStore = inject(UiStore);
+  private behaviourService = inject(BehaviourService);
 
   updateTree = new Subject<TreeAction[]>();
   activeTreeNode = new BehaviorSubject<number>(null);

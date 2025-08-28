@@ -80,7 +80,7 @@ export class TreeHeaderComponent implements OnInit {
   @Output() open = new EventEmitter();
   @Output() edit = new EventEmitter<boolean>();
   @Output() toggleAllSelection = new EventEmitter<boolean>();
-  @Output() toggleView = new EventEmitter<boolean>();
+  @Output() toggleWriteAccess = new EventEmitter<boolean>();
   searchResult = new BehaviorSubject<TreeNode[]>([]);
   query = new UntypedFormControl("");
   searchSub: Subscription;
