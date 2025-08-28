@@ -67,15 +67,13 @@ class OpenDataModelTransformerAdditional(
         )
     }
 
-    private fun mapAddressType(typeKey: String): String {
-        return when (typeKey) {
-            "2" -> return "maintainer"
-            "6" -> return "originator"
-            "7" -> return "contactPoint"
-            "11" -> return "creator"
-            "12" -> return "publisher"
-            else -> return "???"
-        }
+    private fun mapAddressType(typeKey: String): String = when (typeKey) {
+        "2" -> "maintainer"
+        "6" -> "originator"
+        "7" -> "contactPoint"
+        "10" -> "publisher"
+        "11" -> "creator"
+        else -> "???"
     }
 
     fun getSpatials() = emptyList<String>()

@@ -150,12 +150,7 @@ class OpenDataExporter(
             data.apply {
                 val outer = this
 
-                set<JsonNode>(
-                    "pointOfContact",
-                    get("addresses").apply {
-                        (get(0)?.get("type") as ObjectNode?)?.put("key", 12)
-                    },
-                )
+                set<JsonNode>("pointOfContact", get("addresses"))
                 put("alternateTitle", getString("landingPage"))
                 set<JsonNode>("openDataCategories", get("openDataCategories"))
                 set<JsonNode>(
