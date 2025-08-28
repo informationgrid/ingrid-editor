@@ -1257,6 +1257,7 @@
                     </gmd:portrayalCatalogueCitation>
                 </gmd:MD_PortrayalCatalogueReference>
             </gmd:portrayalCatalogueInfo>
+            <idf:hasAccessConstraint>false</idf:hasAccessConstraint>
             <idf:abstract>
                 <gco:CharacterString>Hier ist die Beschreibung.</gco:CharacterString>
             </idf:abstract>

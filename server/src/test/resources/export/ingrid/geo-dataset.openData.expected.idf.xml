@@ -374,6 +374,7 @@
                     </gmd:lineage>
                 </gmd:DQ_DataQuality>
             </gmd:dataQualityInfo>
+            <idf:hasAccessConstraint>false</idf:hasAccessConstraint>
             <idf:abstract>
                 <gco:CharacterString>Allgemeine Beschreibung.</gco:CharacterString>
             </idf:abstract>
