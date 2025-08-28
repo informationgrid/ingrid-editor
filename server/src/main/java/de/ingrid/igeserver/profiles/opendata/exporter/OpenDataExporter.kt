@@ -31,6 +31,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIndexExporter
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridLuceneExporter.JsonStringOutput
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentCategory
+import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
 import de.ingrid.mdek.upload.UploadConfig
@@ -41,6 +42,7 @@ import gg.jte.output.StringOutput
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.context.annotation.Lazy
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
@@ -50,6 +52,7 @@ class OpenDataExporter(
     val ingridIndexExporter: IngridIndexExporter,
     val codelistHandler: CodelistHandler,
     val uploadConfig: UploadConfig,
+    @Lazy val documentService: DocumentService,
 ) : IgeExporter {
 
     val log = logger()
@@ -95,12 +98,12 @@ class OpenDataExporter(
         }
 
         // TODO: support fingerprint in this profile for additionalIDF
-/*
-        if (doc.type != "FOLDER") {
-            val idfFingerprintChecked = handleFingerprint(catalogId, doc.uuid, idf)
-            luceneJson.put("idf", idfFingerprintChecked)
-        }
-*/
+        /*
+                if (doc.type != "FOLDER") {
+                    val idfFingerprintChecked = handleFingerprint(catalogId, doc.uuid, idf)
+                    luceneJson.put("idf", idfFingerprintChecked)
+                }
+         */
 
         return luceneJson.toPrettyString()
     }
@@ -114,7 +117,13 @@ class OpenDataExporter(
 
     private fun getMapFromObject(json: Document, catalogId: String): Map<String, Any> = mapOf(
         "map" to mapOf(
-            "model" to OpenDataModelTransformerAdditional(json, codelistHandler, catalogId, uploadConfig),
+            "model" to OpenDataModelTransformerAdditional(
+                json,
+                codelistHandler,
+                catalogId,
+                uploadConfig,
+                documentService,
+            ),
             "catalogId" to catalogId,
         ),
     )
@@ -135,6 +144,7 @@ class OpenDataExporter(
                         codelistHandler,
                         catalogId,
                         uploadConfig,
+                        documentService,
                     ),
                 ),
             ),
@@ -156,7 +166,16 @@ class OpenDataExporter(
                 set<JsonNode>(
                     "spatial",
                     mapper.createObjectNode().apply {
-                        set<JsonNode>("references", if (outer.get("spatial") == null || outer.get("spatial").isEmpty) mapper.createArrayNode() else outer.get("spatial"))
+                        set<JsonNode>(
+                            "references",
+                            if (outer.get("spatial") == null || outer.get("spatial").isEmpty) {
+                                mapper.createArrayNode()
+                            } else {
+                                outer.get(
+                                    "spatial",
+                                )
+                            },
+                        )
                         set<JsonNode>("spatialSystems", null)
                     },
                 )
