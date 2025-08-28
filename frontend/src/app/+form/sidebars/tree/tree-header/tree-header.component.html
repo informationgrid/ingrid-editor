@@ -42,13 +42,13 @@
                     </mat-checkbox>
                 </div>
             }
-            <div class="flex-1 flex-row justify-content-end align-items-center">
+            <div class="flex-2 flex-row justify-content-end align-items-center">
                 @if (showWriteAccessToggle) {
                     <mat-slide-toggle
                         class="show-all"
-                        checked
-                        (change)="toggleView.emit($event.checked)"
-                        >Alle anzeigen
+                        (change)="toggleWriteAccess.emit($event.checked)"
+                    >
+                        mit Schreibzugriff
                     </mat-slide-toggle>
                 }
                 @if (showReloadButton) {
