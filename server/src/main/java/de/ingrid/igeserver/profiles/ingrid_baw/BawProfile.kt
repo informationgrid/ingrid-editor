@@ -21,6 +21,8 @@ package de.ingrid.igeserver.profiles.ingrid_baw
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import de.ingrid.igeserver.model.FacetGroup
+import de.ingrid.igeserver.model.ViewComponent
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Behaviour
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Codelist
@@ -28,6 +30,7 @@ import de.ingrid.igeserver.profiles.ingrid.InGridProfile
 import de.ingrid.igeserver.profiles.ingrid.importer.iso19139.ISOImport
 import de.ingrid.igeserver.profiles.ingrid.quickfilter.OpenDataCategory
 import de.ingrid.igeserver.profiles.ingrid_baw.importer.ISOImportBaw
+import de.ingrid.igeserver.profiles.ingrid_baw.quickfilter.DocumentTypesBaw
 import de.ingrid.igeserver.repository.CatalogRepository
 import de.ingrid.igeserver.repository.QueryRepository
 import de.ingrid.igeserver.services.BehaviourService
@@ -66,6 +69,17 @@ class BawProfile(
 
     override val indexExportFormatID = "indexInGridIDFBaw"
     private val boundingBoxGermany = """{ "lat1": 47.2701114, "lon1": 5.8663153, "lat2": 55.099161, "lon2": 15.0419309 }"""
+
+    override fun getFacetDefinitionsForDocuments(): Array<FacetGroup> = super.getFacetDefinitionsForDocuments().map { if (it.id == "docType") bawTypeFacetGroup else it }.toTypedArray()
+
+    val bawTypeFacetGroup = FacetGroup(
+        "docType",
+        "Datensatztyp",
+        arrayOf(
+            DocumentTypesBaw(),
+        ),
+        viewComponent = ViewComponent.SELECT,
+    )
 
     override fun initCatalogCodelists(catalogId: String, codelistId: String?) {
         val catalogRef = catalogRepo.findByIdentifier(catalogId)
