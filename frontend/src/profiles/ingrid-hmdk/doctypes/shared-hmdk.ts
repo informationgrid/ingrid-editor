@@ -90,16 +90,13 @@ export class SharedHmdk {
         ? ctrl.value.some((address: any) => address.type?.key === "10")
         : false),
     message: () =>
-      this.transloco.translate(
-        "form.validationMessages.missingAnotherContact",
-        {
-          type: this.codelistStore.getCodelistEntryValueByKey(
-            "505",
-            "10",
-            ConfigService.catalogId,
-          ),
-        },
-      ),
+      this.transloco.translate("form.validationMessages.missingContact", {
+        type: this.codelistStore.getCodelistEntryValueByKey(
+          "505",
+          "10",
+          ConfigService.catalogId,
+        ),
+      }),
   };
 
   downloadLinkWhenHmbtg = {

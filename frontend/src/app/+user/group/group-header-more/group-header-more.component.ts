@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnInit, input } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { Group } from "../../../models/user-group";
 import { MatTooltip } from "@angular/material/tooltip";
@@ -43,7 +43,7 @@ import { DatePipe } from "@angular/common";
 })
 export class GroupHeaderMoreComponent implements OnInit {
   @Input() group: Group;
-  @Input() showMore = false;
+  readonly showMore = input(false);
 
   constructor() {}
 

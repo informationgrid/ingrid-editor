@@ -4,7 +4,7 @@
     aria-labelledby="Versionskonflikt"
     [(ngModel)]="selected"
 >
-    @for (option of options; track option) {
+    @for (option of options(); track option) {
         <mat-radio-button
             [value]="option.value"
             (change)="onSelect(option.value)"

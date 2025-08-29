@@ -34,14 +34,13 @@ import de.ingrid.igeserver.services.BehaviourService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
 import de.ingrid.igeserver.services.DocumentService
-import de.ingrid.igeserver.services.ResearchService
 import de.ingrid.mdek.upload.UploadConfig
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
-class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, @Lazy val researchService: ResearchService, val uploadConfig: UploadConfig, val behaviourService: BehaviourService, val codelistHandler: CodelistHandler) : IgeImporter {
+class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val documentService: DocumentService, val uploadConfig: UploadConfig, val behaviourService: BehaviourService, val codelistHandler: CodelistHandler) : IgeImporter {
     private val log = logger()
 
     private val mapper = jacksonObjectMapper()
@@ -51,12 +50,10 @@ class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val docu
 
     override fun run(catalogId: String, data: Any, addressMaps: MutableMap<String, String>): JsonNode {
         val deserializer = DcatApEiaDeserializer(null)
-        val catalog: Catalog? = deserializer.deserialize(data as String).firstOrNull()
+        val catalog: Catalog = deserializer.deserialize(data as String).firstOrNull()
             ?: throw ServerException.withReason("DCAT-AP.EIA record could not be deserialized")
 
-        val dataset = catalog?.dataset?.firstOrNull()
-
-        if (dataset == null) throw ServerException.withReason("DCAT-AP.EIA catalog does not contain any dataset")
+        val dataset = catalog.dataset?.firstOrNull() ?: throw ServerException.withReason("DCAT-AP.EIA catalog does not contain any dataset")
 
         val dcatApEiaMapper = DcatApEiaMapper(
             dataset as Dataset,
@@ -64,14 +61,24 @@ class DcatApEiaImporter(@Lazy val catalogService: CatalogService, @Lazy val docu
             catalogService,
             behaviourService,
             codelistHandler,
+            documentService,
         )
 
         val parsedDoc = dcatApEiaMapper.getDocument()
+        val jsonDoc = mapper.valueToTree<JsonNode>(parsedDoc)
 
-        val json = mapper.valueToTree<JsonNode>(parsedDoc)
+        val newAddress = dcatApEiaMapper.newAddress
 
-        log.debug("Created JSON from imported DCAT-AP.eia file: $json")
-        return json
+        log.debug("Created JSON document from imported DCAT-AP.eia file. New document: $jsonDoc")
+        return if (newAddress == null) {
+            jsonDoc
+        } else {
+            log.debug("Created JSON address from imported DCAT-AP.eia file. New address: $newAddress")
+            jacksonObjectMapper().createArrayNode().apply {
+                add(jsonDoc)
+                addAll(newAddress)
+            }
+        }
     }
 
     override fun canHandleImportFile(contentType: String, fileContent: String): Boolean = "application/rdf+xml" == contentType && fileContent.contains("<dcat:Catalog") && fileContent.contains("xmlns:eia")

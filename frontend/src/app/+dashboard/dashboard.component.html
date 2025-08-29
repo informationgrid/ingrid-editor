@@ -61,12 +61,12 @@
 
             <ige-card-box
                 data-cy="card-latest-docs"
-                label="{{ t('mostRecent') }}"
+                label="{{ t('recentlyModifiedDocs') }}"
                 nameOfToggle="Von mir"
-                (toggle)="updateRecent($event)"
+                (toggle)="onlyModifiedFromCurrentUser.set($event)"
             >
                 <ige-document-list-item
-                    [docs]="recentDocs()"
+                    [docs]="recentlyModifiedDocs.value()"
                     [hideDate]="false"
                     (select)="openDocument($event._uuid)"
                 ></ige-document-list-item>
@@ -74,12 +74,12 @@
 
             <ige-card-box
                 data-cy="recent-published-docs"
-                label="{{ t('mostRecentPublished') }}"
+                label="{{ t('recentlyPublishedDocs') }}"
                 nameOfToggle="Von mir"
-                (toggle)="updatePublished($event)"
+                (toggle)="onlyPublishedFromCurrentUser.set($event)"
             >
                 <ige-document-list-item
-                    [docs]="recentPublishedDocs()"
+                    [docs]="recentlyPublishedDocs.value()"
                     [hideDate]="false"
                     (select)="openDocument($event._uuid)"
                 ></ige-document-list-item>

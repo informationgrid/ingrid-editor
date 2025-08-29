@@ -1,5 +1,5 @@
 <div class="wrapper" [@slideDown]>
-    <div>Es gibt {{ numErrors }} Fehler im Formular</div>
+    <div>Es gibt {{ numErrors() }} Fehler im Formular</div>
     <button
         mat-icon-button
         (click)="jumpToPreviousError()"

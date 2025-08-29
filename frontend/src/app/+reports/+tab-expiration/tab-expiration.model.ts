@@ -41,3 +41,15 @@ export class ExpiredData {
     return docs?.filter((doc) => doc._responsibleUser == id);
   }
 }
+// Data structure for expired dataset
+export class ExpiredDataset {
+  wrapperId: number | null = null;
+  uuid: string | null = null;
+  responsibleUserId: number | null = null;
+  responsibleUserLogin: string | null = null;
+  title: string | null = null;
+  contentmodified: string | null = null; // OffsetDateTime equivalent in TypeScript is typically represented as ISO string
+  contentmodifiedby: string | null = null;
+  type: string = "";
+  category: string = "";
+}

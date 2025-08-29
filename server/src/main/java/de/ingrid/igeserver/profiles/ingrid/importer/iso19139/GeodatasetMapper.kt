@@ -43,8 +43,10 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
 
     fun getTopicCategories(): List<KeyValue> = identificationInfo?.topicCategory
         ?.mapNotNull { it.value }
-        ?.mapNotNull { codeListService.getCodeListEntryId("527", it, "iso") }
-        ?.map { KeyValue(it) } ?: emptyList()
+        ?.mapNotNull { value ->
+            val key = codeListService.getCodeListEntryId("527", value, "iso")
+            key?.let { KeyValue(key, codeListService.getCodelistValue("527", key, catalogLanguage), "527") }
+        } ?: emptyList()
 
     fun getCharacterSet(): KeyValue? {
         val value = identificationInfo?.characterSet?.get(0)?.code?.codeListValue
@@ -54,7 +56,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             return null
         }
 
-        return KeyValue(entryId)
+        return KeyValue(entryId, codeListService.getCodelistValue("510", entryId, catalogLanguage), "510")
     }
 
     fun getLanguages(): List<String> = identificationInfo?.language
@@ -102,8 +104,9 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                     }
                     val internalGeoDatasetUuid = getGeoDatasetUuid()
 
-                    val dateType = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.dateType?.code?.codeListValue?.let { key ->
-                        codeListService.getCodeListEntryId("502", key, "iso")
+                    val dateType = it.liSource?.sourceCitation?.citation?.date?.getOrNull(0)?.date?.dateType?.code?.codeListValue?.let { value ->
+                        val key = codeListService.getCodeListEntryId("502", value, "iso")
+                        KeyValue(key, key?.let { codeListService.getCodelistValue("502", key, catalogLanguage) } ?: value, "502")
                     }
                     LineageSourceDescription(
                         value = it.liSource?.description?.value,
@@ -145,11 +148,13 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
     private fun mapVectorSpatialRepreseantation(vector: MDVectorSpatialRepresentation): VectorSpatialRepresentation {
         val topologyLevelValue = vector.topologyLevel?.value?.codeListValue
         val entryIdTopologyLevel = codeListService.getCodeListEntryId("528", topologyLevelValue, "iso")
+        val topologyLevelLangValue = entryIdTopologyLevel?.let { codeListService.getCodelistValue("528", entryIdTopologyLevel, catalogLanguage) } ?: topologyLevelValue
         val objectTypeValue = vector.geometricObjects?.get(0)?.value?.geometricObjectType?.value?.codeListValue
         val entryIdObjectType = codeListService.getCodeListEntryId("515", objectTypeValue, "iso")
+        val objectTypeLangValue = entryIdObjectType?.let { codeListService.getCodelistValue("515", entryIdObjectType, catalogLanguage) } ?: objectTypeValue
         val objectCount = vector.geometricObjects?.get(0)?.value?.geometricObjectCount?.value
 
-        return VectorSpatialRepresentation(KeyValue(entryIdTopologyLevel), KeyValue(entryIdObjectType), objectCount)
+        return VectorSpatialRepresentation(KeyValue(entryIdTopologyLevel, objectTypeLangValue, "528"), KeyValue(entryIdObjectType, topologyLevelLangValue, "515"), objectCount)
     }
 
     fun getGridSpatialRepresentation(): GridSpatialRepresentation? {
@@ -169,7 +174,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
     }
 
     private fun mapGeneralRepresentation(node: MDGridSpatialRepresentation): GridSpatialRepresentation = GridSpatialRepresentation(
-        KeyValue("basis"),
+        KeyValue("basis", "Geobasisraster"),
         getAxesDimProperties(node.axisDimensionProperties),
         node.transformationParameterAvailability.boolean?.value ?: false,
         node.numberOfDimensions?.value,
@@ -187,7 +192,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         val pointValue = node.pointInPixel.mdPixelOrientationCode
         val pointId = codeListService.getCodeListEntryId("2100", pointValue, "iso")
         return GridSpatialRepresentation(
-            KeyValue("rectified"),
+            KeyValue("rectified", "Georektifiziertes Raster"),
             getAxesDimProperties(node.axisDimensionProperties),
             node.transformationParameterAvailability.boolean?.value ?: false,
             node.numberOfDimensions?.value,
@@ -195,7 +200,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
             node.checkPointAvailability?.boolean?.value ?: false,
             node.checkPointDescription?.value,
             node.cornerPoints[0].point.coordinates ?: "",
-            KeyValue(pointId),
+            KeyValue(pointId, pointId?.let { codeListService.getCodelistValue("2100", pointId, catalogLanguage) } ?: pointValue, "2100"),
             null,
             null,
             null,
@@ -203,7 +208,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
     }
 
     private fun mapGeoReferencedRepresentation(node: MDGeoreferenceable): GridSpatialRepresentation = GridSpatialRepresentation(
-        KeyValue("referenced"),
+        KeyValue("referenced", "Georeferenzierbares Raster"),
         getAxesDimProperties(node.axisDimensionProperties),
         node.transformationParameterAvailability.boolean?.value ?: false,
         node.numberOfDimensions?.value,
@@ -218,16 +223,16 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
     )
 
     private fun getCellGeometryId(cellGeometry: CellGeometry): KeyValue {
-        val cellGeometryId =
-            codeListService.getCodeListEntryId("509", cellGeometry.mdCellGeometryCode?.codeListValue, "iso")
-        return KeyValue(cellGeometryId)
+        val value = cellGeometry.mdCellGeometryCode?.codeListValue
+        val cellGeometryId = codeListService.getCodeListEntryId("509", value, "iso")
+        return KeyValue(cellGeometryId, cellGeometryId?.let { codeListService.getCodelistValue("509", cellGeometryId, catalogLanguage) } ?: value, "509")
     }
 
     private fun getAxesDimProperties(properties: List<AxisDimensionProperty>?): List<AxesDimProperty> = properties?.map {
         val nameValue = it.mdDimension?.dimensionName?.mdDimensionNameTypeCode?.codeListValue
         val nameId = codeListService.getCodeListEntryId("514", nameValue, "iso")
         AxesDimProperty(
-            KeyValue(nameId),
+            KeyValue(nameId, nameId?.let { codeListService.getCodelistValue("514", nameId, catalogLanguage) } ?: nameValue, "514"),
             it.mdDimension?.dimensionSize?.value ?: 0,
             it.mdDimension?.resolution?.scale?.value ?: 0f,
         )
@@ -257,7 +262,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
     fun getSubtype(): KeyValue? {
         val value = metadata.hierarchyLevel?.get(0)?.scopeCode?.codeListValue ?: return null
         return codeListService.getCodeListEntryId("525", value, "iso")
-            ?.let { KeyValue(it) }
+            ?.let { KeyValue(it, codeListService.getCodelistValue("525", it, catalogLanguage), "525") }
     }
 
     private fun mapQuality(report: DQReport): Quality? {
@@ -331,7 +336,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
 
         val name = info.element.nameOfMeasure.map { it.value }.joinToString(";")
         val nameId = codeListService.getCodeListEntryId(info.codelist, name, "de")
-        val nameKeyValue = if (nameId == null) KeyValue(null, name) else KeyValue(nameId)
+        val nameKeyValue = KeyValue(nameId, name, info.codelist)
         val parameter = info.element.measureDescription?.value
         val value = info.element.result?.dqQuantitativeResult?.value?.getOrNull(0)?.value?.toDouble()
         return Quality(info.type, nameKeyValue, value, parameter)
@@ -342,13 +347,15 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
         ?.getOrNull(0) ?: ""
 
     fun getMDIdentifier(): String = identificationInfo?.citation?.citation?.identifier
-        ?.map { it.mdIdentifier?.code?.value }
+        ?.map { it.mdIdentifier?.code?.value?.trim() }
         ?.getOrNull(0) ?: ""
 
     fun getSpatialRepresentationTypes(): List<KeyValue> = identificationInfo?.spatialRepresentationType
         ?.map { it.code?.codeListValue }
-        ?.map { codeListService.getCodeListEntryId("526", it, "iso") }
-        ?.map { KeyValue(it) } ?: emptyList()
+        ?.mapNotNull { value ->
+            val key = codeListService.getCodeListEntryId("526", value, "iso")
+            key?.let { KeyValue(key, codeListService.getCodelistValue("526", key, catalogLanguage), "526") }
+        } ?: emptyList()
 
     fun getResolutions(): List<Resolution> {
         val scales = identificationInfo?.spatialResolution
@@ -376,7 +383,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                 ?.map {
                     val titleValue = it.citation?.title?.value
                     val titleKey = codeListService.getCatalogCodelistKey(catalogId, "3555", titleValue!!)
-                    val title = if (titleKey == null) KeyValue(null, titleValue) else KeyValue(titleKey)
+                    val title = KeyValue(titleKey, titleValue, "3555")
                     CatalogInfo(
                         title,
                         it.citation.date.getOrNull(0)?.date?.date?.dateTime,
@@ -391,7 +398,7 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
                 ?.map {
                     val titleValue = it.citation?.title?.value
                     val titleKey = codeListService.getCatalogCodelistKey(catalogId, "3535", titleValue!!)
-                    val title = if (titleKey == null) KeyValue(null, titleValue) else KeyValue(titleKey)
+                    val title = KeyValue(titleKey, titleValue, "3535")
                     CatalogInfo(
                         title,
                         it.citation.date.getOrNull(0)?.date?.date?.dateTime,
@@ -434,10 +441,10 @@ open class GeodatasetMapper(isoData: IsoImportData) : GeneralMapper(isoData) {
     } ?: emptyList()
 
     private fun mapGeometryContextFeatureType(feature: GeometricFeature?): KeyValue? = when {
-        feature?.nominalFeature != null -> KeyValue("nominal")
-        feature?.ordinalFeature != null -> KeyValue("ordinal")
-        feature?.scalarFeature != null -> KeyValue("scalar")
-        feature?.otherFeature != null -> KeyValue("other")
+        feature?.nominalFeature != null -> KeyValue("nominal", "nominal")
+        feature?.ordinalFeature != null -> KeyValue("ordinal", "ordinal")
+        feature?.scalarFeature != null -> KeyValue("scalar", "skalar")
+        feature?.otherFeature != null -> KeyValue("other", "sonstiges")
         else -> null
     }
 
@@ -524,6 +531,6 @@ data class LineageSourceDescription(
     val title: String?,
     val identifier: String?,
     val date: String?,
-    val dateType: String?,
+    val dateType: KeyValue?,
     val uuidRef: String?,
 )

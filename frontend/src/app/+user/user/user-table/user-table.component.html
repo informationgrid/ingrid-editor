@@ -136,7 +136,7 @@
         <button mat-flat-button (click)="exportTable()">CSV</button>
     }
     <div class="flex-1"></div>
-    @if (tableType != "simple" || dataSource.data?.length > 10) {
+    @if (tableType() != "simple" || dataSource.data?.length > 10) {
         <mat-paginator
             [pageSize]="10"
             [hidePageSize]="true"
@@ -146,7 +146,7 @@
 </div>
 
 <!-- role legends -->
-@if (tableType == "default") {
+@if (tableType() == "default") {
     <div class="legend" *transloco="let t; read: 'roles'">
         <mat-icon svgIcon="author"></mat-icon>
         <span> {{ t("author") }} </span>
@@ -160,6 +160,6 @@
 }
 
 <!-- permission legends-->
-@if (tableType == "permission") {
+@if (tableType() == "permission") {
     <permission-legends [showSubdirectoryLegend]="false"></permission-legends>
 }

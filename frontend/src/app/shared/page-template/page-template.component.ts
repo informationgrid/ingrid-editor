@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, OnInit, input } from "@angular/core";
 
 @Component({
   selector: "page-template",
@@ -26,8 +26,8 @@ import { Component, Input, OnInit } from "@angular/core";
   standalone: true,
 })
 export class PageTemplateComponent implements OnInit {
-  @Input() label = "";
-  @Input() subLabel = "";
+  readonly label = input("");
+  readonly subLabel = input("");
 
   constructor() {}
 

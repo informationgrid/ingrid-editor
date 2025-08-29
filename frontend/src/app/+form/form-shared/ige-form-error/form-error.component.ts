@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, OnInit, input } from "@angular/core";
 
 @Component({
   selector: "ige-form-error",
@@ -27,7 +27,7 @@ import { Component, Input, OnInit } from "@angular/core";
 })
 export class FormErrorComponent implements OnInit {
   // accessibility
-  @Input() ariaLabel: string;
+  readonly ariaLabel = input<string>(undefined);
 
   constructor() {}
 

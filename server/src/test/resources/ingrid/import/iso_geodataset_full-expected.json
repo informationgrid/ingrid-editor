@@ -9,7 +9,9 @@
       "isOpenData": true,
       "isInspireIdentified": "notConform",
       "subType": {
-        "key": "5"
+        "key": "5",
+        "value": "Datensatz",
+        "_codelistId": "525"
       }
     },
     "description": "siehe Originalplan",
@@ -19,31 +21,28 @@
       {
         "ref": "110C6012-1713-44C0-9A33-4E2C24D06966",
         "type": {
-          "key": "12"
+          "key": "12",
+          "value": "Ansprechpartner MD",
+          "_codelistId": "505"
         }
       },
       {
         "ref": "DA64401A-2AFC-458D-A8AF-58D0A3C35AA9",
         "type": {
-          "key": "7"
+          "key": "7",
+          "value": "Ansprechpartner",
+          "_codelistId": "505"
         }
       },
       {
         "ref": "some_organisation",
         "type": {
-          "key": "5"
+          "key": "5",
+          "value": "Vertrieb",
+          "_codelistId": "505"
         }
       }
     ],
-    "publication": {
-      "doi": "10.1000/1234",
-      "generalResourceType": {
-        "key": "5"
-      },
-      "resourceType": {
-        "key": "2"
-      }
-    },
     "graphicOverviews": [
       {
         "fileName": {
@@ -56,31 +55,41 @@
     ],
     "advProductGroups": [
       {
-        "key": "6"
+        "key": "6",
+        "value": "Luftbilder",
+        "_codelistId": "8010"
       },
       {
-        "key": "12"
+        "key": "12",
+        "value": "Festpunkte",
+        "_codelistId": "8010"
       }
     ],
     "themes": [
       {
-        "key": "105"
+        "key": "105",
+        "value": "Adressen",
+        "_codelistId": "6100"
       }
     ],
     "priorityDatasets": [
       {
-        "key": "-1023933682"
+        "key": "-1023933682",
+        "value": "Anlagen für die Bewirtschaftung von Abfällen aus der mineralgewinnenden Industrie (Bergbauabfallrichtlinie)",
+        "_codelistId": "6350"
       }
     ],
-    "invekosKeywords": [],
-    "hvdCategories": [],
     "openDataCategories": [
       {
-        "key": "6"
+        "key": "6",
+        "value": "Gesundheit",
+        "_codelistId": "6400"
       }
     ],
     "spatialScope": {
-      "key": "-673152846"
+      "key": "-673152846",
+      "value": "National",
+      "_codelistId": "6360"
     },
     "keywords": {
       "free": [
@@ -127,17 +136,23 @@
       ],
       "spatialSystems": [
         {
-          "key": "3068"
+          "key": "3068",
+          "value": "EPSG 3068: DHDN / Soldner Berlin",
+          "_codelistId": "100"
         }
       ],
       "verticalExtent": {
         "minimumValue": 1.0,
         "maximumValue": 6.0,
         "unitOfMeasure": {
-          "key": "9001"
+          "key": "9001",
+          "value": "Meter",
+          "_codelistId": "102"
         },
         "Datum": {
-          "key": "900002"
+          "key": "900002",
+          "value": "DE_AMST / NH",
+          "_codelistId": "101"
         }
       },
       "description": "Erläuterungen Raumbezug"
@@ -147,29 +162,41 @@
         {
           "referenceDate": "2016-02-29T23:00:00Z",
           "referenceDateType": {
-            "key": "1"
+            "key": "1",
+            "value": "Erstellung",
+            "_codelistId": "502"
           }
         }
       ],
       "resourceDateType": {
-        "key": "since"
+        "key": "since",
+        "value": "seit",
+        "_codelistId": null
       },
       "status": {
-        "key": "7"
+        "key": "7",
+        "value": "in Erstellung",
+        "_codelistId": "523"
       },
       "resourceDate": "2016-03-01T00:00:00.000+01:00",
       "resourceDateTypeSince": {
-        "key": "requestTime"
+        "key": "requestTime",
+        "value": "bis: gegenwärtig aktuell",
+        "_codelistId": null
       }
     },
     "maintenanceInformation": {
       "maintenanceAndUpdateFrequency": {
-        "key": "1"
+        "key": "1",
+        "value": "kontinuierlich",
+        "_codelistId": "518"
       },
       "userDefinedMaintenanceFrequency": {
         "number": 6,
         "unit": {
-          "key": "3"
+          "key": "3",
+          "value": "Stunden",
+          "_codelistId": "1230"
         }
       },
       "description": "Erläuterungen Zeitbezug"
@@ -177,24 +204,31 @@
     "conformanceResult": [
       {
         "pass": {
-          "key": "2"
+          "key": "2",
+          "value": "nicht konform",
+          "_codelistId": "6000"
         },
         "isInspire": false,
         "explanation": "see the referenced specification",
         "specification": {
           "key": null,
-          "value": "Technical Guidance for the implementation of INSPIRE Download Services"
+          "value": "Technical Guidance for the implementation of INSPIRE Download Services",
+          "_codelistId": "6005"
         },
         "publicationDate": "2007-03-13T23:00:00Z"
       },
       {
         "pass": {
-          "key": "1"
+          "key": "1",
+          "value": "konform",
+          "_codelistId": "6000"
         },
         "isInspire": true,
         "explanation": "see the referenced specification",
         "specification": {
-          "key": "10"
+          "key": "10",
+          "value": "VERORDNUNG (EG) Nr. 976/2009 DER KOMMISSION vom 19. Oktober 2009 zur Durchführung der Richtlinie 2007/2/EG des Europäischen Parlaments und des Rates hinsichtlich der Netzdienste",
+          "_codelistId": "6005"
         },
         "publicationDate": "2010-12-07T23:00:00Z"
       }
@@ -202,7 +236,9 @@
     "extraInfo": {
       "legalBasicsDescriptions": [
         {
-          "key": "38"
+          "key": "38",
+          "value": "Nieders. Abfallgesetz (NAbfG)",
+          "_codelistId": "1350"
         }
       ]
     },
@@ -211,13 +247,17 @@
       "specificUsage": "Eignung",
       "accessConstraints": [
         {
-          "key": "1"
+          "key": "1",
+          "value": "Es gelten keine Zugriffsbeschränkungen",
+          "_codelistId": "6010"
         }
       ],
       "useConstraints": [
         {
           "title": {
-            "key": "20"
+            "key": "20",
+            "value": "BSD Lizenz",
+            "_codelistId": "6500"
           },
           "source": "Quelle 2"
         }
@@ -228,7 +268,9 @@
       "format": [
         {
           "name": {
-            "key": "26"
+            "key": "26",
+            "value": "PNG",
+            "_codelistId": "1320"
           },
           "version": "",
           "compression": "",
@@ -236,7 +278,9 @@
         },
         {
           "name": {
-            "key": "26"
+            "key": "26",
+            "value": "PNG",
+            "_codelistId": "1320"
           },
           "version": "4.1",
           "compression": "ZIP",
@@ -244,7 +288,9 @@
         },
         {
           "name": {
-            "key": "26"
+            "key": "26",
+            "value": "PNG",
+            "_codelistId": "1320"
           },
           "version": "3.0",
           "compression": "",
@@ -255,12 +301,16 @@
     "digitalTransferOptions": [
       {
         "name": {
-          "key": "4"
+          "key": "4",
+          "value": "3,5-Zoll Diskette",
+          "_codelistId": "520"
         },
         "transferSize": {
           "value": 700.0,
           "unit": {
-            "key": "MB"
+            "key": "MB",
+            "value": "MB",
+            "_codelistId": null
           }
         },
         "mediumNote": "Bunker"
@@ -270,7 +320,9 @@
     "references": [
       {
         "type": {
-          "key": "9999"
+          "key": "9999",
+          "value": "unspezifischer Verweis",
+          "_codelistId": "2000"
         },
         "title": "Bekanntmachung im HmbGVBl als PDF Datei",
         "referenceType": "url",
@@ -279,7 +331,9 @@
       },
       {
         "type": {
-          "key": "9999"
+          "key": "9999",
+          "value": "unspezifischer Verweis",
+          "_codelistId": "2000"
         },
         "title": "URL zu weiteren Informationen über den Datensatz",
         "referenceType": "url",
@@ -288,7 +342,9 @@
       },
       {
         "type": {
-          "key": "9999"
+          "key": "9999",
+          "value": "unspezifischer Verweis",
+          "_codelistId": "2000"
         },
         "title": "Begründung des Bebauungsplans als PDF Datei",
         "referenceType": "url",
@@ -297,7 +353,9 @@
       },
       {
         "type": {
-          "key": "9999"
+          "key": "9999",
+          "value": "unspezifischer Verweis",
+          "_codelistId": "2000"
         },
         "title": "Festsetzungen (Planzeichnung / Verordnung) als PDF Datei",
         "referenceType": "url",
@@ -307,25 +365,46 @@
     ],
     "fileReferences": [
       {
-        "link": {
-          "uri": "placeholder.pdf",
-          "value": "placeholder.pdf",
-          "asLink": false,
-          "sizeInBytes": 43143
-        },
         "title": "Platzhalter Titel",
+        "description": "Platzhalter Beschreibung",
         "format": {
-          "key": "5"
+          "key": "5",
+          "value": "Bitmap",
+          "_codelistId": "1320"
         },
-        "description": "Platzhalter Beschreibung"
+        "link": {
+          "asLink": false,
+          "value": "placeholder.pdf",
+          "uri": "placeholder.pdf",
+          "sizeInBytes": 43143
+        }
       }
     ],
+    "publication": {
+      "doi": "10.1000/1234",
+      "generalResourceType": {
+        "key": "5",
+        "value": "ComputationalNotebook",
+        "_codelistId": "3390"
+      },
+      "resourceType": {
+        "key": "2",
+        "value": "Brochure/Bulletin",
+        "_codelistId": "3386"
+      }
+    },
+    "invekosKeywords": [],
+    "hvdCategories": [],
     "metadata": {
       "language": {
-        "key": "150"
+        "key": "150",
+        "value": "Deutsch",
+        "_codelistId": "99999999"
       },
       "characterSet": {
-        "key": "19"
+        "key": "19",
+        "value": "ShiftJIS",
+        "_codelistId": "510"
       }
     },
     "resolution": [
@@ -337,15 +416,21 @@
     ],
     "topicCategories": [
       {
-        "key": "4"
+        "key": "4",
+        "value": "Atmosphäre",
+        "_codelistId": "527"
       }
     ],
     "spatialRepresentationType": [
       {
-        "key": "1"
+        "key": "1",
+        "value": "Vektor",
+        "_codelistId": "526"
       },
       {
-        "key": "2"
+        "key": "2",
+        "value": "Raster, Gitter",
+        "_codelistId": "526"
       }
     ],
     "lineage": {
@@ -356,7 +441,9 @@
       "citation": [
         {
           "title": {
-            "key": "1"
+            "key": "1",
+            "value": "Ganzflächige Biotopkartierung 94",
+            "_codelistId": "3555"
           },
           "date": "2023-02-07T00:00:00.000+01:00",
           "edition": "1.0"
@@ -367,7 +454,9 @@
       "citation": [
         {
           "title": {
-            "key": "1"
+            "key": "1",
+            "value": "von Drachenfels 94",
+            "_codelistId": "3535"
           },
           "date": "2023-02-03T00:00:00.000+01:00",
           "edition": "2.1"
@@ -376,7 +465,8 @@
       "featureTypes": [
         {
           "key": null,
-          "value": "Meine Sachdaten"
+          "value": "Meine Sachdaten",
+          "_codelistId": null
         }
       ]
     },
@@ -391,7 +481,11 @@
             {
               "value": "Beschreibung der Datengrundlage eines Geodatensatzes",
               "date": "2024-11-18T23:00:00.000Z",
-              "dateType": { "key": "1" },
+              "dateType": {
+                "key": "1",
+                "value": "Erstellung",
+                "_codelistId": "502"
+              },
               "uuidRef": "00000000-0000-0000-0000-000000000000",
               "_type": "internalDataOrigin"
             },
@@ -399,7 +493,9 @@
               "value": "Beschreibung der Datengrundlage eines Geodatensatzes",
               "date": "2024-11-18",
               "dateType": {
-                "key": "1"
+                "key": "1",
+                "value": "Erstellung",
+                "_codelistId": "502"
               },
               "uuidRef": "00000000-0000-0000-0000-000000000000",
               "_type": "internalDataOrigin"
@@ -409,7 +505,8 @@
             "description": [
               {
                 "key": null,
-                "value": "Die in den Planwerken der verbindlichen Bauleitplanung dokumentierten Festsetzungen, Kennzeichnungen und Hinweise werden auf der Grundlage der aktuellen Örtlichkeit der Liegenschaftskarte (ALKIS) mit Hilfe von Fachapplikationen (AutoCAD + WS LANDCAD bzw. ArcGIS + GeoOffice) digitalisiert."
+                "value": "Die in den Planwerken der verbindlichen Bauleitplanung dokumentierten Festsetzungen, Kennzeichnungen und Hinweise werden auf der Grundlage der aktuellen Örtlichkeit der Liegenschaftskarte (ALKIS) mit Hilfe von Fachapplikationen (AutoCAD + WS LANDCAD bzw. ArcGIS + GeoOffice) digitalisiert.",
+                "_codelistId": null
               }
             ]
           }
@@ -430,7 +527,9 @@
       {
         "_type": "completenessComission",
         "measureType": {
-          "key": "2"
+          "key": "2",
+          "value": "Number of duplicate feature instances",
+          "_codelistId": "7109"
         },
         "value": 43,
         "parameter": "343"
@@ -438,7 +537,9 @@
       {
         "_type": "conceptualConsistency",
         "measureType": {
-          "key": "2"
+          "key": "2",
+          "value": "Conceptual Schema compliance",
+          "_codelistId": "7112"
         },
         "value": 343,
         "parameter": "545"
@@ -446,7 +547,9 @@
       {
         "_type": "domainConsistency",
         "measureType": {
-          "key": "1"
+          "key": "1",
+          "value": "Value domain non conformance rate",
+          "_codelistId": "7113"
         },
         "value": 45,
         "parameter": "533"
@@ -454,7 +557,9 @@
       {
         "_type": "formatConsistency",
         "measureType": {
-          "key": "1"
+          "key": "1",
+          "value": "Physical structure conflict rate",
+          "_codelistId": "7114"
         },
         "value": 54,
         "parameter": "577"
@@ -462,7 +567,9 @@
       {
         "_type": "topologicalConsistency",
         "measureType": {
-          "key": "2"
+          "key": "2",
+          "value": "Number of missing connections due to undershoots",
+          "_codelistId": "7115"
         },
         "value": 64,
         "parameter": "31"
@@ -470,7 +577,9 @@
       {
         "_type": "temporalConsistency",
         "measureType": {
-          "key": "1"
+          "key": "1",
+          "value": "Percentage of items that are correctly events ordered",
+          "_codelistId": "7120"
         },
         "value": 5,
         "parameter": "6"
@@ -478,7 +587,9 @@
       {
         "_type": "thematicClassificationCorrectness",
         "measureType": {
-          "key": "1"
+          "key": "1",
+          "value": "Misclassification rate",
+          "_codelistId": "7125"
         },
         "value": 7,
         "parameter": "87"
@@ -486,7 +597,9 @@
       {
         "_type": "nonQuantitativeAttributeAccuracy",
         "measureType": {
-          "key": "2"
+          "key": "2",
+          "value": "Rate of incorrect classification for national identifier",
+          "_codelistId": "7126"
         },
         "value": 64,
         "parameter": "87"
@@ -494,7 +607,9 @@
       {
         "_type": "quantitativeAttributeAccuracy",
         "measureType": {
-          "key": "1"
+          "key": "1",
+          "value": "Attribute value uncertainty at 95 % significance level",
+          "_codelistId": "7127"
         },
         "value": 44,
         "parameter": "77"
@@ -502,7 +617,9 @@
       {
         "_type": "relativeInternalPositionalAccuracy",
         "measureType": {
-          "key": "3"
+          "key": "3",
+          "value": "mean value of positional uncertainties (3D)",
+          "_codelistId": "7128"
         },
         "value": 64,
         "parameter": "Param 1"
@@ -514,22 +631,30 @@
     "vectorSpatialRepresentation": [
       {
         "topologyLevel": {
-          "key": "4"
+          "key": "4",
+          "value": "Körper",
+          "_codelistId": "528"
         },
         "geometricObjectType": {
-          "key": "5"
+          "key": "5",
+          "value": "Flächen",
+          "_codelistId": "515"
         },
         "geometricObjectCount": 8
       }
     ],
     "gridSpatialRepresentation": {
       "type": {
-        "key": "rectified"
+        "key": "rectified",
+        "value": "Georektifiziertes Raster",
+        "_codelistId": null
       },
       "axesDimensionProperties": [
         {
           "name": {
-            "key": "6"
+            "key": "6",
+            "value": "Linie",
+            "_codelistId": "514"
           },
           "size": 6,
           "resolution": 3
@@ -538,14 +663,18 @@
       "transformationParameterAvailability": true,
       "numberOfDimensions": 3,
       "cellGeometry": {
-        "key": "2"
+        "key": "2",
+        "value": "Fläche",
+        "_codelistId": "509"
       },
       "georectified": {
         "checkPointAvailability": true,
         "checkPointDescription": "ctrl description",
         "cornerPoints": "2",
         "pointInPixel": {
-          "key": "2"
+          "key": "2",
+          "value": "links unten",
+          "_codelistId": "2100"
         }
       }
     }
@@ -558,7 +687,9 @@
     "contact": [
       {
         "type": {
-          "key": "3"
+          "key": "3",
+          "value": "E-Mail",
+          "_codelistId": "4430"
         },
         "connection": "you@wemove.com"
       }
@@ -576,18 +707,24 @@
       "po-box": "123",
       "street": "Hanauer Landstr. 52",
       "country": {
-        "key": "276"
+        "key": "276",
+        "value": "Deutschland",
+        "_codelistId": "6200"
       },
       "zip-code": "60314",
       "zip-po-box": "P123",
       "administrativeArea": {
-        "key": "7"
+        "key": "7",
+        "value": "Hessen",
+        "_codelistId": "6250"
       }
     },
     "contact": [
       {
         "type": {
-          "key": "3"
+          "key": "3",
+          "value": "E-Mail",
+          "_codelistId": "4430"
         },
         "connection": "test@wemove.com"
       }

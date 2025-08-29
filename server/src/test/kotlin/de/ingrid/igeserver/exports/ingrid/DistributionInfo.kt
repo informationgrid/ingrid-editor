@@ -33,7 +33,7 @@ class DistributionInfo : GeodatasetBase() {
 
     init {
 
-        isolationMode = IsolationMode.InstancePerTest
+        isolationMode = IsolationMode.InstancePerRoot
 
         // GEODATASET
         should("create distributionInfo when orderInfo exists (GeoDataset)") {

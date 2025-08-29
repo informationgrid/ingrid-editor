@@ -417,7 +417,7 @@ export abstract class IngridShared extends BaseDoctype {
     const message = `
       Bei Auswahl dieses Merkmals wird:
       <ul>
-        <li>"Es gelten keine Zugriffsbeschränkungen" zu den Zugriffsbeschränkungen hinzugefügt.</li>
+        <li>"Es gelten keine Zugriffsbeschränkungen" zu den Zugriffsbeschränkungen hinzugefügt</li>
         <li>die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li>
         <li>dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li>
       </ul>`;

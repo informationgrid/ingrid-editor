@@ -1,14 +1,14 @@
 <ng-container #flow="flow" [flowConfig]="flowConfig()"></ng-container>
 
 <div
-    [class.no-drop-zone]="showOnlyProgress"
+    [class.no-drop-zone]="showOnlyProgress()"
     [class.dragged]="isDragged"
     (dragenter)="setDragged(true)"
     (dragleave)="setDragged(false)"
     (drop)="setDragged(false)"
 >
     <div flowDrop [flow]="flow.flowJs" class="upload-content">
-        @if (!showOnlyProgress) {
+        @if (!showOnlyProgress()) {
             <div class="text-center">
                 @if (infoText) {
                     <div>{{ infoText }}</div>
@@ -22,7 +22,7 @@
                     color="primary"
                     (click)="hiddenUploadInput.click()"
                 >
-                    {{ text }}
+                    {{ text() }}
                 </button>
             </div>
         }
@@ -35,8 +35,8 @@
                 <ige-upload-item
                     [file]="file"
                     [flow]="flow"
-                    [showOnlyProgress]="showOnlyProgress"
-                    (remove)="removeFile.next($event)"
+                    [showOnlyProgress]="showOnlyProgress()"
+                    (remove)="removeFile.emit($event)"
                     (useExisting)="updateFileToUseExisting($event)"
                     (retryUpload)="retryUpload(file, $event)"
                     tabindex="0"

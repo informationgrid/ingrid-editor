@@ -1200,8 +1200,7 @@ open class IngridModelTransformer(
 
     fun isHvd(): Boolean = data.properties?.isHvd ?: false
 
-    // if the document is a service with "Zugang geschützt" or it has access constraints other than "1" ("Es gelten keine Zugriffsbeschränkungen") #4377 #7280
-    fun hasAccessConstraints(): Boolean = data.service.hasAccessConstraintsOrFalse() || (data.resource?.accessConstraints?.any { it.key != "1" } == true)
+    open fun hasAccessConstraints(): Boolean = data.service.hasAccessConstraintsOrFalse()
 
     fun mapConformanceResultTitle(result: ConformanceResult): String? = when (result.isInspire) {
         true -> if (codelists.catalogLanguage == "en") {

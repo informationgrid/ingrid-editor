@@ -3,7 +3,7 @@
     role="menubar"
     aria-label="Navigation zu einzelnem Formularsegment"
 >
-    @for (section of sections; track section; let i = $index) {
+    @for (section of sections(); track section; let i = $index) {
         @if (section[0] !== "_") {
             <button
                 mat-button
@@ -13,7 +13,7 @@
             >
                 {{ section }}
             </button>
-            @if (i !== sections.length - 1) {
+        @if (i !== sections().length - 1) {
                 |
             }
         }

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, OnInit, input } from "@angular/core";
 import { MatIconModule } from "@angular/material/icon";
 
 interface Legend {
@@ -33,16 +33,17 @@ interface Legend {
   imports: [MatIconModule],
 })
 export class PermissionLegendsComponent implements OnInit {
-  @Input() showReadLegend = true;
-  @Input() showWriteLegend = true;
-  @Input() showSubdirectoryLegend = true;
+  readonly showReadLegend = input(true);
+  readonly showWriteLegend = input(true);
+  readonly showSubdirectoryLegend = input(true);
 
   legends: Legend[] = [];
 
   ngOnInit() {
-    if (this.showReadLegend) this.legends.push(this.readLegend);
-    if (this.showSubdirectoryLegend) this.legends.push(this.subdirectoryLegend);
-    if (this.showWriteLegend) this.legends.push(this.writeLegend);
+    if (this.showReadLegend()) this.legends.push(this.readLegend);
+    if (this.showSubdirectoryLegend())
+      this.legends.push(this.subdirectoryLegend);
+    if (this.showWriteLegend()) this.legends.push(this.writeLegend);
   }
 
   get readLegend(): Legend {

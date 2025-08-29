@@ -17,14 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Component,
-  EventEmitter,
-  input,
-  Input,
-  OnInit,
-  Output,
-} from "@angular/core";
+import { Component, input, Input, OnInit, output } from "@angular/core";
 import { MatCard, MatCardContent, MatCardTitle } from "@angular/material/card";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
 import { MatDivider } from "@angular/material/divider";
@@ -44,13 +37,13 @@ import { MatButton } from "@angular/material/button";
   ],
 })
 export class CardBoxComponent implements OnInit {
-  @Input() label: string;
+  readonly label = input<string>(undefined);
   nameOfToggle = input<string>(null);
 
   // button besides label, if provided
   @Input() endBtnTitle: string;
-  @Output() endBtnOnClick = new EventEmitter<void>();
-  @Output() toggle = new EventEmitter<boolean>();
+  readonly endBtnOnClick = output<void>();
+  readonly toggle = output<boolean>();
 
   constructor() {}
 
