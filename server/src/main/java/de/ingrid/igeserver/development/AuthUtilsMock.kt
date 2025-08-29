@@ -20,16 +20,19 @@
 package de.ingrid.igeserver.development
 
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Group
+import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.utils.AuthUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.security.Principal
 
 @Service
 @Profile("dev")
-class AuthUtilsMock : AuthUtils {
+class AuthUtilsMock(@Lazy val catalogService: CatalogService) : AuthUtils {
 
     @Autowired
     lateinit var config: DevelopmentProperties
@@ -50,5 +53,9 @@ class AuthUtilsMock : AuthUtils {
 
     override fun isSuperAdmin(principal: Principal): Boolean = containsRole(principal, "ige-super-admin")
 
-    override fun getCurrentUserRoles(catalogId: String): Set<Group> = emptySet()
+    override fun getCurrentUserRoles(catalogId: String): Set<Group> {
+        val authentication: Authentication = SecurityContextHolder.getContext().authentication
+        val userName: String = getUsernameFromPrincipal(authentication)
+        return catalogService.getUser(userName)?.getGroupsForCatalog(catalogId) ?: emptySet()
+    }
 }
