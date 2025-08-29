@@ -409,7 +409,6 @@ export class GeoDatasetDoctypeLubwSkdvOk extends GeoDatasetDoctype {
       "descriptions",
       ["portrayalCatalogueInfo", "citation"],
       ["featureCatalogueDescription", "citation"],
-      ["processStep", "description"],
       "featureTypes",
       "language",
       "languages",
