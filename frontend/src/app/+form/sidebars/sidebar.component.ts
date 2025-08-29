@@ -55,9 +55,10 @@ export class SidebarComponent implements OnInit {
   @Output() dropped = new EventEmitter();
 
   showWriteAccessToggle = computed(() => {
-    return this.behaviourService
+    const pluginActive = this.behaviourService
       .getBehaviour("plugin.show.writable.tree")
       ?.isActive();
+    return !this.configService.hasCatAdminRights() && pluginActive;
   });
 
   private documentTreeStore = inject(TreeStore);
@@ -65,6 +66,7 @@ export class SidebarComponent implements OnInit {
   private generalStore = inject(GeneralStore);
   private uiStore = inject(UiStore);
   private behaviourService = inject(BehaviourService);
+  private configService = inject(ConfigService);
 
   updateTree = new Subject<TreeAction[]>();
   activeTreeNode = new BehaviorSubject<number>(null);
