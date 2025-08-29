@@ -161,18 +161,21 @@ export class DocumentService {
   getChildren(
     parentId: number,
     isAddress?: boolean,
+    ignoreRootReadPermission?: boolean,
   ): Observable<DocumentAbstract[]> {
-    return this.dataService.getChildren(parentId, isAddress).pipe(
-      map((docs) => {
-        docs.forEach((doc) => {
-          doc.icon = this.profileService.getDocumentIcon(doc._type);
-          if (!doc.title) doc.title = "-Kein Titel-";
-          doc.isRoot = parentId === null;
-        });
-        return docs as DocumentAbstract[];
-      }),
-      tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs)),
-    );
+    return this.dataService
+      .getChildren(parentId, isAddress, ignoreRootReadPermission)
+      .pipe(
+        map((docs) => {
+          docs.forEach((doc) => {
+            doc.icon = this.profileService.getDocumentIcon(doc._type);
+            if (!doc.title) doc.title = "-Kein Titel-";
+            doc.isRoot = parentId === null;
+          });
+          return docs as DocumentAbstract[];
+        }),
+        tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs)),
+      );
   }
 
   load(
