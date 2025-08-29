@@ -20,10 +20,10 @@
 import {
   ChangeDetectorRef,
   Component,
-  EventEmitter,
   Input,
   OnInit,
-  Output,
+  input,
+  output,
 } from "@angular/core";
 import { BehaviorSubject, of, Subscription } from "rxjs";
 import { DynamicDatabase } from "../dynamic.database";
@@ -63,24 +63,24 @@ import { MatSlideToggle } from "@angular/material/slide-toggle";
   ],
 })
 export class TreeHeaderComponent implements OnInit {
-  @Input() showReloadButton = false;
-  @Input() showWriteAccessToggle = false;
-  @Input() isAddress = false;
-  @Input() showOptions = true;
-  @Input() showOnlyFolders = false;
-  @Input() showMultiSelectButton = true;
+  readonly showReloadButton = input(false);
+  readonly showWriteAccessToggle = input(false);
+  readonly isAddress = input(false);
+  readonly showOptions = input(true);
+  readonly showOnlyFolders = input(false);
+  readonly showMultiSelectButton = input(true);
   @Input() multiSelectionModeEnabled = false;
-  @Input() showSearch = true;
-  @Input() emptySearchResults: TreeNode[];
+  readonly showSearch = input(true);
+  readonly emptySearchResults = input<TreeNode[]>(undefined);
 
-  @Input() checkToggleAll = false;
-  @Input() indeterminateToggleAll = false;
+  readonly checkToggleAll = input(false);
+  readonly indeterminateToggleAll = input(false);
 
-  @Output() reload = new EventEmitter();
-  @Output() open = new EventEmitter();
-  @Output() edit = new EventEmitter<boolean>();
-  @Output() toggleAllSelection = new EventEmitter<boolean>();
-  @Output() toggleWriteAccess = new EventEmitter<boolean>();
+  readonly reload = output();
+  readonly open = output<number>();
+  readonly edit = output<boolean>();
+  readonly toggleAllSelection = output<boolean>();
+  readonly toggleWriteAccess = output<boolean>();
   searchResult = new BehaviorSubject<TreeNode[]>([]);
   query = new UntypedFormControl("");
   searchSub: Subscription;
@@ -103,12 +103,12 @@ export class TreeHeaderComponent implements OnInit {
 
   search(value: string) {
     if (!value || value.length === 0) {
-      this.searchResult.next(this.emptySearchResults ?? []);
+      this.searchResult.next(this.emptySearchResults() ?? []);
       return;
     }
     this.searchSub?.unsubscribe();
     this.searchSub = this.db
-      .search(value, this.isAddress)
+      .search(value, this.isAddress())
       .pipe(
         map((result) => this.db.mapDocumentsToTreeNodes(result.hits, 0)),
         catchError(() => of([])),
@@ -120,22 +120,22 @@ export class TreeHeaderComponent implements OnInit {
   }
 
   loadResultDocument(doc: TreeNode) {
-    this.open.next(doc._id);
+    this.open.emit(doc._id);
   }
 
   private filterResult(result: TreeNode[]) {
-    return this.showOnlyFolders
+    return this.showOnlyFolders()
       ? result.filter((node) => node.type === "FOLDER")
       : result;
   }
 
   activateMultiSelection() {
     this.multiSelectionModeEnabled = true;
-    this.edit.next(true);
+    this.edit.emit(true);
   }
 
   deactivateMultiSelection() {
     this.multiSelectionModeEnabled = false;
-    this.edit.next(false);
+    this.edit.emit(false);
   }
 }

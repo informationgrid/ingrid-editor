@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, HostBinding, Input, OnChanges } from "@angular/core";
+import { Component, HostBinding, OnChanges, input } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { TreeNode } from "../../store/tree/tree-node.model";
 import { TranslocoService } from "@jsverse/transloco";
@@ -37,10 +37,10 @@ export class DocumentIconComponent implements OnChanges {
   tooltip: string;
   iconClass: string;
 
-  @Input() doc: DocumentAbstract | TreeNode;
+  readonly doc = input<DocumentAbstract | TreeNode>(undefined);
 
-  @Input() showDelay: number = 0;
-  @Input() toolTipModifier: (tooltip: string) => string = (tooltip) => tooltip;
+  readonly showDelay = input<number>(0);
+  readonly toolTipModifier = input<(tooltip: string) => string>((tooltip) => tooltip);
 
   documentState: string;
   hasTags = false;
@@ -66,7 +66,7 @@ export class DocumentIconComponent implements OnChanges {
     );
     this.hasTags = publicationType?.length > 0;
     const tooltip = this.getTooltip(type, state, publicationTypesAsString);
-    this.tooltip = this.toolTipModifier?.(tooltip) || tooltip;
+    this.tooltip = this.toolTipModifier()?.(tooltip) || tooltip;
     this.iconClass =
       (<DocumentAbstract>doc).icon ||
       (<TreeNode>doc).iconClass ||
@@ -126,6 +126,6 @@ export class DocumentIconComponent implements OnChanges {
   }
 
   ngOnChanges() {
-    this.updateDocumentState(this.doc);
+    this.updateDocumentState(this.doc());
   }
 }

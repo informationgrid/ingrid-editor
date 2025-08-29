@@ -1,17 +1,17 @@
 <div class="wrapper">
     @if (_options?.length === 0) {
-        @if (buttonType == "flat") {
+        @if (buttonType() == "flat") {
             <button
                 type="button"
                 color="primary"
                 mat-flat-button
                 class="button-with-text primary"
                 data-cy="btn-add"
-                [class.padding-btn]="showTitle"
-                [class.error-outline]="showRequiredError"
+                [class.padding-btn]="showTitle()"
+                [class.error-outline]="showRequiredError()"
                 (click)="add.emit()"
                 aria-haspopup="true"
-                [attr.aria-labelledby]="ariaLabelledBy"
+                [attr.aria-labelledby]="ariaLabelledBy()"
                 aria-description="hinzufügen"
                 [attr.aria-description]="
                     matError?.nativeElement?.textContent ?? 'hinzufügen'
@@ -20,17 +20,17 @@
                 <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
             </button>
         }
-        @if (buttonType == "stroked") {
+        @if (buttonType() == "stroked") {
             <button
                 type="button"
                 mat-stroked-button
                 class="button-with-text"
-                [class.padding-btn]="showTitle"
-                [class.error-outline]="showRequiredError"
+                [class.padding-btn]="showTitle()"
+                [class.error-outline]="showRequiredError()"
                 (click)="add.emit()"
-                [matTooltip]="showTitle ? '' : 'Hinzufügen'"
+                [matTooltip]="showTitle() ? '' : 'Hinzufügen'"
                 aria-haspopup="dialog"
-                [attr.aria-labelledby]="ariaLabelledBy"
+                [attr.aria-labelledby]="ariaLabelledBy()"
                 [attr.aria-description]="
                     matError?.nativeElement?.textContent ?? 'hinzufügen'
                 "
@@ -43,10 +43,10 @@
             type="button"
             mat-stroked-button
             class="button-with-text"
-            [class.padding-btn]="showTitle"
-            [class.error-outline]="showRequiredError"
+            [class.padding-btn]="showTitle()"
+            [class.error-outline]="showRequiredError()"
             [matMenuTriggerFor]="menuOptions"
-            [attr.aria-labelledby]="ariaLabelledBy"
+            [attr.aria-labelledby]="ariaLabelledBy()"
             [attr.aria-description]="
                 matError?.nativeElement?.textContent ?? 'hinzufügen'
             "
@@ -70,7 +70,7 @@
     }
 
     <ng-container *transloco="let t">
-        @if (showRequiredError) {
+        @if (showRequiredError()) {
             <mat-error #matError class="error">{{
                 t("form.validationMessages.createOneEntry")
             }}</mat-error>
@@ -79,8 +79,8 @@
 
     <ng-template #buttonContent>
         <mat-icon>add</mat-icon>
-        @if (showTitle) {
-            <span class="btn-title">{{ buttonTitle }}</span>
+        @if (showTitle()) {
+            <span class="btn-title">{{ buttonTitle() }}</span>
         }
     </ng-template>
 </div>

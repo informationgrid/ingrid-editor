@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import { of } from "rxjs";
 import { ContextHelpService } from "../services/context-help/context-help.service";
 import { ConfigService } from "../services/config/config.service";
@@ -41,10 +41,10 @@ import { MatIcon } from "@angular/material/icon";
   imports: [MatIconButton, MatTooltip, MatIcon],
 })
 export class HelpContextButtonComponent {
-  @Input() fieldId: string;
-  @Input() description: string;
-  @Input() label: string;
-  @Input() docType: string = "all";
+  readonly fieldId = input<string>(undefined);
+  readonly description = input<string>(undefined);
+  readonly label = input<string>(undefined);
+  readonly docType = input<string>("all");
 
   constructor(
     private contextHelpService: ContextHelpService,
@@ -52,18 +52,19 @@ export class HelpContextButtonComponent {
   ) {}
 
   showHelpDialog() {
-    if (this.description) {
+    const description = this.description();
+    if (description) {
       this.contextHelpService.showContextHelpPopup(
-        this.label,
-        of(this.description),
+        this.label(),
+        of(description),
       );
     } else {
       let profile = this.configService.$userInfo.getValue().currentCatalog.type;
       this.contextHelpService.showContextHelp(
         profile,
-        this.docType,
-        this.fieldId,
-        this.label,
+        this.docType(),
+        this.fieldId(),
+        this.label(),
         null,
       );
     }

@@ -17,14 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
-} from "@angular/core";
+import { Component, OnInit, ViewChild, input, output } from "@angular/core";
 import {
   ReactiveFormsModule,
   UntypedFormBuilder,
@@ -44,14 +37,11 @@ import { MatButton } from "@angular/material/button";
   imports: [ReactiveFormsModule, MatFormField, MatInput, MatError, MatButton],
 })
 export class EmailformComponent implements OnInit {
-  @Input()
-  initialEmail: string;
+  readonly initialEmail = input<string>(undefined);
 
-  @Input()
-  canAutocomplete = false;
+  readonly canAutocomplete = input(false);
 
-  @Output()
-  onClose = new EventEmitter<String>();
+  readonly onClose = output();
 
   @ViewChild("editForm") emailFormDirective: any;
   emailForm: UntypedFormGroup;
@@ -64,7 +54,7 @@ export class EmailformComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.emailForm.get("email").setValue(this.initialEmail);
+    this.emailForm.get("email").setValue(this.initialEmail());
   }
 
   formErrors: { [string: string]: string } = {
@@ -82,6 +72,7 @@ export class EmailformComponent implements OnInit {
   }
 
   abortChange() {
+    // TODO: The 'emit' function requires a mandatory String argument
     this.onClose.emit();
   }
 }

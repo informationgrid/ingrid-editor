@@ -1,41 +1,41 @@
 <mat-form-field
     class="white-bg"
-    [class.flex-1]="flexWidth"
-    [class.white-border]="withWhiteBorder"
-    [class.no-input-border]="withWhiteBorder"
-    [class.right-sharp-corner]="rectangular || withButton"
-    [class.left-sharp-corner]="rectangular"
-    [style.min-width]="minWidth"
+    [class.flex-1]="flexWidth()"
+    [class.white-border]="withWhiteBorder()"
+    [class.no-input-border]="withWhiteBorder()"
+    [class.right-sharp-corner]="rectangular() || withButton()"
+    [class.left-sharp-corner]="rectangular()"
+    [style.min-width]="minWidth()"
     appearance="outline"
 >
     @if (autocompleteRef) {
         <input
             matInput
-            [igeFocus]="focus"
-            [placeholder]="placeholder"
+            [igeFocus]="focus()"
+            [placeholder]="placeholder()"
             data-cy="search"
-            [formControl]="query"
+            [formControl]="query()"
             [matAutocomplete]="autocompleteRef"
             [errorStateMatcher]="matcher"
             (focusin)="hasFocus = true"
             (focusout)="hasFocus = false"
-            [attr.aria-label]="ariaLabel"
+            [attr.aria-label]="ariaLabel()"
         />
     } @else {
         <input
             matInput
-            [igeFocus]="focus"
-            [placeholder]="placeholder"
-            [formControl]="query"
+            [igeFocus]="focus()"
+            [placeholder]="placeholder()"
+            [formControl]="query()"
             data-cy="search"
-            [attr.aria-label]="ariaLabel"
+            [attr.aria-label]="ariaLabel()"
         />
     }
     <div matSuffix>
-        @if (searchSub && !searchSub.closed) {
+        @if (searchSub() && !searchSub().closed) {
             <mat-spinner [diameter]="24"></mat-spinner>
         }
-        @if (query.value?.length > 0) {
+        @if (query().value?.length > 0) {
             <button
                 mat-icon-button
                 class="field-close"
@@ -45,7 +45,7 @@
                 <mat-icon class="gray">close</mat-icon>
             </button>
         }
-        @if (showSearchIcon && query.value?.length === 0) {
+        @if (showSearchIcon() && query().value?.length === 0) {
             <mat-icon class="search-icon passive"> search </mat-icon>
         }
     </div>
@@ -57,13 +57,13 @@
     }
 </mat-form-field>
 
-@if (withButton) {
+@if (withButton()) {
     <button
         mat-flat-button
         color="primary"
         class="search-btn button-next-to-input"
-        [class.small]="!withWhiteBorder"
-        (click)="buttonClick.next(query.value)"
+        [class.small]="!withWhiteBorder()"
+        (click)="buttonClick.emit(query().value)"
     >
         <mat-icon>search</mat-icon>
         Suchen

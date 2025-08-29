@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, Input, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, Input, ViewChild, input } from "@angular/core";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { IgeDocument } from "../../../models/ige-document";
 import { AsyncPipe, DatePipe } from "@angular/common";
@@ -55,7 +55,7 @@ import { FullNamePipe } from "../../../directives/full-name.pipe";
   ],
 })
 export class ExpirationTableComponent implements AfterViewInit {
-  @Input() isSearching: boolean;
+  readonly isSearching = input<boolean>(undefined);
 
   @Input() set result(docs: IgeDocument[]) {
     this.dataSource.data = docs ?? [];
@@ -75,7 +75,7 @@ export class ExpirationTableComponent implements AfterViewInit {
   constructor(private router: Router) {}
 
   openDataset(element: IgeDocument) {
-    if (this.isSearching) return;
+    if (this.isSearching()) return;
     this.router.navigate([this.getTargetRoute(element), { id: element._uuid }]);
   }
 

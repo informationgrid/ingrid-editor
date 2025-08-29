@@ -20,11 +20,11 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
   Input,
   OnInit,
-  Output,
   ViewChild,
+  input,
+  output
 } from "@angular/core";
 import { MatError } from "@angular/material/form-field";
 import { MatButton } from "@angular/material/button";
@@ -57,20 +57,20 @@ export interface AddButtonOptions {
   ],
 })
 export class AddButtonComponent implements OnInit {
-  @Input() buttonType: "stroked" | "flat" | "menu" = "stroked";
-  @Input() showRequiredError = false;
-  @Input() showTitle = true;
-  @Input() buttonTitle = "Hinzufügen";
+  readonly buttonType = input<"stroked" | "flat" | "menu">("stroked");
+  readonly showRequiredError = input(false);
+  readonly showTitle = input(true);
+  readonly buttonTitle = input("Hinzufügen");
 
   @Input() set options(value: any[]) {
     if (value) this._options = value;
   }
 
   // accessibility
-  @Input() ariaLabelledBy: string;
+  readonly ariaLabelledBy = input<string>(undefined);
   @ViewChild("matError") matError: ElementRef;
 
-  @Output() add = new EventEmitter();
+  readonly add = output();
 
   _options: AddButtonOptions[] = [];
 

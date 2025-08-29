@@ -20,9 +20,8 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
-  Input,
-  Output,
+  input,
+  output
 } from "@angular/core";
 
 import { MatIconModule } from "@angular/material/icon";
@@ -35,14 +34,14 @@ import { MatTooltipModule } from "@angular/material/tooltip";
   imports: [MatIconModule, MatTooltipModule],
 })
 export class FormLabelComponent {
-  @Input() fieldId: string;
-  @Input() hasContextHelp = false;
-  @Input() ariaLabel: string;
+  readonly fieldId = input<string>(undefined);
+  readonly hasContextHelp = input(false);
+  readonly ariaLabel = input<string>(undefined);
 
-  @Output() contextHelp = new EventEmitter<HTMLElement>();
+  readonly contextHelp = output<HTMLElement>();
 
   showContextHelp(evt: MouseEvent) {
-    if (!this.hasContextHelp) {
+    if (!this.hasContextHelp()) {
       return;
     }
 

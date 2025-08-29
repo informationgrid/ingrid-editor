@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input, input } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { DecimalPipe } from "@angular/common";
 
@@ -37,7 +37,7 @@ export class ChartComponent {
     if (values !== null) this.prepare(values);
   }
 
-  @Input() showPercentages: boolean;
+  readonly showPercentages = input<boolean>(undefined);
 
   dataMap: any;
 

@@ -21,8 +21,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  Input,
   OnInit,
+  input
 } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { ConfigService } from "../../../services/config/config.service";
@@ -62,7 +62,7 @@ import { UiStore } from "../../../store/ui.store";
   ],
 })
 export class HeaderMoreComponent implements OnInit {
-  @Input() showMore = false;
+  readonly showMore = input(false);
   hideFields: any;
   migrated: boolean;
 

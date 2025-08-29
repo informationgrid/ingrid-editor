@@ -20,11 +20,11 @@
 import {
   AfterViewInit,
   Component,
-  EventEmitter,
   Input,
   OnDestroy,
   OnInit,
-  Output,
+  input,
+  output
 } from "@angular/core";
 import {
   FormControl,
@@ -57,14 +57,14 @@ export class CoordinatesSpatialComponent
     lon2: new FormControl<number>(null, Validators.required),
   });
 
-  @Input() map: Map;
+  readonly map = input<Map>(undefined);
 
   @Input() set coordinates(value: SpatialBoundingBox) {
     if (!value) return;
     this.form.setValue(value, { emitEvent: false });
   }
 
-  @Output() result = new EventEmitter<any>();
+  readonly result = output<any>();
 
   private boundingBoxes: Rectangle[];
 
@@ -83,11 +83,11 @@ export class CoordinatesSpatialComponent
   }
 
   ngAfterViewInit() {
-    this.leafletService.zoomToInitialBox(this.map);
+    this.leafletService.zoomToInitialBox(this.map());
 
     if (this.coordinates) {
       this.drawCoordinates(this.coordinates);
-      setTimeout(() => this.result.next(this.coordinates), 50);
+      setTimeout(() => this.result.emit(this.coordinates), 50);
     }
   }
 
@@ -96,7 +96,7 @@ export class CoordinatesSpatialComponent
   }
 
   private removeBoundingBoxes() {
-    this.leafletService.removeDrawnBoundingBoxes(this.map, this.boundingBoxes);
+    this.leafletService.removeDrawnBoundingBoxes(this.map(), this.boundingBoxes);
   }
 
   private drawCoordinates(values) {
@@ -108,14 +108,14 @@ export class CoordinatesSpatialComponent
       },
     ]);
     this.boundingBoxes = this.leafletService.drawSpatialRefs(
-      this.map,
+      this.map(),
       coloredBoundingBox,
     );
   }
 
   private coordinatesValid(value): boolean {
     const valid = value.lat1 && value.lon1 && value.lat2 && value.lon2;
-    this.result.next(valid ? this.form.value : null);
+    this.result.emit(valid ? this.form.value : null);
     return valid;
   }
 }

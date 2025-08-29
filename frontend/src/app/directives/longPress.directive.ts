@@ -17,21 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Directive,
-  ElementRef,
-  EventEmitter,
-  HostListener,
-  Output,
-} from "@angular/core";
+import { Directive, ElementRef, HostListener, output } from "@angular/core";
 
 @Directive({
   selector: "[long-press]",
   standalone: true,
 })
 export class LongPressDirective {
-  @Output() longPress = new EventEmitter();
-  @Output() shortClick = new EventEmitter();
+  readonly longPress = output<Event>();
+  readonly shortClick = output<Event>();
 
   private longPressTimeout: any;
   private longPressHandled: boolean;

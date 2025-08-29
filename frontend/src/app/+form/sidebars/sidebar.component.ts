@@ -17,17 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Component,
-  computed,
-  effect,
-  EventEmitter,
-  inject,
-  Input,
-  OnInit,
-  Output,
-  signal,
-} from "@angular/core";
+import { Component, computed, effect, inject, input, OnInit, output } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { TreeStore } from "../../store/tree/tree.store";
 import { BehaviorSubject, Subject } from "rxjs";
@@ -50,9 +40,9 @@ import { BehaviourService } from "../../services/behavior/behaviour.service";
   imports: [TreeComponent],
 })
 export class SidebarComponent implements OnInit {
-  @Input() address = false;
+  readonly address = input(false);
 
-  @Output() dropped = new EventEmitter();
+  readonly dropped = output();
 
   showWriteAccessToggle = computed(() => {
     const pluginActive = this.behaviourService
@@ -79,7 +69,7 @@ export class SidebarComponent implements OnInit {
     private formStateService: FormStateService,
   ) {
     effect(() => {
-      const active = this.address
+      const active = this.address()
         ? this.generalStore.explicitActiveNodeAddress()
         : this.generalStore.explicitActiveNode();
       this.activeTreeNode.next(active?.id ?? null);
@@ -87,7 +77,7 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.address) {
+    if (this.address()) {
       this.path = "/address";
     } else {
       this.path = "/form";
@@ -149,7 +139,7 @@ export class SidebarComponent implements OnInit {
   }
 
   handleSelection(selectedDocsId: number[]) {
-    this.generalStore.setActiveTreeNodes(selectedDocsId, this.address);
+    this.generalStore.setActiveTreeNodes(selectedDocsId, this.address());
   }
 
   updateTreeMode(multiSelect: boolean) {
@@ -163,11 +153,11 @@ export class SidebarComponent implements OnInit {
   }
 
   private getTreeStore() {
-    return this.address ? this.addressTreeStore : this.documentTreeStore;
+    return this.address() ? this.addressTreeStore : this.documentTreeStore;
   }
 
   private getOpenedDocument(): DocumentAbstract {
-    return this.address
+    return this.address()
       ? this.generalStore.openedAddress()
       : this.generalStore.openedDocument();
   }

@@ -19,10 +19,10 @@
  */
 import {
   Directive,
-  Input,
   OnInit,
   TemplateRef,
   ViewContainerRef,
+  input
 } from "@angular/core";
 import { ConfigService } from "../services/config/config.service";
 
@@ -31,7 +31,7 @@ import { ConfigService } from "../services/config/config.service";
   standalone: true,
 })
 export class FeatureFlagDirective implements OnInit {
-  @Input() featureFlag: string | string[];
+  readonly featureFlag = input<string | string[]>(undefined);
 
   constructor(
     private vcr: ViewContainerRef,
@@ -40,7 +40,7 @@ export class FeatureFlagDirective implements OnInit {
   ) {}
 
   ngOnInit() {
-    if (this.configService.hasFlags(this.featureFlag)) {
+    if (this.configService.hasFlags(this.featureFlag())) {
       this.vcr.createEmbeddedView(this.tpl);
     }
   }

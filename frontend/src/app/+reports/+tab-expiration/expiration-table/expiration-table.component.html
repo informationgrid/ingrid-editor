@@ -43,7 +43,7 @@
             tabindex="0"
             cdkMonitorElementFocus
             *matRowDef="let row; columns: displayedColumns"
-            [class.readonly]="isSearching"
+            [class.readonly]="isSearching()"
             (click)="openDataset(row)"
             (keyup.enter)="openDataset(row)"
             [attr.aria-label]="

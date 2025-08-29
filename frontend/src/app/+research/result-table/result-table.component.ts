@@ -21,11 +21,11 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   Input,
   OnInit,
-  Output,
   ViewChild,
+  input,
+  output
 } from "@angular/core";
 import { ResearchResponse } from "../research.service";
 import {
@@ -105,11 +105,11 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     this.updateTableFromResponse(val);
   }
 
-  @Input() isLoading = false;
+  readonly isLoading = input(false);
 
-  @Output() save = new EventEmitter<void>();
-  @Output() export = new EventEmitter<string>();
-  @Output() updated = new EventEmitter<void>();
+  readonly save = output<void>();
+  readonly export = output<string>();
+  readonly updated = output<void>();
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -200,7 +200,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
         if (result) {
           this.documentService
             .delete([hit._id], this.isAddress(hit))
-            .subscribe(() => this.updated.next());
+            .subscribe(() => this.updated.emit());
         }
       });
   }

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, OnInit, input, output } from "@angular/core";
 import { MatRadioModule } from "@angular/material/radio";
 
 import { MatDividerModule } from "@angular/material/divider";
@@ -35,8 +35,8 @@ export interface Option {
   imports: [MatRadioModule, MatDividerModule, FormsModule],
 })
 export class OptionListComponent implements OnInit {
-  @Input() options: Option[];
-  @Output() select = new EventEmitter<string>();
+  readonly options = input<Option[]>(undefined);
+  readonly select = output<string>();
 
   selected: string;
 

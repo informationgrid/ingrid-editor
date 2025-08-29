@@ -19,11 +19,10 @@
  */
 import {
   Component,
-  EventEmitter,
   inject,
-  Input,
   OnInit,
-  Output,
+  input,
+  output
 } from "@angular/core";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatListModule } from "@angular/material/list";
@@ -73,11 +72,11 @@ interface GeoThesaurusResult {
   ],
 })
 export class GeothesaurusWfsgndeComponent implements OnInit {
-  @Input() map: Map;
-  @Input() value: SpatialLocation;
+  readonly map = input<Map>(undefined);
+  readonly value = input<SpatialLocation>(undefined);
 
-  @Output() result = new EventEmitter<SpatialBoundingBox>();
-  @Output() updateTitle = new EventEmitter<string>();
+  readonly result = output<SpatialBoundingBox>();
+  readonly updateTitle = output<string>();
 
   private transloco = inject(TranslocoService);
   private thesaurus = inject(GeothesaurusWfsGndeService);
@@ -100,12 +99,13 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
       .pipe(untilDestroyed(this), debounceTime(500))
       .subscribe((query) => this.searchLocation(query));
 
-    if (this.value.value) {
+    const value = this.value();
+    if (value.value) {
       // @ts-ignore
-      this.spatialSelection = { ars: this.value.ars };
-      this.drawAndZoom(this.value.value);
+      this.spatialSelection = { ars: value.ars };
+      this.drawAndZoom(value.value);
     } else if (!this.drawnBBox) {
-      this.leafletService.zoomToInitialBox(this.map);
+      this.leafletService.zoomToInitialBox(this.map());
     }
   }
 
@@ -128,17 +128,17 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
         this.showNoResult = response.length === 0;
         this.hasMoreResults = response?.[0]?.hasMoreResults ?? false;
         // @ts-ignore
-        setTimeout(() => (<Map>this.map)._onResize());
+        setTimeout(() => (<Map>this.map())._onResize());
       });
   }
 
   handleSelection(entry: GeoThesaurusResult) {
     this.spatialSelection = entry;
 
-    this.value.title = entry.displayTitle;
-    this.value.value = entry.bbox;
+    this.value().title = entry.displayTitle;
+    this.value().value = entry.bbox;
     // @ts-ignore
-    this.value.ars = entry.ars;
+    this.value().ars = entry.ars;
 
     this.result.emit(entry.bbox);
     this.updateTitle.emit(entry.displayTitle);
@@ -152,12 +152,12 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
     );
     this.drawBoundingBox(bounds);
 
-    this.map.fitBounds(bounds);
+    this.map().fitBounds(bounds);
   }
 
   private drawBoundingBox(latLonBounds: LatLngBounds) {
     this.removeDrawnBoundingBox();
-    this.drawnBBox = new Rectangle(latLonBounds).addTo(this.map);
+    this.drawnBBox = new Rectangle(latLonBounds).addTo(this.map());
 
     this.drawnBBox.on("pm:edit", (e) =>
       // @ts-ignore
@@ -168,7 +168,7 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
   private removeDrawnBoundingBox() {
     if (this.drawnBBox) {
       const bbox = this.drawnBBox;
-      setTimeout(() => this.map.removeLayer(bbox), 100);
+      setTimeout(() => this.map().removeLayer(bbox), 100);
       this.drawnBBox = null;
     }
   }
@@ -183,7 +183,7 @@ export class GeothesaurusWfsgndeComponent implements OnInit {
   }
 
   updateArsUsage($event: MatCheckboxChange) {
-    if ($event.checked) this.value.ars = this.spatialSelection.ars;
-    else this.value.ars = null;
+    if ($event.checked) this.value().ars = this.spatialSelection.ars;
+    else this.value().ars = null;
   }
 }

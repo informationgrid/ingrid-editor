@@ -21,12 +21,11 @@ import {
   AfterViewInit,
   Component,
   effect,
-  EventEmitter,
   input,
   Input,
   OnInit,
-  Output,
   ViewChild,
+  output
 } from "@angular/core";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
 import {
@@ -101,10 +100,10 @@ export class GroupsTableComponent
   }
 
   selectedGroup = input<number>();
-  @Input() userGroupNames: string[];
+  readonly userGroupNames = input<string[]>(undefined);
 
-  @Output() onGroupSelect = new EventEmitter<Group>();
-  @Output() onDelete = new EventEmitter<number>();
+  readonly onGroupSelect = output<Group>();
+  readonly onDelete = output<number>();
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;

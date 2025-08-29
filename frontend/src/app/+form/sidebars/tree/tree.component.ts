@@ -23,13 +23,12 @@ import {
   Component,
   effect,
   ElementRef,
-  EventEmitter,
-  Input,
   OnInit,
-  Output,
   signal,
   ViewChild,
   WritableSignal,
+  input,
+  output
 } from "@angular/core";
 import { FlatTreeControl } from "@angular/cdk/tree";
 import { TreeNode } from "../../../store/tree/tree-node.model";
@@ -97,25 +96,25 @@ export enum TreeActionType {
   ],
 })
 export class TreeComponent implements OnInit {
-  @Input() forAddresses: boolean;
-  @Input() showHeader = true;
-  @Input() showMultiSelectButton = false;
-  @Input() showReloadButton = true;
-  @Input() setActiveNode: Subject<number>;
-  @Input() update: Observable<any>;
-  @Input() showHeaderOptions = true;
-  @Input() showWriteAccessToggle = false;
-  @Input() showOnlyFolders = false;
-  @Input() enableDrag = false;
-  @Input() hideReadOnly = false;
-  @Input() ignoreTreeUpdates = false;
-  @Input() searchSuggestions: Observable<DocumentAbstract[]>;
+  readonly forAddresses = input<boolean>(undefined);
+  readonly showHeader = input(true);
+  readonly showMultiSelectButton = input(false);
+  readonly showReloadButton = input(true);
+  readonly setActiveNode = input<Subject<number>>(undefined);
+  readonly update = input<Observable<any>>(undefined);
+  readonly showHeaderOptions = input(true);
+  readonly showWriteAccessToggle = input(false);
+  readonly showOnlyFolders = input(false);
+  readonly enableDrag = input(false);
+  readonly hideReadOnly = input(false);
+  readonly ignoreTreeUpdates = input(false);
+  readonly searchSuggestions = input<Observable<DocumentAbstract[]>>(undefined);
 
-  @Output() selected = new EventEmitter<number[]>();
-  @Output() activate = new EventEmitter<string[]>();
-  @Output() dropped = new EventEmitter<any>();
-  @Output() multiEditMode = new EventEmitter<any>();
-  @Output() error = new EventEmitter<HttpErrorResponse>();
+  readonly selected = output<number[]>();
+  readonly activate = output<string[]>();
+  readonly dropped = output<any>();
+  readonly multiEditMode = output<any>();
+  readonly error = output<HttpErrorResponse>();
 
   @ViewChild("treeComponent", { read: ElementRef })
   treeContainerElement: ElementRef;
@@ -123,22 +122,22 @@ export class TreeComponent implements OnInit {
   /**
    * A function to determine if a tree node should be disabled.
    */
-  @Input() disabledCondition: (TreeNode) => boolean = () => {
+  readonly disabledCondition = input<(TreeNode) => boolean>(() => {
     return false;
-  };
+});
 
   /**
    * A function to determine if a tree node can be expanded.
    */
-  @Input() isExpandable = (node: TreeNode) => node.hasChildren;
+  readonly isExpandable = input((node: TreeNode) => node.hasChildren);
 
-  @Input() allowMultiSelectionMode = true;
+  readonly allowMultiSelectionMode = input(true);
 
   getLevel = (node: TreeNode) => node.level;
 
   treeControl: FlatTreeControl<TreeNode> = new FlatTreeControl<TreeNode>(
     this.getLevel,
-    this.isExpandable,
+    this.isExpandable(),
   );
 
   /** The node selection must be kept local */
@@ -167,11 +166,11 @@ export class TreeComponent implements OnInit {
   ) {
     this.treeControl.dataNodes = [];
     effect(() => {
-      this.multiEditMode.next(this.selection.multiSelectionModeEnabled());
+      this.multiEditMode.emit(this.selection.multiSelectionModeEnabled());
     });
     effect(() => {
       const doReload = this.treeService.isReloadNeededWithReset(
-        this.forAddresses,
+        this.forAddresses(),
       );
       if (doReload) {
         // delay reload to use correct activeId
@@ -183,7 +182,7 @@ export class TreeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.selection.allowMultiSelectionMode = this.allowMultiSelectionMode;
+    this.selection.allowMultiSelectionMode = this.allowMultiSelectionMode();
     this.selection.model.changed
       .pipe(
         untilDestroyed(this),
@@ -192,7 +191,8 @@ export class TreeComponent implements OnInit {
       )
       .subscribe();
 
-    this.database.init(this.forAddresses);
+    const forAddresses = this.forAddresses();
+    this.database.init(forAddresses);
 
     this.dataSource = new DynamicDataSource(
       this.treeControl,
@@ -213,24 +213,24 @@ export class TreeComponent implements OnInit {
     this.dragManager = new DragNDropUtils(
       this.treeControl,
       this.docBehaviour,
-      this.forAddresses,
+      forAddresses,
     );
     //previous code used to be in constructor
 
-    this.database.hideReadOnly = this.hideReadOnly;
-    this.dataSource.setForAddress(this.forAddresses);
+    this.database.hideReadOnly = this.hideReadOnly();
+    this.dataSource.setForAddress(forAddresses);
 
     // make sure the tree with root nodes is loaded before we start
     // expanding the path if any
     this.handleTreeExpandToInitialNode();
 
-    if (!this.ignoreTreeUpdates) {
+    if (!this.ignoreTreeUpdates()) {
       this.database.treeUpdates
         .pipe(untilDestroyed(this))
         .subscribe((data) => this.handleUpdate(data));
     }
 
-    this.searchSuggestions
+    this.searchSuggestions()
       ?.pipe(
         untilDestroyed(this),
         map((doc) => this.database.mapDocumentsToTreeNodes(doc, 0)),
@@ -242,11 +242,12 @@ export class TreeComponent implements OnInit {
   }
 
   private handleActiveNodeSubscription() {
-    if (!this.setActiveNode) {
+    const setActiveNode = this.setActiveNode();
+    if (!setActiveNode) {
       return;
     }
 
-    this.setActiveNode
+    setActiveNode
       .pipe(untilDestroyed(this), debounceTime(100), distinctUntilChanged())
       .subscribe(async (id) => {
         if (this.activeNodeId() === id) {
@@ -254,7 +255,7 @@ export class TreeComponent implements OnInit {
         }
         this.activeNodeId.set(id);
         // when setting a node from the outside, then do not emit activate event again
-        this.jumpToNode(id, true, false).catch((e) => this.error.next(e));
+        this.jumpToNode(id, true, false).catch((e) => this.error.emit(e));
       });
   }
 
@@ -305,7 +306,7 @@ export class TreeComponent implements OnInit {
   }
 
   reloadTree(forceFromServer = false): Observable<TreeNode[]> {
-    return this.database.initialData(forceFromServer, this.forAddresses).pipe(
+    return this.database.initialData(forceFromServer, this.forAddresses()).pipe(
       map((docs) => this.database.mapDocumentsToTreeNodes(docs, 0)),
       map((docs) => docs.sort(this.treeService.getSortTreeNodesFunction())),
       tap((rootElements) => {
@@ -426,7 +427,7 @@ export class TreeComponent implements OnInit {
     // node will be added automatically when expanded
     const isExpanded = this.treeControl.isExpanded(parentNode);
     this.database
-      .getChildren(parentNodeId, true, this.forAddresses)
+      .getChildren(parentNodeId, true, this.forAddresses())
       .subscribe(() => {
         if (isExpanded) {
           this.treeControl.collapse(parentNode);
@@ -575,8 +576,8 @@ export class TreeComponent implements OnInit {
 
   handleFolderClick(node: TreeNode, $event: MouseEvent) {
     // only toggle children if node is disabled
-    if (this.disabledCondition(node)) {
-      if (this.isExpandable(node)) {
+    if (this.disabledCondition()(node)) {
+      if (this.isExpandable()(node)) {
         this.treeControl.toggle(node);
       }
     } else {
@@ -622,7 +623,7 @@ export class TreeComponent implements OnInit {
 
     if (dropInfo.allow) {
       // if dragNode is part of selection all selected ids are srcIds, else only dragNode is sourceId
-      this.dropped.next({
+      this.dropped.emit({
         srcIds: this.selection.model.selected.some(
           (node) => node._id === this.dragManager.dragNode._id,
         )
@@ -640,7 +641,7 @@ export class TreeComponent implements OnInit {
 
   handleDragStart($event: DragEvent, node: any) {
     // set flag delayed to correctly initiate dragging of a node
-    if (this.enableDrag) $event.dataTransfer.effectAllowed = "move";
+    if (this.enableDrag()) $event.dataTransfer.effectAllowed = "move";
     setTimeout(() => (this.isDragging = true));
     this.dragManager.handleDragStart($event, node);
   }
@@ -670,7 +671,7 @@ export class TreeComponent implements OnInit {
   }
 
   selectNode(node: TreeNode, $event?: MouseEvent, emitActive = true) {
-    if (this.disabledCondition(node)) {
+    if (this.disabledCondition()(node)) {
       // disabled nodes can't be selected
       return;
     }
@@ -680,7 +681,7 @@ export class TreeComponent implements OnInit {
 
     this.activeNodeId.set(id);
     if (emitActive) {
-      this.activate.next([node._uuid]);
+      this.activate.emit([node._uuid]);
     }
   }
 }

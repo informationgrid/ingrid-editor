@@ -2,10 +2,10 @@
     <mat-card-title>
         <div class="wrapper">
             <h2>
-                {{ label }}
+                {{ label() }}
             </h2>
             @if (nameOfToggle()) {
-                <mat-slide-toggle (change)="toggle.next($event.checked)">{{
+                <mat-slide-toggle (change)="toggle.emit($event.checked)">{{
                     nameOfToggle()
                 }}</mat-slide-toggle>
             }

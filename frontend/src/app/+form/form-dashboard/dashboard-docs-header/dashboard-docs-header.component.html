@@ -3,7 +3,7 @@
 </h1>
 
 <div class="text-center shortcut" *transloco="let t; read: 'dashboard'">
-    @if (canCreateDatasets) {
+    @if (canCreateDatasets()) {
         <ige-action-button
             label="Neuer Ordner"
             svgIcon="outline-create_new_folder-24px"
@@ -15,7 +15,7 @@
             (submit)="createNewDataset()"
         ></ige-action-button>
     }
-    @if (canImport) {
+    @if (canImport()) {
         <ige-action-button
             [label]="t('importDocument')"
             icon="import_export"

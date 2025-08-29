@@ -22,10 +22,9 @@ import {
   Component,
   inject,
   input,
-  Input,
   OnInit,
   output,
-  signal,
+  signal
 } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";
@@ -68,7 +67,7 @@ interface AddressDocumentAbstract extends DocumentAbstract {
 export class AddressTemplateComponent implements OnInit {
   private doctypeStore = inject(DoctypeStore);
 
-  @Input() form: UntypedFormGroup;
+  readonly form = input<UntypedFormGroup>(undefined);
   parent = input<number>();
 
   create = output<void>();
@@ -113,7 +112,7 @@ export class AddressTemplateComponent implements OnInit {
 
   private setInitialTypeFirstTime(types: AddressDocumentAbstract[]) {
     // only set it first time
-    if (!this.form.get("choice").value) {
+    if (!this.form().get("choice").value) {
       const initialType =
         types.find(
           (t) => t.id == this.profileService.getDefaultAddressType()?.id,
@@ -150,11 +149,11 @@ export class AddressTemplateComponent implements OnInit {
   }
 
   setDocType(docType: AddressDocumentAbstract) {
-    this.form.get("choice").setValue(docType.id);
+    this.form().get("choice").setValue(docType.id);
     this.isPerson.set(docType.addressType !== "organization");
-    const firstName = this.form.get("firstName");
-    const lastName = this.form.get("lastName");
-    const organization = this.form.get("organization");
+    const firstName = this.form().get("firstName");
+    const lastName = this.form().get("lastName");
+    const organization = this.form().get("organization");
 
     if (this.isPerson()) {
       organization.clearValidators();
