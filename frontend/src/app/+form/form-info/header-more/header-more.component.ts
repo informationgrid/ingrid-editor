@@ -22,7 +22,7 @@ import {
   Component,
   inject,
   OnInit,
-  input
+  input,
 } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { ConfigService } from "../../../services/config/config.service";

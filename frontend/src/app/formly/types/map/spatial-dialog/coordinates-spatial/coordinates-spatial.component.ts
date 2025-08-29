@@ -24,7 +24,7 @@ import {
   OnDestroy,
   OnInit,
   input,
-  output
+  output,
 } from "@angular/core";
 import {
   FormControl,
@@ -96,7 +96,10 @@ export class CoordinatesSpatialComponent
   }
 
   private removeBoundingBoxes() {
-    this.leafletService.removeDrawnBoundingBoxes(this.map(), this.boundingBoxes);
+    this.leafletService.removeDrawnBoundingBoxes(
+      this.map(),
+      this.boundingBoxes,
+    );
   }
 
   private drawCoordinates(values) {

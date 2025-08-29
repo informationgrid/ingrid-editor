@@ -28,7 +28,7 @@ import {
   ViewChild,
   WritableSignal,
   input,
-  output
+  output,
 } from "@angular/core";
 import { FlatTreeControl } from "@angular/cdk/tree";
 import { TreeNode } from "../../../store/tree/tree-node.model";
@@ -124,7 +124,7 @@ export class TreeComponent implements OnInit {
    */
   readonly disabledCondition = input<(TreeNode) => boolean>(() => {
     return false;
-});
+  });
 
   /**
    * A function to determine if a tree node can be expanded.

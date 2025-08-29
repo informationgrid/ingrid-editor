@@ -25,7 +25,7 @@ import {
   OnInit,
   ViewChild,
   input,
-  output
+  output,
 } from "@angular/core";
 import { ResearchResponse } from "../research.service";
 import {

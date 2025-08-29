@@ -40,7 +40,9 @@ export class DocumentIconComponent implements OnChanges {
   readonly doc = input<DocumentAbstract | TreeNode>(undefined);
 
   readonly showDelay = input<number>(0);
-  readonly toolTipModifier = input<(tooltip: string) => string>((tooltip) => tooltip);
+  readonly toolTipModifier = input<(tooltip: string) => string>(
+    (tooltip) => tooltip,
+  );
 
   documentState: string;
   hasTags = false;

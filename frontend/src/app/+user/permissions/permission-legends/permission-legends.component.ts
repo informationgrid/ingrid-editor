@@ -41,7 +41,8 @@ export class PermissionLegendsComponent implements OnInit {
 
   ngOnInit() {
     if (this.showReadLegend()) this.legends.push(this.readLegend);
-    if (this.showSubdirectoryLegend()) this.legends.push(this.subdirectoryLegend);
+    if (this.showSubdirectoryLegend())
+      this.legends.push(this.subdirectoryLegend);
     if (this.showWriteLegend()) this.legends.push(this.writeLegend);
   }
 

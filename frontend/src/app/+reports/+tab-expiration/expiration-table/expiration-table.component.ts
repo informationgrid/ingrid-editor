@@ -17,7 +17,13 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { AfterViewInit, Component, Input, ViewChild, input } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  Input,
+  ViewChild,
+  input,
+} from "@angular/core";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { IgeDocument } from "../../../models/ige-document";
 import { AsyncPipe, DatePipe } from "@angular/common";

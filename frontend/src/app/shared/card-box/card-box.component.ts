@@ -17,13 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Component,
-  input,
-  Input,
-  OnInit,
-  output
-} from "@angular/core";
+import { Component, input, Input, OnInit, output } from "@angular/core";
 import { MatCard, MatCardContent, MatCardTitle } from "@angular/material/card";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
 import { MatDivider } from "@angular/material/divider";

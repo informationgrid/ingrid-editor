@@ -25,7 +25,7 @@ import {
   Input,
   OnInit,
   ViewChild,
-  output
+  output,
 } from "@angular/core";
 import { MatSort, MatSortHeader } from "@angular/material/sort";
 import {

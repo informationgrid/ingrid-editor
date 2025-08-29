@@ -31,7 +31,7 @@ import {
   Signal,
   signal,
   ViewChild,
-  input
+  input,
 } from "@angular/core";
 import {
   FormArray,
@@ -226,10 +226,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         // when clicking on root node in breadcrumb we need to set opened document to null
         // otherwise the last one will be loaded again
         const address = this.address();
-        this.documentService.updateOpenedDocumentInTreestore(
-          null,
-          address,
-        );
+        this.documentService.updateOpenedDocumentInTreestore(null, address);
         this.router.navigate([
           ConfigService.catalogId + (address ? "/address" : "/form"),
         ]);
@@ -383,7 +380,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         tap((doc) => this.formStateService.updateMetadata(doc.metadata)),
         tap((doc) => this.handleReadOnlyState(doc.documentWithMetadata)),
         tap((doc) =>
-          this.treeService.selectTreeNode(this.address(), doc.metadata.wrapperId),
+          this.treeService.selectTreeNode(
+            this.address(),
+            doc.metadata.wrapperId,
+          ),
         ),
         tap((doc) =>
           this.loadSubscription.push(
@@ -445,11 +445,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     const address = this.address();
     this.treeService.selectTreeNode(address, null);
     this.form.reset();
-    this.documentService.updateOpenedDocumentInTreestore(
-      null,
-      address,
-      true,
-    );
+    this.documentService.updateOpenedDocumentInTreestore(null, address, true);
   }
 
   private updateFormWithData(data: DocumentWithMetadata) {

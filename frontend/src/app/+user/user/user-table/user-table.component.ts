@@ -24,7 +24,7 @@ import {
   input,
   OnInit,
   output,
-  ViewChild
+  ViewChild,
 } from "@angular/core";
 import {
   FrontendUser,

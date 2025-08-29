@@ -26,7 +26,7 @@ import {
   computed,
   Signal,
   AfterViewInit,
-  output
+  output,
 } from "@angular/core";
 import {
   animate,
@@ -63,7 +63,9 @@ import { AsyncPipe } from "@angular/common";
 })
 export class UploadComponent implements AfterViewInit {
   /** Link text */
-  readonly text = input(this.transloco.translate("form.placeholder.chooseFile"));
+  readonly text = input(
+    this.transloco.translate("form.placeholder.chooseFile"),
+  );
   /** Name used in form which will be sent in HTTP request. */
   readonly param = input("file");
   /** Target URL for file uploading. */

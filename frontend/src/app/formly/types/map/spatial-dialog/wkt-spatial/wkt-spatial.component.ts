@@ -17,13 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  input,
-  output
-} from "@angular/core";
+import { Component, OnDestroy, OnInit, input, output } from "@angular/core";
 import { Layer, Map } from "leaflet";
 import { LeafletService } from "../../leaflet.service";
 import { MatDialog } from "@angular/material/dialog";

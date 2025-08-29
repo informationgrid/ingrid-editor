@@ -24,7 +24,7 @@ import {
   input,
   OnInit,
   output,
-  signal
+  signal,
 } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DocumentAbstract } from "../../../../store/document/document.model";

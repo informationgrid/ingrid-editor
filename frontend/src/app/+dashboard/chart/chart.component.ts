@@ -17,7 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectionStrategy, Component, Input, input } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  input,
+} from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { DecimalPipe } from "@angular/common";
 

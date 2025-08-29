@@ -17,12 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Component,
-  ElementRef,
-  input,
-  output
-} from "@angular/core";
+import { Component, ElementRef, input, output } from "@angular/core";
 
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";

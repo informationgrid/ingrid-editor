@@ -22,7 +22,7 @@ import {
   OnInit,
   TemplateRef,
   ViewContainerRef,
-  input
+  input,
 } from "@angular/core";
 import { ConfigService } from "../services/config/config.service";
 

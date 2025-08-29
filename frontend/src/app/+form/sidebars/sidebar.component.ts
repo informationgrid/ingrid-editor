@@ -17,7 +17,15 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, computed, effect, inject, input, OnInit, output } from "@angular/core";
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  OnInit,
+  output,
+} from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { TreeStore } from "../../store/tree/tree.store";
 import { BehaviorSubject, Subject } from "rxjs";
