@@ -94,19 +94,7 @@ export class DynamicDatabase {
       return of(children);
     }
 
-    const moreChildren = this.docService.getChildren(parentId, isAddress);
-    if (this.hideReadOnly) {
-      return moreChildren.pipe(
-        map((docs) =>
-          docs.filter(
-            (doc) =>
-              doc.hasWritePermission || doc.hasOnlySubtreeWritePermission,
-          ),
-        ),
-      );
-    } else {
-      return moreChildren;
-    }
+    return this.docService.getChildren(parentId, isAddress, this.hideReadOnly);
   }
 
   search(value: string, isAddress: boolean) {
