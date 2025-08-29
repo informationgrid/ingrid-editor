@@ -16,8 +16,10 @@ INSERT INTO catalog VALUES (100, 'test_catalog', 'uvp', 'Test Catalog', 'Test Ca
 INSERT INTO catalog VALUES (101, 'test_catalog_2', 'mcloud', 'Test Catalog 2', NULL, now(), now(), NULL);
 
 -- users
-INSERT INTO user_info VALUES (10, 'user1', NULL, '{"recentLogins": [1604100256021]}');
+INSERT INTO user_info VALUES (10, 'user1', NULL, '{"recentLogins": [1604100256021]}', 2);
+INSERT INTO user_info VALUES (11, 'author1', NULL, '{"recentLogins": [1604100256021]}', 4);
 INSERT INTO catalog_user_info VALUES (100, 10);
+INSERT INTO catalog_user_info VALUES (100, 11);
 
 -- documents and wrappers
 

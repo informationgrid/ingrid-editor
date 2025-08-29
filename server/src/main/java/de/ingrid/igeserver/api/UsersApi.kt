@@ -226,20 +226,6 @@ interface UsersApi {
         ) @RequestBody info: @Valid CatalogAdmin,
     ): ResponseEntity<Void>
 
-    @GetMapping(
-        value = ["/info/assignedUsers/{id}"],
-        produces = [MediaType.APPLICATION_JSON_VALUE],
-    )
-    @Operation
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])
-    fun assignedUsers(
-        principal: Principal,
-        @Parameter(
-            description = "The catalog id to query the assigned users from.",
-            required = true,
-        ) @PathVariable("id") id: String,
-    ): ResponseEntity<List<String>>
-
     @PostMapping(value = ["/user/catalog/{catalogId}"])
     @Operation
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "")])

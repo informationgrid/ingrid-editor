@@ -450,6 +450,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok().build()
     }
 
+    @Deprecated("use assignUserToCatalog")
     private fun addOrUpdateCatalogAdmin(catalogName: String, userIdent: String) {
         var user = userRepo.findByUserId(userIdent)
         val catalog = catalogService.getCatalogById(catalogName)
@@ -466,13 +467,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         }
 
         userRepo.save(user)
-    }
-
-    override fun assignedUsers(principal: Principal, id: String): ResponseEntity<List<String>> {
-        val result = catalogService.getUserOfCatalog(id)
-            .map { it.userId }
-
-        return ResponseEntity.ok(result)
     }
 
     override fun switchCatalog(principal: Principal, catalogId: String): ResponseEntity<Catalog> {
@@ -511,6 +505,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok(allIgeUserIds)
     }
 
+    // TODO: not used at the moment. Check if needed!
     override fun requestPasswordChange(principal: Principal, id: String): ResponseEntity<Void> {
         keycloakService.requestPasswordChange(id)
         return ResponseEntity.ok().build()
