@@ -250,6 +250,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return user
     }
 
+    @PreAuthorize("hasPermission(null,'manage_users')")
     override fun list(principal: Principal): ResponseEntity<List<User>> {
         // return all users except superadmins for superadmins and katadmins
         if (authUtils.isAdmin(principal)) {
@@ -261,6 +262,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok(userIds.mapNotNull { getSingleUser(principal, it) })
     }
 
+    @PreAuthorize("hasPermission(#userId,'manage_users')")
     override fun getResponsibilities(principal: Principal, userId: Int): ResponseEntity<List<Int>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         return ResponseEntity.ok(
@@ -268,6 +270,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         )
     }
 
+    @PreAuthorize("hasPermission(null,'manage_users')")
     override fun reassignResponsibilities(principal: Principal, oldUserId: Int, newUserId: Int): ResponseEntity<Void> {
         val newResponsibleUser =
             userRepo.findByIdOrNull(newUserId) ?: throw NotFoundException.withMissingUser(newUserId.toString())
@@ -297,7 +300,11 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok().build()
     }
 
-    override fun listCatAdmins(catalogId: String): ResponseEntity<List<User>> {
+    @PreAuthorize("hasPermission(null,'manage_users')")
+    override fun listCatAdmins(principal: Principal, catalogId: String): ResponseEntity<List<User>> {
+        if (!authUtils.isAdmin(principal)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val filteredUsers =
             catalogService.getAllCatalogUsers(catalogId).filter { user -> user.role == "cat-admin" }
         return ResponseEntity.ok(filteredUsers)
@@ -490,6 +497,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok().build()
     }
 
+    @PreAuthorize("hasPermission(null,'manage_users')")
     override fun listExternal(principal: Principal): ResponseEntity<List<User>> {
         val users = keycloakService.getUsersWithIgeRoles()
 
@@ -500,21 +508,25 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok(filteredUsers)
     }
 
+    @PreAuthorize("hasPermission(null,'manage_users')")
     override fun listInternal(principal: Principal): ResponseEntity<List<String>> {
         val allIgeUserIds = catalogService.getAllIgeUserIds()
         return ResponseEntity.ok(allIgeUserIds)
     }
 
     // TODO: not used at the moment. Check if needed!
-    override fun requestPasswordChange(principal: Principal, id: String): ResponseEntity<Void> {
-        keycloakService.requestPasswordChange(id)
+    @PreAuthorize("hasPermission(#login,'manage_users')")
+    override fun requestPasswordChange(principal: Principal, login: String): ResponseEntity<Void> {
+        keycloakService.requestPasswordChange(login)
         return ResponseEntity.ok().build()
     }
 
-    override fun resetPassword(principal: Principal, id: String): ResponseEntity<Void> {
-        val user = keycloakService.getUser(id)
-        val password = keycloakService.resetPassword(id)
-        logger.debug("Reset password for user $id to $password")
+    @PreAuthorize("hasPermission(#login,'manage_users')")
+    override fun resetPassword(principal: Principal, login: String): ResponseEntity<Void> {
+        if (!catalogService.canEditUser(principal, login)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        val user = keycloakService.getUser(login)
+        val password = keycloakService.resetPassword(login)
+        logger.debug("Reset password for user $login to $password")
         if (!developmentMode) {
             email.sendResetPasswordEmail(
                 user.email,

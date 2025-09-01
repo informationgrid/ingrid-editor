@@ -166,6 +166,7 @@ interface UsersApi {
         ],
     )
     fun listCatAdmins(
+        principal: Principal,
         @Parameter(description = "Id of the catalog.", required = true) @PathVariable("catalogId") catalogId: String,
     ): ResponseEntity<List<User>>
 
@@ -259,7 +260,7 @@ interface UsersApi {
     fun listExternal(principal: Principal): ResponseEntity<List<User>>
 
     @PostMapping(
-        value = ["/externalUsers/requestPasswordChange/{id}"],
+        value = ["/externalUsers/requestPasswordChange/{login}"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     @Operation
@@ -276,11 +277,11 @@ interface UsersApi {
         @Parameter(
             description = "The user login the password change request shall be initiated.",
             required = true,
-        ) @PathVariable("id") id: String,
+        ) @PathVariable("login") login: String,
     ): ResponseEntity<Void>
 
     @PostMapping(
-        value = ["/externalUsers/resetPassword/{id}"],
+        value = ["/externalUsers/resetPassword/{login}"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     @Operation
@@ -297,7 +298,7 @@ interface UsersApi {
         @Parameter(
             description = "The user login of which the password shall be reset.",
             required = true,
-        ) @PathVariable("id") id: String,
+        ) @PathVariable("login") login: String,
     ): ResponseEntity<Void>
 
     @GetMapping(
