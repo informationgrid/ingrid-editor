@@ -126,7 +126,7 @@ class UserMdAdminTests(val mockMvc: MockMvc) : IntegrationTest() {
         mockMvc.perform(
             put("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jacksonObjectMapper().writeValueAsString(User("test-user", id = 11)))
+                .content(jacksonObjectMapper().writeValueAsString(User("author1")))
                 .principal(mockPrincipal),
         )
             .andExpect(status().isOk)
@@ -137,7 +137,7 @@ class UserMdAdminTests(val mockMvc: MockMvc) : IntegrationTest() {
         mockMvc.perform(
             put("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jacksonObjectMapper().writeValueAsString(User("test-user", id = 12)))
+                .content(jacksonObjectMapper().writeValueAsString(User("mdadmin1")))
                 .principal(mockPrincipal),
         )
             .andExpect(status().isOk)
@@ -148,7 +148,7 @@ class UserMdAdminTests(val mockMvc: MockMvc) : IntegrationTest() {
         mockMvc.perform(
             put("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jacksonObjectMapper().writeValueAsString(User("test-user", id = 13)))
+                .content(jacksonObjectMapper().writeValueAsString(User("catadmin1")))
                 .principal(mockPrincipal),
         )
             .andExpect(status().isForbidden)
