@@ -18,8 +18,14 @@ INSERT INTO catalog VALUES (101, 'test_catalog_2', 'mcloud', 'Test Catalog 2', N
 -- users
 INSERT INTO user_info VALUES (10, 'user1', NULL, '{"recentLogins": [1604100256021]}', 2);
 INSERT INTO user_info VALUES (11, 'author1', NULL, '{"recentLogins": [1604100256021]}', 4);
+INSERT INTO user_info VALUES (12, 'mdadmin1', NULL, '{"recentLogins": [1604100256021]}', 3);
+INSERT INTO user_info VALUES (13, 'catadmin1', NULL, '{"recentLogins": [1604100256021]}', 2);
+INSERT INTO user_info VALUES (14, 'author2', NULL, '{"recentLogins": [1604100256021]}', 4);
 INSERT INTO catalog_user_info VALUES (100, 10);
 INSERT INTO catalog_user_info VALUES (100, 11);
+INSERT INTO catalog_user_info VALUES (100, 12);
+INSERT INTO catalog_user_info VALUES (100, 13);
+INSERT INTO catalog_user_info VALUES (100, 14);
 
 -- documents and wrappers
 
