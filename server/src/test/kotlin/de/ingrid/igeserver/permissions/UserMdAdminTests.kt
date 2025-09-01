@@ -25,11 +25,9 @@ import com.ninjasquad.springmockk.MockkBean
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.CatalogAdmin
 import de.ingrid.igeserver.model.User
-import io.kotest.core.annotation.Ignored
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import org.hamcrest.CoreMatchers.hasItem
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
