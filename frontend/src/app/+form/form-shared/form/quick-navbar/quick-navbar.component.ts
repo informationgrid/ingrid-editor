@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, inject, Input } from "@angular/core";
+import { Component, inject, Input, input } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { IgeDocument } from "../../../../models/ige-document";
 import { FormStateService } from "../../../form-state.service";
@@ -43,8 +43,8 @@ import { UiStore } from "../../../../store/ui.store";
   ],
 })
 export class QuickNavbarComponent {
-  @Input() sections: string[] = [];
-  @Input() hasOptionalFields = false;
+  readonly sections = input<string[]>([]);
+  readonly hasOptionalFields = input(false);
 
   @Input() numberOfErrors: number = 0;
 

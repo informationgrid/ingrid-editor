@@ -41,7 +41,7 @@ export class GeneralTable {
       );
 
       this.paginator.pageIndex = pageNumber;
-      this.paginator.page.next({
+      this.paginator.page.emit({
         pageIndex: pageNumber,
         pageSize: this.paginator.pageSize,
         length: this.paginator.length,

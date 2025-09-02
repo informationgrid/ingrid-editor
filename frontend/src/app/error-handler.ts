@@ -66,9 +66,12 @@ export class GlobalErrorHandler implements ErrorHandler {
         this.modalService.showIgeError(e);
       }
     } else if (error instanceof TypeError) {
-      const e = new IgeError(error.message);
-      e.stacktrace = error.stack;
-      this.modalService.showIgeError(e);
+      // ignore leaflet error in case a map was created and immediately destroyed
+      if (error.message.indexOf("reading '_leaflet_pos'") === -1) {
+        const e = new IgeError(error.message);
+        e.stacktrace = error.stack;
+        this.modalService.showIgeError(e);
+      }
     } else if (error.errorCode) {
       const e = new IgeError();
       e.setMessage(error.errorText);

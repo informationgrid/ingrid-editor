@@ -339,6 +339,11 @@ ige-section-wrapper > h2 {
   text-transform: none;
 }
 
+// Fix alignment for all mat-icon buttons with svg
+.mat-mdc-button-base .mat-icon:has(svg) {
+  min-height: unset;
+}
+
 ige-tree-header ige-search-input .mat-mdc-form-field-subscript-wrapper {
   height: 6px;
 }
@@ -692,6 +697,10 @@ ige-one-column-wrapper formly-group {
 
 formly-field {
   min-width: 130px;
+
+  &.two-sub-fields {
+    min-width: 270px;
+  }
 }
 
 formly-field:empty {

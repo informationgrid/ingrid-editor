@@ -37,6 +37,10 @@ import { IgeDocument } from "../models/ige-document";
 import { IgeError } from "../models/ige-error";
 import { QueryStore } from "../store/query/query.store";
 import { GeneralStore } from "../store/general.store";
+import {
+  ExpiredData,
+  ExpiredDataset,
+} from "../+reports/+tab-expiration/tab-expiration.model";
 
 export interface QuickFilter {
   id: string;
@@ -172,6 +176,37 @@ export class ResearchService {
       `${this.configuration.backendUrl}statistic/query`,
       backendQuery.get(),
     );
+  }
+
+  private expiredDatasetToDocument(exData: ExpiredDataset): IgeDocument {
+    return {
+      _uuid: exData.uuid,
+      title: exData.title,
+      _contentModified: exData.contentmodified,
+      _type: exData.type,
+      _parent: null,
+      _category: exData.category,
+      _responsibleUser: exData.responsibleUserId,
+      // for display purposes. information not passed from backend
+      hasWritePermission: true,
+    } as IgeDocument;
+  }
+
+  getExpiredDatasetStatistics(): Observable<ExpiredData> {
+    return this.http
+      .get<any>(`${this.configuration.backendUrl}statistic/expiredDatasets`)
+      .pipe(
+        map((data: ExpiredDataset[]) => {
+          return new ExpiredData(
+            data
+              .filter((d) => d.category == "data")
+              .map((item) => this.expiredDatasetToDocument(item)),
+            data
+              .filter((d) => d.category == "address")
+              .map((item) => this.expiredDatasetToDocument(item)),
+          );
+        }),
+      );
   }
 
   fetchQueries(): void {

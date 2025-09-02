@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, Input, OnInit, input, output } from "@angular/core";
 import { ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { delay, filter } from "rxjs/operators";
@@ -29,7 +29,7 @@ import {
   MatCardTitle,
 } from "@angular/material/card";
 import { MatSlideToggle } from "@angular/material/slide-toggle";
-import { FormlyModule } from "@ngx-formly/core";
+import { FormlyForm } from "@ngx-formly/core";
 
 @UntilDestroy()
 @Component({
@@ -44,15 +44,15 @@ import { FormlyModule } from "@ngx-formly/core";
     MatSlideToggle,
     ReactiveFormsModule,
     MatCardContent,
-    FormlyModule,
+    FormlyForm,
   ],
 })
 export class BehaviourItemComponent implements OnInit {
-  @Input() title: string;
+  readonly title = input<string>(undefined);
   @Input() description: string;
   @Input() control: any;
 
-  @Output() update = new EventEmitter<void>();
+  readonly update = output<void>();
 
   constructor() {}
 
@@ -64,12 +64,12 @@ export class BehaviourItemComponent implements OnInit {
         delay(0), // add tiny delay to get updated form state
         filter(() => form.dirty && form.valid),
       )
-      .subscribe(() => this.update.next());
+      .subscribe(() => this.update.emit());
   }
 
   updateFieldState(checked: boolean) {
     const form = this.control.form;
     checked ? form.enable() : form.disable();
-    this.update.next();
+    this.update.emit();
   }
 }

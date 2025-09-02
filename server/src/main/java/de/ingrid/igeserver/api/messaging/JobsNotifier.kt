@@ -33,6 +33,7 @@ data class DatasetInfo(val title: String, val type: String, val uuid: String, va
 enum class NotificationType(val uri: String) {
     URL_CHECK("/url-check"),
     IMPORT("/import"),
+    CODELIST_SYNCHRONISATION("/codelist-sync"),
 }
 
 class MessageTarget(val type: NotificationType, var catalogId: String? = null) {

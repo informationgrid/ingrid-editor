@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, Input, input, output } from "@angular/core";
 import { Subscription } from "rxjs";
 import {
   AbstractControl,
@@ -66,27 +66,27 @@ class MyErrorStateMatcher implements ErrorStateMatcher {
   ],
 })
 export class SearchInputComponent {
-  @Input() searchSub: Subscription;
+  readonly searchSub = input<Subscription>(undefined);
 
-  @Input() query: AbstractControl;
+  readonly query = input<AbstractControl>(undefined);
   @Input() autocompleteRef: MatAutocomplete;
-  @Input() minWidth = "100px";
-  @Input() flexWidth = false;
-  @Input() withButton = false;
-  @Input() rectangular = false;
-  @Input() placeholder = "Suchbegriff eingeben";
-  @Input() showSearchIcon = false;
+  readonly minWidth = input("100px");
+  readonly flexWidth = input(false);
+  readonly withButton = input(false);
+  readonly rectangular = input(false);
+  readonly placeholder = input("Suchbegriff eingeben");
+  readonly showSearchIcon = input(false);
   @Input() hint: string;
   @Input() errorText: string;
-  @Input() withWhiteBorder = true;
-  @Input() focus = true;
-  @Input() ariaLabel: string = "Suche";
-  @Output() buttonClick = new EventEmitter<string>();
+  readonly withWhiteBorder = input(true);
+  readonly focus = input(true);
+  readonly ariaLabel = input<string>("Suche");
+  readonly buttonClick = output<string>();
   hasFocus = false;
   matcher = new MyErrorStateMatcher(this);
 
   resetSearch() {
-    this.query.reset("");
-    this.searchSub?.unsubscribe();
+    this.query().reset("");
+    this.searchSub()?.unsubscribe();
   }
 }

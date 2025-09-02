@@ -115,4 +115,16 @@ interface DocumentRepository : JpaRepository<Document, Int> {
         nativeQuery = true,
     )
     fun findAddressByPerson(@Param("catalogIdentifier") catalogIdentifier: String, @Param("firstname") firstname: String?, @Param("lastname") lastname: String?): List<String>
+
+    @Query(
+        """
+        SELECT doc.uuid FROM document_wrapper dw, document doc, catalog cat WHERE dw.uuid = doc.uuid AND dw.deleted = 0 AND dw.catalog_id = cat.id AND doc.catalog_id = cat.id AND doc.is_latest = true AND cat.identifier = :catalogIdentifier AND EXISTS (
+          SELECT 1
+          FROM jsonb_array_elements(doc.data->'contact') AS c
+          WHERE c->>'connection' = :email
+      )
+    """,
+        nativeQuery = true,
+    )
+    fun findAddressesByOrganisationEmail(@Param("catalogIdentifier") catalogIdentifier: String, @Param("email") email: String): List<String>
 }

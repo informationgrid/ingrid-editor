@@ -21,19 +21,16 @@ package de.ingrid.igeserver.profiles.ingrid.exporter
 
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
+import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
-import de.ingrid.igeserver.profiles.ingrid.getISOFromElasticDocumentString
-import de.ingrid.igeserver.repository.DocumentWrapperRepository
 import de.ingrid.igeserver.services.DocumentCategory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
 @Service
 class IngridISOExporter(
-    @Qualifier("ingridIDFExporter") idfExporter: IngridIDFExporter,
-    @Qualifier("ingridLuceneExporter") luceneExporter: IngridLuceneExporter,
-    documentWrapperRepository: DocumentWrapperRepository,
-) : IngridIndexExporter(idfExporter, luceneExporter, documentWrapperRepository) {
+    @Qualifier("ingridIDFExporter") val idfExporter: IngridIDFExporter,
+) : IgeExporter {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
@@ -46,7 +43,7 @@ class IngridISOExporter(
     )
 
     override fun run(doc: Document, catalogId: String, options: ExportOptions): String {
-        val indexString = super.run(doc, catalogId, options) as String
-        return getISOFromElasticDocumentString(indexString)
+        val idf = idfExporter.run(doc, catalogId, options)
+        return getISOFromIdfString(idf)
     }
 }

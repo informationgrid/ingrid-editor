@@ -34,6 +34,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl
 import org.keycloak.OAuth2Constants
 import org.keycloak.admin.client.CreatedResponseUtil
+import org.keycloak.admin.client.JacksonProvider
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.admin.client.resource.RealmResource
@@ -178,7 +179,9 @@ class KeycloakService : UserManagementService {
         if (this.keycloakProxyUrl != null) {
             client.defaultProxy(proxyHost, proxyPort)
         }
-        return client.connectionPoolSize(10).build()
+        return client
+            .register(JacksonProvider::class.java, 100)
+            .connectionPoolSize(10).build()
     }
 
     override fun getUser(login: String): User {

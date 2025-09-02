@@ -9,7 +9,7 @@
         <!-- exchangable sidebar -->
         <as-split-area [size]="sidebarWidth" id="sidebar">
             <ige-sidebar
-                [address]="address"
+                [address]="address()"
                 (dropped)="handleDrop($event)"
             ></ige-sidebar>
         </as-split-area>
@@ -39,10 +39,10 @@
                             #formInfo
                             [form]="form"
                             [model]="formInfoModel"
-                            [forAddress]="address"
+                            [forAddress]="address()"
                             [disableTitleEdit]="
                                 formOptions.formState.disabled === true ||
-                                (address && metadata()?.docType !== 'FOLDER')
+                                (address() && metadata()?.docType !== 'FOLDER')
                             "
                         >
                         </ige-form-info>
@@ -90,7 +90,7 @@
                     @if (metadata()?.docType === "FOLDER") {
                         <div class="folder-content">
                             <ige-folder-dashboard
-                                [isAddress]="address"
+                                [isAddress]="address()"
                             ></ige-folder-dashboard>
                         </div>
                     }

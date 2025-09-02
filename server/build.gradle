@@ -5,12 +5,13 @@ import java.nio.file.Paths
 //import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
 
 buildscript {
-    ext.kotlin_version = '2.1.0'
-    ext.spring_boot_version = '3.4.6'
-    ext.kotest_version = '5.9.1'
+    ext.kotlin_version = '2.2.10'
+    ext.spring_boot_version = '3.5.5'
+    ext.kotest_version = '6.0.1'
     ext.jte_version = '3.2.1'
-    ext.geotools_version = '32.2'
+    ext.geotools_version = '33.2'
     ext['log4j2.version'] = '2.23.1'
+    ext.ktor_client = '3.2.3'
 }
 
 plugins {
@@ -25,12 +26,12 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.4.5'
-    id "com.gorylenko.gradle-git-properties" version "2.5.0"
-//    id 'io.kotest' version '0.4.11'
+    id "com.gorylenko.gradle-git-properties" version "2.5.2"
+    id 'io.kotest' version "$kotest_version"
     id "com.github.ben-manes.versions" version "0.52.0"
     id "gg.jte.gradle" version "$jte_version"
-    id "org.hibernate.orm" version "6.5.2.Final"
-    id "org.jlleitschuh.gradle.ktlint" version "12.2.0"
+    id "org.hibernate.orm" version "6.6.20.Final"
+    id "org.jlleitschuh.gradle.ktlint" version "13.1.0"
     id "org.jetbrains.kotlin.kapt" version "$kotlin_version"
 }
 
@@ -98,8 +99,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation 'org.apache.logging.log4j:log4j-api-kotlin:1.5.0'
-    implementation 'org.apache.tika:tika-core:3.1.0'
-    implementation 'org.glassfish.jersey.media:jersey-media-multipart:3.1.10'
+    implementation 'org.apache.tika:tika-core:3.2.2'
+    implementation 'org.glassfish.jersey.media:jersey-media-multipart:3.1.11'
 
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -129,15 +130,16 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "com.gravity9:json-patch-path:2.0.2"
 
     // JSON schema validation
-    implementation 'com.networknt:json-schema-validator:1.5.6'
+    implementation 'com.networknt:json-schema-validator:1.5.8'
 
     // Keycloak
     // Keycloak implementation explained here: https://github.com/keycloak/keycloak/issues/12514#issuecomment-1209109769
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.keycloak:keycloak-admin-client:26.0.4'
+    implementation 'org.keycloak:keycloak-admin-client:26.0.6'
 
     // OpenAI
     // import Kotlin API client BOM
@@ -148,21 +150,21 @@ dependencies {
     runtimeOnly 'io.ktor:ktor-client-okhttp'
 
     // Markdown
-    implementation "org.commonmark:commonmark:0.24.0"
-    implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.24.0"
-    implementation "org.commonmark:commonmark-ext-gfm-tables:0.24.0"
+    implementation "org.commonmark:commonmark:0.25.1"
+    implementation "org.commonmark:commonmark-ext-yaml-front-matter:0.25.1"
+    implementation "org.commonmark:commonmark-ext-gfm-tables:0.25.1"
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11'
 
     // PostgreSQL
-    implementation 'org.postgresql:postgresql:42.7.5'
+    implementation 'org.postgresql:postgresql:42.7.7'
     implementation "org.hibernate.orm:hibernate-core"
-    implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.5'
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.10.3'
 
-    implementation "de.ingrid:ingrid-codelist-service:7.6.0-SNAPSHOT"
+    implementation "de.ingrid:ingrid-codelist-service:8.0.0"
     implementation 'javax.validation:validation-api:2.0.1.Final'
-    implementation 'org.apache.commons:commons-lang3:3.17.0'
-    implementation 'org.apache.commons:commons-text:1.13.0'
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
+    implementation 'org.apache.commons:commons-text:1.14.0'
 
     // GeoTools
     implementation("org.geotools.xsd:gt-xsd-gml3:$geotools_version") {
@@ -187,24 +189,37 @@ dependencies {
     }
 
     // RDF for DCAT-AP.de
-    implementation "org.apache.jena:apache-jena-libs:5.3.0"
+    implementation "org.apache.jena:apache-jena-libs:5.5.0"
+
+    // DCAT-parser from ingrid-harvester for DCAT-AP.de and DCAT-AP.eia
+    implementation("com.wemove:dcat-parser:0.1.0-SNAPSHOT")
 
     // Test
+    testImplementation "io.kotest:kotest-framework-engine:$kotest_version"
     testImplementation "io.kotest:kotest-runner-junit5:$kotest_version" // for kotest framework
     testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version" // for kotest core jvm assertions
     testImplementation "io.kotest:kotest-assertions-json:$kotest_version" // for comparing json
-    testImplementation 'io.kotest.extensions:kotest-extensions-spring:1.3.0' // to wire dependencies using Spring
-    testImplementation 'io.mockk:mockk:1.13.17'
+    testImplementation "io.kotest:kotest-extensions-spring:$kotest_version" // to wire dependencies using Spring
+    testImplementation "io.kotest:kotest-extensions-testcontainers-jvm:$kotest_version"
+    testImplementation 'io.mockk:mockk:1.14.5'
     testImplementation "com.ninja-squad:springmockk:4.0.2"
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.mockito"
     }
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation 'org.testcontainers:postgresql'
 
     // Elasticsearch communication
-    implementation("com.jillesvangurp:search-client:2.4.1")
+    implementation("com.jillesvangurp:search-client:2.6.0")
+    implementation("io.ktor:ktor-client-core:$ktor_client")
+    implementation("io.ktor:ktor-client-auth:$ktor_client")
+    implementation("io.ktor:ktor-client-logging:$ktor_client")
+    implementation("io.ktor:ktor-client-serialization:$ktor_client")
+    implementation("io.ktor:ktor-client-json:$ktor_client")
+//    implementation("io.ktor:ktor-client-okhttp:$ktor_client")
 
-    implementation('de.ingrid:ingrid-ibus-client:7.6.0-SNAPSHOT') {
+    implementation('de.ingrid:ingrid-ibus-client:8.0.0') {
         exclude group: 'org.apache.logging.log4j'
         exclude group: 'org.slf4j'
     }
@@ -220,8 +235,8 @@ dependencyManagement {
         dependency "commons-collections:commons-collections:3.2.2"
 
         // conflict with kotest and search-client -> kotlinx-serialization
-        dependency "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.0"
-        dependency "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.0"
+        dependency "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.9.0"
+        dependency "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.9.0"
     }
 }
 
@@ -230,6 +245,12 @@ description = 'IGE-NG Server'
 
 springBoot {
     buildInfo()
+}
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
+    }
 }
 
 if (hasProperty('filename')) {
@@ -432,6 +453,6 @@ tasks.register('checkForSnapshots', {
 })
 
 ktlint {
-    version.set("1.6.0")
+    version.set("1.7.1")
 }
 

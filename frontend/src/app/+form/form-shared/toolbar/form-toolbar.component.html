@@ -109,7 +109,7 @@
         <div class="flex-1"></div>
 
         <span class="save-buttons">
-            <ng-container *ngFor="let button of buttons_right">
+            @for (button of buttons_right; track button) {
                 @if (!button.isSeparator && !button.label && !button.hidden) {
                     <button
                         mat-icon-button
@@ -194,7 +194,7 @@
                         }
                     </mat-menu>
                 }
-            </ng-container>
+            }
         </span>
     </mat-toolbar-row>
 </mat-toolbar>

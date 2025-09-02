@@ -36,6 +36,7 @@ import de.ingrid.igeserver.repository.RoleRepository
 import de.ingrid.igeserver.repository.UserRepository
 import de.ingrid.igeserver.utils.AuthUtils
 import org.apache.logging.log4j.kotlin.logger
+import org.springframework.context.annotation.Lazy
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -50,7 +51,7 @@ class CatalogService(
     private val groupRepo: GroupRepository,
     private val roleRepo: RoleRepository,
     private val authUtils: AuthUtils,
-    private val igeAclService: IgeAclService,
+    @Lazy private val igeAclService: IgeAclService,
     private val keycloakService: UserManagementService,
     private val catalogProfiles: List<CatalogProfile>,
 ) {
@@ -253,7 +254,7 @@ class CatalogService(
         userRepo.save(user)
     }
 
-    val catAdminPermisssions = listOf(
+    val catAdminPermissions = listOf(
         Permissions.manage_messages.name,
         Permissions.manage_catalog.name,
         Permissions.manage_codelist_repository.name,
@@ -292,20 +293,28 @@ class CatalogService(
         val permissions = if (isSuperAdmin) {
             superAdminPermissions
         } else if (isCatAdmin) {
-            catAdminPermisssions
+            catAdminPermissions
         } else if (isMdAdmin) {
             listOf(Permissions.manage_users.name) + determineNonAdminUserPermissions(principal)
         } else {
             determineNonAdminUserPermissions(principal)
         }
 
-        return if (user != null && user.catalogs.size > 0) {
+        return if (user != null && user.catalogs.isNotEmpty()) {
             getProfileFromCatalog(getCurrentCatalogForPrincipal(principal))
                 .profileSpecificPermissions(permissions, principal)
         } else {
             permissions
         }
     }
+
+    fun getPermission(permission: String): Permissions? = try {
+        Permissions.valueOf(permission)
+    } catch (_: IllegalArgumentException) {
+        null
+    }
+
+    fun hasPermission(principal: Authentication, permission: Permissions): Boolean = getPermissions(principal).contains(permission.name)
 
     private fun determineNonAdminUserPermissions(principal: Authentication): MutableList<String> {
         // anyone can export

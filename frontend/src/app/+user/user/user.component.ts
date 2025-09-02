@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 
 import {
   Component,
@@ -86,8 +86,8 @@ import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
     MatMenu,
     MatMenuItem,
     HeaderMoreComponent,
-    FormlyModule,
     MATOMO_DIRECTIVES,
+    FormlyForm,
   ],
   providers: [UserManagementService],
 })
@@ -221,16 +221,15 @@ export class UserComponent implements OnInit, OnDestroy {
       if (allClear)
         this.dialog
           .open(NewUserDialogComponent, {
+            width: "490px",
             hasBackdrop: true,
             disableClose: true,
           })
           .afterClosed()
           .subscribe((result) => {
-            if (result?.id) {
-              this.userService
-                .getUsers()
-                .subscribe(() => this.userService.selectedUser$.set(result));
-            }
+            this.userService
+              .getUsers()
+              .subscribe(() => this.userService.selectedUser$.set(result));
           });
     });
   }

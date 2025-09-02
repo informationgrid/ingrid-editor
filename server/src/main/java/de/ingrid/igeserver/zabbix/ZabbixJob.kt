@@ -41,11 +41,11 @@ class ZabbixJob(
     override val log = logger()
 
     override fun run(context: JobExecutionContext) {
-        log.debug("Starting Task: ZabbixJob")
         val info = prepareJob(context)
+        log.debug("Starting Task: ZabbixJob for '${info.catalogId}' with UUID: ${info.data.uuid}")
 
         zabbixService.addOrUpdateDocument(info.data)
-        log.debug("Task finished: ZabbixJob for '${info.catalogId}'")
+        log.debug("Task finished: ZabbixJob for '${info.catalogId}' with UUID: ${info.data.uuid}")
     }
 
     private fun prepareJob(context: JobExecutionContext): JobInfo {

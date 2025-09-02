@@ -19,15 +19,14 @@
  */
 import {
   Component,
-  EventEmitter,
   Input,
   OnInit,
-  Output,
   ViewChild,
   input,
   computed,
   Signal,
   AfterViewInit,
+  output,
 } from "@angular/core";
 import {
   animate,
@@ -36,7 +35,7 @@ import {
   transition,
   trigger,
 } from "@angular/animations";
-import { FlowDirective, NgxFlowModule, Transfer } from "@flowjs/ngx-flow";
+import { FlowConfig, NgxFlowModule, Transfer } from "@flowjs/ngx-flow";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { map, skip } from "rxjs/operators";
 import { IgeError } from "../../models/ige-error";
@@ -64,35 +63,37 @@ import { AsyncPipe } from "@angular/common";
 })
 export class UploadComponent implements AfterViewInit {
   /** Link text */
-  @Input() text = this.transloco.translate("form.placeholder.chooseFile");
+  readonly text = input(
+    this.transloco.translate("form.placeholder.chooseFile"),
+  );
   /** Name used in form which will be sent in HTTP request. */
-  @Input() param = "file";
+  readonly param = input("file");
   /** Target URL for file uploading. */
-  @Input() targetAnalyze;
+  readonly targetAnalyze = input(undefined);
 
   /** File extension that accepted, same as 'accept' of <input type="file" />.
    By the default, it's set to 'image/*'. */
-  @Input() accept = "*.*";
+  readonly accept = input("*.*");
 
   /* automatically upload files after drop/select */
-  @Input() autoupload = true;
+  readonly autoupload = input(true);
 
   /* hide everything except the progressed files */
-  @Input() showOnlyProgress = false;
+  readonly showOnlyProgress = input(false);
 
   /* allow only specific file types when given */
-  @Input() allowedUploadTypes: string[];
+  readonly allowedUploadTypes = input<string[]>(undefined);
 
   @Input() infoText: string;
   enableFileUploadOverride = input<boolean>();
   enableFileUploadReuse = input<boolean>();
   enableFileUploadRename = input<boolean>();
 
-  @Output() complete = new EventEmitter<void>();
-  @Output() chosenFiles = new EventEmitter<TransfersWithErrorInfo[]>();
-  @Output() removeFile = new EventEmitter<string>();
+  readonly complete = output<void>();
+  readonly chosenFiles = output<TransfersWithErrorInfo[]>();
+  readonly removeFile = output<string>();
 
-  @ViewChild("flow") flow: FlowDirective;
+  @ViewChild("flow") flow: FlowConfig;
 
   target = input.required<string>();
   multiple = input<boolean>();
@@ -136,12 +137,12 @@ export class UploadComponent implements AfterViewInit {
       )
       .subscribe((result) => {
         this.filesForUpload.next(result);
-        this.chosenFiles.next(result);
+        this.chosenFiles.emit(result);
       });
 
     this.flow.events$.pipe(untilDestroyed(this)).subscribe(async (event) => {
       try {
-        if (this.autoupload && event.type === "filesSubmitted") {
+        if (this.autoupload() && event.type === "filesSubmitted") {
           const flowFiles = <flowjs.FlowFile[]>event.event[0];
           await this.uploadService.updateAuthenticationToken(flowFiles);
           this.resetParametersForSubmittedFiles(flowFiles);
@@ -159,7 +160,7 @@ export class UploadComponent implements AfterViewInit {
           const fileIdentifier = this.getFileIdentifier(event.event);
           this._errors[fileIdentifier] = null;
           this.errors.next(this._errors);
-          this.complete.next(messageSuccess);
+          this.complete.emit(messageSuccess);
         }
       } catch (e) {
         console.error("Error uploading file", e);
@@ -177,7 +178,7 @@ export class UploadComponent implements AfterViewInit {
       }
       const invalidFormat = this.validateUploadTypes(files);
       if (invalidFormat != undefined) {
-        const allowedTypes = this.allowedUploadTypes.join(", ");
+        const allowedTypes = this.allowedUploadTypes().join(", ");
         throw new IgeError(
           `Das Hochladen von Dateien im [${invalidFormat}] Format ist nicht erlaubt.
            Zugelassene Dateiformate sind: ${allowedTypes}.`,
@@ -199,10 +200,11 @@ export class UploadComponent implements AfterViewInit {
 
   // it returns an invalid upload type when identified
   private validateUploadTypes(files: flowjs.FlowFile[]): string {
-    if (this.allowedUploadTypes == undefined) return;
+    const allowedUploadTypes = this.allowedUploadTypes();
+    if (allowedUploadTypes == undefined) return;
     for (const file of files) {
       const type = file.getType();
-      const isTypeAllowed = this.allowedUploadTypes.includes(type);
+      const isTypeAllowed = allowedUploadTypes.includes(type);
       if (!isTypeAllowed) return type;
     }
   }
@@ -236,7 +238,7 @@ export class UploadComponent implements AfterViewInit {
     this._errors[transfer.id] = null;
     transfer.success = true;
     this.errors.next(this._errors);
-    this.complete.next();
+    this.complete.emit();
   }
 
   setAdditionalUploadParameter(params: any) {

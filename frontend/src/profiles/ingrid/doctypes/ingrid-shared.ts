@@ -54,7 +54,6 @@ import { IgeError } from "../../../app/models/ige-error";
 import { CodelistStore } from "../../../app/store/codelist/codelist.store";
 import { ReferenceViewComponent } from "../components/reference-view/reference-view.component";
 import { DocumentService } from "../../../app/services/document/document.service";
-import { CatalogService } from "../../../app/+catalog/services/catalog.service";
 import { GeneralStore } from "../../../app/store/general.store";
 
 interface GeneralSectionOptions {
@@ -344,7 +343,17 @@ export abstract class IngridShared extends BaseDoctype {
                         (address: any) => address.type?.key === "12",
                       )
                     : false,
-                message: "Es muss mindestens einen 'Ansprechpartner MD' geben.",
+                message: () =>
+                  this.transloco.translate(
+                    "form.validationMessages.missingContact",
+                    {
+                      type: this.codelistStore.getCodelistEntryValueByKey(
+                        "505",
+                        "12",
+                        ConfigService.catalogId,
+                      ),
+                    },
+                  ),
               },
               atLeastOnePointOfContactWhenAdV: {
                 expression: (ctrl: FormControl, field: FormlyFieldConfig) =>
@@ -355,7 +364,17 @@ export abstract class IngridShared extends BaseDoctype {
                         (address: any) => address.type?.key === "7",
                       )
                     : false),
-                message: "Es muss mindestens einen 'Ansprechpartner' geben.",
+                message: () =>
+                  this.transloco.translate(
+                    "form.validationMessages.missingContact",
+                    {
+                      type: this.codelistStore.getCodelistEntryValueByKey(
+                        "505",
+                        "7",
+                        ConfigService.catalogId,
+                      ),
+                    },
+                  ),
               },
               atLeastOneOtherAddress: {
                 expression: (ctrl: FormControl) =>
@@ -365,8 +384,17 @@ export abstract class IngridShared extends BaseDoctype {
                         (address: any) => address.type?.key !== "12",
                       )
                     : false,
-                message:
-                  "Neben dem 'Ansprechpartner MD' muss mindestens eine weitere Adresse angegeben werden.",
+                message: () =>
+                  this.transloco.translate(
+                    "form.validationMessages.missingAnotherContact",
+                    {
+                      type: this.codelistStore.getCodelistEntryValueByKey(
+                        "505",
+                        "12",
+                        ConfigService.catalogId,
+                      ),
+                    },
+                  ),
               },
             },
           }),
@@ -396,11 +424,11 @@ export abstract class IngridShared extends BaseDoctype {
     }
 
     const message = `
-      Wird diese Auswahl gewählt, so:
+      Bei Auswahl dieses Merkmals wird:
       <ul>
-        <li>wird "Es gelten keine Zugriffsbeschränkungen" zu den Zugriffsbeschränkungen hinzugefügt</li>
-        <li>wird die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li>
-        <li>wird dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li>
+        <li>"Es gelten keine Zugriffsbeschränkungen" zu den Zugriffsbeschränkungen hinzugefügt</li>
+        <li>die Angabe einer Opendata-Kategorie unter "Verschlagwortung" verpflichtend</li>
+        <li>dem Datensatz beim Export in ISO19139 Format automatisch das Schlagwort "opendata" hinzugefügt</li>
       </ul>`;
     return this.showConfirmDialog(message, cookieId).pipe(
       map((decision) => {
@@ -1670,16 +1698,16 @@ export abstract class IngridShared extends BaseDoctype {
         hasInlineContextHelp: true,
         wrappers: ["inline-help", "form-field"],
       }),
-      this.addAutoCompleteInline(
-        "generalResourceType",
-        "Ressourcen Typ (generell)",
-        {
-          options: this.getCodelistForSelect("3390", "generalResourceType"),
-          codelistId: "3390",
-          hasInlineContextHelp: true,
-          wrappers: ["inline-help", "form-field"],
+      this.addSelectInline("generalResourceType", "Ressourcen Typ (generell)", {
+        options: this.getCodelistForSelect("3390", "generalResourceType"),
+        codelistId: "3390",
+        hasInlineContextHelp: true,
+        wrappers: ["inline-help", "form-field"],
+        expressions: {
+          "props.required": (field: FormlyFieldConfig) =>
+            field.options.formState.mainModel?.publication?.doi,
         },
-      ),
+      }),
       this.addAutoCompleteInline("resourceType", "Ressourcen Typ", {
         options: this.getCodelistForSelect("3386", "resourceType"),
         codelistId: "3386",

@@ -44,7 +44,7 @@ class ZabbixModel {
         val name: String,
         val retrieve_mode: Int = 1,
         val url: String,
-        val required: String,
+        val required: String = "",
         val status_codes: String = "200",
         val no: Int = 1,
     )

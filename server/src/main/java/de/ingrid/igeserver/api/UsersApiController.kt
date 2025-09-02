@@ -47,6 +47,7 @@ import org.springframework.core.env.Environment
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
@@ -97,6 +98,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
     @Autowired
     lateinit var generalProperties: GeneralProperties
 
+    @PreAuthorize("hasPermission(#user,'manage_users')")
     override fun createUser(principal: Principal, user: User, newExternalUser: Boolean): ResponseEntity<User> {
         // user login must be lowercase
         validateLoginName(user)
@@ -167,6 +169,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         }
     }
 
+    @PreAuthorize("hasPermission(#userId,'manage_users')")
     @Transactional(noRollbackFor = [MailException::class])
     override fun deleteUser(principal: Principal, userId: Int): ResponseEntity<Void> {
         val frontendUser =
@@ -300,6 +303,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok(filteredUsers)
     }
 
+    @PreAuthorize("hasPermission(#user,'manage_users')")
     override fun updateUser(principal: Principal, user: User): ResponseEntity<User> {
         if (!catalogService.canEditUser(principal, user.login)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
@@ -429,6 +433,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok(null)
     }
 
+    @PreAuthorize("hasPermission(#userId,'manage_all_catalogs')")
     override fun assignUserToCatalog(
         principal: Principal,
         userId: String,
@@ -445,6 +450,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok().build()
     }
 
+    @Deprecated("use assignUserToCatalog")
     private fun addOrUpdateCatalogAdmin(catalogName: String, userIdent: String) {
         var user = userRepo.findByUserId(userIdent)
         val catalog = catalogService.getCatalogById(catalogName)
@@ -461,13 +467,6 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         }
 
         userRepo.save(user)
-    }
-
-    override fun assignedUsers(principal: Principal, id: String): ResponseEntity<List<String>> {
-        val result = catalogService.getUserOfCatalog(id)
-            .map { it.userId }
-
-        return ResponseEntity.ok(result)
     }
 
     override fun switchCatalog(principal: Principal, catalogId: String): ResponseEntity<Catalog> {
@@ -506,6 +505,7 @@ class UsersApiController(val behaviourService: BehaviourService) : UsersApi {
         return ResponseEntity.ok(allIgeUserIds)
     }
 
+    // TODO: not used at the moment. Check if needed!
     override fun requestPasswordChange(principal: Principal, id: String): ResponseEntity<Void> {
         keycloakService.requestPasswordChange(id)
         return ResponseEntity.ok().build()

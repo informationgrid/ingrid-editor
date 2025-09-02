@@ -4,14 +4,15 @@
     [disabledCondition]="disabledCondition()"
     (selected)="updateParent($event, 'Tree')"
     [setActiveNode]="activeTreeNode"
-    [forAddresses]="forAddress"
+    [forAddresses]="forAddress()"
     [showOnlyFolders]="showOnlyFolders"
     [showHeaderOptions]="false"
     [hideReadOnly]="false"
     [ignoreTreeUpdates]="true"
+    [allowMultiSelectionMode]="false"
 ></ige-tree>
 
-@if (!disableRoot) {
+@if (!disableRoot()) {
     <div class="selection-divider"></div>
     <div class="side-padding dlg-field-hero-label">Oder anlegen unter</div>
     <ige-document-list-item

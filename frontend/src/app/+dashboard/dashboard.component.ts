@@ -46,7 +46,12 @@ import { DocumentListItemComponent } from "../shared/document-list-item/document
 import { AsyncPipe } from "@angular/common";
 import { GeneralStore } from "../store/general.store";
 import { MATOMO_DIRECTIVES } from "ngx-matomo-client";
+import { DashboardService } from "./dashboard.service";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { tap } from "rxjs/operators";
+import { CatalogService } from "../+catalog/services/catalog.service";
 
+@UntilDestroy()
 @Component({
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
@@ -67,12 +72,18 @@ export class DashboardComponent implements OnInit {
   canCreateAddress: boolean;
   canCreateDataset: boolean;
   canImport: boolean;
-  recentDocs: Signal<DocumentAbstract[]> = computed(() => {
-    return this.generalStore.latestDocuments().slice(0, 5);
-  });
-  recentPublishedDocs: Signal<DocumentAbstract[]> = computed(() => {
-    return this.generalStore.latestPublishedDocuments().slice(0, 5);
-  });
+  onlyModifiedFromCurrentUser = signal<boolean>(false);
+  onlyPublishedFromCurrentUser = signal<boolean>(false);
+
+  recentlyModifiedDocs = this.dashboardService.fetchRecentDocs(
+    this.onlyModifiedFromCurrentUser,
+    false,
+  );
+  recentlyPublishedDocs = this.dashboardService.fetchRecentDocs(
+    this.onlyPublishedFromCurrentUser,
+    true,
+  );
+
   oldestExpiredDocs: Signal<DocumentAbstract[]> = computed(() => {
     return this.generalStore.oldestExpiredDocuments().slice(0, 5);
   });
@@ -85,6 +96,8 @@ export class DashboardComponent implements OnInit {
     private dialog: MatDialog,
     private docService: DocumentService,
     private messageService: MessageService,
+    private dashboardService: DashboardService,
+    private catalogService: CatalogService,
   ) {
     this.messages$ = this.messageService.messages$;
     this.canCreateAddress = configService.hasPermission("can_create_address");
@@ -94,7 +107,16 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.fetchStatistic();
-    this.fetchData();
+    this.catalogService
+      .getExpiryDuration()
+      .pipe(
+        untilDestroyed(this),
+        // update Expired documents if expiry duration is set
+        tap((expiryDuration) =>
+          expiryDuration > 0 ? this.updateExpired() : null,
+        ),
+      )
+      .subscribe();
     this.messageService.loadStoredMessages();
   }
 
@@ -102,12 +124,6 @@ export class DashboardComponent implements OnInit {
     this.docService.getStatistic().subscribe((response) => {
       this.chartDataPublished.set([response.numDrafts, response.numPublished]);
     });
-  }
-
-  fetchData() {
-    this.updateRecent();
-    this.updatePublished();
-    this.updateExpired();
   }
 
   createNewDocument() {
@@ -166,14 +182,6 @@ export class DashboardComponent implements OnInit {
         isFolder: true,
       } as CreateOptions,
     });
-  }
-
-  updateRecent(fromCurrentUser: boolean = false) {
-    this.docService.findRecentDrafts(fromCurrentUser);
-  }
-
-  updatePublished(fromCurrentUser: boolean = false) {
-    this.docService.findRecentPublished(fromCurrentUser);
   }
 
   showExpiredFromCurrentUser = signal<boolean>(false);

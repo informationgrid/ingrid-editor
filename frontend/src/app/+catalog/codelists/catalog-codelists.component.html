@@ -21,10 +21,27 @@
             verwendet, mit dem eingestellten Defaultwert vorausgefüllt.
         </p>
 
-        <div>
-            <button mat-button color="primary" (click)="resetAllCodelists()">
+        <div class="flex-col gap-12">
+            <button
+                mat-button
+                color="primary"
+                (click)="resetAllCodelists(codelistIdInput)"
+            >
                 Alle Codelisten zurücksetzen
             </button>
+            @if (showSyncButton()) {
+                <mat-form-field appearance="outline">
+                    <mat-label>Zurückzusetzende Codelist-ID</mat-label>
+                    <input matInput [(ngModel)]="codelistIdInput" />
+                </mat-form-field>
+                <button
+                    mat-button
+                    color="primary"
+                    (click)="syncCodelistValues($event)"
+                >
+                    Codelistenwerte synchronisieren
+                </button>
+            }
         </div>
     </ng-container>
 

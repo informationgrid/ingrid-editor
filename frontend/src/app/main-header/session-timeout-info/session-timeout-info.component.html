@@ -1,7 +1,7 @@
 <div
     class="timeout-wrapper"
     [class.warn]="timeout < 300"
-    [class.auto-hide]="autoHide"
+    [class.auto-hide]="autoHide()"
     tabindex="0"
     cdkMonitorElementFocus
     aria-labelledby="timeout-info"

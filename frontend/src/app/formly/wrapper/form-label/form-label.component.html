@@ -1,9 +1,9 @@
 <div class="label-wrapper">
     <!-- [id] is used for aria-labelledby with connected fields due to accessibility requirements -->
-    <label [id]="fieldId" (click)="showContextHelp($event)">
+    <label [id]="fieldId()" (click)="showContextHelp($event)">
         <ng-content></ng-content>
     </label>
-    @if (hasContextHelp) {
+    @if (hasContextHelp()) {
         <div class="context-help">
             <mat-icon
                 class="material-icons-outlined"
@@ -15,7 +15,7 @@
                 aria-hidden="false"
                 aria-haspopup="dialog"
                 matTooltip="Eingabehilfe"
-                [attr.aria-labelledby]="fieldId"
+                [attr.aria-labelledby]="fieldId()"
             ></mat-icon>
         </div>
     }

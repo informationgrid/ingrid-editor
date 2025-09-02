@@ -70,11 +70,6 @@ data class Link(
     val title: String,
 )
 
-data class LimitAndOffset(
-    val queryLimit: Int,
-    val queryOffset: Int,
-)
-
 data class MoveRecordsDTO(
     val recordId: String,
     val folderId: String?,

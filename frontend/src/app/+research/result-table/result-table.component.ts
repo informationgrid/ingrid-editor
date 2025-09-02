@@ -21,11 +21,11 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   Input,
   OnInit,
-  Output,
   ViewChild,
+  input,
+  output,
 } from "@angular/core";
 import { ResearchResponse } from "../research.service";
 import {
@@ -58,15 +58,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { ConfigService } from "../../services/config/config.service";
 import { ExportService } from "../../services/export.service";
 import { TranslocoDirective, TranslocoService } from "@jsverse/transloco";
-import {
-  DatePipe,
-  NgFor,
-  NgIf,
-  NgSwitch,
-  NgSwitchCase,
-  NgSwitchDefault,
-  NgTemplateOutlet,
-} from "@angular/common";
+import { DatePipe, NgTemplateOutlet } from "@angular/common";
 import { ResultTableHeaderComponent } from "./result-table-header/result-table-header.component";
 import { MatDivider } from "@angular/material/divider";
 import { DocumentIconComponent } from "../../shared/document-icon/document-icon.component";
@@ -81,24 +73,19 @@ import { MatIcon } from "@angular/material/icon";
   styleUrls: ["./result-table.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgIf,
     ResultTableHeaderComponent,
     MatDivider,
     TranslocoDirective,
     MatTable,
     MatSort,
-    NgFor,
     MatColumnDef,
     MatHeaderCellDef,
     MatHeaderCell,
     MatSortHeader,
     MatCellDef,
     MatCell,
-    NgSwitch,
-    NgSwitchCase,
     DocumentIconComponent,
     NgTemplateOutlet,
-    NgSwitchDefault,
     MatIconButton,
     MatTooltip,
     MatMenuTrigger,
@@ -118,11 +105,11 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     this.updateTableFromResponse(val);
   }
 
-  @Input() isLoading = false;
+  readonly isLoading = input(false);
 
-  @Output() save = new EventEmitter<void>();
-  @Output() export = new EventEmitter<string>();
-  @Output() updated = new EventEmitter<void>();
+  readonly save = output<void>();
+  readonly export = output<string>();
+  readonly updated = output<void>();
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -213,7 +200,7 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
         if (result) {
           this.documentService
             .delete([hit._id], this.isAddress(hit))
-            .subscribe(() => this.updated.next());
+            .subscribe(() => this.updated.emit());
         }
       });
   }
@@ -240,7 +227,11 @@ export class ResultTableComponent implements OnInit, AfterViewInit {
     return [
       doc._uuid,
       this.translocoService.translate(`docState.${doc._state}`),
-      doc._tags ? this.translocoService.translate(`tags.${doc._tags}`) : "",
+      doc._tags?.length
+        ? doc._tags
+            .map((tag) => this.translocoService.translate(`tags.${tag}`))
+            .join(",")
+        : "",
       this.translocoService.translate(`docType.${doc._type}`),
       doc.title,
       doc._contentModified,

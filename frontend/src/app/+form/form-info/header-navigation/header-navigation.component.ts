@@ -17,18 +17,17 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, OnInit, input } from "@angular/core";
 import { MatButton } from "@angular/material/button";
-import { NgIf } from "@angular/common";
 
 @Component({
   selector: "ige-header-navigation",
   templateUrl: "./header-navigation.component.html",
   styleUrls: ["./header-navigation.component.scss"],
-  imports: [MatButton, NgIf],
+  imports: [MatButton],
 })
 export class HeaderNavigationComponent implements OnInit {
-  @Input() sections: string[] = [];
+  readonly sections = input<string[]>([]);
 
   constructor() {}
 

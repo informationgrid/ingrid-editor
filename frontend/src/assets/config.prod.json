@@ -11,6 +11,7 @@
   "allowOverwriteOnVersionConflict": true,
   "matomoUrl": null,
   "matomoSiteId": null,
+  "matomoDisableCookies": null,
   "featureFlags": {
     "showTestBadge": false,
     "AP3": true,

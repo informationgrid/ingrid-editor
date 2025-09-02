@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { Component, OnInit, output } from "@angular/core";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { DocumentService } from "../../services/document/document.service";
 import { Router } from "@angular/router";
@@ -49,8 +49,8 @@ import { escapeRegExp } from "../../shared/utils";
   ],
 })
 export class QuickSearchComponent implements OnInit {
-  @Output() selectDoc = new EventEmitter<string>();
-  @Output() selectAddress = new EventEmitter<string>();
+  readonly selectDoc = output<string>();
+  readonly selectAddress = output<string>();
 
   docs: DocumentAbstract[];
   addresses: DocumentAbstract[];

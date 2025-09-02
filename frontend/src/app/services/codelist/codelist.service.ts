@@ -303,7 +303,7 @@ export class CodelistService {
   }
 
   resetCodelist(id: string) {
-    return this.dataService.resetCodelist(id).pipe(
+    return this.dataService.resetCodelist(id ?? null).pipe(
       map((codelists) => this.prepareCodelists(codelists, true)),
       tap((codelists) =>
         codelists.forEach((codelist) => this.store.updateCodelist(codelist)),
@@ -390,5 +390,9 @@ export class CodelistService {
     };
     newFavorites[id] = entryIds;
     this.generalStore.updateFavorites(newFavorites);
+  }
+
+  syncCodelistValues(migrate: boolean) {
+    return this.dataService.syncCodelistValues(migrate);
   }
 }

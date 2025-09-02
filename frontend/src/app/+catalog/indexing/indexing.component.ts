@@ -38,7 +38,7 @@ import { copyToClipboardFn } from "../../services/utils";
 
 import { IndexingExplanationComponent } from "./indexing-explanation/indexing-explanation.component";
 import { MatFormFieldModule } from "@angular/material/form-field";
-import { FormlyFieldConfig, FormlyModule } from "@ngx-formly/core";
+import { FormlyFieldConfig, FormlyForm } from "@ngx-formly/core";
 import { MatButton } from "@angular/material/button";
 import { MatInput } from "@angular/material/input";
 import { LogResultComponent } from "./log-result/log-result.component";
@@ -57,13 +57,13 @@ import { MatomoTrackClickDirective } from "ngx-matomo-client";
     IndexingExplanationComponent,
     MatFormFieldModule,
     ReactiveFormsModule,
-    FormlyModule,
     MatButton,
     MatInput,
     LogResultComponent,
     PageTemplateComponent,
     JobHandlerHeaderComponent,
     MatomoTrackClickDirective,
+    FormlyForm,
   ],
 })
 export class IndexingComponent implements OnInit {

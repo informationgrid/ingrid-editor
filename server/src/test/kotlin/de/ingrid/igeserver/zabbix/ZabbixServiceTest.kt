@@ -81,8 +81,8 @@ class ZabbixServiceTest : ShouldSpec() {
             val data = prepareZabbixData(emptyList())
             service.addOrUpdateDocument(data)
 
-            // requests for httptest, hostgroup and host
-            verify(exactly = 4) { httpClientMock.send(any(), bodyHandler) }
+            // requests for document, httptest, hostgroup and host
+            verify(exactly = 6) { httpClientMock.send(any(), bodyHandler) }
         }
 
         should("get Problems for a catalog") {
