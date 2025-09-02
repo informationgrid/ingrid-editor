@@ -50,7 +50,14 @@
       "unevaluatedProperties": false,
       "properties": {
         "type": {
-          "$ref": "../../general.schema.json#/definitions/KeyValue"
+          "anyOf": [
+            {
+              "$ref": "../../general.schema.json#/definitions/KeyValue"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "axesDimensionProperties": {
           "type": "array",
