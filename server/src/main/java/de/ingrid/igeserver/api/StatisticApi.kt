@@ -21,6 +21,7 @@ package de.ingrid.igeserver.api
 
 import de.ingrid.igeserver.model.ResearchQuery
 import de.ingrid.igeserver.model.StatisticResponse
+import de.ingrid.igeserver.tasks.ExpiredDataset
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -49,4 +50,8 @@ interface StatisticApi {
         principal: Principal,
         @Parameter(description = "the query with filter definitions") @RequestBody query: ResearchQuery,
     ): ResponseEntity<StatisticResponse>
+
+    @Operation
+    @GetMapping(value = ["/statistic/expiredDatasets"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun expiredDatasets(principal: Principal): ResponseEntity<List<ExpiredDataset>>
 }

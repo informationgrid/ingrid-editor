@@ -5,9 +5,9 @@
     "_parent": "my-specified-parent",
     "_type": "InGridGeoService",
     "properties": {
-      "isInspireIdentified": "relevant",
       "isAdVCompatible": false,
-      "isOpenData": true
+      "isOpenData": true,
+      "isInspireIdentified": "relevant"
     },
     "description": "Dienst für den Test um externe gekoppelte Datensätze hinzuzufügen",
     "alternateTitle": "Short",
@@ -16,26 +16,33 @@
       {
         "ref": "FE8EDBF8-AC98-48AD-849F-8DC35D177481",
         "type": {
-          "key": "12"
+          "key": "12",
+          "value": "Ansprechpartner MD",
+          "_codelistId": "505"
         }
       },
       {
         "ref": "2B83F58E-60C2-11D6-884A-0000F4ABB4D8",
         "type": {
-          "key": "1"
+          "key": "1",
+          "value": "Anbieter",
+          "_codelistId": "505"
         }
       },
       {
         "ref": "9D1C8940-C879-4C7E-98B8-BD97445610B9",
         "type": {
           "key": null,
-          "value": "Meister"
+          "value": "Meister",
+          "_codelistId": "505"
         }
       },
       {
         "ref": "some_organisation",
         "type": {
-          "key": "5"
+          "key": "5",
+          "value": "Vertrieb",
+          "_codelistId": "505"
         }
       }
     ],
@@ -51,26 +58,36 @@
     ],
     "advProductGroups": [
       {
-        "key": "6"
+        "key": "6",
+        "value": "Luftbilder",
+        "_codelistId": "8010"
       }
     ],
     "themes": [
       {
-        "key": "105"
+        "key": "105",
+        "value": "Adressen",
+        "_codelistId": "6100"
       }
     ],
     "priorityDatasets": [
       {
-        "key": "-1023933682"
+        "key": "-1023933682",
+        "value": "Anlagen für die Bewirtschaftung von Abfällen aus der mineralgewinnenden Industrie (Bergbauabfallrichtlinie)",
+        "_codelistId": "6350"
       }
     ],
     "openDataCategories": [
       {
-        "key": "6"
+        "key": "6",
+        "value": "Gesundheit",
+        "_codelistId": "6400"
       }
     ],
     "spatialScope": {
-      "key": "-673152846"
+      "key": "-673152846",
+      "value": "National",
+      "_codelistId": "6360"
     },
     "keywords": {
       "free": [
@@ -102,17 +119,23 @@
       ],
       "spatialSystems": [
         {
-          "key": "3068"
+          "key": "3068",
+          "value": "EPSG 3068: DHDN / Soldner Berlin",
+          "_codelistId": "100"
         }
       ],
       "verticalExtent": {
         "minimumValue": 1.0,
         "maximumValue": 5.0,
         "unitOfMeasure": {
-          "key": "9001"
+          "key": "9001",
+          "value": "Meter",
+          "_codelistId": "102"
         },
         "Datum": {
-          "key": "900002"
+          "key": "900002",
+          "value": "DE_AMST / NH",
+          "_codelistId": "101"
         }
       },
       "description": "Erläuterung Raumbezug"
@@ -122,27 +145,37 @@
         {
           "referenceDate": "2015-03-16T23:00:00Z",
           "referenceDateType": {
-            "key": "1"
+            "key": "1",
+            "value": "Erstellung",
+            "_codelistId": "502"
           }
         }
       ],
       "resourceDateType": {
-        "key": "at"
+        "key": "at",
+        "value": "am",
+        "_codelistId": null
       },
       "status": {
-        "key": "7"
+        "key": "7",
+        "value": "in Erstellung",
+        "_codelistId": "523"
       },
       "resourceDate": "2023-02-07T23:00:00Z",
       "resourceDateTypeSince": null
     },
     "maintenanceInformation": {
       "maintenanceAndUpdateFrequency": {
-        "key": "1"
+        "key": "1",
+        "value": "kontinuierlich",
+        "_codelistId": "518"
       },
       "userDefinedMaintenanceFrequency": {
         "number": 12,
         "unit": {
-          "key": "3"
+          "key": "3",
+          "value": "Stunden",
+          "_codelistId": "1230"
         }
       },
       "description": "Erläuterung Zeitbezug"
@@ -150,24 +183,31 @@
     "conformanceResult": [
       {
         "pass": {
-          "key": "2"
+          "key": "2",
+          "value": "nicht konform",
+          "_codelistId": "6000"
         },
         "isInspire": false,
         "explanation": "see the referenced specification",
         "specification": {
           "key": null,
-          "value": "Technical Guidance for the implementation of INSPIRE Download Services"
+          "value": "Technical Guidance for the implementation of INSPIRE Download Services",
+          "_codelistId": "6005"
         },
         "publicationDate": "2013-08-08T22:00:00Z"
       },
       {
         "pass": {
-          "key": "1"
+          "key": "1",
+          "value": "konform",
+          "_codelistId": "6000"
         },
         "isInspire": true,
         "explanation": "see the referenced specification",
         "specification": {
-          "key": "10"
+          "key": "10",
+          "value": "VERORDNUNG (EG) Nr. 976/2009 DER KOMMISSION vom 19. Oktober 2009 zur Durchführung der Richtlinie 2007/2/EG des Europäischen Parlaments und des Rates hinsichtlich der Netzdienste",
+          "_codelistId": "6005"
         },
         "publicationDate": "2009-10-19T22:00:00Z"
       }
@@ -175,7 +215,9 @@
     "extraInfo": {
       "legalBasicsDescriptions": [
         {
-          "key": "38"
+          "key": "38",
+          "value": "Nieders. Abfallgesetz (NAbfG)",
+          "_codelistId": "1350"
         }
       ]
     },
@@ -184,30 +226,38 @@
       "specificUsage": "Eignung!",
       "accessConstraints": [
         {
-          "key": "1"
+          "key": "1",
+          "value": "Es gelten keine Zugriffsbeschränkungen",
+          "_codelistId": "6010"
         },
         {
           "key": null,
-          "value": "freie Zugriffsbeschränkung"
+          "value": "freie Zugriffsbeschränkung",
+          "_codelistId": "6010"
         }
       ],
       "useConstraints": [
         {
           "title": {
-            "key": "26"
+            "key": "26",
+            "value": "Es gelten keine Bedingungen",
+            "_codelistId": "6500"
           },
           "source": "Quelle 1"
         },
         {
           "title": {
-            "key": "20"
+            "key": "20",
+            "value": "BSD Lizenz",
+            "_codelistId": "6500"
           },
           "source": "Quelle 2"
         },
         {
           "title": {
             "key": null,
-            "value": "meine Lizenz"
+            "value": "meine Lizenz",
+            "_codelistId": "6500"
           },
           "source": ""
         }
@@ -218,7 +268,9 @@
       "format": [
         {
           "name": {
-            "key": "26"
+            "key": "26",
+            "value": "PNG",
+            "_codelistId": "1320"
           },
           "version": "5",
           "compression": "RAR",
@@ -229,12 +281,16 @@
     "digitalTransferOptions": [
       {
         "name": {
-          "key": "4"
+          "key": "4",
+          "value": "3,5-Zoll Diskette",
+          "_codelistId": "520"
         },
         "transferSize": {
           "value": 1.44,
           "unit": {
-            "key": "MB"
+            "key": "MB",
+            "value": "MB",
+            "_codelistId": null
           }
         },
         "mediumNote": "Home"
@@ -244,7 +300,9 @@
     "references": [
       {
         "type": {
-          "key": "9999"
+          "key": "9999",
+          "value": "unspezifischer Verweis",
+          "_codelistId": "2000"
         },
         "title": "Ein Verweis",
         "referenceType": "url",
@@ -253,7 +311,9 @@
       },
       {
         "type": {
-          "key": "5304"
+          "key": "5304",
+          "value": "Bestellung",
+          "_codelistId": "2000"
         },
         "title": "Bestell Link",
         "referenceType": "url",
@@ -262,7 +322,9 @@
       },
       {
         "type": {
-          "key": "5302"
+          "key": "5302",
+          "value": "Information",
+          "_codelistId": "2000"
         },
         "title": "Dienst \"Coupling Service\" (GetCapabilities)",
         "referenceType": "url",
@@ -273,27 +335,37 @@
     "fileReferences": [],
     "metadata": {
       "language": {
-        "key": "150"
+        "key": "150",
+        "value": "Deutsch",
+        "_codelistId": "99999999"
       }
     },
     "service": {
       "classification": [
         {
-          "key": "211"
+          "key": "211",
+          "value": "Dauerauftragsdienst",
+          "_codelistId": "5200"
         }
       ],
       "type": {
-        "key": "3"
+        "key": "3",
+        "value": "Download-Dienste",
+        "_codelistId": "5100"
       },
       "version": [
         {
-          "key": "1"
+          "key": "1",
+          "value": "OGC:WFS 1.1.0",
+          "_codelistId": "5153"
         }
       ],
       "operations": [
         {
           "name": {
-            "key": "1"
+            "key": "1",
+            "value": "GetCapabilities",
+            "_codelistId": "5120"
           },
           "description": "Eine URL für die getCapabilities",
           "methodCall": "https://my-getcapabilities"
@@ -327,7 +399,9 @@
         }
       ],
       "couplingType": {
-        "key": "tight"
+        "key": "tight",
+        "value": "tight",
+        "_codelistId": null
       },
       "hasAccessConstraints": false
     }
@@ -340,7 +414,9 @@
     "contact": [
       {
         "type": {
-          "key": "3"
+          "key": "3",
+          "value": "E-Mail",
+          "_codelistId": "4430"
         },
         "connection": "kst@portalu.de"
       }
@@ -358,7 +434,9 @@
       "po-box": "12345",
       "street": "Brückenstraße 8",
       "country": {
-        "key": "276"
+        "key": "276",
+        "value": "Deutschland",
+        "_codelistId": "6200"
       },
       "zip-code": "D-31582",
       "zip-po-box": "D-31564",
@@ -367,7 +445,9 @@
     "contact": [
       {
         "type": {
-          "key": "3"
+          "key": "3",
+          "value": "E-Mail",
+          "_codelistId": "4430"
         },
         "connection": "besitzer@wemove.com"
       }
@@ -380,7 +460,9 @@
     "_type": "InGridPersonDoc",
     "title": "Besitzername, Besitzervorname",
     "salutation": {
-      "key": "2"
+      "key": "2",
+      "value": "Herr",
+      "_codelistId": "4300"
     },
     "firstName": "Besitzervorname",
     "lastName": "Besitzername",
@@ -389,7 +471,9 @@
       "po-box": "12345",
       "street": "Brückenstraße 8",
       "country": {
-        "key": "276"
+        "key": "276",
+        "value": "Deutschland",
+        "_codelistId": "6200"
       },
       "zip-code": "D-31582",
       "zip-po-box": "D-31564",
@@ -398,7 +482,9 @@
     "contact": [
       {
         "type": {
-          "key": "3"
+          "key": "3",
+          "value": "E-Mail",
+          "_codelistId": "4430"
         },
         "connection": "besitzer@wemove.com"
       }
@@ -414,14 +500,18 @@
     "organization": "Adressvererbung Test",
     "address": {
       "country": {
-        "key": "276"
+        "key": "276",
+        "value": "Deutschland",
+        "_codelistId": "6200"
       },
       "administrativeArea": null
     },
     "contact": [
       {
         "type": {
-          "key": "3"
+          "key": "3",
+          "value": "E-Mail",
+          "_codelistId": "4430"
         },
         "connection": "martin.muster@mu.niedersachsen.de"
       }
@@ -434,20 +524,26 @@
     "_type": "InGridPersonDoc",
     "title": "test1, user",
     "salutation": {
-      "key": "2"
+      "key": "2",
+      "value": "Herr",
+      "_codelistId": "4300"
     },
     "firstName": "user",
     "lastName": "test1",
     "address": {
       "country": {
-        "key": "276"
+        "key": "276",
+        "value": "Deutschland",
+        "_codelistId": "6200"
       },
       "administrativeArea": null
     },
     "contact": [
       {
         "type": {
-          "key": "3"
+          "key": "3",
+          "value": "E-Mail",
+          "_codelistId": "4430"
         },
         "connection": "martin.muster@mu.niedersachsen.de"
       }

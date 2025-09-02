@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, inject, OnInit, Output } from "@angular/core";
+import { Component, inject, OnInit, output } from "@angular/core";
 import {
   ConfigService,
   Configuration,
@@ -71,7 +71,7 @@ import { MatomoTrackClickDirective } from "ngx-matomo-client";
 })
 export class MainHeaderComponent implements OnInit {
   private generalStore = inject(GeneralStore);
-  @Output() onLogout = new EventEmitter<void>();
+  readonly onLogout = output<void>();
 
   userInfo$ = this.configService.$userInfo;
   showShadow: boolean;
@@ -144,6 +144,7 @@ export class MainHeaderComponent implements OnInit {
       return;
     }
 
+    // TODO: The 'emit' function requires a mandatory void argument
     this.onLogout.emit();
 
     setTimeout(() => {

@@ -32,6 +32,7 @@ import de.ingrid.igeserver.features.ogc_api_records.export_catalog.OgcCatalogExp
 import de.ingrid.igeserver.features.ogc_api_records.model.Link
 import de.ingrid.igeserver.features.ogc_api_records.model.MoveRecordsDTO
 import de.ingrid.igeserver.features.ogc_api_records.services.formatFactory.FormatFactory
+import de.ingrid.igeserver.imports.DocumentAnalysis
 import de.ingrid.igeserver.imports.ImportService
 import de.ingrid.igeserver.model.ExportRequestParameter
 import de.ingrid.igeserver.model.ResearchResponse
@@ -161,10 +162,18 @@ class OgcRecordService(
             message = Message(),
         )
 
-        return generateUriOfCreatedRecord(collectionId, optimizedImportAnalysis.references[0].document.uuid)
+        return generateUriOfCreatedRecord(collectionId, optimizedImportAnalysis.references)
     }
 
-    fun generateUriOfCreatedRecord(collectionId: String, recordId: String): URI = URI("/collections/$collectionId/items/$recordId")
+    fun generateUriOfCreatedRecord(collectionId: String, optimizedImportAnalysisReferences: List<DocumentAnalysis>): URI {
+        val documentReferences = optimizedImportAnalysisReferences.filter { ref -> !ref.isAddress }
+        val recordId: String = if (documentReferences.isEmpty()) {
+            optimizedImportAnalysisReferences[0].document.uuid
+        } else {
+            documentReferences[0].document.uuid
+        }
+        return URI("/collections/$collectionId/items/$recordId")
+    }
 
     fun getLinksForRecords(offset: Int, limit: Int, totalHits: Int, collectionId: String, requestedFormat: RecordFormat): List<Link> {
         val list: MutableList<Link> = mutableListOf()

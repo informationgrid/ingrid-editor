@@ -5,16 +5,16 @@
         <h1
             class="label flex-1 flex-row justify-content-space-between"
             [matTooltip]="
-                !address || !disableEdit
+                !address() || !disableEdit()
                     ? undefined
                     : t(
                           'form.titleTooltip.' +
                               (_model.firstName ? 'Person' : 'Organisation')
                       )
             "
-            [matTooltipDisabled]="!address || !disableEdit"
-            [class.editable]="!disableEdit"
-            (click)="!disableEdit && editTitle()"
+            [matTooltipDisabled]="!address() || !disableEdit()"
+            [class.editable]="!disableEdit()"
+            (click)="!disableEdit() && editTitle()"
         >
             <span
                 class="flex-1"
@@ -22,7 +22,7 @@
                 role="textbox"
                 aria-label="Titel der Metadaten"
                 aria-description="Klick auf die Eingabetaste, um den Namen zu bearbeiten"
-                (keyup.enter)="!disableEdit && editTitle()"
+                (keyup.enter)="!disableEdit() && editTitle()"
                 >{{ _form.get("title")?.value || "Kein Titel" }}</span
             >
             <mat-icon svgIcon="cursor-edit" matTooltip="Bearbeiten"></mat-icon>

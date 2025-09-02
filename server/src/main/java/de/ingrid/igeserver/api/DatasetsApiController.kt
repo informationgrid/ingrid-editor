@@ -356,13 +356,18 @@ class DatasetsApiController(
         principal: Principal,
         parentId: String?,
         isAddress: Boolean,
+        ignoreRootReadPermission: Boolean?,
     ): ResponseEntity<List<DocumentInfo>> {
         val catalogId = catalogService.getCurrentCatalogForPrincipal(principal)
         val isSuperOrCatAdmin = authUtils.isAdmin(principal)
-        val hasRootRead = checkForRootPermissions(
-            sidRetrievalStrategy.getSids(principal as Authentication),
-            listOf(BasePermission.READ),
-        )
+        val hasRootRead = if (ignoreRootReadPermission == true) {
+            false
+        } else {
+            checkForRootPermissions(
+                sidRetrievalStrategy.getSids(principal as Authentication),
+                listOf(BasePermission.READ),
+            )
+        }
 
         val childrenInfo = if (
             parentId == null && !isSuperOrCatAdmin && !hasRootRead

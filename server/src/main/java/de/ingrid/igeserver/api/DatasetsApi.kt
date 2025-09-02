@@ -165,6 +165,10 @@ interface DatasetsApi {
             value = "address",
             required = false,
         ) isAddress: Boolean,
+        @Parameter(description = "Explicitly ignore root read permission to focus on writable datasets") @RequestParam(
+            value = "ignoreRootReadPermission",
+            required = false,
+        ) ignoreRootReadPermission: Boolean?,
     ): ResponseEntity<List<DocumentInfo>>
 
     @Operation(description = "Retrieve a dataset by a given ID.")

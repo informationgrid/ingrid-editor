@@ -95,6 +95,8 @@
     @for (Reference ref : page.getReferencesWithUuidRefs())
         <gmd:portrayalCatalogueInfo uuidref="${ref.getUuidRef()}"></gmd:portrayalCatalogueInfo>
     @endfor
+    <idf:hasAccessConstraint>${page.hasAccessConstraints()}</idf:hasAccessConstraint>
+
     ${extraContent}
 
 `, abstract_text = page.getDescription())

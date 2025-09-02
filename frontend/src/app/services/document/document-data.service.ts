@@ -47,8 +47,13 @@ export class DocumentDataService {
   getChildren(
     parentId: number,
     isAddress = false,
+    ignoreRootReadPermission: boolean,
   ): Observable<Partial<DocumentAbstract>[]> {
-    const params = this.createGetChildrenParams(parentId, isAddress);
+    const params = this.createGetChildrenParams(
+      parentId,
+      isAddress,
+      ignoreRootReadPermission,
+    );
     const url = `${this.configuration.backendUrl}tree/children` + params;
     return this.http.get<Partial<DocumentAbstract>[]>(url);
   }
@@ -247,6 +252,7 @@ export class DocumentDataService {
   private createGetChildrenParams(
     parentId: number,
     isAddress: boolean,
+    ignoreRootReadPermission: boolean,
   ): string {
     let params = "";
     if (parentId) {
@@ -255,6 +261,10 @@ export class DocumentDataService {
     if (isAddress) {
       params += params.length > 0 ? "&" : "?";
       params += "address=true";
+    }
+    if (ignoreRootReadPermission) {
+      params += params.length > 0 ? "&" : "?";
+      params += "ignoreRootReadPermission=true";
     }
     return params;
   }

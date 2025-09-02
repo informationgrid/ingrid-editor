@@ -7,7 +7,7 @@
             ></ige-document-icon>
             <ige-header-navigation
                 class="flex-1"
-                [sections]="sections ?? []"
+                [sections]="sections() ?? []"
             ></ige-header-navigation>
         </div>
     </div>
@@ -19,7 +19,7 @@
     <ige-error-panel [numErrors]="numberOfErrors"></ige-error-panel>
 }
 
-<div [class.hide]="!hasOptionalFields" class="optional-fields-toggle">
+<div [class.hide]="!hasOptionalFields()" class="optional-fields-toggle">
     <div class="diagonal"></div>
     <mat-slide-toggle
         [checked]="optionalButtonState()"

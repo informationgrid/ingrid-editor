@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, HostListener, inject, Input, OnInit } from "@angular/core";
+import { Component, HostListener, inject, OnInit, input } from "@angular/core";
 import { animate, style, transition, trigger } from "@angular/animations";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
@@ -40,7 +40,7 @@ import { forkJoin, timer } from "rxjs";
   imports: [MatIconModule, MatButtonModule],
 })
 export class ErrorPanelComponent implements OnInit {
-  @Input() numErrors = 0;
+  readonly numErrors = input(0);
 
   currentError = 0;
 
@@ -73,13 +73,13 @@ export class ErrorPanelComponent implements OnInit {
   }
 
   jumpToNextError() {
-    this.currentError = (this.currentError + 1) % this.numErrors;
+    this.currentError = (this.currentError + 1) % this.numErrors();
     this.jumpToCurrentError();
   }
 
   jumpToPreviousError() {
     this.currentError =
-      this.currentError === 0 ? this.numErrors - 1 : this.currentError - 1;
+      this.currentError === 0 ? this.numErrors() - 1 : this.currentError - 1;
     this.jumpToCurrentError();
   }
 

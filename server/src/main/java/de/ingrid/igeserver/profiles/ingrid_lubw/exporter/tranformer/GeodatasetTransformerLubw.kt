@@ -37,4 +37,7 @@ class GeodatasetTransformerLubw(transformerConfig: TransformerConfig) : Geodatas
         }
 
     override fun getDescriptiveKeywords(): List<Thesaurus> = amendLubwDescriptiveKeywords(docData, super.getDescriptiveKeywords())
+
+    // if the document has access constraints other than "1" ("Es gelten keine Zugriffsbeschränkungen") #4377 #7280
+    override fun hasAccessConstraints(): Boolean = data.resource?.accessConstraints?.any { it.key != "1" } == true
 }

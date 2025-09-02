@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, forwardRef, Input, OnInit } from "@angular/core";
+import { Component, forwardRef, OnInit, input } from "@angular/core";
 import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR,
@@ -55,9 +55,9 @@ export class PermissionsComponent implements OnInit, ControlValueAccessor {
   private onChange: (x: any) => {};
   private onTouch: (x: any) => {};
 
-  @Input() showRootWriteSlider: boolean = false;
-  @Input() showRootReadSlider: boolean = false;
-  @Input() disabled: boolean = false;
+  readonly showRootWriteSlider = input<boolean>(false);
+  readonly showRootReadSlider = input<boolean>(false);
+  readonly disabled = input<boolean>(false);
 
   formGroup: UntypedFormGroup;
   rootPermissionRead = this.fb.control([]);

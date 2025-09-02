@@ -17,19 +17,19 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Directive, ElementRef, Input } from "@angular/core";
+import { Directive, ElementRef, input } from "@angular/core";
 
 @Directive({
   selector: "[igeFocus]",
   standalone: true,
 })
 export class FocusDirective {
-  @Input() igeFocus: boolean;
+  readonly igeFocus = input<boolean>(undefined);
 
   constructor(private host: ElementRef) {}
 
   ngAfterViewInit(): void {
-    if (this.igeFocus !== false) {
+    if (this.igeFocus() !== false) {
       setTimeout(() => this.host.nativeElement.focus());
     }
   }

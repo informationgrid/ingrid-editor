@@ -50,7 +50,7 @@ class SetupDevelopUsers(
 
             if (catalogRepo.count() < 1) {
                 val catalog = Catalog().apply {
-                    this.id = 1
+                    // this.id = 1 // id cannot be set anymore, since it's auto-generated
                     this.name = "Testkatalog"
                     this.identifier = "testkatalog"
                     this.type = "mcloud"

@@ -89,12 +89,12 @@ export interface SpatialLocationWithColor extends SpatialLocation {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpatialListComponent {
-  locations = input<SpatialLocationWithColor[]>([]);
-  disabled = input<boolean>(false);
+  readonly locations = input<SpatialLocationWithColor[]>([]);
+  readonly disabled = input<boolean>(false);
 
-  selectLocation = output<number>();
-  edit = output<number>();
-  remove = output<number>();
+  readonly selectLocation = output<number>();
+  readonly edit = output<number>();
+  readonly remove = output<number>();
 
   private dialog = inject(MatDialog);
 
