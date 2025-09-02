@@ -39,7 +39,9 @@ import java.util.concurrent.Executors
 
 data class BwastrLocatorSearchResponse(
     val bwastrid: String,
-    val concatName: String,
+    val bwastr_name: String,
+    val strecken_name: String,
+    val concat_name: String,
     val start: Double,
     val end: Double,
 )
@@ -71,7 +73,9 @@ class BwastrLocatorService {
             result.map {
                 BwastrLocatorSearchResponse(
                     bwastrid = it.getString("bwastrid") ?: throw Exception("no bwastrid found in response"),
-                    concatName = it.getStringOrEmpty("concat_name"),
+                    bwastr_name = it.getStringOrEmpty("bwastr_name"),
+                    strecken_name = it.getStringOrEmpty("strecken_name"),
+                    concat_name = it.getStringOrEmpty("concat_name"),
                     start = it.getDouble("km_von") ?: 0.0,
                     end = it.getDouble("km_bis") ?: 0.0,
                 )

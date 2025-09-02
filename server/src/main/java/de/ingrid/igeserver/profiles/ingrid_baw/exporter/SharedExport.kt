@@ -112,13 +112,17 @@ fun getBawKeywords(transformer: IngridModelTransformer): Thesaurus = Thesaurus(
 data class BwastrInfo(
     val title: String,
     val bwastrId: String,
+    val name: String,
+    val streckenName: String,
     val start: String,
     val end: String,
 )
-fun getBwastrForIndex(transformerBaw: IngridModelTransformer) = transformerBaw.doc.data.getPath("spatial.references")?.filter { it.getString("type") == "bwastr" }?.map {
+fun getBwastrInfos(transformerBaw: IngridModelTransformer) = transformerBaw.doc.data.getPath("spatial.references")?.filter { it.getString("type") == "bwastr" }?.map {
     BwastrInfo(
         title = it.getString("title") ?: "",
         bwastrId = it.getString("bwastr.bwastrid") ?: "",
+        name = it.getString("bwastr.bwastr_name") ?: "",
+        streckenName = it.getString("bwastr.strecken_name") ?: "",
         start = it.getString("bwastr.start") ?: "",
         end = it.getString("bwastr.end") ?: "",
     )
@@ -162,6 +166,26 @@ fun getBwastrGeographicElements(transformer: IngridModelTransformer) = (
         )
     } ?: emptyList()
     )
+
+fun getBwastrIdfSection(transformer: IngridModelTransformer): String {
+    val sections = getBwastrInfos(transformer)
+    val name = if (sections.size == 1) sections[0].name else sections.joinToString(", ", "[", "]") { it.name }
+    val streckenName = if (sections.size == 1) sections[0].streckenName else sections.joinToString(", ", "[", "]") { it.streckenName }
+
+    return """
+            <idf:additionalDataSection id="bawDmqsAdditionalFields">
+                <idf:title lang="de">BAW DMQS Zusatzfelder</idf:title>
+                <idf:additionalDataField id="bwstr-bwastr_name">
+                    <idf:title lang="de">Bwstr Name</idf:title>
+                    <idf:data>$name</idf:data>
+                </idf:additionalDataField>
+                <idf:additionalDataField id="bwstr-strecken_name">
+                    <idf:title lang="de">Bwstr Streckenname</idf:title>
+                    <idf:data>$streckenName</idf:data>
+                </idf:additionalDataField>
+            </idf:additionalDataSection>
+    """.trimIndent()
+}
 
 private fun getBwastrCode(bwastrNode: JsonNode): String? {
     val bwastrId = bwastrNode.getString("bwastrid")

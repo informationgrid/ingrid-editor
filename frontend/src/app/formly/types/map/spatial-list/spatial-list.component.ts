@@ -58,6 +58,9 @@ export interface SpatialLocation {
 
 export type BwastrSection = {
   bwastrid: string;
+  bwastr_name: string;
+  strecken_name: string;
+  concat_name: string;
   start?: number;
   end?: number;
 };

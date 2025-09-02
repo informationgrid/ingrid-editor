@@ -29,6 +29,7 @@ import de.ingrid.igeserver.api.TagRequest
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.DocumentWrapper
 import de.ingrid.igeserver.profiles.ingrid_baw.BawProfile
 import de.ingrid.igeserver.repository.DocumentRepository
+import de.ingrid.igeserver.services.BwastrLocatorSearchResponse
 import de.ingrid.igeserver.services.BwastrLocatorService
 import de.ingrid.igeserver.services.CatalogService
 import de.ingrid.igeserver.services.CodelistHandler
@@ -37,6 +38,7 @@ import de.ingrid.igeserver.services.GroupService
 import de.ingrid.igeserver.services.IgeAclService
 import de.ingrid.igeserver.utils.convertToDocument
 import de.ingrid.igeserver.utils.getPath
+import de.ingrid.igeserver.utils.getString
 import jakarta.persistence.EntityManager
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
@@ -100,15 +102,16 @@ class PostMigrationTask(
         return spatialSystem
     }
 
-    val customBWASTRMap = mapOf(
-        "7000" to "7000 Nordsee",
-        "8000" to "8000 Ostsee",
-        "8300" to "8300 Ryck",
-        "9600" to "9600 Binnenwasserstraßen",
-        "9700" to "9700 Seewasserstraßen",
-        "9800" to "9800 Bundeswasserstraßen",
-        "9900" to "9900 Sonstige Gewässer",
-        "9999" to "9999 Sonstiger Ortsbezug",
+    val customBWASTRMap = mapOf<String, BwastrLocatorSearchResponse>(
+
+        "7000" to BwastrLocatorSearchResponse("7000", "Nordsee", "", "Nordsee", -1.0, -1.0),
+        "8000" to BwastrLocatorSearchResponse("8000", "Ostsee", "", "Ostsee", -1.0, -1.0),
+        "8300" to BwastrLocatorSearchResponse("8300", "Ryck", "", "Ryck", -1.0, -1.0),
+        "9600" to BwastrLocatorSearchResponse("9600", "Binnenwasserstraßen", "", "Binnenwasserstraßen", -1.0, -1.0),
+        "9700" to BwastrLocatorSearchResponse("9700", "Seewasserstraßen", "", "Seewasserstraßen", -1.0, -1.0),
+        "9800" to BwastrLocatorSearchResponse("9800", "Bundeswasserstraßen", "", "Bundeswasserstraßen", -1.0, -1.0),
+        "9900" to BwastrLocatorSearchResponse("9900", "Sonstige Gewässer", "", "Sonstige Gewässer", -1.0, -1.0),
+        "9999" to BwastrLocatorSearchResponse("9999", "Sonstiger Ortsbezug", "", "Sonstiger Ortsbezug", -1.0, -1.0),
     )
 
     private fun addBWASTRTitles(catalogIdentifier: String) {
@@ -134,11 +137,21 @@ class PostMigrationTask(
     }
 
     private fun lookupBwastrTitle(spatialReference: JsonNode): JsonNode {
-        val bwastrId = spatialReference.getPath("bwastr.bwastrid")?.asText() ?: return spatialReference
-        val title =
-            customBWASTRMap[bwastrId] ?: bwastrLocatorService.search(bwastrId).map { it.concatName }.firstOrNull()
-                ?: return spatialReference
-        (spatialReference as ObjectNode).put("title", title)
+        val migratedBwastr = spatialReference.getPath("bwastr") ?: return spatialReference
+        val bwastrId = migratedBwastr.getString("bwastrid") ?: return spatialReference
+        val bwastr =
+            customBWASTRMap[bwastrId] ?: bwastrLocatorService.search(bwastrId).firstOrNull()
+        if (bwastr == null) {
+            log.warn { "Bwastr not found for id: $bwastrId" }
+            return spatialReference
+        }
+        (migratedBwastr as ObjectNode)
+            .put("bwastr_name", bwastr.bwastr_name)
+            .put("concat_name", bwastr.concat_name)
+            .put("strecken_name", bwastr.strecken_name)
+        (spatialReference as ObjectNode)
+            .put("title", bwastr.bwastr_name)
+            .replace("bwastr", migratedBwastr)
         return spatialReference
     }
 

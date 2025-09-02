@@ -26,6 +26,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrGeographicElements
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getLiteratureAggregates
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
@@ -47,6 +48,17 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() +
         getBawKeywords(this) +
         getSimulationKeywordThesauri()
+
+    override val spatialSystems = super.spatialSystems + (
+        (doc.data.getPath("spatial.verticalSpatialSystems"))?.mapNotNull { it.mapToKeyValue() }?.map {
+            mapToCharacterStringModel(
+                "verticalSpatialSystems",
+                it,
+            )
+        } ?: emptyList()
+        )
+
+    override val extraContent: String by lazy { getBwastrIdfSection(this) }
 
     override val hierarchyLevelName = when (doc.type) {
         "BawMeasurement" -> "measurement"
@@ -70,15 +82,6 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
                 unit = it.getString("unit") ?: "",
             )
         } ?: emptyList()
-
-    override val spatialSystems = super.spatialSystems + (
-        (doc.data.getPath("spatial.verticalSpatialSystems"))?.mapNotNull { it.mapToKeyValue() }?.map {
-            mapToCharacterStringModel(
-                "verticalSpatialSystems",
-                it,
-            )
-        } ?: emptyList()
-        )
 
     fun getSimulationKeywordThesauri(): List<Thesaurus> = listOf(
         dimensionalityThesaurus,

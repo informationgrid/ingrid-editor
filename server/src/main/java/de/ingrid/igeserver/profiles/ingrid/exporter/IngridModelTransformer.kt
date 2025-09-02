@@ -1211,6 +1211,8 @@ open class IngridModelTransformer(
 
         else -> codelists.getCatalogCodelistValue("6006", result.specification)
     }
+
+    open val extraContent: String = ""
 }
 
 data class AccessConstraint(val codelistValues: List<String>, val otherConstraints: List<CharacterStringModel>)

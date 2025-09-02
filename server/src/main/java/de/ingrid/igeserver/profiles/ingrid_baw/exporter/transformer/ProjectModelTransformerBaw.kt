@@ -25,9 +25,12 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrGeographicElements
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
+import de.ingrid.igeserver.utils.getPath
 import de.ingrid.igeserver.utils.getString
+import de.ingrid.igeserver.utils.mapToKeyValue
 
 open class ProjectModelTransformerBaw(transformerConfig: TransformerConfig) : ProjectModelTransformer(transformerConfig) {
 
@@ -38,6 +41,17 @@ open class ProjectModelTransformerBaw(transformerConfig: TransformerConfig) : Pr
     override fun getKeywordsAsList(): List<String> = super.getKeywordsAsList() + getBawKeywords(this).keywords.mapNotNull { it.name }
 
     override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBawKeywords(this)
+
+    override val spatialSystems = super.spatialSystems + (
+        (doc.data.getPath("spatial.verticalSpatialSystems"))?.mapNotNull { it.mapToKeyValue() }?.map {
+            mapToCharacterStringModel(
+                "verticalSpatialSystems",
+                it,
+            )
+        } ?: emptyList()
+        )
+
+    override val extraContent: String by lazy { getBwastrIdfSection(this) }
 
     override val hierarchyLevelName = "project"
 

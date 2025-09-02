@@ -27,16 +27,16 @@
                     <mat-list-item
                         (click)="selectBwastr(entry)"
                         class="clickable"
-                        [title]="entry.concatName"
+                        [title]="entry.concat_name"
                     >
                         <mat-radio-button
                             matListItemIcon
                             [value]="entry"
                             [checked]="selectedBwastr === entry"
-                            [aria-label]="entry.concatName"
+                            [aria-label]="entry.concat_name"
                         ></mat-radio-button>
                         <div matListItemLine>
-                            {{ entry.concatName }}
+                            {{ entry.concat_name }}
                         </div>
                     </mat-list-item>
                     <mat-divider aria-hidden="true"></mat-divider>

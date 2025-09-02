@@ -42,7 +42,9 @@ export class BwastrLocatorService {
     const codelistBwastr: BwastrLocatorSearchResponse = entry
       ? {
           bwastrid: entry.id,
-          concatName: entry.fields.de,
+          bwastr_name: entry.fields.de,
+          strecken_name: "",
+          concat_name: `${entry.id} ${entry.fields.de}`,
           start: null,
           end: null,
         }
@@ -106,7 +108,9 @@ export class BwastrLocatorService {
 
 export interface BwastrLocatorSearchResponse {
   bwastrid: string;
-  concatName: string;
+  bwastr_name: string;
+  strecken_name: string;
+  concat_name: string;
   start: number;
   end: number;
 }

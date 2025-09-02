@@ -25,6 +25,7 @@ import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBawKeywords
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrGeographicElements
+import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getBwastrIdfSection
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.getParentIdentifierBaw
 import de.ingrid.igeserver.profiles.ingrid_baw.exporter.mapDocumentTypeBaw
 import de.ingrid.igeserver.utils.getPath
@@ -41,15 +42,6 @@ open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) 
 
     override fun getDescriptiveKeywords(): List<Thesaurus> = super.getDescriptiveKeywords() + getBawKeywords(this)
 
-    override val hierarchyLevelName = "document"
-
-    fun getHandles(): List<String> = (doc.data.getPath("publication.additionalIdentifiers"))
-        ?.filter { it.getString("type.key") == "1" } // "Handle" type
-        ?.mapNotNull {
-            it.getString("value")
-        }
-        ?: emptyList()
-
     override val spatialSystems =
         super.spatialSystems + (
             (doc.data.getPath("spatial.verticalSpatialSystems"))?.mapNotNull { it.mapToKeyValue() }
@@ -60,4 +52,15 @@ open class PublicationModelTransformerBaw(transformerConfig: TransformerConfig) 
                     )
                 } ?: emptyList()
             )
+
+    override val extraContent: String by lazy { getBwastrIdfSection(this) }
+
+    override val hierarchyLevelName = "document"
+
+    fun getHandles(): List<String> = (doc.data.getPath("publication.additionalIdentifiers"))
+        ?.filter { it.getString("type.key") == "1" } // "Handle" type
+        ?.mapNotNull {
+            it.getString("value")
+        }
+        ?: emptyList()
 }
