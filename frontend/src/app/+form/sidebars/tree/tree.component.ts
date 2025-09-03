@@ -97,8 +97,9 @@ export enum TreeActionType {
   ],
 })
 export class TreeComponent implements OnInit {
+  @Input() treeStore = null;
+
   @Input() forAddresses: boolean;
-  @Input() isLongTermStorage: boolean;
   @Input() showHeader = true;
   @Input() showMultiSelectButton = false;
   @Input() showReloadButton = true;
@@ -192,8 +193,7 @@ export class TreeComponent implements OnInit {
       )
       .subscribe();
 
-    console.log("database:", this.database);
-    this.database.init(this.forAddresses, this.isLongTermStorage);
+    this.database.init(this.forAddresses, this.treeStore);
 
     this.dataSource = new DynamicDataSource(
       this.treeControl,
@@ -306,7 +306,7 @@ export class TreeComponent implements OnInit {
   }
 
   reloadTree(forceFromServer = false): Observable<TreeNode[]> {
-    return this.database.initialData(forceFromServer, this.forAddresses).pipe(
+    return this.database.initialData(forceFromServer).pipe(
       map((docs) => this.database.mapDocumentsToTreeNodes(docs, 0)),
       map((docs) => docs.sort(this.treeService.getSortTreeNodesFunction())),
       tap((rootElements) => {
@@ -426,19 +426,17 @@ export class TreeComponent implements OnInit {
 
     // node will be added automatically when expanded
     const isExpanded = this.treeControl.isExpanded(parentNode);
-    this.database
-      .getChildren(parentNodeId, true, this.forAddresses)
-      .subscribe(() => {
-        if (isExpanded) {
-          this.treeControl.collapse(parentNode);
-        }
-        this.treeControl.expand(parentNode);
-        if (!doNotSelect) {
-          this.scrollToActiveElement();
-          let node = this.dataSource.getNode(id);
-          this.selectNode(node);
-        }
-      });
+    this.database.getChildren(parentNodeId, true).subscribe(() => {
+      if (isExpanded) {
+        this.treeControl.collapse(parentNode);
+      }
+      this.treeControl.expand(parentNode);
+      if (!doNotSelect) {
+        this.scrollToActiveElement();
+        let node = this.dataSource.getNode(id);
+        this.selectNode(node);
+      }
+    });
   }
 
   private updateChildrenInfo(parentNode: TreeNode) {

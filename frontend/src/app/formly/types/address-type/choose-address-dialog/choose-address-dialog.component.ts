@@ -95,8 +95,8 @@ export interface ChooseAddressResponse {
   ],
 })
 export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
+  addressTreeStore = inject(AddressTreeStore);
   private codelistStore = inject(CodelistStore);
-  private addressTreeStore = inject(AddressTreeStore);
   private generalStore = inject(GeneralStore);
   @ViewChild(MatSelect) recentAddressSelect: MatSelect;
   selection = signal<DocumentAbstract>(null);

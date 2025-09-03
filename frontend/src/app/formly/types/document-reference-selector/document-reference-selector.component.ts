@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FieldTypeConfig, FormlyValidationMessage } from "@ngx-formly/core";
 import { catchError, debounceTime, map, startWith } from "rxjs/operators";
@@ -40,7 +40,6 @@ import {
 import { FieldType } from "@ngx-formly/material";
 import { ConfigService } from "../../../services/config/config.service";
 import { DocumentReference } from "../document-reference-type/document-reference-type.component";
-import { TreeStore } from "../../../store/tree/tree.store";
 
 interface Reference {
   layerNames: string[];
@@ -82,12 +81,9 @@ export class DocumentReferenceSelectorComponent
   extends FieldType<FieldTypeConfig>
   implements OnInit
 {
-  private treeStore = inject(TreeStore);
-
   myModel: (SelectedDocumentReference | UrlReference)[];
   allowMultiSelect = false;
   allowRedirectToDocument = false;
-  isLongTermFileStorage = false;
   titleOfDocumentSelectorDialog: "Dokument auswählen";
   refreshing = true;
 
@@ -113,7 +109,6 @@ export class DocumentReferenceSelectorComponent
   private async buildModel() {
     this.allowMultiSelect = this.props.allowMultiSelect;
     this.allowRedirectToDocument = this.props.allowRedirectToDocument;
-    this.isLongTermFileStorage = this.props.isLongTermFileStorage;
     this.refreshing = true;
     this.titleOfDocumentSelectorDialog =
       this.props.titleOfDocumentSelectorDialog;
@@ -159,7 +154,8 @@ export class DocumentReferenceSelectorComponent
       allowMultiSelect: this.props.allowMultiSelect,
       docTypeFilter: this.props.docTypeFilter,
       titleOfDocumentSelectorDialog: this.props.titleOfDocumentSelectorDialog,
-      isLongTermFileStorage: this.isLongTermFileStorage,
+      treeStore: this.props.treeStore,
+      hideHeader: this.props.hideHeader,
     };
     this.dialog
       .open(SelectorServiceDialogComponent, {
@@ -199,7 +195,8 @@ export class DocumentReferenceSelectorComponent
   private async mapInternalRef(
     item: SelectedDocumentReference,
   ): Promise<SelectedDocumentReference> {
-    const nodeEntity = this.treeStore.getByUuid(item.uuid);
+    const treeStore = this.props.treeStore;
+    const nodeEntity = treeStore.getByUuid(item.uuid);
     if (nodeEntity) {
       return this.mapToDocumentReference(nodeEntity, item.layerNames);
     }

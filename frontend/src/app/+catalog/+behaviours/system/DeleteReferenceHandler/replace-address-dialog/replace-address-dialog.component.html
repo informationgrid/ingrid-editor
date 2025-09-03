@@ -28,6 +28,7 @@
                     bereits veröffentlichte Adressen auszuwählen.
                 </p>
                 <ige-tree
+                    [treeStore]="addressTreeStore"
                     [forAddresses]="true"
                     [disabledCondition]="disableTreeNode"
                     (activate)="selectedAddress = $event"

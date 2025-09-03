@@ -24,7 +24,7 @@ import { Observable, of } from "rxjs";
 import { Injectable } from "@angular/core";
 import { PathResponse } from "../../models/path-response";
 import { TagRequest } from "../../models/tag-request.model";
-import { catchError, map } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { SaveOptions } from "./document.service";
 import { DocumentAbstract } from "../../store/document/document.model";
 import { ResearchResponse } from "../../+research/research.service";
@@ -51,44 +51,6 @@ export class DocumentDataService {
     const params = this.createGetChildrenParams(parentId, isAddress);
     const url = `${this.configuration.backendUrl}tree/children` + params;
     return this.http.get<Partial<DocumentAbstract>[]>(url);
-  }
-
-  getLongTermFileStorageChildren(
-    parentPath: string,
-  ): Observable<Partial<DocumentAbstract>[]> {
-    // TODO Adapt http request to intranet source e.g. apiUrl, authentication?
-    const apiUrl = "http://localhost:3001/isibaw/api/list";
-    const url = `${apiUrl}?folder=${parentPath}`;
-    const fallback: { name: string; type: "container" | "object" | string }[] =
-      [
-        { name: "0800", type: "container" },
-        { name: "0701", type: "container" },
-        { name: "0702", type: "container" },
-        { name: "id2name_1.txt", type: "object" },
-        { name: "id2name_2.txt", type: "object" },
-      ];
-    return this.http
-      .get<{ name: string; type: "container" | "object" | string }[]>(url)
-      .pipe(
-        catchError(() => of(fallback)),
-        map((items) =>
-          items.map((item) => ({
-            id: parentPath ? `${parentPath}/${item.name}` : item.name,
-            _uuid: parentPath ? `${parentPath}/${item.name}` : item.name,
-            _type: item.type === "container" ? "FOLDER" : "BawSimulation",
-            _hasChildren: item.type === "container",
-            title: item.name,
-            icon: item.type === "container" ? "Daten" : "BawSimulation",
-            isAddress: false,
-            _parent: null,
-            _modified: null,
-            _contentModified: null,
-            _pendingDate: null,
-            _tags: null,
-            _state: "P",
-          })),
-        ),
-      );
   }
 
   load(id: string | number, useUuid = false): Observable<DocumentWithMetadata> {

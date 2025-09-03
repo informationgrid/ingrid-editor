@@ -63,7 +63,6 @@ export class FolderDashboardComponent {
     configService: ConfigService,
     private docEvents: DocEventsService,
     private router: Router,
-    private docService: DocumentService,
   ) {
     this.canCreateAddress = configService.hasPermission("can_create_address");
     this.canCreateDataset = configService.hasPermission("can_create_dataset");
@@ -84,9 +83,7 @@ export class FolderDashboardComponent {
     const childrenFromStore = store.getChildren(model.id as number);
     if (childrenFromStore.length === 0 && model._hasChildren) {
       // load children, as they are not in store yet
-      this.docService
-        .getChildren(model.id as number, this.isAddress())
-        .subscribe();
+      store.fetchMoreChildren(model.id as number);
     }
     this.numChildren = childrenFromStore.length;
     const latestChildren = childrenFromStore

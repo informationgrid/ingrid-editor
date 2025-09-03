@@ -1,6 +1,7 @@
 <div class="side-padding dlg-field-hero-label">Zielordner wählen</div>
 <!-- FIXME: [hideReadOnly]="true" after completion of #4261 -->
 <ige-tree
+    [treeStore]="forAddress ? addressTreeStore : documentTreeStore"
     [disabledCondition]="disabledCondition()"
     (selected)="updateParent($event, 'Tree')"
     [setActiveNode]="activeTreeNode"

@@ -51,8 +51,8 @@ export class SidebarComponent implements OnInit {
 
   @Output() dropped = new EventEmitter();
 
-  private documentTreeStore = inject(TreeStore);
-  private addressTreeStore = inject(AddressTreeStore);
+  documentTreeStore = inject(TreeStore);
+  addressTreeStore = inject(AddressTreeStore);
   private generalStore = inject(GeneralStore);
   private uiStore = inject(UiStore);
 

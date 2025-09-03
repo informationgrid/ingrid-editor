@@ -62,8 +62,8 @@ import { TreeStore } from "../../../store/tree/tree.store";
 export class PermissionAddDialogComponent implements OnInit {
   @Input() forAddress = this.data?.forAddress;
 
-  private documentTreeStore = inject(TreeStore);
-  private addressTreeStore = inject(AddressTreeStore);
+  documentTreeStore = inject(TreeStore);
+  addressTreeStore = inject(AddressTreeStore);
 
   val: TreePermission[] = [];
   private onChange: (x: any) => {};

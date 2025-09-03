@@ -292,42 +292,6 @@ export class DocumentService {
       pageSize,
     );
   }
-  getChildren(
-    parentId: number | string,
-    isAddress?: boolean,
-    isLongTermStorage?: boolean,
-  ): Observable<DocumentAbstract[]> {
-    return isLongTermStorage
-      ? this.dataService
-          .getLongTermFileStorageChildren(parentId as string)
-          .pipe(
-            map((docs) => {
-              console.log("document.service get children:", docs);
-              docs.forEach((doc) => {
-                doc.icon = this.profileService.getDocumentIcon(doc._type);
-                if (!doc.title) doc.title = "-Kein Titel-";
-                doc.isRoot = parentId === null;
-              });
-              return docs as DocumentAbstract[];
-            }),
-            tap((docs) =>
-              this.updateTreeStoreLongTermFileStorage(parentId as string, docs),
-            ),
-          )
-      : this.dataService.getChildren(parentId as number, isAddress).pipe(
-          map((docs) => {
-            docs.forEach((doc) => {
-              doc.icon = this.profileService.getDocumentIcon(doc._type);
-              if (!doc.title) doc.title = "-Kein Titel-";
-              doc.isRoot = parentId === null;
-            });
-            return docs as DocumentAbstract[];
-          }),
-          tap((docs) =>
-            this.updateTreeStoreDocs(isAddress, parentId as number, docs),
-          ),
-        );
-  }
 
   load(
     id: string | number,
@@ -858,31 +822,6 @@ export class DocumentService {
       .subscribe();
   }
 
-  private updateTreeStoreDocs(
-    isAddress: boolean,
-    parentId: number,
-    docs: DocumentAbstract[],
-  ) {
-    const store = isAddress ? this.addressTreeStore : this.documentTreeStore;
-    if (parentId === null) {
-      store.set(docs);
-    } else {
-      store.add(docs);
-    }
-  }
-
-  private updateTreeStoreLongTermFileStorage(
-    parentId: string,
-    docs: DocumentAbstract[],
-  ) {
-    const store = this.longTermFileStorageTreeStore;
-    if (parentId === null) {
-      store.set(docs);
-    } else {
-      store.add(docs);
-    }
-  }
-
   mapToDocumentAbstracts(docs: DocumentWithMetadata[]): DocumentAbstract[] {
     return docs.map((doc) => {
       return {
@@ -1033,7 +972,7 @@ export class DocumentService {
   private getChildrenIfNotDoneYet(
     parent: number,
     isAddress: boolean,
-  ): Observable<DocumentAbstract[]> {
+  ): DocumentAbstract[] {
     if (parent !== null) {
       const store = isAddress ? this.addressTreeStore : this.documentTreeStore;
       const entityMap = store.entityMap();
@@ -1046,12 +985,12 @@ export class DocumentService {
           (id) => entityMap[id]._parent === parent,
         );
         if (!hasAnyChildren) {
-          return this.getChildren(parent, isAddress);
+          return store.getChildren(parent);
         }
       }
     }
 
-    return of([]);
+    return [];
   }
 
   private preparePath(result: PathResponse[]) {

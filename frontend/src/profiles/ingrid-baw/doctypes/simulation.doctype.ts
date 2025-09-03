@@ -37,14 +37,14 @@ export class SimulationDoctypeBaw extends GeoDatasetDoctypeBaw {
     fieldConfig.unshift(
       this.addSection("Langfristspeicher", [
         this.addGroup("lfs", "LFS-Dateien", [
-          this.addDocumentCard("path", {
+          this.addLongTermFileStorageCard("path", {
             docTypeFilter: [],
-            isLongTermFileStorage: true,
             label: "Datensatzverweis",
             allowRedirectToDocument: false,
             allowMultiSelect: true,
             titleOfDocumentSelectorDialog: "Datei auswählen",
             required: false,
+            hideHeader: true,
             // expressions: {
             //   hide: (field: FormlyFieldConfig) => {
             //     return field.form.value.referenceType != "uuidRef";

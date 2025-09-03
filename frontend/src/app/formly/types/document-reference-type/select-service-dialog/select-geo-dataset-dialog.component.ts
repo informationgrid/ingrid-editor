@@ -49,8 +49,8 @@ export interface SelectServiceResponse {
   imports: [DialogTemplateComponent, TreeComponent, FormlyForm],
 })
 export class SelectGeoDatasetDialog {
+  documentTreeStore = inject(TreeStore);
   private documentService = inject(DocumentService);
-  private documentTreeStore = inject(TreeStore);
 
   selectedNode: number = null;
   field: FormlyFieldConfig[] = [

@@ -21,9 +21,44 @@ import { DocumentAbstract } from "../document/document.model";
 import { signalStore, withMethods } from "@ngrx/signals";
 import { withEntities } from "@ngrx/signals/entities";
 import { getTreeStoreMethods } from "./tree.base";
+import { Observable } from "rxjs";
+import { map, tap } from "rxjs/operators";
+import { inject } from "@angular/core";
+import { DocumentDataService } from "../../services/document/document-data.service";
+import { ProfileService } from "../../services/profile.service";
 
 export const TreeStore = signalStore(
   { providedIn: "root" },
   withEntities<DocumentAbstract>(),
-  withMethods(getTreeStoreMethods.call(this)),
+  withMethods((store) => {
+    const dataService = inject(DocumentDataService);
+    const profileService = inject(ProfileService);
+    return {
+      ...getTreeStoreMethods()(store),
+
+      fetchMoreChildren(
+        parentId: number | string,
+      ): Observable<DocumentAbstract[]> {
+        return dataService.getChildren(parentId as number, false).pipe(
+          map((docs) => {
+            (docs as Array<any>).forEach((doc) => {
+              doc.icon = profileService.getDocumentIcon(doc._type);
+              if (!doc.title) doc.title = "-Kein Titel-";
+              doc.isRoot = parentId === null;
+            });
+            return docs as DocumentAbstract[];
+          }),
+          tap((docs) => this.updateTreeStoreDocs(parentId as number, docs)),
+        );
+      },
+
+      updateTreeStoreDocs(parentId: number, docs: DocumentAbstract[]) {
+        if (parentId === null) {
+          getTreeStoreMethods()(store).set(docs);
+        } else {
+          getTreeStoreMethods()(store).add(docs);
+        }
+      },
+    };
+  }),
 );

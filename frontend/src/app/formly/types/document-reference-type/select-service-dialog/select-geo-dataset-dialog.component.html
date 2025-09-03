@@ -16,6 +16,7 @@
             <div class="section-title">Auswahl des Geodatensatzes:</div>
         }
         <ige-tree
+            [treeStore]="documentTreeStore"
             [allowMultiSelectionMode]="false"
             [disabledCondition]="enableOnlyGeoService()"
             (selected)="selectDatasets($event)"

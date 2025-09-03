@@ -26,9 +26,6 @@ import { TreeNode } from "../../../store/tree/tree-node.model";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { map } from "rxjs/operators";
 import { GeneralStore } from "../../../store/general.store";
-import { AddressTreeStore } from "../../../store/address-tree/address-tree.store";
-import { TreeStore } from "../../../store/tree/tree.store";
-import { TreeStoreLongTermFileStorage } from "../../../store/tree/tree.storeLongTermFileStorage";
 
 /**
  * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
@@ -38,10 +35,7 @@ import { TreeStoreLongTermFileStorage } from "../../../store/tree/tree.storeLong
 @Injectable()
 export class DynamicDatabase {
   private generalStore = inject(GeneralStore);
-  private addressTreeStore = inject(AddressTreeStore);
-  private documentTreeStore = inject(TreeStore);
-  private longTermFileStorageTreeStore = inject(TreeStoreLongTermFileStorage);
-  private isLongTermStorage = false;
+  private treeStore = null;
 
   treeUpdates = new Subject<UpdateDatasetInfo>();
 
@@ -56,17 +50,14 @@ export class DynamicDatabase {
     });
   }
 
-  init(forAdresses: boolean, isLongTermStorage: boolean): void {
+  init(forAdresses: boolean, store: any): void {
     this.isAddress = forAdresses;
-    this.isLongTermStorage = isLongTermStorage;
+    this.treeStore = store;
   }
 
   /** Initial data from database */
-  initialData(
-    forceFromServer?: boolean,
-    isAddress?: boolean,
-  ): Observable<DocumentAbstract[]> {
-    const children = this.getChildren(null, forceFromServer, isAddress);
+  initialData(forceFromServer?: boolean): Observable<DocumentAbstract[]> {
+    const children = this.getChildren(null, forceFromServer);
     if (this.hideReadOnly) {
       return children.pipe(
         map((docs) =>
@@ -84,29 +75,21 @@ export class DynamicDatabase {
   getChildren(
     parentId: number,
     forceFromServer?: boolean,
-    isAddress?: boolean,
   ): Observable<DocumentAbstract[]> {
     let children: DocumentAbstract[];
     if (forceFromServer) {
       children = [];
     } else {
-      const query = isAddress
-        ? this.addressTreeStore
-        : this.isLongTermStorage
-          ? this.longTermFileStorageTreeStore
-          : this.documentTreeStore;
-      children = query.getChildren(parentId);
+      children = this.treeStore.getChildren(parentId);
     }
 
     if (children.length > 0) {
       return of(children);
     }
 
-    const moreChildren = this.docService.getChildren(
-      parentId,
-      isAddress,
-      this.isLongTermStorage,
-    );
+    const moreChildren: Observable<DocumentAbstract[]> =
+      this.treeStore.fetchMoreChildren(parentId);
+
     if (this.hideReadOnly) {
       return moreChildren.pipe(
         map((docs) =>
