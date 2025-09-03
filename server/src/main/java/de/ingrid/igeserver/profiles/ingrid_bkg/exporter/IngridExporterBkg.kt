@@ -52,8 +52,8 @@ class IngridExporterBkg(
         ExportTypeInfo(
             DocumentCategory.DATA,
             "indexInGridIDFBkg",
-            "Internes Portal (BKG)",
-            "Export von Ingrid Dokumenten ins IDF Format für BKG für die Anzeige im internen Portal.",
+            "Export Portal BKG",
+            "Export von Ingrid Dokumenten ins IDF Format für BKG für die Anzeige im Portal.",
             "application/json",
             "json",
             listOf("ingrid-bkg"),
