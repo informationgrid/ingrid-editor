@@ -25,11 +25,9 @@ import com.ninjasquad.springmockk.MockkBean
 import de.ingrid.igeserver.mail.EmailServiceImpl
 import de.ingrid.igeserver.model.CatalogAdmin
 import de.ingrid.igeserver.model.User
-import io.kotest.core.annotation.Ignored
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import org.hamcrest.CoreMatchers.hasItem
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -126,7 +124,7 @@ class UserMdAdminTests(val mockMvc: MockMvc) : IntegrationTest() {
         mockMvc.perform(
             put("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jacksonObjectMapper().writeValueAsString(User("test-user", id = 11)))
+                .content(jacksonObjectMapper().writeValueAsString(User("author1")))
                 .principal(mockPrincipal),
         )
             .andExpect(status().isOk)
@@ -137,7 +135,7 @@ class UserMdAdminTests(val mockMvc: MockMvc) : IntegrationTest() {
         mockMvc.perform(
             put("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jacksonObjectMapper().writeValueAsString(User("test-user", id = 12)))
+                .content(jacksonObjectMapper().writeValueAsString(User("mdadmin1")))
                 .principal(mockPrincipal),
         )
             .andExpect(status().isOk)
@@ -148,7 +146,7 @@ class UserMdAdminTests(val mockMvc: MockMvc) : IntegrationTest() {
         mockMvc.perform(
             put("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jacksonObjectMapper().writeValueAsString(User("test-user", id = 13)))
+                .content(jacksonObjectMapper().writeValueAsString(User("catadmin1")))
                 .principal(mockPrincipal),
         )
             .andExpect(status().isForbidden)
