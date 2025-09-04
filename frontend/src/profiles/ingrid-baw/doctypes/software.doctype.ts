@@ -162,7 +162,7 @@ export class SoftwareDoctypeBaw extends InformationSystemDoctype {
     return [
       this.addGroup("productiveUse", "Produktiver Einsatz", [
         this.addCheckboxInline("wsv", "WSV-Auftrag"),
-        this.addCheckboxInline("baw", "FuE"),
+        this.addCheckboxInline("fue", "FuE"),
         this.addCheckboxInline("other", "Andere"),
       ]),
       this.getNotesFieldGroupConfig("productiveUse"),
