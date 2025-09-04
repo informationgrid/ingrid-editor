@@ -44,6 +44,8 @@ class InGridLUBWComponent extends InGridComponent {
     super();
     this.isoView.isoExportFormat = "ingridISOLUBW";
     const isAuthor = this.configService.$userInfo.value.role === "author";
+    // pre-fetch 505 codelist for validation message in addresses
+    this.geoDataset.getCodelistForSelect("505", "");
     this.modifyFormFieldConfiguration(isAuthor);
 
     if (isAuthor) {
@@ -93,6 +95,10 @@ class InGridLUBWComponent extends InGridComponent {
           fieldConfig,
           "pointOfContact",
         );
+        contacts.field.props.requiredMessage = () => {
+          const addressTypes = this.getAddressTypesByKeys(["12", "7", "5"]);
+          return `Es müssen insgesamt drei Adressen angegeben werden: '${addressTypes[0]}', '${addressTypes[1]}' und '${addressTypes[2]}'.`;
+        };
         contacts.field.validators = {
           threeAddressTypesNeeded: {
             expression: (ctrl: FormControl) => {

@@ -21,10 +21,10 @@ import {
   Component,
   ElementRef,
   Input,
-  OnInit,
-  ViewChild,
   input,
+  OnInit,
   output,
+  ViewChild,
 } from "@angular/core";
 import { MatError } from "@angular/material/form-field";
 import { MatButton } from "@angular/material/button";
@@ -59,6 +59,7 @@ export interface AddButtonOptions {
 export class AddButtonComponent implements OnInit {
   readonly buttonType = input<"stroked" | "flat" | "menu">("stroked");
   readonly showRequiredError = input(false);
+  readonly requiredMessage = input<Function>();
   readonly showTitle = input(true);
   readonly buttonTitle = input("Hinzufügen");
 

@@ -43,6 +43,7 @@
         [showRequiredError]="
             showError && formControl.invalid && formControl.errors?.required
         "
+        [requiredMessage]="props.requiredMessage"
         [ariaLabelledBy]="field | fieldToAriaLabelledBy"
         [class.required]="props.required"
     ></ige-add-button>
