@@ -28,6 +28,7 @@ import de.ingrid.igeserver.services.SchedulerService
 import de.ingrid.igeserver.zabbix.ZabbixJob
 import de.ingrid.igeserver.zabbix.ZabbixModel
 import de.ingrid.igeserver.zabbix.ZabbixService
+import de.ingrid.mdek.upload.UploadConfig
 import de.ingrid.utils.xpath.XPathUtils
 import org.apache.logging.log4j.kotlin.logger
 import org.quartz.JobDataMap
@@ -44,7 +45,7 @@ import javax.xml.parsers.DocumentBuilderFactory
  */
 @Component
 @Profile("zabbix")
-class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler: SchedulerService) : Filter<PostIndexPayload> {
+class PostDocumentIndexingZabbix(val uploadConfig: UploadConfig, val zabbixService: ZabbixService, val scheduler: SchedulerService) : Filter<PostIndexPayload> {
 
     private val log = logger()
 
@@ -96,7 +97,7 @@ class PostDocumentIndexingZabbix(val zabbixService: ZabbixService, val scheduler
             documentURL = zabbixService.detailUrl.format(uuid),
             addressName = xpath.getString(xmlDocument, "//idfMdMetadata/addresses/address/name"),
             addressMail = xpath.getString(xmlDocument, "//idfMdMetadata/addresses/address/mail")?.trim(),
-            uploads = getUploadsToAdd(xmlDocument, zabbixService.uploadUrl),
+            uploads = getUploadsToAdd(xmlDocument, uploadConfig.uploadExternalUrl),
         )
     }
 
