@@ -20,6 +20,7 @@
 package de.ingrid.igeserver.profiles.ingrid_baw.exporter.transformer
 
 import de.ingrid.igeserver.exporter.model.GeographicElement
+import de.ingrid.igeserver.model.KeyValue
 import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 import de.ingrid.igeserver.profiles.ingrid.exporter.TransformerConfig
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
@@ -67,12 +68,9 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     }
 
     fun getLiteratureAggregates() = getLiteratureAggregates(this)
-    val waterMeasurements = doc.data.getPath("measurementPhases")?.find { it.getString("type") == "waterMeasurement" }
 
     val orderTitle = doc.data.getString("orderTitle")
     val orderNumber = doc.data.getString("orderNumber")
-    val timestep = waterMeasurements?.getDouble("timestep")
-
     val simulationParameters = doc.data.getPath("simulationParameter")
         ?.map {
             SimParameter(
@@ -107,7 +105,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
     )
 
     val process = doc.data.getPath("process")?.mapToKeyValue()?.let { codelists.getValue("3950001", it) }
-    val measuringMethod: List<String> = doc.data.getPath("measuringMethod")?.map { codelists.getValue("3950011", it.mapToKeyValue())!! } ?: emptyList()
+    val measuringMethod: List<String> = doc.data.getPath("measuringMethod")?.mapNotNull { codelists.getValue("3950011", it.mapToKeyValue()) } ?: emptyList()
 
     // measurementMethod for Messdaten and process for Simulationen
     val method = measuringMethod + (process?.let { listOf(it) } ?: emptyList())
@@ -127,7 +125,7 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
         } ?: emptyList(),
     )
 
-    val modelType = doc.data.getPath("simulationModelType")?.map { codelists.getValue("3950003", it.mapToKeyValue())!! } ?: emptyList()
+    val modelType = doc.data.getPath("simulationModelType")?.mapNotNull { codelists.getValue("3950003", it.mapToKeyValue()) } ?: emptyList()
 
     val modelTypeThesaurus = Thesaurus(
         "de.baw.codelist.model.type",
@@ -141,7 +139,92 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
             )
         },
     )
+
+    // Wasserbau Messdaten
+    val waterMeasurements = doc.data.getPath("measurementPhases")?.find { it.getString("type") == "waterMeasurement" }
+    val timestep = waterMeasurements?.getDouble("timestep")
+    val spatiality = waterMeasurements?.getPath("spatiality")?.mapToKeyValue()?.let { codelists.getValue("3950012", it) }
+    val frequency = waterMeasurements?.getDouble("frequency")
+    val posAccuracy = waterMeasurements?.getDouble("posAccuracy")
+    val measuringDepth = waterMeasurements?.getPath("measuringDepth")?.let { depth ->
+        MeasurementDepth(
+            value = depth.getString("value"),
+            crs = depth.getPath("verticalSpatialSystems")?.mapToKeyValue()?.let {
+                KeyValue(it.key, codelists.getValue("verticalSpatialSystems", it))
+            },
+        )
+    }
+    val zeroLevel = waterMeasurements?.getPath("zeroLevel")?.map { level ->
+        ZeroLevel(
+            value = level.getString("value"),
+            crs = level.getPath("verticalSpatialSystems")?.mapToKeyValue()?.let {
+                KeyValue(it.key, codelists.getValue("verticalSpatialSystems", it))
+            },
+            unit = level.getPath("unitOfMeasurement")?.mapToKeyValue()?.let { codelists.getValue("3950020", it) },
+            description = level.getString("description"),
+        )
+    } ?: emptyList()
+
+    val averageWaterLevel = waterMeasurements?.getPath("averageWaterLevel")?.map { level ->
+        AverageWaterLevel(
+            value = level.getString("value"),
+            unit = level.getPath("unitOfMeasurement")?.mapToKeyValue()?.let { codelists.getValue("3950020", it) },
+        )
+    } ?: emptyList()
+
+    val maxDrain = waterMeasurements?.getString("drain.max")
+    val minDrain = waterMeasurements?.getString("drain.min")
+
+    val gauge = waterMeasurements?.getPath("gauge")?.map { device ->
+        MeasurementDevice(
+            name = device.getString("name"),
+            id = device.getString("id"),
+            model = device.getString("model"),
+            description = device.getString("description"),
+        )
+    } ?: emptyList()
+
+    val targetParameters = waterMeasurements?.getPath("targetParameters")?.map { param ->
+        TargetParameter(
+            name = param.getPath("name")?.mapToKeyValue()?.let { codelists.getValue("3950021", it) },
+            type = param.getPath("type")?.mapToKeyValue()?.let { codelists.getValue("3950014", it) },
+            unit = param.getPath("unitOfMeasurement")?.mapToKeyValue()?.let { codelists.getValue("3950020", it) },
+            formula = param.getString("formula"),
+        )
+    } ?: emptyList()
+
+    val dataQualityDescription = waterMeasurements?.getString("dataQualityDescription")
 }
+
+data class TargetParameter(
+    val name: String?,
+    val type: String?,
+    val unit: String?,
+    val formula: String?,
+)
+
+data class MeasurementDevice(
+    val name: String?,
+    val id: String?,
+    val model: String?,
+    val description: String?,
+)
+
+data class AverageWaterLevel(
+    val value: String?,
+    val unit: String?,
+)
+data class ZeroLevel(
+    val value: String?,
+    val crs: KeyValue?,
+    val unit: String?,
+    val description: String?,
+)
+
+data class MeasurementDepth(
+    val value: String?,
+    val crs: KeyValue?,
+)
 
 data class SimParameter(
     val name: String,
