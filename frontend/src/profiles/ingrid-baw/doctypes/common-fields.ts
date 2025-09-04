@@ -97,7 +97,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
   }
 
   getUnitOfMeasurementFieldConfig(doc: IngridShared) {
-    return this.addSelectInline("unitOfMeasurement", "Einheit", {
+    return this.addAutoCompleteInline("unitOfMeasurement", "Einheit", {
       required: true,
       options: doc.getCodelistForSelect("3950020", "null"),
     });
