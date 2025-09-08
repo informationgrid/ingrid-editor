@@ -48,7 +48,6 @@ class ZabbixService(
     private val userGroupId = zabbixProperties.userGroupId
     val activatedCatalogs = zabbixProperties.catalogs ?: emptyList()
     val detailUrl = zabbixProperties.detailURLTemplate
-    val uploadUrl = zabbixProperties.uploadURL
 
     fun addOrUpdateDocument(data: ZabbixModel.ZabbixData) {
         val remoteUploads = requestApi(getUploadsPayload(data.uuid)).get("result")
