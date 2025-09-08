@@ -110,7 +110,7 @@ export class PublicationDoctypeBaw extends IngridShared {
     // Auftragsnummer
     this.addBefore(
       parentIdentifierPosition,
-      this.addRepeatList("orderNumbers", "Auftragsnummer"),
+      this.addRepeatList("orderNumber", "Auftragsnummer"),
     );
     // Auftragstitel
     this.addBefore(
