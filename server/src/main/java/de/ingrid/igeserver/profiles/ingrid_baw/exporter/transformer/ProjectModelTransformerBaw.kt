@@ -34,6 +34,7 @@ import de.ingrid.igeserver.utils.mapToKeyValue
 
 open class ProjectModelTransformerBaw(transformerConfig: TransformerConfig) : ProjectModelTransformer(transformerConfig) {
 
+    val forRepository = transformerConfig.tags.contains("forRepository")
     override fun mapDocumentType(type: String): String = mapDocumentTypeBaw(type) ?: super.mapDocumentType(type)
     override val linkToVerticalCRS = true
     override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)
@@ -55,5 +56,5 @@ open class ProjectModelTransformerBaw(transformerConfig: TransformerConfig) : Pr
 
     override val hierarchyLevelName = "project"
 
-    val orderNumber = doc.data.getString("orderNumber")
+    val orderNumber = if (forRepository) null else doc.data.getString("orderNumber")
 }
