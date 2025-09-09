@@ -78,7 +78,7 @@ export class CommonFieldsBaw extends FormFieldHelper {
       "verticalSpatialSystems",
       "Raumbezugssystem (Höhe)",
       {
-        asSelect: false,
+        asSelect: true,
         showSearch: true,
         options: doc.getCodelistForSelect("verticalSpatialSystems", "null"),
         codelistId: "verticalSpatialSystems",

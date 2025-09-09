@@ -143,9 +143,15 @@
             },
             "bwastr": {
               "type": "object",
-              "additionalProperties": false,
+              "additionalProperties": true,
               "properties": {
                 "bwastrid": {
+                  "type": ["null", "string"]
+                },
+                "concat_name": {
+                  "type": ["null", "string"]
+                },
+                "strecken_name": {
                   "type": ["null", "string"]
                 },
                 "start": {
