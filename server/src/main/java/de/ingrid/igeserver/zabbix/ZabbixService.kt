@@ -48,10 +48,9 @@ class ZabbixService(
     private val userGroupId = zabbixProperties.userGroupId
     val activatedCatalogs = zabbixProperties.catalogs ?: emptyList()
     val detailUrl = zabbixProperties.detailURLTemplate
-    val uploadUrl = zabbixProperties.uploadURL
 
     fun addOrUpdateDocument(data: ZabbixModel.ZabbixData) {
-        val remoteUploads = requestApi(getUploadsPayload(data.uuid, apiKey)).get("result")
+        val remoteUploads = requestApi(getUploadsPayload(data.uuid)).get("result")
             .map { getUpload(it) }.toMutableList()
 
         val documentsToAdd = mutableListOf<ZabbixModel.Upload>()
@@ -163,7 +162,7 @@ class ZabbixService(
     private fun createAction(uuid: String, addressMail: String) {
         val userid = getUser("username", addressMail)?.get("userid")?.asText() ?: createUser(addressMail)
         val updatedUserId = updateUserMail(uuid, addressMail) ?: userid
-        requestApi(getActionPayload(uuid, updatedUserId, apiKey))
+        requestApi(getActionPayload(uuid, updatedUserId))
     }
 
     private fun getUserId(username: String): String {

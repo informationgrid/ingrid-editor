@@ -157,7 +157,7 @@ class ZabbixModel {
     )
 }
 
-fun getUploadsPayload(uuid: String, apiKey: String): String = """
+fun getUploadsPayload(uuid: String): String = """
     {
         "jsonrpc": "$JSONRPC",
         "method": "httptest.get",
@@ -184,7 +184,7 @@ fun getUploadsPayload(uuid: String, apiKey: String): String = """
     }
 """.trimIndent()
 
-fun getActionPayload(uuid: String, updatedUserId: String, apiKey: String): String = """
+fun getActionPayload(uuid: String, updatedUserId: String): String = """
     {
         "jsonrpc": "$JSONRPC",
         "method": "action.create",
