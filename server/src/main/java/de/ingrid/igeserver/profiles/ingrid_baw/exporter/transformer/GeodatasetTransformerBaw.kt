@@ -38,6 +38,8 @@ import de.ingrid.igeserver.utils.mapToKeyValue
 
 class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : GeodatasetModelTransformer(transformerConfig) {
 
+    val forRepository = transformerConfig.tags.contains("forRepository")
+    val baseUrl = if (forRepository) "dl.datenrepository.baw.de" else "dl.datenfinder.baw.de"
     override fun mapDocumentType(type: String): String = mapDocumentTypeBaw(type) ?: super.mapDocumentType(type)
     override val linkToVerticalCRS = true
     override fun getParentIdentifier(): String? = getParentIdentifierBaw(this)
@@ -69,8 +71,8 @@ class GeodatasetTransformerBaw(transformerConfig: TransformerConfig) : Geodatase
 
     fun getLiteratureAggregates() = getLiteratureAggregates(this)
 
-    val orderTitle = doc.data.getString("orderTitle")
-    val orderNumber = doc.data.getString("orderNumber")
+    val orderTitle = if (forRepository) null else doc.data.getString("orderTitle")
+    val orderNumber = if (forRepository) null else doc.data.getString("orderNumber")
     val simulationParameters = doc.data.getPath("simulationParameter")
         ?.map {
             SimParameter(

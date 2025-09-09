@@ -50,7 +50,7 @@ class IngridExporterBaw(
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
         "indexInGridIDFBaw",
-        "Ingrid IDF BAW (Elasticsearch)",
+        "Ingrid IDF BAW Datenfinder (Elasticsearch)",
         "Export von Ingrid Dokumenten ins IDF Format für BAW für die Anzeige im Portal ins Elasticsearch-Format.",
         "application/json",
         "json",
@@ -61,22 +61,27 @@ class IngridExporterBaw(
 }
 
 @Service
-class IngridExporterBawMetaver(
+class IngridExporterBawRepository(
     idfExporter: IngridIdfExporterBaw,
     luceneExporter: IngridLuceneExporterBaw,
-) : IngridIndexExporter(idfExporter, luceneExporter) {
+) : IngridExporterBaw(idfExporter, luceneExporter) {
 
     override val typeInfo = ExportTypeInfo(
         DocumentCategory.DATA,
-        "indexInGridIDFBaw",
-        "Ingrid IDF Metaver (Elasticsearch)",
-        "Export von BAW Ingrid Dokumenten",
+        "indexInGridIDFBawRepository",
+        "Ingrid IDF BAW Datenrepository (Elasticsearch)",
+        "Export von BAW Dokumenten in das Datenrepository",
         "application/json",
         "json",
         listOf("ingrid-baw"),
         isPublic = true,
         useForPublish = true,
     )
+
+    override fun run(doc: Document, catalogId: String, options: ExportOptions): Any {
+        options.tags += "forRepository"
+        return super.run(doc, catalogId, options)
+    }
 }
 
 @Service
