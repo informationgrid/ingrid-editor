@@ -29,9 +29,9 @@ import de.ingrid.utils.ElasticDocument
 interface IIndexManager {
     val name: String
 
-    fun onFinishIndexAll()
+    fun onFinishIndexAll() {}
 
-    fun setCatalogId(catalogId: String)
+    fun setCatalogId(catalogId: String) {}
 
     fun getIndexNameFromAliasName(indexAlias: String, partialName: String? = null): String?
 
@@ -61,5 +61,4 @@ interface IIndexManager {
      * @return a list of available document categories as defined in the DocumentCategory enum.
      */
     fun getCategories(): List<DocumentCategory>
-
 }

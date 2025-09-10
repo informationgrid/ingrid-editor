@@ -57,14 +57,6 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
     private val defaultMapping: String = ElasticIndexer::class.java.getResource("/ingrid-meta-mapping.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-mapping.json' for creating index 'ingrid_meta'")
     private val defaultSettings: String = ElasticIndexer::class.java.getResource("/ingrid-meta-settings.json")?.readText() ?: throw ServerException.withReason("Could not find mapping file 'ingrid-meta-settings.json' for creating index 'ingrid_meta'")
 
-    override fun onFinishIndexAll() {
-        // nothing to do here
-    }
-
-    override fun setCatalogId(catalogId: String) {
-        // nothing to do here
-    }
-
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? = runBlocking {
         val aliases = try {
             elastic.client.getAliases(indexAlias)
@@ -186,8 +178,5 @@ class ElasticIndexer(override val name: String, private val elastic: ElasticClie
 
     override fun indexExists(indexName: String): Boolean = runBlocking { elastic.client.exists(indexName) }
 
-    override fun getCategories(): List<DocumentCategory> {
-        return listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
-    }
-
+    override fun getCategories(): List<DocumentCategory> = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
 }

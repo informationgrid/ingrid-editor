@@ -30,14 +30,6 @@ import org.apache.logging.log4j.kotlin.logger
 class IBusIndexer(override val name: String, private val iBus: IBus) : IIndexManager {
     val log = logger()
 
-    override fun onFinishIndexAll() {
-        // nothing to do here
-    }
-
-    override fun setCatalogId(catalogId: String) {
-        // nothing to do here
-    }
-
     override fun getIndexNameFromAliasName(indexAlias: String, partialName: String?): String? {
         val call = IngridCall()
         call.method = "getIndexNameFromAliasName"
@@ -163,8 +155,5 @@ class IBusIndexer(override val name: String, private val iBus: IBus) : IIndexMan
         }
     }
 
-    override fun getCategories(): List<DocumentCategory> {
-        return listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
-    }
-
+    override fun getCategories(): List<DocumentCategory> = listOf(DocumentCategory.DATA, DocumentCategory.ADDRESS)
 }
