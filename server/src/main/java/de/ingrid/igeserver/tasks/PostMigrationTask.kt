@@ -150,7 +150,7 @@ class PostMigrationTask(
             .put("concat_name", bwastr.concat_name)
             .put("strecken_name", bwastr.strecken_name)
         (spatialReference as ObjectNode)
-            .put("title", bwastr.bwastr_name)
+            .put("title", bwastr.concat_name)
             .replace("bwastr", migratedBwastr)
         return spatialReference
     }
