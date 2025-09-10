@@ -9,7 +9,6 @@ services:
       - TZ=Europe/Berlin
       - _JAVA_OPTIONS=-Xmx2g -Dstorage.diskCache.bufferSize=256 -Dspring.profiles.active=elasticsearch,mcloud,test,uvp,ingrid,ingrid-kommunal-st,ingrid-krzn,ingrid-up-sh,ogc-api,csw-t,ogc-distributions-api,ingrid-bast,codelist-repo
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8699
-      #- KEYCLOAK_CLIENT_ID=ige-ng
       - KEYCLOAK_URL=http://${SERVICE_FQDN_KEYCLOAK}/keycloak
       - KEYCLOAK_BACKEND_USER=ige
       - KEYCLOAK_BACKEND_USER_PASSWORD=ige
@@ -23,7 +22,7 @@ services:
       - ige-ng-network
 
   keycloak:
-    image: docker-registry.wemove.com/keycloak:26.0.2-1
+    image: docker-registry.wemove.com/keycloak:26.2.4-1
     restart: unless-stopped
     environment:
       - SIMPLE_SECURITY=true
@@ -31,14 +30,11 @@ services:
       - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
       - KC_HOSTNAME=http://${SERVICE_FQDN_KEYCLOAK}/keycloak
       - KC_HTTP_ENABLED=true
-#      - KC_DB=postgres
-#      - KC_DB_URL_HOST=db
       - KC_DB_USERNAME=admin
       - KC_DB_PASSWORD=admin
       - MAIL_SMTP=mailrelay
       - MAIL_FROM=keycloak@wemove.com
-      #- IGE_CLIENT_ID=ige-ng
-      - IGE_FRONTEND_URL=http://${SERVICE_FQDN_KEYCLOAK}/editor
+      - IGE_FRONTEND_URL=http://${SERVICE_FQDN_KEYCLOAK}
       - IGE_SUPER_USER_LOGIN=ige
       - IGE_SUPER_USER_PASSWORD=ige
       - IGE_SUPER_USER_FIRSTNAME=Super
@@ -58,11 +54,6 @@ services:
       - http.cors.enabled=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - xpack.security.enabled=false
-      #- xpack.security.enabled=true
-      #- ELASTIC_PASSWORD=admin
-      #- xpack.security.http.ssl.enabled=true
-      #- xpack.security.http.ssl.keystore.path=http.p12
-      # - ELASTICSEARCH_KEYSTORE_PASSWORD=
     restart: unless-stopped
     # volumes:
       # - ./set-keystore-password.sh:/usr/share/elasticsearch/bin/set-keystore-password.sh

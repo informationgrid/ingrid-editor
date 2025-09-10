@@ -1,7 +1,7 @@
 services:
 
   keycloak:
-    image: docker-registry.wemove.com/keycloak:26.0.2-1
+    image: docker-registry.wemove.com/keycloak:26.2.4-1
     restart: unless-stopped
     environment:
       - SIMPLE_SECURITY=true
