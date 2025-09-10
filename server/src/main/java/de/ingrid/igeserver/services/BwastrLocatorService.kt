@@ -53,8 +53,8 @@ data class BwastrCoordinateResponse(
 
 data class BwastrSection(
     val bwastrid: String,
-    val start: Double,
-    val end: Double,
+    val start: Double?,
+    val end: Double?,
 )
 
 @Service
@@ -102,8 +102,8 @@ class BwastrLocatorService {
                     {
                         "bwastrid": "${section.bwastrid}",
                         "stationierung": {
-                            "km_von": ${section.start},
-                            "km_bis": ${section.end}
+                            "km_von": ${section.start ?: 0.0},
+                            "km_bis": ${section.end ?: Double.MAX_VALUE}
                         },
                         "spatialReference":{"wkid":4326}
                     }
