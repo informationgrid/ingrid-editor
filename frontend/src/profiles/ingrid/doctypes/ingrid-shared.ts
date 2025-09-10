@@ -110,9 +110,6 @@ export abstract class IngridShared extends BaseDoctype {
       openDataCategories: (field: FormlyFieldConfig) =>
         !field.options.formState.mainModel?.properties?.isOpenData,
     },
-    dynamicDisabled: {
-      parentIdentifier: (_: FormlyFieldConfig) => false,
-    },
     required: {
       freeKeywords: false,
       useLimitation: false,
@@ -342,14 +339,6 @@ export abstract class IngridShared extends BaseDoctype {
             {
               wrappers: ["panel", "form-field"],
               className: "optional",
-              expressions: {
-                "props.disabled": (field: FormlyFieldConfig) =>
-                  this.options.dynamicDisabled.parentIdentifier(field),
-                "props.placeholder": (field: FormlyFieldConfig) =>
-                  field.props.disabled
-                    ? "wird aus übergeordnetem Metadatensatz übernommen"
-                    : "",
-              },
             },
           ),
           this.addInput(

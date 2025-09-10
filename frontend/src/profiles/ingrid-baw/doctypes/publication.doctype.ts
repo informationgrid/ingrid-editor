@@ -102,19 +102,19 @@ export class PublicationDoctypeBaw extends IngridShared {
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     // Add new fields
     this.common.addSharedFields(this, fieldConfig);
-    const parentIdentifierPosition = this.findFieldElementWithId(
+    const alternateTitlePosition = this.findFieldElementWithId(
       fieldConfig,
-      "parentIdentifier",
+      "alternateTitle",
     );
 
     // Auftragsnummer
     this.addBefore(
-      parentIdentifierPosition,
+      alternateTitlePosition,
       this.addRepeatList("orderNumber", "Auftragsnummer"),
     );
     // Auftragstitel
     this.addBefore(
-      parentIdentifierPosition,
+      alternateTitlePosition,
       this.addRepeatList("orderTitles", "Auftragstitel"),
     );
 

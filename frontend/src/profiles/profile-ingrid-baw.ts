@@ -84,9 +84,6 @@ class InGridBawComponent extends InGridComponent {
     ].forEach((docType) => {
       // add BWaStr-Strecken to spatial types
       docType.options.spatialTypes.push("bwastr");
-      // disable parentIdentifier field for objects with parents
-      docType.options.dynamicDisabled.parentIdentifier =
-        this.common.parentIsObject;
     });
   }
 }

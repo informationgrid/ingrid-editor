@@ -33,8 +33,6 @@ import { timezones } from "./timezones";
 
 @Injectable({ providedIn: "root" })
 export class CommonFieldsBaw extends FormFieldHelper {
-  private formStateService = inject(FormStateService);
-
   getOrderTitleFieldConfig(options: InputOptions = {}): FormlyFieldConfig {
     return this.addInput("orderTitle", "Auftragstitel", {
       required: true,
@@ -220,6 +218,16 @@ export class CommonFieldsBaw extends FormFieldHelper {
       "fileReferences",
     );
     fileReferencesPosition?.fieldConfig.splice(fileReferencesPosition.index, 1);
+
+    //remove parentIdentifier as it is set automatically in baw
+    const parentIdentifierPosition = this.findFieldElementWithId(
+      fieldConfig,
+      "parentIdentifier",
+    );
+    parentIdentifierPosition?.fieldConfig.splice(
+      parentIdentifierPosition.index,
+      1,
+    );
   }
 
   getBAWPointOfContactFieldConfig(
@@ -320,15 +328,15 @@ export class CommonFieldsBaw extends FormFieldHelper {
     doc: GeoDatasetDoctypeBaw,
     fieldConfig: FormlyFieldConfig[],
   ) {
-    const parentIdentifierPosition = this.findFieldElementWithId(
+    const alternateTitlePosition = this.findFieldElementWithId(
       fieldConfig,
-      "parentIdentifier",
+      "alternateTitle",
     );
 
     // Auftragsnummer
-    this.addBefore(parentIdentifierPosition, this.getOrderNumberFieldConfig());
+    this.addBefore(alternateTitlePosition, this.getOrderNumberFieldConfig());
     // Auftragstitel
-    this.addBefore(parentIdentifierPosition, this.getOrderTitleFieldConfig());
+    this.addBefore(alternateTitlePosition, this.getOrderTitleFieldConfig());
 
     this.addSharedFields(doc, fieldConfig);
   }
@@ -384,12 +392,5 @@ export class CommonFieldsBaw extends FormFieldHelper {
         : false,
     message:
       "Es muss mindestens ein Datum vom Typ 'Publikation' vorhanden sein",
-  };
-
-  parentIsObject = () => {
-    const metadata = this.formStateService.metadata();
-    return (
-      metadata.parentDocType != null && metadata.parentDocType !== "FOLDER"
-    );
   };
 }

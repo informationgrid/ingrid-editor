@@ -33,13 +33,13 @@ export class ProjectDoctypeBaw extends ProjectDoctype {
 
   manipulateDocumentFields = (fieldConfig: FormlyFieldConfig[]) => {
     this.common.addSharedFields(this, fieldConfig);
-    const parentIdentifierPosition = this.findFieldElementWithId(
+    const alternateTitlePosition = this.findFieldElementWithId(
       fieldConfig,
-      "parentIdentifier",
+      "alternateTitle",
     );
     // Auftragsnummer
     this.common.addBefore(
-      parentIdentifierPosition,
+      alternateTitlePosition,
       this.common.getOrderNumberFieldConfig(),
     );
 
