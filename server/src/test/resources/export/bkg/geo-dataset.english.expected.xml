@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><idf:html xmlns:idf="http://www.portalu.de/IDF/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" idf-version="3.6.1" xsi:schemaLocation="http://www.portalu.de/IDF/1.0 ingrid_detail_data_schema.xsd">
     <idf:head/>
     <idf:body>
-        <idf:idfMdMetadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:igctx="https://www.ingrid-oss.eu/schemas/igctx" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd https://www.ingrid-oss.eu/schemas/igctx https://www.ingrid-oss.eu/schemas/igctx/igctx.xsd">
+        <idf:idfMdMetadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:igctx="https://www.ingrid-oss.eu/schemas/igctx" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://repository.gdi-de.org/schemas/geonetwork/2020-12-11/csw/2.0.2/profiles/apiso/1.0.1/apiso.xsd https://www.ingrid-oss.eu/schemas/igctx https://www.ingrid-oss.eu/schemas/igctx/igctx.xsd">
             <gmd:fileIdentifier>
                 <gco:CharacterString>D85D3ABC-0612-40AE-8E70-78EDB386DE7F</gco:CharacterString>
             </gmd:fileIdentifier>
@@ -84,7 +84,7 @@
                 </idf:idfResponsibleParty>
             </gmd:contact>
             <gmd:dateStamp>
-                <gco:Date>2025-02-20</gco:Date>
+                <gco:Date>2025-09-10</gco:Date>
             </gmd:dateStamp>
             <gmd:metadataStandardName>
                 <gco:CharacterString>ISO19115</gco:CharacterString>
@@ -690,6 +690,7 @@
                     </gmd:portrayalCatalogueCitation>
                 </gmd:MD_PortrayalCatalogueReference>
             </gmd:portrayalCatalogueInfo>
+            <idf:hasAccessConstraint>false</idf:hasAccessConstraint>
             <idf:abstract>
                 <gco:CharacterString>This serie clc5 describes the landscape according to the CORINE Land Cover (CLC) nomenclature. These classes contain mainly information about landcover mixed with some aspects of landuse. CLC5 is based on the more detailed German landcover model (LBM-DE) which uses separate classes for landcover and landuse and attribute-information about percentage of vegetation and sealing. The mimimum unit for an object is 1 ha. For the CLC5 dataset landcover and landuse classes are combined to unique CLC-classes taking into account the percentage of vegetation and sealing, followed by a generalisation process.</gco:CharacterString>
             </idf:abstract>
