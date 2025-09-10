@@ -40,14 +40,14 @@ class UvpForeignProjectSchema : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getFileContent("/export/uvp/foreign-project.minimal.json")
+        val json = SchemaUtils.getJsonFileContent("/export/uvp/foreign-project.minimal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
 
     @Test
     fun full() {
-        val json = SchemaUtils.getFileContent("/export/uvp/foreign-project.maximal.json")
+        val json = SchemaUtils.getJsonFileContent("/export/uvp/foreign-project.maximal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }

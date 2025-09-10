@@ -40,6 +40,7 @@ class EnglishCatalog : GeodatasetBase() {
                 this.uploadConfig,
                 this.catalogService,
                 this.documentService,
+                this.documentWrapperRepository,
             )
         every { catalogService.getProfileFromCatalog(any()) } returns DummyCatalog("ingrid-bkg")
         every { catalogService.getCatalogById(any()).settings.config.language } returns "en"
@@ -56,7 +57,7 @@ class EnglishCatalog : GeodatasetBase() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getFileContent("/export/bkg/geo-service.english.expected.xml")
+            result shouldBe SchemaUtils.getJsonFileContent("/export/bkg/geo-service.english.expected.xml")
         }
 
         should("export geodataset to ISO with English codelist values") {
@@ -66,7 +67,7 @@ class EnglishCatalog : GeodatasetBase() {
                 .replace(GENERATED_UUID_REGEX, "ID_00000000-0000-0000-0000-000000000000")
 
             result shouldNotBe null
-            result shouldBe SchemaUtils.getFileContent("/export/bkg/geo-dataset.english.expected.xml")
+            result shouldBe SchemaUtils.getJsonFileContent("/export/bkg/geo-dataset.english.expected.xml")
         }
     }
 }

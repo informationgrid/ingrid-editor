@@ -43,21 +43,21 @@ class McloudSchema : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getFileContent("/export/mcloud/mcloud.minimal.json")
+        val json = SchemaUtils.getJsonFileContent("/export/mcloud/mcloud.minimal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
 
     @Test
     fun more() {
-        val json = SchemaUtils.getFileContent("/export/mcloud/mcloud.json")
+        val json = SchemaUtils.getJsonFileContent("/export/mcloud/mcloud.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
 
     @Test
     fun full() {
-        val json = SchemaUtils.getFileContent("/export/mcloud/mcloud.full.json")
+        val json = SchemaUtils.getJsonFileContent("/export/mcloud/mcloud.full.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }

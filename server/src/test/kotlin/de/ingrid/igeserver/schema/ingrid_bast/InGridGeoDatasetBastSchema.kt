@@ -29,7 +29,7 @@ class InGridGeoDatasetBastSchema : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
             "{",
             """
             { "projectNumber": "my project number", "projectTitle": "my project title", "supplementalInformation": "info", 

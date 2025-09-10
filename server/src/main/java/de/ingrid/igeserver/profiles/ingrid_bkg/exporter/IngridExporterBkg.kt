@@ -21,6 +21,7 @@ package de.ingrid.igeserver.profiles.ingrid_bkg.exporter
 
 import de.ingrid.igeserver.exports.ExportOptions
 import de.ingrid.igeserver.exports.ExportTypeInfo
+import de.ingrid.igeserver.exports.IgeExporter
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Catalog
 import de.ingrid.igeserver.persistence.postgresql.jpa.model.ige.Document
 import de.ingrid.igeserver.profiles.ingrid.exporter.IngridIDFExporter
@@ -94,7 +95,18 @@ class IngridLuceneExporterBkg(
     config,
     catalogService,
     documentService,
-) {
+),
+    IgeExporter {
+    override val typeInfo = ExportTypeInfo(
+        DocumentCategory.DATA,
+        "ingridLuceneBkg",
+        "Ingrid Lucene BKG",
+        "Export von Ingrid Dokumenten Lucene Format für die Anzeige im Portal.",
+        "text/xml",
+        "xml",
+        listOf("ingrid-bkg"),
+        false,
+    )
 
     override fun getTransformer(data: TransformerData): Any = when (data.type) {
         IngridDocType.DOCUMENT -> {

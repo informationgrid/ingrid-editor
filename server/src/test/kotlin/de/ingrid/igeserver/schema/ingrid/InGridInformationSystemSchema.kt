@@ -29,14 +29,14 @@ class InGridInformationSystemSchema : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getFileContent("/export/ingrid/information-system.minimal.json")
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/information-system.minimal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
 
     @Test
     fun maximal() {
-        val json = SchemaUtils.getFileContent("/export/ingrid/information-system.maximal.json")
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/information-system.maximal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }

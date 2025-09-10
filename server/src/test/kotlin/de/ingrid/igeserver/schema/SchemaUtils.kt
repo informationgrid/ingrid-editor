@@ -29,10 +29,10 @@ class SchemaUtils {
     companion object {
         fun validate(json: String, schema: String) = PreJsonSchemaValidator().validate(schema, json)
 
-        fun getFileContent(file: String) = this::class.java.getResource(file)!!.readText(Charsets.UTF_8).replace("\r\n", "\n")
+        fun getJsonFileContent(file: String) = this::class.java.getResource(file)!!.readText(Charsets.UTF_8).replace("\r\n", "\n")
 
         fun createNegativeTestByAddingInvalidField(schema: String, jsonFile: String) {
-            val json = getFileContent(jsonFile)
+            val json = getJsonFileContent(jsonFile)
                 .replaceFirst("{", """{ "anotherField": "should not be allowed",""")
 
             val exception = shouldThrow<ValidationException> { validate(json, schema) }

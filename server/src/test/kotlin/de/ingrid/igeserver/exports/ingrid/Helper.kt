@@ -72,7 +72,7 @@ fun exportDocToXML(exporter: IgeExporter, doc: Document): String = (exporter.run
 fun exportJsonToJson(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String = prettyFormatJson(exportJsonToString(exporter, file, additional))
 
 private fun exportJsonToString(exporter: IgeExporter, file: String, additional: ObjectNode? = null): String {
-    val input = SchemaUtils.getFileContent(file)
+    val input = SchemaUtils.getJsonFileContent(file)
     val doc = convertToDocument(input)
 
     if (additional != null) {

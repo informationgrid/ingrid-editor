@@ -29,7 +29,7 @@ class BmiDocumentSchema : AnnotationSpec() {
 
     @Test
     fun maximal() {
-        val json = SchemaUtils.getFileContent("/export/bmi/document_max.json")
+        val json = SchemaUtils.getJsonFileContent("/export/bmi/document_max.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }

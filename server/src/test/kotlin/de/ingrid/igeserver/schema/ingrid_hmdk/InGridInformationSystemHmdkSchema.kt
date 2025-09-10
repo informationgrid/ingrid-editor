@@ -29,7 +29,7 @@ class InGridInformationSystemHmdkSchema : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getFileContent("/export/ingrid/information-system.minimal.json").replaceFirst(
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/information-system.minimal.json").replaceFirst(
             "\"properties\": {",
             """"properties": {"publicationHmbTG": true, """,
         ).replaceFirst("{", """{ "informationHmbTG": [{"key": "1"}], """)

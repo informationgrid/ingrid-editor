@@ -36,6 +36,7 @@ class UseConstraints : GeodatasetBase() {
                 this.uploadConfig,
                 this.catalogService,
                 this.documentService,
+                this.documentWrapperRepository,
             )
         every { catalogService.getProfileFromCatalog(any()) } returns
             DummyCatalog("ingrid-bkg")

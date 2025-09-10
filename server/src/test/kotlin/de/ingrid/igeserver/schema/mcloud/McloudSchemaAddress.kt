@@ -33,14 +33,14 @@ class McloudSchemaAddress : AnnotationSpec() {
 
     @Test
     fun minAddress() {
-        val json = SchemaUtils.getFileContent("/export/mcloud/mcloud-address.minimal.json")
+        val json = SchemaUtils.getJsonFileContent("/export/mcloud/mcloud-address.minimal.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }
 
     @Test
     fun fullAddress() {
-        val json = SchemaUtils.getFileContent("/export/mcloud/mcloud-address.full.json")
+        val json = SchemaUtils.getJsonFileContent("/export/mcloud/mcloud-address.full.json")
         val result = SchemaUtils.validate(json, schema)
         result.size shouldBe 0
     }

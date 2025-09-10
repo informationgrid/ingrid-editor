@@ -29,7 +29,7 @@ class InGridGeoDatasetKrznSchema : AnnotationSpec() {
 
     @Test
     fun minimal() {
-        val json = SchemaUtils.getFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
+        val json = SchemaUtils.getJsonFileContent("/export/ingrid/geo-dataset.minimal.json").replaceFirst(
             "{",
             """
             { "environmentDescription": "my env description", "mapLink": { "key": null, "value": "my map link" }, "dataSetURI": "info",
