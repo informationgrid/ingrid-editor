@@ -1,12 +1,12 @@
 <div class="result-table-header">
     <div class="result">
-        @if (isLoading) {
+        @if (isLoading()) {
             Suche
             <mat-spinner [diameter]="24"></mat-spinner>
         } @else {
             <h2>
-                <span data-cy="total-hits">{{ totalHits }}</span>
-                @if (totalHits === 1) {
+                <span data-cy="total-hits">{{ totalHits() }}</span>
+                @if (totalHits() === 1) {
                     Ergebnis gefunden
                 } @else {
                     Ergebnisse gefunden

@@ -14,7 +14,7 @@
 
 {
     "iPlugId": "ige-ng_${catalog.getIdentifier()}",
-    "dataSourceName": "iPlug IGE-NG (${catalog.getIdentifier()})",
+    "dataSourceName": "${catalog.getName()}",
     "title": "${page.getTitle()}",
     "summary": "${page.getData().getDescription()}",
     "x1": [${page.getSpatial("lon1")}],

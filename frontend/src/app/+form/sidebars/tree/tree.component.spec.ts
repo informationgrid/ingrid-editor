@@ -405,7 +405,7 @@ describe("TreeComponent", () => {
   xit("should copy a whole tree/folder to root", fakeAsync(() => {}));
 
   it("should move a root node to root?", fakeAsync(() => {
-    db.getPath.and.returnValue(Promise.resolve(["1"]));
+    db.getPath.and.returnValue(Promise.resolve([1]));
     db.initialData.and.returnValue(of(recentDocuments));
     spectator.detectChanges();
 
@@ -428,7 +428,7 @@ describe("TreeComponent", () => {
     const treeStore = spectator.inject(TreeStore);
     store.set(recentDocuments);
 
-    db.getPath.and.returnValue(Promise.resolve(["1"]));
+    db.getPath.and.returnValue(Promise.resolve([1]));
     db.initialData.and.returnValue(of(recentDocuments));
     db.getChildren.and.callFake((parentId) =>
       of(treeStore.getChildren(parentId)),

@@ -19,7 +19,6 @@
  */
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   inject,
   Inject,
@@ -102,8 +101,8 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   selection = signal<DocumentAbstract>(null);
   selectedType: string;
   selectedNode = new BehaviorSubject<number>(null);
-  recentAddresses$: Observable<DocumentAbstract[]> = toObservable(
-    this.generalStore.recentAddresses,
+  recentlyUsedAddresses$: Observable<DocumentAbstract[]> = toObservable(
+    this.generalStore.recentlyUsedAddresses,
   ).pipe(map((allRecent) => allRecent[ConfigService.catalogId] ?? []));
   initialActiveAddressType = new BehaviorSubject<Partial<any>>(null);
   typeSelectionEnabled = signal<boolean>(false);
@@ -115,21 +114,21 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   disabledCondition: (node: TreeNode) => boolean = (node: TreeNode) => {
     return node.type === "FOLDER";
   };
+  private addressTypeCodelistId = "505";
 
   constructor(
     @Inject(MAT_DIALOG_DATA) private data: ChooseAddressDialogData,
     private codelistService: CodelistService,
     private documentService: DocumentService,
     private dlgRef: MatDialogRef<ChooseAddressDialogComponent>,
-    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
-    this.codelistService.byId("505");
+    this.codelistService.byId(this.addressTypeCodelistId);
     this.codelists$
       .pipe(
         untilDestroyed(this),
-        map((item) => item["505"]),
+        map((item) => item[this.addressTypeCodelistId]),
         map((codelist) => CodelistService.mapToSelect(codelist)),
         tap((items) => {
           this.availableReferenceTypes = this.prepareReferenceTypes(items);
@@ -150,7 +149,6 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
     );
     this.preselectIfOnlyOneType(this.allowedReferenceTypes);
     this.typeSelectionEnabled.set(this.allowedReferenceTypes.length > 1);
-    this.cdr.markForCheck();
   }
 
   private prepareReferenceTypes(result: SelectOptionUi[]): DocumentAbstract[] {
@@ -171,10 +169,17 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   }
 
   getResult(): void {
-    this.documentService.addToRecentAddresses(this.selection());
+    this.documentService.addToRecentlyUsedAddresses(this.selection());
 
+    const value = this.availableReferenceTypes.find(
+      (item) => item.id === this.selectedType,
+    ).title;
     this.dlgRef.close({
-      type: { key: this.selectedType },
+      type: {
+        key: this.selectedType,
+        value: value,
+        _codelistId: this.addressTypeCodelistId,
+      },
       address: this.selection(),
     });
   }
@@ -204,7 +209,7 @@ export class ChooseAddressDialogComponent implements OnInit, OnDestroy {
   handleTreeError(error: HttpErrorResponse) {
     console.error(error);
     if (error.error.errorText === "No value present") {
-      this.documentService.removeFromRecentAddresses(
+      this.documentService.removeFromRecentlyUsedAddresses(
         this.recentAddressSelect.value.id,
       );
       this.recentAddressSelect.value = null;

@@ -27,7 +27,7 @@ export abstract class Plugin {
   abstract name: string;
   group: string;
   description: string;
-  isActive: boolean;
+  isActive = signal<boolean>(false);
   defaultActive: boolean;
   hide = false;
   _state?: string;
@@ -49,7 +49,7 @@ export abstract class Plugin {
 
   register(): void {
     console.debug("Register Plugin: ", this.name);
-    this.isActive = true;
+    this.isActive.set(true);
   }
 
   registerForm(): void {
@@ -59,13 +59,13 @@ export abstract class Plugin {
 
   unregister(): void {
     console.debug("Unregister Plugin: ", this.name);
-    this.isActive = false;
+    this.isActive.set(false);
     this.subscriptions.forEach((sub) => sub.unsubscribe());
     this.subscriptions = [];
   }
 
   unregisterForm(): void {
-    if (this.isActive) {
+    if (this.isActive()) {
       console.debug("Unregister Form-Plugin: ", this.name);
       this.formSubscriptions.forEach((sub) => sub.unsubscribe());
       this.formSubscriptions = [];

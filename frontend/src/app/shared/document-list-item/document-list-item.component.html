@@ -1,55 +1,63 @@
 @if (docs) {
-    <mat-selection-list
-        class="doc-item"
-        [multiple]="false"
-        [class.dense]="denseMode"
-        [class.hide-divider]="hideDivider"
-    >
-        <mat-list-option
-            *ngFor="let doc of docs | async as allDocs; let i = index"
-            (click)="makeSelection(doc)"
-            tabindex="0"
-            cdkMonitorElementFocus
-            (keydown.enter)="makeSelection(doc)"
-            [class.selected]="
-                currentSelection && doc.id === currentSelection.id
-            "
-            [class.hide-bg-selection]="showSelection"
-            [class.disabled]="doc.hasWritePermission === false"
-            [attr.data-cy]="doc.title.replace(' ', '_') | lowercase"
+    @if (docs | async; as allDocs) {
+        <mat-selection-list
+            class="doc-item"
+            [multiple]="false"
+            [class.dense]="denseMode()"
+            [class.hide-divider]="hideDivider()"
         >
-            @if (showSelection) {
-                <mat-icon
-                    [class.invisible]="currentSelection?.id !== doc.id"
-                    [class.extra-padding]="!showIcons"
-                    class="marker mark-color"
-                    matListItemIcon
-                    svgIcon="baseline-check-24px"
-                ></mat-icon>
+            @for (doc of allDocs; track $any(doc).id; let i = $index) {
+                <mat-list-option
+                    (click)="makeSelection(doc)"
+                    tabindex="0"
+                    cdkMonitorElementFocus
+                    (keydown.enter)="makeSelection(doc)"
+                    [class.selected]="
+                        currentSelection && $any(doc).id === currentSelection.id
+                    "
+                    [class.hide-bg-selection]="showSelection()"
+                    [class.disabled]="doc.hasWritePermission === false"
+                    [attr.data-cy]="doc.title.replace(' ', '_') | lowercase"
+                >
+                    @if (showSelection()) {
+                        <mat-icon
+                            [class.invisible]="
+                                currentSelection?.id !== $any(doc).id
+                            "
+                            [class.extra-padding]="!showIcons()"
+                            class="marker mark-color"
+                            matListItemIcon
+                            svgIcon="baseline-check-24px"
+                        ></mat-icon>
+                    }
+                    @if (showIcons()) {
+                        <ige-document-icon
+                            [doc]="doc"
+                            matListItemIcon
+                        ></ige-document-icon>
+                    }
+                    <span matListItemTitle class="doc-item-content">
+                        <span class="card-title">{{ doc.title }}</span>
+                        @if (!hideDate()) {
+                            <span
+                                class="date"
+                                [matTooltip]="
+                                    $any(doc)._contentModified
+                                        | date: 'dd.LL.yyyy HH:mm'
+                                "
+                                >{{
+                                    $any(doc)._contentModified | dateAgo: "DE"
+                                }}</span
+                            >
+                        }
+                    </span>
+                    @if (i < allDocs.length - 1) {
+                        <mat-divider aria-hidden="true"></mat-divider>
+                    }
+                </mat-list-option>
             }
-            @if (showIcons) {
-                <ige-document-icon
-                    [doc]="doc"
-                    matListItemIcon
-                ></ige-document-icon>
-            }
-            <span matListItemTitle class="doc-item-content">
-                <span class="card-title">{{ doc.title }}</span>
-                @if (!hideDate) {
-                    <span
-                        class="date"
-                        [matTooltip]="
-                            doc._contentModified | date: 'dd.LL.yyyy HH:mm'
-                        "
-                        >{{ doc._contentModified | dateAgo: "DE" }}</span
-                    >
-                }
-            </span>
-            @if (i < allDocs.length - 1) {
-                <mat-divider aria-hidden="true"></mat-divider>
-            }
-        </mat-list-option>
-    </mat-selection-list>
+        </mat-selection-list>
+    }
 }
 
 @if (doc) {
@@ -58,7 +66,7 @@
         (click)="makeSelection(doc)"
     >
         @if (
-            showSelection &&
+            showSelection() &&
             currentSelection &&
             currentSelection.id === $any(doc).id
         ) {
@@ -72,7 +80,7 @@
         <span matListItemTitle>
             <!-- in case we want to style title, we need to add it as innerHTML -->
             <span [innerHTML]="doc.title"></span>
-            @if (!hideDate) {
+            @if (!hideDate()) {
                 <span
                     class="date"
                     [matTooltip]="

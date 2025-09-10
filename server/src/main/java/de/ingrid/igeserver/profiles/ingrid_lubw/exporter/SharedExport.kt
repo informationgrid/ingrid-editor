@@ -22,12 +22,14 @@ package de.ingrid.igeserver.profiles.ingrid_lubw.exporter
 import com.fasterxml.jackson.databind.JsonNode
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.KeywordIso
 import de.ingrid.igeserver.profiles.ingrid.exporter.model.Thesaurus
+import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.tranformer.GeodataserviceTransformerLubw
 import de.ingrid.igeserver.profiles.ingrid_lubw.exporter.tranformer.GeodatasetTransformerLubw
 import de.ingrid.igeserver.utils.getString
 import kotlin.reflect.KClass
 
 fun getLubwModelTransformerClass(docType: String): KClass<out Any>? = when (docType) {
     "InGridGeoDataset" -> GeodatasetTransformerLubw::class
+    "InGridGeoService" -> GeodataserviceTransformerLubw::class
     else -> null
 }
 

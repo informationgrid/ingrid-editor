@@ -26,12 +26,12 @@ import {
   ElementRef,
   HostListener,
   inject,
-  Input,
   OnDestroy,
   OnInit,
   Signal,
   signal,
   ViewChild,
+  input,
 } from "@angular/core";
 import {
   FormArray,
@@ -52,8 +52,8 @@ import {
 import { FormUtils } from "../../form.utils";
 import {
   FormlyFieldConfig,
+  FormlyForm,
   FormlyFormOptions,
-  FormlyModule,
 } from "@ngx-formly/core";
 import { FormularService } from "../../formular.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -88,6 +88,7 @@ import { toObservable } from "@angular/core/rxjs-interop";
 import { ProfileService } from "../../../services/profile.service";
 import { UiStore } from "../../../store/ui.store";
 import { BehaviourService } from "../../../services/behavior/behaviour.service";
+import { AuthenticationFactory } from "../../../security/auth.factory";
 
 @UntilDestroy()
 @Component({
@@ -104,19 +105,20 @@ import { BehaviourService } from "../../../services/behavior/behaviour.service";
     QuickNavbarComponent,
     ReactiveFormsModule,
     FormsModule,
-    FormlyModule,
     FolderDashboardComponent,
     AsyncPipe,
     JsonPipe,
+    FormlyForm,
   ],
 })
 export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() address = false;
+  readonly address = input(false);
 
   private generalStore = inject(GeneralStore);
   private profileService = inject(ProfileService);
   private uiStore = inject(UiStore);
   private behaviourService = inject(BehaviourService);
+  private authService = inject(AuthenticationFactory);
 
   @ViewChild("scrollForm", { read: ElementRef }) scrollForm: ElementRef;
   @ViewChild("formInfo", { read: ElementRef }) formInfoRef: ElementRef;
@@ -162,7 +164,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showJson: Signal<boolean> = computed(() => {
     const plugin = this.behaviourService.getBehaviour("plugin.show.json");
-    return plugin.isActive && this.uiStore.showJSONView();
+    return plugin.isActive() && this.uiStore.showJSONView();
   });
 
   private readonly: boolean;
@@ -223,12 +225,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       if (activeNode.id === null) {
         // when clicking on root node in breadcrumb we need to set opened document to null
         // otherwise the last one will be loaded again
-        this.documentService.updateOpenedDocumentInTreestore(
-          null,
-          this.address,
-        );
+        const address = this.address();
+        this.documentService.updateOpenedDocumentInTreestore(null, address);
         this.router.navigate([
-          ConfigService.catalogId + (this.address ? "/address" : "/form"),
+          ConfigService.catalogId + (address ? "/address" : "/form"),
         ]);
       }
     });
@@ -238,7 +238,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.formularService.currentDoctypeId = null;
 
     // reset selected documents if we revisit the page
-    this.formularService.setSelectedDocuments([], this.address);
+    this.formularService.setSelectedDocuments([], this.address());
   }
 
   ngOnInit() {
@@ -251,7 +251,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       merge(
         this.route.params.pipe(map((param) => param.id)),
         this.documentService.reload$.pipe(
-          filter((item) => item.forAddress === this.address),
+          filter((item) => item.forAddress === this.address()),
           map((item) => item.uuid),
           // when we revisit this page, make sure to update the form in our service
           // so that other plugins access the current one
@@ -288,11 +288,11 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     // show blocker div to prevent user from modifying data or calling functions
     // during save
     this.docEvents
-      .beforeSave$(this.address)
+      .beforeSave$(this.address())
       .subscribe(() => this.showBlocker.set(true));
 
     // reset dirty flag after save
-    this.docEvents.afterSave$(this.address).subscribe((data) => {
+    this.docEvents.afterSave$(this.address()).subscribe((data) => {
       this.formStateService.updateMetadata(data.metadata);
       // TODO AW: do not update form data after save, since metadata is enough
       this.updateFormWithData(data);
@@ -312,8 +312,8 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @HostListener("window:beforeunload", ["$event"])
   beforeUnloadHandler(event: Event) {
-    if (this.form?.dirty) {
-      event.returnValue = false;
+    if (this.form?.dirty && this.authService.get().isLoggedIn()) {
+      event.preventDefault();
     }
   }
 
@@ -329,7 +329,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
         debounceTime(300), // update store less frequently
         tap(() =>
           this.treeService.updateScrollPositionInStore(
-            this.address,
+            this.address(),
             element.scrollTop,
           ),
         ),
@@ -373,14 +373,17 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     const loadSubscription = this.documentService
-      .load(id, this.address, true, true)
+      .load(id, this.address(), true, true)
       .pipe(
         untilDestroyed(this),
         filter((doc) => doc != null),
         tap((doc) => this.formStateService.updateMetadata(doc.metadata)),
         tap((doc) => this.handleReadOnlyState(doc.documentWithMetadata)),
         tap((doc) =>
-          this.treeService.selectTreeNode(this.address, doc.metadata.wrapperId),
+          this.treeService.selectTreeNode(
+            this.address(),
+            doc.metadata.wrapperId,
+          ),
         ),
         tap((doc) =>
           this.loadSubscription.push(
@@ -404,7 +407,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private updateBreadcrumb(id: number) {
-    return this.documentService.updateBreadcrumb(id, this.address);
+    return this.documentService.updateBreadcrumb(id, this.address());
   }
 
   private handleLoadError(
@@ -414,7 +417,7 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
     if (error.status === 403) {
       // select previous document
       const target =
-        ConfigService.catalogId + (this.address ? "/address" : "/form");
+        ConfigService.catalogId + (this.address() ? "/address" : "/form");
       const commands: any[] = [target];
       if (previousDocUuid) commands.push({ id: previousDocUuid });
 
@@ -439,13 +442,10 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private resetForm() {
     this.fields = [];
-    this.treeService.selectTreeNode(this.address, null);
+    const address = this.address();
+    this.treeService.selectTreeNode(address, null);
     this.form.reset();
-    this.documentService.updateOpenedDocumentInTreestore(
-      null,
-      this.address,
-      true,
-    );
+    this.documentService.updateOpenedDocumentInTreestore(null, address, true);
   }
 
   private updateFormWithData(data: DocumentWithMetadata) {
@@ -539,14 +539,14 @@ export class DynamicFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.formStateService,
       this.documentService,
       this.dialog,
-      this.address,
+      this.address(),
     );
 
     if (!handled) {
       return;
     }
     this.documentService
-      .move(event.srcIds, event.destination, this.address, true)
+      .move(event.srcIds, event.destination, this.address(), true)
       .subscribe();
   }
 

@@ -4,9 +4,9 @@
     *transloco="let t; read: 'group'"
 >
     <div class="flex-1 flex-col justify-content-end align-items-end gap-12">
-        @if (showRootReadSlider) {
+        @if (showRootReadSlider()) {
             <mat-slide-toggle
-                [disabled]="disabled"
+                [disabled]="disabled()"
                 labelPosition="before"
                 (change)="toggleRootPermission()"
                 [formControl]="rootPermissionRead"
@@ -16,9 +16,9 @@
                 >Allgemeines Leserecht
             </mat-slide-toggle>
         }
-        @if (showRootWriteSlider) {
+        @if (showRootWriteSlider()) {
             <mat-slide-toggle
-                [disabled]="disabled"
+                [disabled]="disabled()"
                 labelPosition="before"
                 (change)="toggleRootPermission()"
                 [formControl]="rootPermissionWrite"
@@ -48,13 +48,13 @@
         </div>
     }
     <permission-table
-        [disabled]="disabled"
+        [disabled]="disabled()"
         formControlName="documents"
         label="Berechtigungen {{ t('form') }}"
         data-cy="Berechtigungen Daten"
     ></permission-table>
     <permission-table
-        [disabled]="disabled"
+        [disabled]="disabled()"
         formControlName="addresses"
         label="Berechtigungen Adressen"
         data-cy="Berechtigungen Adressen"

@@ -32,6 +32,7 @@ import {
   HTTP_INTERCEPTORS,
   HttpClient,
   provideHttpClient,
+  withFetch,
   withInterceptorsFromDi,
   withXsrfConfiguration,
 } from "@angular/common/http";
@@ -65,7 +66,7 @@ import {
 } from "@angular/material/tooltip";
 import { RxStompService } from "./app/rx-stomp.service";
 import { rxStompServiceFactory } from "./app/rx-stomp-service-factory";
-import { FORMLY_CONFIG, FormlyModule } from "@ngx-formly/core";
+import { FORMLY_CONFIG, provideFormlyCore } from "@ngx-formly/core";
 import { registerTranslateExtension } from "./app/formly/translate.extension";
 import { pluginProvider } from "./app/plugin.provider";
 import { KeycloakAngularModule } from "keycloak-angular";
@@ -79,7 +80,7 @@ import { OneColumnWrapperComponent } from "./app/formly/wrapper/one-column-wrapp
 import { FullWidthWrapperComponent } from "./app/formly/wrapper/full-width-wrapper.component";
 import { SectionWrapper } from "./app/formly/wrapper/section-wrapper.component";
 import { ButtonWrapperComponent } from "./app/formly/wrapper/button/button-wrapper.component";
-import { FormlyMaterialModule } from "@ngx-formly/material";
+import { withFormlyMaterial } from "@ngx-formly/material";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
@@ -138,14 +139,15 @@ import {
   PositiveNumValidator,
   UrlValidator,
 } from "./app/formly/input.validators";
-import { FormlyMatToggleModule } from "@ngx-formly/material/toggle";
-import { FormlyMatDatepickerModule } from "@ngx-formly/material/datepicker";
+import { withFormlyFieldToggle } from "@ngx-formly/material/toggle";
+import { withFormlyFieldDatepicker } from "@ngx-formly/material/datepicker";
 import { MetadataTypeComponent } from "./app/formly/types/metadata-type/metadata-type.component";
 import { MatDatepickerIntl } from "@angular/material/datepicker";
 import { GermanDateIntl } from "./app/services/german-date.intl";
 import { GeneralStore } from "./app/store/general.store";
 import {
   MatomoInitializerService,
+  MatomoTracker,
   provideMatomo,
   withRouter,
 } from "ngx-matomo-client";
@@ -168,7 +170,34 @@ bootstrapApplication(AppComponent, {
       // angular
       BrowserModule,
       NgxFlowModule,
-      FormlyModule.forRoot({
+      // Material
+      MatToolbarModule,
+      MatIconModule,
+      MatButtonModule,
+      MatDialogModule,
+      MatSidenavModule,
+      MatRadioModule,
+      MatCheckboxModule,
+      MatListModule,
+      MatFormFieldModule,
+      MatInputModule,
+      MatCardModule,
+      MatAutocompleteModule,
+      MatTableModule,
+      MatSortModule,
+      MatProgressSpinnerModule,
+      MatPaginatorModule,
+      // IGE-Modules
+      routing,
+      FormsModule,
+      MatTabsModule,
+      MatMenuModule,
+      TranslocoRootModule,
+      ClipboardModule,
+      MatNativeDateModule,
+    ),
+    provideFormlyCore([
+      {
         types: [
           {
             name: "autocomplete",
@@ -309,9 +338,9 @@ bootstrapApplication(AppComponent, {
           { name: "doi", validation: DoiValidator },
         ],
         /*,
-            wrappers: [
-              { name: 'panel', component: OneColumnWrapperComponent },
-            ]*/
+          wrappers: [
+            { name: 'panel', component: OneColumnWrapperComponent },
+          ]*/
         wrappers: [
           { name: "inline-help", component: InlineHelpWrapperComponent },
           { name: "addons", component: AddonsWrapperComponent },
@@ -332,37 +361,16 @@ bootstrapApplication(AppComponent, {
         extras: {
           lazyRender: true,
         },
-      }),
-      FormlyMaterialModule,
-      FormlyMatToggleModule,
-      FormlyMatDatepickerModule,
-      // Material
-      MatToolbarModule,
-      MatIconModule,
-      MatButtonModule,
-      MatDialogModule,
-      MatSidenavModule,
-      MatRadioModule,
-      MatCheckboxModule,
-      MatListModule,
-      MatFormFieldModule,
-      MatInputModule,
-      MatCardModule,
-      MatAutocompleteModule,
-      MatTableModule,
-      MatSortModule,
-      MatProgressSpinnerModule,
-      MatPaginatorModule,
-      // IGE-Modules
-      routing,
-      FormsModule,
-      MatTabsModule,
-      MatMenuModule,
-      TranslocoRootModule,
-      ClipboardModule,
-      MatNativeDateModule,
+      },
+      ...withFormlyMaterial(),
+      withFormlyFieldToggle(),
+      withFormlyFieldDatepicker(),
+    ]),
+    provideHttpClient(
+      withInterceptorsFromDi(),
+      withXsrfConfiguration({}),
+      withFetch(),
     ),
-    provideHttpClient(withInterceptorsFromDi(), withXsrfConfiguration({})),
     // make sure we are authenticated by keycloak before bootstrap
     provideAppInitializer(() => {
       const initializerFn = ConfigLoader(
@@ -374,6 +382,7 @@ bootstrapApplication(AppComponent, {
         inject(TranslocoService),
         inject(GeneralStore),
         inject(MatomoInitializerService),
+        inject(MatomoTracker),
       );
       return initializerFn();
     }),

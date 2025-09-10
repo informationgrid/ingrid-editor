@@ -345,7 +345,7 @@ class ResearchService(
         } catch (error: Exception) {
             throw ClientException.withReason(
                 (error.cause?.cause ?: error.cause)?.message ?: error.localizedMessage,
-                data = mapOf("sql" to finalQuery),
+                data = mapOf("finalQuery" to finalQuery, "query" to sqlQuery),
                 cause = error,
             )
         }

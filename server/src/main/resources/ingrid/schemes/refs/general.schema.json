@@ -1,19 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "definitions": {
-    "KeyValue": {
-      "type": "object",
-      "unevaluatedProperties": false,
-      "properties": {
-        "key": {
-          "type": ["string", "null"]
-        },
-        "value": {
-          "type": ["string", "null"]
-        }
-      },
-      "title": "KeyValue"
-    },
     "PointOfContact": {
       "type": "object",
       "unevaluatedProperties": false,
@@ -22,7 +9,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/KeyValue"
+          "$ref": "../../../general.schema.json#/definitions/KeyValue"
         }
       },
       "required": ["ref", "type"],
@@ -70,7 +57,7 @@
             "format": "date-time"
           },
           "referenceDateType": {
-            "$ref": "#/definitions/KeyValue"
+            "$ref": "../../../general.schema.json#/definitions/KeyValue"
           }
         },
         "required": ["referenceDateType", "referenceDate"],
@@ -94,7 +81,7 @@
         "spatialSystems": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/KeyValue"
+            "$ref": "../../../general.schema.json#/definitions/KeyValue"
           }
         },
         "verticalExtent": {
@@ -104,7 +91,7 @@
             "Datum": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/KeyValue"
+                  "$ref": "../../../general.schema.json#/definitions/KeyValue"
                 },
                 {
                   "type": "null"
@@ -120,7 +107,7 @@
             "unitOfMeasure": {
               "anyOf": [
                 {
-                  "$ref": "#/definitions/KeyValue"
+                  "$ref": "../../../general.schema.json#/definitions/KeyValue"
                 },
                 {
                   "type": "null"
@@ -170,7 +157,7 @@
     "accessConstraints": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/KeyValue"
+        "$ref": "../../../general.schema.json#/definitions/KeyValue"
       }
     },
     "useConstraints": {
@@ -180,7 +167,7 @@
         "unevaluatedProperties": false,
         "properties": {
           "title": {
-            "$ref": "#/definitions/KeyValue"
+            "$ref": "../../../general.schema.json#/definitions/KeyValue"
           },
           "source": {
             "type": "string"
@@ -200,7 +187,7 @@
           "name": {
             "anyOf": [
               {
-                "$ref": "#/definitions/KeyValue"
+                "$ref": "../../../general.schema.json#/definitions/KeyValue"
               },
               {
                 "type": "null"
@@ -220,7 +207,7 @@
                     "type": ["null", "number"]
                   },
                   "unit": {
-                    "$ref": "#/definitions/KeyValue"
+                    "$ref": "../../../general.schema.json#/definitions/KeyValue"
                   }
                 }
               },
@@ -243,7 +230,7 @@
             "unevaluatedProperties": false,
             "properties": {
               "name": {
-                "$ref": "#/definitions/KeyValue"
+                "$ref": "../../../general.schema.json#/definitions/KeyValue"
               },
               "version": {
                 "type": "string"
@@ -310,7 +297,7 @@
             ]
           },
           "title": {
-            "$ref": "#/definitions/KeyValue"
+            "$ref": "../../../general.schema.json#/definitions/KeyValue"
           },
           "edition": {
             "type": ["null", "string"]
@@ -347,12 +334,12 @@
       "unevaluatedProperties": false,
       "properties": {
         "language": {
-          "$ref": "#/definitions/KeyValue"
+          "$ref": "../../../general.schema.json#/definitions/KeyValue"
         },
         "characterSet": {
           "anyOf": [
             {
-              "$ref": "#/definitions/KeyValue"
+              "$ref": "../../../general.schema.json#/definitions/KeyValue"
             },
             {
               "type": "null"
@@ -386,7 +373,7 @@
         "status": {
           "anyOf": [
             {
-              "$ref": "general.schema.json#/definitions/KeyValue"
+              "$ref": "../../../general.schema.json#/definitions/KeyValue"
             },
             {
               "type": "null"
@@ -407,7 +394,7 @@
         "resourceDateType": {
           "anyOf": [
             {
-              "$ref": "general.schema.json#/definitions/KeyValue"
+              "$ref": "../../../general.schema.json#/definitions/KeyValue"
             },
             {
               "type": "null"
@@ -417,7 +404,7 @@
         "resourceDateTypeSince": {
           "anyOf": [
             {
-              "$ref": "general.schema.json#/definitions/KeyValue"
+              "$ref": "../../../general.schema.json#/definitions/KeyValue"
             },
             {
               "type": "null"
@@ -493,14 +480,14 @@
     "themes": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/KeyValue"
+        "$ref": "../../../general.schema.json#/definitions/KeyValue"
       },
       "minItems": 0
     },
     "advProductGroups": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/KeyValue"
+        "$ref": "../../../general.schema.json#/definitions/KeyValue"
       },
       "minItems": 0
     },
@@ -514,7 +501,7 @@
         "maintenanceAndUpdateFrequency": {
           "anyOf": [
             {
-              "$ref": "#/definitions/KeyValue"
+              "$ref": "../../../general.schema.json#/definitions/KeyValue"
             },
             {
               "type": "null"
@@ -525,7 +512,7 @@
           "unit": {
             "anyOf": [
               {
-                "$ref": "#/definitions/KeyValue"
+                "$ref": "../../../general.schema.json#/definitions/KeyValue"
               },
               {
                 "type": "null"
@@ -547,7 +534,7 @@
             "unevaluatedProperties": false,
             "properties": {
               "type": {
-                "$ref": "#/definitions/KeyValue"
+                "$ref": "../../../general.schema.json#/definitions/KeyValue"
               },
               "title": {
                 "type": "string"
@@ -559,7 +546,7 @@
               "urlDataType": {
                 "anyOf": [
                   {
-                    "$ref": "#/definitions/KeyValue"
+                    "$ref": "../../../general.schema.json#/definitions/KeyValue"
                   },
                   {
                     "type": "null"
@@ -583,7 +570,7 @@
             "unevaluatedProperties": false,
             "properties": {
               "type": {
-                "$ref": "#/definitions/KeyValue"
+                "$ref": "../../../general.schema.json#/definitions/KeyValue"
               },
               "title": {
                 "type": "string"
@@ -594,7 +581,7 @@
               "urlDataType": {
                 "anyOf": [
                   {
-                    "$ref": "#/definitions/KeyValue"
+                    "$ref": "../../../general.schema.json#/definitions/KeyValue"
                   },
                   {
                     "type": "null"

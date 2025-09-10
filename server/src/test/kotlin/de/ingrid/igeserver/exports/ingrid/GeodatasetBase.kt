@@ -49,8 +49,10 @@ open class GeodatasetBase : ShouldSpec() {
     protected val catalogService = mockk<CatalogService>()
 
     protected val codelistHandler = mockk<CodelistHandler>()
-    private val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
-    protected val uploadConfig = mockk<UploadConfig>()
+    protected val documentWrapperRepository = mockk<DocumentWrapperRepository>(relaxed = true)
+    protected val uploadConfig = UploadConfig().apply {
+        uploadExternalUrl = "https://my.external.url/"
+    }
 
     protected lateinit var exporter: IngridIDFExporter
     protected lateinit var indexExporter: IngridIndexExporter
@@ -58,14 +60,14 @@ open class GeodatasetBase : ShouldSpec() {
 
     override suspend fun beforeSpec(spec: Spec) {
         clearAllMocks()
-        this.exporter = IngridIDFExporter(this.codelistHandler, this.uploadConfig, this.catalogService, this.documentService)
+        this.exporter = IngridIDFExporter(this.codelistHandler, this.uploadConfig, this.catalogService, this.documentService, this.documentWrapperRepository)
         this.luceneExporter = IngridLuceneExporter(
             this.codelistHandler,
             this.uploadConfig,
             this.catalogService,
             this.documentService,
         )
-        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter, this.documentWrapperRepository)
+        this.indexExporter = IngridIndexExporter(this.exporter, this.luceneExporter)
 
         mockkObject(SpringContext)
         every { SpringContext.getBean(DocumentService::class.java) } answers {

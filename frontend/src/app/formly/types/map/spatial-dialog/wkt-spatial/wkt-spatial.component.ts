@@ -17,14 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from "@angular/core";
+import { Component, OnDestroy, OnInit, input, output } from "@angular/core";
 import { Layer, Map } from "leaflet";
 import { LeafletService } from "../../leaflet.service";
 import { MatDialog } from "@angular/material/dialog";
@@ -56,9 +49,9 @@ import { FormErrorComponent } from "../../../../../+form/form-shared/ige-form-er
   ],
 })
 export class WktSpatialComponent implements OnInit, OnDestroy {
-  @Input() map: Map;
-  @Input() wktString = "";
-  @Output() result = new EventEmitter<string>();
+  readonly map = input<Map>(undefined);
+  readonly wktString = input("");
+  readonly result = output<string>();
 
   error: string = null;
 
@@ -71,11 +64,12 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.leafletService.zoomToInitialBox(this.map);
+    this.leafletService.zoomToInitialBox(this.map());
 
-    if (this.wktString) {
-      this.drawWkt(this.wktString);
-      setTimeout(() => this.result.next(this.wktString), 50);
+    const wktString = this.wktString();
+    if (wktString) {
+      this.drawWkt(wktString);
+      setTimeout(() => this.result.emit(this.wktString()), 50);
     }
   }
 
@@ -94,12 +88,12 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
       .subscribe((response) => {
         if (!response.isValid) {
           this.error = response.message;
-          this.result.next(null);
+          this.result.emit(null);
           return;
         }
 
         this.drawWkt(value);
-        this.result.next(value);
+        this.result.emit(value);
       });
   }
 
@@ -111,7 +105,7 @@ export class WktSpatialComponent implements OnInit, OnDestroy {
 
   private drawWkt(value: string) {
     this.drawnWkt = this.leafletService.convertWKT(
-      this.map,
+      this.map(),
       value,
       true,
     ) as any;

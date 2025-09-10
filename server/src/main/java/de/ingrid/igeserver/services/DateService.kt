@@ -33,7 +33,7 @@ class DateService {
     fun toISO8601UTC(date: Date?): String? {
         val tz: TimeZone = TimeZone.getTimeZone("UTC")
         val df: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'")
-        df.setTimeZone(tz)
+        df.timeZone = tz
         return df.format(date)
     }
 }

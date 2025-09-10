@@ -18,38 +18,38 @@
         ></ige-quick-search>
 
         <div class="shortcut">
-            <ige-action-button
-                [label]="t('newDocument')"
-                svgIcon="Neuer-Datensatz"
-                [disabled]="!canCreateDataset"
-                (submit)="createNewDocument()"
-                matomoClickCategory="QuickActions"
-                matomoClickAction="CreateNewDocument"
-            ></ige-action-button>
-            <ige-action-button
-                label="Neuer Ordner"
-                svgIcon="outline-create_new_folder-24px"
-                [disabled]="!canCreateDataset"
-                (submit)="createNewFolder()"
-            ></ige-action-button>
+            @if (canCreateDataset) {
+                <ige-action-button
+                    [label]="t('newDocument')"
+                    svgIcon="Neuer-Datensatz"
+                    (submit)="createNewDocument()"
+                    matomoClickCategory="QuickActions"
+                    matomoClickAction="CreateNewDocument"
+                ></ige-action-button>
+                <ige-action-button
+                    label="Neuer Ordner"
+                    svgIcon="outline-create_new_folder-24px"
+                    (submit)="createNewFolder()"
+                ></ige-action-button>
+            }
             @if (canImport) {
                 <ige-action-button
                     [label]="t('importDocument')"
                     icon="import_export"
-                    [disabled]="!canImport"
                     (submit)="gotoImportPage()"
                     matomoClickCategory="QuickActions"
                     matomoClickAction="ImportDocument"
                 ></ige-action-button>
             }
-            <ige-action-button
-                label="Neue Adresse"
-                svgIcon="outline-person_add-24px"
-                [disabled]="!canCreateAddress"
-                (submit)="createNewAddress()"
-                matomoClickCategory="QuickActions"
-                matomoClickAction="CreateNewAddress"
-            ></ige-action-button>
+            @if (canCreateAddress) {
+                <ige-action-button
+                    label="Neue Adresse"
+                    svgIcon="outline-person_add-24px"
+                    (submit)="createNewAddress()"
+                    matomoClickCategory="QuickActions"
+                    matomoClickAction="CreateNewAddress"
+                ></ige-action-button>
+            }
         </div>
 
         <div class="info-cards flex-col gap-24">
@@ -61,12 +61,12 @@
 
             <ige-card-box
                 data-cy="card-latest-docs"
-                label="{{ t('mostRecent') }}"
+                label="{{ t('recentlyModifiedDocs') }}"
                 nameOfToggle="Von mir"
-                (toggle)="updateRecent($event)"
+                (toggle)="onlyModifiedFromCurrentUser.set($event)"
             >
                 <ige-document-list-item
-                    [docs]="recentDocs()"
+                    [docs]="recentlyModifiedDocs.value()"
                     [hideDate]="false"
                     (select)="openDocument($event._uuid)"
                 ></ige-document-list-item>
@@ -74,12 +74,12 @@
 
             <ige-card-box
                 data-cy="recent-published-docs"
-                label="{{ t('mostRecentPublished') }}"
+                label="{{ t('recentlyPublishedDocs') }}"
                 nameOfToggle="Von mir"
-                (toggle)="updatePublished($event)"
+                (toggle)="onlyPublishedFromCurrentUser.set($event)"
             >
                 <ige-document-list-item
-                    [docs]="recentPublishedDocs()"
+                    [docs]="recentlyPublishedDocs.value()"
                     [hideDate]="false"
                     (select)="openDocument($event._uuid)"
                 ></ige-document-list-item>

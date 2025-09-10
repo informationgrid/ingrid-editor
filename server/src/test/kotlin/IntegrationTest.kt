@@ -20,25 +20,34 @@
 import com.ninjasquad.springmockk.MockkBean
 import de.ingrid.igeserver.IgeServer
 import de.ingrid.igeserver.services.UserManagementService
+import io.kotest.core.extensions.ApplyExtension
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.extensions.spring.SpringExtension
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
+import org.testcontainers.containers.PostgreSQLContainer
 
 @SpringBootTest(classes = [IgeServer::class], webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@TestPropertySource(locations = ["classpath:application-test.properties"])
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(scripts = ["/test_data_acl.sql"], config = SqlConfig(encoding = "UTF-8"))
 @AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles(profiles = ["default", "uvp", "ogc-api", "ingrid", "mcloud"])
+@ApplyExtension(SpringExtension::class)
+@ContextConfiguration(classes = [(IgeServer::class)])
+@ActiveProfiles(profiles = ["default", "uvp", "ogc-api", "ingrid", "mcloud", "ingrid-krzn", "opendata", "ingrid-hmdk", "ingrid-lfubayern"])
 class IntegrationTest : AnnotationSpec() {
-    override fun extensions() = listOf(SpringExtension)
 
     @MockkBean(relaxed = true)
     lateinit var userManagementService: UserManagementService
+
+    companion object {
+        @ServiceConnection
+        private val postgres = PostgreSQLContainer("postgres:17-alpine")
+            .apply { start() }
+    }
 }

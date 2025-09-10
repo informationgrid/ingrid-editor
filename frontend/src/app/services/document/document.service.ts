@@ -20,14 +20,7 @@
 import { inject, Injectable } from "@angular/core";
 import { ModalService } from "../modal/modal.service";
 import { UpdateType } from "../../models/update-type.enum";
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable,
-  of,
-  Subject,
-  Subscription,
-} from "rxjs";
+import { BehaviorSubject, Observable, of, Subject, Subscription } from "rxjs";
 import {
   catchError,
   filter,
@@ -56,9 +49,7 @@ import {
 import { DocEventsService } from "../event/doc-events.service";
 import { TranslocoService } from "@jsverse/transloco";
 import { TagRequest } from "../../models/tag-request.model";
-import { MatSnackBar } from "@angular/material/snack-bar";
 import { CatalogService } from "../../+catalog/services/catalog.service";
-import { isExpired } from "../utils";
 import { GeneralStore } from "../../store/general.store";
 import { AddressTreeStore } from "../../store/address-tree/address-tree.store";
 import { EntityMap } from "@ngrx/signals/entities";
@@ -115,7 +106,6 @@ export class DocumentService {
     private researchService: ResearchService,
     private translocoService: TranslocoService,
     private docEvents: DocEventsService,
-    private snackBar: MatSnackBar,
   ) {
     this.configuration = configService.getConfiguration();
   }
@@ -147,134 +137,23 @@ export class DocumentService {
       .pipe(map((result) => this.mapSearchResults(result)));
   }
 
-  findRecentDrafts(fromCurrentUser: boolean = false): void {
-    let currentUser = this.getCurrentUserQuery(fromCurrentUser);
-    this.researchService
-      .search(
-        "",
-        {
-          type: "selectDocuments",
-          ignoreFolders: "exceptFolders",
-          selectConditions: "document1.state IS NOT NULL " + currentUser,
-        },
-        "modified",
-        "DESC",
-        {
-          page: 1,
-          pageSize: 10,
-        },
-        ["selectConditions"],
-      )
-      .pipe(
-        map((result) => this.mapSearchResults(result)),
-        tap((docs) => this.generalStore.setLatestDocuments(docs.hits)),
-      )
-      .subscribe();
-  }
-
-  findRecentPublished(fromCurrentUser: boolean = false): void {
-    // only published
-    this.researchService
-      .search(
-        "",
-        {
-          type: "selectDocuments",
-          ignoreFolders: "exceptFolders",
-          selectConditions:
-            "document1.state = 'PUBLISHED' " +
-            this.getCurrentUserQuery(fromCurrentUser),
-        },
-        "modified",
-        "DESC",
-        {
-          page: 1,
-          pageSize: 10,
-        },
-        ["selectConditions"],
-      )
-      .pipe(
-        map((result) => this.mapSearchResults(result)),
-        tap((docs) => this.generalStore.setLatestPublishedDocuments(docs.hits)),
-      )
-      .subscribe();
-  }
-
   findExpired(fromCurrentUser: boolean = false): void {
-    let currentUser = fromCurrentUser
-      ? "and document1.modifiedbyuser = " +
-        this.configService.$userInfo.getValue().id
-      : "";
-    const model = {
-      ignoreFolders: "exceptFolders",
-      selectConditions: "document1.state = 'PUBLISHED'" + currentUser,
-    };
-    combineLatest([
-      this.catalogService.getExpiryDuration(),
-      this.researchService.search(
-        "",
-        {
-          type: "selectDocuments",
-          ...model,
-        },
-        "contentmodified",
-        "ASC",
-        {
-          page: 1,
-          pageSize: 5,
-        },
-        ["selectConditions"],
-      ),
-      this.researchService.search(
-        "",
-        {
-          type: "selectAddresses",
-          ...model,
-        },
-        "contentmodified",
-        "ASC",
-        {
-          page: 1,
-          pageSize: 5,
-        },
-        ["selectConditions"],
-      ),
-    ])
+    this.researchService
+      .getExpiredDatasetStatistics()
       .pipe(
-        map(([days, docs, addresses]) => {
-          if (days == 0) return [];
-          // add annotation to addresses for distinction
-          addresses.hits.forEach((hit) => (hit.isAddress = true));
-          // combine all hits as observable
-          const combined = docs.hits
-            .concat(addresses.hits)
-            .filter((doc) => isExpired(doc._contentModified, days))
-            .sort(
-              (a, b) =>
-                new Date(a._contentModified).getTime() -
-                new Date(b._contentModified).getTime(),
+        map((exData) => {
+          // filter by current user if requested
+          if (fromCurrentUser) {
+            exData = exData.filterById(
+              this.configService.$userInfo.getValue().id,
             );
-          return this.mapSearchResponseToDocumentAbstracts(combined);
+          }
+          // combine objects and addresses and map to document abstracts
+          return this.mapSearchResponseToDocumentAbstracts(
+            exData.objects.concat(exData.addresses),
+          );
         }),
         tap((docs) => this.generalStore.setOldestExpiredDocuments(docs)),
-      )
-      .subscribe();
-  }
-
-  findRecentAddresses(): void {
-    this.researchService
-      .search(
-        "",
-        { type: "selectAddresses", ignoreFolders: "exceptFolders" },
-        "modified",
-        "DESC",
-        {
-          page: 1,
-          pageSize: 10,
-        },
-      )
-      .pipe(
-        map((result) => this.mapSearchResults(result)),
-        tap((docs) => this.generalStore.setLatestAddresses(docs.hits)),
       )
       .subscribe();
   }
@@ -282,18 +161,21 @@ export class DocumentService {
   getChildren(
     parentId: number,
     isAddress?: boolean,
+    ignoreRootReadPermission?: boolean,
   ): Observable<DocumentAbstract[]> {
-    return this.dataService.getChildren(parentId, isAddress).pipe(
-      map((docs) => {
-        docs.forEach((doc) => {
-          doc.icon = this.profileService.getDocumentIcon(doc._type);
-          if (!doc.title) doc.title = "-Kein Titel-";
-          doc.isRoot = parentId === null;
-        });
-        return docs as DocumentAbstract[];
-      }),
-      tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs)),
-    );
+    return this.dataService
+      .getChildren(parentId, isAddress, ignoreRootReadPermission)
+      .pipe(
+        map((docs) => {
+          docs.forEach((doc) => {
+            doc.icon = this.profileService.getDocumentIcon(doc._type);
+            if (!doc.title) doc.title = "-Kein Titel-";
+            doc.isRoot = parentId === null;
+          });
+          return docs as DocumentAbstract[];
+        }),
+        tap((docs) => this.updateTreeStoreDocs(isAddress, parentId, docs)),
+      );
   }
 
   load(
@@ -409,42 +291,7 @@ export class DocumentService {
     this.docEvents.sendBeforeSave();
     this.documentOperationFinished$.next(false);
 
-    return this.trimObjectAndRemoveEvilTags(data);
-  }
-
-  private trimObjectAndRemoveEvilTags(obj: IgeDocument): IgeDocument {
-    const trimmed = JSON.stringify(obj, (_key, value) => {
-      return typeof value === "string"
-        ? this.removeEvilTags(value.trim())
-        : value;
-    });
-    return JSON.parse(trimmed);
-  }
-
-  private removeEvilTags(val: String) {
-    // strip all tags except anchors and simple <b>, <i>, <u>, <p>, <br>, <strong>, <ul>, <ol>, <li> tags
-    let processed = val.replace(
-      /<(?!a>|a href|\/a>|b>|\/b>|i>|\/i>|u>|\/u>|p>|\/p>|br>|br\/>|br \/>|strong>|\/strong>|ul>|\/ul>|ol>|\/ol>|li>|\/li>)[^>]*>/gi,
-      "",
-    );
-    // strip anchors with javascript
-    processed = processed.replace(
-      /<a[^>]*?href="javascript[^>]*?>.*?<\/a>/gi,
-      "",
-    );
-    // remove all event handlers
-    processed = processed.replace(/ on\w+="[^"]*"/g, "");
-
-    if (processed !== val) {
-      this.snackBar.open(
-        "Ihre Eingabe wurde gespeichert. Bitte beachten Sie, dass bestimmte HTML-Tags nicht erlaubt sind und daher entfernt wurden.",
-        "OK",
-        {
-          duration: 5000,
-        },
-      );
-    }
-    return processed;
+    return data;
   }
 
   postSaveActions(saveOptions: PostSaveOptions) {
@@ -824,8 +671,8 @@ export class DocumentService {
     );
   }
 
-  public addToRecentAddresses(address: DocumentAbstract) {
-    const recentAddresses = this.generalStore.recentAddresses();
+  public addToRecentlyUsedAddresses(address: DocumentAbstract) {
+    const recentAddresses = this.generalStore.recentlyUsedAddresses();
 
     let addresses = recentAddresses[ConfigService.catalogId]?.slice() ?? [];
     addresses = addresses.filter((addr) => addr.id !== address.id);
@@ -836,19 +683,19 @@ export class DocumentService {
       addresses = addresses.slice(0, 5);
     }
 
-    this.generalStore.setRecentAddresses({
+    this.generalStore.setRecentlyUsedAddresses({
       ...recentAddresses,
       [ConfigService.catalogId]: addresses,
     });
   }
 
-  public removeFromRecentAddresses(id: number) {
-    const recentAddresses = this.generalStore.recentAddresses();
+  public removeFromRecentlyUsedAddresses(id: number) {
+    const recentAddresses = this.generalStore.recentlyUsedAddresses();
 
     let addresses = recentAddresses[ConfigService.catalogId]?.slice() ?? [];
     addresses = addresses.filter((address) => address.id !== id);
 
-    this.generalStore.setRecentAddresses({
+    this.generalStore.setRecentlyUsedAddresses({
       ...recentAddresses,
       [ConfigService.catalogId]: addresses,
     });
@@ -871,11 +718,6 @@ export class DocumentService {
     } else {
       store.add(docs);
     }
-  }
-
-  clearTreeStores() {
-    this.documentTreeStore.set([]);
-    this.addressTreeStore.set([]);
   }
 
   mapToDocumentAbstracts(docs: DocumentWithMetadata[]): DocumentAbstract[] {
@@ -939,7 +781,7 @@ export class DocumentService {
     }
   }
 
-  private mapSearchResults(
+  mapSearchResults(
     result: ServerSearchResult | ResearchResponse,
   ): SearchResult {
     return {
@@ -981,23 +823,21 @@ export class DocumentService {
 
       store.update(id, { _parent: parent, isRoot: parent === null });
 
-      // update children information of parent of each moved dataset
-      const hasChildren = Object.keys(entityMap).some(
-        (key) => entityMap[key]._parent === parentId,
-      );
+      if (parentId === null) return;
 
-      if (parentId !== null && !hasChildren) {
-        store.update(parentId, {
-          _hasChildren: false,
-        });
+      // update children information of the parent for each moved dataset
+      const hasChildren = store
+        .entities()
+        .some((item) => item._parent === parentId);
+
+      if (!hasChildren) {
+        store.update(parentId, { _hasChildren: false });
       }
     });
 
     // update children information of destination
     if (parent !== null) {
-      store.update(parent, {
-        _hasChildren: true,
-      });
+      store.update(parent, { _hasChildren: true });
     }
 
     this.generalStore.setDatasetsChanged(
@@ -1098,13 +938,6 @@ export class DocumentService {
       },
       !entity.hasWritePermission,
     );
-  }
-
-  private getCurrentUserQuery(fromCurrentUser: boolean) {
-    return fromCurrentUser
-      ? "and document1.modifiedbyuser = " +
-          this.configService.$userInfo.getValue().id
-      : "";
   }
 
   replaceAddress(source: string, target: string): Observable<any> {

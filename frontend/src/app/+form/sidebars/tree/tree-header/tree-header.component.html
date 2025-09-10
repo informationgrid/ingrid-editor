@@ -5,10 +5,10 @@
         <mat-checkbox
             data-cy="toggle-all-selection"
             matTooltip="Alle aus-/abwählen"
-            [checked]="checkToggleAll"
-            [indeterminate]="indeterminateToggleAll"
-            (change)="toggleAllSelection.next($event.checked)"
-            (keyup.enter)="toggleAllSelection.next(!checkToggleAll)"
+            [checked]="checkToggleAll()"
+            [indeterminate]="indeterminateToggleAll()"
+            (change)="toggleAllSelection.emit($event.checked)"
+            (keyup.enter)="toggleAllSelection.emit(!checkToggleAll())"
             aria-label="Alle Metadaten in der Baumansicht auswählen"
             >Alle
         </mat-checkbox>
@@ -25,11 +25,11 @@
 }
 
 <div class="header flex-col">
-    @if (showOptions && !multiSelectionModeEnabled) {
+    @if (showOptions() && !multiSelectionModeEnabled) {
         <div
             class="options flex-row flex-wrap-reverse justify-content-space-between align-items-stretch"
         >
-            @if (showMultiSelectButton) {
+            @if (showMultiSelectButton()) {
                 <div class="multi-select">
                     <mat-checkbox
                         data-cy="edit-button"
@@ -42,14 +42,16 @@
                     </mat-checkbox>
                 </div>
             }
-            <div class="flex-1 flex-row justify-content-end align-items-center">
-                <!--            <mat-slide-toggle
-        class="show-all"
-        checked
-        (change)="toggleView.emit($event.checked)"
-        >Alle anzeigen
-      </mat-slide-toggle>-->
-                @if (showReloadButton) {
+            <div class="flex-2 flex-row justify-content-end align-items-center">
+                @if (showWriteAccessToggle()) {
+                    <mat-slide-toggle
+                        class="show-all"
+                        (change)="toggleWriteAccess.emit($event.checked)"
+                    >
+                        mit Schreibzugriff
+                    </mat-slide-toggle>
+                }
+                @if (showReloadButton()) {
                     <button
                         mat-icon-button
                         data-cy="reload-button"
@@ -65,7 +67,7 @@
         </div>
     }
 
-    @if (showSearch) {
+    @if (showSearch()) {
         <div data-cy="tree-search-field">
             <ige-search-input
                 [autocompleteRef]="searchAuto"

@@ -56,6 +56,7 @@ export class GeoDatasetDoctypeKrzn extends GeoDatasetDoctype {
         required: true,
         allowNoValue: false,
         options: this.getCodelistForSelect("10500", "mapLink", "description"),
+        codelistId: "10500",
       }),
       this.addGroupSimple(
         null,

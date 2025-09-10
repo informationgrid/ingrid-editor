@@ -89,12 +89,6 @@ export class UserDataService {
     );
   }
 
-  getAssignedUsers(dbId: string): Observable<string[]> {
-    return this.http.get<string[]>(
-      this.configuration.backendUrl + "info/assignedUsers/" + dbId,
-    );
-  }
-
   getAssignedDatasets(userId: number): Observable<number[]> {
     return this.http.get<number[]>(
       this.configuration.backendUrl + `users/${userId}/responsibilities`,
@@ -117,15 +111,6 @@ export class UserDataService {
     return this.http.post<void>(
       this.configuration.backendUrl + `user/${userId}/assignCatalog`,
       catalogId,
-    );
-  }
-
-  sendPasswordChangeRequest(login: string) {
-    return this.http.post<void>(
-      this.configuration.backendUrl +
-        "externalUsers/requestPasswordChange/" +
-        login,
-      null,
     );
   }
 

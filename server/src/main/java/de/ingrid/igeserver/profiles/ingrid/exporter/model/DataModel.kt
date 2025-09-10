@@ -407,7 +407,7 @@ data class Resolution(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GridSpatialRepresentation(
     val type: KeyValue?,
-    val axesDimensionProperties: List<AxisDimensionProperties>,
+    val axesDimensionProperties: List<AxisDimensionProperties>?,
     val transformationParameterAvailability: Boolean = false,
     val numberOfDimensions: Int?,
     val cellGeometry: KeyValue?,
@@ -515,8 +515,8 @@ data class UserDefinedMaintenanceFrequency(
 
 data class DateEvent(
     @JsonDeserialize(using = DateDeserializer::class)
-    val referenceDate: OffsetDateTime,
-    val referenceDateType: KeyValue,
+    val referenceDate: OffsetDateTime?,
+    val referenceDateType: KeyValue?,
 )
 
 data class TimeRange(

@@ -56,17 +56,12 @@ export class SelectOption {
     this.label = label;
   }
 
-  forBackend(): BackendOption {
-    if (this.value === null || this.value === undefined) {
-      return {
-        key: null,
-        value: this.label,
-      };
-    } else {
-      return {
-        key: this.value,
-      };
-    }
+  forBackend(codelistId: string): BackendOption {
+    return {
+      key: this.value,
+      value: this.label,
+      _codelistId: codelistId ?? null,
+    };
   }
 }
 
@@ -124,14 +119,25 @@ export class CodelistService {
     return CodelistService.addFavorites(codelist.id, items);
   };
 
-  private static mapToSelectOptionUi(language: string) {
-    return (entry: CodelistEntry) =>
-      ({
-        label:
-          entry.fields[language] ?? entry.fields["de"] ?? entry.fields["name"],
-        value: entry.id,
-        sortkey: entry.fields["sortkey"],
-      }) as SelectOptionUi;
+  static mapToSelectOptionUi(language: string) {
+    return (entry: CodelistEntry) => {
+      const option: SelectOptionUi = new SelectOption(
+        entry.id,
+        entry.fields[language] ?? entry.fields["de"] ?? entry.fields["name"],
+      );
+      option.sortkey = entry.fields["sortkey"] as CodelistSort;
+      return option;
+    };
+  }
+
+  getCodelistEntryAsSelectOption(
+    codelistId: string,
+    entryId: string,
+  ): SelectOptionUi {
+    const entry = this.store.getCodelistEntryByKey(codelistId, entryId);
+    return CodelistService.mapToSelectOptionUi(
+      this.generalStore.catalogLanguage(),
+    )(entry);
   }
 
   private static getSortFunction(
@@ -297,7 +303,7 @@ export class CodelistService {
   }
 
   resetCodelist(id: string) {
-    return this.dataService.resetCodelist(id).pipe(
+    return this.dataService.resetCodelist(id ?? null).pipe(
       map((codelists) => this.prepareCodelists(codelists, true)),
       tap((codelists) =>
         codelists.forEach((codelist) => this.store.updateCodelist(codelist)),
@@ -384,5 +390,9 @@ export class CodelistService {
     };
     newFavorites[id] = entryIds;
     this.generalStore.updateFavorites(newFavorites);
+  }
+
+  syncCodelistValues(migrate: boolean) {
+    return this.dataService.syncCodelistValues(migrate);
   }
 }

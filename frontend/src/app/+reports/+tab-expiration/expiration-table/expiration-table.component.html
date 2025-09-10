@@ -15,7 +15,7 @@
 
         <ng-container matColumnDef="_contentModified">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                Zuletzt bearbeitet
+                Zuletzt veröffentlicht
             </th>
             <td
                 mat-cell
@@ -43,13 +43,13 @@
             tabindex="0"
             cdkMonitorElementFocus
             *matRowDef="let row; columns: displayedColumns"
-            [class.readonly]="isSearching"
+            [class.readonly]="isSearching()"
             (click)="openDataset(row)"
             (keyup.enter)="openDataset(row)"
             [attr.aria-label]="
                 'Titel: ' +
                 row.title +
-                ', zuletzt bearbeitet: ' +
+                ', zuletzt veröffentlicht: ' +
                 (row._contentModified | dateAgo: 'DE') +
                 ', Verantwortlicher: ' +
                 (row._responsibleUser | fullName | async)

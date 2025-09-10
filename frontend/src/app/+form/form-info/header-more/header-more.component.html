@@ -1,4 +1,4 @@
-@if (showMore) {
+@if (showMore()) {
     <div [@slideDown] class="more-info">
         @if (metadata().docType !== "FOLDER" && !hideFields.state) {
             <div class="flex-row">

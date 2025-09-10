@@ -182,8 +182,8 @@ describe("ConformityDialogComponent", () => {
     spectator.component.submit();
 
     expect(closeDialog).toHaveBeenCalledWith({
-      specification: { key: null, value: "text to enter" },
-      pass: { key: "1" },
+      specification: { key: null, value: "text to enter", _codelistId: "6006" },
+      pass: { key: "1", value: "konform", _codelistId: "6000" },
       publicationDate: new Date(
         "Wed Mar 18 2020 00:00:00 GMT+0100 (Mitteleuropäische Normalzeit)",
       ),
@@ -210,8 +210,8 @@ describe("ConformityDialogComponent", () => {
     spectator.component.submit();
 
     expect(closeDialog).toHaveBeenCalledWith({
-      specification: { key: "1" },
-      pass: { key: "1" },
+      specification: { key: "1", value: "Eins", _codelistId: "6005" },
+      pass: { key: "1", value: "konform", _codelistId: "6000" },
       publicationDate: expectedDateInISO,
       explanation: null,
       isInspire: true,
@@ -223,6 +223,8 @@ describe("ConformityDialogComponent", () => {
     codelistStore.addCodelists([
       {
         id: "6005",
+        name: "",
+        default: "",
         entries: [
           {
             id: "1",
@@ -236,6 +238,8 @@ describe("ConformityDialogComponent", () => {
     codelistStore.addCodelists([
       {
         id: "6006",
+        name: "",
+        default: "",
         entries: [
           {
             id: "1",

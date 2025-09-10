@@ -1,6 +1,7 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid.exporter.GeodatasetModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.Citation
+@import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 @import java.util.Map
 
 @param Map<String, Object> map
@@ -53,6 +54,9 @@
             </gmd:MD_FeatureCatalogueDescription>
         </gmd:contentInfo>
         @endif
+        @for (Reference ref : page.getReferencesWithUuidRefs())
+            <gmd:contentInfo uuidref="${ref.getUuidRef()}"></gmd:contentInfo>
+        @endfor
     `
     )
     @template.export.ingrid.idf.dataQuality(page = page)
@@ -84,5 +88,8 @@
         </gmd:MD_PortrayalCatalogueReference>
     </gmd:portrayalCatalogueInfo>
     @endfor
-
+    @for (Reference ref : page.getReferencesWithUuidRefs())
+        <gmd:portrayalCatalogueInfo uuidref="${ref.getUuidRef()}"></gmd:portrayalCatalogueInfo>
+    @endfor
+    <idf:hasAccessConstraint>${page.hasAccessConstraints()}</idf:hasAccessConstraint>
 `, abstract_text = page.getDescription())

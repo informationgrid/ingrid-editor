@@ -41,22 +41,26 @@ class ZabbixJob(
     override val log = logger()
 
     override fun run(context: JobExecutionContext) {
-        log.debug("Starting Task: ZabbixJob")
         val info = prepareJob(context)
+        log.debug("Starting Task: ZabbixJob for '${info.catalogId}' with UUID: ${info.data.uuid}")
 
         zabbixService.addOrUpdateDocument(info.data)
-        log.debug("Task finished: ZabbixJob for '${info.catalogId}'")
+        log.debug("Task finished: ZabbixJob for '${info.catalogId}' with UUID: ${info.data.uuid}")
     }
 
     private fun prepareJob(context: JobExecutionContext): JobInfo {
         val dataMap: JobDataMap = context.mergedJobDataMap!!
 
-        val profile = dataMap.getString("profile")
-        val catalogId: String = dataMap.getString("catalogId")
-        val data: ZabbixModel.ZabbixData = dataMap.getString("data")!!.let { jacksonObjectMapper().readValue(it) }
-
-        return JobInfo(profile, catalogId, data)
+        return JobInfo(
+            profile = dataMap.getString("profile"),
+            catalogId = dataMap.getString("catalogId"),
+            data = dataMap.getString("data")!!.let { jacksonObjectMapper().readValue(it) },
+        )
     }
 
-    private data class JobInfo(val profile: String, val catalogId: String, val data: ZabbixModel.ZabbixData)
+    private data class JobInfo(
+        val profile: String,
+        val catalogId: String,
+        val data: ZabbixModel.ZabbixData,
+    )
 }

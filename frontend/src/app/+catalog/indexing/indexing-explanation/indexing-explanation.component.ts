@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Output } from "@angular/core";
+import { Component, output } from "@angular/core";
 import { MatChip, MatChipListbox } from "@angular/material/chips";
 
 @Component({
@@ -27,5 +27,5 @@ import { MatChip, MatChipListbox } from "@angular/material/chips";
   styleUrl: "./indexing-explanation.component.scss",
 })
 export class IndexingExplanationComponent {
-  @Output() cronChange = new EventEmitter<string>();
+  readonly cronChange = output<string>();
 }

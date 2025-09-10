@@ -17,7 +17,7 @@ title: Ressourcentyp (generell)
 
 # Ressourcentyp (generell)
 
-Angabe der übergeordneten Art des Dokumentes. Es ist eine Kurzcharakteristik über die Art des Dokuments anzugeben. Der Eintrag kann direkt erfolgen oder mit Hilfe einer Auswahlliste, die über den Pfeil am rechten Ende des Feldes geöffnet werden kann.
+Angabe der übergeordneten Art des Dokumentes. Es ist eine Kurzcharakteristik über die Art des Dokuments anzugeben. Der Eintrag muss aus der Auswahlliste erfolgen, die über den Pfeil am Ende des Feldes geöffnet werden kann.
 
 ## Beispiel:
 

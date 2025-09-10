@@ -19,11 +19,9 @@
  */
 import { createComponentFactory, Spectator } from "@ngneat/spectator";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { FormlyModule } from "@ngx-formly/core";
 import { GeometryContextDialogComponent } from "./geometry-context-dialog.component";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { getTranslocoModule } from "../../../app/transloco-testing.module";
-import { FormlyMaterialModule } from "@ngx-formly/material";
 import { OneColumnWrapperComponent } from "../../../app/formly/wrapper/one-column-wrapper.component";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import { RepeatComponent } from "../../../app/formly/types/repeat/repeat.component";
@@ -39,6 +37,8 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
+import { provideFormlyCore } from "@ngx-formly/core";
+import { withFormlyMaterial } from "@ngx-formly/material";
 
 describe("GeometryContextDialogComponent", () => {
   let spectator: Spectator<GeometryContextDialogComponent>;
@@ -50,6 +50,16 @@ describe("GeometryContextDialogComponent", () => {
     providers: [
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
+      provideFormlyCore([
+        {
+          types: [
+            { name: "repeat", component: RepeatComponent },
+            { name: "ige-select", component: SelectTypeComponent },
+          ],
+          wrappers: [{ name: "panel", component: OneColumnWrapperComponent }],
+        },
+        ...withFormlyMaterial(),
+      ]),
       {
         provide: MatDialogRef,
         useValue: {},
@@ -65,18 +75,7 @@ describe("GeometryContextDialogComponent", () => {
         },
       },
     ],
-    imports: [
-      FormlyMaterialModule,
-      FormlyModule.forRoot({
-        types: [
-          { name: "repeat", component: RepeatComponent },
-          { name: "ige-select", component: SelectTypeComponent },
-        ],
-        wrappers: [{ name: "panel", component: OneColumnWrapperComponent }],
-      }),
-      getTranslocoModule(),
-      CommonModule,
-    ],
+    imports: [getTranslocoModule(), CommonModule],
     detectChanges: false,
   });
 
@@ -93,7 +92,7 @@ describe("GeometryContextDialogComponent", () => {
     await enterCommonData();
     await expectNumInputsForType(select, "nominal", 4);
     expect(spectator.component.form.value).toEqual(
-      expectedFormValue("nominal"),
+      expectedFormValue("nominal", "nominal"),
     );
   });
 
@@ -105,7 +104,7 @@ describe("GeometryContextDialogComponent", () => {
     await setInputValue(5, "5");
 
     expect(spectator.component.form.value).toEqual({
-      ...expectedFormValue("ordinal"),
+      ...expectedFormValue("ordinal", "ordinal"),
       min: 3,
       max: 5,
     });
@@ -120,7 +119,7 @@ describe("GeometryContextDialogComponent", () => {
     await setInputValue(6, "test-unit");
 
     expect(spectator.component.form.value).toEqual({
-      ...expectedFormValue("scalar"),
+      ...expectedFormValue("scalar", "skalar"),
       min: 3,
       max: 5,
       unit: "test-unit",
@@ -133,7 +132,7 @@ describe("GeometryContextDialogComponent", () => {
     await expectNumInputsForType(select, "sonstiges", 4);
 
     expect(spectator.component.form.value).toEqual({
-      ...expectedFormValue("other"),
+      ...expectedFormValue("other", "sonstiges"),
     });
   });
 
@@ -161,14 +160,14 @@ describe("GeometryContextDialogComponent", () => {
     await inputs[index].blur();
   }
 
-  function expectedFormValue(type: string) {
+  function expectedFormValue(type: string, typeValue: string) {
     return {
       geometryType: "geo-type",
       name: "name",
       dataType: "data-type",
       description: "description",
       attributes: [],
-      featureType: { key: type },
+      featureType: { key: type, value: typeValue, _codelistId: null },
     };
   }
 });

@@ -34,7 +34,6 @@ import de.ingrid.igeserver.services.DocumentCategory
 import de.ingrid.igeserver.services.DocumentService
 import de.ingrid.igeserver.utils.getRawJsonFromDocument
 import org.springframework.context.annotation.Lazy
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
 @Service
@@ -49,7 +48,7 @@ class OgcGeoJsonExporter(
             "geojson",
             "geoJsonIGE",
             "geoJson Export des IGE",
-            MediaType.APPLICATION_JSON_VALUE,
+            "application/geo+json",
             "json",
             listOf(),
             false,

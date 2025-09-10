@@ -4,7 +4,7 @@
     <div class="content flex-1 flex-row">
         <div class="left-side">
             @if (label) {
-                <h1 class="page-title">{{ label }}<br />{{ subLabel }}</h1>
+                <h1 class="page-title">{{ label }}<br />{{ subLabel() }}</h1>
             }
             <ng-content select="[left-side]"></ng-content>
         </div>

@@ -17,7 +17,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, Input, input, output } from "@angular/core";
 import { LogResult } from "../../+catalog/indexing/index.service";
 import { MatIcon } from "@angular/material/icon";
 import { MatTooltip } from "@angular/material/tooltip";
@@ -32,18 +32,18 @@ import { DatePipe } from "@angular/common";
   imports: [MatIcon, MatTooltip, MatProgressSpinner, MatIconButton, DatePipe],
 })
 export class JobHandlerHeaderComponent {
-  @Input() message: LogResult;
-  @Input() isRunning: boolean;
+  readonly message = input<LogResult>(undefined);
+  readonly isRunning = input<boolean>(undefined);
   @Input() set showMoreForce(value: boolean) {
     this.showMoreInternal = value;
   }
 
-  @Output() showMore = new EventEmitter<boolean>();
+  readonly showMore = output<boolean>();
 
   showMoreInternal = false;
 
   toggleShow() {
     this.showMoreInternal = !this.showMoreInternal;
-    this.showMore.next(this.showMoreInternal);
+    this.showMore.emit(this.showMoreInternal);
   }
 }

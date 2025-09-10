@@ -49,12 +49,17 @@ class SchedulerService(factory: SchedulerFactoryBean) {
             }
         }
         val triggerKey = TriggerKey(jobKey.name, jobKey.group)
-        if (scheduler.checkExists(triggerKey)) scheduler.unscheduleJob(triggerKey)
+        if (scheduler.checkExists(triggerKey)) {
+            log.debug("Trigger for job $jobKey already exists. Replacing.")
+            val success = scheduler.unscheduleJob(triggerKey)
+            log.debug("Unscheduling job $jobKey: $success")
+        }
 
         val trigger = TriggerBuilder.newTrigger().forJob(jobKey)
             .usingJobData(jobDataMap)
             .withPriority(jobPriority)
             .withIdentity(triggerKey)
+            .startNow()
             .build()
 
         scheduler.scheduleJob(trigger)

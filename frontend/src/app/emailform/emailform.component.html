@@ -7,7 +7,7 @@
             type="email"
             email
             required
-            [autocomplete]="canAutocomplete ? 'email' : undefined"
+            [autocomplete]="canAutocomplete() ? 'email' : undefined"
         />
         @if (formErrors.email) {
             <mat-error>{{ formErrors.email }}</mat-error>

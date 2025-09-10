@@ -1,7 +1,7 @@
 @import de.ingrid.igeserver.exporter.TransformationTools
 @import de.ingrid.igeserver.profiles.ingrid.exporter.DataCollectionModelTransformer
 @import de.ingrid.igeserver.profiles.ingrid.exporter.model.CategoryCatalog
-@import de.ingrid.igeserver.profiles.ingrid.exporter.model.Citation
+@import de.ingrid.igeserver.profiles.ingrid.exporter.model.Reference
 @import java.util.Map
 
 @param Map<String, Object> map
@@ -75,6 +75,9 @@
                 </gmd:MD_FeatureCatalogueDescription>
             </gmd:contentInfo>
         @endif
+        @for (Reference ref : page.getReferencesWithUuidRefs())
+            <gmd:contentInfo uuidref="${ref.getUuidRef()}"></gmd:contentInfo>
+        @endfor
     `)
     @if (TransformationTools.hasValue(page.getMethodText()))
         <gmd:dataQualityInfo>

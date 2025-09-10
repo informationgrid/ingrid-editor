@@ -5,3 +5,4 @@ node_modules
 .gradle
 e2e/node_modules
 .angular
+dist

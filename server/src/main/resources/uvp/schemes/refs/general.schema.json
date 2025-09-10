@@ -72,7 +72,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/KeyValue"
+          "$ref": "../../../general.schema.json#/definitions/KeyValue"
         }
       },
       "required": ["ref", "type"],

@@ -34,7 +34,6 @@ import {
 } from "../../services/config/config.service";
 import { tap } from "rxjs/operators";
 
-import { FormlyModule } from "@ngx-formly/core";
 import { MatButton } from "@angular/material/button";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
@@ -43,6 +42,7 @@ import {
 } from "./connection-state/connection-state.component";
 import { Subscription } from "rxjs";
 import { PageTemplateComponent } from "../../shared/page-template/page-template.component";
+import { FormlyForm } from "@ngx-formly/core";
 
 @Component({
   selector: "ige-ibus-management",
@@ -50,10 +50,10 @@ import { PageTemplateComponent } from "../../shared/page-template/page-template.
   styleUrls: ["./connection-management.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    FormlyModule,
     MatButton,
     ConnectionStateComponent,
     PageTemplateComponent,
+    FormlyForm,
   ],
 })
 export class ConnectionManagementComponent implements OnInit {

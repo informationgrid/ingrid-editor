@@ -2,5 +2,9 @@
   .wfsgnde-spatial-wrapper {
     flex: 1;
     overflow: auto;
+
+    mat-checkbox {
+      height: 44px;
+    }
   }
 }

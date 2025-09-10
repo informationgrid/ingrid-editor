@@ -17,9 +17,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { SelectOptionUi } from "../../../app/services/codelist/codelist.service";
+import {
+  SelectOption,
+  SelectOptionUi,
+} from "../../../app/services/codelist/codelist.service";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Injectable } from "@angular/core";
+import { Injectable, signal } from "@angular/core";
 import { IngridShared } from "./ingrid-shared";
 import { distinctUntilKeyChanged, filter, tap } from "rxjs/operators";
 import { BehaviorSubject } from "rxjs";
@@ -61,21 +64,28 @@ export class GeoServiceDoctype extends IngridShared {
   }
 
   private mapServiceTypeToVersionCodelist = {
-    "1": 5151,
-    "2": 5152,
-    "3": 5153,
-    "4": 5154,
+    "1": "5151",
+    "2": "5152",
+    "3": "5153",
+    "4": "5154",
   };
 
   private mapServiceTypeToOperationNameCodelist = {
-    "1": 5105,
-    "2": 5110,
-    "3": 5120,
-    "4": 5130,
+    "1": "5105",
+    "2": "5110",
+    "3": "5120",
+    "4": "5130",
   };
 
   getServiceVersionOptions = new BehaviorSubject<SelectOptionUi[]>([]);
   getServiceOperationNameOptions = new BehaviorSubject<SelectOptionUi[]>([]);
+  currentServiceOperationNameCodelist = signal<string>("5110");
+
+  private couplingTypeOptions: SelectOption[] = [
+    new SelectOption("loose", "loose"),
+    new SelectOption("mixed", "mixed"),
+    new SelectOption("tight", "tight"),
+  ];
 
   documentFields = () => {
     this.handleDoiBehaviour();
@@ -169,6 +179,7 @@ export class GeoServiceDoctype extends IngridShared {
                 this.addAutoCompleteInline("name", "Name", {
                   required: true,
                   options: this.getServiceOperationNameOptions,
+                  dynamicCodelistId: this.currentServiceOperationNameCodelist,
                 }),
                 this.addInputInline("description", "Beschreibung"),
                 this.addInputInline("methodCall", "Zugriffs-URL", {
@@ -209,11 +220,7 @@ export class GeoServiceDoctype extends IngridShared {
                 this.addSelectInline("couplingType", "Kopplungstyp", {
                   showSearch: true,
                   defaultValue: { key: "loose" },
-                  options: <SelectOptionUi[]>[
-                    { label: "loose", value: "loose" },
-                    { label: "mixed", value: "mixed" },
-                    { label: "tight", value: "tight" },
-                  ],
+                  options: this.couplingTypeOptions,
                   hasInlineContextHelp: true,
                   wrappers: ["inline-help", "form-field"],
                   expressions: {
@@ -237,7 +244,7 @@ export class GeoServiceDoctype extends IngridShared {
             this.addResolutionFields(),
             this.addGroup(
               null,
-              null,
+              "Weitere Informationen",
               [
                 this.addTextAreaInline(
                   "systemEnvironment",
@@ -288,9 +295,9 @@ export class GeoServiceDoctype extends IngridShared {
     if (couplingTypeCtrl === null || couplingTypeCtrl.value?.key === "mixed")
       return;
 
-    couplingTypeCtrl.setValue({
-      key: value.length > 0 ? "tight" : "loose",
-    });
+    const key = value.length > 0 ? "tight" : "loose";
+    const option = this.couplingTypeOptions.find((item) => item.value === key);
+    couplingTypeCtrl.setValue(option.forBackend(null));
   }
 
   private handleServiceTypeChange(field: FormlyFieldConfig) {
@@ -318,6 +325,7 @@ export class GeoServiceDoctype extends IngridShared {
   private updateOperationNameField(value) {
     const codelistId =
       this.mapServiceTypeToOperationNameCodelist[value.key] ?? "5110";
+    this.currentServiceOperationNameCodelist.set(codelistId);
     this.getCodelistForSelect(codelistId, "version").subscribe((value) => {
       this.getServiceOperationNameOptions.next(value);
       this.updateOperationNameInPrintField(value);

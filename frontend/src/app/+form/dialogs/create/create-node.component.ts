@@ -24,10 +24,12 @@ import {
   ElementRef,
   inject,
   Inject,
+  linkedSignal,
   OnInit,
   Signal,
   signal,
   ViewChild,
+  WritableSignal,
 } from "@angular/core";
 import {
   DocumentService,
@@ -108,7 +110,7 @@ export class CreateNodeComponent implements OnInit {
 
   @ViewChild("contextNodeContainer") container: ElementRef;
   title = "Neuen Ordner anlegen";
-  parent: Signal<number> = computed(() => {
+  parent: WritableSignal<number> = linkedSignal(() => {
     return this.path()[this.path().length - 1]?.id ?? null;
   });
   forAddress = signal<boolean>(false);
@@ -118,7 +120,6 @@ export class CreateNodeComponent implements OnInit {
   formGroup: UntypedFormGroup;
   jumpedTreeNodeId: number = null;
   isAdmin = this.config.hasWriteRootPermission();
-  selectedLocation: number = null;
 
   path = computed<ShortTreeNode[]>(() => {
     return this.overridePath() ?? this.mapPath(this.getBreadcrumb());
@@ -196,15 +197,15 @@ export class CreateNodeComponent implements OnInit {
   }
 
   updateParent(parentId: number) {
-    this.selectedLocation = parentId;
+    this.parent.set(parentId);
   }
 
   applyLocation() {
-    if (this.selectedLocation === null) {
+    if (this.parent() === null) {
       this.overridePath.set([]);
     } else {
       this.documentService
-        .getPath(this.selectedLocation)
+        .getPath(this.parent())
         .pipe(tap((result) => this.overridePath.set(result)))
         .subscribe();
     }
@@ -222,6 +223,7 @@ export class CreateNodeComponent implements OnInit {
   quickBreadcrumbChange(id: number) {
     const index = this.path().findIndex((item) => item.id === id);
     this.overridePath.set([...this.path().splice(0, index + 1)]);
+    this.parent.set(id);
   }
 
   private mapPath(path: ShortTreeNode[]): ShortTreeNode[] {

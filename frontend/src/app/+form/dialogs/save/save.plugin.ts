@@ -17,7 +17,14 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-import { effect, inject, Inject, Injectable, signal } from "@angular/core";
+import {
+  effect,
+  inject,
+  Inject,
+  Injectable,
+  signal,
+  DOCUMENT,
+} from "@angular/core";
 import { FormToolbarService } from "../../form-shared/toolbar/form-toolbar.service";
 import { DocumentService } from "../../../services/document/document.service";
 import { IgeDocument } from "../../../models/ige-document";
@@ -25,7 +32,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { catchError, finalize } from "rxjs/operators";
 import { SaveBase } from "./save.base";
 import { DocEventsService } from "../../../services/event/doc-events.service";
-import { DOCUMENT } from "@angular/common";
+
 import { IgeError } from "../../../models/ige-error";
 import { PluginService } from "../../../services/plugin/plugin.service";
 
@@ -49,7 +56,7 @@ export class SavePlugin extends SaveBase {
     inject(PluginService).registerPlugin(this);
 
     effect(() => {
-      if (!this.formRegistered) return;
+      if (!this.isActive() || !this.formRegistered()) return;
       const doc = this.generalStore.getOpenedDocument(this.forAddress());
       this.formToolbarService.setButtonState(
         "toolBtnSave",
@@ -76,7 +83,7 @@ export class SavePlugin extends SaveBase {
     const toolbarEventSubscription = this.docEvents
       .onEvent("SAVE")
       .subscribe(() => {
-        const form: IgeDocument = this.getForm()?.getRawValue();
+        const form: IgeDocument = this.getCleanedFormValue();
         if (form) {
           this.formToolbarService.setButtonState("toolBtnSave", false);
           this.saveWithData(form);
@@ -86,7 +93,7 @@ export class SavePlugin extends SaveBase {
     this.formSubscriptions.push(toolbarEventSubscription);
   }
 
-  saveWithData(formData: IgeDocument) {
+  saveWithData(formData: IgeDocument, overrideVersion?: number) {
     this.documentService.publishState$.next(false);
 
     // delay execution to reset error messages after publish state has been set to false
@@ -99,7 +106,7 @@ export class SavePlugin extends SaveBase {
         .save({
           data: formData,
           id: metadata.wrapperId,
-          version: metadata.version,
+          version: overrideVersion ?? metadata.version,
           isNewDoc: false,
           isAddress: this.forAddress(),
           type: metadata.docType,
@@ -119,7 +126,7 @@ export class SavePlugin extends SaveBase {
   unregisterForm() {
     super.unregisterForm();
 
-    if (this.isActive) {
+    if (this.isActive()) {
       this.formToolbarService.removeButton("toolBtnSave");
     }
   }

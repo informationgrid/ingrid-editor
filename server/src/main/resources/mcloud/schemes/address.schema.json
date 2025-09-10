@@ -38,7 +38,7 @@
       "additionalProperties": false,
       "properties": {
         "type": {
-          "$ref": "#/definitions/KeyValue"
+          "$ref": "../../general.schema.json#/definitions/KeyValue"
         },
         "connection": {
           "type": "string"
@@ -46,19 +46,6 @@
       },
       "required": ["connection", "type"],
       "title": "Contact"
-    },
-    "KeyValue": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "key": {
-          "type": ["string", "null"]
-        },
-        "value": {
-          "type": ["string", "null"]
-        }
-      },
-      "title": "KeyValue"
     }
   }
 }

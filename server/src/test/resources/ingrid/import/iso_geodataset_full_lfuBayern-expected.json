@@ -8,7 +8,9 @@
       "isAdVCompatible": false,
       "isOpenData": false,
       "subType": {
-        "key": "5"
+        "key": "5",
+        "value": "Datensatz",
+        "_codelistId": "525"
       }
     },
     "description": "Beschreibung",
@@ -18,13 +20,17 @@
       {
         "ref": "855a9c9e-5387-41e2-b0c2-dc043de9c22e",
         "type": {
-          "key": "12"
+          "key": "12",
+          "value": "Ansprechpartner MD",
+          "_codelistId": "505"
         }
       },
       {
         "ref": "855a9c9e-5387-41e2-b0c2-dc043de9c22e",
         "type": {
-          "key": "7"
+          "key": "7",
+          "value": "Ansprechpartner",
+          "_codelistId": "505"
         }
       }
     ],
@@ -36,12 +42,16 @@
       "free": [],
       "geologicalKeywords": [
         {
-          "key": "1"
+          "key": "1",
+          "value": "geological eins",
+          "_codelistId": "20000"
         }
       ],
       "internalKeywords": [
         {
-          "key": "2"
+          "key": "2",
+          "value": "intern zwei",
+          "_codelistId": "20001"
         }
       ]
     },
@@ -60,7 +70,9 @@
       ],
       "spatialSystems": [
         {
-          "key": "84"
+          "key": "84",
+          "value": "CRS 84: CRS 84 / mathematisch",
+          "_codelistId": "100"
         }
       ],
       "description": ""
@@ -70,7 +82,9 @@
         {
           "referenceDate": "2024-04-01T22:00:00Z",
           "referenceDateType": {
-            "key": "1"
+            "key": "1",
+            "value": "Erstellung",
+            "_codelistId": "502"
           }
         }
       ],
@@ -80,15 +94,9 @@
       "resourceDateTypeSince": null
     },
     "maintenanceInformation": {
-      "maintenanceAndUpdateFrequency": {
-        "key": null,
-        "value": ""
-      },
+      "maintenanceAndUpdateFrequency": null,
       "userDefinedMaintenanceFrequency": {
-        "unit": {
-          "key": null,
-          "value": ""
-        }
+        "unit": null
       },
       "description": ""
     },
@@ -102,7 +110,9 @@
       "useConstraints": [
         {
           "title": {
-            "key": "19"
+            "key": "19",
+            "value": "Andere Open Source Lizenz",
+            "_codelistId": "6500"
           },
           "source": "Datenquelle: meine Quelle",
           "note": "my comments to use constraints"
@@ -119,7 +129,9 @@
     "references": [
       {
         "type": {
-          "key": "5304"
+          "key": "5304",
+          "value": "Bestellung",
+          "_codelistId": "2000"
         },
         "title": "Meine Verweis",
         "referenceType": "url",
@@ -129,16 +141,21 @@
     ],
     "fileReferences": [],
     "invekosKeywords": [],
+    "hvdCategories": [],
     "metadata": {
       "language": {
-        "key": "150"
+        "key": "150",
+        "value": "Deutsch",
+        "_codelistId": "99999999"
       },
       "characterSet": null
     },
     "resolution": [],
     "topicCategories": [
       {
-        "key": "17"
+        "key": "17",
+        "value": "Bauwerke",
+        "_codelistId": "527"
       }
     ],
     "spatialRepresentationType": [],
@@ -188,7 +205,9 @@
     "contact": [
       {
         "type": {
-          "key": "3"
+          "key": "3",
+          "value": "E-Mail",
+          "_codelistId": "4430"
         },
         "connection": "fegeg@ege.fe"
       }

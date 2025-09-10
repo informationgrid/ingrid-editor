@@ -3,23 +3,22 @@
 </h1>
 
 <div class="text-center shortcut" *transloco="let t; read: 'dashboard'">
-    <ige-action-button
-        label="Neuer Ordner"
-        svgIcon="outline-create_new_folder-24px"
-        [disabled]="!canCreateDatasets"
-        (submit)="createNewFolder()"
-    ></ige-action-button>
-    <ige-action-button
-        [label]="t('newDocument')"
-        svgIcon="Neuer-Datensatz"
-        [disabled]="!canCreateDatasets"
-        (submit)="createNewDataset()"
-    ></ige-action-button>
-    @if (canImport) {
+    @if (canCreateDatasets()) {
+        <ige-action-button
+            label="Neuer Ordner"
+            svgIcon="outline-create_new_folder-24px"
+            (submit)="createNewFolder()"
+        ></ige-action-button>
+        <ige-action-button
+            [label]="t('newDocument')"
+            svgIcon="Neuer-Datensatz"
+            (submit)="createNewDataset()"
+        ></ige-action-button>
+    }
+    @if (canImport()) {
         <ige-action-button
             [label]="t('importDocument')"
             icon="import_export"
-            [disabled]="!canImport"
             (submit)="importDataset()"
         ></ige-action-button>
     }

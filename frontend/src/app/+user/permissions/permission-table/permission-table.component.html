@@ -1,4 +1,4 @@
-<h3 class="table-title">{{ label }}</h3>
+<h3 class="table-title">{{ label() }}</h3>
 <table
     mat-table
     [dataSource]="val"
@@ -25,7 +25,7 @@
                 <ige-breadcrumb
                     class="no-padding disabled"
                     [path]="breadcrumb[element.id]"
-                    [rootName]="forAddress ? 'Adressen' : t('form')"
+                    [rootName]="forAddress() ? 'Adressen' : t('form')"
                     [simplePath]="true"
                 ></ige-breadcrumb>
             </div>
@@ -39,7 +39,7 @@
             <mat-button
                 matTooltip="Leserecht"
                 (click)="updatePermission(element, permissionLevel.READ)"
-                [class.disabled]="disabled"
+                [class.disabled]="disabled()"
                 [class.active]="element.permission == permissionLevel.READ"
             >
                 <mat-icon>visibility</mat-icon>
@@ -57,7 +57,7 @@
                             permissionLevel.WRITE_EXCEPT_PARENT
                         )
                     "
-                    [class.disabled]="disabled"
+                    [class.disabled]="disabled()"
                     [class.active]="
                         element.permission ==
                         permissionLevel.WRITE_EXCEPT_PARENT
@@ -73,7 +73,7 @@
                 <mat-button
                     matTooltip="Schreibrecht"
                     (click)="updatePermission(element, permissionLevel.WRITE)"
-                    [class.disabled]="disabled"
+                    [class.disabled]="disabled()"
                     [class.active]="element.permission == permissionLevel.WRITE"
                 >
                     <mat-icon>edit</mat-icon>
@@ -99,7 +99,7 @@
                     Öffnen
                 </button>
                 <button
-                    [disabled]="disabled"
+                    [disabled]="disabled()"
                     mat-menu-item
                     (click)="removePermission(element.id)"
                 >
@@ -118,7 +118,7 @@
 </table>
 <div class="permission-table-footer">
     <button
-        [disabled]="disabled"
+        [disabled]="disabled()"
         type="button"
         data-cy="add-permission"
         color="primary"
