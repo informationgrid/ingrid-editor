@@ -51,12 +51,16 @@ class ZabbixJob(
     private fun prepareJob(context: JobExecutionContext): JobInfo {
         val dataMap: JobDataMap = context.mergedJobDataMap!!
 
-        val profile = dataMap.getString("profile")
-        val catalogId: String = dataMap.getString("catalogId")
-        val data: ZabbixModel.ZabbixData = dataMap.getString("data")!!.let { jacksonObjectMapper().readValue(it) }
-
-        return JobInfo(profile, catalogId, data)
+        return JobInfo(
+            profile = dataMap.getString("profile"),
+            catalogId = dataMap.getString("catalogId"),
+            data = dataMap.getString("data")!!.let { jacksonObjectMapper().readValue(it) },
+        )
     }
 
-    private data class JobInfo(val profile: String, val catalogId: String, val data: ZabbixModel.ZabbixData)
+    private data class JobInfo(
+        val profile: String,
+        val catalogId: String,
+        val data: ZabbixModel.ZabbixData,
+    )
 }

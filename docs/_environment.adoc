@@ -199,10 +199,6 @@
 |
 |
 
-|ZABBIX_UPLOAD_URL
-|
-|
-
 |===
 
 === System configuration
