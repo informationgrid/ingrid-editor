@@ -23,12 +23,11 @@ import {
   InputOptions,
   SelectOptions,
 } from "../../form-field-helper";
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { IngridShared } from "../../ingrid/doctypes/ingrid-shared";
 import { FormControl } from "@angular/forms";
 import { GeoDatasetDoctypeBaw } from "./geo-dataset.doctype";
 import { isNotEmptyObject } from "../../../app/shared/utils";
-import { FormStateService } from "../../../app/+form/form-state.service";
 import { timezones } from "./timezones";
 
 @Injectable({ providedIn: "root" })
